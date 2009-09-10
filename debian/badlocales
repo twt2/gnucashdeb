@@ -1,0 +1,92 @@
+Check all the locale D_FMT's to see that they fit in eleven bytes.
+
+ar_AE
+ar_BH
+ar_DZ
+ar_EG
+ar_IQ
+ar_JO
+ar_KW
+ar_LB
+ar_LY
+ar_MA
+ar_OM
+ar_QA
+ar_SD
+ar_SY
+ar_TN
+ar_YE
+  "%d %b, %Y"
+
+ar_SA
+  "%A %.1d %B %Y"
+
+ar_IN
+bn_BN
+bn_IN
+en_IN
+gu_IN
+hi_IN
+kn_IN
+mr_IN
+ms_MY
+ne_NP
+pa_IN
+ta_IN
+te_IN
+  "%A %d %b %Y"
+
+en_HK
+  "%A, %B %d, %Y"
+
+en_PH
+  "%A, %d %B, %Y"
+
+en_SG
+  "%a %d,%B,%Y"
+
+ml_IN
+  "%A %d %B %Y"
+
+eu_ES
+  "%a, %Y.eko %bren %da"
+
+fa_IR:
+  "%0y/%0m/%0d"
+
+is_IS
+  "%a %e.%b %Y"
+
+ja_JP
+  "%Y*%m*%d*"	[where "*" is actually the appropriate kanji]
+
+kl_GL
+  "%d %b %Y"
+
+ko_KR
+  "%Y* %m* %d*" [where "*" is actually the appropriate hangul]
+
+lv_LV
+  "%Y.%m.%d."
+
+mt_MT
+  "%A, %d ta %b, %Y"
+
+nn_NO
+  "%d. %b %Y"
+
+sl_SI
+  "%d. %m. %Y"
+
+sr_CS
+  "%d.%m.%Y."
+
+zh_CN
+zh_SG
+  "%Y*%m*%d*" [where "*" is actually the appropriate character]
+
+zh_HK
+  "%Y*%m*%d* %A" [where "*" is actually the appropriate character]
+
+zh_TW
+  "**%Y*%m*%d*" [where "*" is actually the appropriate character]

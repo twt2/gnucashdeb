@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=GnuCash
+Comment=GnuCash Personal Finance
+Exec=gnucash
+Icon=/usr/share/gnucash/pixmaps/gnucash-icon-16x16.png
+Terminal=false
+Type=Application
+Categories=GNOME;Application;Office

@@ -1,0 +1,33 @@
+Source: gnucash
+Section: gnome
+Priority: optional
+Maintainer: Thomas Bushnell, BSG <tb@debian.org>
+Standards-Version: 3.7.2
+Build-Depends: libfinance-quote-perl, guile-1.6-slib, guile-1.6-dev, m4, gettext, slib (>= 3a2-5), debhelper (>= 4.2.16), zlib1g-dev, libxml-parser-perl, x11-common, libglib2.0-dev (>= 2.4.7), libxml2-dev (>= 2.4.16), libgtk2.0-dev (>= 2.4.13), libglade2-dev (>= 2.3.6), libgnomeprint2.2-dev (>= 2.8.0), libgconf2-dev, libgnomeui-dev (>= 2.0.0), libgsf-gnome-1-dev (>= 1.12.2), libpango1.0-dev (>= 1.6.0), libgtkhtml3.8-dev, gconf2, libgoffice-0-dev, dpkg-dev (>= 1.13.19), swig, libofx-dev, ofx, libaqbanking29-dev
+Build-Conflicts: guile-1.8-dev, guile-1.8
+
+Package: gnucash
+Architecture: any
+Depends: gnucash-common (>= ${source:Version}), ${shlibs:Depends}, ${misc:Depends}, slib (>= 3a2-5), guile-1.6-slib, libfinance-quote-perl, libdate-manip-perl, psfontmgr, x-ttcidfont-conf, libcrypt-ssleay-perl
+Suggests: gnucash-sql
+Recommends: gnucash-docs
+Replaces: gnucash-common (<< 1.9.8-1)
+Description: A personal finance tracking program
+ Gnucash can track finances in multiple accounts, keeping running
+ and reconciled balances. It has an X based graphical user interface,
+ double entry, a hierarchy of accounts, expense accounts (categories),
+ and can import Quicken QIF files and OFX files.
+
+Package: gnucash-common
+Architecture: all
+Conflicts: gnucash (<< ${source:Version})
+Recommends: gnucash (>= ${source:Version})
+Replaces: gnucash (<< 1.8.8-5)
+Description: A personal finance tracking program
+ Gnucash can track finances in multiple accounts, keeping running
+ and reconciled balances. It has an X based graphical user interface,
+ double entry, a hierarchy of accounts, expense accounts (categories),
+ and can import Quicken QIF files and OFX files, and interact with HBCI
+ banks.
+ .
+ This package contains the architecture independent portions of gnucash.
