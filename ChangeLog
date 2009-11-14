@@ -1,0 +1,379 @@
+2009-02-23 20:22  andi5
+
+	* [r17949] packaging/win32/Makefile.am: [Win32] Update EXTRA_DIST.
+
+2009-02-23 20:02  andi5
+
+	* [r17947] NEWS, configure.in, src/bin/gnucash-bin.c: Update to
+	  release 2.2.9.
+
+2009-02-23 19:55  andi5
+
+	* [r17946] src/engine/test/Makefile.am: Disable test-lots for the
+	  release. test-lots is broken since r17862, a change unrelated to
+	  the test but changing the random numbers used by it. For more
+	  information, see
+	  https://lists.gnucash.org/pipermail/gnucash-devel/2009-February/024754.html
+	  and
+	  http://lists.gnucash.org/logs/2009/02/2009-02-22.html#T14:19:02.
+
+2009-02-22 21:12  cstim
+
+	* [r17944] po/de.po: Minor updates in German translation
+
+2009-02-20 19:51  cstim
+
+	* [r17941] po/de.po: Update German translation
+
+2009-02-18 20:56  andi5
+
+	* [r17932] src/gnome-utils/gnc-date-edit.c: [17930] Bug #565421:
+	  Remove dependency on GTK+ 2.10 in date edit control. Original
+	  commit by cedayiv.
+
+2009-02-18 18:05  cmarchi
+
+	* [r17931] po/zh_CN.po: Update of Chinese translation by Roy Luo
+
+2009-02-15 17:28  andi5
+
+	* [r17924] packaging/win32/gnucash.iss.in,
+	  packaging/win32/install.sh: [17921] Bug #571220: [Win32] Unset
+	  SCHEME_LIBRARY_PATH environment variable.
+	* [r17923] src/register/ledger-core/split-register-util.c: [17920]
+	  Bug #435642: Correct r17853 about editing results of a find. 1.
+	  create a transaction that has two or more splits in the same
+	  account 2. open a register on that account that is in either
+	  "Basic Ledger" or "Auto-Split Ledger" mode 3. change some
+	  transaction other than the one with multiple splits in this
+	  register 4. click on the second or succeeding occurrence of the
+	  transaction with multiple splits in this register This will put
+	  the cursor on the first occurrence of the transaction instead of
+	  the one you clicked on. Patch by Mike Alexander.
+	* [r17922] src/backend/file/io-gncxml-v2.c: [17868] Bug #569735:
+	  Don't create a new nested template root account when a file is
+	  opened Whenever an XML file is opened, Gnucash creates a new
+	  template root account and makes the old one a child of it. My
+	  main accounts file had them nested over 540 deep before I got
+	  annoyed enough to fix this. The problem is that sxtg_book_begin
+	  creates a root account when the book is opened. Then
+	  add_template_transaction_local tries to replace this new root
+	  account with the one read from the file. However the code that
+	  does this is rather badly broken and the result is that the one
+	  read from the file becomes a child of the one created in
+	  sxtg_book_begin. This patch avoids creating any more nested root
+	  accounts, but it doesn't get rid of the ones that are already
+	  there. This is slightly more tricky than just deleting them
+	  since, although most of them have no children (other than the
+	  next root account), some do. Accounts created for template
+	  transactions will be children of whatever root account happens
+	  to be at the top of the tree then. As the file is saved and
+	  reopened, this will get pushed down into the tree of accounts.
+	  In my case about 5 of the 540 or so root accounts had other
+	  children. Patch by Mike Alexander. Original commit by cstim.
+
+2009-02-14 21:34  andi5
+
+	* [r17915] src/import-export/import-main-matcher.c: [17891] Bug
+	  #552275, #434944: Fix generic import skipped transactions
+	  gnc_import_TransInfo_delete() was defined but never called! This
+	  led to a memory leak, and erroneous behaviour. Bug 552275 -
+	  Cancelling OFX Import Still Adds Entries Bug 434944 - Refused
+	  transactions from import appear in register Patch by Alan
+	  Jenkins <alan-jenkins@tuffmail.co.uk> Original commit by cstim.
+
+2009-02-14 21:12  andi5
+
+	* [r17914] accounts/fr_CH/acctchrt_business.gnucash-xea,
+	  accounts/fr_FR/acctchrt_business.gnucash-xea: [17899] Add
+	  missing encoding information to the french business account
+	  template files.
+	* [r17913] src/gnome-utils/gnc-main-window.c: [17898] Update
+	  copyright year in about dialog.
+	* [r17912] packaging/win32/defaults.sh: [17897] Bug #570166:
+	  Update win32 packaging to use GTK version 2.14.7 Original commit
+	  by cedayiv.
+	* [r17911] src/app-utils/options.scm: [17885] Bug #570894: Fix an
+	  else clause in budget->guid. Scheme is not common lisp, so
+	  rather use 'else', t might be unbound. Found by Forest Bond.
+	* [r17910] packaging/win32/gnucash.iss.in: [17884] [Win32] Bug
+	  #542382: Assign .gnucash file name extension to GnuCash.
+
+2009-02-14 21:11  andi5
+
+	* [r17909] configure.in, src/gnome-utils/gnc-html.c: [17883] Bug
+	  #462148: Fix multi-page printing on Win32 by using
+	  gtk_html_print_operation_run().
+	* [r17908] packaging/win32/defaults.sh,
+	  packaging/win32/install.sh: [17882] [Win32] Update gtkhtml to
+	  version 3.24.2.
+	* [r17907] packaging/win32/Makefile.am, packaging/win32/README,
+	  packaging/win32/dist.sh, packaging/win32/gnucash.iss.in,
+	  packaging/win32/install-fq-mods.bat,
+	  packaging/win32/install-fq-mods.cmd, packaging/win32/install.sh:
+	  [17881] [Win32] Rename *.bat to *.cmd.
+	* [r17906] src/import-export/ofx/gnc-ofx-import.c: [17880]
+	  ofx_proc_account() already works. Remove "WRITEME". Patch by
+	  Alan Jenkins. Signed-off-by: Christian Stimming
+	  <stimming@tuhh.de>
+	* [r17905] src/gnome-utils/dialog-account.c: [17879] Fix use of
+	  "=" in if statement where "==" was intended This fixes the
+	  default currency and description in the new account dialog.
+	  Patch by Alan Jenkins. Signed-off-by: Christian Stimming
+	  <stimming@tuhh.de>
+	* [r17904] packaging/win32/install.sh: [17810] [Win32] Minor
+	  cleanup. * Relinking is really fast now, no need for a hack
+	  anymore * GnuCash does not install into lib/locale/ anymore *
+	  Remove invalid LIBXML2_DIR from PATH
+	* [r17903] packaging/win32/install.sh: [17809] [Win32] Remove a
+	  few obsolete comments.
+
+2009-02-14 20:29  andi5
+
+	* [r17902] configure.in: [17788] Add dist-bzip2 to dist.
+	  Automake-1.10 also supports dist-lzma but adding it to
+	  AM_INIT_AUTOMAKE would require us to assume Automake 1.10 which
+	  might not yet be available on each developer os. When dist'ing I
+	  will probably add a short line to the dist target to tar up the
+	  same directory instead of running dist-lzma manually.
+
+2009-02-14 20:26  andi5
+
+	* [r17901] util/git-backport.sh: [17856] Add shell script to
+	  easily back-port commits in git-svn from trunk to other
+	  branches. Original commit by cstim.
+
+2009-02-06 20:11  cmarchi
+
+	* [r17878] po/ca.po: Update of Catalan translation by David
+	  Planella
+
+2009-02-03 21:05  cstim
+
+	* [r17875] src/engine/SX-book.c: [17867] Bug #569734: Give the
+	  template root account a name The template root account created
+	  as part of the scheduled transaction infrastructure should have
+	  a name. Various parts of the Gnucash engine get upset if an
+	  account doesn't have a name. Perhaps this name should be
+	  localized, but the name of the main root account is not
+	  localized. Patch by Mike Alexander.
+	* [r17874] src/backend/file/gnc-account-xml-v2.c: [17866] Bug
+	  #438132: Fix warning about commodity being NULL for root account
+	  on save This patch doesn't write the commodity, the commodity
+	  SCU, or the non-standard SCU setting for an account that has no
+	  commodity. Patch by Mike Alexander. Original commit by cstim.
+	* [r17873] src/report/report-system/html-utilities.scm,
+	  src/report/report-system/report-system.scm,
+	  src/report/standard-reports/budget.scm: [17851] Bug #568327:
+	  Budget reports without a budget will crash Fixes crashes and
+	  also improves error message when no budgets exists (for all
+	  budget reports). Patch by Forest Bond.
+
+2009-02-03 21:04  cstim
+
+	* [r17872] AUTHORS, accounts/de_DE/Makefile.am,
+	  accounts/de_DE/acctchrt_wohnungsw.gnucash-xea: [17604] Added
+	  German account template for a Wohnungswirtschaft business, by
+	  Christoph Franzen. Originally proposed here
+	  http://lists.gnucash.org/pipermail/gnucash-de/2005-December/003651.html
+
+2009-01-31 20:31  cstim
+
+	* [r17871] accounts/de_DE/Makefile.am,
+	  accounts/de_DE/acctchrt_skr49.gnucash-xea: [17852] Bug #568653:
+	  Add German account template SKR49 for non-profit organizations
+	  By Michael Braun and Frank H. Ellenberger.
+	* [r17870] src/gnome/window-reconcile.c: [17820] Bug #339027:
+	  Reconcile window displays the date, too This patch adds an
+	  additional label statement date to the box below the Credits
+	  section. Patch by C. Ernst
+
+2009-01-31 20:30  cstim
+
+	* [r17869] src/report/report-gnome/dialog-column-view.c: [17819]
+	  Bug #565721: Fix untranslated report names in multicolumn report
+	  Report names are passed through the _() macro before they are
+	  stored to the tree list. Patch by C. Ernst.
+
+2009-01-31 10:46  cstim
+
+	* [r17864] src/register/ledger-core/split-register-util.c: [17853]
+	  Bug #435642: Fix crash when editing results of a find I finally
+	  got around to looking into this some more. I think the problem
+	  is a result of an interaction between gnc_split_register_redraw
+	  and gnc_split_register_find_split when called from
+	  gnc_split_register_move_cursor in split-register-control.c. As
+	  the comment says, "redrawing the register can muck everything
+	  up". In particular calling gnc_split_register_redraw may change
+	  the "transaction split" for some or all of the transactions if
+	  the register is a "ledger" style register such as the one for
+	  find results. This causes the subsequent call to
+	  gnc_split_register_find_split to find the wrong register row if
+	  the cursor class being found is CURSOR_CLASS_TRANS. Whether this
+	  causes a crash seems to depend on circumstances I haven't quite
+	  figured out, but I have one test file that crashes 100% of the
+	  time in r17804. This patch changes the way
+	  gnc_split_register_find_split works when asked to find the
+	  transaction split for a transaction. It assumes that any
+	  transaction can only have one such split and returns as soon as
+	  it finds a row containing it. If you think this is wrong, let me
+	  know and I'll try something else. Patch by Mike Alexander.
+	* [r17863] src/engine/gnc-pricedb.c: [17850] Bug #568945:
+	  gnc_pricedb_convert_balance_* should look for the reciprocal of
+	  the exchange rate If the price DB contains the reciprocal of the
+	  exchange rate which gnc_pricedb_convert_balance_nearest_price,
+	  gnc_pricedb_convert_balance_latest_price, and
+	  gnc_pricedb_convert_balance_latest_before need to do their
+	  conversion they don't find it and return zero. Patch by Mike
+	  Alexander.
+	* [r17862] src/engine/iso-4217-currencies.scm: [17849] Bug
+	  #564450: HUF currency can be divided into 100 "fillers" even
+	  though there are no coins for it In Hungary the smallest Forint
+	  (HUF) coin is 5 forints, but formally we had 1,2 forint coins,
+	  and dividing FILLER coins (like cents for US, EUR, ...). They
+	  are simply not circulated in cash usage, but the banking system
+	  still using it. Such as the smallest transferable amount is 0.01
+	  FORINTs (1 FILLER), and with business it is normal to use it (as
+	  result of foreign exchange, incoming interest rate, or many
+	  other reason). Patch by Frank H. Ellenberger.
+
+2009-01-31 10:45  cstim
+
+	* [r17861] src/register/ledger-core/split-register.c: [17840]
+	  Register: Add additional debugging output during register
+	  cleanup. Also rename a variable for clarity and to match typical
+	  usage in the rest of the ledger code. Original commit by cedayiv.
+	* [r17860] src/gnome/gnc-plugin-page-register.c,
+	  src/gnome/gnc-split-reg.c: [17838] Register: Add a few more
+	  debugging lines to the gnome code. Original commit by cedayiv.
+	* [r17859] src/engine/Transaction.c: [17836] Bug #566352: Remove
+	  printf("%s", NULL) in xaccTransSetDateInternal() when
+	  val=={-1,0}. Original commit by andi5.
+	* [r17858] src/gnc-module/gnc-module.c: [17818] Bug #564209:
+	  Improved debuggability for module loading gnucash-2.2.7 doesn't
+	  (IMHO) log enough (any?) information about failures to load
+	  optional modules. It was a bit of work to debug a recent problem
+	  (#564033) and I ended up tweaking gnc_module_load_common() a bit
+	  to coax the error messages out. I slightly reorganized the code
+	  in this function to accomplish two things: 1. Make the logic
+	  clearer to someone new to the code (i.e., me) 2. If an optional
+	  module is found, log any errors in loading it I tried to
+	  maintain the original spirit of not squawking too much about
+	  unfound optional modules while still generating messages about
+	  legitimate problems. Patch by G. Paul Ziemba.
+	* [r17857] lib/guile-www/Makefile.am, src/app-utils/Makefile.am,
+	  src/business/business-core/Makefile.am,
+	  src/business/business-gnome/Makefile.am,
+	  src/business/business-reports/Makefile.am,
+	  src/business/business-utils/Makefile.am,
+	  src/business/dialog-tax-table/Makefile.am,
+	  src/core-utils/Makefile.am, src/engine/Makefile.am,
+	  src/gnc-module/Makefile.am, src/gnome-utils/Makefile.am,
+	  src/import-export/qif-import/Makefile.am,
+	  src/import-export/qif-io-core/Makefile.am,
+	  src/report/locale-specific/us/Makefile.am,
+	  src/report/report-gnome/Makefile.am,
+	  src/report/report-system/Makefile.am,
+	  src/report/standard-reports/Makefile.am,
+	  src/report/stylesheets/Makefile.am,
+	  src/report/utility-reports/Makefile.am, src/scm/Makefile.am,
+	  src/scm/gnumeric/Makefile.am, src/tax/us/Makefile.am: [17817]
+	  Bug #566567: [Win32] Do not touch .scm-links on windows - always
+	  copy scm files .scm files must be copied on windows because
+	  linking won't work. Note: existing build directories will be
+	  fixed only after make clean. Patch by C. Ernst.
+
+2009-01-25 12:34  cmarchi
+
+	* [r17845] po/zh_CN.po: Update of Chinese translation by Wang
+	  Binbin
+
+2009-01-24 10:01  cstim
+
+	* [r17842] accounts/nl/acctchrt_full.gnucash-xea: Bug #514455: Fix
+	  syntax errors in Dutch (Netherlands) translation of account
+	  templates Patch by Frank H. Ellenberger.
+
+2009-01-18 21:52  andi5
+
+	* [r17833] src/import-export/import-commodity-matcher.c: Bug
+	  #526775: Remove printf("%s", NULL) in generic importer as called
+	  from ofx.
+
+2009-01-18 20:14  cstim
+
+	* [r17830] po/de.po, po/glossary/de.po: Updated German translation
+	  by Frank H. Ellenberger. Note: This changed the translation
+	  "Passiva" into "Fremdkapital".
+
+2009-01-18 16:33  andi5
+
+	* [r17828] doc/README-it.win32-bin.txt: [r17826,r17827] Fix
+	  encoding and line endings of README-it.win32-bin.txt. Patch by
+	  Cristian Marchi
+
+2009-01-14 20:13  cstim
+
+	* [r17823] lib/libqof/qof/qoflog.c: [17813] Initialize GError in
+	  qof_log_parse_log_config(). This avoids a crash when the log
+	  configuration is not valid. Original patch by andi5.
+	* [r17822] src/engine/gnc-commodity.c: [17805] Bug #567174:
+	  Restrict commodity mnemonic updates (like NIS to ILS) to iso
+	  currencies only. Original patch by andi5.
+
+2009-01-14 20:12  cstim
+
+	* [r17821] configure.in: [17803] Remove trailing commas in
+	  --enable-{debug,ref-counts-dump}. Those commas will be
+	  interpreted as commands and warnings printed out. Also, put
+	  square brackets around the strings describing the corresponding
+	  autoconf definitions to save them from possible substitions.
+	  Noticed by Kevin HaleBoyes.
+
+2009-01-14 00:37  andi5
+
+	* [r17816] packaging/win32/defaults.sh, packaging/win32/dist.sh,
+	  packaging/win32/goffice-0.4.3-patch.diff,
+	  packaging/win32/goffice-0.7.2-patch.diff,
+	  packaging/win32/install.sh: [r17806] Update a whole bunch of
+	  packages. * MinGW tools * Autotools (ac 2.60, am 1.10.2, lt
+	  2.2.6a) - libtool feels faster, needs confirmation - compiling
+	  ac needs a newer m4 version, add that * Gnome - intltool needs a
+	  newer perl, so upgrade to activeperl 5.10 - new libpng,
+	  separated into libpng and libpng-dev - newly packaged zlib
+	  (zlib-dev as well), no dlltool'ing anymore - remove
+	  libgnomeprint (cf. goffice), gtkprint finally seems to work ->
+	  goodbye mirrored printouts * libxslt - not the newest because
+	  that will be moved to oldreleases/ soon * openssl - watch for
+	  libeay32.dll in your Windows folder, it might be too old, better
+	  you remove it completely * swig * pcre * libgsf, goffice -
+	  goffice does not use libgnomeprint anymore, new patch necessary,
+	  grab gtk-doc.m4 from gtk-doc tarball instead of patching goffice
+	  - install htmlhelp earlier and add flags to link to it * svn -
+	  includes an own libeay32.dll, may conflict with
+	  openssl/bin/libeay32.dll
+
+2009-01-05 10:44  andi5
+
+	* [r17801] doc/Makefile.am, doc/README-it.win32-bin.txt,
+	  packaging/win32/gnucash.iss.in: Add Italian translation of Win32
+	  installer by Cristian Marchi.
+
+2009-01-05 10:31  andi5
+
+	* [r17799] packaging/win32/gnucash.iss.in: [r17798] Sort
+	  translations in gnucash.iss.in by language code.
+
+2009-01-02 10:52  andi5
+
+	* [r17795] ChangeLog.2008, Makefile.am: Add ChangeLog.2008. Used
+	  branches: - gnucash/trunk (up to r16560) -
+	  gnucash/branches/aqbanking3 - gnucash/branches/reshuffle-modules
+	  - gnucash/branches/deprecated-cleanup -
+	  gnucash/branches/gobject-engine-dev-warlord -
+	  gnucash/branches/remove-group2 - gnucash/branches/sx-cleanup
+
+2009-01-02 10:36  andi5
+
+	* [r17793] src/app-utils/gnc-euro.c: [r17792] Bug #566198: Add
+	  Slovak koruna to EURO support. Patch from Herbert Thoma.
