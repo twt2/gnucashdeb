@@ -1,0 +1,3 @@
+version=3
+
+http://www.gnucash.org/pub/gnucash/sources/stable/gnucash-(\d.*)\.tar\.gz
