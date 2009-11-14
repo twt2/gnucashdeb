@@ -40,25 +40,25 @@ build-stamp: configure-stamp
 clean: unpatch
 	dh_testdir
 	dh_testroot
-	-$(MAKE) clean
-	-rm -f configure-stamp build-stamp install-stamp config.log config.cache config.status
-	-rm -f po/*.gmo src/gnome/gnucash src/gnome/g-wrapped
-	-rm -f po/.intltool-merge-cache
-	-rm -f `find . -name "*.o"`
-	-rm -f `find . -name "*.lo"`
-	-rm -f `find . -name "*.a"`
-	-rm -f `find . -name ".scm-links"`
-	-rm -f `find . -name ".links"`
-	-rm -rf `find . -type d -name ".libs"`
-	-rm -rf `find . -type d -name ".deps"`
-	-rm -f  `find . -type l -name "gnucash"`
-	-rm -f  `find . -type l -name "g-wrapped"`
-	-rm -f  `find . -type l -name "goffice"`
-	-rm -f  `find . -type l -name "gsf"`
-	-rm -f src/report/report-gnome/report src/register/register-core/register src/import-export/binary-import/import-export
+	[ ! -e Makefile ] || $(MAKE) clean
+	rm -f configure-stamp build-stamp install-stamp config.log config.cache config.status
+	rm -f po/*.gmo src/gnome/gnucash src/gnome/g-wrapped
+	rm -f po/.intltool-merge-cache
+	rm -f `find . -name "*.o"`
+	rm -f `find . -name "*.lo"`
+	rm -f `find . -name "*.a"`
+	rm -f `find . -name ".scm-links"`
+	rm -f `find . -name ".links"`
+	rm -rf `find . -type d -name ".libs"`
+	rm -rf `find . -type d -name ".deps"`
+	rm -f  `find . -type l -name "gnucash"`
+	rm -f  `find . -type l -name "g-wrapped"`
+	rm -f  `find . -type l -name "goffice"`
+	rm -f  `find . -type l -name "gsf"`
+	rm -f src/report/report-gnome/report src/register/register-core/register src/import-export/binary-import/import-export
 	# -rm doc/sgml/*/gnucash/help-search-index.db doc-tools/dbadd
 	# -rm src/gnome/gnucash src/gnome/g-wrapped doc/sgml/C/help-search-index.db
-	-rm doc/sgml/C/help-search-index.db
+	rm -f doc/sgml/C/help-search-index.db
 	dh_clean
 
 install: install-stamp
