@@ -1,3 +1,20 @@
+gnucash (2.2.9-1) unstable; urgency=low
+
+  * debian/control:
+    + Added myself to Uploaders
+    + Added Vcs-{Browser,Git} fields
+    + Added homepage field
+    + debian/control: Splitted (build-)dependencies into multiple lines
+    + Package complies to standards version 3.8.3 (except for #556245)
+    + Added build-dep on patch system dpatch for easier patch management
+  * Update to current menu structure (closes: #445049)
+  * Added debian/watch file (closes: #519994)
+  * Added patch 04_renew-gui from upstream SVN (closes: #548795)
+  * debian/rules: Re-worked clean target to not ignore errors where
+    there are none (Closes: #494639).
+
+ -- Micha Lenk <micha@debian.org>  Sat, 21 Nov 2009 20:42:13 +0100
+
 gnucash (2.2.9-0.2) unstable; urgency=low
 
   * Non-maintainer upload.
