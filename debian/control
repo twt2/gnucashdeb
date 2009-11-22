@@ -22,7 +22,6 @@ Architecture: any
 Depends: gnucash-common (>= ${source:Version}), ${shlibs:Depends},
   ${misc:Depends}, slib (>= 3a2-5), guile-1.6-slib, libfinance-quote-perl,
   libdate-manip-perl, psfontmgr, x-ttcidfont-conf, libcrypt-ssleay-perl
-Suggests: gnucash-sql
 Recommends: gnucash-docs
 Replaces: gnucash-common (<< 1.9.8-1)
 Description: A personal finance tracking program
