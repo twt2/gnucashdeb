@@ -24,7 +24,7 @@ Depends: gnucash-common (>= ${source:Version}), ${shlibs:Depends},
   libdate-manip-perl, psfontmgr, x-ttcidfont-conf, libcrypt-ssleay-perl
 Recommends: gnucash-docs
 Replaces: gnucash-common (<< 1.9.8-1)
-Description: A personal finance tracking program
+Description: A personal finance and money tracking program
  Gnucash can track finances in multiple accounts, keeping running
  and reconciled balances. It has an X based graphical user interface,
  double entry, a hierarchy of accounts, expense accounts (categories),
@@ -35,7 +35,7 @@ Architecture: all
 Conflicts: gnucash (<< ${source:Version})
 Recommends: gnucash (>= ${source:Version})
 Replaces: gnucash (<< 1.8.8-5)
-Description: A personal finance tracking program
+Description: A personal finance and money tracking program
  Gnucash can track finances in multiple accounts, keeping running
  and reconciled balances. It has an X based graphical user interface,
  double entry, a hierarchy of accounts, expense accounts (categories),
