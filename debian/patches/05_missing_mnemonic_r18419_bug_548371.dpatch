@@ -1,5 +1,5 @@
 #! /bin/sh /usr/share/dpatch/dpatch-run
-## 05_missing_mnemonic_r18419_bug_548371.dpatch by Gabor Karsay
+## 05_missing_mnemonic_r18419_bug_548371.dpatch by Matt Kraai <kraai@ftbfs.org> and Gabor Karsay
 ##
 ## All lines beginning with `## DP:' are a description of the patch.
 ## DP: Fixes broken mnemonics on non-stock buttons
