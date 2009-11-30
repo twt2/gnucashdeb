@@ -1,0 +1,20 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 05_missing_mnemonic_r18419_bug_548371.dpatch by Gabor Karsay
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Fixes broken mnemonics on non-stock buttons
+## DP: Fix for #548371, applied upstream in SVN r18419
+
+@DPATCH@
+
+--- a/src/gnome-utils/dialog-utils.c	(Revision 18418)
++++ b/src/gnome-utils/dialog-utils.c	(Revision 18419)
+@@ -907,7 +907,7 @@
+ {
+   GtkWidget *button;
+ 
+-  button = gtk_button_new_with_label(label);
++  button = gtk_button_new_with_mnemonic(label);
+   if (stock_id) {
+     GtkWidget *image;
+ 
