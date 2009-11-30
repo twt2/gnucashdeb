@@ -107,6 +107,7 @@ binary-arch: build install
 	dh_installchangelogs -a ChangeLog
 	dh_gconf -a
 	dh_strip -a
+	dh_desktop -a
 	dh_compress -a
 	dh_fixperms -a
 	dh_installdeb -a
