@@ -30,6 +30,19 @@ Description: A personal finance and money tracking program
  double entry, a hierarchy of accounts, expense accounts (categories),
  and can import Quicken QIF files and OFX files.
 
+Package: gnucash-dbg
+Section: debug
+Priority: extra
+Architecture: any
+Depends: gnucash (= ${binary:Version})
+Recommends: libglib2.0-0-dbg, libxml2-dbg, libgtk2.0-0-dbg, libgnomeui-0-dbg,
+  libgoffice-dbg, libaqbanking29-dbg
+Description: Debugging symbols for Gnucash
+ Gnucash can track finances in multiple accounts, keeping running
+ and reconciled balances. It has an X based graphical user interface,
+ double entry, a hierarchy of accounts, expense accounts (categories),
+ and can import Quicken QIF files and OFX files.
+
 Package: gnucash-common
 Architecture: all
 Conflicts: gnucash (<< ${source:Version})

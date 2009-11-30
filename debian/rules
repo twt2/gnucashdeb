@@ -106,7 +106,7 @@ binary-arch: build install
 #	dh_perl
 	dh_installchangelogs -a ChangeLog
 	dh_gconf -a
-	dh_strip -a
+	dh_strip -a --dbg-package=gnucash-dbg
 	dh_desktop -a
 	dh_compress -a
 	dh_fixperms -a
