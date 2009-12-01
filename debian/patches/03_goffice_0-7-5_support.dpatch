@@ -2,6 +2,8 @@
 ##
 ## All lines beginning with `## DP:' are a description of the patch.
 ## DP: Build against goffice >= 0.7.5
+## DP: Does not build with libgoffice-0-8-dev (0.7.15-1). For further details
+## DP: see http://git.debian.org/?p=pkg-gnucash/gnucash.git;a=commit;h=8cf36052938b66f67b41c60c89820b2a5250cb53
 
 @DPATCH@
 diff -urNad gnucash-2.2.9~/src/gnome-utils/gnc-html-graph-gog.c gnucash-2.2.9/src/gnome-utils/gnc-html-graph-gog.c
