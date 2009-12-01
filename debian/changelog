@@ -1,3 +1,22 @@
+gnucash (2.2.9-2) unstable; urgency=low
+
+  * Changes in debian/control:
+    + switched build-dependency from libgtkhtml3.8-dev to libgtk3.14-dev
+      (closes: #542017)
+    + Introduced binary package gnucash-dbg with debug symbols
+    + gnucash: droppped obsolete Suggests: gnucash-sql (closes: #496928)
+    + inserted coin ("money") into short package descriptions (closes: #492380)
+  * Changes in debian/rules:
+    + added call to dh_desktop (closes: #494638)
+    + added --dbg-package=gnucash-dbg to dh_strip
+  * Added patch 05_missing_mnemonic_r18419_bug_548371 written by
+    Matt Kraai <kraai@ftbfs.org> and Gabor Karsay fixing missing mnemonics
+    (closes: #548371, LP: #483716)
+  * Switched to debhelper 5 (needed for package gnucash-dbg)
+  * Removed some unused and outdated debian/* files
+
+ -- Micha Lenk <micha@debian.org>  Tue, 01 Dec 2009 12:36:47 +0100
+
 gnucash (2.2.9-1) unstable; urgency=low
 
   * debian/control:
