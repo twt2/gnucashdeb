@@ -453,7 +453,7 @@ child_exit_cb(GPid pid, gint status, gpointer data)
                       "value: %d. The called program was \"%s\".\n",
                       exit_status, deferred_info->wizard_path);
             gnc_error_dialog
-                (info->window,
+                (info->window, "%s",
                  _("The external program \"AqBanking Setup Wizard\" failed "
                    "to run successfully because the "
                    "additional software \"Qt\" was not found.  "
@@ -472,7 +472,7 @@ child_exit_cb(GPid pid, gint status, gpointer data)
                       "value: %d. The called program was \"%s\".\n",
                       exit_status, deferred_info->wizard_path);
             gnc_error_dialog
-                (info->window,
+                (info->window, "%s",
                  _("The external program \"AqBanking Setup Wizard\" failed "
                    "to run successfully.  Online Banking can only be setup "
                    "if this wizard has run successfully.  "
@@ -534,7 +534,7 @@ update_account_list_acc_cb(AB_ACCOUNT *ab_acc, gpointer user_data)
 
     /* Build the text for the gnucash account. */
     if (gnc_acc)
-        gnc_name = xaccAccountGetFullName(gnc_acc);
+        gnc_name = gnc_account_get_full_name(gnc_acc);
     else
         gnc_name = g_strdup("");
 
@@ -672,7 +672,7 @@ account_list_changed_cb(GtkTreeSelection *selection, gpointer user_data)
 
                 /* Map ab_acc to gnc_acc */
                 g_hash_table_insert(info->gnc_hash, ab_acc, gnc_acc);
-                gnc_name = xaccAccountGetFullName(gnc_acc);
+                gnc_name = gnc_account_get_full_name(gnc_acc);
                 gtk_list_store_set(info->account_store, &iter,
                                    ACCOUNT_LIST_COL_GNC_NAME, gnc_name,
                                    ACCOUNT_LIST_COL_CHECKED, TRUE,

@@ -24,6 +24,7 @@
 # AQBANKING_WITH_QT=no
 # GLOBAL_DIR=Z:\\mydir  # all directories will use this
 # WGET_RATE=50k         #limit download bandwith to 50KB/s
+# NO_SAVE_PROFILE=yes   # don't save env settings to /etc/profile.d
 # late_eval 'INSTALL_DIR=$GNUCASH_DIR\\myinst'  # no need to define GNUCASH_DIR
 # block_step inst_docs
 # late_eval 'add_step greetings'
@@ -58,6 +59,8 @@ if [ "$BUILD_FROM_TARBALL" = "yes" ]; then
 else
     # change this to "no" if you are using install.sh from the same repository checkout
     set_default UPDATE_SOURCES yes
+    # latest revision that should compile, use HEAD or vwxyz
+    set_default SVN_REV "HEAD"
     set_default GNUCASH_DIR $GLOBAL_DIR\\gnucash
     set_default REPOS_URL "http://svn.gnucash.org/repo/gnucash/trunk"
     set_default REPOS_DIR $GNUCASH_DIR\\repos
@@ -77,11 +80,8 @@ set_default RANLIB ranlib
 # For cross-compiling, change this to "yes"
 set_default CROSS_COMPILE "no"
 
-if [ "$CROSS_COMPILE" != yes ]; then
-    set_default LIBTOOLIZE libtoolize
-else
+if [ "$CROSS_COMPILE" = yes ]; then
     # Insert your cross-compiler mingw32 bin-directories here
-    set_default LIBTOOLIZE $GLOBAL_DIR/autotools/bin/libtoolize
     set_default HOST_XCOMPILE "--host=mingw32"
 fi
 ####
@@ -133,12 +133,19 @@ set_default AUTOMAKE_URL "http://ftp.gnu.org/gnu/automake/automake-1.10.2.tar.bz
 set_default LIBTOOL_URL "http://ftp.gnu.org/gnu/libtool/libtool-2.2.6a.tar.gz"
 set_default AUTOTOOLS_DIR $GLOBAL_DIR\\autotools
 
+set_default GMP_URL "ftp://ftp.gnu.org/gnu/gmp/gmp-4.3.1.tar.bz2"
+set_default GMP_ABI 32
+set_default GMP_DIR $GLOBAL_DIR\\gmp
+
 set_default GUILE_URL "http://ftp.gnu.org/pub/gnu/guile/guile-1.6.8.tar.gz"
 set_default SLIB_URL "http://swiss.csail.mit.edu/ftpdir/scm/OLD/slib3a3.zip"
 set_default GUILE_DIR $GLOBAL_DIR\\guile
 
 set_default OPENSSL_URL "http://www.openssl.org/source/openssl-0.9.8j.tar.gz"
 set_default OPENSSL_DIR $GLOBAL_DIR\\openssl
+
+set_default GNUTLS_URL "http://josefsson.org/gnutls4win/gnutls-2.8.1.zip"
+set_default GNUTLS_DIR $GLOBAL_DIR\\gnutls
 
 set_default MINGW_UTILS_URL "$SF_MIRROR/mingw/mingw-utils-0.3.tar.gz"
 set_default MINGW_UTILS_DIR $TOOLS_DIR
@@ -167,6 +174,7 @@ set_default ZLIB_DEV_URL "$GNOME_WIN32_DEPS_URL/zlib-dev-1.2.3.zip"
 set_default PKG_CONFIG_URL "$GNOME_WIN32_DEPS_URL/pkg-config-0.23.zip"
 set_default CAIRO_URL "$GNOME_WIN32_DEPS_URL/cairo_1.8.6-1_win32.zip"
 set_default CAIRO_DEV_URL "$GNOME_WIN32_DEPS_URL/cairo-dev_1.8.6-1_win32.zip"
+set_default PIXMAN_URL "http://cairographics.org/releases/pixman-0.14.0.tar.gz"
 set_default EXPAT_URL "$GNOME_WIN32_DEPS_URL/expat-2.0.0.zip"
 set_default FONTCONFIG_URL "$GNOME_WIN32_DEPS_URL/fontconfig-2.4.2-tml-20071015.zip"
 set_default FONTCONFIG_DEV_URL "$GNOME_WIN32_DEPS_URL/fontconfig-dev-2.4.2-tml-20071015.zip"
@@ -234,7 +242,10 @@ set_default INNO_DIR $GLOBAL_DIR\\inno
 set_default HH_URL "http://download.microsoft.com/download/OfficeXPProf/Install/4.71.1015.0/W98NT42KMe/EN-US/HTMLHELP.EXE"
 set_default HH_DIR $GLOBAL_DIR\\hh
 
-set_default SVN_URL "http://subversion.tigris.org/files/documents/15/44582/svn-win32-1.5.5.zip"
+set_default WEBKIT_URL "$SF_MIRROR/gnucash/webkit-1.1.5-win32.zip"
+set_default WEBKIT_DIR $GLOBAL_DIR\\webkit-1.1.5
+
+set_default SVN_URL "http://subversion.tigris.org/files/documents/15/35379/svn-1.4.2-setup.exe"
 set_default SVN_DIR $GLOBAL_DIR\\svn
 
 # OFX import in gnucash and ofx directconnect support for aqbanking
@@ -247,25 +258,59 @@ set_default LIBOFX_DIR $GLOBAL_DIR\\libofx
 set_default LIBOFX_PATCH `pwd`/libofx-0.8.3-patch.diff
 
 ## online banking: gwenhywfar+aqbanking
-set_default GWENHYWFAR_URL "$SF_MIRROR/gwenhywfar/gwenhywfar-2.6.2.tar.gz"
+set_default AQBANKING3 yes
+
+if [ "$AQBANKING3" != "yes" ]; then
+    set_default GWENHYWFAR_URL "$SF_MIRROR/gwenhywfar/gwenhywfar-2.6.2.tar.gz"
+else
+    set_default GWENHYWFAR_URL "http://www2.aquamaniac.de/sites/download/download.php?package=01&release=29&file=01&dummy=gwenhywfar-3.11.1.tar.gz"
+    set_default GWENHYWFAR_PATCH `pwd`/gwenhywfar-3.11.1-patch.diff
+fi
 set_default GWENHYWFAR_DIR $GLOBAL_DIR\\gwenhywfar
 
-set_default KTOBLZCHECK_URL "$SF_MIRROR/ktoblzcheck/ktoblzcheck-1.17.tar.gz"
+set_default KTOBLZCHECK_URL "$SF_MIRROR/ktoblzcheck/ktoblzcheck-1.23.tar.gz"
 # ktoblzcheck is being installed into GWENHYWFAR_DIR
 
-set_default AQBANKING_URL "$SF_MIRROR/aqbanking/aqbanking-2.3.3.tar.gz"
+if [ "$AQBANKING3" != "yes" ]; then
+    set_default AQBANKING_URL "$SF_MIRROR/aqbanking/aqbanking-2.3.3.tar.gz"
+else
+    set_default AQBANKING_URL "http://www2.aquamaniac.de/sites/download/download.php?package=03&release=45&file=01&dummy=aqbanking-4.1.8.tar.gz"
+    #set_default AQBANKING_PATCH `pwd`/aqbanking-4.1.6-patch.diff
+fi
 set_default AQBANKING_DIR $GLOBAL_DIR\\aqbanking
 set_default AQBANKING_WITH_QT yes
 # If set to yes, download Qt from http://www.trolltech.com/developer/downloads/qt/windows,
 # install it and set QTDIR in custom.sh, like "QTDIR=/c/Qt/4.2.3".
 
+set_default SQLITE3_URL "http://sqlite.org/sqlite-amalgamation-3.6.1.tar.gz"
+set_default SQLITE3_DIR $GLOBAL_DIR\\sqlite3
+set_default MYSQL_LIB_URL "http://mirror.csclub.uwaterloo.ca/mysql/Downloads/Connector-C/mysql-connector-c-noinstall-6.0.1-win32.zip"
+set_default MYSQL_LIB_DIR $GLOBAL_DIR\\mysql
+set_default LIBMYSQL_DEF `pwd`/libmysql.def
+set_default PGSQL_LIB_URL "$SF_MIRROR/gnucash/pgsql-win32-2.tar.gz"
+set_default PGSQL_DIR $GLOBAL_DIR\\pgsql
+set_default LIBDBI_URL "$SF_MIRROR/libdbi/libdbi-0.8.3.tar.gz"
+set_default LIBDBI_DIR $GLOBAL_DIR\\libdbi
+set_default LIBDBI_PATCH `pwd`/libdbi-0.8.3.patch
+set_default LIBDBI_PATCH2 `pwd`/libdbi-dbd_helper.c.patch
+set_default LIBDBI_DRIVERS_URL "$SF_MIRROR/libdbi-drivers/libdbi-drivers-0.8.3-1.tar.gz"
+set_default LIBDBI_DRIVERS_DIR $GLOBAL_DIR\\libdbi-drivers
+set_default LIBDBI_DRIVERS_PATCH `pwd`/libdbi-drivers-dbd_sqlite3.c.patch
+set_default LIBDBI_DRIVERS_PATCH2 `pwd`/libdbi-drivers-Makefile.in.patch
+set_default LIBDBI_DRIVERS_PATCH3 `pwd`/libdbi-drivers-dbd_mysql.c.patch
+set_default LIBDBI_DRIVERS_PATCH4 `pwd`/libdbi-drivers-dbd_pgsql.c.patch
+
 set_default DOCBOOK_XSL_URL "$SF_MIRROR/docbook/docbook-xsl-1.72.0.zip"
+set_default UPDATE_DOCS yes
+set_default DOCS_REV "HEAD"
 set_default DOCS_URL "http://svn.gnucash.org/repo/gnucash-docs/trunk"
 set_default DOCS_DIR $GLOBAL_DIR\\gnucash-docs
+set_default XSLTPROCFLAGS ""
 ##
 
 # There is no reason to ever need to comment these out!
 # * commented out glade, as it is not needed to run gnucash
+add_step prepare
 if [ "$CROSS_COMPILE" != "yes" ]; then
  add_step inst_wget
  add_step inst_dtk
@@ -278,15 +323,23 @@ if [ "$CROSS_COMPILE" != "yes" ]; then
  add_step inst_active_perl
 fi
 add_step inst_autotools
+if [ "$AQBANKING3" = "yes" ]; then
+ add_step inst_gmp
+fi
 add_step inst_guile
 if [ "$CROSS_COMPILE" != "yes" ]; then
  add_step inst_svn
  add_step inst_mingwutils
- add_step inst_openssl
+ if [ "$AQBANKING3" != "yes" ]; then
+  add_step inst_openssl
+ fi
 fi
 add_step inst_exetype
 add_step inst_libxslt
 add_step inst_gnome
+if [ "$AQBANKING3" = "yes" ]; then
+ add_step inst_gnutls
+fi
 add_step inst_swig
 add_step inst_pcre
 add_step inst_libgsf
@@ -301,6 +354,8 @@ add_step inst_libofx
 add_step inst_gwenhywfar
 add_step inst_ktoblzcheck
 add_step inst_aqbanking
+add_step inst_libdbi
+add_step inst_webkit
 ##
 if [ "$UPDATE_SOURCES" = "yes" ]; then
  add_step svn_up
@@ -310,6 +365,7 @@ add_step inst_docs
 if [ "$CROSS_COMPILE" != "yes" ]; then
  add_step inst_inno
 fi
+add_step finish
 
 # run commands registered with late_eval
 eval_now

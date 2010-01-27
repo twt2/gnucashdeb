@@ -88,13 +88,14 @@ xaccSchedXactionInit(SchedXaction *sx, QofBook *book)
    /* create a new template account for our splits */
    sx->template_acct = xaccMallocAccount(book);
    guid = qof_instance_get_guid( sx );
+   xaccAccountBeginEdit( sx->template_acct );
    xaccAccountSetName( sx->template_acct, guid_to_string( guid ));
    xaccAccountSetCommodity
      (sx->template_acct,
-      gnc_commodity_new( book,
-                         "template", "template",
-                         "template", "template", 1 ) );
+	  gnc_commodity_table_lookup( gnc_commodity_table_get_table(book),
+	  					"template", "template") );
    xaccAccountSetType( sx->template_acct, ACCT_TYPE_BANK );
+   xaccAccountCommitEdit( sx->template_acct );
    ra = gnc_book_get_template_root( book );
    gnc_account_append_child( ra, sx->template_acct );
 }
@@ -168,6 +169,13 @@ sx_set_template_account (SchedXaction *sx, Account *account)
 }
 
 void
+xaccSchedXactionDestroy( SchedXaction *sx )
+{
+    qof_instance_set_destroying( QOF_INSTANCE(sx), TRUE );
+	gnc_sx_commit_edit( sx );
+}
+
+static void
 xaccSchedXactionFree( SchedXaction *sx )
 {
   GList *l;
@@ -215,9 +223,15 @@ gnc_sx_begin_edit (SchedXaction *sx)
   qof_begin_edit (&sx->inst);
 }
 
+static void sx_free(QofInstance* inst )
+{
+    xaccSchedXactionFree( GNC_SX(inst) );
+}
+
 static void commit_err (QofInstance *inst, QofBackendError errcode)
 {
      g_critical("Failed to commit: %d", errcode);
+     gnc_engine_signal_commit_error( errcode );
 }
 
 static void commit_done(QofInstance *inst)
@@ -225,13 +239,11 @@ static void commit_done(QofInstance *inst)
   qof_event_gen (inst, QOF_EVENT_MODIFY, NULL);
 }
 
-static void noop(QofInstance *inst) {}
-
 void
 gnc_sx_commit_edit (SchedXaction *sx)
 {
   if (!qof_commit_edit (QOF_INSTANCE(sx))) return;
-  qof_commit_edit_part2 (&sx->inst, commit_err, commit_done, noop);
+  qof_commit_edit_part2 (&sx->inst, commit_err, commit_done, sx_free);
 }
 
 /* ============================================================ */
@@ -666,7 +678,7 @@ pack_split_info (TTSplitInfo *s_info, Account *parent_acct,
 
   kvp_value_delete(tmp_value);
 
-  acc_guid = xaccAccountGetGUID(gnc_ttsplitinfo_get_account(s_info));
+  acc_guid = qof_entity_get_guid(QOF_INSTANCE(gnc_ttsplitinfo_get_account(s_info)));
 
   tmp_value = kvp_value_new_guid(acc_guid);
 
@@ -849,17 +861,17 @@ gnc_sx_get_defer_instances( SchedXaction *sx )
 
 static QofObject SXDesc = 
 {
-	interface_version : QOF_OBJECT_VERSION,
-	e_type            : GNC_SX_ID,
-	type_label        : "Scheduled Transaction",
-	create            : (gpointer)xaccSchedXactionMalloc,
-	book_begin        : NULL,
-	book_end          : NULL,
-	is_dirty          : qof_collection_is_dirty,
-	mark_clean        : qof_collection_mark_clean,
-	foreach           : qof_collection_foreach,
-	printable         : NULL,
-	version_cmp       : (int (*)(gpointer, gpointer)) qof_instance_version_cmp,
+	.interface_version = QOF_OBJECT_VERSION,
+	.e_type            = GNC_SX_ID,
+	.type_label        = "Scheduled Transaction",
+	.create            = (gpointer)xaccSchedXactionMalloc,
+	.book_begin        = NULL,
+	.book_end          = NULL,
+	.is_dirty          = qof_collection_is_dirty,
+	.mark_clean        = qof_collection_mark_clean,
+	.foreach           = qof_collection_foreach,
+	.printable         = NULL,
+	.version_cmp       = (int (*)(gpointer, gpointer)) qof_instance_version_cmp,
 };
 
 gboolean

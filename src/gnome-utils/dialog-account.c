@@ -169,7 +169,9 @@ gnc_account_commodity_from_type (AccountWindow * aw, gboolean update)
 {
   dialog_commodity_mode new_mode;
 
-  if ((aw->type == ACCT_TYPE_STOCK) || (aw->type == ACCT_TYPE_MUTUAL))
+  if (aw->type == ACCT_TYPE_TRADING)
+    new_mode = DIAG_COMM_ALL;
+  else if ((aw->type == ACCT_TYPE_STOCK) || (aw->type == ACCT_TYPE_MUTUAL))
     new_mode = DIAG_COMM_NON_CURRENCY;
   else
     new_mode = DIAG_COMM_CURRENCY;
@@ -718,7 +720,7 @@ gnc_common_ok (AccountWindow *aw)
   if (parent == NULL) {
     account = gnc_account_lookup_by_full_name(root, name);
   } else {
-    fullname_parent = xaccAccountGetFullName(parent);
+    fullname_parent = gnc_account_get_full_name(parent);
     fullname = g_strconcat(fullname_parent, separator, name, NULL);
 
     account = gnc_account_lookup_by_full_name(root, fullname);
@@ -1026,7 +1028,8 @@ gnc_account_type_changed_cb (GtkTreeSelection *selection, gpointer data)
     sensitive = (aw->type != ACCT_TYPE_EQUITY &&
 		 aw->type != ACCT_TYPE_CURRENCY &&
 		 aw->type != ACCT_TYPE_STOCK &&
-		 aw->type != ACCT_TYPE_MUTUAL);
+		 aw->type != ACCT_TYPE_MUTUAL &&
+		 aw->type != ACCT_TYPE_TRADING);
   }
 
   gtk_widget_set_sensitive (aw->opening_balance_page, sensitive);
@@ -1297,7 +1300,7 @@ get_ui_fullname (AccountWindow *aw)
     char *parent_name;
     const gchar *separator;
 
-    parent_name = xaccAccountGetFullName (parent_account);
+    parent_name = gnc_account_get_full_name (parent_account);
 
     separator = gnc_get_account_separator_string ();
     fullname = g_strconcat (parent_name, separator, name, NULL);
@@ -1838,7 +1841,7 @@ gnc_account_renumber_create_dialog (GtkWidget *window, Account *account)
   string = g_strdup_printf(_( "Renumber the immediate sub-accounts of %s?  "
 			      "This will replace the account code field of "
 			      "each child account with a newly generated code."),
-			   xaccAccountGetFullName(account));
+			   gnc_account_get_full_name(account));
   gtk_label_set_text(GTK_LABEL(widget), string);
   g_free(string);
 

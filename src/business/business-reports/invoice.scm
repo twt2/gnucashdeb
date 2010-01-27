@@ -234,9 +234,15 @@
   (define (gnc:register-inv-option new-option)
     (gnc:register-option gnc:*report-options* new-option))
 
+   (gnc:register-inv-option
+    (gnc:make-invoice-option invoice-page invoice-name "x" ""
+ 			    (lambda () '()) #f))
+
   (gnc:register-inv-option
-   (gnc:make-invoice-option invoice-page invoice-name "x" ""
-			    (lambda () '()) #f))
+   (gnc:make-string-option 
+    invoice-page (N_ "Custom Title") 
+    "z" (N_ "A custom string to replace Invoice, Bill or Expense Voucher") 
+    ""))
 
   (gnc:register-inv-option
    (gnc:make-simple-boolean-option
@@ -622,13 +628,21 @@
     (gnc:option-value
      (gnc:lookup-option (gnc:report-options report-obj) section name)))
 
+  (define (title-string title custom-title)
+    (if (not (equal? "" custom-title))
+	(string-expand custom-title
+		       #\space "&nbsp;")
+	title))
+
   (let* ((document (gnc:make-html-document))
 	 (table '())
 	 (orders '())
 	 (invoice (opt-val invoice-page invoice-name))
 	 (owner '())
 	 (references? (opt-val "Display" "References"))
-	 (title (_ "Invoice"))
+	 (default-title (N_ "Invoice"))
+	 (custom-title (opt-val invoice-page "Custom Title"))
+	 (title "")
 	 (invoice? #f))
 
     (define (add-order o)
@@ -644,13 +658,14 @@
 	      ((eqv? type GNC-OWNER-CUSTOMER)
 	       (set! invoice? #t))
 	      ((eqv? type GNC-OWNER-VENDOR)
-	       (set! title (_ "Bill")))
+	       (set! default-title (_ "Bill")))
 	      ((eqv? type GNC-OWNER-EMPLOYEE)
-	       (set! title (_ "Expense Voucher")))))
-	  (set! title (sprintf #f (_"%s #%d") title
-			       (gncInvoiceGetID invoice)))))
+	       (set! default-title (_ "Expense Voucher")))))))
 
-    (gnc:html-document-set-title! document title)
+    (set! title (title-string default-title custom-title))
+
+    (gnc:html-document-set-title! document (sprintf #f (_"%s #%d") title
+						    (gncInvoiceGetID invoice)))
 
     (if (not (null? invoice))
 	(let ((book (gncInvoiceGetBook invoice)))
@@ -675,13 +690,13 @@
 	    (if (not (equal? post-date (cons 0 0)))
 		(begin
 		  (set! date-table (make-date-table))
-		  (make-date-row! date-table (_ "Invoice Date") post-date)
+		  (make-date-row! date-table (string-append title " " (_ "Date")) post-date)
 		  (make-date-row! date-table (_ "Due Date") due-date)
 		  (gnc:html-document-add-object! document date-table))
 		(gnc:html-document-add-object!
 		 document
 		 (gnc:make-html-text
-		  (N_ "Invoice in progress....")))))
+		  (N_ "Invoice in progress...")))))
 
 	  (make-break! document)
 	  (make-break! document)
@@ -747,19 +762,22 @@
 
     document))
 
+(define invoice-report-guid "5123a759ceb9483abf2182d01c140e8d")
+
 (gnc:define-report
  'version 1
  'name (N_ "Printable Invoice")
+ 'report-guid invoice-report-guid
  'menu-path (list gnc:menuname-business-reports)
  'options-generator options-generator
  'renderer reg-renderer
  'in-menu? #t)
 
 (define (gnc:invoice-report-create-internal invoice)
-  (let* ((options (gnc:make-report-options (N_ "Printable Invoice")))
+  (let* ((options (gnc:make-report-options invoice-report-guid))
          (invoice-op (gnc:lookup-option options invoice-page invoice-name)))
 
     (gnc:option-set-value invoice-op invoice)
-    (gnc:make-report (N_ "Printable Invoice") options)))
+    (gnc:make-report invoice-report-guid options)))
 
 (export gnc:invoice-report-create-internal)

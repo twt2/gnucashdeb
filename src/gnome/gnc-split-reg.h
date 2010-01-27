@@ -206,15 +206,6 @@ GtkWidget *gnc_split_reg_get_summarybar( GNCSplitReg *gsr );
 void gnc_split_reg_set_split_state( GNCSplitReg *gsr, gboolean split );
 void gnc_split_reg_set_double_line( GNCSplitReg *gsr, gboolean doubleLine );
 
-/**
- * Check if its OK to close this register window.  Gives the register
- * a chance to abort the close if there are roblems, e.g. an open
- * transaction.
- *
- * @return TRUE if the register may be closed, FALSE if not.
- **/
-gboolean gnc_split_reg_check_close( GNCSplitReg *gsr );
-
 void gnc_split_reg_raise( GNCSplitReg *gsr );
 
 /**
@@ -230,6 +221,16 @@ gboolean gnc_split_reg_get_read_only( GNCSplitReg *gsr );
 void gnc_split_reg_jump_to_blank (GNCSplitReg *gsr);
 void gnc_split_reg_jump_to_split(GNCSplitReg *gsr, Split *split);
 void gnc_split_reg_jump_to_split_amount(GNCSplitReg *gsr, Split *split);
+
+/*
+ * Create a transaction entry with given amount and date. One account is 
+ * specified, the other is undefined i.e. it defaults to orphan account.  
+ * Jump to the transaction entry in the register.
+ * The purpose of this function to create an adjustment entry from the reconcile
+ * window. 
+ */
+void gnc_split_reg_balancing_entry (GNCSplitReg *gsr, Account *account, 
+    time_t statement_date, gnc_numeric balancing_amount);
 
 void gsr_default_delete_handler( GNCSplitReg *gsr, gpointer data );
 void gnc_split_reg_enter( GNCSplitReg *gsr, gboolean next_transaction );

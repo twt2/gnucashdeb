@@ -24,6 +24,8 @@ typedef void (*GNCOptionChangeCallback) (gpointer user_data);
 typedef int GNCOptionDBHandle;
 
 QofBook * gnc_get_current_book (void);
+const gchar * gnc_get_current_book_tax_name (void);
+const gchar * gnc_get_current_book_tax_type (void);
 Account * gnc_get_current_root_account (void);
 
 %newobject gnc_gettext_helper;
@@ -60,8 +62,6 @@ void gnc_option_db_register_option(GNCOptionDBHandle handle,
         SCM guile_option);
 
 const char * gnc_locale_default_iso_currency_code (void);
-
-char * gnc_account_get_full_name (const Account *account);
 
 GNCPrintAmountInfo gnc_default_print_info (gboolean use_symbol);
 GNCPrintAmountInfo gnc_account_print_info (const Account *account,

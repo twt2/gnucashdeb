@@ -4,23 +4,26 @@ pkglib_LTLIBRARIES = libgncmod-gnome-utils.la
 
 # Note that src/gnome-utils CANNOT depend on src/gnome!
 
-AM_CFLAGS = \
+AM_CPPFLAGS = \
   -I${top_srcdir}/src/core-utils \
   -I${top_srcdir}/src/gnc-module \
   -I${top_srcdir}/src/engine \
-  -I${top_srcdir}/src/backend/file \
+  -I${top_srcdir}/src/backend/xml \
   -I${top_srcdir}/src/app-utils \
   -I${top_srcdir}/src \
   -I${top_builddir}/src \
   -I${top_srcdir}/lib/libc \
+  -I${top_srcdir}/src/libqof/qof \
   ${GLIB_CFLAGS} \
   ${GLADE_CFLAGS} \
   ${GTK_CFLAGS} \
   ${GNOME_CFLAGS} \
-  ${GTKHTML_CFLAGS} \
+  ${GNOME_PRINT_CFLAGS} \
   ${GUILE_INCS} \
   ${QOF_CFLAGS} \
-  ${GOFFICE_CFLAGS}
+  ${GOFFICE_CFLAGS} \
+  ${LIBGDA_CFLAGS} \
+  ${IGE_MAC_CFLAGS}
 
 libgncmod_gnome_utils_la_SOURCES = \
   QuickFill.c \
@@ -29,6 +32,7 @@ libgncmod_gnome_utils_la_SOURCES = \
   dialog-account.c \
   dialog-book-close.c \
   dialog-commodity.c \
+  dialog-file-access.c \
   dialog-options.c \
   dialog-preferences.c \
   dialog-query-list.c \
@@ -50,6 +54,7 @@ libgncmod_gnome_utils_la_SOURCES = \
   gnc-dense-cal.c \
   gnc-dense-cal-model.c \
   gnc-dense-cal-store.c \
+  gnc-dialog.c \
   gnc-druid-gnome.c \
   gnc-druid-provider-edge-gnome.c \
   gnc-druid-provider-file-gnome.c \
@@ -61,9 +66,6 @@ libgncmod_gnome_utils_la_SOURCES = \
   gnc-general-select.c \
   gnc-gnome-utils.c \
   gnc-gui-query.c \
-  gnc-html-graph-gog.c \
-  gnc-html-history.c \
-  gnc-html.c \
   gnc-icons.c \
   gnc-main-window.c \
   gnc-menu-extensions.c \
@@ -80,6 +82,7 @@ libgncmod_gnome_utils_la_SOURCES = \
   gnc-tree-model.c \
   gnc-tree-model-account-types.c \
   gnc-tree-model-account.c \
+  gnc-tree-model-account-drag.c \
   gnc-tree-model-budget.c \
   gnc-tree-model-commodity.c \
   gnc-tree-model-price.c \
@@ -92,7 +95,7 @@ libgncmod_gnome_utils_la_SOURCES = \
   gncmod-gnome-utils.c \
   misc-gnome-utils.c \
   search-param.c \
-  gnc-dialog.c \
+  print-session.c \
   swig-gnome-utils.c \
   window-main-summarybar.c
 
@@ -103,6 +106,7 @@ gncinclude_HEADERS = \
   dialog-account.h \
   dialog-book-close.h \
   dialog-commodity.h \
+  dialog-file-access.h \
   dialog-preferences.h \
   dialog-options.h \
   dialog-query-list.h \
@@ -131,9 +135,6 @@ gncinclude_HEADERS = \
   gnc-general-select.h \
   gnc-gnome-utils.h \
   gnc-gui-query.h \
-  gnc-html-graph-gog.h \
-  gnc-html-history.h \
-  gnc-html.h \
   gnc-icons.h \
   gnc-main-window.h \
   gnc-menu-extensions.h \
@@ -150,6 +151,7 @@ gncinclude_HEADERS = \
   gnc-tree-model.h \
   gnc-tree-model-account-types.h \
   gnc-tree-model-account.h \
+  gnc-tree-model-account-drag.h \
   gnc-tree-model-budget.h \
   gnc-tree-model-commodity.h \
   gnc-tree-model-price.h \
@@ -178,29 +180,26 @@ libgncmod_gnome_utils_la_LIBADD = \
   ${top_builddir}/src/core-utils/libgnc-core-utils.la \
   ${top_builddir}/src/gnc-module/libgnc-module.la \
   ${top_builddir}/src/engine/libgncmod-engine.la \
-  ${top_builddir}/src/backend/file/libgnc-backend-file-utils.la \
-  ${top_builddir}/src/calculation/libgncmod-calculation.la \
+  ${top_builddir}/src/backend/xml/libgnc-backend-xml-utils.la \
   ${top_builddir}/src/app-utils/libgncmod-app-utils.la \
   $(top_builddir)/lib/libc/libc-missing.la \
+  ${top_builddir}/src/libqof/qof/libgnc-qof.la \
   ${GNOME_LIBS} \
-  ${GTKHTML_LIBS} \
-  ${GUILE_LIBS} \
-  ${GDK_PIXBUF_LIBS} \
+  ${GNOME_PRINT_LIBS} \
   ${GLADE_LIBS} \
   ${GUILE_LIBS} \
   ${GLIB_LIBS} \
   ${DB_LIBS} \
-  ${QOF_LIBS} \
-  ${GOFFICE_LIBS} \
   ${REGEX_LIBS} \
-  ${LIBXML2_LIBS}
+  ${LIBXML2_LIBS} \
+  ${IGE_MAC_LIBS}
 
 if HAVE_X11_XLIB_H
   libgncmod_gnome_utils_la_LIBADD += -lX11
 endif
 
 if BUILDING_FROM_SVN
-swig-gnome-utils.c: gnome-utils.i gnc-html.h \
+swig-gnome-utils.c: gnome-utils.i \
                     ${top_srcdir}/src/base-typemaps.i
 	$(SWIG) -guile $(SWIG_ARGS) -Linkage module \
 	-I${top_srcdir}/src -o $@ $<
@@ -217,14 +216,6 @@ EXTRA_DIST = \
   gnome-utils.i \
   ${gncmod_DATA} \
   ${gncscm_DATA}
-
-if GTKHTML_USES_GTKPRINT
-  EXTRA_DIST += print-session.c
-else
-  AM_CFLAGS += ${GNOME_PRINT_CFLAGS}
-  libgncmod_gnome_utils_la_LIBADD += ${GNOME_PRINT_LIBS}
-  libgncmod_gnome_utils_la_SOURCES += print-session.c
-endif
 
 ## We borrow guile's convention and use @-...-@ as the substitution
 ## brackets here, instead of the usual @...@.  This prevents autoconf

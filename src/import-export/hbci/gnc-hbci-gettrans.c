@@ -262,13 +262,6 @@ AB_TRANSACTION *gnc_hbci_trans_list_cb(AB_TRANSACTION *h_trans, void *user_data)
   /* Create new gnucash transaction for the given hbci one */
   gnc_trans = xaccMallocTransaction(book);
   xaccTransBeginEdit(gnc_trans);
-    
-  {
-    /* OFX unique transaction ID */
-    const char *fitid = AB_Transaction_GetFiId(h_trans);
-    if (fitid && (strlen (fitid) > 0))
-      gnc_import_set_trans_online_id(gnc_trans, fitid);
-  }
 
   normalDate = AB_Transaction_GetDate(h_trans);
   valutaDate = AB_Transaction_GetValutaDate(h_trans);
@@ -317,11 +310,30 @@ AB_TRANSACTION *gnc_hbci_trans_list_cb(AB_TRANSACTION *h_trans, void *user_data)
   xaccTransAppendSplit(gnc_trans, split);
   xaccAccountInsertSplit(gnc_acc, split);
     
+
+  {
+    /* OFX unique transaction ID */
+    const char *fitid = AB_Transaction_GetFiId(h_trans);
+    if (fitid && (strlen (fitid) > 0))
+      gnc_import_set_split_online_id(split, fitid);
+  }
+
   {
     /* Amount into the split */
     const AB_VALUE *h_value = AB_Transaction_GetValue (h_trans);
-    gnc_numeric gnc_amount = double_to_gnc_numeric
-      (h_value ? AB_Value_GetValue (h_value) : 0.0,
+    double d_value = h_value ? AB_Value_GetValue (h_value) : 0.0;
+    AB_TRANSACTION_TYPE h_type = AB_Transaction_GetType (h_trans);
+    gnc_numeric gnc_amount;
+
+    /*printf("Transaction with value %f has type %d\n", d_value, h_type);*/
+    /* If the value is positive, but the transaction type says the
+       money is transferred away from our account (Transfer instead of
+       DebitNote), we switch the value to negative. */
+    if (d_value > 0.0 && h_type == AB_Transaction_TypeTransfer)
+      d_value = -d_value;
+
+    gnc_amount = double_to_gnc_numeric
+      (d_value,
        xaccAccountGetCommoditySCU(gnc_acc),
        GNC_RND_ROUND);
     if (!h_value)

@@ -73,7 +73,7 @@ struct _taxtable_window {
 
   GncTaxTable *	current_table;
   GncTaxTableEntry *	current_entry;
-  GNCBook *	book;
+  QofBook *	book;
   gint		component_id;
 };
 
@@ -350,7 +350,7 @@ tax_table_entries_refresh (TaxTableWindow *ttw)
     Account *acc = gncTaxTableEntryGetAccount (entry);
     gnc_numeric amount = gncTaxTableEntryGetAmount (entry);
 
-    row_text[0] = xaccAccountGetFullName (acc);
+    row_text[0] = gnc_account_get_full_name (acc);
     switch (gncTaxTableEntryGetType (entry)) {
     case GNC_AMT_TYPE_PERCENT:
      row_text[1] =
@@ -583,7 +583,7 @@ tax_table_delete_entry_cb (GtkButton *button, TaxTableWindow *ttw)
     return;
   }
 
-  if (gnc_verify_dialog (ttw->dialog, FALSE,
+  if (gnc_verify_dialog (ttw->dialog, FALSE, "%s",
 			 _("Are you sure you want to delete this entry?"))) {
     /* Ok, let's remove it */
     gnc_suspend_gui_refresh ();
@@ -640,14 +640,14 @@ static gboolean
 find_handler (gpointer find_data, gpointer user_data)
 {
   TaxTableWindow *ttw = user_data;
-  GNCBook *book = find_data;
+  QofBook *book = find_data;
 
   return (ttw != NULL && ttw->book == book);
 }
 
 /* Create a tax-table window */
 TaxTableWindow *
-gnc_ui_tax_table_window_new (GNCBook *book)
+gnc_ui_tax_table_window_new (QofBook *book)
 {
   TaxTableWindow *ttw;
   GladeXML *xml;
@@ -749,7 +749,7 @@ gnc_ui_tax_table_window_destroy (TaxTableWindow *ttw)
 
 /* Create a new tax-table by name */
 GncTaxTable *
-gnc_ui_tax_table_new_from_name (GNCBook *book, const char *name)
+gnc_ui_tax_table_new_from_name (QofBook *book, const char *name)
 {
   TaxTableWindow *ttw;
 

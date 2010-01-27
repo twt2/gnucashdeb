@@ -303,6 +303,10 @@ recnRecalculateBalance (RecnWindow *recnData)
 					"RecnFinishAction");
   gtk_action_set_sensitive(action, gnc_numeric_zero_p (diff));
 
+  action = gtk_action_group_get_action (recnData->action_group,
+          "TransBalanceAction");
+  gtk_action_set_sensitive(action, !gnc_numeric_zero_p (diff));
+
   return diff;
 }
 
@@ -393,7 +397,7 @@ gnc_recn_make_interest_window_name(Account *account, char *text)
   char *fullname;
   char *title;
 
-  fullname = xaccAccountGetFullName(account);
+  fullname = gnc_account_get_full_name(account);
   title = g_strconcat(fullname, " - ", text && *text ? _(text) : "", NULL);
 
   g_free(fullname);
@@ -461,6 +465,8 @@ recnInterestXferWindow( startRecnWindowData *data)
 		    			    _("Payment From") );
     gnc_xfer_dialog_set_from_show_button_active( data->xferData, TRUE );
 
+    // XXX: Set "from" account from previous interest payment.
+
     gnc_xfer_dialog_set_to_account_label( data->xferData,
 		    			  _("Reconcile Account") );
     gnc_xfer_dialog_select_to_account( data->xferData, data->account );
@@ -479,6 +485,8 @@ recnInterestXferWindow( startRecnWindowData *data)
     gnc_xfer_dialog_set_to_account_label( data->xferData,
 		    			  _("Payment To") );
     gnc_xfer_dialog_set_to_show_button_active( data->xferData, TRUE );
+
+    // XXX: Set "to" account from previous interest payment.
 
     /* Quickfill based on the reconcile account, which is the "From" acct. */
     gnc_xfer_dialog_quickfill_to_account( data->xferData, FALSE );
@@ -1121,6 +1129,35 @@ gnc_ui_reconcile_window_new_cb(GtkButton *button, gpointer data)
 }
 
 static void
+gnc_ui_reconcile_window_balance_cb(GtkButton *button, gpointer data)
+{
+  RecnWindow *recnData = data;
+  GNCSplitReg *gsr;
+  Account *account;
+  gnc_numeric balancing_amount;
+  time_t statement_date;
+  
+  
+  gsr = gnc_reconcile_window_open_register(recnData);
+  if (gsr == NULL)
+    return;
+  
+  account = recn_get_account(recnData);
+  if (account == NULL)
+    return;
+
+  balancing_amount = recnRecalculateBalance(recnData);
+  if (gnc_numeric_zero_p(balancing_amount))
+    return;
+
+  statement_date = recnData->statement_date;
+  if (statement_date == 0)
+    statement_date = time(NULL); // default to 'now'
+  
+  gnc_split_reg_balancing_entry(gsr, account, statement_date, balancing_amount);
+}
+
+static void
 gnc_ui_reconcile_window_delete_cb(GtkButton *button, gpointer data)
 {
   RecnWindow *recnData = data;
@@ -1176,7 +1213,7 @@ gnc_recn_make_window_name(Account *account)
   char *fullname;
   char *title;
 
-  fullname = xaccAccountGetFullName(account);
+  fullname = gnc_account_get_full_name(account);
   title = g_strconcat(fullname, " - ", _("Reconcile"), NULL);
 
   g_free(fullname);
@@ -1292,13 +1329,18 @@ gnc_get_reconcile_info (Account *account,
                         gnc_numeric *new_ending,
                         time_t *statement_date)
 {
+  gboolean always_today;
   GDate date;
   time_t today;
   struct tm tm;
 
   g_date_clear(&date, 1);
 
-  if (xaccAccountGetReconcileLastDate (account, statement_date))
+  always_today = gnc_gconf_get_bool(GCONF_RECONCILE_SECTION,
+                    "always_reconcile_to_today", NULL);
+
+  if (!always_today &&
+      xaccAccountGetReconcileLastDate (account, statement_date))
   {
     int months = 1, days = 0;
 
@@ -2081,6 +2123,9 @@ static GtkActionEntry recnWindow_actions [] =
 	{ "TransNewAction", GTK_STOCK_NEW, N_("_New"),  "<control>n",
 	  N_("Add a new transaction to the account"),
 	  G_CALLBACK(gnc_ui_reconcile_window_new_cb)},
+  {"TransBalanceAction", GTK_STOCK_EXECUTE, N_("_Balance"), "<control>b",
+	  N_("Add a new balancing entry to the account"),
+	  G_CALLBACK(gnc_ui_reconcile_window_balance_cb)},
 	{ "TransEditAction", GTK_STOCK_PROPERTIES, N_("_Edit"),  "<control>e",
 	  N_("Edit the current transaction"),
 	  G_CALLBACK(gnc_ui_reconcile_window_edit_cb)},

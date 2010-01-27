@@ -1,4 +1,22 @@
-/* Copyright (C) 2006 Joshua Sled <jsled@asynchronous.org> */
+/********************************************************************\
+ * gnc-account-merge.c                                              *
+ * Copyright (C) 2006 Joshua Sled <jsled@asynchronous.org>          *
+ *                                                                  *
+ * This program is free software; you can redistribute it and/or    *
+ * modify it under the terms of the GNU General Public License as   *
+ * published by the Free Software Foundation; either version 2 of   *
+ * the License, or (at your option) any later version.              *
+ *                                                                  *
+ * This program is distributed in the hope that it will be useful,  *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of   *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the    *
+ * GNU General Public License for more details.                     *
+ *                                                                  *
+ * You should have received a copy of the GNU General Public License*
+ * along with this program; if not, write to the Free Software      *
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.        *
+\********************************************************************/
+
 #include "config.h"
 #include <glib.h>
 #include "gnc-account-merge.h"
@@ -21,7 +39,7 @@ determine_merge_disposition(Account *existing_root, Account *new_acct)
   Account *existing_acct;
   gchar *full_name;
   
-  full_name = xaccAccountGetFullName(new_acct);
+  full_name = gnc_account_get_full_name(new_acct);
   existing_acct = gnc_account_lookup_by_full_name(existing_root, full_name);
   g_free(full_name);
 

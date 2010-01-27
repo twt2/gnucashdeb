@@ -81,7 +81,7 @@ struct _billterms_window {
   BillTermNB	notebook;
 
   GncBillTerm *	current_term;
-  GNCBook *	book;
+  QofBook *	book;
   gint		component_id;
 };
 
@@ -161,7 +161,7 @@ set_numeric (GtkWidget *widget, GncBillTerm *term,
 
 static void
 get_numeric (GtkWidget *widget, GncBillTerm *term,
-	     gnc_numeric (*func)(GncBillTerm *))
+	     gnc_numeric (*func)(const GncBillTerm *))
 {
   gnc_numeric val;
   gdouble fl;
@@ -183,7 +183,7 @@ set_int (GtkWidget *widget, GncBillTerm *term,
 
 static void
 get_int (GtkWidget *widget, GncBillTerm *term,
-	     gint (*func)(GncBillTerm *))
+	     gint (*func)(const GncBillTerm *))
 {
   gint val;
 
@@ -657,14 +657,14 @@ static gboolean
 find_handler (gpointer find_data, gpointer user_data)
 {
   BillTermsWindow *btw = user_data;
-  GNCBook *book = find_data;
+  QofBook *book = find_data;
 
   return (btw != NULL && btw->book == book);
 }
 
 /* Create a billterms window */
 BillTermsWindow *
-gnc_ui_billterms_window_new (GNCBook *book)
+gnc_ui_billterms_window_new (QofBook *book)
 {
   BillTermsWindow *btw;
   GladeXML *xml;
@@ -760,7 +760,7 @@ gnc_ui_billterms_window_destroy (BillTermsWindow *btw)
 #if 0
 /* Create a new billterms by name */
 GncBillTerm *
-gnc_ui_billterms_new_from_name (GNCBook *book, const char *name)
+gnc_ui_billterms_new_from_name (QofBook *book, const char *name)
 {
   BillTermsWindow *btw;
 

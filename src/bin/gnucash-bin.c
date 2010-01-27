@@ -171,7 +171,7 @@ load_user_config(void)
         "config-2.0.auto", "config-1.8.auto", "config-1.6.auto",
 	"config.auto", NULL};
     static const gchar *saved_report_files[] = {
-        "saved-reports-2.0", "saved-reports-1.8", NULL};
+      "saved-reports-2.4", "saved-reports-2.0", NULL};
     static const gchar *stylesheet_files[] = { "stylesheets-2.0", NULL};
     static int is_user_config_loaded = FALSE;
 
@@ -338,6 +338,7 @@ load_gnucash_modules()
         { "gnucash/register/register-gnome", 0, FALSE },
         { "gnucash/import-export/qif-import", 0, FALSE },
         { "gnucash/import-export/ofx", 0, TRUE },
+        { "gnucash/import-export/csv", 0, TRUE },
         { "gnucash/import-export/log-replay", 0, TRUE },
         { "gnucash/import-export/aqbanking", 0, TRUE },
         { "gnucash/import-export/hbci", 0, TRUE },
@@ -361,11 +362,11 @@ load_gnucash_modules()
     }
     if (!gnc_engine_is_initialized()) {
         /* On Windows this check used to fail anyway, see
-	   https://lists.gnucash.org/pipermail/gnucash-devel/2006-September/018529.html
-	   but more recently it seems to work as expected
-	   again. 2006-12-20, cstim. */
-        g_error("GnuCash engine failed to initialize.  Exiting.\n");
-        exit(0);
+         * https://lists.gnucash.org/pipermail/gnucash-devel/2006-September/018529.html
+         * but more recently it seems to work as expected
+         * again. 2006-12-20, cstim. */
+        g_warning("GnuCash engine failed to initialize.  Exiting.\n");
+        exit(1);
     }
 }
 
@@ -386,7 +387,7 @@ inner_main_add_price_quotes(void *closure, int argc, char **argv)
     scm_c_eval_string("(gnc:price-quotes-install-sources)");
 
     if (!gnc_quote_source_fq_installed()) {
-        g_print(_("No quotes retrieved. Finance::Quote isn't "
+        g_print("%s", _("No quotes retrieved. Finance::Quote isn't "
                   "installed properly.\n"));
         goto fail;
     }
@@ -409,7 +410,7 @@ inner_main_add_price_quotes(void *closure, int argc, char **argv)
 
     qof_session_destroy(session);
     if (!SCM_NFALSEP(scm_result)) {
-        g_error("Failed to add quotes to %s.", add_quotes_file);
+        g_warning("Failed to add quotes to %s.", add_quotes_file);
         goto fail;
     }
 
@@ -418,7 +419,7 @@ inner_main_add_price_quotes(void *closure, int argc, char **argv)
     return;
  fail:
     if (session && qof_session_get_error(session) != ERR_BACKEND_NO_ERR)
-        g_error("Session Error: %s", qof_session_get_error_message(session));
+        g_warning("Session Error: %s", qof_session_get_error_message(session));
     qof_event_resume();
     gnc_shutdown(1);
 }
@@ -523,6 +524,14 @@ gnc_log_init()
           qof_log_set_level("gnc", QOF_LOG_INFO);
      }
 
+     {
+          gchar *log_config_filename;
+          log_config_filename = gnc_build_dotgnucash_path("log.conf");
+          if (g_file_test(log_config_filename, G_FILE_TEST_EXISTS))
+               qof_log_parse_log_config(log_config_filename);
+          g_free(log_config_filename);
+     }
+
      if (log_flags != NULL)
      {
           int i = 0;
@@ -543,14 +552,6 @@ gnc_log_init()
                qof_log_set_level(parts[0], level);
                g_strfreev(parts);
           }
-     }
-
-     {
-          gchar *log_config_filename;
-          log_config_filename = gnc_build_dotgnucash_path("log.conf");
-          if (g_file_test(log_config_filename, G_FILE_TEST_EXISTS))
-               qof_log_parse_log_config(log_config_filename);
-          g_free(log_config_filename);
      }
  }
 

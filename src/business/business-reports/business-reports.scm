@@ -28,8 +28,9 @@
 (gnc:module-load "gnucash/report/standard-reports" 0)
 (gnc:module-load "gnucash/business-utils" 0)
 
-;; this defines URL-TYPE-OWNERREPORT and pulls in gnome-utils
 ;; to define gnc-build-url
+(gnc:module-load "gnucash/html" 0)
+;; this defines URL-TYPE-OWNERREPORT
 (gnc:module-load "gnucash/business-gnome" 0)
 
 (define gnc:menuname-business-reports (N_ "_Business"))
@@ -102,6 +103,7 @@
 (use-modules (gnucash report invoice))
 (use-modules (gnucash report easy-invoice))
 (use-modules (gnucash report owner-report))
+(use-modules (gnucash report job-report))
 (use-modules (gnucash report payables))
 (use-modules (gnucash report receivables))
 

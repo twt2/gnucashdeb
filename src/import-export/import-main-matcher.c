@@ -605,10 +605,12 @@ refresh_model_row (GNCImportMainMatcher *gui,
 	}
       else
 	{
+          /* Assume that importers won't create transactions in two or more
+             currencies so we can use xaccTransGetImbalanceValue */
 	  imbalance = 
 	    g_strdup 
 	    (xaccPrintAmount
-	     (gnc_numeric_neg(xaccTransGetImbalance
+	     (gnc_numeric_neg(xaccTransGetImbalanceValue
 			      (gnc_import_TransInfo_get_trans(info) )), 
 	      gnc_commodity_print_info 
 	      (xaccTransGetCurrency(gnc_import_TransInfo_get_trans (info)),
@@ -616,7 +618,7 @@ refresh_model_row (GNCImportMainMatcher *gui,
 	  if (gnc_import_TransInfo_get_destacc (info) != NULL)
 	    {
 	      color = COLOR_GREEN;
-	      tmp = xaccAccountGetFullName 
+	      tmp = gnc_account_get_full_name 
 		(gnc_import_TransInfo_get_destacc (info));
 	      if(gnc_import_TransInfo_get_destacc_selected_manually(info)
 		 == TRUE)

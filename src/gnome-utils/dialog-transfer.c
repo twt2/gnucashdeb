@@ -44,6 +44,10 @@
 #include "gnc-ui.h"
 #include "Transaction.h"
 #include "Account.h"
+#include <libguile.h>
+#include "swig-runtime.h"
+#include "guile-mappings.h"
+#include "engine-helpers.h"
 
 
 #define DIALOG_TRANSFER_CM_CLASS "dialog-transfer"
@@ -109,9 +113,11 @@ struct _xferDialog
   GtkWidget * price_radio;
   GtkWidget * amount_radio;
 
+  GtkWidget * fetch_button;
+
   GtkTooltips *tips;
 
-  GNCBook *	book;
+  QofBook *	book;
   GNCPriceDB *	pricedb;
 
   /* Where to store the "exchange_rate" at exit (in lieu of
@@ -375,20 +381,22 @@ gnc_xfer_dialog_from_tree_selection_changed_cb (GtkTreeSelection *selection,
   Account *account;
 
   account = gnc_transfer_dialog_get_selected_account (xferData, XFER_DIALOG_FROM);
+  if (!account)
+    return;
+
   commodity = xaccAccountGetCommodity(account);
   gtk_label_set_text(GTK_LABEL(xferData->from_currency_label), 
 		     gnc_commodity_get_printname(commodity));
 
   xferData->from_commodity = commodity;
 
-  gnc_xfer_dialog_curr_acct_activate(xferData);
-
   print_info = gnc_account_print_info (account, FALSE);
-
   gnc_amount_edit_set_print_info (GNC_AMOUNT_EDIT (xferData->amount_edit),
                                   print_info);
   gnc_amount_edit_set_fraction (GNC_AMOUNT_EDIT (xferData->amount_edit),
                                 xaccAccountGetCommoditySCU (account));
+
+  gnc_xfer_dialog_curr_acct_activate(xferData);
 
   /* Reload the xferDialog quickfill if it is based on the from account */
   if (xferData->quickfill == XFER_DIALOG_FROM)
@@ -405,20 +413,22 @@ gnc_xfer_dialog_to_tree_selection_changed_cb (GtkTreeSelection *selection, gpoin
   Account *account;
 
   account = gnc_transfer_dialog_get_selected_account (xferData, XFER_DIALOG_TO);
+  if (!account)
+    return;
+
   commodity = xaccAccountGetCommodity(account);
   gtk_label_set_text(GTK_LABEL(xferData->to_currency_label),
 		     gnc_commodity_get_printname(commodity));
 
   xferData->to_commodity = commodity;
 
-  gnc_xfer_dialog_curr_acct_activate(xferData);
-
   print_info = gnc_account_print_info (account, FALSE);
-
   gnc_amount_edit_set_print_info (GNC_AMOUNT_EDIT (xferData->to_amount_edit),
                                   print_info);
   gnc_amount_edit_set_fraction (GNC_AMOUNT_EDIT (xferData->to_amount_edit),
                                 xaccAccountGetCommoditySCU (account));
+
+  gnc_xfer_dialog_curr_acct_activate(xferData);
 
   /* Reload the xferDialog quickfill if it is based on the to account */
   if (xferData->quickfill == XFER_DIALOG_TO)
@@ -948,11 +958,13 @@ gnc_xfer_dialog_select_from_currency(XferDialog *xferData, gnc_commodity *cur)
   if (!xferData) return;
   if (!cur) return;
 
-  gtk_label_set_text(GTK_LABEL(xferData->from_currency_label), 
-		     gnc_commodity_get_printname(cur));
+  gtk_label_set_text(GTK_LABEL(xferData->from_currency_label),
+                     gnc_commodity_get_printname(cur));
 
-  gnc_amount_edit_set_fraction (GNC_AMOUNT_EDIT (xferData->amount_edit),
-                                gnc_commodity_get_fraction (cur));
+  gnc_amount_edit_set_print_info(GNC_AMOUNT_EDIT(xferData->amount_edit),
+                                 gnc_commodity_print_info(cur, FALSE));
+  gnc_amount_edit_set_fraction(GNC_AMOUNT_EDIT(xferData->amount_edit),
+                               gnc_commodity_get_fraction (cur));
 
   xferData->from_commodity = cur;
   gnc_xfer_dialog_curr_acct_activate(xferData);
@@ -962,10 +974,12 @@ void
 gnc_xfer_dialog_select_to_currency(XferDialog *xferData, gnc_commodity *cur)
 {
   gtk_label_set_text(GTK_LABEL(xferData->to_currency_label),
-		     gnc_commodity_get_printname(cur));
+                     gnc_commodity_get_printname(cur));
 
-  gnc_amount_edit_set_fraction (GNC_AMOUNT_EDIT (xferData->to_amount_edit),
-				gnc_commodity_get_fraction (cur));
+  gnc_amount_edit_set_print_info(GNC_AMOUNT_EDIT(xferData->to_amount_edit),
+                                 gnc_commodity_print_info(cur, FALSE));
+  gnc_amount_edit_set_fraction(GNC_AMOUNT_EDIT(xferData->to_amount_edit),
+                               gnc_commodity_get_fraction(cur));
 
   xferData->to_commodity = cur;
   gnc_xfer_dialog_curr_acct_activate(xferData);
@@ -1232,6 +1246,13 @@ gnc_xfer_dialog_response_cb (GtkDialog *dialog, gint response, gpointer data)
   Split *to_split;
 
   ENTER(" ");
+
+  if (response == GTK_RESPONSE_APPLY)
+  {
+    LEAVE("fetching exchange rate");
+    return;
+  }
+
   if (response != GTK_RESPONSE_OK) {
     gnc_close_gui_component_by_data (DIALOG_TRANSFER_CM_CLASS, xferData);
     LEAVE("cancel, etc.");
@@ -1270,9 +1291,9 @@ gnc_xfer_dialog_response_cb (GtkDialog *dialog, gint response, gpointer data)
       char *name;
 
       if (xaccAccountGetPlaceholder(from_account))
-	name = xaccAccountGetFullName(from_account);
+	name = gnc_account_get_full_name(from_account);
       else
-	name = xaccAccountGetFullName(to_account);
+	name = gnc_account_get_full_name(to_account);
       gnc_error_dialog(xferData->dialog, placeholder_format, name);
       g_free(name);
       LEAVE("placeholder");
@@ -1529,6 +1550,56 @@ gnc_xfer_dialog_close_cb(GtkDialog *dialog, gpointer data)
 
 
 static void
+gnc_xfer_dialog_fetch (GtkButton *button, XferDialog *xferData)
+{
+  gnc_numeric rate;
+  GNCPrice *prc;
+  gnc_commodity *from = xferData->from_commodity;
+  gnc_commodity *to = xferData->to_commodity;
+  SCM quotes_func;
+  SCM book_scm;
+  SCM scm_window;
+
+  g_return_if_fail (xferData);
+
+  ENTER(" ");
+
+  quotes_func = scm_c_eval_string ("gnc:book-add-quotes");
+
+  if (!SCM_PROCEDUREP (quotes_func)) {
+    LEAVE("quote retrieval failed");
+    return;
+  }
+
+  book_scm = gnc_book_to_scm (xferData->book);
+  if (SCM_NFALSEP (scm_not (book_scm))) {
+    LEAVE("no book");
+    return;
+  }
+
+  scm_window =  SWIG_NewPointerObj(xferData->dialog,
+                                   SWIG_TypeQuery("_p_GtkWidget"), 0);
+
+  if (SCM_NFALSEP (scm_not (book_scm))) {
+    LEAVE("no scm window");
+    return;
+  }
+
+  gnc_set_busy_cursor (NULL, TRUE);
+  scm_call_2 (quotes_func, scm_window, book_scm);
+  gnc_unset_busy_cursor (NULL);
+
+  /*the results should be in the price db now */
+
+  prc = gnc_pricedb_lookup_latest(xferData->pricedb, from, to);
+  rate = gnc_price_get_value (prc);
+  gnc_amount_edit_set_amount(GNC_AMOUNT_EDIT(xferData->price_edit), rate); 
+
+  LEAVE("quote retrieved");
+
+}
+
+static void
 gnc_xfer_dialog_create(GtkWidget *parent, XferDialog *xferData)
 {
   GtkWidget *dialog;
@@ -1564,6 +1635,10 @@ gnc_xfer_dialog_create(GtkWidget *parent, XferDialog *xferData)
   xferData->quickfill = XFER_DIALOG_FROM;
 
   xferData->transferinfo_label = glade_xml_get_widget (xml, "transferinfo-label");
+
+  xferData->fetch_button = glade_xml_get_widget (xml, "fetch");
+  glade_xml_signal_connect_data (xml, "gnc_xfer_dialog_fetch",
+				 G_CALLBACK (gnc_xfer_dialog_fetch), xferData);
 
   /* amount & date widgets */
   {
@@ -1755,7 +1830,7 @@ gnc_xfer_dialog (GtkWidget * parent, Account * initial)
   XferDialog *xferData;
   GNCAmountEdit *gae;
   GtkWidget *amount_entry;
-  GNCBook *book = NULL;
+  QofBook *book = NULL;
 
   xferData = g_new0 (XferDialog, 1);
 
@@ -1948,7 +2023,7 @@ gboolean gnc_xfer_dialog_run_until_done( XferDialog *xferData )
     DEBUG("gtk_dialog_run returned %d", response);
     gnc_xfer_dialog_response_cb (dialog, response, xferData);
 
-    if (response != GTK_RESPONSE_OK) {
+    if ((response != GTK_RESPONSE_OK) && (response != GTK_RESPONSE_APPLY)) {
       LEAVE("not ok");
       return FALSE;
     }
@@ -2069,6 +2144,21 @@ gboolean gnc_xfer_dialog_run_exchange_dialog(
     gnc_commodity *txn_cur = xaccTransGetCurrency(txn);
     gnc_commodity *reg_com = xaccAccountGetCommodity(reg_acc);
 
+    g_return_val_if_fail(txn_cur, TRUE);
+
+    if (xaccTransUseTradingAccounts (txn)) {
+      /* If we're using commodity trading accounts then "amount" is
+         really the split's amount and it's in xfer_com.  We need an
+         exchange rate that will convert this amount into a value in
+         the transaction currency.  */
+      if (gnc_commodity_equal(xfer_com, txn_cur)) {
+        /* Transaction is in the same currency as the split, exchange
+           rate is 1. */
+        *exch_rate = gnc_numeric_create(1, 1);
+        return FALSE;
+      }
+      swap_amounts = TRUE;
+    
     /* We know that "amount" is always in the reg_com currency.
      * Unfortunately it is possible that neither xfer_com or txn_cur are
      * the same as reg_com, in which case we need to convert to the txn
@@ -2076,7 +2166,7 @@ gboolean gnc_xfer_dialog_run_exchange_dialog(
      * need to flip-flop the commodities and the exchange rates.
      */
     
-    if (gnc_commodity_equal(reg_com, txn_cur)) {
+    } else if (gnc_commodity_equal(reg_com, txn_cur)) {
         /* we're working in the txn currency.  Great.  Nothing to do! */
         swap_amounts = FALSE;
         
@@ -2107,6 +2197,7 @@ gboolean gnc_xfer_dialog_run_exchange_dialog(
         if (!gnc_numeric_zero_p(*exch_rate))
             *exch_rate = gnc_numeric_div(gnc_numeric_create(1, 1), *exch_rate,
                                          GNC_DENOM_AUTO, GNC_DENOM_REDUCE);
+        amount = gnc_numeric_neg(amount);
     } else {
         gnc_xfer_dialog_select_to_currency(xfer, xfer_com);
         gnc_xfer_dialog_select_from_currency(xfer, txn_cur);

@@ -28,6 +28,7 @@
  */
 
 #include "config.h"
+#include <glib/gi18n.h>
 
 #include "gnc-ab-utils.h"
 #include "gnc-module.h"
@@ -71,7 +72,7 @@ libgncmod_aqbanking_gnc_module_init(gint refcount)
     gnc_plugin_aqbanking_create_plugin();
 
     gnc_preferences_add_to_page("aqbanking.glade", "aqbanking_prefs",
-                                "Online Banking");
+                                _("Online Banking"));
 
     /* Initialize gwen library */
     gnc_GWEN_Init();

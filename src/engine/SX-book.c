@@ -61,7 +61,7 @@ gnc_collection_get_template_root( const QofCollection *col )
 }
 
 Account *
-gnc_book_get_template_root( QofBook *book )
+gnc_book_get_template_root( const QofBook *book )
 {
   QofCollection *col;
   if (!book) return NULL;
@@ -113,13 +113,13 @@ sxtg_book_begin (QofBook *book)
 {
   Account *root;
 
-  root = xaccMallocAccount(book);
-  xaccAccountBeginEdit(root);
-  xaccAccountSetType(root, ACCT_TYPE_ROOT);
-  xaccAccountSetName(root, "Template Root");
-  xaccAccountCommitEdit(root);
-  gnc_book_set_template_root (book, root);
-}
+  	root = xaccMallocAccount(book);
+  	xaccAccountBeginEdit(root);
+  	xaccAccountSetType(root, ACCT_TYPE_ROOT);
+        xaccAccountSetName(root, "Template Root");
+  	xaccAccountCommitEdit(root);
+  	gnc_book_set_template_root (book, root);
+  }
 
 static void 
 sxtg_book_end (QofBook *book)
@@ -163,15 +163,15 @@ sxtg_mark_clean(QofCollection *col)
 
 static QofObject sxtg_object_def = 
 {
-  interface_version: QOF_OBJECT_VERSION,
-  e_type:            GNC_ID_SXTG,
-  type_label:        "Scheduled Transaction Templates",
-  book_begin:        sxtg_book_begin,
-  book_end:          sxtg_book_end,
-  is_dirty:          sxtg_is_dirty,
-  mark_clean:        sxtg_mark_clean,
-  foreach:           NULL,
-  printable:         NULL,
+  .interface_version = QOF_OBJECT_VERSION,
+  .e_type            = GNC_ID_SXTG,
+  .type_label        = "Scheduled Transaction Templates",
+  .book_begin        = sxtg_book_begin,
+  .book_end          = sxtg_book_end,
+  .is_dirty          = sxtg_is_dirty,
+  .mark_clean        = sxtg_mark_clean,
+  .foreach           = NULL,
+  .printable         = NULL,
 };
 
 /* ====================================================================== */
@@ -295,32 +295,32 @@ book_sxlist_notsaved(const QofCollection *col)
 
 static QofObject sxes_object_def =
 {
-  interface_version: QOF_OBJECT_VERSION,
-  e_type:            GNC_ID_SXES,
-  type_label:        "Scheduled Transactions List",
-  create:            NULL,
-  book_begin:        book_sxes_setup,
-  book_end:          NULL,
-  is_dirty:          book_sxlist_notsaved,
-  mark_clean:        book_sxns_mark_saved,
-  foreach:           NULL,
-  printable:         NULL,
-  version_cmp:       NULL
+  .interface_version = QOF_OBJECT_VERSION,
+  .e_type            = GNC_ID_SXES,
+  .type_label        = "Scheduled Transactions List",
+  .create            = NULL,
+  .book_begin        = book_sxes_setup,
+  .book_end          = NULL,
+  .is_dirty          = book_sxlist_notsaved,
+  .mark_clean        = book_sxns_mark_saved,
+  .foreach           = NULL,
+  .printable         = NULL,
+  .version_cmp       = NULL
 };
   
 static QofObject sxtt_object_def = 
 {
-  interface_version: QOF_OBJECT_VERSION,
-  e_type:            GNC_ID_SXTT,
-  type_label:        "Scheduled Transaction Templates",
-  create:            NULL,
-  book_begin:        NULL,
-  book_end:          NULL,
-  is_dirty:          NULL,
-  mark_clean:        NULL,
-  foreach:           NULL,
-  printable:         NULL,
-  version_cmp:       NULL,
+  .interface_version = QOF_OBJECT_VERSION,
+  .e_type            = GNC_ID_SXTT,
+  .type_label        = "Scheduled Transaction Templates",
+  .create            = NULL,
+  .book_begin        = NULL,
+  .book_end          = NULL,
+  .is_dirty          = NULL,
+  .mark_clean        = NULL,
+  .foreach           = NULL,
+  .printable         = NULL,
+  .version_cmp       = NULL,
 };
 
 gboolean 
@@ -337,7 +337,7 @@ GList*
 gnc_sx_get_sxes_referencing_account(QofBook *book, Account *acct)
 {
   GList *rtn = NULL;
-  const GUID *acct_guid = xaccAccountGetGUID(acct);
+  const GUID *acct_guid = qof_entity_get_guid(QOF_INSTANCE(acct));
   GList *sx_list = gnc_book_get_schedxactions(book)->sx_list;
   for (; sx_list != NULL; sx_list = sx_list->next)
   {

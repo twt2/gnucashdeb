@@ -1,4 +1,4 @@
-AM_CFLAGS = \
+AM_CPPFLAGS = \
   -I${top_srcdir}/src \
   -I${top_srcdir}/src/gnc-module \
   ${GUILE_INCS} \
@@ -17,7 +17,7 @@ noinst_HEADERS = \
   swig-bar.c
 
 libgncmodbar_la_SOURCES=gnc-mod-bar.c
-libgncmodbar_la_LDFLAGS=-rpath ${PWD}
+libgncmodbar_la_LDFLAGS=-rpath ${PWD} -avoid-version
 libgncmodbar_la_LIBADD=libbar.la \
   $(GUILE_LIBS) \
   $(GLIB_LIBS)

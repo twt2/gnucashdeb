@@ -40,6 +40,10 @@
 #include "gncVendor.h"
 #include "gncVendorP.h"
 
+static gint gs_address_event_handler_id = 0;
+static void listen_for_address_events(QofInstance *entity, QofEventId event_type,
+			    gpointer user_data, gpointer event_data);
+
 struct _gncVendor 
 {
   QofInstance     inst;
@@ -112,6 +116,10 @@ GncVendor *gncVendorCreate (QofBook *book)
   vendor->taxincluded = GNC_TAXINCLUDED_USEGLOBAL;
   vendor->active = TRUE;
   vendor->jobs = NULL;
+
+  if (gs_address_event_handler_id == 0) {
+    gs_address_event_handler_id = qof_event_register_handler(listen_for_address_events, NULL);
+  }
 
   qof_event_gen (&vendor->inst, QOF_EVENT_CREATE, NULL);
 
@@ -346,68 +354,68 @@ qofVendorSetTaxIncluded(GncVendor *vendor, const char* type_string)
 /* ============================================================== */
 /* Get Functions */
 
-const char * gncVendorGetID (GncVendor *vendor)
+const char * gncVendorGetID (const GncVendor *vendor)
 {
   if (!vendor) return NULL;
   return vendor->id;
 }
 
-const char * gncVendorGetName (GncVendor *vendor)
+const char * gncVendorGetName (const GncVendor *vendor)
 {
   if (!vendor) return NULL;
   return vendor->name;
 }
 
-GncAddress * gncVendorGetAddr (GncVendor *vendor)
+GncAddress * gncVendorGetAddr (const GncVendor *vendor)
 {
   if (!vendor) return NULL;
   return vendor->addr;
 }
 
-const char * gncVendorGetNotes (GncVendor *vendor)
+const char * gncVendorGetNotes (const GncVendor *vendor)
 {
   if (!vendor) return NULL;
   return vendor->notes;
 }
 
-GncBillTerm * gncVendorGetTerms (GncVendor *vendor)
+GncBillTerm * gncVendorGetTerms (const GncVendor *vendor)
 {
   if (!vendor) return 0;
   return vendor->terms;
 }
 
-GncTaxIncluded gncVendorGetTaxIncluded (GncVendor *vendor)
+GncTaxIncluded gncVendorGetTaxIncluded (const GncVendor *vendor)
 {
   if (!vendor) return GNC_TAXINCLUDED_USEGLOBAL;
   return vendor->taxincluded;
 }
 
-gnc_commodity * gncVendorGetCurrency (GncVendor *vendor)
+gnc_commodity * gncVendorGetCurrency (const GncVendor *vendor)
 {
   if (!vendor) return NULL;
   return vendor->currency;
 }
 
-gboolean gncVendorGetActive (GncVendor *vendor)
+gboolean gncVendorGetActive (const GncVendor *vendor)
 {
   if (!vendor) return FALSE;
   return vendor->active;
 }
 
-gboolean gncVendorGetTaxTableOverride (GncVendor *vendor)
+gboolean gncVendorGetTaxTableOverride (const GncVendor *vendor)
 {
   if (!vendor) return FALSE;
   return vendor->taxtable_override;
 }
 
-GncTaxTable* gncVendorGetTaxTable (GncVendor *vendor)
+GncTaxTable* gncVendorGetTaxTable (const GncVendor *vendor)
 {
   if (!vendor) return NULL;
   return vendor->taxtable;
 }
 
 static const char*
-qofVendorGetTaxIncluded(GncVendor *vendor)
+qofVendorGetTaxIncluded(const GncVendor *vendor)
 {
 	return gncTaxIncludedTypeToString(vendor->taxincluded);
 }
@@ -451,6 +459,7 @@ void gncVendorBeginEdit (GncVendor *vendor)
 static void gncVendorOnError (QofInstance *vendor, QofBackendError errcode)
 {
   PERR("Vendor QofBackend Failure: %d", errcode);
+  gnc_engine_signal_commit_error( errcode );
 }
 
 static void gncVendorOnDone (QofInstance *inst)
@@ -475,7 +484,7 @@ void gncVendorCommitEdit (GncVendor *vendor)
 /* ============================================================== */
 /* Other functions */
 
-int gncVendorCompare (GncVendor *a, GncVendor *b)
+int gncVendorCompare (const GncVendor *a, const GncVendor *b)
 {
   if (!a && !b) return 0;
   if (!a && b) return 1;
@@ -484,7 +493,7 @@ int gncVendorCompare (GncVendor *a, GncVendor *b)
   return(strcmp(a->name, b->name));
 }
 
-GList * gncVendorGetJoblist (GncVendor *vendor, gboolean show_all)
+GList * gncVendorGetJoblist (const GncVendor *vendor, gboolean show_all)
 {
   if (!vendor) return NULL;
 
@@ -501,13 +510,42 @@ GList * gncVendorGetJoblist (GncVendor *vendor, gboolean show_all)
   }
 }
 
-gboolean gncVendorIsDirty (GncVendor *vendor)
+gboolean gncVendorIsDirty (const GncVendor *vendor)
 {
   if (!vendor) return FALSE;
   return (qof_instance_get_dirty_flag(vendor)
           || gncAddressIsDirty (vendor->addr));
 }
 
+/**
+ * Listens for MODIFY events from addresses.   If the address belongs to a vendor,
+ * mark the vendor as dirty.
+ *
+ * @param entity Entity for the event
+ * @param event_type Event type
+ * @param user_data User data registered with the handler
+ * @param event_data Event data passed with the event.
+ */
+static void
+listen_for_address_events(QofInstance *entity, QofEventId event_type,
+			    gpointer user_data, gpointer event_data)
+{
+  GncVendor* v;
+
+  if ((event_type & QOF_EVENT_MODIFY) == 0) {
+  	return;
+  }
+  if (!GNC_IS_ADDRESS(entity)) {
+    return;
+  }
+  if (!GNC_IS_VENDOR(event_data)) {
+    return;
+  }
+  v = GNC_VENDOR(event_data);
+  gncVendorBeginEdit(v);
+  mark_vendor(v);
+  gncVendorCommitEdit(v);
+}
 /* ============================================================== */
 /* Package-Private functions */
 
@@ -520,17 +558,17 @@ static const char * _gncVendorPrintable (gpointer item)
 
 static QofObject gncVendorDesc = 
 {
-  interface_version:  QOF_OBJECT_VERSION,
-  e_type:             _GNC_MOD_NAME,
-  type_label:         "Vendor",
-  create:             (gpointer)gncVendorCreate,
-  book_begin:         NULL,
-  book_end:           NULL,
-  is_dirty:           qof_collection_is_dirty,
-  mark_clean:         qof_collection_mark_clean,
-  foreach:            qof_collection_foreach,
-  printable:          _gncVendorPrintable,
-  version_cmp:        (int (*)(gpointer, gpointer)) qof_instance_version_cmp,
+  .interface_version = QOF_OBJECT_VERSION,
+  .e_type            = _GNC_MOD_NAME,
+  .type_label        = "Vendor",
+  .create            = (gpointer)gncVendorCreate,
+  .book_begin        = NULL,
+  .book_end          = NULL,
+  .is_dirty          = qof_collection_is_dirty,
+  .mark_clean        = qof_collection_mark_clean,
+  .foreach           = qof_collection_foreach,
+  .printable         = _gncVendorPrintable,
+  .version_cmp       = (int (*)(gpointer, gpointer)) qof_instance_version_cmp,
 };
 
 gboolean gncVendorRegister (void)

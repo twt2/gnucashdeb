@@ -1,5 +1,5 @@
 /********************************************************************\
- * split-register-model.c -- split register model object            *
+ * split-register-model-save.c -- split register model object       *
  *                                                                  *
  * This program is free software; you can redistribute it and/or    *
  * modify it under the terms of the GNU General Public License as   *
@@ -108,6 +108,31 @@ gnc_split_register_save_due_date_cell (BasicCell * cell,
   gnc_date_cell_get_date ((DateCell *) cell, &ts);
 
   xaccTransSetDateDueTS (sd->trans, &ts);
+}
+
+static void
+gnc_split_register_save_trans_date_cell (BasicCell * cell,
+                                       gpointer save_data,
+                                       gpointer user_data)
+{
+  SRSaveData *sd = save_data;
+  const char *value;
+  Timespec ts;
+
+
+  g_return_if_fail (gnc_basic_cell_has_name (cell, DTRANS_CELL));
+
+  value = gnc_basic_cell_get_value (cell);
+
+  /* commit any pending changes */
+  gnc_date_cell_commit ((DateCell *) cell);
+
+
+  DEBUG ("TRANSACTION: %s", value ? value : "(null)");
+
+  gnc_date_cell_get_date ((DateCell *) cell, &ts);
+
+  xaccTransSetDateEnteredTS (sd->trans, &ts);
 }
 
 static void
@@ -386,9 +411,66 @@ gnc_split_register_save_amount_values (SRSaveData *sd, SplitRegister *reg)
 {
   Account *acc;
   gnc_numeric new_amount, convrate, amtconv, value;
+  gnc_commodity *curr, *reg_com, *xfer_com;
+  Account *xfer_acc;
 
   new_amount = gnc_split_register_debcred_cell_value (reg);
+  acc = gnc_split_register_get_default_account (reg);
+  
+  xfer_acc = xaccSplitGetAccount (sd->split);
+  xfer_com = xaccAccountGetCommodity (xfer_acc);
+  reg_com = xaccAccountGetCommodity (acc);  
+  curr = xaccTransGetCurrency (sd->trans);
+  
+  /* First, compute the conversion rate to convert the value to the
+    * amount.
+    */
+  amtconv = convrate = gnc_split_register_get_rate_cell (reg, RATE_CELL);
+  if (gnc_split_register_needs_conv_rate (reg, sd->trans, acc)) {
+    
+    /* If we are in an expanded register and the xfer_acc->comm !=
+    * reg_acc->comm then we need to compute the convrate here.
+    * Otherwise, we _can_ use the rate_cell!
+    */
+    if (sd->reg_expanded && ! gnc_commodity_equal (reg_com, xfer_com))
+      amtconv = xaccTransGetAccountConvRate(sd->trans, acc);
+  }
+  
+  if (xaccTransUseTradingAccounts (sd->trans)) {
+    /* Using currency accounts, the amount is probably really the
+       amount and not the value. */
+    gboolean is_amount;
+    if (reg->type == STOCK_REGISTER || 
+        reg->type == CURRENCY_REGISTER ||
+        reg->type == PORTFOLIO_LEDGER) {
+      if (xaccAccountIsPriced(xfer_acc) || 
+          !gnc_commodity_is_iso(xaccAccountGetCommodity(xfer_acc))) 
+        is_amount = FALSE;
+      else
+        is_amount = TRUE;
+    }
+    else {
+      is_amount = TRUE;
+    }
 
+    if (is_amount) {
+      xaccSplitSetAmount(sd->split, new_amount);
+      if (gnc_split_register_split_needs_amount (reg, sd->split)) {
+        value = gnc_numeric_div(new_amount, amtconv,
+                                gnc_commodity_get_fraction(curr),
+                                GNC_RND_ROUND);
+        xaccSplitSetValue(sd->split, value);
+      }
+      else
+        xaccSplitSetValue(sd->split, new_amount);
+    }
+    else {
+      xaccSplitSetValue(sd->split, new_amount);
+    }
+    
+    return;
+  }
+        
   /* How to interpret new_amount depends on our view of this
    * transaction.  If we're sitting in an account with the same
    * commodity as the transaction, then we can set the Value and then
@@ -397,34 +479,12 @@ gnc_split_register_save_amount_values (SRSaveData *sd, SplitRegister *reg)
    * 'value' by dividing by the convrate in order to set the value.
    */
 
-  /* First, compute the conversion rate to convert the value to the
-   * amount.
-   */
-  convrate = gnc_split_register_get_rate_cell (reg, RATE_CELL);
-
   /* Now compute/set the split value.  Amount is in the register
    * currency but we need to convert to the txn currency.
    */
-  acc = gnc_split_register_get_default_account (reg);
   if (gnc_split_register_needs_conv_rate (reg, sd->trans, acc)) {
-    gnc_commodity *curr, *reg_com, *xfer_com;
-    Account *xfer_acc;
-
-    xfer_acc = xaccSplitGetAccount (sd->split);
-    xfer_com = xaccAccountGetCommodity (xfer_acc);
-    reg_com = xaccAccountGetCommodity (acc);
-
-    /* If we are in an expanded register and the xfer_acc->comm !=
-     * reg_acc->comm then we need to compute the convrate here.
-     * Otherwise, we _can_ use the rate_cell!
-     */
-    if (sd->reg_expanded && ! gnc_commodity_equal (reg_com, xfer_com))
-      amtconv = xaccTransGetAccountConvRate(sd->trans, acc);
-    else
-      amtconv = convrate;
 
     /* convert the amount to the Value ... */
-    curr = xaccTransGetCurrency (sd->trans);
     value = gnc_numeric_div (new_amount, amtconv,
 			     gnc_commodity_get_fraction (curr),
 			     GNC_RND_ROUND);
@@ -711,6 +771,11 @@ gnc_split_register_model_add_save_handlers (TableModel *model)
                                     gnc_split_register_save_due_date_cell,
                                     DDUE_CELL);
 
+
+  gnc_table_model_set_save_handler (model,
+                                    gnc_split_register_save_trans_date_cell,
+                                    DTRANS_CELL);
+
   gnc_table_model_set_save_handler (model,
                                     gnc_split_register_save_type_cell,
                                     TYPE_CELL);
@@ -784,6 +849,12 @@ gnc_template_register_model_add_save_handlers (TableModel *model)
   gnc_table_model_set_save_handler (model,
                                     gnc_template_register_save_unexpected_cell,
                                     DDUE_CELL);
+
+
+  gnc_table_model_set_save_handler (model,
+                                    gnc_template_register_save_unexpected_cell,
+                                    DTRANS_CELL);
+
 
   gnc_table_model_set_save_handler (model,
                                     gnc_template_register_save_xfrm_cell,

@@ -1217,16 +1217,17 @@ SWIG_Guile_GetArgs (SCM *dest, SCM rest,
 #define SWIGTYPE_p_char swig_types[7]
 #define SWIGTYPE_p_double swig_types[8]
 #define SWIGTYPE_p_f_p_void__void swig_types[9]
-#define SWIGTYPE_p_gboolean swig_types[10]
-#define SWIGTYPE_p_gint64 swig_types[11]
-#define SWIGTYPE_p_gnc_commodity swig_types[12]
-#define SWIGTYPE_p_gnc_commodity_table swig_types[13]
-#define SWIGTYPE_p_gnc_numeric swig_types[14]
-#define SWIGTYPE_p_int swig_types[15]
-#define SWIGTYPE_p_unsigned_int swig_types[16]
-#define SWIGTYPE_p_unsigned_long swig_types[17]
-static swig_type_info *swig_types[19];
-static swig_module_info swig_module = {swig_types, 18, 0, 0, 0, 0};
+#define SWIGTYPE_p_float swig_types[10]
+#define SWIGTYPE_p_gboolean swig_types[11]
+#define SWIGTYPE_p_gint64 swig_types[12]
+#define SWIGTYPE_p_gnc_commodity swig_types[13]
+#define SWIGTYPE_p_gnc_commodity_table swig_types[14]
+#define SWIGTYPE_p_gnc_numeric swig_types[15]
+#define SWIGTYPE_p_int swig_types[16]
+#define SWIGTYPE_p_unsigned_int swig_types[17]
+#define SWIGTYPE_p_unsigned_long swig_types[18]
+static swig_type_info *swig_types[20];
+static swig_module_info swig_module = {swig_types, 19, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1267,6 +1268,48 @@ _wrap_gnc_get_current_book ()
   result = (QofBook *)gnc_get_current_book();
   {
     gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_QofBook, 0);
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_get_current_book_tax_name ()
+{
+#define FUNC_NAME "gnc-get-current-book-tax-name"
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  gchar *result = 0 ;
+  
+  result = (gchar *)gnc_get_current_book_tax_name();
+  {
+    gswig_result = scm_makfrom0str((const char *)result);
+    if (!SCM_NFALSEP(gswig_result)) {
+      gswig_result = scm_makstr(0, 0);
+    }
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_get_current_book_tax_type ()
+{
+#define FUNC_NAME "gnc-get-current-book-tax-type"
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  gchar *result = 0 ;
+  
+  result = (gchar *)gnc_get_current_book_tax_type();
+  {
+    gswig_result = scm_makfrom0str((const char *)result);
+    if (!SCM_NFALSEP(gswig_result)) {
+      gswig_result = scm_makstr(0, 0);
+    }
   }
   
   return gswig_result;
@@ -1520,32 +1563,6 @@ _wrap_gnc_locale_default_iso_currency_code ()
       gswig_result = scm_makstr(0, 0);
     }
   }
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_gnc_account_get_full_name (SCM s_0)
-{
-#define FUNC_NAME "gnc-account-get-full-name"
-  Account *arg1 = (Account *) 0 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  char *result = 0 ;
-  
-  {
-    arg1 = (Account *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Account, 1, 0);
-  }
-  result = (char *)gnc_account_get_full_name((Account const *)arg1);
-  {
-    gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
-      gswig_result = scm_makstr(0, 0);
-    }
-  }
-  
   
   return gswig_result;
 #undef FUNC_NAME
@@ -2020,6 +2037,7 @@ static swig_type_info _swigt__p_QofIdType = {"_p_QofIdType", "QofIdType *", 0, 0
 static swig_type_info _swigt__p_char = {"_p_char", "gchar *|char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_double = {"_p_double", "double *|gdouble *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_f_p_void__void = {"_p_f_p_void__void", "void (*)(void *)|GNCOptionChangeCallback", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_float = {"_p_float", "float *|gfloat *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_gboolean = {"_p_gboolean", "gboolean *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_gint64 = {"_p_gint64", "gint64 *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_gnc_commodity = {"_p_gnc_commodity", "gnc_commodity *", 0, 0, (void*)0, 0};
@@ -2040,6 +2058,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_char,
   &_swigt__p_double,
   &_swigt__p_f_p_void__void,
+  &_swigt__p_float,
   &_swigt__p_gboolean,
   &_swigt__p_gint64,
   &_swigt__p_gnc_commodity,
@@ -2060,6 +2079,7 @@ static swig_cast_info _swigc__p_QofIdType[] = {  {&_swigt__p_QofIdType, 0, 0, 0}
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_double[] = {  {&_swigt__p_double, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_f_p_void__void[] = {  {&_swigt__p_f_p_void__void, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_float[] = {  {&_swigt__p_float, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_gboolean[] = {  {&_swigt__p_gboolean, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_gint64[] = {  {&_swigt__p_gint64, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_gnc_commodity[] = {  {&_swigt__p_gnc_commodity, 0, 0, 0},{0, 0, 0, 0}};
@@ -2080,6 +2100,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_char,
   _swigc__p_double,
   _swigc__p_f_p_void__void,
+  _swigc__p_float,
   _swigc__p_gboolean,
   _swigc__p_gint64,
   _swigc__p_gnc_commodity,
@@ -2338,6 +2359,8 @@ SWIG_init(void)
   SWIG_PropagateClientData();
   
   scm_c_define_gsubr("gnc-get-current-book", 0, 0, 0, (swig_guile_proc) _wrap_gnc_get_current_book);
+  scm_c_define_gsubr("gnc-get-current-book-tax-name", 0, 0, 0, (swig_guile_proc) _wrap_gnc_get_current_book_tax_name);
+  scm_c_define_gsubr("gnc-get-current-book-tax-type", 0, 0, 0, (swig_guile_proc) _wrap_gnc_get_current_book_tax_type);
   scm_c_define_gsubr("gnc-get-current-root-account", 0, 0, 0, (swig_guile_proc) _wrap_gnc_get_current_root_account);
   scm_c_define_gsubr("gnc-gettext-helper", 1, 0, 0, (swig_guile_proc) _wrap_gnc_gettext_helper);
   scm_c_define_gsubr("gnc-option-db-new", 1, 0, 0, (swig_guile_proc) _wrap_gnc_option_db_new);
@@ -2349,7 +2372,6 @@ SWIG_init(void)
   scm_c_define_gsubr("gncp-option-invoke-callback", 2, 0, 0, (swig_guile_proc) _wrap_gncp_option_invoke_callback);
   scm_c_define_gsubr("gnc-option-db-register-option", 2, 0, 0, (swig_guile_proc) _wrap_gnc_option_db_register_option);
   scm_c_define_gsubr("gnc-locale-default-iso-currency-code", 0, 0, 0, (swig_guile_proc) _wrap_gnc_locale_default_iso_currency_code);
-  scm_c_define_gsubr("gnc-account-get-full-name", 1, 0, 0, (swig_guile_proc) _wrap_gnc_account_get_full_name);
   scm_c_define_gsubr("gnc-default-print-info", 1, 0, 0, (swig_guile_proc) _wrap_gnc_default_print_info);
   scm_c_define_gsubr("gnc-account-print-info", 2, 0, 0, (swig_guile_proc) _wrap_gnc_account_print_info);
   scm_c_define_gsubr("gnc-commodity-print-info", 2, 0, 0, (swig_guile_proc) _wrap_gnc_commodity_print_info);
@@ -2379,7 +2401,7 @@ SWIG_init(void)
 static void SWIG_init_helper(void *data)
 {
 SWIG_init();
-scm_c_export("gnc-get-current-book", "gnc-get-current-root-account", "gnc-gettext-helper", "gnc-option-db-new", "gnc-option-db-destroy", "gnc-option-db-set-option-selectable-by-name", "gnc-commodity-table-get-quotable-commodities", "gnc-default-currency", "gnc-default-report-currency", "gncp-option-invoke-callback", "gnc-option-db-register-option", "gnc-locale-default-iso-currency-code", "gnc-account-get-full-name", "gnc-default-print-info", "gnc-account-print-info", "gnc-commodity-print-info", "gnc-share-print-info-places", "xaccPrintAmount", "number-to-words", "printable-value", "gnc-reverse-balance", "gnc-is-euro-currency", "gnc-convert-to-euro", "gnc-convert-from-euro", "gnc-accounting-period-fiscal-start", "gnc-accounting-period-fiscal-end", "gnc-make-kvp-options", "gnc-register-kvp-option-generator", "gnc-spawn-process-async", "gnc-process-get-fd", "gnc-detach-process", "gnc-parse-time-to-timet", NULL);
+scm_c_export("gnc-get-current-book", "gnc-get-current-book-tax-name", "gnc-get-current-book-tax-type", "gnc-get-current-root-account", "gnc-gettext-helper", "gnc-option-db-new", "gnc-option-db-destroy", "gnc-option-db-set-option-selectable-by-name", "gnc-commodity-table-get-quotable-commodities", "gnc-default-currency", "gnc-default-report-currency", "gncp-option-invoke-callback", "gnc-option-db-register-option", "gnc-locale-default-iso-currency-code", "gnc-default-print-info", "gnc-account-print-info", "gnc-commodity-print-info", "gnc-share-print-info-places", "xaccPrintAmount", "number-to-words", "printable-value", "gnc-reverse-balance", "gnc-is-euro-currency", "gnc-convert-to-euro", "gnc-convert-from-euro", "gnc-accounting-period-fiscal-start", "gnc-accounting-period-fiscal-end", "gnc-make-kvp-options", "gnc-register-kvp-option-generator", "gnc-spawn-process-async", "gnc-process-get-fd", "gnc-detach-process", "gnc-parse-time-to-timet", NULL);
 }
 
 SCM

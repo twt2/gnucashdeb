@@ -538,7 +538,7 @@ gnc_book_partition_txn (QofBook *dest_book, QofBook *src_book, QofQuery *query)
    /* Next, copy the commodity tables */
    src_tbl = gnc_commodity_table_get_table (src_book);
    dst_tbl = gnc_commodity_table_get_table (dest_book);
-   gnc_commodity_table_copy (dst_tbl, src_tbl);
+   gnc_commodity_table_copy (dst_tbl, src_tbl, dest_book);
 
    /* Next, copy all of the accounts */
    /* hack alert -- FIXME -- this should really be a merge, not a
@@ -670,7 +670,7 @@ add_closing_balances (Account *parent,
        * of this account. */
       xaccAccountBeginEdit (twin);
       cwd = xaccAccountGetSlots (twin);
-      kvp_frame_set_guid (cwd, "/book/prev-acct", xaccAccountGetGUID (candidate));
+      kvp_frame_set_guid (cwd, "/book/prev-acct", qof_entity_get_guid (QOF_INSTANCE(candidate)));
       kvp_frame_set_guid (cwd, "/book/prev-book", qof_book_get_guid(closed_book));
 
       qof_instance_set_slots(QOF_INSTANCE(twin), twin->inst.kvp_data);
@@ -681,7 +681,7 @@ add_closing_balances (Account *parent,
       xaccAccountBeginEdit (candidate);
       cwd = xaccAccountGetSlots (candidate);
       kvp_frame_set_guid (cwd, "/book/next-book", qof_book_get_guid(open_book));
-      kvp_frame_set_guid (cwd, "/book/next-acct", xaccAccountGetGUID (twin));
+      kvp_frame_set_guid (cwd, "/book/next-acct", qof_entity_get_guid (QOF_INSTANCE(twin)));
 
       qof_instance_set_slots(QOF_INSTANCE(candidate), candidate->inst.kvp_data);
 
@@ -689,7 +689,7 @@ add_closing_balances (Account *parent,
       /* We need to carry a balance on any account that is not
        * and income or expense or equity account */
       if ((ACCT_TYPE_INCOME != tip) && (ACCT_TYPE_EXPENSE != tip) &&
-	  (ACCT_TYPE_EQUITY != tip)) 
+	  (ACCT_TYPE_EQUITY != tip && ACCT_TYPE_TRADING != tip)) 
       {
          gnc_numeric baln;
          baln = xaccAccountGetBalance (candidate);
@@ -740,7 +740,7 @@ add_closing_balances (Account *parent,
              * transaction came from */
             cwd = xaccTransGetSlots (trans);
             kvp_frame_set_guid (cwd, "/book/closed-book", qof_book_get_guid(closed_book));
-            kvp_frame_set_guid (cwd, "/book/closed-acct", xaccAccountGetGUID(candidate));
+            kvp_frame_set_guid (cwd, "/book/closed-acct", qof_entity_get_guid(QOF_INSTANCE(candidate)));
             
             xaccTransCommitEdit (trans);
    

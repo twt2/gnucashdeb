@@ -37,6 +37,10 @@
 #include "gncEmployee.h"
 #include "gncEmployeeP.h"
 
+static gint gs_address_event_handler_id = 0;
+static void listen_for_address_events(QofInstance *entity, QofEventId event_type,
+			    gpointer user_data, gpointer event_data);
+
 struct _gncEmployee 
 {
   QofInstance     inst;
@@ -108,6 +112,10 @@ GncEmployee *gncEmployeeCreate (QofBook *book)
   employee->rate = gnc_numeric_zero();
   employee->active = TRUE;
   
+  if (gs_address_event_handler_id == 0) {
+    gs_address_event_handler_id = qof_event_register_handler(listen_for_address_events, NULL);
+  }
+
   qof_event_gen (&employee->inst, QOF_EVENT_CREATE, NULL);
 
   return employee;
@@ -299,67 +307,67 @@ qofEmployeeSetAddr (GncEmployee *employee, QofInstance *addr_ent)
 
 /* ============================================================== */
 /* Get Functions */
-const char * gncEmployeeGetID (GncEmployee *employee)
+const char * gncEmployeeGetID (const GncEmployee *employee)
 {
   if (!employee) return NULL;
   return employee->id;
 }
 
-const char * gncEmployeeGetUsername (GncEmployee *employee)
+const char * gncEmployeeGetUsername (const GncEmployee *employee)
 {
   if (!employee) return NULL;
   return employee->username;
 }
 
-GncAddress * gncEmployeeGetAddr (GncEmployee *employee)
+GncAddress * gncEmployeeGetAddr (const GncEmployee *employee)
 {
   if (!employee) return NULL;
   return employee->addr;
 }
 
-const char * gncEmployeeGetLanguage (GncEmployee *employee)
+const char * gncEmployeeGetLanguage (const GncEmployee *employee)
 {
   if (!employee) return NULL;
   return employee->language;
 }
 
-const char * gncEmployeeGetAcl (GncEmployee *employee)
+const char * gncEmployeeGetAcl (const GncEmployee *employee)
 {
   if (!employee) return NULL;
   return employee->acl;
 }
 
-gnc_numeric gncEmployeeGetWorkday (GncEmployee *employee)
+gnc_numeric gncEmployeeGetWorkday (const GncEmployee *employee)
 {
   if (!employee) return gnc_numeric_zero();
   return employee->workday;
 }
 
-gnc_numeric gncEmployeeGetRate (GncEmployee *employee)
+gnc_numeric gncEmployeeGetRate (const GncEmployee *employee)
 {
   if (!employee) return gnc_numeric_zero();
   return employee->rate;
 }
 
-gnc_commodity * gncEmployeeGetCurrency (GncEmployee *employee)
+gnc_commodity * gncEmployeeGetCurrency (const GncEmployee *employee)
 {
   if (!employee) return NULL;
   return employee->currency;
 }
 
-gboolean gncEmployeeGetActive (GncEmployee *employee)
+gboolean gncEmployeeGetActive (const GncEmployee *employee)
 {
   if (!employee) return FALSE;
   return employee->active;
 }
 
-Account * gncEmployeeGetCCard (GncEmployee *employee)
+Account * gncEmployeeGetCCard (const GncEmployee *employee)
 {
   if (!employee) return NULL;
   return employee->ccard_acc;
 }
 
-gboolean gncEmployeeIsDirty (GncEmployee *employee)
+gboolean gncEmployeeIsDirty (const GncEmployee *employee)
 {
   if (!employee) return FALSE;
   return (qof_instance_get_dirty_flag(employee)
@@ -374,6 +382,7 @@ void gncEmployeeBeginEdit (GncEmployee *employee)
 static void gncEmployeeOnError (QofInstance *employee, QofBackendError errcode)
 {
   PERR("Employee QofBackend Failure: %d", errcode);
+  gnc_engine_signal_commit_error( errcode );
 }
 
 static void gncEmployeeOnDone (QofInstance *inst)
@@ -399,7 +408,7 @@ void gncEmployeeCommitEdit (GncEmployee *employee)
 /* ============================================================== */
 /* Other functions */
 
-int gncEmployeeCompare (GncEmployee *a, GncEmployee *b)
+int gncEmployeeCompare (const GncEmployee *a, const GncEmployee *b)
 {
   if (!a && !b) return 0;
   if (!a && b) return 1;
@@ -417,19 +426,49 @@ static const char * _gncEmployeePrintable (gpointer item)
   return gncAddressGetName(v->addr);
 }
 
+/**
+ * Listens for MODIFY events from addresses.   If the address belongs to an employee,
+ * mark the employee as dirty.
+ *
+ * @param entity Entity for the event
+ * @param event_type Event type
+ * @param user_data User data registered with the handler
+ * @param event_data Event data passed with the event.
+ */
+static void
+listen_for_address_events(QofInstance *entity, QofEventId event_type,
+			    gpointer user_data, gpointer event_data)
+{
+  GncEmployee* empl;
+
+  if ((event_type & QOF_EVENT_MODIFY) == 0) {
+  	return;
+  }
+  if (!GNC_IS_ADDRESS(entity)) {
+    return;
+  }
+  if (!GNC_IS_EMPLOYEE(event_data)) {
+    return;
+  }
+  empl = GNC_EMPLOYEE(event_data);
+  gncEmployeeBeginEdit(empl);
+  mark_employee(empl);
+  gncEmployeeCommitEdit(empl);
+}
+
 static QofObject gncEmployeeDesc = 
 {
-  interface_version:  QOF_OBJECT_VERSION,
-  e_type:             _GNC_MOD_NAME,
-  type_label:         "Employee",
-  create:             (gpointer)gncEmployeeCreate,
-  book_begin:         NULL,
-  book_end:           NULL,
-  is_dirty:           qof_collection_is_dirty,
-  mark_clean:         qof_collection_mark_clean,
-  foreach:            qof_collection_foreach,
-  printable:          _gncEmployeePrintable,
-  version_cmp:        (int (*)(gpointer, gpointer)) qof_instance_version_cmp,
+  .interface_version = QOF_OBJECT_VERSION,
+  .e_type            = _GNC_MOD_NAME,
+  .type_label        = "Employee",
+  .create            = (gpointer)gncEmployeeCreate,
+  .book_begin        = NULL,
+  .book_end          = NULL,
+  .is_dirty          = qof_collection_is_dirty,
+  .mark_clean        = qof_collection_mark_clean,
+  .foreach           = qof_collection_foreach,
+  .printable         = _gncEmployeePrintable,
+  .version_cmp       = (int (*)(gpointer, gpointer)) qof_instance_version_cmp,
 };
 
 gboolean gncEmployeeRegister (void)

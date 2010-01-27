@@ -21,7 +21,7 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-module (gnucash report portfolio))
+(define-module (gnucash report standard-reports portfolio))
 
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (srfi srfi-1))
@@ -146,8 +146,8 @@
 			table
 			row-style
 			(list (gnc:html-account-anchor current)
-			      ticker-symbol
-			      listing
+			      (gnc:make-html-table-header-cell/markup "text-cell" ticker-symbol)
+			      (gnc:make-html-table-header-cell/markup "text-cell" listing)
 			      (gnc:make-html-table-header-cell/markup
 			       "number-cell" 
 			       (xaccPrintAmount units share-print-info))
@@ -274,6 +274,7 @@
 (gnc:define-report
  'version 1
  'name reportname
+ 'report-guid "4a6b82e8678c4f3d9e85d9f09634ca89"
  'menu-path (list gnc:menuname-asset-liability)
  'options-generator options-generator
  'renderer portfolio-renderer)

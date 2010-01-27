@@ -365,39 +365,39 @@ xaccTransSortSplits (Transaction *trans)
  */
 /* Actually, it *is* public, and used by Period.c */
 Transaction *
-xaccDupeTransaction (const Transaction *t)
+xaccDupeTransaction (const Transaction *from)
 {
-  Transaction *trans;
+  Transaction *to;
   GList *node;
 
-  trans = g_object_new (GNC_TYPE_TRANSACTION, NULL);
+  to = g_object_new (GNC_TYPE_TRANSACTION, NULL);
 
-  trans->num         = CACHE_INSERT (t->num);
-  trans->description = CACHE_INSERT (t->description);
+  to->num         = CACHE_INSERT (from->num);
+  to->description = CACHE_INSERT (from->description);
 
-  trans->splits = g_list_copy (t->splits);
-  for (node = trans->splits; node; node = node->next)
+  to->splits = g_list_copy (from->splits);
+  for (node = to->splits; node; node = node->next)
   {
     node->data = xaccDupeSplit (node->data);
   }
 
-  trans->date_entered = t->date_entered;
-  trans->date_posted = t->date_posted;
-  qof_instance_copy_version(trans, t);
-  trans->orig = NULL;
+  to->date_entered = from->date_entered;
+  to->date_posted = from->date_posted;
+  qof_instance_copy_version(to, from);
+  to->orig = NULL;
 
-  trans->common_currency = t->common_currency;
+  to->common_currency = from->common_currency;
 
   /* Trash the guid and entity table. We don't want to mistake 
    * the cloned transaction as something official.  If we ever 
    * use this transaction, we'll have to fix this up.
    */
-  trans->inst.e_type = NULL;
-  qof_instance_set_guid(trans, guid_null());
-  qof_instance_copy_book(trans, t);
-  trans->inst.kvp_data = kvp_frame_copy (t->inst.kvp_data);
+  to->inst.e_type = NULL;
+  qof_instance_set_guid(to, guid_null());
+  qof_instance_copy_book(to, from);
+  to->inst.kvp_data = kvp_frame_copy (from->inst.kvp_data);
 
-  return trans;
+  return to;
 }
 
 /*
@@ -405,41 +405,41 @@ xaccDupeTransaction (const Transaction *t)
  * a full fledged transaction with unique guid, splits, etc.
  */
 Transaction *
-xaccTransClone (const Transaction *t)
+xaccTransClone (const Transaction *from)
 {
-  Transaction *trans;
+  Transaction *to;
   Split *split;
   GList *node;
 
   qof_event_suspend();
-  trans = g_object_new (GNC_TYPE_TRANSACTION, NULL);
+  to = g_object_new (GNC_TYPE_TRANSACTION, NULL);
 
-  trans->date_entered    = t->date_entered;
-  trans->date_posted     = t->date_posted;
-  trans->num             = CACHE_INSERT (t->num);
-  trans->description     = CACHE_INSERT (t->description);
-  trans->common_currency = t->common_currency;
-  qof_instance_copy_version(trans, t);
-  qof_instance_copy_version_check(trans, t);
+  to->date_entered    = from->date_entered;
+  to->date_posted     = from->date_posted;
+  to->num             = CACHE_INSERT (from->num);
+  to->description     = CACHE_INSERT (from->description);
+  to->common_currency = from->common_currency;
+  qof_instance_copy_version(to, from);
+  qof_instance_copy_version_check(to, from);
 
-  trans->orig            = NULL;
+  to->orig            = NULL;
 
-  qof_instance_init_data (&trans->inst, GNC_ID_TRANS, qof_instance_get_book(t));
-  kvp_frame_delete (trans->inst.kvp_data);
-  trans->inst.kvp_data    = kvp_frame_copy (t->inst.kvp_data);
+  qof_instance_init_data (&to->inst, GNC_ID_TRANS, qof_instance_get_book(from));
+  kvp_frame_delete (to->inst.kvp_data);
+  to->inst.kvp_data    = kvp_frame_copy (from->inst.kvp_data);
 
-  xaccTransBeginEdit(trans);
-  for (node = t->splits; node; node = node->next)
+  xaccTransBeginEdit(to);
+  for (node = from->splits; node; node = node->next)
   {
     split = xaccSplitClone(node->data);
-    split->parent = trans;
-    trans->splits = g_list_append (trans->splits, split);
+    split->parent = to;
+    to->splits = g_list_append (to->splits, split);
   }
-  qof_instance_set_dirty(QOF_INSTANCE(trans));
-  xaccTransCommitEdit(trans);
+  qof_instance_set_dirty(QOF_INSTANCE(to));
+  xaccTransCommitEdit(to);
   qof_event_resume();
 
-  return trans;
+  return to;
 }
 
 
@@ -650,6 +650,18 @@ xaccTransEqual(const Transaction *ta, const Transaction *tb,
 }
 
 /********************************************************************\
+xaccTransUseTradingAccounts
+
+Returns true if the transaction should include trading account splits if
+it involves more than one commodity.
+\********************************************************************/
+
+gboolean xaccTransUseTradingAccounts(const Transaction *trans)
+{
+  return qof_book_use_trading_accounts(qof_instance_get_book (trans));
+}
+
+/********************************************************************\
 \********************************************************************/
 
 Transaction *
@@ -665,7 +677,7 @@ xaccTransLookup (const GUID *guid, QofBook *book)
 \********************************************************************/
 
 gnc_numeric
-xaccTransGetImbalance (const Transaction * trans)
+xaccTransGetImbalanceValue (const Transaction * trans)
 {
   gnc_numeric imbal = gnc_numeric_zero();
   if (!trans) return imbal;
@@ -678,6 +690,91 @@ xaccTransGetImbalance (const Transaction * trans)
                                  GNC_DENOM_AUTO, GNC_HOW_DENOM_EXACT));
   LEAVE("(trans=%p) imbal=%s", trans, gnc_num_dbg_to_string(imbal));
   return imbal;
+}
+
+MonetaryList *
+xaccTransGetImbalance (const Transaction * trans)
+{
+  /* imbal_value is used if either (1) the transaction has a non currency
+     split or (2) all the splits are in the same currency.  If there are 
+     no non-currency splits and not all splits are in the same currency then
+     imbal_list is used to compute the imbalance. */
+  MonetaryList *imbal_list = NULL;
+  gnc_numeric imbal_value = gnc_numeric_zero();
+  gboolean trading_accts;
+  
+  if (!trans) return imbal_list;
+  
+  ENTER("(trans=%p)", trans);
+  
+  trading_accts = xaccTransUseTradingAccounts (trans);
+  
+  /* If using trading accounts and there is at least one split that is not
+     in the transaction currency or a split that has a price or exchange 
+     rate other than 1, then compute the balance in each commodity in the
+     transaction.  Otherwise (all splits are in the transaction's currency)
+     then compute the balance using the value fields.
+     
+     Optimize for the common case of only one currency and a balanced 
+     transaction. */
+  FOR_EACH_SPLIT(trans, {
+    gnc_commodity *commodity;
+    commodity = xaccAccountGetCommodity(xaccSplitGetAccount(s));
+    if (trading_accts && 
+        (imbal_list ||
+         ! gnc_commodity_equiv(commodity, trans->common_currency) ||
+         ! gnc_numeric_equal(xaccSplitGetAmount(s), xaccSplitGetValue(s)))) {
+      /* Need to use (or already are using) a list of imbalances in each of 
+         the currencies used in the transaction. */
+      if (! imbal_list) {
+        /* All previous splits have been in the transaction's common
+           currency, so imbal_value is in this currency. */
+        imbal_list = gnc_monetary_list_add_value(imbal_list, 
+                                                 trans->common_currency,
+                                                 imbal_value);
+      }
+      imbal_list = gnc_monetary_list_add_value(imbal_list, commodity,
+                                               xaccSplitGetAmount(s));
+    }
+    
+    /* Add it to the value accumulator in case we need it. */
+    imbal_value = gnc_numeric_add(imbal_value, xaccSplitGetValue(s),
+                                  GNC_DENOM_AUTO, GNC_HOW_DENOM_EXACT);
+  } );
+
+  
+  if (!imbal_list && !gnc_numeric_zero_p(imbal_value)) {
+    /* Not balanced and no list, create one.  If we found multiple currencies
+       and no non-currency commodity then imbal_list will already exist and
+       we won't get here. */
+    imbal_list = gnc_monetary_list_add_value(imbal_list,
+                                             trans->common_currency,
+                                             imbal_value);
+  }
+  
+  /* Delete all the zero entries from the list, perhaps leaving an
+     empty list */
+  imbal_list = gnc_monetary_list_delete_zeros(imbal_list);
+  
+  LEAVE("(trans=%p), imbal=%p", trans, imbal_list);
+  return imbal_list;
+}
+
+gboolean
+xaccTransIsBalanced (const Transaction *trans)
+{
+  MonetaryList *imbal_list;
+  gboolean result;
+  if (! gnc_numeric_zero_p(xaccTransGetImbalanceValue(trans)))
+    return FALSE;
+    
+  if (!xaccTransUseTradingAccounts (trans)) 
+    return TRUE;
+    
+  imbal_list = xaccTransGetImbalance(trans);
+  result = imbal_list == NULL;
+  gnc_monetary_list_free(imbal_list);
+  return result;
 }
 
 gnc_numeric
@@ -716,22 +813,28 @@ xaccTransGetAccountConvRate(Transaction *txn, Account *acc)
   GList *splits;
   Split *s;
   gboolean found_acc_match = FALSE;
+  gnc_commodity *acc_commod = xaccAccountGetCommodity(acc);
 
   /* We need to compute the conversion rate into _this account_.  So,
    * find the first split into this account, compute the conversion
    * rate (based on amount/value), and then return this conversion
    * rate.
    */
-  if (gnc_commodity_equal(xaccAccountGetCommodity(acc), 
-                          xaccTransGetCurrency(txn)))
+  if (gnc_commodity_equal(acc_commod, xaccTransGetCurrency(txn)))
       return gnc_numeric_create(1, 1);
 
   for (splits = txn->splits; splits; splits = splits->next) {
+    Account *split_acc;
+    gnc_commodity *split_commod;
+    
     s = splits->data;
 
     if (!xaccTransStillHasSplit(txn, s))
       continue;
-    if (xaccSplitGetAccount (s) != acc)
+    split_acc = xaccSplitGetAccount (s);
+    split_commod = xaccAccountGetCommodity (split_acc);
+    if (! (split_acc == acc ||
+          gnc_commodity_equal (split_commod, acc_commod)))
       continue;
 
     found_acc_match = TRUE;
@@ -940,6 +1043,7 @@ static void trans_on_error(Transaction *trans, QofBackendError errcode)
     }
 
     xaccTransRollbackEdit(trans);
+    gnc_engine_signal_commit_error( errcode );
 }
 
 static void trans_cleanup_commit(Transaction *trans)
@@ -1055,6 +1159,7 @@ xaccTransCommitEdit (Transaction *trans)
 #endif
       trans->date_entered.tv_sec = tv.tv_sec;
       trans->date_entered.tv_nsec = 1000 * tv.tv_usec;
+      qof_instance_set_dirty(QOF_INSTANCE(trans));
    }
 
    qof_commit_edit_part2(QOF_INSTANCE(trans),
@@ -1914,23 +2019,23 @@ xaccTransFindSplitByAccount(const Transaction *trans, const Account *acc)
 
 /* Hook into the QofObject registry */
 static QofObject trans_object_def = {
-  interface_version:   QOF_OBJECT_VERSION,
-  e_type:              GNC_ID_TRANS,
-  type_label:          "Transaction",
-  create:              (gpointer)xaccMallocTransaction,
-  book_begin:          NULL,
-  book_end:            NULL,
-  is_dirty:            qof_collection_is_dirty,
-  mark_clean:          qof_collection_mark_clean,
-  foreach:             qof_collection_foreach,
-  printable:           (const char* (*)(gpointer)) xaccTransGetDescription,
-  version_cmp:         (int (*)(gpointer,gpointer)) qof_instance_version_cmp,
+  .interface_version = QOF_OBJECT_VERSION,
+  .e_type            = GNC_ID_TRANS,
+  .type_label        = "Transaction",
+  .create            = (gpointer)xaccMallocTransaction,
+  .book_begin        = NULL,
+  .book_end          = NULL,
+  .is_dirty          = qof_collection_is_dirty,
+  .mark_clean        = qof_collection_mark_clean,
+  .foreach           = qof_collection_foreach,
+  .printable         = (const char* (*)(gpointer)) xaccTransGetDescription,
+  .version_cmp       = (int (*)(gpointer,gpointer)) qof_instance_version_cmp,
 };
 
 static gboolean
 trans_is_balanced_p (const Transaction *trans)
 {
-  return trans ? gnc_numeric_zero_p(xaccTransGetImbalance(trans)) : FALSE;
+  return trans ? xaccTransIsBalanced(trans) : FALSE;
 }
 
 gboolean xaccTransRegister (void)
@@ -1952,7 +2057,7 @@ gboolean xaccTransRegister (void)
     { TRANS_DATE_DUE, QOF_TYPE_DATE, 
       (QofAccessFunc)xaccTransRetDateDueTS, NULL },
     { TRANS_IMBALANCE, QOF_TYPE_NUMERIC, 
-      (QofAccessFunc)xaccTransGetImbalance, NULL },
+      (QofAccessFunc)xaccTransGetImbalanceValue, NULL },
     { TRANS_NOTES, QOF_TYPE_STRING, 
       (QofAccessFunc)xaccTransGetNotes, 
       (QofSetterFunc)qofTransSetNotes },

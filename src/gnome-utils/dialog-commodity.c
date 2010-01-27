@@ -182,6 +182,7 @@ gnc_ui_select_commodity_modal_full(gnc_commodity * orig_sel,
 		    mnemonic ? mnemonic : "");
    gtk_label_set_text ((GtkLabel *)(win->select_user_prompt),
 		      user_prompt_text);
+   g_free(user_prompt_text);
 
   /* Run the dialog, handling the terminal conditions. */
   done = FALSE;
@@ -1198,7 +1199,7 @@ gnc_ui_commodity_dialog_to_object(CommodityWindow * w)
     if (w->edit_commodity) {
       c = w->edit_commodity;
       gnc_commodity_begin_edit(c);
-      gnc_commodity_set_quote_flag (c, gtk_toggle_button_get_active
+      gnc_commodity_user_set_quote_flag (c, gtk_toggle_button_get_active
 				    (GTK_TOGGLE_BUTTON (w->get_quote_check)));
       selection = gtk_combo_box_get_active(GTK_COMBO_BOX(w->quote_tz_menu));
       string = gnc_timezone_menu_position_to_string(selection);
@@ -1206,7 +1207,7 @@ gnc_ui_commodity_dialog_to_object(CommodityWindow * w)
       gnc_commodity_commit_edit(c);
       return TRUE;
     }
-    gnc_warning_dialog(w->dialog,
+    gnc_warning_dialog(w->dialog, "%s", 
 		       _("You may not create a new national currency."));
     return FALSE;
   }
@@ -1219,7 +1220,7 @@ gnc_ui_commodity_dialog_to_object(CommodityWindow * w)
 
     if ((!w->edit_commodity && c) ||
         (w->edit_commodity && c && (c != w->edit_commodity))) {
-      gnc_warning_dialog (w->dialog, _("That commodity already exists."));
+      gnc_warning_dialog (w->dialog, "%s",  _("That commodity already exists."));
       g_free(namespace);
       return FALSE;
     }
@@ -1241,7 +1242,7 @@ gnc_ui_commodity_dialog_to_object(CommodityWindow * w)
       gnc_commodity_set_fraction (c, fraction);
     }
 
-    gnc_commodity_set_quote_flag (c, gtk_toggle_button_get_active
+    gnc_commodity_user_set_quote_flag (c, gtk_toggle_button_get_active
 				  (GTK_TOGGLE_BUTTON (w->get_quote_check)));
 
     for (type = SOURCE_SINGLE; type < SOURCE_MAX; type++) {
@@ -1261,7 +1262,7 @@ gnc_ui_commodity_dialog_to_object(CommodityWindow * w)
     c = gnc_commodity_table_insert(gnc_get_current_commodities(), c);
   }
   else {
-    gnc_warning_dialog(w->dialog,
+    gnc_warning_dialog(w->dialog, "%s", 
 		       _("You must enter a non-empty \"Full name\", "
 			 "\"Symbol/abbreviation\", "
 			 "and \"Type\" for the commodity."));

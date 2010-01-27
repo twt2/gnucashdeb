@@ -95,14 +95,6 @@
 #define KF_KEY_TEXT        "Text"
 #define KF_KEY_FILENAME    "Filename"
 
-/* Do not treat -Wstrict-aliasing warnings as errors because of problems of the
- * G_LOCK* macros as declared by glib.  See
- * http://bugzilla.gnome.org/show_bug.cgi?id=316221 for additional information.
- */
-#if (__GNUC__ >= 4 && __GNUC_MINOR__ >= 2)
-#    pragma GCC diagnostic warning "-Wstrict-aliasing"
-#endif
-
 /**< This enum specifies the columns used in the check format combobox. */
 typedef enum format_combo_col_t {
     COL_NAME = 0,               /**< This column holds a copy of the check
@@ -119,8 +111,6 @@ typedef enum format_combo_col_t {
 
 #if USE_GTKPRINT
 #    define GncPrintContext GtkPrintContext
-static GtkPrintSettings *print_settings = NULL;
-G_LOCK_DEFINE_STATIC(print_settings);
 #else
 #    define GncPrintContext GnomePrintContext
 #    define GNOMEPRINT_CLIP_EXTRA 2
@@ -555,7 +545,7 @@ pcd_save_custom_data(PrintCheckDialog *pcd, const gchar *title)
         dialog = gtk_message_dialog_new(GTK_WINDOW(pcd->dialog),
                                         GTK_DIALOG_DESTROY_WITH_PARENT,
                                         GTK_MESSAGE_ERROR,
-                                        GTK_BUTTONS_CLOSE,
+                                        GTK_BUTTONS_CLOSE, "%s", 
                                         _("Cannot save check format file."));
         gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog),
                                                  "%s", error->message);
@@ -1088,7 +1078,7 @@ read_one_check_directory(PrintCheckDialog * pcd, GtkListStore *store,
             dialog = gtk_message_dialog_new
                 (GTK_WINDOW(pcd->dialog),
                  GTK_DIALOG_DESTROY_WITH_PARENT,
-                 GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE,
+                 GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s", 
                  _("There is a duplicate check format file."));
             gtk_message_dialog_format_secondary_text
                 (GTK_MESSAGE_DIALOG(dialog),
@@ -1988,11 +1978,7 @@ gnc_ui_print_check_dialog_ok_cb(PrintCheckDialog * pcd)
 
     print = gtk_print_operation_new();
 
-    G_LOCK(print_settings);
-    if (print_settings)
-        gtk_print_operation_set_print_settings(print, print_settings);
-    G_UNLOCK(print_settings);
-
+    gnc_print_operation_init(print);
     gtk_print_operation_set_unit(print, GTK_UNIT_POINTS);
     gtk_print_operation_set_use_full_page(print, TRUE);
     g_signal_connect(print, "begin_print", G_CALLBACK(begin_print), NULL);
@@ -2002,13 +1988,8 @@ gnc_ui_print_check_dialog_ok_cb(PrintCheckDialog * pcd)
                                   GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG,
                                   pcd->caller_window, NULL);
 
-    if (res == GTK_PRINT_OPERATION_RESULT_APPLY) {
-        G_LOCK(print_settings);
-        if (print_settings)
-            g_object_unref(print_settings);
-        print_settings = g_object_ref(gtk_print_operation_get_print_settings(print));
-        G_UNLOCK(print_settings);
-    }
+    if (res == GTK_PRINT_OPERATION_RESULT_APPLY)
+        gnc_print_operation_save_print_settings(print);
 
     g_object_unref(print);
 }

@@ -9,7 +9,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <gmodule.h>
-#include <guile/gh.h>
 #include <sys/types.h>
 #include <dirent.h>
 
@@ -269,6 +268,8 @@ gnc_module_get_symbol(GModule* gmodule, const char* symbol, gpointer res)
   g_return_val_if_fail(symbol, FALSE);
 
   /* Separate the file from its extension */
+  /* Note: This currently does not work with versioned libtool dlls,
+   * as they are named like libgncmodbaz-0.dll */
   basename = g_path_get_basename(g_module_name(gmodule));
   strs = g_strsplit(basename, ".", 2);
   g_free(basename);

@@ -287,6 +287,7 @@ void gncJobBeginEdit (GncJob *job)
 static void gncJobOnError (QofInstance *inst, QofBackendError errcode)
 {
   PERR("Job QofBackend Failure: %d", errcode);
+  gnc_engine_signal_commit_error( errcode );
 }
 
 static void job_free (QofInstance *inst)
@@ -307,19 +308,19 @@ void gncJobCommitEdit (GncJob *job)
 /* ================================================================== */
 /* Get Functions */
 
-const char * gncJobGetID (GncJob *job)
+const char * gncJobGetID (const GncJob *job)
 {
   if (!job) return NULL;
   return job->id;
 }
 
-const char * gncJobGetName (GncJob *job)
+const char * gncJobGetName (const GncJob *job)
 {
   if (!job) return NULL;
   return job->name;
 }
 
-const char * gncJobGetReference (GncJob *job)
+const char * gncJobGetReference (const GncJob *job)
 {
   if (!job) return NULL;
   return job->desc;
@@ -331,7 +332,7 @@ GncOwner * gncJobGetOwner (GncJob *job)
   return &(job->owner);
 }
 
-gboolean gncJobGetActive (GncJob *job)
+gboolean gncJobGetActive (const GncJob *job)
 {
   if (!job) return FALSE;
   return job->active;
@@ -367,17 +368,17 @@ static const char * _gncJobPrintable (gpointer item)
 
 static QofObject gncJobDesc = 
 {
-  interface_version:  QOF_OBJECT_VERSION,
-  e_type:             _GNC_MOD_NAME,
-  type_label:         "Job",
-  create:             (gpointer)gncJobCreate,
-  book_begin:         NULL,
-  book_end:           NULL,
-  is_dirty:           qof_collection_is_dirty,
-  mark_clean:         qof_collection_mark_clean,
-  foreach:            qof_collection_foreach,
-  printable:          _gncJobPrintable,
-  version_cmp:        (int (*)(gpointer, gpointer)) qof_instance_version_cmp,
+  .interface_version = QOF_OBJECT_VERSION,
+  .e_type            = _GNC_MOD_NAME,
+  .type_label        = "Job",
+  .create            = (gpointer)gncJobCreate,
+  .book_begin        = NULL,
+  .book_end          = NULL,
+  .is_dirty          = qof_collection_is_dirty,
+  .mark_clean        = qof_collection_mark_clean,
+  .foreach           = qof_collection_foreach,
+  .printable         = _gncJobPrintable,
+  .version_cmp       = (int (*)(gpointer, gpointer)) qof_instance_version_cmp,
 };
 
 gboolean gncJobRegister (void)

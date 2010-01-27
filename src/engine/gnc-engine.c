@@ -36,13 +36,17 @@
 #include "gnc-pricedb-p.h"
 
 /** gnc file backend library name */
-#define GNC_LIB_NAME "gncmod-backend-file"
+#define GNC_LIB_NAME "gncmod-backend-xml"
 
 /* gnc-backend-file location */
 #include "gnc-path.h"
 
 static GList * engine_init_hooks = NULL;
 static int engine_is_initialized = 0;
+
+EngineCommitErrorCallback g_error_cb;
+gpointer g_error_cb_data;
+
 // static QofLogModule log_module = GNC_MOD_ENGINE;
 
 /* GnuCash version functions */
@@ -76,11 +80,10 @@ gnc_engine_init(int argc, char ** argv)
     const gchar* lib;
     gboolean required;
   } libs[] = {
-    { GNC_LIB_NAME, TRUE },
-#ifdef SQL_DIR
-    /* shouldn't the PG gnc-module do this instead of US doing it? */
-    { "gnc-backend-postgres", FALSE },
+#if defined( HAVE_DBI_DBI_H )
+    { "gncmod-backend-dbi", TRUE },
 #endif
+    { "gncmod-backend-xml", TRUE },
     { NULL, FALSE } }, *lib;
   gnc_engine_init_hook_t hook;
   GList * cur;
@@ -165,3 +168,17 @@ void gnc_log_default(void)
 	qof_log_set_level(GNC_MOD_TEST, QOF_LOG_DEBUG);
 }
 
+void
+gnc_engine_add_commit_error_callback( EngineCommitErrorCallback cb, gpointer data )
+{
+    g_error_cb = cb;
+    g_error_cb_data = data;
+}
+
+void
+gnc_engine_signal_commit_error( QofBackendError errcode )
+{
+    if( g_error_cb != NULL ) {
+	(*g_error_cb)( g_error_cb_data, errcode );
+    }
+}

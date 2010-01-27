@@ -49,26 +49,31 @@
 #include "dialog-employee.h"
 #include "dialog-invoice.h"
 
+#include "gnc-commodity.h"
+
 typedef enum {
   GNCSEARCH_TYPE_SELECT,
   GNCSEARCH_TYPE_EDIT
 } GNCSearchType;
 
 static GtkWidget * gnc_owner_new (GtkWidget *label, GtkWidget *hbox,
-				  GNCBook *book, GncOwner *owner,
+				  QofBook *book, GncOwner *owner,
 				  GNCSearchType type)
 {
   GtkWidget *edit;
   GNCSearchCB search_cb = NULL;
   const char *type_name = NULL;
   const char *text = NULL;
+  gboolean text_editable = FALSE;
 
   switch (type) {
   case GNCSEARCH_TYPE_SELECT:
     text = _("Select...");
+    text_editable = TRUE;
     break;
   case GNCSEARCH_TYPE_EDIT:
     text = _("Edit...");
+    text_editable = FALSE;
   };
 
   switch (owner->type) {
@@ -113,7 +118,7 @@ static GtkWidget * gnc_owner_new (GtkWidget *label, GtkWidget *hbox,
     return NULL;
   }
 
-  edit = gnc_general_search_new (type_name, text, search_cb, book);
+  edit = gnc_general_search_new (type_name, text, text_editable, search_cb, book, book);
   if (!edit)
     return NULL;
 
@@ -127,7 +132,7 @@ static GtkWidget * gnc_owner_new (GtkWidget *label, GtkWidget *hbox,
 }
 
 GtkWidget * gnc_owner_select_create (GtkWidget *label, GtkWidget *hbox,
-				     GNCBook *book, GncOwner *owner)
+				     QofBook *book, GncOwner *owner)
 {
   g_return_val_if_fail (hbox != NULL, NULL);
   g_return_val_if_fail (book != NULL, NULL);
@@ -137,7 +142,7 @@ GtkWidget * gnc_owner_select_create (GtkWidget *label, GtkWidget *hbox,
 }
 
 GtkWidget * gnc_owner_edit_create (GtkWidget *label, GtkWidget *hbox,
-				   GNCBook *book, GncOwner *owner)
+				   QofBook *book, GncOwner *owner)
 {
   g_return_val_if_fail (hbox != NULL, NULL);
   g_return_val_if_fail (book != NULL, NULL);
@@ -173,7 +178,7 @@ void gnc_owner_set_owner (GtkWidget *widget, GncOwner *owner)
 
 typedef struct _invoice_select_info {
   GtkWidget *label;
-  GNCBook *book;
+  QofBook *book;
   GncOwner owner;
   gboolean have_owner;
 } GncISI;
@@ -223,7 +228,7 @@ gnc_invoice_select_search_set_label(GncISI* isi)
   gtk_label_set_text(GTK_LABEL(isi->label), label);
 }
 
-GtkWidget * gnc_invoice_select_create (GtkWidget *hbox, GNCBook *book,
+GtkWidget * gnc_invoice_select_create (GtkWidget *hbox, QofBook *book,
 				       const GncOwner *owner,
 				       GncInvoice *invoice,
 				       GtkWidget *label)
@@ -249,7 +254,7 @@ GtkWidget * gnc_invoice_select_create (GtkWidget *hbox, GNCBook *book,
   isi->label = label;
 
   edit = gnc_general_search_new (GNC_INVOICE_MODULE_NAME, _("Select..."),
-				 gnc_invoice_select_search_cb, isi);
+				 TRUE, gnc_invoice_select_search_cb, isi, isi->book);
   if (!edit) {
     g_free(isi);
     return NULL;
@@ -302,8 +307,8 @@ void gnc_invoice_set_owner (GtkWidget *widget, GncOwner *owner)
 }
 
 void
-gnc_fill_account_select_combo (GtkWidget *combo, GNCBook *book,
-			       GList *acct_types)
+gnc_fill_account_select_combo (GtkWidget *combo, QofBook *book,
+			       GList *acct_types, GList *acct_commodities)
 {
   GtkListStore *store;
   GtkEntry *entry;
@@ -335,7 +340,18 @@ gnc_fill_account_select_combo (GtkWidget *combo, GNCBook *book,
 	== -1)
       continue;
 
-    name = xaccAccountGetFullName (account);
+    /* Only present accounts with the right commodity, if that's a
+       restriction */
+    if (acct_commodities)
+    {
+        if ( g_list_find_custom( acct_commodities,
+                                 GINT_TO_POINTER(xaccAccountGetCommodity(account)),
+                                 gnc_commodity_compare_void) == NULL ) {
+            continue;
+        }
+    }
+
+    name = gnc_account_get_full_name (account);
     gtk_combo_box_append_text(GTK_COMBO_BOX(combo), name);
     g_free(name);
   }
@@ -366,6 +382,15 @@ gnc_business_account_types (GncOwner *owner)
   }
 }
 
+GList *
+gnc_business_commodities (GncOwner *owner)
+{
+  g_return_val_if_fail (owner, NULL);
+  g_return_val_if_fail (gncOwnerGetCurrency(owner), NULL);
+
+  return (g_list_prepend (NULL, gncOwnerGetCurrency(owner)));
+}
+
 /*********************************************************************/
 /* Option Menu creation                                              */
 
@@ -374,15 +399,15 @@ typedef const char * (*GenericLookup_t)(gpointer);
 typedef struct {
   gint		component_id;
   GtkWidget *	omenu;
-  GNCBook *	book;
+  QofBook *	book;
   gboolean	none_ok;
   const char *	(*get_name)(gpointer);
-  GList *	(*get_list)(GNCBook*);
+  GList *	(*get_list)(QofBook*);
 
   gboolean	building_menu;
   gpointer	result;
   gpointer *	result_p;
-  
+
   void		(*changed_cb)(GtkWidget*, gpointer);
   gpointer	cb_arg;
 } OpMenuData;
@@ -447,7 +472,7 @@ build_generic_optionmenu (OpMenuData *omd)
 
   /* Make a menu */
   menu = gtk_menu_new ();
-  
+
   omd->building_menu = TRUE;
 
   if (omd->none_ok || items == NULL)
@@ -471,9 +496,9 @@ generic_omenu_refresh_handler (GHashTable *changes, gpointer user_data)
 }
 
 static OpMenuData *
-make_generic_optionmenu (GtkWidget *omenu, GNCBook *book,
+make_generic_optionmenu (GtkWidget *omenu, QofBook *book,
 			 gboolean none_ok, GNCIdType type_name,
-			 GList * (*get_list)(GNCBook*),
+			 GList * (*get_list)(QofBook*),
 			 GenericLookup_t get_name,
 			 gpointer *result)
 {
@@ -509,7 +534,7 @@ make_generic_optionmenu (GtkWidget *omenu, GNCBook *book,
       gnc_gui_component_watch_entity_type (omd->component_id,
 					   type_name,
 					   QOF_EVENT_MODIFY | QOF_EVENT_DESTROY);
-    
+
     g_signal_connect (G_OBJECT (omenu), "destroy",
 		      G_CALLBACK (generic_omenu_destroy_cb), omd);
 
@@ -588,7 +613,7 @@ gnc_ui_optionmenu_set_value (GtkWidget *omenu, gpointer data)
  * created.
  */
 void
-gnc_ui_billterms_optionmenu (GtkWidget *omenu, GNCBook *book,
+gnc_ui_billterms_optionmenu (GtkWidget *omenu, QofBook *book,
 			     gboolean none_ok, GncBillTerm **choice)
 {
   if (!omenu || !book) return;
@@ -600,7 +625,7 @@ gnc_ui_billterms_optionmenu (GtkWidget *omenu, GNCBook *book,
 }
 
 void
-gnc_ui_taxtables_optionmenu (GtkWidget *omenu, GNCBook *book,
+gnc_ui_taxtables_optionmenu (GtkWidget *omenu, QofBook *book,
 			     gboolean none_ok, GncTaxTable **choice)
 {
   if (!omenu || !book) return;
@@ -626,7 +651,7 @@ gnc_ui_taxincluded_optionmenu (GtkWidget *omenu, GncTaxIncluded *choice)
   g_return_if_fail (omd);
 
   menu = gtk_menu_new ();
-  
+
   add_menu_item (menu, _("Yes"), omd,
 		 GINT_TO_POINTER (GNC_TAXINCLUDED_YES));
   if (*choice == GNC_TAXINCLUDED_YES) current = index;

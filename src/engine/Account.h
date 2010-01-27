@@ -25,7 +25,7 @@
     Splits that debit that Account. To ensure consistency, if a Split points
     to an Account, then the Account must point to the Split, and vice-versa.
     A Split can belong to at most one Account. Besides merely containing a
-    list of Splits, the Account structure also give the Account a name, a
+    list of Splits, the Account structure also gives the Account a name, a
     code number, description and notes fields, a key-value frame, a pointer
     to the commodity that is used for all splits in this account. The
     commodity can be the name of anything traded and tradable: a stock
@@ -140,18 +140,24 @@ typedef enum
   ACCT_TYPE_PAYABLE = 12,  /**< A/P account type */
 
   ACCT_TYPE_ROOT = 13, /**< The hidden root account of an account tree. */
+  
+  ACCT_TYPE_TRADING = 14, /**< Account used to record multiple commodity transactions.
+                           *   This is not the same as ACCT_TYPE_CURRENCY above.
+                           *   Multiple commodity transactions have splits in these
+                           *   accounts to make the transaction balance in each 
+                           *   commodity as well as in total value.  */
 
-  NUM_ACCOUNT_TYPES = 14,  /**< stop here; the following types
+  NUM_ACCOUNT_TYPES = 15,  /**< stop here; the following types
 			    * just aren't ready for prime time */
   
   /* bank account types */
-  ACCT_TYPE_CHECKING = 14, /**< bank account type -- don't use this
+  ACCT_TYPE_CHECKING = 15, /**< bank account type -- don't use this
 			    *   for now, see NUM_ACCOUNT_TYPES  */
-  ACCT_TYPE_SAVINGS = 15, /**< bank account type -- don't use this for
+  ACCT_TYPE_SAVINGS = 16, /**< bank account type -- don't use this for
 			   *   now, see NUM_ACCOUNT_TYPES  */
-  ACCT_TYPE_MONEYMRKT = 16, /**< bank account type -- don't use this
+  ACCT_TYPE_MONEYMRKT = 17, /**< bank account type -- don't use this
 			     *   for now, see NUM_ACCOUNT_TYPES  */
-  ACCT_TYPE_CREDITLINE = 17, /**< line of credit -- don't use this for
+  ACCT_TYPE_CREDITLINE = 18, /**< line of credit -- don't use this for
 			      *   now, see NUM_ACCOUNT_TYPES  */
 } GNCAccountType;
 
@@ -228,7 +234,7 @@ const gchar *gnc_get_account_separator_string (void);
 gunichar gnc_get_account_separator (void);
 void gnc_set_account_separator (const gchar *separator);
 
-Account *gnc_book_get_root_account(QofBook *book);
+/*@ dependent @*/ Account *gnc_book_get_root_account(QofBook *book);
 void gnc_book_set_root_account(QofBook *book, Account *root);
 
 /** @deprecated */
@@ -238,7 +244,7 @@ void gnc_book_set_root_account(QofBook *book, Account *root);
 /** The xaccAccountLookup() subroutine will return the
  *    account associated with the given id, or NULL
  *    if there is no such account. */
-Account * xaccAccountLookup (const GUID *guid, QofBook *book);
+/*@ dependent @*/ Account * xaccAccountLookup (const GUID *guid, QofBook *book);
 #define xaccAccountLookupDirect(g,b) xaccAccountLookup(&(g),b)
 
 /** @} */
@@ -394,7 +400,7 @@ void xaccAccountRecomputeBalance (Account *);
  */
 void xaccAccountSortSplits (Account *acc, gboolean force);
 
-/** The xaccAccountGetFullName routine returns the fully qualified name
+/** The gnc_account_get_full_name routine returns the fully qualified name
  * of the account using the given separator char. The name must be
  * g_free'd after use. The fully qualified name of an account is the
  * concatenation of the names of the account and all its ancestor
@@ -402,12 +408,12 @@ void xaccAccountSortSplits (Account *acc, gboolean force);
  * given account. Each name is separated by the given character.
  *
  * @note: WAKE UP!
- * Unlike all other gets, the string returned by xaccAccountGetFullName() 
+ * Unlike all other gets, the string returned by gnc_account_get_full_name() 
  * must be freed by you the user !!!
  * hack alert -- since it breaks the rule of string allocation, maybe this
  * routine should not be in this library, but some utility library?
  */
-char * xaccAccountGetFullName (const Account *account);
+gchar * gnc_account_get_full_name (const Account *account);
 
 /** Set a string that identifies the Finance::Quote backend that
  *  should be used to retrieve online prices.  See price-quotes.scm
@@ -475,7 +481,7 @@ void xaccAccountSetCommodity (Account *account, gnc_commodity *comm);
 #define DxaccAccountSetSecurity xaccAccountSetCommodity
 
 /** Get the account's commodity  */
-gnc_commodity * xaccAccountGetCommodity (const Account *account);
+/*@ dependent @*/ gnc_commodity * xaccAccountGetCommodity (const Account *account);
 
 /** @deprecated do not use */
 #define DxaccAccountGetSecurity xaccAccountGetCommodity
@@ -627,7 +633,7 @@ void gnc_account_remove_child (Account *parent, Account *child);
  *
  *  @return A pointer to the parent account node, or NULL if there is
  *  no parent account. */
-Account * gnc_account_get_parent (const Account *account);
+/*@ dependent @*/ Account * gnc_account_get_parent (const Account *account);
 
 /** This routine returns the root account of the account tree that the
  *  specified account belongs to.  It is the equivalent of repeatedly
@@ -773,7 +779,7 @@ gint gnc_account_get_tree_depth (const Account *account);
  *
  *  @param user_data This data will be passed to each call of func. */
 void gnc_account_foreach_child (const Account *account,
-				AccountCb func, gpointer user_data);
+				AccountCb func, /*@ null @*/ gpointer user_data);
 
 /** This method will traverse the immediate children of this accounts,
  *  calling 'func' on each account.  Traversal will stop when func
@@ -791,7 +797,7 @@ void gnc_account_foreach_child (const Account *account,
  *
  *  @param user_data This data will be passed to each call of func. */
 gpointer gnc_account_foreach_child_until (const Account *account,
-					  AccountCb2 func, gpointer user_data);
+					  AccountCb2 func, /*@ null @*/ gpointer user_data);
 
 
 /** This method will traverse all children of this accounts and their
@@ -808,7 +814,7 @@ gpointer gnc_account_foreach_child_until (const Account *account,
  *
  *  @param user_data This data will be passed to each call of func. */
 void gnc_account_foreach_descendant (const Account *account,
-				     AccountCb func, gpointer user_data);
+				     AccountCb func, /*@ null @*/ gpointer user_data);
 
 /** This method will traverse all children of this accounts and their
  *  descendants, calling 'func' on each account.  Traversal will stop
@@ -826,7 +832,7 @@ void gnc_account_foreach_descendant (const Account *account,
  *
  *  @param user_data This data will be passed to each call of func. */
 gpointer gnc_account_foreach_descendant_until (const Account *account,
-					       AccountCb2 func, gpointer user_data);
+					       AccountCb2 func, /*@ null @*/ gpointer user_data);
 
 
 /** @} */
@@ -1023,7 +1029,7 @@ Transaction * xaccAccountFindTransByDesc(const Account *account,
 Split * xaccAccountFindSplitByDesc(const Account *account, 
                                    const char *description);
 
-/*@}*/
+/** @} */
 
 /* ------------------ */
 
@@ -1056,7 +1062,7 @@ LotList* xaccAccountGetLotList (const Account *account);
  */
 gpointer xaccAccountForEachLot(
     const Account *acc,
-    gpointer (*proc)(GNCLot *lot, gpointer user_data), gpointer user_data);
+    gpointer (*proc)(GNCLot *lot, gpointer user_data), /*@ null @*/ gpointer user_data);
 
 
 /** Find a list of open lots that match the match_func.  Sort according
@@ -1067,7 +1073,7 @@ gpointer xaccAccountForEachLot(
 LotList * xaccAccountFindOpenLots (const Account *acc,
 				   gboolean (*match_func)(GNCLot *lot,
 							  gpointer user_data),
-				   gpointer user_data, GCompareFunc sort_func);
+				   /*@ null @*/ gpointer user_data, GCompareFunc sort_func);
 
 /** @} */
 /* ------------------ */
@@ -1192,6 +1198,10 @@ void xaccAccountSetTaxUSCode (Account *account, const char *code);
 const char * xaccAccountGetTaxUSPayerNameSource (const Account *account);
 /** DOCUMENT ME! */
 void xaccAccountSetTaxUSPayerNameSource (Account *account, const char *source);
+/** DOCUMENT ME! */
+gint64 xaccAccountGetTaxUSCopyNumber (const Account *account);
+/** DOCUMENT ME! */
+void xaccAccountSetTaxUSCopyNumber (Account *account, gint64 copy_number);
 /** @} */
 
 

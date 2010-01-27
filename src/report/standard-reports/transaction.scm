@@ -29,7 +29,7 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-module (gnucash report transaction))
+(define-module (gnucash report standard-reports transaction))
 
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (srfi srfi-1))
@@ -94,6 +94,16 @@
   (and (timepair-same-year tp-a tp-b) 
        (= (gnc:timepair-get-month tp-a)
           (gnc:timepair-get-month tp-b))))
+
+(define (timepair-same-week tp-a tp-b)
+  (and (timepair-same-year tp-a tp-b)
+       (= (gnc:timepair-get-week tp-a)
+	  (gnc:timepair-get-week tp-b))))
+
+(define (split-same-week-p a b)
+  (let ((tp-a (gnc-transaction-get-date-posted (xaccSplitGetParent a)))
+	(tp-b (gnc-transaction-get-date-posted (xaccSplitGetParent b))))
+    (timepair-same-week tp-a tp-b)))
 
 (define (split-same-month-p a b)
   (let ((tp-a (gnc-transaction-get-date-posted (xaccSplitGetParent a)))
@@ -168,6 +178,13 @@
                                                (used-sort-account-full-name column-vector))))
                         table width subheading-style)))
 
+(define (render-week-subheading split table width subheading-style column-vector)
+  (add-subheading-row (gnc:date-get-week-year-string
+		       (gnc:timepair->date
+			(gnc-transaction-get-date-posted
+			 (xaccSplitGetParent split))))
+		      table width subheading-style))
+
 (define (render-month-subheading split table width subheading-style column-vector)
   (add-subheading-row (gnc:date-get-month-year-string
                       (gnc:timepair->date 
@@ -199,12 +216,12 @@
      table
      subtotal-style 
      (if export?
-      (append! (cons (gnc:make-html-table-cell subtotal-string)
+      (append! (cons (gnc:make-html-table-cell/markup "total-label-cell" subtotal-string)
                      (gnc:html-make-empty-cells (- width 2)))
                (list (gnc:make-html-table-cell/markup 
                       "total-number-cell"
                       (car currency-totals))))
-     (list (gnc:make-html-table-cell/size 1 (- width 1) 
+     (list (gnc:make-html-table-cell/size/markup 1 (- width 1) "total-label-cell"
                                           subtotal-string)
            (gnc:make-html-table-cell/markup 
             "total-number-cell"
@@ -241,6 +258,14 @@
                                                         #t
                                                         (used-sort-account-full-name column-vector)))
                     total-collector subtotal-style export?))
+
+(define (render-week-subtotal
+	 table width split total-collector subtotal-style column-vector export?)
+  (let ((tm (gnc:timepair->date (gnc-transaction-get-date-posted
+				 (xaccSplitGetParent split)))))
+    (add-subtotal-row table width
+		      (total-string (gnc:date-get-week-year-string tm))
+		      total-collector subtotal-style export?)))
 
 (define (render-month-subtotal
          table width split total-collector subtotal-style column-vector export?)
@@ -448,23 +473,27 @@
     (if (used-date column-vector)
         (addto! row-contents
                 (if transaction-row?
-                    (gnc-print-date (gnc-transaction-get-date-posted parent))
+                    (gnc:make-html-table-cell/markup "text-cell"
+                        (gnc-print-date (gnc-transaction-get-date-posted parent)))
                     " ")))
     (if (used-reconciled-date column-vector)
         (addto! row-contents
-		(let ((date (gnc-split-get-date-reconciled split)))
-		  (if (equal? date (cons 0 0))
-		      " "
-		      (gnc-print-date date)))))
+                (gnc:make-html-table-cell/markup "text-cell"
+		    (let ((date (gnc-split-get-date-reconciled split)))
+		      (if (equal? date (cons 0 0))
+		          " "
+		          (gnc-print-date date))))))
     (if (used-num column-vector)
         (addto! row-contents
                 (if transaction-row?
-                    (xaccTransGetNum parent)
+                    (gnc:make-html-table-cell/markup "text-cell"
+                        (xaccTransGetNum parent))
                     " ")))
     (if (used-description column-vector)
         (addto! row-contents
                 (if transaction-row?
-                    (xaccTransGetDescription parent)
+                    (gnc:make-html-table-cell/markup "text-cell"
+                        (xaccTransGetDescription parent))
                     " ")))
     
     (if (used-memo column-vector)
@@ -583,7 +612,8 @@
              ACCT-TYPE-ASSET ACCT-TYPE-LIABILITY
              ACCT-TYPE-STOCK ACCT-TYPE-MUTUAL ACCT-TYPE-CURRENCY
              ACCT-TYPE-PAYABLE ACCT-TYPE-RECEIVABLE
-             ACCT-TYPE-EQUITY ACCT-TYPE-INCOME ACCT-TYPE-EXPENSE)
+             ACCT-TYPE-EQUITY ACCT-TYPE-INCOME ACCT-TYPE-EXPENSE
+             ACCT-TYPE-TRADING)
        (gnc-account-get-descendants-sorted (gnc-get-current-root-account))))
     #f #t))
 
@@ -708,7 +738,7 @@
         (subtotal-choice-list
          (list
           (vector 'none (N_ "None") (N_ "None"))
-          ;;(vector 'weekly (N_ "Weekly") (N_ "Weekly"))
+          (vector 'weekly (N_ "Weekly") (N_ "Weekly"))
           (vector 'monthly (N_ "Monthly") (N_ "Monthly"))
           (vector 'quarterly (N_ "Quarterly") (N_ "Quarterly"))
           (vector 'yearly (N_ "Yearly") (N_ "Yearly")))))
@@ -1183,6 +1213,8 @@ Credit Card, and Income accounts")))))
     ;; subtotal-renderer))
     (list
      (cons 'none (vector #f #f #f))
+     (cons 'weekly (vector split-same-week-p render-week-subheading
+			   render-week-subtotal))
      (cons 'monthly (vector split-same-month-p render-month-subheading 
                             render-month-subtotal))
      (cons 'quarterly (vector split-same-quarter-p render-quarter-subheading 
@@ -1412,6 +1444,7 @@ in the Options panel.")))
  'version 1
  
  'name reportname
+ 'report-guid "2fe3b9833af044abb929a88d5a59620f"
  
  'options-generator trep-options-generator
  

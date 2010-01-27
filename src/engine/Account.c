@@ -78,6 +78,10 @@ enum {
   PROP_TAX_RELATED,
   PROP_TAX_CODE,
   PROP_TAX_SOURCE,
+  PROP_TAX_COPY_NUMBER,
+
+  PROP_HIDDEN,
+  PROP_PLACEHOLDER,
 };
 
 typedef struct AccountPrivate
@@ -282,7 +286,7 @@ gnc_account_get_property (GObject         *object,
 	    g_value_set_string(value, priv->accountName);
 	    break;
 	case PROP_FULL_NAME:
-	    g_value_take_string(value, xaccAccountGetFullName(account));
+	    g_value_take_string(value, gnc_account_get_full_name(account));
 	    break;
 	case PROP_CODE:
 	    g_value_set_string(value, priv->accountCode);
@@ -347,6 +351,16 @@ gnc_account_get_property (GObject         *object,
 	    g_value_set_string(value,
 			       xaccAccountGetTaxUSPayerNameSource(account));
 	    break;
+	case PROP_TAX_COPY_NUMBER:
+	    g_value_set_int64(value,
+			       xaccAccountGetTaxUSCopyNumber(account));
+	    break;
+	case PROP_HIDDEN:
+		g_value_set_boolean(value, xaccAccountGetHidden(account));
+		break;
+	case PROP_PLACEHOLDER:
+		g_value_set_boolean(value, xaccAccountGetPlaceholder(account));
+		break;
 	default:
 	    G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
 	    break;
@@ -389,6 +403,9 @@ gnc_account_set_property (GObject         *object,
 	case PROP_COMMODITY_SCU:
 	    xaccAccountSetCommoditySCU(account, g_value_get_int(value));
 	    break;
+	case PROP_NON_STD_SCU:
+		xaccAccountSetNonStdSCU(account, g_value_get_boolean(value));
+		break;
 	case PROP_SORT_DIRTY:
 	    gnc_account_set_sort_dirty(account);
 	    break;
@@ -422,6 +439,16 @@ gnc_account_set_property (GObject         *object,
 	case PROP_TAX_SOURCE:
 	    xaccAccountSetTaxUSPayerNameSource(account,
 					       g_value_get_string(value));
+	case PROP_TAX_COPY_NUMBER:
+	    xaccAccountSetTaxUSCopyNumber(account,
+			               g_value_get_int64(value));
+	    break;
+	case PROP_HIDDEN:
+		xaccAccountSetHidden(account, g_value_get_boolean(value));
+		break;
+	case PROP_PLACEHOLDER:
+		xaccAccountSetPlaceholder(account, g_value_get_boolean(value));
+		break;
 	default:
 	    G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
 	    break;
@@ -547,7 +574,7 @@ gnc_account_class_init (AccountClass *klass)
          PROP_NON_STD_SCU,
          g_param_spec_boolean ("non-std-scu",
                                "Non-std SCU",
-                               "TRUE id the account SCU doesn't match "
+                               "TRUE if the account SCU doesn't match "
                                "the commodity SCU.  This indicates a case "
                                "where the two were accidentally set to "
                                "mismatched values in older versions of "
@@ -715,9 +742,41 @@ gnc_account_class_init (AccountClass *klass)
          PROP_TAX_SOURCE,
          g_param_spec_string ("tax-source",
                               "Tax Source",
-                              "This is an unknown tax related field.",
+                              "This specifies where exported name comes from.",
                               NULL,
                               G_PARAM_READWRITE));
+
+    g_object_class_install_property
+        (gobject_class,
+         PROP_TAX_COPY_NUMBER,
+         g_param_spec_int ("tax-copy-number",
+                           "Tax Copy Number",
+                           "This specifies the copy number of the tax "
+                           "form/schedule.",
+                           1,
+			               G_MAXINT16,
+			               1,
+                           G_PARAM_READWRITE));
+
+    g_object_class_install_property
+        (gobject_class,
+         PROP_HIDDEN,
+         g_param_spec_boolean ("hidden",
+                               "Hidden",
+                               "Whether the account should be hidden in the  "
+			       "account tree.",
+                               FALSE,
+                               G_PARAM_READWRITE));
+
+    g_object_class_install_property
+        (gobject_class,
+         PROP_PLACEHOLDER,
+         g_param_spec_boolean ("placeholder",
+                               "Placeholder",
+                               "Whether the account is a placeholder account which does not "
+							   "allow transactions to be created, edited or deleted.",
+                               FALSE,
+                               G_PARAM_READWRITE));
 }
 
 static void
@@ -871,6 +930,7 @@ xaccCloneAccountCommon(const Account *from, QofBook *book)
     /* The new book should contain a commodity that matches
      * the one in the old book. Find it, use it. */
     priv->commodity = gnc_commodity_obtain_twin(from_priv->commodity, book);
+    gnc_commodity_increment_usage_count(priv->commodity);
 
     priv->commodity_scu = from_priv->commodity_scu;
     priv->non_standard_scu = from_priv->non_standard_scu;
@@ -1004,6 +1064,7 @@ xaccFreeAccount (Account *acc)
   priv->reconciled_balance = gnc_numeric_zero();
 
   priv->type = ACCT_TYPE_NONE;
+  gnc_commodity_decrement_usage_count(priv->commodity);
   priv->commodity = NULL;
 
   priv->balance_dirty = FALSE;
@@ -1033,6 +1094,7 @@ static void on_done(QofInstance *inst)
 static void on_err (QofInstance *inst, QofBackendError errcode)
 {
   PERR("commit error: %d", errcode);
+  gnc_engine_signal_commit_error( errcode );
 }
 
 static void acc_free (QofInstance *inst)
@@ -1650,6 +1712,8 @@ xaccAccountRemoveLot (Account *acc, GNCLot *lot)
 
     ENTER ("(acc=%p, lot=%p)", acc, lot);
     priv->lots = g_list_remove(priv->lots, lot);
+    qof_event_gen (&lot->inst, QOF_EVENT_REMOVE, NULL);
+    qof_event_gen (&acc->inst, QOF_EVENT_MODIFY, NULL);
     LEAVE ("(acc=%p, lot=%p)", acc, lot);
 }
 
@@ -1684,6 +1748,9 @@ xaccAccountInsertLot (Account *acc, GNCLot *lot)
     * if appropriate, and doing it here will not work if we are being 
     * called from gnc_book_close_period since xaccAccountInsertSplit
     * will try to balance capital gains and things aren't ready for that. */
+
+   qof_event_gen (&lot->inst, QOF_EVENT_ADD, NULL);
+   qof_event_gen (&acc->inst, QOF_EVENT_MODIFY, NULL);
 
    LEAVE ("(acc=%p, lot=%p)", acc, lot);
 }
@@ -1852,7 +1919,7 @@ static int typeorder[NUM_ACCOUNT_TYPES] = {
      ACCT_TYPE_BANK, ACCT_TYPE_STOCK, ACCT_TYPE_MUTUAL, ACCT_TYPE_CURRENCY,
      ACCT_TYPE_CASH, ACCT_TYPE_ASSET, ACCT_TYPE_RECEIVABLE,
      ACCT_TYPE_CREDIT, ACCT_TYPE_LIABILITY, ACCT_TYPE_PAYABLE,
-     ACCT_TYPE_INCOME, ACCT_TYPE_EXPENSE, ACCT_TYPE_EQUITY };
+     ACCT_TYPE_INCOME, ACCT_TYPE_EXPENSE, ACCT_TYPE_EQUITY, ACCT_TYPE_TRADING };
 
 static int revorder[NUM_ACCOUNT_TYPES] = {
      -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
@@ -2061,7 +2128,9 @@ xaccAccountSetCommodity (Account * acc, gnc_commodity * com)
       return;
 
   xaccAccountBeginEdit(acc);
+  gnc_commodity_decrement_usage_count(priv->commodity);
   priv->commodity = com;
+  gnc_commodity_increment_usage_count(com);
   priv->commodity_scu = gnc_commodity_get_fraction(com);
   priv->non_standard_scu = FALSE;
 
@@ -2080,15 +2149,6 @@ xaccAccountSetCommodity (Account * acc, gnc_commodity * com)
   priv->balance_dirty = TRUE;
   mark_account (acc);
 
-  if (gnc_commodity_is_iso(com)) {
-    /* compatability hack - Gnucash 1.8 gets currency quotes when a
-       non-default currency is assigned to an account.  */
-	gnc_commodity_begin_edit(com);
-    gnc_commodity_set_quote_flag(com, TRUE);
-    gnc_commodity_set_quote_source(com, 
-        gnc_commodity_get_default_quote_source(com));
-	gnc_commodity_commit_edit(com);
-  }
   xaccAccountCommitEdit(acc);
 }
 
@@ -2708,8 +2768,8 @@ xaccAccountGetName (const Account *acc)
     return GET_PRIVATE(acc)->accountName;
 }
 
-char *
-xaccAccountGetFullName(const Account *account)
+gchar *
+gnc_account_get_full_name(const Account *account)
 {
   AccountPrivate *priv;
   const Account *a;
@@ -2843,7 +2903,7 @@ gnc_account_set_start_cleared_balance (Account *acc,
   g_return_if_fail(GNC_IS_ACCOUNT(acc));
 
   priv = GET_PRIVATE(acc);
-  priv->starting_balance = start_baln;
+  priv->starting_cleared_balance = start_baln;
   priv->balance_dirty = TRUE;
 }
 
@@ -2864,7 +2924,7 @@ gnc_account_set_start_reconciled_balance (Account *acc,
   g_return_if_fail(GNC_IS_ACCOUNT(acc));
 
   priv = GET_PRIVATE(acc);
-  priv->starting_balance = start_baln;
+  priv->starting_reconciled_balance = start_baln;
   priv->balance_dirty = TRUE;
 }
 
@@ -3331,10 +3391,13 @@ xaccAccountGetBalanceChangeForPeriod (Account *acc, time_t t1, time_t t2, gboole
  * allowing the internal organization to change data structures if
  * necessary for whatever reason, while leaving the external API
  * unchanged. */
+/* XXX: violates the const'ness by forcing a sort before returning
+ * the splitlist */
 SplitList *
 xaccAccountGetSplitList (const Account *acc) 
 {
     g_return_val_if_fail(GNC_IS_ACCOUNT(acc), NULL);
+    xaccAccountSortSplits((Account*)acc, FALSE);  // normally a noop
     return GET_PRIVATE(acc)->splits;
 }
 
@@ -3440,6 +3503,11 @@ xaccAccountSetTaxUSCode (Account *acc, const char *code)
 
   xaccAccountBeginEdit (acc);
   kvp_frame_set_string (acc->inst.kvp_data, "/tax-US/code", code);
+  if (!code)
+  {
+    KvpFrame  *frame = NULL;
+    kvp_frame_set_frame (acc->inst.kvp_data, "/tax-US", frame);
+  }
   mark_account (acc);
   xaccAccountCommitEdit (acc);
 }
@@ -3460,6 +3528,39 @@ xaccAccountSetTaxUSPayerNameSource (Account *acc, const char *source)
   xaccAccountBeginEdit (acc);
   kvp_frame_set_string (acc->inst.kvp_data, 
                         "/tax-US/payer-name-source", source);
+  mark_account (acc);
+  xaccAccountCommitEdit (acc);
+}
+
+gint64
+xaccAccountGetTaxUSCopyNumber (const Account *acc)
+{
+  gint64 copy_number;
+
+  g_return_val_if_fail(GNC_IS_ACCOUNT(acc), 1);
+  copy_number = kvp_frame_get_gint64(acc->inst.kvp_data,
+			      "tax-US/copy-number");
+  return (copy_number == 0) ? 1: copy_number;
+}
+
+void
+xaccAccountSetTaxUSCopyNumber (Account *acc, gint64 copy_number)
+{
+  g_return_if_fail(GNC_IS_ACCOUNT(acc));
+
+  xaccAccountBeginEdit (acc);
+  if (copy_number != 0)
+    kvp_frame_set_gint64 (acc->inst.kvp_data, "/tax-US/copy-number", copy_number);
+  else
+  {
+    KvpFrame * frame;
+    KvpValue *value;
+
+    value = NULL;
+    frame = kvp_frame_set_value_nc (acc->inst.kvp_data,
+                                                 "/tax-US/copy-number", value);
+    if (!frame) kvp_value_delete (value);
+  }
   mark_account (acc);
   xaccAccountCommitEdit (acc);
 }
@@ -3600,6 +3701,7 @@ xaccAccountTypeEnumAsString(GNCAccountType type)
     GNC_RETURN_ENUM_AS_STRING(RECEIVABLE);
     GNC_RETURN_ENUM_AS_STRING(PAYABLE);
     GNC_RETURN_ENUM_AS_STRING(ROOT);
+    GNC_RETURN_ENUM_AS_STRING(TRADING);
     GNC_RETURN_ENUM_AS_STRING(CHECKING);
     GNC_RETURN_ENUM_AS_STRING(SAVINGS);
     GNC_RETURN_ENUM_AS_STRING(MONEYMRKT);
@@ -3635,6 +3737,7 @@ xaccAccountStringToType(const char* str, GNCAccountType *type)
   GNC_RETURN_ON_MATCH(RECEIVABLE);
   GNC_RETURN_ON_MATCH(PAYABLE);
   GNC_RETURN_ON_MATCH(ROOT);
+  GNC_RETURN_ON_MATCH(TRADING);
   GNC_RETURN_ON_MATCH(CHECKING);
   GNC_RETURN_ON_MATCH(SAVINGS);
   GNC_RETURN_ON_MATCH(MONEYMRKT);
@@ -3676,7 +3779,9 @@ account_type_name[NUM_ACCOUNT_TYPES] = {
   N_("Expense"),
   N_("Equity"),
   N_("A/Receivable"),
-  N_("A/Payable")
+  N_("A/Payable"),
+  N_("Root"),
+  N_("Trading")
   /*
     N_("Checking"),
     N_("Savings"),
@@ -3747,6 +3852,10 @@ xaccParentAccountTypesCompatibleWith (GNCAccountType type)
   case ACCT_TYPE_EQUITY:
     return
       (1 << ACCT_TYPE_EQUITY)     |
+      (1 << ACCT_TYPE_ROOT);
+  case ACCT_TYPE_TRADING:
+    return
+      (1 << ACCT_TYPE_TRADING)    |
       (1 << ACCT_TYPE_ROOT);
   default:
     PERR("bad account type: %d", type);
@@ -4503,17 +4612,17 @@ xaccAccountForEachTransaction(const Account *acc, TransactionCallback proc,
 /* QofObject function implementation and registration */
 
 static QofObject account_object_def = {
-  interface_version:     QOF_OBJECT_VERSION,
-  e_type:                GNC_ID_ACCOUNT,
-  type_label:            "Account",
-  create:                (gpointer)xaccMallocAccount,
-  book_begin:            NULL,
-  book_end:              NULL,
-  is_dirty:              qof_collection_is_dirty,
-  mark_clean:            qof_collection_mark_clean,
-  foreach:               qof_collection_foreach,
-  printable:             (const char* (*)(gpointer)) xaccAccountGetName,
-  version_cmp:           (int (*)(gpointer,gpointer)) qof_instance_version_cmp,
+  .interface_version = QOF_OBJECT_VERSION,
+  .e_type            = GNC_ID_ACCOUNT,
+  .type_label        = "Account",
+  .create            = (gpointer)xaccMallocAccount,
+  .book_begin        = NULL,
+  .book_end          = NULL,
+  .is_dirty          = qof_collection_is_dirty,
+  .mark_clean        = qof_collection_mark_clean,
+  .foreach           = qof_collection_foreach,
+  .printable         = (const char* (*)(gpointer)) xaccAccountGetName,
+  .version_cmp       = (int (*)(gpointer,gpointer)) qof_instance_version_cmp,
 };
 
 gboolean xaccAccountRegister (void)

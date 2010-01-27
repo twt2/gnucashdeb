@@ -232,7 +232,19 @@
 ;;;;
 
     (gnc:html-document-set-style!
+     ssdoc "anchor-cell"
+     'tag "td"
+     'attribute (list "align" "left")
+     'attribute (list "nowrap"))
+
+    (gnc:html-document-set-style!
      ssdoc "number-cell"
+     'tag "td"
+     'attribute (list "align" "right")
+     'attribute (list "nowrap"))
+
+    (gnc:html-document-set-style!
+     ssdoc "number-cell-neg"
      'tag "td"
      'attribute (list "align" "right")
      'attribute (list "nowrap"))
@@ -277,6 +289,11 @@
 
     (gnc:html-document-set-style!
      ssdoc "total-number-cell"
+     'tag '("td" "b")
+     'attribute (list "align" "right"))
+
+    (gnc:html-document-set-style!
+     ssdoc "total-number-cell-neg"
      'tag '("td" "b")
      'attribute (list "align" "right"))
 
@@ -341,7 +358,7 @@
           (gnc:html-table-set-cell!
             t 0 0
             (gnc:make-html-text
-	      (gnc:html-markup-img logopixmap)))))
+	      (gnc:html-markup-img (make-file-url logopixmap))))))
       
       (if (and headpixmap (> (string-length headpixmap) 0))
         (begin
@@ -350,7 +367,7 @@
             (gnc:make-html-text 
                (string-append 
                  "<div align=\"" align "\">"
-                 "<img src=\"" headpixmap "\">"
+                 "<img src=\"" (make-file-url headpixmap) "\">"
                  "</div>")))
         )
         (gnc:html-table-set-cell!

@@ -1215,12 +1215,13 @@ SWIG_Guile_GetArgs (SCM *dest, SCM rest,
 #define SWIGTYPE_p_char swig_types[5]
 #define SWIGTYPE_p_double swig_types[6]
 #define SWIGTYPE_p_f_p_void__gboolean swig_types[7]
-#define SWIGTYPE_p_gboolean swig_types[8]
-#define SWIGTYPE_p_int swig_types[9]
-#define SWIGTYPE_p_unsigned_int swig_types[10]
-#define SWIGTYPE_p_unsigned_long swig_types[11]
-static swig_type_info *swig_types[13];
-static swig_module_info swig_module = {swig_types, 12, 0, 0, 0, 0};
+#define SWIGTYPE_p_float swig_types[8]
+#define SWIGTYPE_p_gboolean swig_types[9]
+#define SWIGTYPE_p_int swig_types[10]
+#define SWIGTYPE_p_unsigned_int swig_types[11]
+#define SWIGTYPE_p_unsigned_long swig_types[12]
+static swig_type_info *swig_types[14];
+static swig_module_info swig_module = {swig_types, 13, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1767,6 +1768,7 @@ static swig_type_info _swigt__p__GNCProgressDialog = {"_p__GNCProgressDialog", "
 static swig_type_info _swigt__p_char = {"_p_char", "gchar *|char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_double = {"_p_double", "double *|gdouble *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_f_p_void__gboolean = {"_p_f_p_void__gboolean", "GNCProgressCancelFunc|gboolean (*)(void *)", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_float = {"_p_float", "float *|gfloat *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_gboolean = {"_p_gboolean", "gboolean *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_int = {"_p_int", "int *|gint *|time_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_int = {"_p_unsigned_int", "guint *|unsigned int *", 0, 0, (void*)0, 0};
@@ -1781,6 +1783,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_char,
   &_swigt__p_double,
   &_swigt__p_f_p_void__gboolean,
+  &_swigt__p_float,
   &_swigt__p_gboolean,
   &_swigt__p_int,
   &_swigt__p_unsigned_int,
@@ -1795,6 +1798,7 @@ static swig_cast_info _swigc__p__GNCProgressDialog[] = {  {&_swigt__p__GNCProgre
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_double[] = {  {&_swigt__p_double, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_f_p_void__gboolean[] = {  {&_swigt__p_f_p_void__gboolean, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_float[] = {  {&_swigt__p_float, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_gboolean[] = {  {&_swigt__p_gboolean, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_int[] = {  {&_swigt__p_unsigned_int, 0, 0, 0},{0, 0, 0, 0}};
@@ -1809,6 +1813,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_char,
   _swigc__p_double,
   _swigc__p_f_p_void__gboolean,
+  _swigc__p_float,
   _swigc__p_gboolean,
   _swigc__p_int,
   _swigc__p_unsigned_int,

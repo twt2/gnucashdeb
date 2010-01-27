@@ -52,7 +52,6 @@
 #include "gnc-gconf-utils.h"
 #include "gnc-gnome-utils.h"
 #include "gnc-gobject-utils.h"
-#include "gnc-html.h"
 #include "gnc-icons.h"
 #include "gnc-plugin-account-tree.h"
 #include "gnc-session.h"
@@ -164,7 +163,7 @@ static GtkActionEntry gnc_plugin_page_account_tree_actions [] = {
 	{ "EditEditAccountAction", GNC_STOCK_EDIT_ACCOUNT, N_("Edit _Account"), "<control>e",
 	  N_("Edit the selected account"),
 	  G_CALLBACK (gnc_plugin_page_account_tree_cmd_edit_account) },
-	{ "EditDeleteAccountAction", GNC_STOCK_DELETE_ACCOUNT, N_("_Delete Account..."), NULL,
+	{ "EditDeleteAccountAction", GNC_STOCK_DELETE_ACCOUNT, N_("_Delete Account..."), "Delete",
 	  N_("Delete selected account"),
 	  G_CALLBACK (gnc_plugin_page_account_tree_cmd_delete_account) },
 	{ "EditRenumberSubaccountsAction", NULL, N_("_Renumber Subaccounts..."), NULL,
@@ -408,6 +407,25 @@ gnc_plugin_page_account_tree_close_cb (gpointer user_data)
   gnc_main_window_close_page(plugin_page);
 }
 
+static const GtkTargetEntry dnd_targets[] = {
+  { "gnc_account", GTK_TARGET_SAME_WIDGET, 0 }
+};
+
+
+static void
+gnc_enable_account_dragging(GtkTreeView *tree_view)
+{
+  GtkTreeModel *model;
+
+  model = gtk_tree_view_get_model (tree_view);
+
+  g_return_if_fail (G_TYPE_CHECK_INSTANCE_TYPE (model, GTK_TYPE_TREE_DRAG_DEST));
+  g_return_if_fail (G_TYPE_CHECK_INSTANCE_TYPE (model, GTK_TYPE_TREE_DRAG_SOURCE));
+
+  gtk_tree_view_enable_model_drag_source(tree_view, GDK_BUTTON1_MASK, dnd_targets, 1, GDK_ACTION_MOVE);
+  gtk_tree_view_enable_model_drag_dest(tree_view, dnd_targets, 1, GDK_ACTION_MOVE);
+}
+
 static GtkWidget *
 gnc_plugin_page_account_tree_create_widget (GncPluginPage *plugin_page)
 {
@@ -466,6 +484,9 @@ gnc_plugin_page_account_tree_create_widget (GncPluginPage *plugin_page)
 			  G_CALLBACK (gnc_plugin_page_account_tree_button_press_cb), page);
 	g_signal_connect (G_OBJECT (tree_view), "row-activated",
 			  G_CALLBACK (gnc_plugin_page_account_tree_double_click_cb), page);
+
+	/* Support dragging accounts for re-ordering/re-parenting */
+	gnc_enable_account_dragging(tree_view);
 
 	gtk_tree_view_set_headers_visible(tree_view, TRUE);
 	gnc_plugin_page_account_tree_selection_changed_cb (NULL, page);
@@ -852,7 +873,7 @@ gppat_populate_gas_list(GtkWidget *dialog,
   filter = g_object_get_data(G_OBJECT(dialog), DELETE_DIALOG_FILTER);
 
   /* Setting the account type filter triggers GNCAccountSel population. */
-  gnc_account_sel_set_acct_filters (gas, filter);
+  gnc_account_sel_set_acct_filters (gas, filter, NULL);
 
   /* Accounts to be deleted must be removed. */
   gnc_account_sel_purge_account( gas, account, exclude_subaccounts);
@@ -901,7 +922,7 @@ gnc_plugin_page_account_tree_cmd_delete_account (GtkAction *action, GncPluginPag
     return;
 
   window = gnc_plugin_page_get_window(GNC_PLUGIN_PAGE(page));
-  acct_name = xaccAccountGetFullName(account);
+  acct_name = gnc_account_get_full_name(account);
   if (!acct_name) {
     acct_name = g_strdup (_("(no name)"));
   }
@@ -1025,7 +1046,7 @@ gnc_plugin_page_account_tree_cmd_delete_account (GtkAction *action, GncPluginPag
     lines[0] = g_strdup_printf(format, acct_name);
     if (splits) {
       if (ta) {
-	name = xaccAccountGetFullName(ta);
+	name = gnc_account_get_full_name(ta);
 	format = _("All transactions in this account will be moved to "
 		   "the account %s.");
 	lines[++i] = g_strdup_printf(format, name);
@@ -1036,7 +1057,7 @@ gnc_plugin_page_account_tree_cmd_delete_account (GtkAction *action, GncPluginPag
     }
     if (gnc_account_n_children(account) > 0) {
       if (daa) {
-	name = xaccAccountGetFullName(daa);
+	name = gnc_account_get_full_name(daa);
 	format = _("All of its sub-accounts will be moved to "
 		   "the account %s.");
 	lines[++i] = g_strdup_printf(format, name);
@@ -1044,7 +1065,7 @@ gnc_plugin_page_account_tree_cmd_delete_account (GtkAction *action, GncPluginPag
 	format = _("All of its subaccounts will be deleted.");
 	lines[++i] = g_strdup_printf("%s", format);
 	if (dta) {
-	  name = xaccAccountGetFullName(dta);
+	  name = gnc_account_get_full_name(dta);
 	  format = _("All sub-account transactions will be moved to "
 		     "the account %s.");
 	  lines[++i] = g_strdup_printf(format, name);

@@ -73,6 +73,7 @@ static GncEmployee * gncEmployeeLookupFlip(GUID g, QofBook *b)
 %}
 
 GLIST_HELPER_INOUT(EntryList, SWIGTYPE_p__gncEntry);
+GLIST_HELPER_INOUT(GncTaxTableEntryList, SWIGTYPE_p__gncTaxTableEntry);
 
 %typemap(in) GncAccountValue * "$1 = gnc_scm_to_account_value_ptr($input);"
 %typemap(out) GncAccountValue * "$result = gnc_account_value_ptr_to_scm($1);"
@@ -124,6 +125,7 @@ GLIST_HELPER_INOUT(EntryList, SWIGTYPE_p__gncEntry);
 #define URL_TYPE_CUSTOMER GNC_ID_CUSTOMER
 #define URL_TYPE_VENDOR GNC_ID_VENDOR
 #define URL_TYPE_EMPLOYEE GNC_ID_EMPLOYEE
+#define URL_TYPE_JOB GNC_ID_JOB
 #define URL_TYPE_INVOICE GNC_ID_INVOICE
 // not exactly clean
 #define URL_TYPE_OWNERREPORT "owner-report"
@@ -145,6 +147,7 @@ GLIST_HELPER_INOUT(EntryList, SWIGTYPE_p__gncEntry);
     SET_ENUM("URL-TYPE-CUSTOMER");
     SET_ENUM("URL-TYPE-VENDOR");
     SET_ENUM("URL-TYPE-EMPLOYEE");
+    SET_ENUM("URL-TYPE-JOB");
     SET_ENUM("URL-TYPE-INVOICE");
     SET_ENUM("URL-TYPE-OWNERREPORT");
 

@@ -173,6 +173,25 @@ xaccUserPathPathGenerator(char *pathbuf, int which)
 
 /* ====================================================================== */
 
+/**
+ * Scrubs a filename by changing "strange" chars (e.g. those that are not
+ * valid in a win32 file name) to "_".
+ *
+ * @param filename File name - updated in place
+ */
+static void
+scrub_filename(char* filename)
+{
+    char* p;
+
+#define STRANGE_CHARS "/:"
+    p = strpbrk(filename, STRANGE_CHARS);
+    while (p) {
+      *p = '_';
+      p = strpbrk(filename, STRANGE_CHARS);
+    }
+}
+
 char * 
 xaccResolveFilePath (const char * filefrag)
 {
@@ -203,7 +222,17 @@ xaccResolveFilePath (const char * filefrag)
   if (!g_ascii_strncasecmp(filefrag, "file:", 5))
   {
       LEAVE("filefrag is file uri");
-      return g_strdup(filefrag + 5);
+      if (!g_ascii_strncasecmp(filefrag, "file://", 7))
+        return g_strdup(filefrag + 7);
+      else
+        return g_strdup(filefrag + 5);
+  }
+  if( g_ascii_strncasecmp( filefrag, "xml:", 4 ) == 0 ) {
+  	  LEAVE( "filefrag is xml file uri" );
+      if( g_ascii_strncasecmp( filefrag, "xml://", 6 ) == 0 )
+        return g_strdup( filefrag + 6);
+      else
+	    return g_strdup( filefrag + 4);
   }
 
   /* get conservative on the length so that sprintf(getpid()) works ... */
@@ -237,16 +266,10 @@ xaccResolveFilePath (const char * filefrag)
 
   filefrag_dup = g_strdup (filefrag);
 
-  /* Replace '/' with ',' for non file backends */
+  /* Replace "strange" chars with "_" for non-file backends. */
   if (strstr (filefrag, "://"))
   {
-    char *p;
-
-    p = strchr (filefrag_dup, '/');
-    while (p) {
-      *p = ',';
-      p = strchr (filefrag_dup, '/');
-    }
+	scrub_filename(filefrag_dup);
   }
 
   /* Lets try creating a new file in $HOME/.gnucash/data */
@@ -281,6 +304,9 @@ xaccResolveFilePath (const char * filefrag)
 char * 
 xaccResolveURL (const char * pathfrag)
 {
+  GList* list;
+  GList* node;
+
   /* seriously invalid */
   if (!pathfrag) return NULL;
 
@@ -292,14 +318,33 @@ xaccResolveURL (const char * pathfrag)
    */
 
   if (!g_ascii_strncasecmp (pathfrag, "http://", 7)      ||
-      !g_ascii_strncasecmp (pathfrag, "https://", 8)     ||
-      !g_ascii_strncasecmp (pathfrag, "postgres://", 11))
+      !g_ascii_strncasecmp (pathfrag, "https://", 8))
   {
     return g_strdup(pathfrag);
   }
 
+  /* Check the URL against the list of registered access methods */
+  list = qof_backend_get_registered_access_method_list();
+  for( node = list; node != NULL; node = node->next ) {
+  	const gchar* access_method = node->data;
+	if( strcmp( access_method, "file" ) != 0 &&
+			strcmp( access_method, "xml" ) != 0 ) {
+		gchar s[30];
+		sprintf( s, "%s://", access_method );
+		if( !g_ascii_strncasecmp( pathfrag, s, strlen(s) ) ) {
+			g_list_free(list);
+    		return g_strdup(pathfrag);
+		}
+	}
+  }
+  g_list_free(list);
+
+  /* "file:" and "xml:" are handled specially */
   if (!g_ascii_strncasecmp (pathfrag, "file:", 5)) {
     return (xaccResolveFilePath (pathfrag));
+  }
+  if (!g_ascii_strncasecmp (pathfrag, "xml:", 4)) {
+    return (g_strdup_printf( "xml:%s", xaccResolveFilePath (pathfrag)) );
   }
 
   return (xaccResolveFilePath (pathfrag));
@@ -422,7 +467,13 @@ gnc_build_dotgnucash_path (const gchar *filename)
 gchar *
 gnc_build_book_path (const gchar *filename)
 {
-  return g_build_filename(gnc_dotgnucash_dir(), "books", filename, (gchar *)NULL);
+  char* filename_dup = g_strdup(filename);
+  char* result;
+
+  scrub_filename(filename_dup);
+  result = g_build_filename(gnc_dotgnucash_dir(), "books", filename_dup, (gchar *)NULL);
+  g_free(filename_dup);
+  return result;
 }
 
 /* =============================== END OF FILE ========================== */

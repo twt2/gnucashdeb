@@ -24,6 +24,9 @@
 /* Don't use deprecated gdk-pixbuf functions */
 #undef GDK_PIXBUF_DISABLE_DEPRECATED
 
+/* Using GDK Quartz (not X11) */
+#undef GDK_QUARTZ
+
 /* GetText version number */
 #undef GETTEXT_PACKAGE
 
@@ -71,6 +74,9 @@
 
 /* Define to 1 if you have the `chown' function. */
 #undef HAVE_CHOWN
+
+/* Define to 1 if you have the <dbi/dbi.h> header file. */
+#undef HAVE_DBI_DBI_H
 
 /* Define to 1 if you have the `dcgettext' function. */
 #undef HAVE_DCGETTEXT
@@ -156,9 +162,6 @@
 /* Define to 1 if you have the `popt' library (-lpopt). */
 #undef HAVE_LIBPOPT
 
-/* Define to 1 if you have the <libpq-fe.h> header file. */
-#undef HAVE_LIBPQ_FE_H
-
 /* Define to 1 if you have the `pthread' library (-lpthread). */
 #undef HAVE_LIBPTHREAD
 
@@ -186,14 +189,8 @@
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
-/* Define to 1 if you have the <pgsql/libpq-fe.h> header file. */
-#undef HAVE_PGSQL_LIBPQ_FE_H
-
 /* Define to 1 if you have the <popt.h> header file. */
 #undef HAVE_POPT_H
-
-/* Define to 1 if you have the <postgresql/libpq-fe.h> header file. */
-#undef HAVE_POSTGRESQL_LIBPQ_FE_H
 
 /* Define to 1 if you have the `pthread_mutex_init' function. */
 #undef HAVE_PTHREAD_MUTEX_INIT
@@ -267,6 +264,13 @@
 /* Enable the experimental locale-specific tax categories */
 #undef LOCALE_SPECIFIC_TAX
 
+/* Define to the sub-directory in which libtool stores uninstalled libraries.
+   */
+#undef LT_OBJDIR
+
+/* Define to 1 if your C compiler doesn't accept -c and -o together. */
+#undef NO_MINUS_C_MINUS_O
+
 /* Name of package */
 #undef PACKAGE
 
@@ -281,6 +285,9 @@
 
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
@@ -321,6 +328,9 @@
 
 /* Version number of package */
 #undef VERSION
+
+/* Use webkit instead of gtkhtml */
+#undef WANT_WEBKIT
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */

@@ -1,7 +1,7 @@
 ;; -*-scheme-*-
 ;; register.scm
 
-(define-module (gnucash report register))
+(define-module (gnucash report standard-reports register))
 
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (srfi srfi-1))
@@ -147,55 +147,69 @@
     (if (date-col column-vector)
         (addto! row-contents
                 (if transaction-info?
-                    (gnc-print-date
-                     (gnc-transaction-get-date-posted parent))
-                    " ")))
+                    (gnc:make-html-table-cell/markup
+					    "text-cell"
+                        (gnc-print-date
+                             (gnc-transaction-get-date-posted parent)))
+                        " ")))
     (if (num-col column-vector)
         (addto! row-contents
-                (if transaction-info?
-                    (xaccTransGetNum parent)
-                    (if split-info?
-                        (xaccSplitGetAction split)
-                        " "))))
+                (gnc:make-html-table-cell/markup
+					"text-cell"
+                    (if transaction-info?
+                        (xaccTransGetNum parent)
+                        (if split-info?
+                            (xaccSplitGetAction split)
+                            " ")))))
     (if (description-col column-vector)
         (addto! row-contents
-                (if transaction-info?
-                    (if description?
-                        (xaccTransGetDescription parent)
-                        " " )
-                    (if split-info?
-                        (if memo?
-                            (xaccSplitGetMemo split)
-                            " ")
-                        " "))))
+                (gnc:make-html-table-cell/markup
+					"text-cell"
+                    (if transaction-info?
+                        (if description?
+                            (xaccTransGetDescription parent)
+                            " " )
+                        (if split-info?
+                            (if memo?
+                                (xaccSplitGetMemo split)
+                                " ")
+                            " ")))))
     (if (memo-col column-vector)
         (addto! row-contents
-                (if transaction-info?
-                    (xaccSplitGetMemo split)
-                    " ")))
+                (gnc:make-html-table-cell/markup
+					"text-cell"
+                    (if transaction-info?
+                        (xaccSplitGetMemo split)
+                        " "))))
     (if (account-col column-vector)
         (addto! row-contents
-                (if split-info?
-                    (if transaction-info?
-                        (let ((other-split
-                               (xaccSplitGetOtherSplit split)))
-                          (if (not (null? other-split))
-                              (gnc-account-get-full-name
-                               (xaccSplitGetAccount other-split))
-                              (_ "-- Split Transaction --")))
-                        (gnc-account-get-full-name account))
-                    " ")))
+                (gnc:make-html-table-cell/markup
+					"text-cell"
+                    (if split-info?
+                        (if transaction-info?
+                            (let ((other-split
+                                   (xaccSplitGetOtherSplit split)))
+                              (if (not (null? other-split))
+                                  (gnc-account-get-full-name
+                                   (xaccSplitGetAccount other-split))
+                                  (_ "-- Split Transaction --")))
+                            (gnc-account-get-full-name account))
+                        " "))))
     (if (shares-col column-vector)
         (addto! row-contents
-                (if split-info?
-                    (xaccSplitGetAmount split)
-                    " ")))
+                (gnc:make-html-table-cell/markup
+					"text-cell"
+                    (if split-info?
+                        (xaccSplitGetAmount split)
+                        " "))))
     (if (price-col column-vector)
         (addto! row-contents 
-                (if split-info?
-                    (gnc:make-gnc-monetary
-                     currency (xaccSplitGetSharePrice split))
-                    " ")))
+                (gnc:make-html-table-cell/markup
+					"text-cell"
+                    (if split-info?
+                        (gnc:make-gnc-monetary
+                         currency (xaccSplitGetSharePrice split))
+                        " "))))
     (if (amount-single-col column-vector)
         (addto! row-contents
                 (if split-info?
@@ -635,16 +649,26 @@
 
     document))
 
+(define register-report-guid "22104e02654c4adba844ee75a3f8d173")
+
+;; we get called from elsewhere... but this doesn't work FIX-ME, find
+;; out how to get report-guid's exported from report into the report
+;; system at large. might have to define this at the report-system
+;; level to get them read by other reports. Look at the aging reports
+;; for suggestions, perhaps
+(export register-report-guid)
+
 (gnc:define-report
  'version 1
  'name (N_ "Register")
+ 'report-guid register-report-guid
  'options-generator options-generator
  'renderer reg-renderer
  'in-menu? #f)
 
 (define (gnc:register-report-create-internal invoice? query journal? double?
                                              title debit-string credit-string)
-  (let* ((options (gnc:make-report-options "Register"))
+  (let* ((options (gnc:make-report-options register-report-guid))
          (query-op (gnc:lookup-option options "__reg" "query"))
          (journal-op (gnc:lookup-option options "__reg" "journal"))
          (double-op (gnc:lookup-option options "__reg" "double"))
@@ -664,6 +688,6 @@
     (gnc:option-set-value title-op title)
     (gnc:option-set-value debit-op debit-string)
     (gnc:option-set-value credit-op credit-string)
-    (gnc:make-report "Register" options)))
+    (gnc:make-report register-report-guid options)))
 
 (export gnc:register-report-create-internal)

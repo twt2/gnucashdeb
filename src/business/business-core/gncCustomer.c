@@ -45,6 +45,10 @@
 #include "gncJobP.h"
 #include "gncTaxTableP.h"
 
+static gint gs_address_event_handler_id = 0;
+static void listen_for_address_events(QofInstance *entity, QofEventId event_type,
+			    gpointer user_data, gpointer event_data);
+
 struct _gncCustomer
 {
   QofInstance     inst;
@@ -128,6 +132,10 @@ GncCustomer *gncCustomerCreate (QofBook *book)
   cust->discount = gnc_numeric_zero();
   cust->credit = gnc_numeric_zero();
   cust->shipaddr = gncAddressCreate (book, &cust->inst);
+
+  if (gs_address_event_handler_id == 0) {
+    gs_address_event_handler_id = qof_event_register_handler(listen_for_address_events, NULL);
+  }
 
   qof_event_gen (&cust->inst, QOF_EVENT_CREATE, NULL);
 
@@ -393,6 +401,7 @@ void gncCustomerBeginEdit (GncCustomer *cust)
 static void gncCustomerOnError (QofInstance *inst, QofBackendError errcode)
 {
   PERR("Customer QofBackend Failure: %d", errcode);
+  gnc_engine_signal_commit_error( errcode );
 }
 
 static void gncCustomerOnDone (QofInstance *inst)
@@ -418,19 +427,19 @@ void gncCustomerCommitEdit (GncCustomer *cust)
 /* ============================================================== */
 /* Get Functions */
 
-const char * gncCustomerGetID (GncCustomer *cust)
+const char * gncCustomerGetID (const GncCustomer *cust)
 {
   if (!cust) return NULL;
   return cust->id;
 }
 
-const char * gncCustomerGetName (GncCustomer *cust)
+const char * gncCustomerGetName (const GncCustomer *cust)
 {
   if (!cust) return NULL;
   return cust->name;
 }
 
-GncAddress * gncCustomerGetAddr (GncCustomer *cust)
+GncAddress * gncCustomerGetAddr (const GncCustomer *cust)
 {
   if (!cust) return NULL;
   return cust->addr;
@@ -470,67 +479,67 @@ qofCustomerSetShipAddr (GncCustomer *cust, QofInstance *ship_addr_ent)
 	gncCustomerCommitEdit(cust);
 }
 
-GncAddress * gncCustomerGetShipAddr (GncCustomer *cust)
+GncAddress * gncCustomerGetShipAddr (const GncCustomer *cust)
 {
   if (!cust) return NULL;
   return cust->shipaddr;
 }
 
-const char * gncCustomerGetNotes (GncCustomer *cust)
+const char * gncCustomerGetNotes (const GncCustomer *cust)
 {
   if (!cust) return NULL;
   return cust->notes;
 }
 
-GncBillTerm * gncCustomerGetTerms (GncCustomer *cust)
+GncBillTerm * gncCustomerGetTerms (const GncCustomer *cust)
 {
   if (!cust) return NULL;
   return cust->terms;
 }
 
-GncTaxIncluded gncCustomerGetTaxIncluded (GncCustomer *cust)
+GncTaxIncluded gncCustomerGetTaxIncluded (const GncCustomer *cust)
 {
   if (!cust) return GNC_TAXINCLUDED_USEGLOBAL;
   return cust->taxincluded;
 }
 
-gnc_commodity * gncCustomerGetCurrency (GncCustomer *cust)
+gnc_commodity * gncCustomerGetCurrency (const GncCustomer *cust)
 {
   if (!cust) return NULL;
   return cust->currency;
 }
 
-gboolean gncCustomerGetActive (GncCustomer *cust)
+gboolean gncCustomerGetActive (const GncCustomer *cust)
 {
   if (!cust) return FALSE;
   return cust->active;
 }
 
-gnc_numeric gncCustomerGetDiscount (GncCustomer *cust)
+gnc_numeric gncCustomerGetDiscount (const GncCustomer *cust)
 {
   if (!cust) return gnc_numeric_zero();
   return cust->discount;
 }
 
-gnc_numeric gncCustomerGetCredit (GncCustomer *cust)
+gnc_numeric gncCustomerGetCredit (const GncCustomer *cust)
 {
   if (!cust) return gnc_numeric_zero();
   return cust->credit;
 }
 
-gboolean gncCustomerGetTaxTableOverride (GncCustomer *customer)
+gboolean gncCustomerGetTaxTableOverride (const GncCustomer *customer)
 {
   if (!customer) return FALSE;
   return customer->taxtable_override;
 }
 
-GncTaxTable* gncCustomerGetTaxTable (GncCustomer *customer)
+GncTaxTable* gncCustomerGetTaxTable (const GncCustomer *customer)
 {
   if (!customer) return NULL;
   return customer->taxtable;
 }
 
-GList * gncCustomerGetJoblist (GncCustomer *cust, gboolean show_all)
+GList * gncCustomerGetJoblist (const GncCustomer *cust, gboolean show_all)
 {
   if (!cust) return NULL;
 
@@ -557,7 +566,7 @@ gboolean gncCustomerIsDirty (GncCustomer *cust)
 
 /* Other functions */
 
-int gncCustomerCompare (GncCustomer *a, GncCustomer *b)
+int gncCustomerCompare (const GncCustomer *a, const GncCustomer *b)
 {
   if (!a && !b) return 0;
   if (!a && b) return 1;
@@ -566,6 +575,35 @@ int gncCustomerCompare (GncCustomer *a, GncCustomer *b)
   return(strcmp(a->name, b->name));
 }
 
+/**
+ * Listens for MODIFY events from addresses.   If the address belongs to a customer,
+ * mark the customer as dirty.
+ *
+ * @param entity Entity for the event
+ * @param event_type Event type
+ * @param user_data User data registered with the handler
+ * @param event_data Event data passed with the event.
+ */
+static void
+listen_for_address_events(QofInstance *entity, QofEventId event_type,
+			    gpointer user_data, gpointer event_data)
+{
+  GncCustomer* cust;
+
+  if ((event_type & QOF_EVENT_MODIFY) == 0) {
+  	return;
+  }
+  if (!GNC_IS_ADDRESS(entity)) {
+    return;
+  }
+  if (!GNC_IS_CUSTOMER(event_data)) {
+    return;
+  }
+  cust = GNC_CUSTOMER(event_data);
+  gncCustomerBeginEdit(cust);
+  mark_customer(cust);
+  gncCustomerCommitEdit(cust);
+}
 /* ============================================================== */
 /* Package-Private functions */
 static const char * _gncCustomerPrintable (gpointer item)
@@ -577,17 +615,17 @@ static const char * _gncCustomerPrintable (gpointer item)
 
 static QofObject gncCustomerDesc =
 {
-  interface_version:  QOF_OBJECT_VERSION,
-  e_type:             _GNC_MOD_NAME,
-  type_label:         "Customer",
-  create:             (gpointer)gncCustomerCreate,
-  book_begin:         NULL,
-  book_end:           NULL,
-  is_dirty:           qof_collection_is_dirty,
-  mark_clean:         qof_collection_mark_clean,
-  foreach:            qof_collection_foreach,
-  printable:          (const char* (*)(gpointer))gncCustomerGetName,
-  version_cmp:        (int (*)(gpointer, gpointer)) qof_instance_version_cmp,
+  .interface_version = QOF_OBJECT_VERSION,
+  .e_type            = _GNC_MOD_NAME,
+  .type_label        = "Customer",
+  .create            = (gpointer)gncCustomerCreate,
+  .book_begin        = NULL,
+  .book_end          = NULL,
+  .is_dirty          = qof_collection_is_dirty,
+  .mark_clean        = qof_collection_mark_clean,
+  .foreach           = qof_collection_foreach,
+  .printable         = (const char* (*)(gpointer))gncCustomerGetName,
+  .version_cmp       = (int (*)(gpointer, gpointer)) qof_instance_version_cmp,
 };
 
 gboolean gncCustomerRegister (void)

@@ -31,10 +31,12 @@
 #include "dialog-account.h"
 #include "GNCId.h"
 #include "gnc-account-sel.h"
+#include "gnc-commodity.h"
 #include "gnc-exp-parser.h"
 #include "gnc-gtk-utils.h"
 #include "gnc-ui-util.h"
 #include "qof.h"
+#include "gnc-session.h"
 
 #define ACCT_DATA_TAG "gnc-account-sel_acct"
 
@@ -146,6 +148,8 @@ gnc_account_sel_init (GNCAccountSel *gas)
         gas->acctTypeFilters = FALSE;
         gas->newAccountButton = NULL;
 
+        g_object_set(gas, "spacing", 2, (gchar*)NULL);
+
 	gas->store = gtk_list_store_new(NUM_ACCT_COLS, G_TYPE_STRING, G_TYPE_POINTER);
         widget =
 	  gtk_combo_box_entry_new_with_model(GTK_TREE_MODEL(gas->store), ACCT_COL_NAME);
@@ -183,7 +187,7 @@ gas_populate_list( GNCAccountSel *gas )
 	Account *acc;
 	GtkTreeIter iter;
 	GtkEntry *entry;
-	gint i, active = 0;
+	gint i, active = -1;
         GList *accts, *ptr, *filteredAccts;
         gchar *currentSel, *name;
 
@@ -204,7 +208,7 @@ gas_populate_list( GNCAccountSel *gas )
 	gtk_list_store_clear(gas->store);
 	for (ptr = filteredAccts, i = 0; ptr; ptr = g_list_next(ptr), i++) {
 	  acc = ptr->data;
-	  name = xaccAccountGetFullName(acc);
+	  name = gnc_account_get_full_name(acc);
 	  gtk_list_store_append(gas->store, &iter);
 	  gtk_list_store_set(gas->store, &iter,
 			     ACCT_COL_NAME, name,
@@ -218,7 +222,8 @@ gas_populate_list( GNCAccountSel *gas )
 
         /* If the account which was in the text box before still exists, then
          * reset to it. */
-	gtk_combo_box_set_active(GTK_COMBO_BOX(gas->combo), active);
+	if (active != -1)
+	  gtk_combo_box_set_active(GTK_COMBO_BOX(gas->combo), active);
 
         g_list_free( filteredAccts );
         if ( currentSel ) {
@@ -246,6 +251,17 @@ gas_filter_accounts( gpointer data, gpointer user_data )
                         return;
                 }
         }
+
+        if ( atnd->gas->acctCommodityFilters ) {
+                if ( g_list_find_custom( atnd->gas->acctCommodityFilters,
+                                  GINT_TO_POINTER(xaccAccountGetCommodity( a )),
+                                  gnc_commodity_compare_void)
+                     == NULL ) {
+                        return;
+                }
+        }
+
+        
         *atnd->outList = g_list_append( *atnd->outList, a );
 }
 
@@ -286,15 +302,14 @@ gnc_account_sel_set_account( GNCAccountSel *gas, Account *acct, gboolean set_def
 {
 	gas_find_data data;
 
-	if (set_default_acct)
-	{
-		gtk_combo_box_set_active( GTK_COMBO_BOX(gas->combo), 0 );
-	}
+        if (set_default_acct)
+        {
+          gtk_combo_box_set_active(GTK_COMBO_BOX(gas->combo), 0);
+        }
         else
-	{
-		gtk_combo_box_set_active( GTK_COMBO_BOX(gas->combo), -1 );
-	}
-
+        {
+	  gtk_combo_box_set_active( GTK_COMBO_BOX(gas->combo), -1 );
+        }
         if ( acct == NULL )
                 return;
 
@@ -322,19 +337,40 @@ gnc_account_sel_get_account( GNCAccountSel *gas )
 
 
 void
-gnc_account_sel_set_acct_filters( GNCAccountSel *gas, GList *filters )
+gnc_account_sel_set_acct_filters( GNCAccountSel *gas, GList *typeFilters, GList *commodityFilters )
 {
+        GList *src=NULL;
+        GList *dest=NULL;
+        gnc_commodity* commClone=NULL;
+
         if ( gas->acctTypeFilters != NULL ) {
                 g_list_free( gas->acctTypeFilters );
                 gas->acctTypeFilters = NULL;
         }
-        /* If it's null, then no filters exist. */
-        if ( ! filters ) {
+
+        if ( gas->acctCommodityFilters != NULL) {
+                g_list_free( gas->acctCommodityFilters );
+                gas->acctCommodityFilters = NULL;
+        }
+
+        /* If both filters are null, then no filters exist. */
+        if (( ! typeFilters ) && ( ! commodityFilters)) {
                 return;
         }
+
         /* This works because the GNCAccountTypes in the list are
          * ints-casted-as-pointers. */
-        gas->acctTypeFilters = g_list_copy( filters );
+        if (typeFilters)
+        {
+            gas->acctTypeFilters = g_list_copy( typeFilters );
+        }
+
+		/* Save the commodity filter list */
+        if (commodityFilters)
+        {
+            gas->acctCommodityFilters = g_list_copy(commodityFilters);
+        }
+
         gas_populate_list( gas );
 }
 
@@ -401,7 +437,7 @@ gnc_account_sel_set_new_account_ability( GNCAccountSel *gas,
 			  G_CALLBACK( gas_new_account_click ),
 			  gas );
         gtk_box_pack_start( GTK_BOX(gas), gas->newAccountButton,
-                            FALSE, FALSE, 2 );
+                            FALSE, FALSE, 0 );
 }
 
 void

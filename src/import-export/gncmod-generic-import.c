@@ -1,12 +1,13 @@
  /**@internal
  @file
  \brief module definition/initialization for the generic import infrastructure
- \author Copyright (c) 2002 Benoit Grégoire bock@step.polymtl.ca
+ \author Copyright (c) 2002 Benoit GrÃ©goire bock@step.polymtl.ca
  */
 
 #include "config.h"
 #include <gmodule.h>
 #include <libguile.h>
+#include <glib/gi18n.h>
 
 #include "gnc-import-format-gnome.h"
 #include "dialog-preferences.h"
@@ -57,7 +58,7 @@ libgncmod_generic_import_gnc_module_init(int refcount)
   if (!refcount) {
     gnc_import_format_gnome_register();
     gnc_preferences_add_to_page("generic-import.glade", "matcher_prefs",
-				"Online Banking");
+				_("Online Banking"));
 
   }
 

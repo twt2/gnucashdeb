@@ -394,6 +394,7 @@ gnc_tree_model_account_get_column_type (GtkTreeModel *tree_model,
 		case GNC_TREE_MODEL_ACCOUNT_COL_CLEARED_REPORT:
 		case GNC_TREE_MODEL_ACCOUNT_COL_RECONCILED:
 		case GNC_TREE_MODEL_ACCOUNT_COL_RECONCILED_REPORT:
+		case GNC_TREE_MODEL_ACCOUNT_COL_RECONCILED_DATE:
 		case GNC_TREE_MODEL_ACCOUNT_COL_FUTURE_MIN:
 		case GNC_TREE_MODEL_ACCOUNT_COL_FUTURE_MIN_REPORT:
 		case GNC_TREE_MODEL_ACCOUNT_COL_TOTAL:
@@ -549,6 +550,9 @@ gnc_tree_model_account_compute_period_balance(GncTreeModelAccount *model,
   time_t t1, t2;
   gnc_numeric b3;  
 
+  if( negative )
+  	*negative = FALSE;
+
   priv = GNC_TREE_MODEL_ACCOUNT_GET_PRIVATE(model);
   if (acct == priv->root)
     return g_strdup("");
@@ -580,6 +584,7 @@ gnc_tree_model_account_get_value (GtkTreeModel *tree_model,
 	Account *account;
 	gboolean negative; /* used to set "deficit style" aka red numbers */
 	gchar *string;
+	time_t last_date;
 
 	g_return_if_fail (GNC_IS_TREE_MODEL_ACCOUNT (model));
 	g_return_if_fail (iter != NULL);
@@ -673,19 +678,19 @@ gnc_tree_model_account_get_value (GtkTreeModel *tree_model,
 		case GNC_TREE_MODEL_ACCOUNT_COL_CLEARED:
 			g_value_init (value, G_TYPE_STRING);
 			string = gnc_ui_account_get_print_balance(xaccAccountGetClearedBalanceInCurrency,
-								  account, FALSE, &negative);
+								  account, TRUE, &negative);
 			g_value_take_string (value, string);
 			break;
 		case GNC_TREE_MODEL_ACCOUNT_COL_CLEARED_REPORT:
 			g_value_init (value, G_TYPE_STRING);
 			string = gnc_ui_account_get_print_report_balance(xaccAccountGetClearedBalanceInCurrency,
-									 account, FALSE, &negative);
+									 account, TRUE, &negative);
 			g_value_take_string (value, string);
 			break;
 		case GNC_TREE_MODEL_ACCOUNT_COL_COLOR_CLEARED:
 			g_value_init (value, G_TYPE_STRING);
 			string = gnc_ui_account_get_print_balance(xaccAccountGetClearedBalanceInCurrency,
-								  account, FALSE, &negative);
+								  account, TRUE, &negative);
 			gnc_tree_model_account_set_color(model, negative, value);
 			g_free(string);
 			break;
@@ -702,6 +707,13 @@ gnc_tree_model_account_get_value (GtkTreeModel *tree_model,
 									 account, FALSE, &negative);
 			g_value_take_string (value, string);
 			break;
+		case GNC_TREE_MODEL_ACCOUNT_COL_RECONCILED_DATE:
+			g_value_init (value, G_TYPE_STRING);
+			if (xaccAccountGetReconcileLastDate(account, &last_date)) {
+			  g_value_take_string(value, qof_print_date(last_date));
+			}
+			break;
+
 		case GNC_TREE_MODEL_ACCOUNT_COL_COLOR_RECONCILED:
 			g_value_init (value, G_TYPE_STRING);
 			string = gnc_ui_account_get_print_balance(xaccAccountGetReconciledBalanceInCurrency,

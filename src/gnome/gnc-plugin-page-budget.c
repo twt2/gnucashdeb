@@ -45,7 +45,6 @@
 #include "dialog-options.h"
 #include "dialog-utils.h"
 #include "gnc-gnome-utils.h"
-#include "gnc-html.h"
 #include "gnc-icons.h"
 #include "gnc-plugin-page-budget.h"
 #include "gnc-plugin-budget.h"
@@ -296,7 +295,7 @@ gnc_plugin_page_budget_init (GncPluginPageBudget *plugin_page)
     priv->fd.show_zero_total = TRUE;
 
     priv->sigFigs = 1;
-    recurrenceSet(&priv->r, 1, PERIOD_MONTH, NULL); 
+    recurrenceSet(&priv->r, 1, PERIOD_MONTH, NULL, WEEKEND_ADJ_NONE); 
 
     LEAVE("page %p, priv %p, action group %p",
           plugin_page, priv, action_group);
@@ -723,7 +722,7 @@ gnc_plugin_page_budget_options_apply_cb (GncDialog * d,
 					 gpointer user_data)
 {
     GncPluginPageBudgetPrivate *priv = user_data;
-    const gchar *name;
+    gchar *name;
     gchar *desc;
     gint num_periods;
     GncRecurrence *gr;
@@ -737,10 +736,9 @@ gnc_plugin_page_budget_options_apply_cb (GncDialog * d,
     if (name) {
         gnc_budget_set_name(priv->budget, name);
         DEBUG("%s", name);
+        g_free(name);
     }
 
-    //FIXME: this is special broken case where we actually do need to
-    //free because widget is a GtkTextView
     desc = (gchar *) gnc_dialog_get_string(d, "BudgetDescription");
     gnc_budget_set_description(priv->budget, desc);
     g_free(desc);
@@ -909,7 +907,7 @@ gnc_plugin_page_budget_cmd_estimate_budget(GtkAction *action,
         dialog = gtk_message_dialog_new (
             GTK_WINDOW(gnc_plugin_page_get_window(GNC_PLUGIN_PAGE(page))),
             GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL,
-            GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE,
+            GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE, "%s", 
             _("You must select at least one account to estimate."));
         gtk_dialog_run (GTK_DIALOG(dialog));
         gtk_widget_destroy(dialog);
@@ -936,7 +934,8 @@ gnc_plugin_page_budget_cmd_estimate_budget(GtkAction *action,
         
         gnc_date_edit_get_gdate(GNC_DATE_EDIT(gde), &date);
         recurrenceSet(&priv->r, recurrenceGetMultiplier(r), 
-                      recurrenceGetPeriodType(r), &date);
+                      recurrenceGetPeriodType(r), &date,
+                      recurrenceGetWeekendAdjust(r));
         priv->sigFigs = 
             gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(dtr));
 

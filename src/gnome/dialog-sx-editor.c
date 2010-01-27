@@ -246,7 +246,7 @@ editor_help_button_clicked(GtkButton *b, GncSxEditorDialog *sxed)
 static void
 editor_ok_button_clicked( GtkButton *b, GncSxEditorDialog *sxed )
 {
-    GNCBook *book;
+    QofBook *book;
     SchedXactions *sxes;
 
     if ( !gnc_sxed_check_consistent( sxed ) ) 
@@ -765,7 +765,7 @@ gnc_sxed_check_consistent( GncSxEditorDialog *sxed )
                 GTK_TOGGLE_BUTTON(sxed->notifyOpt) );
 
         if (((ttVarCount > 0) || multi_commodity) && autocreateState) {
-            gnc_warning_dialog(sxed->dialog,
+            gnc_warning_dialog(sxed->dialog, "%s", 
                                _("Scheduled Transactions with variables "
                                  "cannot be automatically created."));
             return FALSE;
@@ -774,7 +774,7 @@ gnc_sxed_check_consistent( GncSxEditorDialog *sxed )
         /* Fix for part of Bug#121740 -- auto-create transactions are
          * only valid if there's actually a transaction to create. */
         if ( autocreateState && splitCount == 0 ) {
-            gnc_warning_dialog( sxed->dialog,
+            gnc_warning_dialog(sxed->dialog, "%s", 
                                 _("Scheduled Transactions without a template "
                                   "transaction cannot be automatically created.") );
             return FALSE;
@@ -862,6 +862,8 @@ gnc_sxed_check_consistent( GncSxEditorDialog *sxed )
 static void
 gnc_sxed_save_sx( GncSxEditorDialog *sxed )
 {
+	gnc_sx_begin_edit( sxed->sx );
+
     /* name */
     {
         char *name;
@@ -963,6 +965,8 @@ gnc_sxed_save_sx( GncSxEditorDialog *sxed )
         /* now that we have it, set the start date */
         xaccSchedXactionSetStartDate( sxed->sx, &gdate );
     }
+
+	gnc_sx_commit_edit( sxed->sx );
 }
 
 static void
@@ -1029,7 +1033,8 @@ scheduledxaction_editor_dialog_destroy(GtkObject *object, gpointer data)
          * "Cancel" is clicked, the flag will still be true, and this
          * SX will be cleaned, here. -- jsled
          */
-        xaccSchedXactionFree( sxed->sx );
+		gnc_sx_begin_edit( sxed->sx );
+        xaccSchedXactionDestroy( sxed->sx );
     }
     sxed->sx = NULL;
 

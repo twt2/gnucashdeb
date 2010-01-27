@@ -498,6 +498,12 @@ xaccSplitSetAccount (Split *s, Account *acc)
         xaccTransCommitEdit(trans);
 }
 
+static void commit_err (QofInstance *inst, QofBackendError errcode)
+{
+  PERR("commit error: %d", errcode);
+  gnc_engine_signal_commit_error( errcode );
+}
+
 /* An engine-private helper for completing xaccTransCommitEdit(). */
 void
 xaccSplitCommitEdit(Split *s)
@@ -551,7 +557,7 @@ xaccSplitCommitEdit(Split *s)
        original and new transactions, for the _next_ begin/commit cycle. */
     s->orig_acc = s->acc;
     s->orig_parent = s->parent;
-    qof_commit_edit_part2(QOF_INSTANCE(s), NULL, NULL, 
+    qof_commit_edit_part2(QOF_INSTANCE(s), commit_err, NULL, 
                           (void (*) (QofInstance *)) xaccFreeSplit);
 
     if (acc) {
@@ -1050,7 +1056,7 @@ xaccSplitConvertAmount (const Split *split, Account * account)
    * rate and just return the 'other' split amount.
    */
   txn = xaccSplitGetParent (split);
-  if (txn && gnc_numeric_zero_p (xaccTransGetImbalance (txn))) {
+  if (txn && xaccTransIsBalanced (txn)) {
     const Split *osplit = xaccSplitGetOtherSplit (split);
 
     if (osplit)
@@ -1258,7 +1264,7 @@ xaccSplitGetCorrAccountFullName(const Split *sa)
 
     return g_strdup(split_const);
   }
-  return xaccAccountGetFullName(other_split->acc);
+  return gnc_account_get_full_name(other_split->acc);
 }
 
 const char *
@@ -1290,8 +1296,8 @@ xaccSplitCompareAccountFullNames(const Split *sa, const Split *sb)
 
   aa = sa->acc;
   ab = sb->acc;
-  full_a = xaccAccountGetFullName(aa);
-  full_b = xaccAccountGetFullName(ab);
+  full_a = gnc_account_get_full_name(aa);
+  full_b = gnc_account_get_full_name(ab);
   retval = g_utf8_collate(full_a, full_b);
   g_free(full_a);
   g_free(full_b);
@@ -1527,6 +1533,15 @@ xaccSplitGetLot (const Split *split)
    return split ? split->lot : NULL;
 }
 
+void
+xaccSplitSetLot(Split* split, GNCLot* lot)
+{
+   xaccTransBeginEdit (split->parent);
+   split->lot = lot;
+   qof_instance_set_dirty(QOF_INSTANCE(split));
+   xaccTransCommitEdit(split->parent);
+}
+
 const char *
 xaccSplitGetMemo (const Split *split)
 {
@@ -1653,6 +1668,9 @@ xaccSplitGetOtherSplit (const Split *split)
   int count, num_splits;
   Split *other = NULL;
   KvpValue *sva;
+  Account *trading_account = NULL;
+  Account *root_account = NULL;
+  gboolean trading_accts;
 
   if (!split) return NULL;
   trans = split->parent;
@@ -1669,15 +1687,19 @@ xaccSplitGetOtherSplit (const Split *split)
   return s1;
 #endif
 
+  trading_accts = xaccTransUseTradingAccounts (trans);
   num_splits = xaccTransCountSplits(trans);
   count = num_splits;
   sva = kvp_frame_get_slot (split->inst.kvp_data, "lot-split");
-  if (!sva && (2 != count)) return NULL;
+  if (!sva && !trading_accts && (2 != count)) return NULL;
 
   for (i = 0; i < num_splits; i++) {
       Split *s = xaccTransGetSplit(trans, i);
       if (s == split) { --count; continue; }
       if (kvp_frame_get_slot (s->inst.kvp_data, "lot-split")) 
+          { --count; continue; }
+      if (trading_accts && 
+          xaccAccountGetType(xaccSplitGetAccount(s)) == ACCT_TYPE_TRADING)
           { --count; continue; }
       other = s;
   }
@@ -1743,17 +1765,17 @@ xaccSplitUnvoid(Split *split)
 /* Hook into the QofObject registry */
 
 static QofObject split_object_def = {
-  interface_version: QOF_OBJECT_VERSION,
-  e_type:            GNC_ID_SPLIT,
-  type_label:        "Split",
-  create:            (gpointer)xaccMallocSplit,
-  book_begin:        NULL,
-  book_end:          NULL,
-  is_dirty:          qof_collection_is_dirty,
-  mark_clean:        qof_collection_mark_clean,
-  foreach:           qof_collection_foreach,
-  printable:         (const char* (*)(gpointer)) xaccSplitGetMemo,
-  version_cmp:       (int (*)(gpointer, gpointer)) qof_instance_version_cmp,
+  .interface_version = QOF_OBJECT_VERSION,
+  .e_type            = GNC_ID_SPLIT,
+  .type_label        = "Split",
+  .create            = (gpointer)xaccMallocSplit,
+  .book_begin        = NULL,
+  .book_end          = NULL,
+  .is_dirty          = qof_collection_is_dirty,
+  .mark_clean        = qof_collection_mark_clean,
+  .foreach           = qof_collection_foreach,
+  .printable         = (const char* (*)(gpointer)) xaccSplitGetMemo,
+  .version_cmp       = (int (*)(gpointer, gpointer)) qof_instance_version_cmp,
 };
 
 static gpointer 

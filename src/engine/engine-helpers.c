@@ -47,7 +47,7 @@ cannot be considered "standard" or public parts of QOF. */
 static QofLogModule log_module = GNC_MOD_ENGINE;
 
 Timespec
-gnc_transaction_get_date_posted(Transaction *t) 
+gnc_transaction_get_date_posted(const Transaction *t) 
 {
   Timespec result;
   xaccTransGetDatePostedTS(t, &result);
@@ -55,7 +55,7 @@ gnc_transaction_get_date_posted(Transaction *t)
 }
 
 Timespec
-gnc_transaction_get_date_entered(Transaction *t) 
+gnc_transaction_get_date_entered(const Transaction *t) 
 {
   Timespec result;
   xaccTransGetDateEnteredTS(t, &result);
@@ -63,7 +63,7 @@ gnc_transaction_get_date_entered(Transaction *t)
 }
 
 Timespec
-gnc_split_get_date_reconciled(Split *s) 
+gnc_split_get_date_reconciled(const Split *s) 
 {
   Timespec result;
   xaccSplitGetDateReconciledTS(s, &result);
@@ -125,7 +125,7 @@ gnc_guid2scm(GUID guid)
   char string[GUID_ENCODING_LENGTH + 1];
 
   if (!guid_to_string_buff(&guid, string))
-    return SCM_UNDEFINED;
+    return SCM_BOOL_F;
 
   return scm_makfrom0str(string);
 }
@@ -382,10 +382,10 @@ gnc_scm2kvp_match_where (SCM where_scm)
 }
 
 static SCM
-gnc_guid_glist2scm (GList *account_guids)
+gnc_guid_glist2scm (const GList *account_guids)
 {
   SCM guids = SCM_EOL;
-  GList *node;
+  const GList *node;
 
   for (node = account_guids; node; node = node->next)
   {
@@ -409,10 +409,13 @@ gnc_scm2guid_glist (SCM guids_scm)
   while (!SCM_NULLP (guids_scm))
   {
     SCM guid_scm = SCM_CAR (guids_scm);
-    GUID *guid;
+    GUID *guid = NULL;
 
-    guid = guid_malloc ();
-    *guid = gnc_scm2guid (guid_scm);
+    if (guid_scm != SCM_BOOL_F)
+    {
+      guid = guid_malloc ();
+      *guid = gnc_scm2guid (guid_scm);
+    }
 
     guids = g_list_prepend (guids, guid);
 
@@ -460,10 +463,10 @@ gnc_query_scm2numeric (SCM pair)
 }
 
 static SCM
-gnc_query_path2scm (GSList *path)
+gnc_query_path2scm (const GSList *path)
 {
   SCM path_scm = SCM_EOL;
-  GSList *node;
+  const GSList *node;
 
   for (node = path; node; node = node->next)
   {
@@ -522,7 +525,7 @@ gnc_scm2KvpValueTypeype (SCM value_type_scm)
 static SCM gnc_kvp_frame2scm (KvpFrame *frame);
 
 static SCM
-gnc_kvp_value2scm (KvpValue *value)
+gnc_kvp_value2scm (const KvpValue *value)
 {
   SCM value_scm = SCM_EOL;
   KvpValueType value_t;
@@ -663,8 +666,13 @@ gnc_scm2KvpValue (SCM value_scm)
     }
 
     case KVP_TYPE_GUID: {
-      GUID guid = gnc_scm2guid (val_scm);
-      value = kvp_value_new_guid (&guid);
+      if (val_scm != SCM_BOOL_F)
+      {
+        GUID guid = gnc_scm2guid (val_scm);
+        value = kvp_value_new_guid (&guid);
+      }
+      else
+        value = NULL;
       break;
     }
 
@@ -770,7 +778,7 @@ gnc_scm2KvpFrame (SCM frame_scm)
 }
 
 static SCM
-gnc_queryterm2scm (QofQueryTerm *qt)
+gnc_queryterm2scm (const QofQueryTerm *qt)
 {
   SCM qt_scm = SCM_EOL;
   QofQueryPredData *pd = NULL;
@@ -1413,10 +1421,10 @@ gnc_scm2query_term_query (SCM query_term_scm, query_version_t vers)
 }
 
 static SCM
-gnc_query_terms2scm (GList *terms)
+gnc_query_terms2scm (const GList *terms)
 {
   SCM or_terms = SCM_EOL;
-  GList *or_node;
+  const GList *or_node;
 
   for (or_node = terms; or_node; or_node = or_node->next)
   {
@@ -1524,7 +1532,7 @@ gnc_scm2query_or_terms (SCM or_terms, query_version_t vers)
 }
 
 static SCM
-gnc_query_sort2scm (QofQuerySort *qs)
+gnc_query_sort2scm (const QofQuerySort *qs)
 {
   SCM sort_scm = SCM_EOL;
   GSList *path;
@@ -2192,13 +2200,13 @@ gnc_commodity_to_scm (const gnc_commodity *commodity)
 }
 
 SCM
-gnc_book_to_scm (QofBook *book)
+gnc_book_to_scm (const QofBook *book)
 {
     return gnc_generic_to_scm(book, "_p_QofBook");
 }
 
 SCM
-qof_session_to_scm (QofSession *session)
+qof_session_to_scm (const QofSession *session)
 {
     return gnc_generic_to_scm(session, "_p_QofSession");
 }

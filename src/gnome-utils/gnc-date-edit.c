@@ -1,5 +1,5 @@
 /*
- * gnc-dateedit.c -- Date editor widget
+ * gnc-date-edit.c -- Date editor widget
  *
  * Copyright (C) 1997, 1998, 1999, 2000 Free Software Foundation
  * All rights reserved.
@@ -43,6 +43,9 @@
 #include <stdio.h>
 #include <time.h>
 
+#ifndef HAVE_LOCALTIME_R
+# include "localtime_r.h"
+#endif
 #include "gnc-date.h"
 #include "gnc-engine.h"
 #include "dialog-utils.h"
@@ -320,6 +323,7 @@ gnc_date_edit_popup (GNCDateEdit *gde)
                              GDK_CURRENT_TIME, TRUE))
   {
     gtk_widget_hide (gde->cal_popup);
+    LEAVE("Failed to grab window");
     return;
   }
 
@@ -337,14 +341,22 @@ gnc_date_edit_button_pressed (GtkWidget      *widget,
   GNCDateEdit *gde     = GNC_DATE_EDIT(data);
   GtkWidget   *ewidget = gtk_get_event_widget ((GdkEvent *)event);
 
+  ENTER("widget=%p, ewidget=%p, event=%p, gde=%p", widget, ewidget, event, gde);
+
   /* While popped up, ignore presses outside the popup window. */
   if (ewidget == gde->cal_popup)
+  {
+    LEAVE("Press on calendar. Ignoring.");
     return TRUE;
+  }
 
   /* If the press isn't to make the popup appear, just propagate it. */
   if (ewidget != gde->date_button ||
       gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (gde->date_button)))
+  {
+    LEAVE("Press, not on popup button, or while popup is raised.");
     return FALSE;
+  }
 
   if (!GTK_WIDGET_HAS_FOCUS (gde->date_button))
     gtk_widget_grab_focus (gde->date_button);
@@ -355,6 +367,7 @@ gnc_date_edit_button_pressed (GtkWidget      *widget,
 
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (gde->date_button), TRUE);
 
+  LEAVE("Popup in progress.");
   return TRUE;
 }
 
@@ -365,8 +378,9 @@ gnc_date_edit_button_released (GtkWidget      *widget,
 {
   GNCDateEdit *gde     = GNC_DATE_EDIT(data);
   GtkWidget   *ewidget = gtk_get_event_widget ((GdkEvent *)event);
-
   gboolean popup_in_progress = FALSE;
+
+  ENTER("widget=%p, ewidget=%p, event=%p, gde=%p", widget, ewidget, event, gde);
 
   if (gde->popup_in_progress)
   {
@@ -376,7 +390,10 @@ gnc_date_edit_button_released (GtkWidget      *widget,
 
   /* Propagate releases on the calendar. */
   if (ewidget == gde->calendar)
+  {
+    LEAVE("Button release on calendar.");
     return FALSE;
+  }
 
   if (ewidget == gde->date_button)
   {
@@ -385,14 +402,17 @@ gnc_date_edit_button_released (GtkWidget      *widget,
         gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (gde->date_button)))
     {
       gnc_date_edit_popdown (gde);
+      LEAVE("Release on button, not in progress. Popped down.");
       return TRUE;
     }
 
+    LEAVE("Button release on button. Allowing.");
     return FALSE;
   }
 
   /* Pop down on a release anywhere else. */
   gnc_date_edit_popdown (gde);
+  LEAVE("Release not on button or calendar. Popping down.");
   return TRUE;
 }
 
@@ -447,11 +467,8 @@ fill_time_popup (GtkWidget *widget, GNCDateEdit *gde)
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (gde->time_popup), menu);
 
 	time (&current_time);
-	tm_returned = localtime (&current_time);
+	tm_returned = localtime_r (&current_time, &mtm);
 	g_return_if_fail(tm_returned != NULL);
-        /* The return value points to statically allocated, shared memory.
-         * Copy the contents so we don't risk unexpected changes. */
-        mtm = *tm_returned;
 	
 	for (i = gde->lower_hour; i <= gde->upper_hour; i++){
 		GtkWidget *item, *submenu;
@@ -681,11 +698,8 @@ gnc_date_edit_set_time (GNCDateEdit *gde, time_t the_time)
           gde->initial_time = the_time;
 
         /* Convert time_t to tm. */
-	tm_returned = localtime (&the_time);
+	tm_returned = localtime_r (&the_time, &tm_to_set);
 	g_return_if_fail(tm_returned != NULL);
-        /* The return value points to statically allocated, shared memory.
-         * Copy the contents so we don't risk unexpected changes. */
-        tm_to_set = *tm_returned;
 
 	gnc_date_edit_set_time_tm(gde, &tm_to_set);
 }
@@ -881,10 +895,12 @@ create_children (GNCDateEdit *gde)
                   | GTK_CALENDAR_SHOW_HEADING
                   | ((gde->flags & GNC_DATE_EDIT_WEEK_STARTS_ON_MONDAY)
                      ? GTK_CALENDAR_WEEK_START_MONDAY : 0)));
-	g_signal_connect (G_OBJECT (gde->calendar), "day_selected",
+	g_signal_connect (gde->calendar, "button-release-event",
+			  G_CALLBACK(gnc_date_edit_button_released), gde);
+	g_signal_connect (G_OBJECT (gde->calendar), "day-selected",
 			  G_CALLBACK  (day_selected), gde);
 	g_signal_connect (G_OBJECT (gde->calendar),
-                            "day_selected_double_click",
+                            "day-selected-double-click",
 			  G_CALLBACK  (day_selected_double_click), gde);
 	gtk_container_add (GTK_CONTAINER (frame), gde->calendar);
         gtk_widget_show (GTK_WIDGET(gde->calendar));
@@ -966,7 +982,7 @@ gnc_date_edit_get_date_internal (GNCDateEdit *gde)
 {
 	struct tm tm = {0};
 	char *str;
-	unsigned char *flags = NULL;
+	gchar *flags = NULL;
 
 	/* Assert, because we're just hosed if it's NULL */
 	g_assert(gde != NULL);
@@ -985,7 +1001,7 @@ gnc_date_edit_get_date_internal (GNCDateEdit *gde)
 
 	if (gde->flags & GNC_DATE_EDIT_SHOW_TIME) {
 		char *tokp = NULL;
-		unsigned char *temp;
+		gchar *temp;
 
 		str = g_strdup (gtk_entry_get_text
                                 (GTK_ENTRY (gde->time_entry)));

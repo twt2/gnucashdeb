@@ -302,7 +302,7 @@ sxftd_update_schedule( SXFromTransInfo *sxfti, GDate *date, GList **recurrences)
   {
   case FREQ_DAILY: {
       Recurrence *r = g_new0(Recurrence, 1);
-      recurrenceSet(r, 1, PERIOD_DAY, date);
+      recurrenceSet(r, 1, PERIOD_DAY, date, WEEKEND_ADJ_NONE);
       *recurrences = g_list_append(*recurrences, r);
     } break;
 
@@ -310,7 +310,7 @@ sxftd_update_schedule( SXFromTransInfo *sxfti, GDate *date, GList **recurrences)
   case FREQ_BIWEEKLY: {
       Recurrence *r = g_new0(Recurrence, 1);
       int mult = (index == FREQ_BIWEEKLY ? 2 : 1);
-      recurrenceSet(r, mult, PERIOD_WEEK, date);
+      recurrenceSet(r, mult, PERIOD_WEEK, date, WEEKEND_ADJ_NONE);
       *recurrences = g_list_append(*recurrences, r);
   } break;
 
@@ -323,7 +323,7 @@ sxftd_update_schedule( SXFromTransInfo *sxfti, GDate *date, GList **recurrences)
                   : (index == FREQ_QUARTERLY
                      ? 3
                      : 12));
-      recurrenceSet(r, mult, PERIOD_MONTH, date);
+      recurrenceSet(r, mult, PERIOD_MONTH, date, recurrenceGetWeekendAdjust(r));
       *recurrences = g_list_append(*recurrences, r);
   } break;
 
@@ -527,7 +527,8 @@ static void
 sxftd_close(SXFromTransInfo *sxfti, gboolean delete_sx)
 {
   if ( sxfti->sx && delete_sx ) {
-    xaccSchedXactionFree(sxfti->sx);
+	gnc_sx_begin_edit(sxfti->sx);
+    xaccSchedXactionDestroy(sxfti->sx);
   }
   sxfti->sx = NULL;
 
@@ -549,7 +550,7 @@ sxftd_ok_clicked(SXFromTransInfo *sxfti)
   else
   {
     if ( sx_error == SXFTD_ERRNO_UNBALANCED_XACTION ) {
-            gnc_error_dialog( gnc_ui_get_toplevel(), 
+            gnc_error_dialog( gnc_ui_get_toplevel(), "%s",  
                               _( "The Scheduled Transaction is unbalanced. "
                                  "You are strongly encouraged to correct this situation." ) );
     }
@@ -627,7 +628,8 @@ sxftd_destroy( GtkWidget *w, gpointer user_data )
   SXFromTransInfo *sxfti = (SXFromTransInfo*)user_data;
 
   if ( sxfti->sx ) {
-    xaccSchedXactionFree(sxfti->sx);
+	gnc_sx_begin_edit(sxfti->sx);
+    xaccSchedXactionDestroy(sxfti->sx);
     sxfti->sx = NULL;
   }
 
@@ -767,7 +769,7 @@ gnc_sx_create_from_trans( Transaction *trans )
   if ( (errno = sxftd_init( sxfti )) < 0 ) {
           if ( errno == SXFTD_ERRNO_OPEN_XACTION )
           {
-                  gnc_error_dialog( gnc_ui_get_toplevel(),
+                  gnc_error_dialog( gnc_ui_get_toplevel(), "%s", 
                                     _( "Cannot create a Scheduled Transaction "
                                        "from a Transaction currently "
                                        "being edited. Please Enter the "
@@ -781,5 +783,5 @@ gnc_sx_create_from_trans( Transaction *trans )
           }
   }
 
-  gtk_widget_show_all(GTK_WIDGET(sxfti->dialog));
+  gtk_widget_show(GTK_WIDGET(sxfti->dialog));
 }

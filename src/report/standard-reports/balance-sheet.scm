@@ -62,7 +62,7 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-module (gnucash report balance-sheet))
+(define-module (gnucash report standard-reports balance-sheet))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (ice-9 slib))
 (use-modules (gnucash gnc-module))
@@ -189,7 +189,8 @@
                ACCT-TYPE-ASSET ACCT-TYPE-LIABILITY
                ACCT-TYPE-STOCK ACCT-TYPE-MUTUAL ACCT-TYPE-CURRENCY
                ACCT-TYPE-PAYABLE ACCT-TYPE-RECEIVABLE
-               ACCT-TYPE-EQUITY ACCT-TYPE-INCOME ACCT-TYPE-EXPENSE)
+               ACCT-TYPE-EQUITY ACCT-TYPE-INCOME ACCT-TYPE-EXPENSE
+               ACCT-TYPE-TRADING)
 	 (gnc-account-get-descendants-sorted (gnc-get-current-root-account))))
       #f #t))
     (gnc:options-add-account-levels!
@@ -358,6 +359,8 @@
                   (assoc-ref split-up-accounts ACCT-TYPE-EXPENSE)))
          (equity-accounts
           (assoc-ref split-up-accounts ACCT-TYPE-EQUITY))
+         (trading-accounts
+          (assoc-ref split-up-accounts ACCT-TYPE-TRADING))
 	 
          (doc (gnc:make-html-document))
 	 ;; this can occasionally put extra (blank) columns in our
@@ -441,6 +444,8 @@
                (equity-balance #f)
 	       (neg-retained-earnings #f) ;; credit, income - expenses, < 0
 	       (retained-earnings #f)
+	       (neg-trading-balance #f)
+	       (trading-balance #f)
                (unrealized-gain-collector #f)
                (total-equity-balance #f)
                (liability-plus-equity #f)
@@ -501,6 +506,18 @@
 	  (retained-earnings 'minusmerge
 			  neg-retained-earnings
 			  #f)
+	  (set! neg-trading-balance
+	        ;; If you pass a null account list to gnc:accountlist-get-comm-balance-at-date
+	        ;; it calculates a balance for all accounts, instead of no accounts.  This is 
+	        ;; probably a bug, but for now we'll work around it.
+	        (if (null? trading-accounts)
+	            (gnc:make-commodity-collector)
+	            (gnc:accountlist-get-comm-balance-at-date
+	             trading-accounts date-tp)))
+	  (set! trading-balance (gnc:make-commodity-collector))
+	  (trading-balance 'minusmerge
+	                   neg-trading-balance
+	                   #f)
 	  (gnc:report-percent-done 14)
 	  ;; sum any unrealized gains
 	  ;; 
@@ -537,6 +554,9 @@
 	  (total-equity-balance 'merge
 				unrealized-gain-collector
 				#f)
+	  (total-equity-balance 'merge
+	                        trading-balance
+	                        #f)
 	  (gnc:report-percent-done 18)
 	  (set! liability-plus-equity (gnc:make-commodity-collector))
 	  (liability-plus-equity 'merge
@@ -650,6 +670,12 @@
 				  (_ "Retained Losses")
 				  retained-earnings))
 	  (and (not (gnc-commodity-collector-allzero?
+	             trading-balance))
+	       (add-subtotal-line right-table
+	                          (_ "Trading Gains")
+	                          (_ "Trading Losses")
+	                          trading-balance))
+	  (and (not (gnc-commodity-collector-allzero?
 		     unrealized-gain-collector))
 	       (add-subtotal-line right-table
 				  (_ "Unrealized Gains")
@@ -719,6 +745,7 @@
 (gnc:define-report 
  'version 1
  'name reportname
+ 'report-guid "c4173ac99b2b448289bf4d11c731af13"
  'menu-path (list gnc:menuname-asset-liability)
  'options-generator balance-sheet-options-generator
  'renderer (lambda (report-obj)

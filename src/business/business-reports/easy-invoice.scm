@@ -246,6 +246,12 @@
 			    (lambda () '()) #f))
 
   (gnc:register-inv-option
+   (gnc:make-string-option 
+    invoice-page (N_ "Custom Title") 
+    "z" (N_ "A custom string to replace Invoice, Bill or Expense Voucher") 
+    ""))
+
+  (gnc:register-inv-option
    (gnc:make-simple-boolean-option
     (N_ "Display Columns") (N_ "Date")
     "b" (N_ "Display the date?") #t))
@@ -669,13 +675,21 @@
     (gnc:option-value
      (gnc:lookup-option (gnc:report-options report-obj) section name)))
 
+  (define (title-string title custom-title)
+    (if (not (equal? "" custom-title))
+	(string-expand custom-title
+		       #\space "&nbsp;")
+	title))
+
   (let* ((document (gnc:make-html-document))
 	 (table '())
 	 (orders '())
 	 (invoice (opt-val invoice-page invoice-name))
 	 (owner '())
 	 (references? (opt-val "Display" "References"))
-	 (title (_ "Invoice"))
+	 (default-title (_ "Invoice"))
+	 (custom-title (opt-val invoice-page "Custom Title"))
+	 (title "")
 	 (invoice? #f))
 
     (define (add-order o)
@@ -691,10 +705,10 @@
 	      ((eqv? type GNC-OWNER-CUSTOMER)
 	       (set! invoice? #t))
 	      ((eqv? type GNC-OWNER-VENDOR)
-	       (set! title (_ "Bill")))
+	       (set! default-title (_ "Bill")))
 	      ((eqv? type GNC-OWNER-EMPLOYEE)
-	       (set! title (_ "Expense Voucher")))))
-	  (set! title (sprintf #f (_"%s #%d") title
+	       (set! default-title (_ "Expense Voucher")))))
+	  (set! title (sprintf #f (_"%s #%d") (title-string default-title custom-title)
 			       (gncInvoiceGetID invoice)))))
 
 ;    (gnc:html-document-set-title! document title)
@@ -712,8 +726,9 @@
         (add-html! document "<table width='100%'><tr>")
         (add-html! document "<td align='left'>")
         (add-html! document "<b><u>")
-	(add-html! document (sprintf #f (_ "Invoice #%d")
-				     (gncInvoiceGetID invoice)))
+	(add-html! document title)
+;;	(add-html! document (sprintf #f (_ "Invoice #%d")
+;;				     (gncInvoiceGetID invoice)))
         (add-html! document "</u></b></td>")
         (add-html! document "<td align='right'>")
 
@@ -851,19 +866,22 @@
 
     document))
 
+(define easy-invoice-guid "67112f318bef4fc496bdc27d106bbda4")
+
 (gnc:define-report
  'version 1
  'name (N_ "Easy Invoice")
+ 'report-guid easy-invoice-guid
  'menu-path (list gnc:menuname-business-reports)
  'options-generator options-generator
  'renderer reg-renderer
  'in-menu? #t)
 
 (define (gnc:easy-invoice-report-create-internal invoice)
-  (let* ((options (gnc:make-report-options (N_ "Easy Invoice")))
+  (let* ((options (gnc:make-report-options easy-invoice-guid))
          (invoice-op (gnc:lookup-option options invoice-page invoice-name)))
 
     (gnc:option-set-value invoice-op invoice)
-    (gnc:make-report (N_ "Easy Invoice") options)))
+    (gnc:make-report easy-invoice-guid options)))
 
 (export gnc:easy-invoice-report-create-internal)

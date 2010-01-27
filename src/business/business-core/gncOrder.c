@@ -293,7 +293,7 @@ void gncOrderRemoveEntry (GncOrder *order, GncEntry *entry)
 
 /* Get Functions */
 
-const char * gncOrderGetID (GncOrder *order)
+const char * gncOrderGetID (const GncOrder *order)
 {
   if (!order) return NULL;
   return order->id;
@@ -305,33 +305,33 @@ GncOwner * gncOrderGetOwner (GncOrder *order)
   return &order->owner;
 }
 
-Timespec gncOrderGetDateOpened (GncOrder *order)
+Timespec gncOrderGetDateOpened (const GncOrder *order)
 {
   Timespec ts; ts.tv_sec = 0; ts.tv_nsec = 0;
   if (!order) return ts;
   return order->opened;
 }
 
-Timespec gncOrderGetDateClosed (GncOrder *order)
+Timespec gncOrderGetDateClosed (const GncOrder *order)
 {
   Timespec ts; ts.tv_sec = 0; ts.tv_nsec = 0;
   if (!order) return ts;
   return order->closed;
 }
 
-const char * gncOrderGetNotes (GncOrder *order)
+const char * gncOrderGetNotes (const GncOrder *order)
 {
   if (!order) return NULL;
   return order->notes;
 }
 
-const char * gncOrderGetReference (GncOrder *order)
+const char * gncOrderGetReference (const GncOrder *order)
 {
   if (!order) return NULL;
   return order->reference;
 }
 
-gboolean gncOrderGetActive (GncOrder *order)
+gboolean gncOrderGetActive (const GncOrder *order)
 {
   if (!order) return FALSE;
   return order->active;
@@ -344,7 +344,7 @@ GList * gncOrderGetEntries (GncOrder *order)
   return order->entries;
 }
 
-gboolean gncOrderIsClosed (GncOrder *order)
+gboolean gncOrderIsClosed (const GncOrder *order)
 {
   if (!order) return FALSE;
   if (order->closed.tv_sec || order->closed.tv_nsec) return TRUE;
@@ -361,6 +361,7 @@ void gncOrderBeginEdit (GncOrder *order)
 static void gncOrderOnError (QofInstance *order, QofBackendError errcode)
 {
   PERR("Order QofBackend Failure: %d", errcode);
+  gnc_engine_signal_commit_error( errcode );
 }
 
 static void gncOrderOnDone (QofInstance *order) {}
@@ -378,7 +379,7 @@ void gncOrderCommitEdit (GncOrder *order)
 			 gncOrderOnDone, order_free);
 }
 
-int gncOrderCompare (GncOrder *a, GncOrder *b)
+int gncOrderCompare (const GncOrder *a, const GncOrder *b)
 {
   int compare;
 
@@ -421,17 +422,17 @@ _gncOrderPrintable (gpointer obj)
 
 static QofObject gncOrderDesc =
 {
-  interface_version:  QOF_OBJECT_VERSION,
-  e_type:             _GNC_MOD_NAME,
-  type_label:         "Order",
-  create:             (gpointer)gncOrderCreate,
-  book_begin:         NULL,
-  book_end:           NULL,
-  is_dirty:           qof_collection_is_dirty,
-  mark_clean:         qof_collection_mark_clean,
-  foreach:            qof_collection_foreach,
-  printable:          _gncOrderPrintable,
-  version_cmp:        (int (*)(gpointer, gpointer)) qof_instance_version_cmp,
+  .interface_version = QOF_OBJECT_VERSION,
+  .e_type            = _GNC_MOD_NAME,
+  .type_label        = "Order",
+  .create            = (gpointer)gncOrderCreate,
+  .book_begin        = NULL,
+  .book_end          = NULL,
+  .is_dirty          = qof_collection_is_dirty,
+  .mark_clean        = qof_collection_mark_clean,
+  .foreach           = qof_collection_foreach,
+  .printable         = _gncOrderPrintable,
+  .version_cmp       = (int (*)(gpointer, gpointer)) qof_instance_version_cmp,
 };
 
 gboolean gncOrderRegister (void)

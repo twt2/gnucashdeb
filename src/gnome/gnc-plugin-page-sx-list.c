@@ -421,7 +421,10 @@ gnc_plugin_page_sx_list_save_page (GncPluginPage *plugin_page,
     priv = GNC_PLUGIN_PAGE_SX_LIST_GET_PRIVATE(page);
 
     g_key_file_set_integer(key_file, group_name, "dense_cal_num_months",
-                           gnc_dense_cal_get_num_months(priv->gdcal)); 
+                           gnc_dense_cal_get_num_months(priv->gdcal));
+
+    g_key_file_set_integer(key_file, group_name, "paned_position",
+                           gtk_paned_get_position(GTK_PANED(priv->widget)));
 }
 
 /**
@@ -459,6 +462,16 @@ gnc_plugin_page_sx_list_recreate_page (GtkWidget *window,
             g_error_free(err);
     }
 
+    {
+        GError *err = NULL;
+        gint paned_position = g_key_file_get_integer(key_file, group_name,
+                                                     "paned_position", &err);
+        if (err == NULL)
+            gtk_paned_set_position(GTK_PANED(priv->widget), paned_position);
+        else
+            g_error_free(err);
+    }
+
     return GNC_PLUGIN_PAGE(page);
 }
 
@@ -476,7 +489,7 @@ gnc_plugin_page_sx_list_cmd_new(GtkAction *action, GncPluginPageSxList *page)
         
         g_date_clear(&now, 1);
         g_date_set_time_t(&now, time(NULL));
-        recurrenceSet(r, 1, PERIOD_MONTH, &now);
+        recurrenceSet(r, 1, PERIOD_MONTH, &now, WEEKEND_ADJ_NONE);
         schedule = gnc_sx_get_schedule(new_sx);
         schedule = g_list_append(schedule, r);
         gnc_sx_set_schedule(new_sx, schedule);
@@ -540,11 +553,12 @@ _destroy_sx(gpointer data, gpointer user_data)
 {
     SchedXactions *sxes;
     SchedXaction *sx = (SchedXaction*)data;
-    GNCBook *book;
+    QofBook *book;
     book = gnc_get_current_book();
     sxes = gnc_book_get_schedxactions(book);
     gnc_sxes_del_sx(sxes, sx);
-    xaccSchedXactionFree(sx);
+	gnc_sx_begin_edit(sx);
+    xaccSchedXactionDestroy(sx);
 }
 
 static void
@@ -578,7 +592,7 @@ gnc_plugin_page_sx_list_cmd_delete(GtkAction *action, GncPluginPageSxList *page)
        multiple SXs be deleted as well? Ideally, the number of
        to-be-deleted SXs should be mentioned here; see
        dialog-sx-since-last-run.c:807 */
-    if (gnc_verify_dialog(NULL, FALSE, _("Do you really want to delete this scheduled transaction?")))
+    if (gnc_verify_dialog(NULL, FALSE, "%s", _("Do you really want to delete this scheduled transaction?")))
     {
         g_list_foreach(to_delete, (GFunc)_destroy_sx, NULL);
     }

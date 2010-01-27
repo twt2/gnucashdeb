@@ -115,11 +115,11 @@ static gint inputbox_cb(GWEN_GUI *gwen_gui, guint32 flags, const gchar *title,
 static guint32 showbox_cb(GWEN_GUI *gwen_gui, guint32 flags, const gchar *title,
                           const gchar *text, guint32 guiid);
 static void hidebox_cb(GWEN_GUI *gwen_gui, guint32 id);
-static guint32 progress_start_cb(GWEN_GUI *gwen_gui, guint32 progressFlags,
-                                 const gchar *title, const gchar *text,
-                                 guint64 total, guint32 guiid);
-static gint progress_advance_cb(GWEN_GUI *gwen_gui, guint32 id,
-                                guint64 new_progress);
+static guint32 progress_start_cb(GWEN_GUI *gwen_gui, uint32_t progressFlags,
+                                 const char *title, const char *text,
+                                 uint64_t total, uint32_t guiid);
+static gint progress_advance_cb(GWEN_GUI *gwen_gui, uint32_t id,
+                                uint64_t new_progress);
 static gint progress_log_cb(GWEN_GUI *gwen_gui, guint32 id,
                             GWEN_LOGGER_LEVEL level, const gchar *text);
 static gint progress_end_cb(GWEN_GUI *gwen_gui, guint32 id);
@@ -184,6 +184,7 @@ struct _GncGWENGui {
 
     /* Certificates handling */
     GHashTable *accepted_certs;
+    GWEN_DB_NODE *permanently_accepted_certs;
     GWEN_GUI_CHECKCERT_FN builtin_checkcert;
 
     /* Dialogs */
@@ -285,6 +286,8 @@ gnc_GWEN_Gui_shutdown(void)
         g_hash_table_destroy(gui->passwords);
     if (gui->showbox_hash)
         g_hash_table_destroy(gui->showbox_hash);
+    if (gui->permanently_accepted_certs)
+        GWEN_DB_Group_free(gui->permanently_accepted_certs);
     if (gui->accepted_certs)
         g_hash_table_destroy(gui->accepted_certs);
     gtk_widget_destroy(gui->dialog);
@@ -371,6 +374,7 @@ setup_dialog(GncGWENGui *gui)
     gui->close_button = glade_xml_get_widget(xml, "close_button");
     gui->close_checkbutton = glade_xml_get_widget(xml, "close_checkbutton");
     gui->accepted_certs = NULL;
+    gui->permanently_accepted_certs = NULL;
     gui->showbox_hash = NULL;
     gui->showbox_id = 1;
 
@@ -448,6 +452,8 @@ reset_dialog(GncGWENGui *gui)
     if (!gui->accepted_certs)
         gui->accepted_certs = g_hash_table_new_full(
             g_str_hash, g_str_equal, (GDestroyNotify) g_free, NULL);
+    if (!gui->permanently_accepted_certs)
+        gui->permanently_accepted_certs = gnc_ab_get_permanent_certs();
 
     LEAVE(" ");
 }
@@ -1022,8 +1028,8 @@ hidebox_cb(GWEN_GUI *gwen_gui, guint32 id)
 }
 
 static guint32
-progress_start_cb(GWEN_GUI *gwen_gui, guint32 progressFlags, const gchar *title,
-                  const gchar *text, guint64 total, guint32 guiid)
+progress_start_cb(GWEN_GUI *gwen_gui, uint32_t progressFlags, const char *title,
+                  const char *text, uint64_t total, uint32_t guiid)
 {
     GncGWENGui *gui = GETDATA_GUI(gwen_gui);
     Progress *progress;
@@ -1031,7 +1037,7 @@ progress_start_cb(GWEN_GUI *gwen_gui, guint32 progressFlags, const gchar *title,
     g_return_val_if_fail(gui, -1);
 
     ENTER("gui=%p, flags=%d, title=%s, total=%" G_GUINT64_FORMAT, gui,
-          progressFlags, title ? title : "(null)", total);
+          progressFlags, title ? title : "(null)", (guint64)total);
 
     if (!gui->progresses) {
         /* Top-level progress */
@@ -1069,13 +1075,13 @@ progress_start_cb(GWEN_GUI *gwen_gui, guint32 progressFlags, const gchar *title,
 }
 
 static gint
-progress_advance_cb(GWEN_GUI *gwen_gui, guint32 id, guint64 progress)
+progress_advance_cb(GWEN_GUI *gwen_gui, uint32_t id, uint64_t progress)
 {
     GncGWENGui *gui = GETDATA_GUI(gwen_gui);
 
     g_return_val_if_fail(gui, -1);
 
-    ENTER("gui=%p, progress=%" G_GUINT64_FORMAT, gui, progress);
+    ENTER("gui=%p, progress=%" G_GUINT64_FORMAT, gui, (guint64)progress);
 
     if (id == 1                                  /* top-level progress */
         && gui->max_actions > 0                  /* progressbar active */
@@ -1251,7 +1257,8 @@ checkcert_cb(GWEN_GUI *gwen_gui, const GWEN_SSLCERTDESCR *cert,
     const gchar *hash, *status;
     struct md5_ctx md5_context;
     gchar cert_hash[16];
-    gint retval;
+    gchar *cert_hash_hex;
+    gint retval, i;
 
     g_return_val_if_fail(gui && gui->accepted_certs, -1);
 
@@ -1266,8 +1273,26 @@ checkcert_cb(GWEN_GUI *gwen_gui, const GWEN_SSLCERTDESCR *cert,
     md5_process_bytes(status, strlen(status), &md5_context);
     md5_finish_ctx(&md5_context, cert_hash);
 
+    /* Did we get the permanently accepted certs from AqBanking? */
+    if (gui->permanently_accepted_certs) {
+        /* Generate a hex string of the cert_hash for usage by AqBanking cert store */
+        cert_hash_hex = g_new0(gchar, 33);
+        for (i = 0; i < 16; i++)
+            g_snprintf(cert_hash_hex+2*i, 3, "%02X", (unsigned char)cert_hash[i]);
+    
+        retval=GWEN_DB_GetIntValue(gui->permanently_accepted_certs, cert_hash_hex, 0, -1);
+        g_free(cert_hash_hex);
+        if (retval == 0) {
+            /* Certificate is marked as accepted in AqBanking's cert store */
+            LEAVE("Certificate accepted by AqBanking's permanent cert store");
+            return 0;
+        }
+    } else {
+        g_warning("Can't check permanently accepted certs from invalid AqBanking cert store.");
+    }
+
     if (g_hash_table_lookup(gui->accepted_certs, cert_hash)) {
-        /* Certificate has been accepted before */
+        /* Certificate has been accepted by Gnucash before */
         LEAVE("Automatically accepting certificate");
         return 0;
     }

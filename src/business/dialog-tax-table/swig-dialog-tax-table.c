@@ -1207,15 +1207,16 @@ SWIG_Guile_GetArgs (SCM *dest, SCM rest,
 
 /* -------- TYPES TABLE (BEGIN) -------- */
 
-#define SWIGTYPE_p_GNCBook swig_types[0]
+#define SWIGTYPE_p_QofBook swig_types[0]
 #define SWIGTYPE_p_TaxTableWindow swig_types[1]
 #define SWIGTYPE_p_char swig_types[2]
 #define SWIGTYPE_p_double swig_types[3]
-#define SWIGTYPE_p_int swig_types[4]
-#define SWIGTYPE_p_unsigned_int swig_types[5]
-#define SWIGTYPE_p_unsigned_long swig_types[6]
-static swig_type_info *swig_types[8];
-static swig_module_info swig_module = {swig_types, 7, 0, 0, 0, 0};
+#define SWIGTYPE_p_float swig_types[4]
+#define SWIGTYPE_p_int swig_types[5]
+#define SWIGTYPE_p_unsigned_int swig_types[6]
+#define SWIGTYPE_p_unsigned_long swig_types[7]
+static swig_type_info *swig_types[9];
+static swig_module_info swig_module = {swig_types, 8, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1232,13 +1233,13 @@ static SCM
 _wrap_gnc_ui_tax_table_window_new (SCM s_0)
 {
 #define FUNC_NAME "gnc-ui-tax-table-window-new"
-  GNCBook *arg1 = (GNCBook *) 0 ;
+  QofBook *arg1 = (QofBook *) 0 ;
   SCM gswig_result;
   SWIGUNUSED int gswig_list_p = 0;
   TaxTableWindow *result = 0 ;
   
   {
-    arg1 = (GNCBook *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_GNCBook, 1, 0);
+    arg1 = (QofBook *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_QofBook, 1, 0);
   }
   result = (TaxTableWindow *)gnc_ui_tax_table_window_new(arg1);
   {
@@ -1257,37 +1258,41 @@ extern "C" {
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
-static swig_type_info _swigt__p_GNCBook = {"_p_GNCBook", "GNCBook *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_QofBook = {"_p_QofBook", "QofBook *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_TaxTableWindow = {"_p_TaxTableWindow", "TaxTableWindow *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "gchar *|char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_double = {"_p_double", "double *|gdouble *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_float = {"_p_float", "float *|gfloat *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_int = {"_p_int", "int *|gint *|time_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_int = {"_p_unsigned_int", "guint *|unsigned int *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_long = {"_p_unsigned_long", "SCM *|unsigned long *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
-  &_swigt__p_GNCBook,
+  &_swigt__p_QofBook,
   &_swigt__p_TaxTableWindow,
   &_swigt__p_char,
   &_swigt__p_double,
+  &_swigt__p_float,
   &_swigt__p_int,
   &_swigt__p_unsigned_int,
   &_swigt__p_unsigned_long,
 };
 
-static swig_cast_info _swigc__p_GNCBook[] = {  {&_swigt__p_GNCBook, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_QofBook[] = {  {&_swigt__p_QofBook, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_TaxTableWindow[] = {  {&_swigt__p_TaxTableWindow, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_double[] = {  {&_swigt__p_double, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_float[] = {  {&_swigt__p_float, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_int[] = {  {&_swigt__p_unsigned_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_long[] = {  {&_swigt__p_unsigned_long, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
-  _swigc__p_GNCBook,
+  _swigc__p_QofBook,
   _swigc__p_TaxTableWindow,
   _swigc__p_char,
   _swigc__p_double,
+  _swigc__p_float,
   _swigc__p_int,
   _swigc__p_unsigned_int,
   _swigc__p_unsigned_long,

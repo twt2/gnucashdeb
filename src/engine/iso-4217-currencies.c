@@ -162,6 +162,24 @@
   }
 
   {
+    const char *fullname = "Armenian Dram";
+    gnc_commodity *c = gnc_commodity_new(book,
+					 _(fullname),
+                                         "ISO4217",
+                                         "AMD",
+                                         "051",
+                                         100);
+
+    if(!c) {
+      PWARN("failed to create commodity for currency %s", fullname);
+    } else {
+      if(!gnc_commodity_table_insert(table, c)) {
+        PWARN("failed to insert %s into commodity table", fullname);
+      }
+    }
+  }
+
+  {
     const char *fullname = "Aruban Florin";
     gnc_commodity *c = gnc_commodity_new(book,
 					 _(fullname),
@@ -2670,6 +2688,24 @@
                                          "ISO4217",
                                          "SAR",
                                          "682",
+                                         100);
+
+    if(!c) {
+      PWARN("failed to create commodity for currency %s", fullname);
+    } else {
+      if(!gnc_commodity_table_insert(table, c)) {
+        PWARN("failed to insert %s into commodity table", fullname);
+      }
+    }
+  }
+
+  {
+    const char *fullname = "Serbian Dinar";
+    gnc_commodity *c = gnc_commodity_new(book,
+					 _(fullname),
+                                         "ISO4217",
+                                         "RSD",
+                                         "941",
                                          100);
 
     if(!c) {

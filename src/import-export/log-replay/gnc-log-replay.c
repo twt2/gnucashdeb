@@ -21,7 +21,7 @@
 /** @internal
     @file gnc-log-replay.c
     @brief .log file replay code
-    @author Copyright (c) 2003 Benoit Grégoire <bock@step.polymtl.ca>
+    @author Copyright (c) 2003 Benoit GrÃ©goire <bock@step.polymtl.ca>
 */
 #include "config.h"
 
@@ -360,7 +360,7 @@ static void  process_trans_record(  FILE *log_file)
   Transaction * trans = NULL;
   Split * split = NULL;
   Account * acct = NULL;
-  GNCBook * book = gnc_get_current_book();
+  QofBook * book = gnc_get_current_book();
 
   DEBUG("process_trans_record(): Begin...\n");
 

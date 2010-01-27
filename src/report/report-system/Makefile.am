@@ -25,7 +25,7 @@ swig-report-system.c: report-system.i ${top_srcdir}/src/base-typemaps.i
 	-I${top_srcdir}/src -o $@ $<
 endif
 
-AM_CFLAGS = \
+AM_CPPFLAGS = \
   -I${top_srcdir}/src \
   -I${top_srcdir}/src/gnc-module \
   -I${top_srcdir}/src/app-utils \
@@ -39,6 +39,7 @@ gncscm_DATA = \
      html-document.scm \
      html-piechart.scm \
      html-scatter.scm \
+     html-linechart.scm \
      html-style-info.scm \
      html-style-sheet.scm \
      html-table.scm \
@@ -51,7 +52,9 @@ gncscm_DATA = \
 gncmoddir = ${GNC_SHAREDIR}/guile-modules/gnucash/report-system
 
 gncscmmoddir = ${GNC_SHAREDIR}/guile-modules/gnucash/report/
-gncscmmod_DATA = report-system.scm
+gncscmmod_DATA = \
+    report-system.scm \
+	eguile-gnc.scm
 
 if GNUCASH_SEPARATE_BUILDDIR
 #For executing test cases

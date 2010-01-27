@@ -59,6 +59,7 @@ typedef struct AccountViewInfo_s     AccountViewInfo;
 struct AccountViewInfo_s
 {
   gboolean include_type[NUM_ACCOUNT_TYPES];
+  gboolean show_hidden;
 };
 
 
@@ -124,8 +125,7 @@ GType gnc_tree_view_account_get_type (void);
  *  but this code provides one so that it can be used with all parts
  *  of the gnucash gui.
  *
- *  @param group A list of the accounts to use as the first level of
- *  accounts in the created tree.  This list may not be NULL.
+ *  @param root The account to use as the first level of the created tree.
  *
  *  @param show_root Show the pseudo top-level account in this view.
  *
@@ -266,7 +266,7 @@ typedef gboolean (*gnc_tree_view_account_filter_func)(Account *account, gpointer
  *  thinks should possibly show.  The filter may perform any actions
  *  necessary on the account to decide whether it should be shown or
  *  not.  (I.E. Check type, placeholder status, etc.)  If the filter
- *  returns TRUE then the account wil be displayed.
+ *  returns TRUE then the account will be displayed.
  *
  *  @param account_view A pointer to an account tree view.
  *
@@ -283,7 +283,7 @@ typedef gboolean (*gnc_tree_view_account_filter_func)(Account *account, gpointer
 void gnc_tree_view_account_set_filter (GncTreeViewAccount *account_view, 
 				       gnc_tree_view_account_filter_func func,
 				       gpointer data,
-				       GtkDestroyNotify destroy);
+				       GtkFunction destroy);
 
 /*  This is a convenient filter function for use with
  *  gnc_tree_view_account_set_filter() and the functions in
@@ -303,6 +303,17 @@ void gnc_tree_view_account_set_filter (GncTreeViewAccount *account_view,
  * 
  */
 gboolean gnc_tree_view_account_filter_by_type_selection(
+    Account* acct, gpointer data);
+
+/*  This is a convenient filter function for use with
+ *  gnc_tree_view_account_set_filter() and the functions in
+ *  gnc-tree-model-account-types.h.  If you have some view that is
+ *  backed by the "account types" tree model, you can get a guint32
+ *  from that view's tree selection.  Then, you can use that account
+ *  type selection as a filter for the account tree view.  This also
+ *  can filter by whether an account is hidden or not.
+ */
+gboolean gnc_tree_view_account_filter_by_view_info(
     Account* acct, gpointer data);
 
 
@@ -476,6 +487,7 @@ void gnc_tree_view_account_expand_to_account (GncTreeViewAccount *view, Account 
 
 /** @} */
 
+/** @} */
 /** @} */
 
 G_END_DECLS

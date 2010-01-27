@@ -45,6 +45,8 @@
 #include "dialog-payment.h"
 #include "business-gnome-utils.h"
 
+#include "dialog-transfer.h"
+
 #define DIALOG_PAYMENT_CUSTOMER_CM_CLASS "customer-payment-dialog"
 #define DIALOG_PAYMENT_VENDOR_CM_CLASS "vendor-payment-dialog"
 
@@ -61,16 +63,19 @@ struct _payment_window {
   GtkWidget *	acct_tree;
 
   gint		component_id;
-  GNCBook *	book;
+  QofBook *	book;
   GncOwner	owner;
   GncInvoice *	invoice;
   GList *	acct_types;
+  GList *       acct_commodities;
 };
 
 
 void gnc_payment_ok_cb (GtkWidget *widget, gpointer data);
 void gnc_payment_cancel_cb (GtkWidget *widget, gpointer data);
 void gnc_payment_window_destroy_cb (GtkWidget *widget, gpointer data);
+void gnc_payment_acct_tree_row_activated_cb (GtkWidget *widget, GtkTreePath *path,
+                                             GtkTreeViewColumn *column, PaymentWindow *pw);
 
 
 static void
@@ -78,7 +83,7 @@ gnc_payment_window_refresh_handler (GHashTable *changes, gpointer data)
 {
   PaymentWindow *pw = data;
 
-  gnc_fill_account_select_combo (pw->post_combo, pw->book, pw->acct_types);
+  gnc_fill_account_select_combo (pw->post_combo, pw->book, pw->acct_types, pw->acct_commodities);
 }
 
 static void
@@ -110,8 +115,8 @@ gnc_payment_dialog_invoice_changed(PaymentWindow *pw)
 static void
 gnc_payment_dialog_owner_changed(PaymentWindow *pw)
 {
-  Account *last_acct;
-  GUID *guid;
+  Account *last_acct=NULL;
+  GUID *guid=NULL;
   KvpValue* value;
   KvpFrame* slots;
 
@@ -129,15 +134,36 @@ gnc_payment_dialog_owner_changed(PaymentWindow *pw)
 
   /* Now handle the account tree */
   slots = gncOwnerGetSlots(&pw->owner);
-  if (!slots) return;
+  if (slots)
+  {
+    value = kvp_frame_get_slot_path(slots, "payment", "last_acct", NULL);
+    if (value)
+    {
+      guid = kvp_value_get_guid(value);
+    }
+  }
 
-  value = kvp_frame_get_slot_path(slots, "payment", "last_acct", NULL);
-  if (!value) return;
-  
-  guid = kvp_value_get_guid(value);
-  if (!guid) return;
+  /* refresh the post and acc available accounts, but cleanup first */
+  if (pw->acct_types)
+  {
+    g_list_free(pw->acct_types);
+    pw->acct_types = NULL;
+  }
 
-  last_acct = xaccAccountLookup(guid, pw->book);
+  if (pw->acct_commodities)
+  {  
+    g_list_free(pw->acct_commodities);
+    pw->acct_commodities = NULL;
+  }
+
+  pw->acct_types = gnc_business_account_types(&pw->owner);
+  pw->acct_commodities = gnc_business_commodities (&pw->owner);
+  gnc_fill_account_select_combo (pw->post_combo, pw->book, pw->acct_types, pw->acct_commodities);
+
+  if (guid)
+  {
+    last_acct = xaccAccountLookup(guid, pw->book);
+  }
 
   /* Set the last-used transfer account */
   if (last_acct) {
@@ -271,15 +297,41 @@ gnc_payment_ok_cb (GtkWidget *widget, gpointer data)
   {
     const char *memo, *num;
     Timespec date;
+    gnc_numeric exch = gnc_numeric_create(1,1); //default to "one to one" rate
     
     /* Obtain all our ancillary information */
     memo = gtk_entry_get_text (GTK_ENTRY (pw->memo_entry));
     num = gtk_entry_get_text (GTK_ENTRY (pw->num_entry));
     date = gnc_date_edit_get_date_ts (GNC_DATE_EDIT (pw->date_edit));
 
+    /* If the 'acc' account and the post account don't have the same
+       currency, we need to get the user to specify the exchange rate */
+    if (!gnc_commodity_equal(xaccAccountGetCommodity(acc), xaccAccountGetCommodity(post)))
+    {
+        XferDialog* xfer;
+
+        text = _("The transfer and post accounts are associated with different currencies.  Please specify the conversion rate.");
+
+        xfer = gnc_xfer_dialog(pw->dialog, acc);
+        gnc_info_dialog(pw->dialog, "%s", text);
+
+        gnc_xfer_dialog_select_to_account(xfer,post);
+        gnc_xfer_dialog_set_amount(xfer, amount);
+        
+        /* All we want is the exchange rate so prevent the user from thinking 
+           it makes sense to mess with other stuff */
+        gnc_xfer_dialog_set_from_show_button_active(xfer, FALSE);
+        gnc_xfer_dialog_set_to_show_button_active(xfer, FALSE);
+        gnc_xfer_dialog_hide_from_account_tree(xfer);
+        gnc_xfer_dialog_hide_to_account_tree(xfer);
+        gnc_xfer_dialog_is_exchange_dialog(xfer, &exch);
+        gnc_xfer_dialog_run_until_done(xfer);
+    }
+        
     /* Now apply the payment */
     gncOwnerApplyPayment (&pw->owner, pw->invoice,
-			  post, acc, amount, date, memo, num);
+			  post, acc, amount, exch, date, memo, num);                    
+    
   }
   gnc_resume_gui_refresh ();
 
@@ -306,7 +358,37 @@ gnc_payment_window_destroy_cb (GtkWidget *widget, gpointer data)
   gnc_unregister_gui_component (pw->component_id);
 
   g_list_free (pw->acct_types);
+  g_list_free (pw->acct_commodities);
   g_free (pw);
+}
+
+void
+gnc_payment_acct_tree_row_activated_cb (GtkWidget *widget, GtkTreePath *path,
+                                        GtkTreeViewColumn *column, PaymentWindow *pw)
+{
+GtkTreeView *view;
+GtkTreeModel *model;
+GtkTreeIter iter;
+
+g_return_if_fail(widget);
+view = GTK_TREE_VIEW(widget);
+
+model = gtk_tree_view_get_model(view);
+if (gtk_tree_model_get_iter(model, &iter, path))
+{
+  if (gtk_tree_model_iter_has_child(model, &iter))
+  {
+    /* There are children,
+     * just expand or collapse the row. */
+    if (gtk_tree_view_row_expanded(view, path))
+      gtk_tree_view_collapse_row(view, path);
+    else
+      gtk_tree_view_expand_row(view, path, FALSE);
+  }
+  else
+    /* It's an account without any children, so click the Ok button. */
+    gnc_payment_ok_cb(widget, pw);
+}
 }
 
 /* Select the list of accounts to show in the tree */
@@ -344,7 +426,7 @@ find_handler (gpointer find_data, gpointer user_data)
 }
 
 static PaymentWindow *
-new_payment_window (GncOwner *owner, GNCBook *book, GncInvoice *invoice)
+new_payment_window (GncOwner *owner, QofBook *book, GncInvoice *invoice)
 {
   PaymentWindow *pw;
   GladeXML *xml;
@@ -376,6 +458,8 @@ new_payment_window (GncOwner *owner, GNCBook *book, GncInvoice *invoice)
 
   /* Compute the post-to account types */
   pw->acct_types = gnc_business_account_types (owner);
+
+  pw->acct_commodities = gnc_business_commodities (owner);
 
   /* Open and read the XML */
   xml = gnc_glade_xml_new ("payment.glade", "Payment Dialog");
@@ -430,6 +514,9 @@ new_payment_window (GncOwner *owner, GNCBook *book, GncInvoice *invoice)
   g_signal_connect (G_OBJECT (pw->invoice_choice), "changed",
 		    G_CALLBACK (gnc_payment_dialog_invoice_changed_cb), pw);
 
+  g_signal_connect (G_OBJECT (pw->acct_tree), "row-activated",
+		    G_CALLBACK (gnc_payment_acct_tree_row_activated_cb), pw);
+
   /* Register with the component manager */
   pw->component_id =
     gnc_register_gui_component (cm_class,
@@ -444,8 +531,7 @@ new_payment_window (GncOwner *owner, GNCBook *book, GncInvoice *invoice)
 				       QOF_EVENT_DESTROY);
 
   /* Fill in the post_combo and account_tree widgets */
-  gnc_fill_account_select_combo (pw->post_combo, pw->book, pw->acct_types);
-
+  gnc_fill_account_select_combo (pw->post_combo, pw->book, pw->acct_types, pw->acct_commodities);
   /* Show it all */
   gtk_widget_show_all (pw->dialog);
 
@@ -481,7 +567,7 @@ gnc_ui_payment_window_destroy (PaymentWindow *pw)
 }
 
 PaymentWindow *
-gnc_ui_payment_new_with_invoice (GncOwner *owner, GNCBook *book,
+gnc_ui_payment_new_with_invoice (GncOwner *owner, QofBook *book,
 				 GncInvoice *invoice)
 {
   GncOwner owner_def;
@@ -499,7 +585,7 @@ gnc_ui_payment_new_with_invoice (GncOwner *owner, GNCBook *book,
 }
 
 PaymentWindow *
-gnc_ui_payment_new (GncOwner *owner, GNCBook *book)
+gnc_ui_payment_new (GncOwner *owner, QofBook *book)
 {
   return gnc_ui_payment_new_with_invoice (owner, book, NULL);
 }

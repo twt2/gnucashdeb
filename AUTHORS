@@ -103,6 +103,7 @@ Andrew Arensburger <arensb@cfar.umd.edu> for FreeBSD & other patches
 Matt Armstrong <matt_armstrong@bigfoot.com> for misc fixes
 Jon Arney <jarney1@cox.net> Windows porting patches, misc fixes
 A. Alper Atici <alper_atici@yahoo.com> Turkish translation
+J. Alex Aycinena <alex.aycinena@gmail.com> Heavily improved Tax Report & TXF export
 Fred Baube <fred@moremagic.com> for attempted Java port/MoneyDance
 Roman Bertle <bertle@smoerz.org> Austrian German account templates
 Jan-Pascal van Best <j.p.vanbest@tbm.tudelft.nl> MT940 importer
@@ -110,6 +111,7 @@ Dennis Björklund <dennisb@cs.chalmers.se> Swedish translation
 Andreas Bogk <andreas@andreas.org> Postgres backend patch
 Per Bojsen <bojsen@worldnet.att.net> several core dump fixes
 Terry Boldt <tboldt@attglobal.net> financial calculator and expression parser
+Forest Bond <forest@alittletooquiet.net> Budget report improvements
 Richard Braakman <dark@xs4all.nl> xml version configure patch
 Simon Britnell <simon.britnell@peace.com> patch to RPM spec
 Christopher B. Browne <cbbrowne@hex.net> for perl, lots of scheme and documentation updates
@@ -120,7 +122,7 @@ Eskil Bylund <eskil.bylund@gmail.com> account type deprecation
 Paul Campbell <kemitix@users.sourceforge.net> reconcile children patch
 Conrad Canterford <conrad@mail.watersprite.com.au> register bug fix
 Bill Carlson <wwc@wwcnet.nu> performance improvements
-David Mar?n Carre?o <davefx@aspl.f2s.com> Spanish translation of account setup.
+David Marín Carreño <davefx@aspl.f2s.com> Spanish translation of account setup.
 Tomas Cernaj <tcernaj@gmx.de> GType consistency changes, register fixes
 Carol Champagne <carol@io.com> documentation & a patient GUI usability critic
 Nikos Charonitakis <charosn@her.forthnet.gr> Greek translation
@@ -154,6 +156,7 @@ Christoph Franzen <ChristophFranzen@gmx.net> German account template for Wohnung
 Dave Freese <DFreese@osc.uscg.mil> for leap-year fix
 Todd T. Fries <todd@flare.fries.net> OpenBSD fix
 John Goerzen <jgoerzen@complete.org> file i/o fix for 64-bit architectures
+Jeff Green <jeff@parit.ca> Python bindings, with grant funding from Assiniboine Credit Union (http://assiniboine.mb.ca/)
 Hans de Graaff <hans@degraaff.org> XML patches
 Daniel Hagerty <hag@linnaean.org> patch to balance sheet report
 Mitsuo Hamada <mhamada@redhat.com> messages Japanese translations
@@ -171,6 +174,7 @@ Péter Hosszú <hosszu@web.de> Hungarian translation
 Edward J. Huff <ejhuff@huff20may77.us> Date handling in reports, quarterly option
 Tomokazu Iwashita <iwashita@center.nitech.ac.jp> Japanese translation of xea
 David Jafferian <david.jafferian@east.sun.com> Delete account query code.
+Mark Jenkins <mark@parit.ca> Python bindings, with grant funding from Assiniboine Credit Union (http://assiniboine.mb.ca/) and Legal Aid Manitoba (http://www.legalaid.mb.ca/)
 Miquel Jordana Vilamitjana <jjvmjv@mundomail.net> Spanish translation of manual
 Prakash Kailasa <PrakashK@bigfoot.com> for gnome build fixes
 Alexey Kakunin <small@arcadia.spb.ru> quickfill patch for Cyrillic
@@ -201,7 +205,6 @@ Phil Longstaff <plongstaff@newearth.org> fixes for pricedb
 Duarte Loreto <happyguy_pt@hotmail.com> message and documentation Portuguese translations
 Raffael Luthiger <modir@huanga.com> Swiss German translation
 Lionel Elie Mamane <lionel@mamane.lu> Patches for gcc2.95 macro compatibility
-Cristian Marchi <cri79@libero.it> Italian translation
 Kjartan Maraas <kmaraas@gnome.org> Norwegian translations
 Heath Martin <martinh@pegasus.cc.ucf.edu> gnome patches, major register work, x86_64 support
 Matt Martin <mgmartin@abacusnet.net> guile error handling code
@@ -229,7 +232,7 @@ Gordon Oliver <gordo@pincoya.com> multiple currency status line patch
 Scott Oonk <s.oonk@comcast.net>, <scott.oonk@gmail.com> register changes for utf-8 and pango.
 Alan Orndorff <dwarf@solarisresources.com> Solaris packager
 Myroslav Opyr <mopyr@IPM.Lviv.UA> for misc patches
-Laurent P{'e}lecq <laurent.pelecq@wanadoo.fr> i18n patches with gettext
+Laurent Pélecq <laurent.pelecq@wanadoo.fr> i18n patches with gettext
 Sulyok Peter <sp@elte.hu> Hungarian account templates
 Alain Peyrat <Alain.Peyrat@nmu.alcatel.fr> for configure.in patches
 Zdenko Podobný <zdpo@mailbox.sk> Slovak translations

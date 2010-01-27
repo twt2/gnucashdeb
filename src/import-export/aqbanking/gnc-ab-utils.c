@@ -38,6 +38,7 @@
 #include "dialog-ab-trans.h"
 #include "gnc-ab-kvp.h"
 #include "gnc-ab-utils.h"
+#include "gnc-gconf-utils.h"
 #include "gnc-glib-utils.h"
 #include "gnc-gwen-gui.h"
 #include "gnc-ui.h"
@@ -84,9 +85,15 @@ gnc_GWEN_Init(void)
     GWEN_Init();
 
     /* Initialize gwen logging */
-    GWEN_Logger_SetLevel(NULL, GWEN_LoggerLevel_Debug);
-    GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Debug);
-    GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevel_Debug);
+    if (gnc_gconf_get_bool(GCONF_SECTION_AQBANKING, KEY_VERBOSE_DEBUG, NULL)) {
+      GWEN_Logger_SetLevel(NULL, GWEN_LoggerLevel_Info);
+      GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
+      GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevel_Debug);
+    } else {
+      GWEN_Logger_SetLevel(NULL, GWEN_LoggerLevel_Error);
+      GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Error);
+      GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevel_Warning);
+    }
     gnc_GWEN_Gui_log_init();
 }
 
@@ -95,7 +102,7 @@ gnc_GWEN_Fini(void)
 {
     /* Shutdown the GWEN_GUIs */
     gnc_GWEN_Gui_shutdown();
-    GWEN_Logger_SetLevel(NULL, GWEN_LoggerLevel_Warning);
+    GWEN_Logger_SetLevel(NULL, GWEN_LoggerLevel_Error);
     GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Warning);
     GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevel_Warning);
 
@@ -346,8 +353,6 @@ gnc_ab_trans_to_gnc(const AB_TRANSACTION *ab_trans, Account *gnc_acc)
     const char *custref;
     gchar *description;
     Split *split;
-    const AB_VALUE *ab_value;
-    gnc_numeric gnc_amount;
     gchar *memo;
 
     g_return_val_if_fail(ab_trans && gnc_acc, NULL);
@@ -356,11 +361,6 @@ gnc_ab_trans_to_gnc(const AB_TRANSACTION *ab_trans, Account *gnc_acc)
     book = gnc_account_get_book(gnc_acc);
     gnc_trans = xaccMallocTransaction(book);
     xaccTransBeginEdit(gnc_trans);
-
-    /* Set OFX unique transaction ID */
-    fitid = AB_Transaction_GetFiId(ab_trans);
-    if (fitid && *fitid)
-        gnc_import_set_trans_online_id(gnc_trans, fitid);
 
     /* Date / Time */
     valuta_date = AB_Transaction_GetValutaDate(ab_trans);
@@ -400,15 +400,33 @@ gnc_ab_trans_to_gnc(const AB_TRANSACTION *ab_trans, Account *gnc_acc)
     xaccSplitSetParent(split, gnc_trans);
     xaccSplitSetAccount(split, gnc_acc);
 
+    /* Set OFX unique transaction ID */
+    fitid = AB_Transaction_GetFiId(ab_trans);
+    if (fitid && *fitid)
+        gnc_import_set_split_online_id(split, fitid);
+
+    {
     /* Amount into the split */
-    ab_value = AB_Transaction_GetValue(ab_trans);
+    const AB_VALUE *ab_value = AB_Transaction_GetValue(ab_trans);
+    double d_value = ab_value ? AB_Value_GetValueAsDouble (ab_value) : 0.0;
+    AB_TRANSACTION_TYPE ab_type = AB_Transaction_GetType (ab_trans);
+    gnc_numeric gnc_amount;
+
+    /*printf("Transaction with value %f has type %d\n", d_value, ab_type);*/
+    /* If the value is positive, but the transaction type says the
+       money is transferred away from our account (Transfer instead of
+       DebitNote), we switch the value to negative. */
+    if (d_value > 0.0 && ab_type == AB_Transaction_TypeTransfer)
+      d_value = -d_value;
+
     gnc_amount = double_to_gnc_numeric(
-        ab_value ? AB_Value_GetValueAsDouble(ab_value) : 0.0,
+	d_value,
         xaccAccountGetCommoditySCU(gnc_acc),
         GNC_RND_ROUND);
     if (!ab_value)
         g_warning("transaction_cb: Oops, value was NULL.  Using 0");
     xaccSplitSetBaseValue(split, gnc_amount, xaccAccountGetCommodity(gnc_acc));
+    }
 
     /* Memo in the Split. */
     memo = gnc_ab_memo_to_gnc(ab_trans);
@@ -803,4 +821,25 @@ gnc_ab_ieci_run_matcher(GncABImExContextImport *ieci)
     g_return_val_if_fail(ieci, FALSE);
 
     return gnc_gen_trans_list_run(ieci->generic_importer);
+}
+
+GWEN_DB_NODE *
+gnc_ab_get_permanent_certs(void)
+{
+    int rv;
+    GWEN_DB_NODE *perm_certs = NULL;
+    AB_BANKING *banking = gnc_AB_BANKING_new();
+
+    g_return_val_if_fail(banking, NULL);
+#ifdef AQBANKING_VERSION_4_PLUS
+    rv = AB_Banking_LoadSharedConfig(banking, "certs", &perm_certs, 0);
+#else
+    /* FIXME: Add code for older AqBanking versions */
+    /* See QBankmanager 0.9.50 in src/kbanking/libs/kbanking.cpp lines 323ff
+       for a proper example of how to do this */
+    rv = 0;
+#endif
+    gnc_AB_BANKING_fini(banking);
+    g_return_val_if_fail(rv >= 0, NULL);
+    return perm_certs;
 }

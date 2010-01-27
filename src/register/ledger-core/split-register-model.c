@@ -55,6 +55,78 @@ static QofLogModule log_module = GNC_MOD_LEDGER;
 /* Flag for determining colorization of negative amounts. */
 static gboolean use_red_for_negative = TRUE;
 
+/* This returns the balance at runtime of a register at the split defined by virt_loc regardless of
+ * sort order. It always assumes that the first txn in the register is starting from a 0 balance. 
+ * If gboolean subaccounts is TRUE, then it will return the total balance of the parent account
+ * and all its subaccounts. FALSE will return the balance of just the parent account of the register. */
+static gnc_numeric
+gnc_split_register_get_rbaln (VirtualLocation virt_loc, gpointer user_data, gboolean subaccounts)
+{
+  SplitRegister *reg = user_data;
+  Split *split;
+  SRInfo *info = gnc_split_register_get_info (reg);
+  gnc_numeric value = gnc_numeric_zero(), balance = gnc_numeric_zero();
+  Account *account = NULL;
+  Transaction *trans;
+  GList *node, *child;
+  GList *children = NULL;
+  int i, row;
+
+  balance = gnc_numeric_zero();
+
+    /* Return NULL if this is a blank transaction. */
+    split = gnc_split_register_get_split (reg, virt_loc.vcell_loc);
+    if (split == xaccSplitLookup (&info->blank_split_guid,
+                                  gnc_get_current_book ()))
+      return gnc_numeric_zero();
+
+    trans = xaccSplitGetParent (split);
+    if (!trans)
+      return gnc_numeric_zero();
+
+    /* Get a list of accounts for matching */
+    if (subaccounts) {
+      children = gnc_account_get_descendants(gnc_split_register_get_default_account(reg));
+      children = g_list_append(children, gnc_split_register_get_default_account(reg));
+    } else
+      account = gnc_split_register_get_default_account(reg);
+      
+
+    /* Get the row number we're on, then start with the first row. */
+    row = virt_loc.vcell_loc.virt_row;
+    virt_loc.vcell_loc.virt_row=0;
+
+    while (virt_loc.vcell_loc.virt_row <= row ) {
+      /* Get new temporary split and its parent transaction */
+      split = gnc_split_register_get_split (reg, virt_loc.vcell_loc);
+      trans = xaccSplitGetParent (split);
+
+      i = 1;
+      for (node = xaccTransGetSplitList (trans); node; node = node->next) {
+        Split *secondary = node->data;
+        i++;
+
+        if (subaccounts) {
+          /* Add up the splits that belong to the transaction if they are
+           * from the lead account or one of the subaccounts. */
+          account = xaccSplitGetAccount (secondary);
+
+          for (child = children; child; child = child->next) {
+            if (account == child->data) {
+              balance = gnc_numeric_add_fixed(balance, xaccSplitGetAmount(secondary));
+              break;
+            }
+          }
+        } else {
+          if ( account == xaccSplitGetAccount(secondary) )
+            balance = gnc_numeric_add_fixed( balance, xaccSplitGetAmount(secondary) );
+        }
+      }
+      virt_loc.vcell_loc.virt_row+=i;
+    }
+
+  return balance;
+}
 
 static gboolean
 gnc_split_register_use_security_cells (SplitRegister *reg,
@@ -91,6 +163,11 @@ gnc_split_register_use_security_cells (SplitRegister *reg,
   if (!account)
     return TRUE;
 
+  if (xaccTransUseTradingAccounts (xaccSplitGetParent (split))) {
+    if (!gnc_commodity_is_iso(xaccAccountGetCommodity(account)))
+      return TRUE;
+  }
+  
   return xaccAccountIsPriced(account);
 }
 
@@ -106,6 +183,13 @@ gnc_split_register_get_due_date_label (VirtualLocation virt_loc,
 				       gpointer user_data)
 {
   return _("Due Date");
+}
+
+static const char *
+gnc_split_register_get_trans_date_label (VirtualLocation virt_loc,
+				       gpointer user_data)
+{
+  return _("Transaction");
 }
 
 static const char *
@@ -402,6 +486,8 @@ gnc_split_register_get_balance_fg_color (VirtualLocation virt_loc,
 
   if (gnc_cell_name_equal (cell_name, BALN_CELL))
     balance = xaccSplitGetBalance (split);
+  else if (gnc_cell_name_equal (cell_name, RBALN_CELL))
+    balance = gnc_split_register_get_rbaln (virt_loc,user_data, TRUE);
   else
     balance = get_trans_total_balance (reg, xaccSplitGetParent (split));
 
@@ -606,7 +692,7 @@ gnc_split_register_get_debcred_bg_color (VirtualLocation virt_loc,
     trans = gnc_split_register_get_trans (reg, virt_loc.vcell_loc);
 
     if (trans)
-      *hatching = !gnc_numeric_zero_p (xaccTransGetImbalance (trans));
+      *hatching = !xaccTransIsBalanced (trans);
     else
       *hatching = FALSE;
   }
@@ -744,9 +830,50 @@ gnc_split_register_get_due_date_entry (VirtualLocation virt_loc,
 
   xaccTransGetDateDueTS (trans, &ts);
   //PWARN ("returning valid due_date entry");
-    
+
   return gnc_print_date (ts);
 }
+
+
+static const char *
+gnc_split_register_get_trans_date_entry (VirtualLocation virt_loc,
+                                   gboolean translate,
+                                   gboolean *conditionally_changed,
+                                   gpointer user_data)
+{
+  SplitRegister *reg = user_data;
+  Transaction *trans;
+  Split *split;
+  Timespec ts;
+
+  split = gnc_split_register_get_split (reg, virt_loc.vcell_loc);
+  trans = xaccSplitGetParent (split);
+  if (!trans) {
+   //PWARN ("No transaction in transaction_date entry");
+    return NULL;
+  }
+
+  xaccTransGetDateEnteredTS (trans, &ts);
+  //PWARN ("returning valid transaction_date entry");
+
+  return gnc_print_date (ts);
+}
+
+
+static char *
+gnc_split_register_get_trans_date_help (VirtualLocation virt_loc,
+                                   gpointer user_data)
+{
+  SplitRegister *reg = user_data;
+  const char *help;
+
+  help = gnc_table_get_entry (reg->table, virt_loc);
+  if (!help || *help == '\0')
+    help = _("Enter the transaction date");
+
+  return g_strdup (help);
+}
+
 
 static const char *
 gnc_split_register_get_date_entry (VirtualLocation virt_loc,
@@ -1061,12 +1188,6 @@ gnc_split_register_get_memo_help (VirtualLocation virt_loc,
   return g_strdup (help);
 }
 
-static GNCPrintAmountInfo gnc_split_register_print_info (SplitRegister *reg)
-{
-  return gnc_account_print_info (gnc_split_register_get_default_account (reg),
-      FALSE);
-}
-
 static const char *
 gnc_split_register_get_balance_entry (VirtualLocation virt_loc,
                                       gboolean translate,
@@ -1078,6 +1199,7 @@ gnc_split_register_get_balance_entry (VirtualLocation virt_loc,
   gnc_numeric balance;
   gboolean is_trans;
   Split *split;
+  Account *account;
 
   split = gnc_split_register_get_split (reg, virt_loc.vcell_loc);
 
@@ -1093,18 +1215,14 @@ gnc_split_register_get_balance_entry (VirtualLocation virt_loc,
   else
     balance = xaccSplitGetBalance (split);
 
-  {
-    Account *account;
+  account = xaccSplitGetAccount (split);
+  if (!account)
+    account = gnc_split_register_get_default_account (reg);
 
-    account = xaccSplitGetAccount (split);
-    if (!account)
-      account = gnc_split_register_get_default_account (reg);
+  if (gnc_reverse_balance (account))
+    balance = gnc_numeric_neg (balance);
 
-    if (gnc_reverse_balance (account))
-      balance = gnc_numeric_neg (balance);
-  }
-
-  return xaccPrintAmount (balance, gnc_split_register_print_info (reg));
+  return xaccPrintAmount (balance, gnc_account_print_info (account, FALSE));
 }
 
 static const char *
@@ -1313,6 +1431,25 @@ gnc_split_register_get_mxfrm_help (VirtualLocation virt_loc,
   return g_strdup (help);
 }
 
+/* Return the total amount of the transaction for splits of default account
+ * and all subaccounts of the register. */
+static gnc_numeric
+get_trans_total_amount_subaccounts (SplitRegister *reg, Transaction *trans)
+{
+  GList *children, *child;
+  gnc_numeric total = gnc_numeric_zero();
+
+  /* Get a list of all subaccounts for matching */
+  children = gnc_account_get_descendants(gnc_split_register_get_default_account(reg));
+  children = g_list_append(children, gnc_split_register_get_default_account(reg));
+
+  for (child = children; child; child = child->next) {
+    total = gnc_numeric_add_fixed(total, xaccTransGetAccountAmount(trans, child->data));
+  }
+
+  return total;
+}
+
 static const char *
 gnc_split_register_get_tdebcred_entry (VirtualLocation virt_loc,
                                        gboolean translate,
@@ -1330,7 +1467,16 @@ gnc_split_register_get_tdebcred_entry (VirtualLocation virt_loc,
 
   cell_name = gnc_table_get_cell_name (reg->table, virt_loc);
 
-  total = get_trans_total_amount (reg, xaccSplitGetParent (split));
+  switch (reg->type)
+  {
+    case GENERAL_LEDGER:
+    case INCOME_LEDGER:
+      total = get_trans_total_amount_subaccounts (reg, xaccSplitGetParent (split));
+      break;
+    default:
+      total = get_trans_total_amount (reg, xaccSplitGetParent (split));
+  }
+
   if (gnc_numeric_zero_p (total))
     return NULL;
 
@@ -1363,6 +1509,7 @@ gnc_split_reg_has_rate_cell (SplitRegisterType type)
   case INCOME_REGISTER:
   case EXPENSE_REGISTER:
   case EQUITY_REGISTER:
+  case TRADING_REGISTER:
   case GENERAL_LEDGER:
   case INCOME_LEDGER:
   case PORTFOLIO_LEDGER:
@@ -1428,10 +1575,43 @@ gnc_split_register_get_debcred_entry (VirtualLocation virt_loc,
     gnc_numeric imbalance;
     Account *acc;
 
-    imbalance = xaccTransGetImbalance (trans);
-
+    imbalance = xaccTransGetImbalanceValue (trans);
+ 
     if (gnc_numeric_zero_p (imbalance))
       return NULL;
+   
+    if (xaccTransUseTradingAccounts (trans)) {
+      MonetaryList *imbal_list;
+      gnc_monetary *imbal_mon;
+      imbal_list = xaccTransGetImbalance (trans);
+      
+      if (!imbal_list) {
+        /* No commodity imbalance, there shouldn't be a value imablance. */
+        return NULL;
+      }
+  
+      if (imbal_list->next) {
+        /* Multiple currency imbalance. */
+        gnc_monetary_list_free(imbal_list);
+        return NULL;
+      }
+      
+      imbal_mon = imbal_list->data;
+      if (!gnc_commodity_equal(gnc_monetary_commodity(*imbal_mon), currency)) {
+        /* Imbalance is in wrong currency */
+        gnc_monetary_list_free(imbal_list);
+        return NULL;
+      }
+      
+      if (!gnc_numeric_equal (gnc_monetary_value(*imbal_mon), imbalance)) {
+        /* Value and commodity imbalances differ */
+        gnc_monetary_list_free(imbal_list);
+        return NULL;
+      } 
+      
+      /* Done with the imbalance list */
+      gnc_monetary_list_free(imbal_list);
+    }
 
     imbalance = gnc_numeric_neg (imbalance);
 
@@ -1458,35 +1638,79 @@ gnc_split_register_get_debcred_entry (VirtualLocation virt_loc,
 				       GNC_RND_ROUND);
     }
 
-    return xaccPrintAmount (imbalance, gnc_split_register_print_info (reg));
+    return xaccPrintAmount (imbalance, gnc_account_print_info (acc, FALSE));
   }
 
   {
     gnc_numeric amount;
+    gnc_commodity *split_commodity;
+    GNCPrintAmountInfo print_info;
+    Account *account;
+    gnc_commodity * commodity;
+          
+    account = gnc_split_register_get_default_account (reg);
+    commodity = xaccAccountGetCommodity (account);
+    split_commodity = xaccAccountGetCommodity(xaccSplitGetAccount(split));
 
-    /* If this account is not a stock/mutual/currency account, and
-     * currency != the account commodity, then use the SplitAmount
-     * instead of the SplitValue.
-     */
-    switch (reg->type) {
-    case STOCK_REGISTER:
-    case CURRENCY_REGISTER:
-      amount = xaccSplitGetValue (split);
-      break;
-
-    default:
-      {
-	Account *account;
-	gnc_commodity * commodity;
-
-	account = gnc_split_register_get_default_account (reg);
-	commodity = xaccAccountGetCommodity (account);
-
-	if (commodity && !gnc_commodity_equal (commodity, currency))
-	  /* Convert this to the "local" value */
-	  amount = xaccSplitConvertAmount(split, account);
-	else
-	  amount = xaccSplitGetValue (split);
+    if (xaccTransUseTradingAccounts (trans)) {
+      gboolean use_symbol, is_current;
+      is_current = virt_cell_loc_equal (reg->table->current_cursor_loc.vcell_loc,
+                                        virt_loc.vcell_loc);
+      
+      if (reg->type == STOCK_REGISTER || 
+          reg->type == CURRENCY_REGISTER ||
+          reg->type == PORTFOLIO_LEDGER) {
+        gnc_commodity *amount_commodity;
+        /* security register.  If this split has price and shares columns,
+           use the value, otherwise use the amount.  */
+        if (gnc_split_register_use_security_cells(reg, virt_loc)) {
+          amount = xaccSplitGetValue(split);
+          amount_commodity = currency;
+        }
+        else {
+          amount = xaccSplitGetAmount(split);
+          amount_commodity = split_commodity;
+        }
+        /* Show the currency if it is not the default currency */
+        if (is_current ||
+            gnc_commodity_equiv(amount_commodity, gnc_default_currency())) 
+          use_symbol = FALSE;
+        else
+          use_symbol = TRUE;
+        print_info = gnc_commodity_print_info(amount_commodity, use_symbol);
+      }
+      else {
+        /* non-security register, always use the split amount. */
+        amount = xaccSplitGetAmount(split);
+        if (is_current ||
+            gnc_commodity_equiv(split_commodity, commodity)) 
+          use_symbol = FALSE;
+        else
+          use_symbol = TRUE;
+        print_info = gnc_commodity_print_info(split_commodity, use_symbol);
+      }
+    }
+    else {
+      /* If this account is not a stock/mutual/currency account, and
+      * currency != the account commodity, then use the SplitAmount
+      * instead of the SplitValue.
+      */
+      switch (reg->type) {
+        case STOCK_REGISTER:
+        case CURRENCY_REGISTER:
+          amount = xaccSplitGetValue (split);
+          print_info = gnc_commodity_print_info (currency, FALSE);
+          break;
+          
+        default:
+        {
+          if (commodity && !gnc_commodity_equal (commodity, currency))
+            /* Convert this to the "local" value */
+            amount = xaccSplitConvertAmount(split, account);
+          else
+            amount = xaccSplitGetValue (split);
+          print_info = gnc_account_print_info (account, FALSE);
+        }
       }
     }
 
@@ -1501,8 +1725,45 @@ gnc_split_register_get_debcred_entry (VirtualLocation virt_loc,
 
     amount = gnc_numeric_abs (amount);
 
-    return xaccPrintAmount (amount, gnc_split_register_print_info (reg));
+    return xaccPrintAmount (amount, print_info);
   }
+}
+
+/* Calculates the register balance for each split at runtime.
+ * This works regardless of the sort order. */
+static const char *
+gnc_split_register_get_rbaln_entry (VirtualLocation virt_loc,
+                                      gboolean translate,
+                                      gboolean *conditionally_changed,
+                                      gpointer user_data)
+{
+  SplitRegister *reg = user_data;
+  SRInfo *info = gnc_split_register_get_info (reg);
+  Split *split;
+  Transaction *trans;
+  gnc_numeric balance;
+  Account *account;
+
+  /* Return NULL if this is a blank transaction. */
+  split = gnc_split_register_get_split (reg, virt_loc.vcell_loc);
+  if (split == xaccSplitLookup (&info->blank_split_guid,
+                                gnc_get_current_book ()))
+    return NULL;
+
+  trans = xaccSplitGetParent (split);
+  if (!trans)
+    return NULL;
+
+  balance = gnc_split_register_get_rbaln (virt_loc,user_data, TRUE);
+
+  account = xaccSplitGetAccount (split);
+  if (!account)
+    account = gnc_split_register_get_default_account (reg);
+
+  if (gnc_reverse_balance (account))
+    balance = gnc_numeric_neg (balance);
+
+  return xaccPrintAmount (balance, gnc_account_print_info (account, FALSE));
 }
 
 static gboolean
@@ -1867,7 +2128,7 @@ gnc_template_register_get_debcred_entry (VirtualLocation virt_loc,
     amount = gnc_numeric_abs (amount);
 
     /* FIXME: This should be fixed to be correct for the "fake" account. */
-    return xaccPrintAmount (amount, gnc_split_register_print_info (reg));
+    return xaccPrintAmount (amount, gnc_default_print_info (FALSE));
   }
 
   return NULL;
@@ -1927,6 +2188,10 @@ gnc_split_register_model_new (void)
   gnc_table_model_set_entry_handler (model,
                                      gnc_split_register_get_date_entry,
                                      DATE_CELL);
+
+  gnc_table_model_set_entry_handler (model,
+                                     gnc_split_register_get_trans_date_entry,
+                                     DTRANS_CELL);
 
   gnc_table_model_set_entry_handler (model,
                                      gnc_split_register_get_due_date_entry,
@@ -2012,10 +2277,18 @@ gnc_split_register_model_new (void)
                                      gnc_split_register_get_debcred_entry,
                                      CRED_CELL);
 
+  gnc_table_model_set_entry_handler (model,
+                                     gnc_split_register_get_rbaln_entry,
+                                     RBALN_CELL);
+
 
   gnc_table_model_set_label_handler (model,
                                      gnc_split_register_get_date_label,
                                      DATE_CELL);
+
+  gnc_table_model_set_label_handler (model,
+                                     gnc_split_register_get_trans_date_label,
+                                     DTRANS_CELL);
 
   gnc_table_model_set_label_handler (model,
                                      gnc_split_register_get_due_date_label,
@@ -2101,6 +2374,10 @@ gnc_split_register_model_new (void)
                                      gnc_split_register_get_fcredit_label,
                                      FCRED_CELL);
 
+  gnc_table_model_set_label_handler (model,
+                                     gnc_split_register_get_tbalance_label,
+                                     RBALN_CELL);
+
 
   gnc_table_model_set_default_help_handler(
       model, gnc_split_register_get_default_help);
@@ -2108,6 +2385,10 @@ gnc_split_register_model_new (void)
   gnc_table_model_set_help_handler (model,
                                     gnc_split_register_get_date_help,
                                     DATE_CELL);
+
+  gnc_table_model_set_help_handler (model,
+                                    gnc_split_register_get_trans_date_help,
+                                    DTRANS_CELL);
 
   gnc_table_model_set_help_handler (model,
                                     gnc_split_register_get_date_help,
@@ -2164,6 +2445,10 @@ gnc_split_register_model_new (void)
 
   gnc_table_model_set_io_flags_handler(
       model, gnc_split_register_get_standard_io_flags, DATE_CELL);
+
+  gnc_table_model_set_io_flags_handler(
+      model, gnc_split_register_get_standard_io_flags, DTRANS_CELL);
+
 
   /* FIXME: We really only need a due date for 'invoices', not for
    * 'payments' or 'receipts'.  This implies we really only need the
@@ -2231,6 +2516,9 @@ gnc_split_register_model_new (void)
   gnc_table_model_set_fg_color_handler(
       model, gnc_split_register_get_balance_fg_color, TBALN_CELL);
 
+  gnc_table_model_set_fg_color_handler(
+      model, gnc_split_register_get_balance_fg_color, RBALN_CELL);
+
 
   gnc_table_model_set_default_bg_color_handler(
       model, gnc_split_register_get_bg_color);
@@ -2284,10 +2572,16 @@ gnc_template_register_model_new (void)
       model, gnc_split_register_get_inactive_date_entry, DATE_CELL );
 
   gnc_table_model_set_entry_handler(
+      model, gnc_split_register_get_inactive_date_entry, DTRANS_CELL );
+
+  gnc_table_model_set_entry_handler(
       model, gnc_split_register_get_inactive_date_entry, DDUE_CELL );
 
   gnc_table_model_set_io_flags_handler(
       model, gnc_split_register_get_inactive_io_flags, DATE_CELL );
+
+  gnc_table_model_set_io_flags_handler(
+      model, gnc_split_register_get_inactive_io_flags, DTRANS_CELL );
 
   gnc_table_model_set_io_flags_handler(
       model, gnc_split_register_get_inactive_io_flags, DDUE_CELL );
