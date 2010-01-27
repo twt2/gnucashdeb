@@ -1,2 +1,3 @@
+03_disable_graphing_support.dpatch
 04_renew-gui.dpatch
 05_missing_mnemonic_r18419_bug_548371
