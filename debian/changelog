@@ -1,3 +1,16 @@
+gnucash (2.2.9-3) unstable; urgency=low
+
+  * Added patch 03_disable_graphing_support, disable graphing support in order
+    to make Gnucash 2.2.9 build with libgoffice-0-8-dev (closes: #498775).
+    Thanks to Thomas Themel <thomas@themel.com> for an initial patch version.
+  * Added build-dependency on libltdl-dev for /usr/lib/libltdl.la
+    (closes: #562380)
+  * Removed obsolete deps on psfontmgr and x-ttcidfont-conf (closes: #561829)
+  * Dropped build-dependency on libgnomeprint (closes: #542556), obsoleted by
+    gtkhtml3.14
+
+ -- Micha Lenk <micha@debian.org>  Wed, 27 Jan 2010 23:46:22 +0100
+
 gnucash (2.2.9-2) unstable; urgency=low
 
   * Changes in debian/control:
