@@ -3,7 +3,7 @@ Section: gnome
 Priority: optional
 Maintainer: Thomas Bushnell, BSG <tb@debian.org>
 Uploaders: Micha Lenk <micha@debian.org>
-Standards-Version: 3.8.3
+Standards-Version: 3.8.4
 Build-Depends: libfinance-quote-perl, guile-1.6-slib, guile-1.6-dev,
   m4, gettext, slib (>= 3a2-5), debhelper (>= 5), zlib1g-dev,
   libxml-parser-perl, x11-common, libglib2.0-dev (>= 2.4.7),
