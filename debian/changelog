@@ -1,3 +1,13 @@
+gnucash (2.2.9-4) unstable; urgency=low
+
+  * Re-enabled patch 03_goffice_0-7-5_support and replaced patch
+    03_disable_graphing_support contributed by Jean-Louis Dupond's patch
+    03_goffice_0-8_support from Ubuntu's merge request #521217.
+    This enables graphing support again (closes: #567208).
+  * Package is compliant to Debian Policy 3.8.4 (no changes needed)
+
+ -- Micha Lenk <micha@debian.org>  Sat, 13 Feb 2010 15:08:57 +0100
+
 gnucash (2.2.9-3) unstable; urgency=low
 
   * Added patch 03_disable_graphing_support, disable graphing support in order
