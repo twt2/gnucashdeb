@@ -1,3 +1,10 @@
+gnucash (2.2.9-5) unstable; urgency=low
+
+  * Transition build-dep from libgoffice-0-8-dev to libgoffice-0.8-dev
+    (Closes: #573678, #574113)
+
+ -- Micha Lenk <micha@debian.org>  Wed, 17 Mar 2010 20:50:55 +0100
+
 gnucash (2.2.9-4) unstable; urgency=low
 
   * Re-enabled patch 03_goffice_0-7-5_support and replaced patch
