@@ -1232,6 +1232,7 @@ static swig_module_info swig_module = {swig_types, 13, 0, 0, 0, 0};
 #include <config.h>
 #include <gtk/gtk.h>
 #include <dialog-progress.h>
+#include "guile-mappings.h"
 
 SCM scm_init_sw_gnome_module (void);
 
@@ -1248,7 +1249,7 @@ _wrap_gnc_progress_dialog_new (SCM s_0, SCM s_1)
   {
     arg1 = (GtkWidget *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_GtkWidget, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   result = (GNCProgressDialog *)gnc_progress_dialog_new(arg1,arg2);
   {
     gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p__GNCProgressDialog, 0);

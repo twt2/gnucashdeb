@@ -5,6 +5,7 @@
 #include <glib.h>
 #include <qof.h>
 #include <Query.h>
+#include <guile-mappings.h>
 #include <gnc-budget.h>
 #include <gnc-commodity.h>
 #include <gnc-engine.h>
@@ -115,6 +116,9 @@ SplitList * qof_query_run (QofQuery *q);
 %include <qofquery.h>
 %include <qofquerycore.h>
 %include <qofbookslots.h>
+%include <qofbook.h>
+
+KvpFrame* qof_book_get_slots(QofBook* book);
 
 gnc_numeric gnc_numeric_create(gint64 num, gint64 denom);
 gnc_numeric gnc_numeric_zero(void);
@@ -153,15 +157,15 @@ gchar * gnc_build_book_path (const gchar *filename);
   SCM path_scm = $input;
   GList *path = NULL;
 
-  while (!SCM_NULLP (path_scm))
+  while (!scm_is_null (path_scm))
   {
     SCM key_scm = SCM_CAR (path_scm);
     char *key;
 
-    if (!SCM_STRINGP (key_scm))
+    if (!scm_is_string (key_scm))
       break;
 
-    key = g_strdup (SCM_STRING_CHARS (key_scm));
+    key = g_strdup (scm_to_locale_string (key_scm));
 
     path = g_list_prepend (path, key);
 
@@ -194,12 +198,6 @@ void kvp_frame_set_slot_path_gslist(
 KvpValue * kvp_frame_get_slot_path_gslist (KvpFrame *frame, GSList *key_path);
 
 %clear GSList *key_path;
-
-%inline %{
-static KvpFrame * gnc_book_get_slots(QofBook *book) {
-   return qof_instance_get_slots(QOF_INSTANCE(book));
-}
-%}
 
 
 %init {

@@ -84,7 +84,7 @@ test_date_converting_OBJECTS = $(am_test_date_converting_OBJECTS)
 test_date_converting_LDADD = $(LDADD)
 am__DEPENDENCIES_1 =
 test_date_converting_DEPENDENCIES =  \
-	${top_builddir}/src/test-core/libgncmod-test.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
@@ -99,7 +99,7 @@ am_test_dom_converters1_OBJECTS = sixtp-dom-parsers.$(OBJEXT) \
 test_dom_converters1_OBJECTS = $(am_test_dom_converters1_OBJECTS)
 test_dom_converters1_LDADD = $(LDADD)
 test_dom_converters1_DEPENDENCIES =  \
-	${top_builddir}/src/test-core/libgncmod-test.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
@@ -114,7 +114,7 @@ am_test_kvp_frames_OBJECTS = sixtp-dom-parsers.$(OBJEXT) \
 test_kvp_frames_OBJECTS = $(am_test_kvp_frames_OBJECTS)
 test_kvp_frames_LDADD = $(LDADD)
 test_kvp_frames_DEPENDENCIES =  \
-	${top_builddir}/src/test-core/libgncmod-test.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
@@ -126,7 +126,7 @@ test_load_backend_SOURCES = test-load-backend.c
 test_load_backend_OBJECTS = test-load-backend.$(OBJEXT)
 test_load_backend_LDADD = $(LDADD)
 test_load_backend_DEPENDENCIES =  \
-	${top_builddir}/src/test-core/libgncmod-test.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
@@ -151,7 +151,7 @@ test_load_example_account_OBJECTS =  \
 	$(am_test_load_example_account_OBJECTS)
 test_load_example_account_LDADD = $(LDADD)
 test_load_example_account_DEPENDENCIES =  \
-	${top_builddir}/src/test-core/libgncmod-test.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
@@ -163,7 +163,7 @@ test_load_xml2_SOURCES = test-load-xml2.c
 test_load_xml2_OBJECTS = test-load-xml2.$(OBJEXT)
 test_load_xml2_LDADD = $(LDADD)
 test_load_xml2_DEPENDENCIES =  \
-	${top_builddir}/src/test-core/libgncmod-test.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
@@ -175,7 +175,7 @@ test_save_in_lang_SOURCES = test-save-in-lang.c
 test_save_in_lang_OBJECTS = test-save-in-lang.$(OBJEXT)
 test_save_in_lang_LDADD = $(LDADD)
 test_save_in_lang_DEPENDENCIES =  \
-	${top_builddir}/src/test-core/libgncmod-test.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
@@ -190,7 +190,7 @@ am_test_string_converters_OBJECTS = sixtp-dom-parsers.$(OBJEXT) \
 test_string_converters_OBJECTS = $(am_test_string_converters_OBJECTS)
 test_string_converters_LDADD = $(LDADD)
 test_string_converters_DEPENDENCIES =  \
-	${top_builddir}/src/test-core/libgncmod-test.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
@@ -211,7 +211,7 @@ am_test_xml_account_OBJECTS = sixtp-dom-parsers.$(OBJEXT) \
 test_xml_account_OBJECTS = $(am_test_xml_account_OBJECTS)
 test_xml_account_LDADD = $(LDADD)
 test_xml_account_DEPENDENCIES =  \
-	${top_builddir}/src/test-core/libgncmod-test.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
@@ -232,7 +232,7 @@ am_test_xml_commodity_OBJECTS = sixtp-dom-parsers.$(OBJEXT) \
 test_xml_commodity_OBJECTS = $(am_test_xml_commodity_OBJECTS)
 test_xml_commodity_LDADD = $(LDADD)
 test_xml_commodity_DEPENDENCIES =  \
-	${top_builddir}/src/test-core/libgncmod-test.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
@@ -253,7 +253,7 @@ am_test_xml_pricedb_OBJECTS = sixtp-dom-parsers.$(OBJEXT) \
 test_xml_pricedb_OBJECTS = $(am_test_xml_pricedb_OBJECTS)
 test_xml_pricedb_LDADD = $(LDADD)
 test_xml_pricedb_DEPENDENCIES =  \
-	${top_builddir}/src/test-core/libgncmod-test.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
@@ -275,7 +275,7 @@ am_test_xml_transaction_OBJECTS = sixtp-dom-parsers.$(OBJEXT) \
 test_xml_transaction_OBJECTS = $(am_test_xml_transaction_OBJECTS)
 test_xml_transaction_LDADD = $(LDADD)
 test_xml_transaction_DEPENDENCIES =  \
-	${top_builddir}/src/test-core/libgncmod-test.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
@@ -298,7 +298,7 @@ am_test_xml2_is_file_OBJECTS = sixtp-dom-parsers.$(OBJEXT) \
 test_xml2_is_file_OBJECTS = $(am_test_xml2_is_file_OBJECTS)
 test_xml2_is_file_LDADD = $(LDADD)
 test_xml2_is_file_DEPENDENCIES =  \
-	${top_builddir}/src/test-core/libgncmod-test.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
@@ -430,7 +430,6 @@ GDK_PIXBUF_LIBS = @GDK_PIXBUF_LIBS@
 GETTEXT_PACKAGE = @GETTEXT_PACKAGE@
 GLADE_CFLAGS = @GLADE_CFLAGS@
 GLADE_LIBS = @GLADE_LIBS@
-GLIB26_LIBS = @GLIB26_LIBS@
 GLIB_CFLAGS = @GLIB_CFLAGS@
 GLIB_GENMARSHAL = @GLIB_GENMARSHAL@
 GLIB_LIBS = @GLIB_LIBS@
@@ -456,9 +455,9 @@ GNC_SRFI_LOAD_PATH = @GNC_SRFI_LOAD_PATH@
 GNC_TEST_SRFI_LOAD_CMD = @GNC_TEST_SRFI_LOAD_CMD@
 GNC_UI_DIR = @GNC_UI_DIR@
 GNOME_CFLAGS = @GNOME_CFLAGS@
+GNOME_KEYRING_CFLAGS = @GNOME_KEYRING_CFLAGS@
+GNOME_KEYRING_LIBS = @GNOME_KEYRING_LIBS@
 GNOME_LIBS = @GNOME_LIBS@
-GNOME_PRINT_CFLAGS = @GNOME_PRINT_CFLAGS@
-GNOME_PRINT_LIBS = @GNOME_PRINT_LIBS@
 GNUCASH_MAJOR_VERSION = @GNUCASH_MAJOR_VERSION@
 GNUCASH_MICRO_VERSION = @GNUCASH_MICRO_VERSION@
 GNUCASH_MINOR_VERSION = @GNUCASH_MINOR_VERSION@
@@ -531,7 +530,6 @@ PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PERL = @PERL@
-PERLINCL = @PERLINCL@
 PKG_CONFIG = @PKG_CONFIG@
 POFILES = @POFILES@
 POSUB = @POSUB@
@@ -821,7 +819,7 @@ libgnc_test_file_stuff_la_LIBADD = \
   ${top_builddir}/src/engine/libgncmod-engine.la
 
 noinst_HEADERS = test-file-stuff.h
-LDADD = ${top_builddir}/src/test-core/libgncmod-test.la \
+LDADD = ${top_builddir}/src/test-core/libtest-core.la \
         ${top_builddir}/src/gnc-module/libgnc-module.la \
         ${top_builddir}/src/engine/libgncmod-engine.la \
         ${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \

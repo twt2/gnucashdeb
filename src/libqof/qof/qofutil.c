@@ -42,7 +42,6 @@ qof_utf8_substr_nocase (const gchar *haystack, const gchar *needle)
     gchar *haystack_casefold, *haystack_normalized;
     gchar *needle_casefold, *needle_normalized;
     gchar *p;
-    gint offset;
 
     g_return_val_if_fail (haystack && needle, FALSE);
 
@@ -523,6 +522,7 @@ qof_close(void)
     qof_query_shutdown ();
     qof_object_shutdown ();
     guid_shutdown ();
+    qof_finalize_backend_libraries();
     qof_util_string_cache_destroy ();
     qof_log_shutdown();
 }

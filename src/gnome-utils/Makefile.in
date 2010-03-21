@@ -101,33 +101,34 @@ libgncmod_gnome_utils_la_DEPENDENCIES =  \
 am_libgncmod_gnome_utils_la_OBJECTS = QuickFill.lo \
 	account-quickfill.lo cursors.lo dialog-account.lo \
 	dialog-book-close.lo dialog-commodity.lo dialog-file-access.lo \
-	dialog-options.lo dialog-preferences.lo dialog-query-list.lo \
+	dialog-object-references.lo dialog-options.lo \
+	dialog-preferences.lo dialog-query-list.lo \
 	dialog-reset-warnings.lo dialog-totd.lo dialog-transfer.lo \
-	dialog-utils.lo druid-utils.lo druid-gconf-setup.lo \
-	druid-gnc-xml-import.lo gnc-account-sel.lo gnc-amount-edit.lo \
-	gnc-autosave.lo gnc-commodity-edit.lo gnc-currency-edit.lo \
-	gnc-date-delta.lo gnc-date-edit.lo gnc-date-format.lo \
-	gnc-dense-cal.lo gnc-dense-cal-model.lo gnc-dense-cal-store.lo \
-	gnc-dialog.lo gnc-druid-gnome.lo \
-	gnc-druid-provider-edge-gnome.lo \
+	dialog-userpass.lo dialog-utils.lo druid-utils.lo \
+	druid-gconf-setup.lo druid-gnc-xml-import.lo \
+	gnc-account-sel.lo gnc-amount-edit.lo gnc-autosave.lo \
+	gnc-commodity-edit.lo gnc-currency-edit.lo gnc-date-delta.lo \
+	gnc-date-edit.lo gnc-date-format.lo gnc-dense-cal.lo \
+	gnc-dense-cal-model.lo gnc-dense-cal-store.lo gnc-dialog.lo \
+	gnc-druid-gnome.lo gnc-druid-provider-edge-gnome.lo \
 	gnc-druid-provider-file-gnome.lo \
 	gnc-druid-provider-multifile-gnome.lo gnc-embedded-window.lo \
 	gnc-file.lo gnc-frequency.lo gnc-recurrence.lo \
-	gnc-general-select.lo gnc-gnome-utils.lo gnc-gui-query.lo \
-	gnc-icons.lo gnc-main-window.lo gnc-menu-extensions.lo \
+	gnc-general-select.lo gnc-gnome-utils.lo gnc-gobject-utils.lo \
+	gnc-gtk-utils.lo gnc-gui-query.lo gnc-icons.lo gnc-keyring.lo \
+	gnc-main-window.lo gnc-menu-extensions.lo \
 	gnc-plugin-file-history.lo gnc-plugin-manager.lo \
 	gnc-plugin-menu-additions.lo gnc-plugin-page.lo gnc-plugin.lo \
 	gnc-period-select.lo gnc-query-list.lo gnc-splash.lo \
 	gnc-sx-instance-dense-cal-adapter.lo \
 	gnc-sx-list-tree-model-adapter.lo gnc-tree-model.lo \
 	gnc-tree-model-account-types.lo gnc-tree-model-account.lo \
-	gnc-tree-model-account-drag.lo gnc-tree-model-budget.lo \
-	gnc-tree-model-commodity.lo gnc-tree-model-price.lo \
-	gnc-tree-view-account.lo gnc-tree-view-commodity.lo \
-	gnc-tree-view-price.lo gnc-tree-view-sx-list.lo \
-	gnc-tree-view.lo gnc-window.lo gncmod-gnome-utils.lo \
-	misc-gnome-utils.lo search-param.lo print-session.lo \
-	swig-gnome-utils.lo window-main-summarybar.lo
+	gnc-tree-model-budget.lo gnc-tree-model-commodity.lo \
+	gnc-tree-model-price.lo gnc-tree-view-account.lo \
+	gnc-tree-view-commodity.lo gnc-tree-view-price.lo \
+	gnc-tree-view-sx-list.lo gnc-tree-view.lo gnc-window.lo \
+	gncmod-gnome-utils.lo misc-gnome-utils.lo search-param.lo \
+	print-session.lo swig-gnome-utils.lo window-main-summarybar.lo
 libgncmod_gnome_utils_la_OBJECTS =  \
 	$(am_libgncmod_gnome_utils_la_OBJECTS)
 libgncmod_gnome_utils_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -242,7 +243,6 @@ GDK_PIXBUF_LIBS = @GDK_PIXBUF_LIBS@
 GETTEXT_PACKAGE = @GETTEXT_PACKAGE@
 GLADE_CFLAGS = @GLADE_CFLAGS@
 GLADE_LIBS = @GLADE_LIBS@
-GLIB26_LIBS = @GLIB26_LIBS@
 GLIB_CFLAGS = @GLIB_CFLAGS@
 GLIB_GENMARSHAL = @GLIB_GENMARSHAL@
 GLIB_LIBS = @GLIB_LIBS@
@@ -268,9 +268,9 @@ GNC_SRFI_LOAD_PATH = @GNC_SRFI_LOAD_PATH@
 GNC_TEST_SRFI_LOAD_CMD = @GNC_TEST_SRFI_LOAD_CMD@
 GNC_UI_DIR = @GNC_UI_DIR@
 GNOME_CFLAGS = @GNOME_CFLAGS@
+GNOME_KEYRING_CFLAGS = @GNOME_KEYRING_CFLAGS@
+GNOME_KEYRING_LIBS = @GNOME_KEYRING_LIBS@
 GNOME_LIBS = @GNOME_LIBS@
-GNOME_PRINT_CFLAGS = @GNOME_PRINT_CFLAGS@
-GNOME_PRINT_LIBS = @GNOME_PRINT_LIBS@
 GNUCASH_MAJOR_VERSION = @GNUCASH_MAJOR_VERSION@
 GNUCASH_MICRO_VERSION = @GNUCASH_MICRO_VERSION@
 GNUCASH_MINOR_VERSION = @GNUCASH_MINOR_VERSION@
@@ -343,7 +343,6 @@ PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PERL = @PERL@
-PERLINCL = @PERLINCL@
 PKG_CONFIG = @PKG_CONFIG@
 POFILES = @POFILES@
 POSUB = @POSUB@
@@ -463,7 +462,7 @@ AM_CPPFLAGS = \
   ${GLADE_CFLAGS} \
   ${GTK_CFLAGS} \
   ${GNOME_CFLAGS} \
-  ${GNOME_PRINT_CFLAGS} \
+  ${GNOME_KEYRING_CFLAGS} \
   ${GUILE_INCS} \
   ${QOF_CFLAGS} \
   ${GOFFICE_CFLAGS} \
@@ -478,12 +477,14 @@ libgncmod_gnome_utils_la_SOURCES = \
   dialog-book-close.c \
   dialog-commodity.c \
   dialog-file-access.c \
+  dialog-object-references.c \
   dialog-options.c \
   dialog-preferences.c \
   dialog-query-list.c \
   dialog-reset-warnings.c \
   dialog-totd.c \
   dialog-transfer.c \
+  dialog-userpass.c \
   dialog-utils.c \
   druid-utils.c \
   druid-gconf-setup.c \
@@ -510,8 +511,11 @@ libgncmod_gnome_utils_la_SOURCES = \
   gnc-recurrence.c \
   gnc-general-select.c \
   gnc-gnome-utils.c \
+  gnc-gobject-utils.c \
+  gnc-gtk-utils.c \
   gnc-gui-query.c \
   gnc-icons.c \
+  gnc-keyring.c \
   gnc-main-window.c \
   gnc-menu-extensions.c \
   gnc-plugin-file-history.c \
@@ -527,7 +531,6 @@ libgncmod_gnome_utils_la_SOURCES = \
   gnc-tree-model.c \
   gnc-tree-model-account-types.c \
   gnc-tree-model-account.c \
-  gnc-tree-model-account-drag.c \
   gnc-tree-model-budget.c \
   gnc-tree-model-commodity.c \
   gnc-tree-model-price.c \
@@ -553,6 +556,7 @@ gncinclude_HEADERS = \
   dialog-commodity.h \
   dialog-file-access.h \
   dialog-preferences.h \
+  dialog-object-references.h \
   dialog-options.h \
   dialog-query-list.h \
   dialog-reset-warnings.h \
@@ -581,6 +585,7 @@ gncinclude_HEADERS = \
   gnc-gnome-utils.h \
   gnc-gui-query.h \
   gnc-icons.h \
+  gnc-keyring.h \
   gnc-main-window.h \
   gnc-menu-extensions.h \
   gnc-plugin-file-history.h \
@@ -596,7 +601,6 @@ gncinclude_HEADERS = \
   gnc-tree-model.h \
   gnc-tree-model-account-types.h \
   gnc-tree-model-account.h \
-  gnc-tree-model-account-drag.h \
   gnc-tree-model-budget.h \
   gnc-tree-model-commodity.h \
   gnc-tree-model-price.h \
@@ -617,6 +621,8 @@ noinst_HEADERS = \
   gnc-druid-provider-edge-gnome.h \
   gnc-druid-provider-file-gnome.h \
   gnc-druid-provider-multifile-gnome.h \
+  gnc-gobject-utils.h \
+  gnc-gtk-utils.h \
   search-param.h
 
 libgncmod_gnome_utils_la_LDFLAGS = -avoid-version
@@ -628,7 +634,7 @@ libgncmod_gnome_utils_la_LIBADD =  \
 	${top_builddir}/src/app-utils/libgncmod-app-utils.la \
 	$(top_builddir)/lib/libc/libc-missing.la \
 	${top_builddir}/src/libqof/qof/libgnc-qof.la ${GNOME_LIBS} \
-	${GNOME_PRINT_LIBS} ${GLADE_LIBS} ${GUILE_LIBS} ${GLIB_LIBS} \
+	${GNOME_KEYRING_LIBS} ${GLADE_LIBS} ${GUILE_LIBS} ${GLIB_LIBS} \
 	${DB_LIBS} ${REGEX_LIBS} ${LIBXML2_LIBS} ${IGE_MAC_LIBS} \
 	$(am__append_1)
 gncmoddir = ${GNC_SHAREDIR}/guile-modules/gnucash
@@ -734,12 +740,14 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-book-close.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-commodity.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-file-access.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-object-references.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-options.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-preferences.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-query-list.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-reset-warnings.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-totd.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-transfer.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-userpass.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/druid-gconf-setup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/druid-gnc-xml-import.Plo@am__quote@
@@ -765,8 +773,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-frequency.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-general-select.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-gnome-utils.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-gobject-utils.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-gtk-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-gui-query.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-icons.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-keyring.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-main-window.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-menu-extensions.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-period-select.Plo@am__quote@
@@ -780,7 +791,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-splash.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-sx-instance-dense-cal-adapter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-sx-list-tree-model-adapter.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-tree-model-account-drag.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-tree-model-account-types.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-tree-model-account.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-tree-model-budget.Plo@am__quote@

@@ -339,7 +339,8 @@ void qof_date_format_set(QofDateFormat df)
         dateFormat = df;
     }
     else
-    {    /* hack alert - Use a neutral default. */
+    {
+        /* hack alert - Use a neutral default. */
         PERR("non-existent date format set attempted. Setting ISO default");
         prevQofDateFormat = dateFormat;
         dateFormat = QOF_DATE_FORMAT_ISO;
@@ -448,7 +449,7 @@ qof_print_date_dmy_buff (char * buff, size_t len, int day, int month, int year)
         tm_str.tm_mday = day;
         tm_str.tm_mon = month - 1;    /* tm_mon = 0 through 11 */
         tm_str.tm_year = year - 1900; /* this is what the standard
-                                 * says, it's not a Y2K thing */
+	 says, it's not a Y2K thing */
 
         gnc_tm_set_day_start (&tm_str);
         t = mktime (&tm_str);
@@ -509,7 +510,7 @@ gnc_print_date (Timespec ts)
     static char buff[MAX_DATE_LENGTH];
     time_t t;
 
-    t = ts.tv_sec + (ts.tv_nsec / 1000000000.0);
+    t = ts.tv_sec + (time_t)(ts.tv_nsec / 1000000000.0);
 
     qof_print_date_buff (buff, MAX_DATE_LENGTH, t);
 
@@ -859,7 +860,8 @@ char dateSeparator (void)
         if (locale_separator != '\0')
             return locale_separator;
         else
-        { /* Make a guess */
+        {
+            /* Make a guess */
             gchar string[256];
             struct tm tm;
             time_t secs;
@@ -1517,4 +1519,39 @@ gnc_dow_abbrev(gchar *buf, int buf_len, int dow)
     my_tm.tm_wday = dow;
     i = qof_strftime(buf, buf_len, "%a", &my_tm);
     buf[i] = 0;
+}
+
+/* *******************************************************************
+ *  GValue handling
+ ********************************************************************/
+static gpointer
+timespec_boxed_copy_func( gpointer in_timespec )
+{
+    Timespec* newvalue;
+
+    newvalue = g_malloc( sizeof( Timespec ) );
+    memcpy( newvalue, in_timespec, sizeof( Timespec ) );
+
+    return newvalue;
+}
+
+static void
+timespec_boxed_free_func( gpointer in_timespec )
+{
+    g_free( in_timespec );
+}
+
+GType
+timespec_get_type( void )
+{
+    static GType type = 0;
+
+    if ( type == 0 )
+    {
+        type = g_boxed_type_register_static( "timespec",
+                                             timespec_boxed_copy_func,
+                                             timespec_boxed_free_func );
+    }
+
+    return type;
 }

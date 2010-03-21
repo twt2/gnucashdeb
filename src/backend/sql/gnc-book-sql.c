@@ -38,7 +38,6 @@
 #include "gnc-slots-sql.h"
 
 #include "gnc-engine.h"
-#include "gnc-book.h"
 #include "SX-book.h"
 #include "SX-book-p.h"
 
@@ -146,11 +145,13 @@ load_single_book( GncSqlBackend* be, GncSqlRow* row )
 
 	pBook = be->primary_book;
 	if( pBook == NULL ) {
-	    pBook = gnc_book_new();
+	    pBook = qof_book_new();
 	}
 
+	qof_book_begin_edit( pBook );
     gnc_sql_load_object( be, row, GNC_ID_BOOK, pBook, col_table );
     gnc_sql_slots_load( be, QOF_INSTANCE(pBook) );
+	qof_book_commit_edit( pBook );
 
     qof_instance_mark_clean( QOF_INSTANCE(pBook) );
 }
@@ -201,11 +202,17 @@ create_book_tables( GncSqlBackend* be )
 gboolean
 gnc_sql_save_book( GncSqlBackend* be, QofInstance* inst)
 {
+	gboolean status;
+
 	g_return_val_if_fail( be != NULL, FALSE );
 	g_return_val_if_fail( inst != NULL, FALSE );
 	g_return_val_if_fail( QOF_IS_BOOK(inst), FALSE );
 
-	return gnc_sql_commit_standard_item( be, inst, BOOK_TABLE, GNC_ID_BOOK, col_table );
+	status = gnc_sql_commit_standard_item( be, inst, BOOK_TABLE, GNC_ID_BOOK, col_table );
+
+	qof_book_mark_saved( QOF_BOOK(inst) );
+
+	return status;
 }
 
 /* ================================================================= */

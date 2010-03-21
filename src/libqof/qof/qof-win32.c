@@ -26,6 +26,7 @@
 #include "gnc-date-p.h"
 #include "strptime.h"
 #include <windows.h>
+#include <stdlib.h>
 
 static GHashTable *picture_to_format = NULL;
 G_LOCK_DEFINE_STATIC(picture_to_format);
@@ -103,7 +104,7 @@ qof_win32_get_time_format(QofWin32Picture picture)
     case QOF_WIN32_PICTURE_DATETIME:
         tmp1 = get_win32_locale_string(LOCALE_SSHORTDATE);
         tmp2 = get_win32_locale_string(LOCALE_STIMEFORMAT);
-        locale_string = g_strconcat(tmp1, " ", tmp2);
+        locale_string = g_strconcat(tmp1, " ", tmp2, NULL);
         g_free(tmp1);
         g_free(tmp2);
         break;

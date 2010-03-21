@@ -67,7 +67,7 @@ test_gnc_dialog_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	${top_builddir}/src/gnome-utils/libgncmod-gnome-utils.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
-	${top_builddir}/src/test-core/libgncmod-test.la
+	${top_builddir}/src/test-core/libtest-core.la
 am_test_gnc_recurrence_OBJECTS = test-gnc-recurrence.$(OBJEXT)
 test_gnc_recurrence_OBJECTS = $(am_test_gnc_recurrence_OBJECTS)
 test_gnc_recurrence_LDADD = $(LDADD)
@@ -76,7 +76,7 @@ test_gnc_recurrence_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	${top_builddir}/src/gnome-utils/libgncmod-gnome-utils.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
-	${top_builddir}/src/test-core/libgncmod-test.la
+	${top_builddir}/src/test-core/libtest-core.la
 am_test_link_module_OBJECTS = test-link-module.$(OBJEXT)
 test_link_module_OBJECTS = $(am_test_link_module_OBJECTS)
 test_link_module_DEPENDENCIES = $(am__DEPENDENCIES_1) \
@@ -154,7 +154,6 @@ GDK_PIXBUF_LIBS = @GDK_PIXBUF_LIBS@
 GETTEXT_PACKAGE = @GETTEXT_PACKAGE@
 GLADE_CFLAGS = @GLADE_CFLAGS@
 GLADE_LIBS = @GLADE_LIBS@
-GLIB26_LIBS = @GLIB26_LIBS@
 GLIB_CFLAGS = @GLIB_CFLAGS@
 GLIB_GENMARSHAL = @GLIB_GENMARSHAL@
 GLIB_LIBS = @GLIB_LIBS@
@@ -180,9 +179,9 @@ GNC_SRFI_LOAD_PATH = @GNC_SRFI_LOAD_PATH@
 GNC_TEST_SRFI_LOAD_CMD = @GNC_TEST_SRFI_LOAD_CMD@
 GNC_UI_DIR = @GNC_UI_DIR@
 GNOME_CFLAGS = @GNOME_CFLAGS@
+GNOME_KEYRING_CFLAGS = @GNOME_KEYRING_CFLAGS@
+GNOME_KEYRING_LIBS = @GNOME_KEYRING_LIBS@
 GNOME_LIBS = @GNOME_LIBS@
-GNOME_PRINT_CFLAGS = @GNOME_PRINT_CFLAGS@
-GNOME_PRINT_LIBS = @GNOME_PRINT_LIBS@
 GNUCASH_MAJOR_VERSION = @GNUCASH_MAJOR_VERSION@
 GNUCASH_MICRO_VERSION = @GNUCASH_MICRO_VERSION@
 GNUCASH_MINOR_VERSION = @GNUCASH_MINOR_VERSION@
@@ -255,7 +254,6 @@ PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PERL = @PERL@
-PERLINCL = @PERLINCL@
 PKG_CONFIG = @PKG_CONFIG@
 POFILES = @POFILES@
 POSUB = @POSUB@
@@ -398,7 +396,7 @@ LDADD = \
   ${top_builddir}/src/gnome-utils/libgncmod-gnome-utils.la \
   ${top_builddir}/src/engine/libgncmod-engine.la \
   ${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
-  ${top_builddir}/src/test-core/libgncmod-test.la
+  ${top_builddir}/src/test-core/libtest-core.la
 
 test_gnc_recurrence_SOURCES = test-gnc-recurrence.c
 test_link_module_SOURCES = test-link-module.c

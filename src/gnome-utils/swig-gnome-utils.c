@@ -1356,7 +1356,7 @@ _wrap_gnc_verify_dialog (SCM s_0, SCM s_1, SCM s_2)
   {
     arg1 = (GtkWidget *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_GtkWidget, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   {
     arg3 = (gchar *)SWIG_scm2str(s_2);
     must_free3 = 1;
@@ -1484,7 +1484,7 @@ _wrap_gnc_set_busy_cursor (SCM s_0, SCM s_1)
   {
     arg1 = (GtkWidget *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_GtkWidget, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   gnc_set_busy_cursor(arg1,arg2);
   gswig_result = SCM_UNSPECIFIED;
   

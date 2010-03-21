@@ -34,7 +34,7 @@
  *  @author Copyright (c) 2000-2001 Dave Peticolas <dave@krondo.com>
  *
  *  @details
- *  The CellBlock struct is a rectangular grid of cells that 
+ *  The CellBlock struct is a rectangular grid of cells that
  *  define an arrangement of cells.  It is typically used to
  *  define a virtual cursor within a larger table of cells.
  */
@@ -48,15 +48,15 @@
 
 typedef struct
 {
-  short num_rows;
-  short num_cols;
+    short num_rows;
+    short num_cols;
 
-  short start_col;
-  short stop_col;
+    short start_col;
+    short stop_col;
 
-  char *cursor_name;
+    char *cursor_name;
 
-  GPtrArray *cells; /* Holds the CellBlockCell table */
+    GPtrArray *cells; /* Holds the CellBlockCell table */
 } CellBlock;
 
 
@@ -71,8 +71,8 @@ void        gnc_cellblock_set_cell (CellBlock *cellblock,
 BasicCell * gnc_cellblock_get_cell (CellBlock *cellblock,
                                     int row, int col);
 
-/** Searches by name for a particular cell in a CellBlock. Parameters @row
- *  and/or @col may be @c NULL.
+/** Searches by name for a particular cell in a CellBlock. Parameters @c row
+ *  and/or @c col may be @c NULL.
  *
  *  @param cellblock a ::CellBlock to search
  *
@@ -87,8 +87,8 @@ BasicCell * gnc_cellblock_get_cell (CellBlock *cellblock,
  *  @return the matching cell, or @c NULL
  */
 BasicCell * gnc_cellblock_get_cell_by_name(CellBlock *cellblock,
-                                           const char *cell_name,
-                                           int *row, int *col);
+        const char *cell_name,
+        int *row, int *col);
 
 /* Return number of changed cells. */
 int         gnc_cellblock_changed (CellBlock *cursor,

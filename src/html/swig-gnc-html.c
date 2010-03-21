@@ -1511,7 +1511,7 @@ _wrap_gnc_build_url (SCM s_0, SCM s_1, SCM s_2)
   result = (gchar *)gnc_build_url(arg1,(char const *)arg2,(char const *)arg3);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }

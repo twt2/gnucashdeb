@@ -26,8 +26,8 @@
 
 #include <glib.h>
 #include <math.h>
-#ifdef G_OS_WIN32
-#include <pow.h>
+#if defined(G_OS_WIN32) && !defined(_MSC_VER)
+# include <pow.h>
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -925,7 +925,7 @@ gnc_numeric_convert(gnc_numeric in, gint64 denom, gint how)
         case GNC_HOW_RND_ROUND_HALF_DOWN:
             if (denom_neg)
             {
-                if ((2 * remainder) > in.denom*denom)
+                if ((2 * remainder) > in.denom * denom)
                 {
                     out.num = out.num + 1;
                 }
@@ -945,7 +945,7 @@ gnc_numeric_convert(gnc_numeric in, gint64 denom, gint how)
         case GNC_HOW_RND_ROUND_HALF_UP:
             if (denom_neg)
             {
-                if ((2 * remainder) >= in.denom*denom)
+                if ((2 * remainder) >= in.denom * denom)
                 {
                     out.num = out.num + 1;
                 }
@@ -965,11 +965,11 @@ gnc_numeric_convert(gnc_numeric in, gint64 denom, gint how)
         case GNC_HOW_RND_ROUND:
             if (denom_neg)
             {
-                if ((2 * remainder) > in.denom*denom)
+                if ((2 * remainder) > in.denom * denom)
                 {
                     out.num = out.num + 1;
                 }
-                else if ((2 * remainder) == in.denom*denom)
+                else if ((2 * remainder) == in.denom * denom)
                 {
                     if (out.num % 2)
                     {
@@ -1146,6 +1146,10 @@ gnc_numeric_to_decimal(gnc_numeric *a, guint8 *max_decimal_places)
 /* *******************************************************************
  *  double_to_gnc_numeric
  ********************************************************************/
+
+#ifdef _MSC_VER
+# define rint /* */
+#endif
 
 gnc_numeric
 double_to_gnc_numeric(double in, gint64 denom, gint how)
@@ -1386,11 +1390,11 @@ string_to_gnc_numeric(const gchar* str, gnc_numeric *n)
         return FALSE;
     }
 #else
-    tmpnum = strtoll (str, NULL, 0);
+    tmpnum = g_ascii_strtoll (str, NULL, 0);
     str = strchr (str, '/');
     if (!str) return FALSE;
     str ++;
-    tmpdenom = strtoll (str, NULL, 0);
+    tmpdenom = g_ascii_strtoll (str, NULL, 0);
     num_read = strspn (str, "0123456789");
 #endif
     n->num = tmpnum;

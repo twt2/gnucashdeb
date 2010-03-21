@@ -20,7 +20,7 @@
 /** @addtogroup Engine
     @{ */
 /** @addtogroup Business
-    The Business Engine provides a set of structures for 
+    The Business Engine provides a set of structures for
     that provide small-business accounting features.
     @{ */
 
@@ -46,5 +46,18 @@
 #define GNC_OWNER_MODULE_NAME    GNC_ID_OWNER
 #define GNC_TAXTABLE_MODULE_NAME GNC_ID_TAXTABLE
 #define GNC_VENDOR_MODULE_NAME   GNC_ID_VENDOR
+
+void
+gnc_module_init_business_core_init(void);
+
+#ifndef DI
+# ifdef _MSC_VER
+/* MSVC compiler doesn't have C99 "designated initializers"
+ * so we wrap them in a macro that is empty on MSVC. */
+#  define DI(x) /* */
+# else
+#  define DI(x) x
+# endif
+#endif
 
 #endif /* GNC_BUSINESS_H_ */

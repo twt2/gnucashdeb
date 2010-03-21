@@ -19,7 +19,7 @@
  * Boston, MA  02110-1301,  USA       gnu@gnu.org                   *
 \********************************************************************/
 /** @file gnc-backend-xml.h
- *  @brief load and save data to files 
+ *  @brief load and save data to files
  *  @author Copyright (c) 2000 Gnumatic Inc.
  *  @author Copyright (c) 2002 Derek Atkins <warlord@MIT.EDU>
  *  @author Copyright (c) 2003 Linas Vepstas <linas@linas.org>
@@ -37,18 +37,18 @@
 #include "qofbackend-p.h"
 struct FileBackend_struct
 {
-  QofBackend be;
+    QofBackend be;
 
-  char *dirname;
-  char *fullpath;  /* Fully qualified path to book */
-  char *lockfile;
-  char *linkfile;
-  int lockfd;
+    char *dirname;
+    char *fullpath;  /* Fully qualified path to book */
+    char *lockfile;
+    char *linkfile;
+    int lockfd;
 
-  QofBook *primary_book;  /* The primary, main open book */
-  
-  int file_retention_days;
-  gboolean file_compression;
+    QofBook *primary_book;  /* The primary, main open book */
+
+    int file_retention_days;
+    gboolean file_compression;
 };
 
 typedef struct FileBackend_struct FileBackend;
@@ -56,6 +56,12 @@ typedef struct FileBackend_struct FileBackend;
 // This is now a static inside the module
 //QofBackend * libgncmod_backend_file_LTX_gnc_backend_new(void);
 
+/** Initialization function which can be used when this module is
+ * statically linked into the application. */
+void gnc_module_init_backend_xml(void);
+
+/** This is the standarized initialization function of a qof_backend
+ * GModule. This one simply calls gnc_module_init_backend_file(). */
 G_MODULE_EXPORT void
 qof_backend_module_init(void);
 

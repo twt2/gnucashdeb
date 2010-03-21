@@ -7,12 +7,13 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/engine \
   -I${top_srcdir}/src/engine/test-core \
   -I${top_srcdir}/src/libqof/qof \
+  -I${top_srcdir}/src/core-utils \
   ${GUILE_INCS} \
   ${GLIB_CFLAGS}
 
 LDADD = \
   ${top_builddir}/src/gnc-module/libgnc-module.la \
-  ${top_builddir}/src/test-core/libgncmod-test.la \
+  ${top_builddir}/src/test-core/libtest-core.la \
   ../libgncmod-engine.la \
   ../test-core/libgncmod-test-engine.la \
   ${top_builddir}/src/core-utils/libgnc-core-utils.la \
@@ -38,7 +39,6 @@ TESTS = \
   test-querynew \
   test-query \
   test-recursive \
-  test-resolve-file-path \
   test-split-vs-account  \
   test-transaction-reversal \
   test-transaction-voiding \
@@ -76,7 +76,6 @@ check_PROGRAMS = \
   test-query \
   test-querynew \
   test-recursive \
-  test-resolve-file-path \
   test-scm-query \
   test-split-vs-account \
   test-transaction-reversal \
@@ -85,6 +84,7 @@ check_PROGRAMS = \
 
 test_link_SOURCES = test-link.c
 test_link_LDADD = ../libgncmod-engine.la \
+  ${top_builddir}/src/core-utils/libgnc-core-utils.la \
   ${top_builddir}/src/libqof/qof/libgnc-qof.la
 
 EXTRA_DIST = \

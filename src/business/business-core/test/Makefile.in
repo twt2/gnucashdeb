@@ -67,7 +67,7 @@ test_address_LDADD = $(LDADD)
 am__DEPENDENCIES_1 =
 test_address_DEPENDENCIES =  \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
-	${top_builddir}/src/test-core/libgncmod-test.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	../libgncmod-business-core.la \
 	${top_builddir}/src/libqof/qof/libgnc-qof.la \
@@ -77,7 +77,7 @@ test_business_OBJECTS = test-business.$(OBJEXT)
 test_business_LDADD = $(LDADD)
 test_business_DEPENDENCIES =  \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
-	${top_builddir}/src/test-core/libgncmod-test.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	../libgncmod-business-core.la \
 	${top_builddir}/src/libqof/qof/libgnc-qof.la \
@@ -87,7 +87,7 @@ test_customer_OBJECTS = test-customer.$(OBJEXT)
 test_customer_LDADD = $(LDADD)
 test_customer_DEPENDENCIES =  \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
-	${top_builddir}/src/test-core/libgncmod-test.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	../libgncmod-business-core.la \
 	${top_builddir}/src/libqof/qof/libgnc-qof.la \
@@ -97,7 +97,7 @@ test_employee_OBJECTS = test-employee.$(OBJEXT)
 test_employee_LDADD = $(LDADD)
 test_employee_DEPENDENCIES =  \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
-	${top_builddir}/src/test-core/libgncmod-test.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	../libgncmod-business-core.la \
 	${top_builddir}/src/libqof/qof/libgnc-qof.la \
@@ -107,7 +107,7 @@ test_job_OBJECTS = test-job.$(OBJEXT)
 test_job_LDADD = $(LDADD)
 test_job_DEPENDENCIES =  \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
-	${top_builddir}/src/test-core/libgncmod-test.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	../libgncmod-business-core.la \
 	${top_builddir}/src/libqof/qof/libgnc-qof.la \
@@ -117,7 +117,7 @@ test_load_module_OBJECTS = test-load-module.$(OBJEXT)
 test_load_module_LDADD = $(LDADD)
 test_load_module_DEPENDENCIES =  \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
-	${top_builddir}/src/test-core/libgncmod-test.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	../libgncmod-business-core.la \
 	${top_builddir}/src/libqof/qof/libgnc-qof.la \
@@ -127,7 +127,7 @@ test_vendor_OBJECTS = test-vendor.$(OBJEXT)
 test_vendor_LDADD = $(LDADD)
 test_vendor_DEPENDENCIES =  \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
-	${top_builddir}/src/test-core/libgncmod-test.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	../libgncmod-business-core.la \
 	${top_builddir}/src/libqof/qof/libgnc-qof.la \
@@ -205,7 +205,6 @@ GDK_PIXBUF_LIBS = @GDK_PIXBUF_LIBS@
 GETTEXT_PACKAGE = @GETTEXT_PACKAGE@
 GLADE_CFLAGS = @GLADE_CFLAGS@
 GLADE_LIBS = @GLADE_LIBS@
-GLIB26_LIBS = @GLIB26_LIBS@
 GLIB_CFLAGS = @GLIB_CFLAGS@
 GLIB_GENMARSHAL = @GLIB_GENMARSHAL@
 GLIB_LIBS = @GLIB_LIBS@
@@ -231,9 +230,9 @@ GNC_SRFI_LOAD_PATH = @GNC_SRFI_LOAD_PATH@
 GNC_TEST_SRFI_LOAD_CMD = @GNC_TEST_SRFI_LOAD_CMD@
 GNC_UI_DIR = @GNC_UI_DIR@
 GNOME_CFLAGS = @GNOME_CFLAGS@
+GNOME_KEYRING_CFLAGS = @GNOME_KEYRING_CFLAGS@
+GNOME_KEYRING_LIBS = @GNOME_KEYRING_LIBS@
 GNOME_LIBS = @GNOME_LIBS@
-GNOME_PRINT_CFLAGS = @GNOME_PRINT_CFLAGS@
-GNOME_PRINT_LIBS = @GNOME_PRINT_LIBS@
 GNUCASH_MAJOR_VERSION = @GNUCASH_MAJOR_VERSION@
 GNUCASH_MICRO_VERSION = @GNUCASH_MICRO_VERSION@
 GNUCASH_MINOR_VERSION = @GNUCASH_MINOR_VERSION@
@@ -306,7 +305,6 @@ PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PERL = @PERL@
-PERLINCL = @PERLINCL@
 PKG_CONFIG = @PKG_CONFIG@
 POFILES = @POFILES@
 POSUB = @POSUB@
@@ -420,7 +418,7 @@ AM_CPPFLAGS = \
 
 LDADD = \
   ${top_builddir}/src/gnc-module/libgnc-module.la \
-  ${top_builddir}/src/test-core/libgncmod-test.la \
+  ${top_builddir}/src/test-core/libtest-core.la \
   ${top_builddir}/src/engine/libgncmod-engine.la \
   ../libgncmod-business-core.la \
   ${top_builddir}/src/libqof/qof/libgnc-qof.la \

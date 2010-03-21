@@ -1237,6 +1237,7 @@ static swig_module_info swig_module = {swig_types, 19, 0, 0, 0, 0};
 /* Includes the header in the wrapper code */
 #include <config.h>
 #include <option-util.h>
+#include <guile-mappings.h>
 #include <gnc-euro.h>
 #include <gnc-exp-parser.h>
 #include <gnc-ui-util.h>
@@ -1286,7 +1287,7 @@ _wrap_gnc_get_current_book_tax_name ()
   result = (gchar *)gnc_get_current_book_tax_name();
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -1307,7 +1308,7 @@ _wrap_gnc_get_current_book_tax_type ()
   result = (gchar *)gnc_get_current_book_tax_type();
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -1352,7 +1353,7 @@ _wrap_gnc_gettext_helper (SCM s_0)
   result = (char *)gnc_gettext_helper((char const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -1426,7 +1427,7 @@ _wrap_gnc_option_db_set_option_selectable_by_name (SCM s_0, SCM s_1, SCM s_2, SC
     arg3 = (char *)SWIG_scm2str(s_2);
     must_free3 = 1;
   }
-  arg4 = SCM_NFALSEP(s_3) ? TRUE : FALSE;
+  arg4 = scm_is_true(s_3) ? TRUE : FALSE;
   gnc_option_db_set_option_selectable_by_name(arg1,(char const *)arg2,(char const *)arg3,arg4);
   gswig_result = SCM_UNSPECIFIED;
   if (must_free2 && arg2) SWIG_free(arg2);
@@ -1559,7 +1560,7 @@ _wrap_gnc_locale_default_iso_currency_code ()
   result = (char *)gnc_locale_default_iso_currency_code();
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -1578,7 +1579,7 @@ _wrap_gnc_default_print_info (SCM s_0)
   SWIGUNUSED int gswig_list_p = 0;
   GNCPrintAmountInfo result;
   
-  arg1 = SCM_NFALSEP(s_0) ? TRUE : FALSE;
+  arg1 = scm_is_true(s_0) ? TRUE : FALSE;
   result = gnc_default_print_info(arg1);
   gswig_result = gnc_printinfo2scm(result);
   
@@ -1600,7 +1601,7 @@ _wrap_gnc_account_print_info (SCM s_0, SCM s_1)
   {
     arg1 = (Account *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Account, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   result = gnc_account_print_info((Account const *)arg1,arg2);
   gswig_result = gnc_printinfo2scm(result);
   
@@ -1623,7 +1624,7 @@ _wrap_gnc_commodity_print_info (SCM s_0, SCM s_1)
   {
     arg1 = (gnc_commodity *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_gnc_commodity, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   result = gnc_commodity_print_info((gnc_commodity const *)arg1,arg2);
   gswig_result = gnc_printinfo2scm(result);
   
@@ -1668,7 +1669,7 @@ _wrap_xaccPrintAmount (SCM s_0, SCM s_1)
   result = (char *)xaccPrintAmount(arg1,arg2);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -1695,7 +1696,7 @@ _wrap_number_to_words (SCM s_0, SCM s_1)
   result = (gchar *)number_to_words(arg1,arg2);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -1724,7 +1725,7 @@ _wrap_printable_value (SCM s_0, SCM s_1)
   result = (gchar *)printable_value(arg1,arg2);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -1916,19 +1917,19 @@ _wrap_gnc_spawn_process_async (SCM s_0, SCM s_1)
   {
     SCM path_scm = s_0;
     GList *path = NULL;
-    while (!SCM_NULLP (path_scm))
+    while (!scm_is_null (path_scm))
     {
       SCM key_scm = SCM_CAR (path_scm);
       char *key;
-      if (!SCM_STRINGP (key_scm))
+      if (!scm_is_string (key_scm))
       break;
-      key = g_strdup (SCM_STRING_CHARS (key_scm));
+      key = g_strdup (scm_to_locale_string (key_scm));
       path = g_list_prepend (path, key);
       path_scm = SCM_CDR (path_scm);
     }
     arg1 = g_list_reverse (path);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   result = (Process *)gnc_spawn_process_async(arg1,arg2);
   {
     gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_Process, 0);
@@ -1979,7 +1980,7 @@ _wrap_gnc_detach_process (SCM s_0, SCM s_1)
   {
     arg1 = (Process *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Process, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   gnc_detach_process(arg1,arg2);
   gswig_result = SCM_UNSPECIFIED;
   

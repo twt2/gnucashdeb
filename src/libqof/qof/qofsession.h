@@ -111,8 +111,6 @@ typedef struct _QofSession    QofSession;
 
 QofSession * qof_session_new (void);
 void         qof_session_destroy (QofSession *session);
-QofSession * qof_session_get_current_session (void);
-void	       qof_session_set_current_session (QofSession *session);
 
 /** The qof_session_swap_data () method swaps the book of
  *    the two given sessions. It is useful
@@ -221,8 +219,8 @@ const char * qof_session_get_url (const QofSession *session);
  * The qof_session_not_saved() subroutine will return TRUE
  *    if any data in the session hasn't been saved to long-term storage.
  */
-gboolean qof_session_not_saved(QofSession *session);
-gboolean qof_session_save_in_progress(QofSession *session);
+/* gboolean qof_session_not_saved(const QofSession *session); <- unimplemented */
+gboolean qof_session_save_in_progress(const QofSession *session);
 
 /** Allows the backend to warn the user if a dataset already exists. */
 gboolean qof_session_save_may_clobber_data (const QofSession *session);
@@ -400,7 +398,7 @@ on stdout and can be piped or redirected to other processes.
 Currently, only the QSF backend supports writing to stdout, other
 backends may return a ::QofBackendError.
 */
-#define QOF_STDOUT "file:"
+#define QOF_STDOUT ">"
 
 /** @name Event Handling
 

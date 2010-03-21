@@ -76,16 +76,11 @@ static const GncSqlColumnTableEntry tx_col_table[] =
 {
 	/*@ -full_init_block @*/
     { "guid",          CT_GUID,           0,                      COL_NNUL|COL_PKEY, "guid" },
-    { "currency_guid", CT_COMMODITYREF,   0,                      COL_NNUL,          NULL, NULL,
-			(QofAccessFunc)xaccTransGetCurrency, (QofSetterFunc)xaccTransSetCurrency },
-    { "num",           CT_STRING,         TX_MAX_NUM_LEN,         COL_NNUL,          NULL, NULL,
-			(QofAccessFunc)xaccTransGetNum, (QofSetterFunc)xaccTransSetNum },
-    { "post_date",     CT_TIMESPEC,       0,                      0,                 NULL, NULL,
-			(QofAccessFunc)xaccTransRetDatePostedTS, (QofSetterFunc)gnc_transaction_set_date_posted },
-    { "enter_date",    CT_TIMESPEC,       0,                      0,                 NULL, NULL,
-			(QofAccessFunc)xaccTransRetDateEnteredTS, (QofSetterFunc)gnc_transaction_set_date_entered },
-    { "description",   CT_STRING,         TX_MAX_DESCRIPTION_LEN, 0,                 NULL, NULL,
-            (QofAccessFunc)xaccTransGetDescription, (QofSetterFunc)xaccTransSetDescription },
+    { "currency_guid", CT_COMMODITYREF,   0,                      COL_NNUL,          "currency" },
+    { "num",           CT_STRING,         TX_MAX_NUM_LEN,         COL_NNUL,          "num" },
+    { "post_date",     CT_TIMESPEC,       0,                      0,                 "post-date" },
+    { "enter_date",    CT_TIMESPEC,       0,                      0,                 "enter-date" },
+    { "description",   CT_STRING,         TX_MAX_DESCRIPTION_LEN, 0,                 "description" },
     { NULL }
 	/*@ +full_init_block @*/
 };
@@ -102,16 +97,15 @@ static const GncSqlColumnTableEntry split_col_table[] =
 {
 	/*@ -full_init_block @*/
     { "guid",            CT_GUID,         0,                    COL_NNUL|COL_PKEY, "guid" },
-    { "tx_guid",         CT_TXREF,        0,                    COL_NNUL,          NULL, SPLIT_TRANS },
-    { "account_guid",    CT_ACCOUNTREF,   0,                    COL_NNUL,          NULL, SPLIT_ACCOUNT },
-    { "memo",            CT_STRING,       SPLIT_MAX_MEMO_LEN,   COL_NNUL,          NULL, SPLIT_MEMO },
-    { "action",          CT_STRING,       SPLIT_MAX_ACTION_LEN, COL_NNUL,          NULL, SPLIT_ACTION },
+    { "tx_guid",         CT_TXREF,        0,                    COL_NNUL,          "transaction" },
+    { "account_guid",    CT_ACCOUNTREF,   0,                    COL_NNUL,          "account" },
+    { "memo",            CT_STRING,       SPLIT_MAX_MEMO_LEN,   COL_NNUL,          "memo" },
+    { "action",          CT_STRING,       SPLIT_MAX_ACTION_LEN, COL_NNUL,          "action" },
     { "reconcile_state", CT_STRING,       1,                    COL_NNUL,          NULL, NULL,
 			(QofAccessFunc)get_split_reconcile_state, set_split_reconcile_state },
-    { "reconcile_date",  CT_TIMESPEC,     0,                    0,                 NULL, NULL,
-			(QofAccessFunc)xaccSplitRetDateReconciledTS, (QofSetterFunc)set_split_reconcile_date },
-    { "value",           CT_NUMERIC,      0,                    COL_NNUL,          NULL, SPLIT_VALUE },
-    { "quantity",        CT_NUMERIC,      0,                    COL_NNUL,          NULL, SPLIT_AMOUNT },
+    { "reconcile_date",  CT_TIMESPEC,     0,                    0,                 "reconcile-date" },
+    { "value",           CT_NUMERIC,      0,                    COL_NNUL,          "value" },
+    { "quantity",        CT_NUMERIC,      0,                    COL_NNUL,          "amount" },
 	{ "lot_guid",        CT_LOTREF,       0,                    0,                 NULL, NULL,
 			(QofAccessFunc)xaccSplitGetLot, set_split_lot },
     { NULL }
@@ -235,7 +229,7 @@ load_splits_for_tx_list( GncSqlBackend* be, GList* list )
 			Split* s;
             s = load_single_split( be, row );
 			if( s != NULL ) {
-				split_list = g_list_append( split_list, s );
+				split_list = g_list_prepend( split_list, s );
 			}
 			row = gnc_sql_result_get_next_row( result );
         }
@@ -382,7 +376,7 @@ query_transactions( GncSqlBackend* be, GncSqlStatement* stmt )
         while( row != NULL ) {
             tx = load_single_tx( be, row );
 			if( tx != NULL ) {
-				tx_list = g_list_append( tx_list, tx );
+				tx_list = g_list_prepend( tx_list, tx );
 			}
 			row = gnc_sql_result_get_next_row( result );
         }
@@ -399,6 +393,7 @@ query_transactions( GncSqlBackend* be, GncSqlStatement* stmt )
 			Transaction* pTx = GNC_TRANSACTION(node->data);
     		xaccTransCommitEdit( pTx );
 		}
+		g_list_free( tx_list );
 
 #if LOAD_TRANSACTIONS_AS_NEEDED
 		// Update the account balances based on the loaded splits.  If the end

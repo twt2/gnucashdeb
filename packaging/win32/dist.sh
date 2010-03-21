@@ -28,6 +28,7 @@ function prepare() {
     _EXETYPE_UDIR=`unix_path $EXETYPE_DIR`
     _GNOME_UDIR=`unix_path $GNOME_DIR`
     _PCRE_UDIR=`unix_path $PCRE_DIR`
+    _LIBBONOBOUI_UDIR=`unix_path $LIBBONOBOUI_DIR`
     _LIBGSF_UDIR=`unix_path $LIBGSF_DIR`
     _GOFFICE_UDIR=`unix_path $GOFFICE_DIR`
     _OPENSP_UDIR=`unix_path $OPENSP_DIR`
@@ -124,6 +125,12 @@ function dist_pcre() {
     setup pcre
     mkdir -p $DIST_UDIR/bin
     cp -a $_PCRE_UDIR/bin/pcre3.dll $DIST_UDIR/bin
+}
+
+function dist_libbonoboui() {
+    setup libbonoboui
+    mkdir -p $DIST_UDIR/bin
+    cp -a $_LIBBONOBOUI_UDIR/bin/libbonoboui*.dll $DIST_UDIR/bin
 }
 
 function dist_libgsf() {
@@ -229,9 +236,13 @@ function dist_gnucash() {
     cp -a $_REPOS_UDIR/packaging/win32/install-fq-mods.cmd $DIST_UDIR/bin
 
     _QTDIR_WIN=`echo $QTDIR | sed 's,^/\([A-Za-z]\)/,\1:/,g' `
+    _AQBANKING_SO_EFFECTIVE=$(awk '/AQBANKING_SO_EFFECTIVE / { print $3 }' ${_AQBANKING_UDIR}/include/aqbanking/version.h )
+    _GWENHYWFAR_SO_EFFECTIVE=$(awk '/GWENHYWFAR_SO_EFFECTIVE / { print $3 }' ${_GWENHYWFAR_UDIR}/include/gwenhywfar3/gwenhywfar/version.h )
     sed < $_BUILD_UDIR/packaging/win32/gnucash.iss \
         > $_GNUCASH_UDIR/gnucash.iss \
-        -e "s#@-qtbindir-@#${_QTDIR_WIN}/bin#g"
+        -e "s#@-qtbindir-@#${_QTDIR_WIN}/bin#g" \
+	-e "s#@-gwenhywfar_so_effective-@#${_GWENHYWFAR_SO_EFFECTIVE}#g" \
+	-e "s#@-aqbanking_so_effective-@#${_AQBANKING_SO_EFFECTIVE}#g"
 }
 
 function finish() {
@@ -262,7 +273,7 @@ function finish() {
     done
 
     echo "Now running the Inno Setup Compiler for creating the setup.exe"
-    ${_INNO_UDIR}/iscc ${_GNUCASH_UDIR}/gnucash.iss
+    ${_INNO_UDIR}/iscc //Q ${_GNUCASH_UDIR}/gnucash.iss
 
     if [ "$BUILD_FROM_TARBALL" = "no" ]; then
         # And changing output filename
@@ -283,6 +294,7 @@ dist_autotools
 dist_guile
 dist_gnome
 dist_pcre
+dist_libbonoboui
 dist_libgsf
 dist_goffice
 dist_libofx

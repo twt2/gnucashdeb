@@ -2,6 +2,7 @@
 %{
 /* Includes the header in the wrapper code */
 #include <config.h>
+#include <guile-mappings.h>
 #include <gncAddress.h>
 #include <gncBillTerm.h>
 #include <gncCustomer.h>
@@ -14,6 +15,9 @@
 #include <gncTaxTable.h>
 #include <gncVendor.h>
 #include <gncBusGuile.h>
+#ifdef _MSC_VER
+# define snprintf _snprintf
+#endif
 #include "engine-helpers.h"
 #include "gncBusGuile.h"
 
@@ -81,11 +85,11 @@ GLIST_HELPER_INOUT(GncTaxTableEntryList, SWIGTYPE_p__gncTaxTableEntry);
   SCM list = $input;
   GList *c_list = NULL;
 
-  while (!SCM_NULLP(list)) {
+  while (!scm_is_null(list)) {
         GncAccountValue *p;
 
         SCM p_scm = SCM_CAR(list);
-        if (SCM_FALSEP(p_scm) || SCM_NULLP(p_scm))
+        if (scm_is_false(p_scm) || scm_is_null(p_scm))
            p = NULL;
         else
            p = gnc_scm_to_account_value_ptr(p_scm);

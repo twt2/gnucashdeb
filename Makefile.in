@@ -187,7 +187,6 @@ GDK_PIXBUF_LIBS = @GDK_PIXBUF_LIBS@
 GETTEXT_PACKAGE = @GETTEXT_PACKAGE@
 GLADE_CFLAGS = @GLADE_CFLAGS@
 GLADE_LIBS = @GLADE_LIBS@
-GLIB26_LIBS = @GLIB26_LIBS@
 GLIB_CFLAGS = @GLIB_CFLAGS@
 GLIB_GENMARSHAL = @GLIB_GENMARSHAL@
 GLIB_LIBS = @GLIB_LIBS@
@@ -213,9 +212,9 @@ GNC_SRFI_LOAD_PATH = @GNC_SRFI_LOAD_PATH@
 GNC_TEST_SRFI_LOAD_CMD = @GNC_TEST_SRFI_LOAD_CMD@
 GNC_UI_DIR = @GNC_UI_DIR@
 GNOME_CFLAGS = @GNOME_CFLAGS@
+GNOME_KEYRING_CFLAGS = @GNOME_KEYRING_CFLAGS@
+GNOME_KEYRING_LIBS = @GNOME_KEYRING_LIBS@
 GNOME_LIBS = @GNOME_LIBS@
-GNOME_PRINT_CFLAGS = @GNOME_PRINT_CFLAGS@
-GNOME_PRINT_LIBS = @GNOME_PRINT_LIBS@
 GNUCASH_MAJOR_VERSION = @GNUCASH_MAJOR_VERSION@
 GNUCASH_MICRO_VERSION = @GNUCASH_MICRO_VERSION@
 GNUCASH_MINOR_VERSION = @GNUCASH_MINOR_VERSION@
@@ -288,7 +287,6 @@ PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PERL = @PERL@
-PERLINCL = @PERLINCL@
 PKG_CONFIG = @PKG_CONFIG@
 POFILES = @POFILES@
 POSUB = @POSUB@
@@ -396,6 +394,7 @@ dist_doc_DATA = \
   AUTHORS \
   COPYING \
   ChangeLog \
+  ChangeLog.2009 \
   ChangeLog.2008 \
   ChangeLog.2007 \
   ChangeLog.2006 \
@@ -422,7 +421,6 @@ dist_doc_DATA = \
 # Don't list any directories or you'll get *everything*, including the
 # CVS dirs.
 EXTRA_DIST = \
-  gnucash.lsm \
   make-gnucash-potfiles.in \
   macros/aqbanking.m4 \
   macros/as-scrub-include.m4 \
@@ -475,6 +473,7 @@ distuninstallcheck_listfiles = \
 
 SVN = svn
 XSLTPROC = xsltproc
+ASTYLE = /usr/bin/astyle
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -1078,9 +1077,17 @@ intl-scm/guile-strings.c:
 # idea? Before a release, NEWS will get updated because of the version
 # change, so this should fit just fine.)
 @BUILDING_FROM_SVN_TRUE@ChangeLog: NEWS
-@BUILDING_FROM_SVN_TRUE@	$(SVN) log -v --xml -r HEAD:17790 http://svn.gnucash.org/repo/gnucash | \
+@BUILDING_FROM_SVN_TRUE@	$(SVN) log -v --xml -r HEAD:18543 http://svn.gnucash.org/repo/gnucash | \
 @BUILDING_FROM_SVN_TRUE@	  $(XSLTPROC) --stringparam strip-prefix "gnucash/trunk" \
 @BUILDING_FROM_SVN_TRUE@	  --stringparam include-rev "yes" $(srcdir)/macros/svn2cl.xsl - > $@
+.PHONY: indent
+indent:
+	$(ASTYLE) --indent=spaces=4 --brackets=break --suffix=none `find ${srcdir}/src -name '*.[hc]'`
+# Use the following line if you've got astyle-1.24, but don't use
+# --pad=oper with astyle 1.22 as it will reformat e.g. "return +1;" in
+# a very ugly way.
+#	$(ASTYLE) --indent=spaces=4 --brackets=break --pad-oper -pad-header --suffix=none `find ${srcdir}/src -name '*.[hc]'`
+	@echo "### GnuCash development hint: The above command might have re-indented much more files than what you intended. Please commit only those which you really want to have changed, and revert the changes in the others so that other devevelopers do not have unnecessary merge conflicts. Thanks! ###"
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

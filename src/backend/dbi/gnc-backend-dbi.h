@@ -31,7 +31,14 @@
 
 #include <gmodule.h>
 
-G_MODULE_EXPORT void
-qof_backend_module_init(void);
+/** Initialization function which can be used when this module is
+ * statically linked into the application. */
+void gnc_module_init_backend_dbi(void);
+/** Shutdown function which can be used when this module is
+ * statically linked into the application. */
+void gnc_module_finalize_backend_dbi(void);
+
+G_MODULE_EXPORT void qof_backend_module_init(void);
+G_MODULE_EXPORT void qof_backend_module_finalize(void);
 
 #endif /* GNC_BACKEND_DBI_H_ */

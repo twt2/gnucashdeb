@@ -79,13 +79,14 @@ GType gnc_billterm_get_type(void);
 
 DEFINE_ENUM(GncBillTermType, ENUM_TERMS_TYPE)
 #else
-typedef enum {
-  GNC_TERM_TYPE_DAYS = 1,
-  GNC_TERM_TYPE_PROXIMO,
+typedef enum
+{
+    GNC_TERM_TYPE_DAYS = 1,
+    GNC_TERM_TYPE_PROXIMO,
 } GncBillTermType;
 #endif
 
-/** @name Create/Destroy Functions 
+/** @name Create/Destroy Functions
  @{ */
 GncBillTerm * gncBillTermCreate (QofBook *book);
 void gncBillTermDestroy (GncBillTerm *term);
@@ -97,7 +98,7 @@ void gncBillTermBeginEdit (GncBillTerm *term);
 void gncBillTermCommitEdit (GncBillTerm *term);
 /** @} */
 
-/** @name Set Functions 
+/** @name Set Functions
 @{
 */
 void gncBillTermSetName (GncBillTerm *term, const char *name);
@@ -110,16 +111,18 @@ void gncBillTermSetCutoff (GncBillTerm *term, gint cutoff);
 
 /** @} */
 
-/** @name Get Functions 
+/** @name Get Functions
  @{ */
 /** Return a pointer to the instance gncBillTerm that is identified
- *  by the guid, and is residing in the book. Returns NULL if the 
+ *  by the guid, and is residing in the book. Returns NULL if the
  *  instance can't be found.
  *  Equivalent function prototype is
  *  GncBillTerm * gncBillTermLookup (QofBook *book, const GUID *guid);
  */
-#define gncBillTermLookup(book,guid)    \
-       QOF_BOOK_LOOKUP_ENTITY((book),(guid),GNC_ID_BILLTERM, GncBillTerm)
+static inline GncBillTerm * gncBillTermLookup (const QofBook *book, const GUID *guid)
+{
+    QOF_BOOK_RETURN_ENTITY(book, guid,GNC_ID_BILLTERM, GncBillTerm);
+}
 
 GncBillTerm *gncBillTermLookupByName (QofBook *book, const char *name);
 GList * gncBillTermGetTerms (QofBook *book);

@@ -1270,6 +1270,7 @@ static swig_module_info swig_module = {swig_types, 52, 0, 0, 0, 0};
 
 /* Includes the header in the wrapper code */
 #include <config.h>
+#include <guile-mappings.h>
 #include <gncAddress.h>
 #include <gncBillTerm.h>
 #include <gncCustomer.h>
@@ -1282,6 +1283,9 @@ static swig_module_info swig_module = {swig_types, 52, 0, 0, 0, 0};
 #include <gncTaxTable.h>
 #include <gncVendor.h>
 #include <gncBusGuile.h>
+#ifdef _MSC_VER
+# define snprintf _snprintf
+#endif
 #include "engine-helpers.h"
 #include "gncBusGuile.h"
 
@@ -2149,7 +2153,7 @@ _wrap_gncAddressGetName (SCM s_0)
   result = (char *)gncAddressGetName((struct _gncAddress const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -2175,7 +2179,7 @@ _wrap_gncAddressGetAddr1 (SCM s_0)
   result = (char *)gncAddressGetAddr1((struct _gncAddress const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -2201,7 +2205,7 @@ _wrap_gncAddressGetAddr2 (SCM s_0)
   result = (char *)gncAddressGetAddr2((struct _gncAddress const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -2227,7 +2231,7 @@ _wrap_gncAddressGetAddr3 (SCM s_0)
   result = (char *)gncAddressGetAddr3((struct _gncAddress const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -2253,7 +2257,7 @@ _wrap_gncAddressGetAddr4 (SCM s_0)
   result = (char *)gncAddressGetAddr4((struct _gncAddress const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -2279,7 +2283,7 @@ _wrap_gncAddressGetPhone (SCM s_0)
   result = (char *)gncAddressGetPhone((struct _gncAddress const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -2305,7 +2309,7 @@ _wrap_gncAddressGetFax (SCM s_0)
   result = (char *)gncAddressGetFax((struct _gncAddress const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -2331,7 +2335,7 @@ _wrap_gncAddressGetEmail (SCM s_0)
   result = (char *)gncAddressGetEmail((struct _gncAddress const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -3028,6 +3032,33 @@ _wrap_gncBillTermSetCutoff (SCM s_0, SCM s_1)
 
 
 static SCM
+_wrap_gncBillTermLookup (SCM s_0, SCM s_1)
+{
+#define FUNC_NAME "gncBillTermLookup"
+  QofBook *arg1 = (QofBook *) 0 ;
+  GUID *arg2 = (GUID *) 0 ;
+  GUID g2 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  GncBillTerm *result = 0 ;
+  
+  {
+    arg1 = (QofBook *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_QofBook, 1, 0);
+  }
+  g2 = gnc_scm2guid(s_1); arg2 = &g2; 
+  result = (GncBillTerm *)gncBillTermLookup((QofBook const *)arg1,(GUID const *)arg2);
+  {
+    gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p__gncBillTerm, 0);
+  }
+  
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
 _wrap_gncBillTermLookupByName (SCM s_0, SCM s_1)
 {
 #define FUNC_NAME "gncBillTermLookupByName"
@@ -3095,7 +3126,7 @@ _wrap_gncBillTermGetName (SCM s_0)
   result = (char *)gncBillTermGetName((struct _gncBillTerm const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -3121,7 +3152,7 @@ _wrap_gncBillTermGetDescription (SCM s_0)
   result = (char *)gncBillTermGetDescription((struct _gncBillTerm const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -3302,7 +3333,7 @@ _wrap_gncBillTermReturnChild (SCM s_0, SCM s_1)
   {
     arg1 = (GncBillTerm *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncBillTerm, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   result = (GncBillTerm *)gncBillTermReturnChild(arg1,arg2);
   {
     gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p__gncBillTerm, 0);
@@ -3670,7 +3701,7 @@ _wrap_gncCustomerSetActive (SCM s_0, SCM s_1)
   {
     arg1 = (GncCustomer *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncCustomer, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   gncCustomerSetActive(arg1,arg2);
   gswig_result = SCM_UNSPECIFIED;
   
@@ -3761,7 +3792,7 @@ _wrap_gncCustomerSetTaxTableOverride (SCM s_0, SCM s_1)
   {
     arg1 = (GncCustomer *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncCustomer, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   gncCustomerSetTaxTableOverride(arg1,arg2);
   gswig_result = SCM_UNSPECIFIED;
   
@@ -3847,6 +3878,33 @@ _wrap_gncCustomerRemoveJob (SCM s_0, SCM s_1)
 
 
 static SCM
+_wrap_gncCustomerLookup (SCM s_0, SCM s_1)
+{
+#define FUNC_NAME "gncCustomerLookup"
+  QofBook *arg1 = (QofBook *) 0 ;
+  GUID *arg2 = (GUID *) 0 ;
+  GUID g2 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  GncCustomer *result = 0 ;
+  
+  {
+    arg1 = (QofBook *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_QofBook, 1, 0);
+  }
+  g2 = gnc_scm2guid(s_1); arg2 = &g2; 
+  result = (GncCustomer *)gncCustomerLookup((QofBook const *)arg1,(GUID const *)arg2);
+  {
+    gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p__gncCustomer, 0);
+  }
+  
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
 _wrap_gncCustomerGetID (SCM s_0)
 {
 #define FUNC_NAME "gncCustomerGetID"
@@ -3861,7 +3919,7 @@ _wrap_gncCustomerGetID (SCM s_0)
   result = (char *)gncCustomerGetID((struct _gncCustomer const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -3887,7 +3945,7 @@ _wrap_gncCustomerGetName (SCM s_0)
   result = (char *)gncCustomerGetName((struct _gncCustomer const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -3959,7 +4017,7 @@ _wrap_gncCustomerGetNotes (SCM s_0)
   result = (char *)gncCustomerGetNotes((struct _gncCustomer const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -4159,7 +4217,7 @@ _wrap_gncCustomerGetJoblist (SCM s_0, SCM s_1)
   {
     arg1 = (GncCustomer *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncCustomer, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   result = (GList *)gncCustomerGetJoblist((struct _gncCustomer const *)arg1,arg2);
   {
     gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_GList, 0);
@@ -4736,7 +4794,7 @@ _wrap_gncEmployeeSetActive (SCM s_0, SCM s_1)
   {
     arg1 = (GncEmployee *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncEmployee, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   gncEmployeeSetActive(arg1,arg2);
   gswig_result = SCM_UNSPECIFIED;
   
@@ -4834,7 +4892,7 @@ _wrap_gncEmployeeGetID (SCM s_0)
   result = (char *)gncEmployeeGetID((struct _gncEmployee const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -4860,7 +4918,7 @@ _wrap_gncEmployeeGetUsername (SCM s_0)
   result = (char *)gncEmployeeGetUsername((struct _gncEmployee const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -4909,7 +4967,7 @@ _wrap_gncEmployeeGetLanguage (SCM s_0)
   result = (char *)gncEmployeeGetLanguage((struct _gncEmployee const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -4935,7 +4993,7 @@ _wrap_gncEmployeeGetAcl (SCM s_0)
   result = (char *)gncEmployeeGetAcl((struct _gncEmployee const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -5048,6 +5106,33 @@ _wrap_gncEmployeeGetCCard (SCM s_0)
   {
     gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_Account, 0);
   }
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gncEmployeeLookup (SCM s_0, SCM s_1)
+{
+#define FUNC_NAME "gncEmployeeLookup"
+  QofBook *arg1 = (QofBook *) 0 ;
+  GUID *arg2 = (GUID *) 0 ;
+  GUID g2 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  GncEmployee *result = 0 ;
+  
+  {
+    arg1 = (QofBook *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_QofBook, 1, 0);
+  }
+  g2 = gnc_scm2guid(s_1); arg2 = &g2; 
+  result = (GncEmployee *)gncEmployeeLookup((QofBook const *)arg1,(GUID const *)arg2);
+  {
+    gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p__gncEmployee, 0);
+  }
+  
   
   
   return gswig_result;
@@ -5322,7 +5407,7 @@ _wrap_gncEntryDiscountHowToString (SCM s_0)
   result = (char *)gncEntryDiscountHowToString(arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -5375,7 +5460,7 @@ _wrap_gncEntryPaymentTypeToString (SCM s_0)
   result = (char *)gncEntryPaymentTypeToString(arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -5662,7 +5747,7 @@ _wrap_gncEntrySetInvTaxable (SCM s_0, SCM s_1)
   {
     arg1 = (GncEntry *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncEntry, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   gncEntrySetInvTaxable(arg1,arg2);
   gswig_result = SCM_UNSPECIFIED;
   
@@ -5684,7 +5769,7 @@ _wrap_gncEntrySetInvTaxIncluded (SCM s_0, SCM s_1)
   {
     arg1 = (GncEntry *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncEntry, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   gncEntrySetInvTaxIncluded(arg1,arg2);
   gswig_result = SCM_UNSPECIFIED;
   
@@ -5902,7 +5987,7 @@ _wrap_gncEntrySetBillTaxable (SCM s_0, SCM s_1)
   {
     arg1 = (GncEntry *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncEntry, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   gncEntrySetBillTaxable(arg1,arg2);
   gswig_result = SCM_UNSPECIFIED;
   
@@ -5924,7 +6009,7 @@ _wrap_gncEntrySetBillTaxIncluded (SCM s_0, SCM s_1)
   {
     arg1 = (GncEntry *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncEntry, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   gncEntrySetBillTaxIncluded(arg1,arg2);
   gswig_result = SCM_UNSPECIFIED;
   
@@ -5971,7 +6056,7 @@ _wrap_gncEntrySetBillable (SCM s_0, SCM s_1)
   {
     arg1 = (GncEntry *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncEntry, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   gncEntrySetBillable(arg1,arg2);
   gswig_result = SCM_UNSPECIFIED;
   
@@ -6087,7 +6172,7 @@ _wrap_gncEntryGetDescription (SCM s_0)
   result = (char *)gncEntryGetDescription((struct _gncEntry const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -6113,7 +6198,7 @@ _wrap_gncEntryGetAction (SCM s_0)
   result = (char *)gncEntryGetAction((struct _gncEntry const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -6139,7 +6224,7 @@ _wrap_gncEntryGetNotes (SCM s_0)
   result = (char *)gncEntryGetNotes((struct _gncEntry const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -6297,7 +6382,7 @@ _wrap_qofEntryGetInvDiscType (SCM s_0)
   result = (char *)qofEntryGetInvDiscType((struct _gncEntry const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -6323,7 +6408,7 @@ _wrap_qofEntryGetInvDiscHow (SCM s_0)
   result = (char *)qofEntryGetInvDiscHow((struct _gncEntry const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -6613,7 +6698,7 @@ _wrap_gncEntryReturnValue (SCM s_0, SCM s_1)
   {
     arg1 = (GncEntry *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncEntry, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   result = gncEntryReturnValue(arg1,arg2);
   gswig_result = gnc_numeric_to_scm(result);
   
@@ -6636,7 +6721,7 @@ _wrap_gncEntryReturnDiscountValue (SCM s_0, SCM s_1)
   {
     arg1 = (GncEntry *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncEntry, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   result = gncEntryReturnDiscountValue(arg1,arg2);
   gswig_result = gnc_numeric_to_scm(result);
   
@@ -6659,7 +6744,7 @@ _wrap_gncEntryReturnTaxValue (SCM s_0, SCM s_1)
   {
     arg1 = (GncEntry *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncEntry, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   result = gncEntryReturnTaxValue(arg1,arg2);
   gswig_result = gnc_numeric_to_scm(result);
   
@@ -6682,7 +6767,7 @@ _wrap_gncEntryReturnTaxValues (SCM s_0, SCM s_1)
   {
     arg1 = (GncEntry *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncEntry, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   result = (AccountValueList *)gncEntryReturnTaxValues(arg1,arg2);
   {
     SCM list = SCM_EOL;
@@ -6716,7 +6801,7 @@ _wrap_gncEntryGetValue (SCM s_0, SCM s_1, SCM s_2, SCM s_3, SCM s_4, SCM s_5)
   {
     arg1 = (GncEntry *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncEntry, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   {
     arg3 = (gnc_numeric *)SWIG_MustGetPtr(s_2, SWIGTYPE_p_gnc_numeric, 3, 0);
   }
@@ -6765,7 +6850,7 @@ _wrap_gncEntryComputeValue (SCM s_0, SCM s_1, SCM s_2, SCM s_3, SCM s_4, SCM s_5
   {
     arg3 = (GncTaxTable *)SWIG_MustGetPtr(s_2, SWIGTYPE_p__gncTaxTable, 3, 0);
   }
-  arg4 = SCM_NFALSEP(s_3) ? TRUE : FALSE;
+  arg4 = scm_is_true(s_3) ? TRUE : FALSE;
   arg5 = gnc_scm_to_numeric(s_4);
   {
     arg6 = (GncAmountType) scm_num2int(s_5, SCM_ARG1, FUNC_NAME); 
@@ -6866,6 +6951,33 @@ _wrap_gncEntryGetBill (SCM s_0)
   {
     gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p__gncInvoice, 0);
   }
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gncEntryLookup (SCM s_0, SCM s_1)
+{
+#define FUNC_NAME "gncEntryLookup"
+  QofBook *arg1 = (QofBook *) 0 ;
+  GUID *arg2 = (GUID *) 0 ;
+  GUID g2 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  GncEntry *result = 0 ;
+  
+  {
+    arg1 = (QofBook *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_QofBook, 1, 0);
+  }
+  g2 = gnc_scm2guid(s_1); arg2 = &g2; 
+  result = (GncEntry *)gncEntryLookup((QofBook const *)arg1,(GUID const *)arg2);
+  {
+    gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p__gncEntry, 0);
+  }
+  
   
   
   return gswig_result;
@@ -7598,7 +7710,7 @@ _wrap_gncInvoiceSetActive (SCM s_0, SCM s_1)
   {
     arg1 = (GncInvoice *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncInvoice, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   gncInvoiceSetActive(arg1,arg2);
   gswig_result = SCM_UNSPECIFIED;
   
@@ -7890,7 +8002,7 @@ _wrap_gncInvoiceGetID (SCM s_0)
   result = (char *)gncInvoiceGetID((struct _gncInvoice const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -8025,7 +8137,7 @@ _wrap_gncInvoiceGetBillingID (SCM s_0)
   result = (char *)gncInvoiceGetBillingID((struct _gncInvoice const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -8051,7 +8163,7 @@ _wrap_gncInvoiceGetNotes (SCM s_0)
   result = (char *)gncInvoiceGetNotes((struct _gncInvoice const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -8100,7 +8212,7 @@ _wrap_gncInvoiceGetType (SCM s_0)
   result = (char *)gncInvoiceGetType(arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -8468,7 +8580,7 @@ _wrap_gncInvoicePostToAccount (SCM s_0, SCM s_1, SCM s_2, SCM s_3, SCM s_4, SCM 
     arg5 = (char *)SWIG_scm2str(s_4);
     must_free5 = 1;
   }
-  arg6 = SCM_NFALSEP(s_5) ? TRUE : FALSE;
+  arg6 = scm_is_true(s_5) ? TRUE : FALSE;
   result = (Transaction *)gncInvoicePostToAccount(arg1,arg2,arg3,arg4,(char const *)arg5,arg6);
   {
     gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_Transaction, 0);
@@ -8497,7 +8609,7 @@ _wrap_gncInvoiceUnpost (SCM s_0, SCM s_1)
   {
     arg1 = (GncInvoice *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncInvoice, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   result = gncInvoiceUnpost(arg1,arg2);
   gswig_result = result ? SCM_BOOL_T : SCM_BOOL_F;
   
@@ -8604,6 +8716,33 @@ _wrap_gncInvoiceGetInvoiceFromLot (SCM s_0)
   {
     gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p__gncInvoice, 0);
   }
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gncInvoiceLookup (SCM s_0, SCM s_1)
+{
+#define FUNC_NAME "gncInvoiceLookup"
+  QofBook *arg1 = (QofBook *) 0 ;
+  GUID *arg2 = (GUID *) 0 ;
+  GUID g2 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  GncInvoice *result = 0 ;
+  
+  {
+    arg1 = (QofBook *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_QofBook, 1, 0);
+  }
+  g2 = gnc_scm2guid(s_1); arg2 = &g2; 
+  result = (GncInvoice *)gncInvoiceLookup((QofBook const *)arg1,(GUID const *)arg2);
+  {
+    gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p__gncInvoice, 0);
+  }
+  
   
   
   return gswig_result;
@@ -9226,7 +9365,7 @@ _wrap_gncJobSetActive (SCM s_0, SCM s_1)
   {
     arg1 = (GncJob *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncJob, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   gncJobSetActive(arg1,arg2);
   gswig_result = SCM_UNSPECIFIED;
   
@@ -9291,7 +9430,7 @@ _wrap_gncJobGetID (SCM s_0)
   result = (char *)gncJobGetID((struct _gncJob const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -9317,7 +9456,7 @@ _wrap_gncJobGetName (SCM s_0)
   result = (char *)gncJobGetName((struct _gncJob const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -9343,7 +9482,7 @@ _wrap_gncJobGetReference (SCM s_0)
   result = (char *)gncJobGetReference((struct _gncJob const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -9391,6 +9530,33 @@ _wrap_gncJobGetActive (SCM s_0)
   }
   result = gncJobGetActive((struct _gncJob const *)arg1);
   gswig_result = result ? SCM_BOOL_T : SCM_BOOL_F;
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gncJobLookup (SCM s_0, SCM s_1)
+{
+#define FUNC_NAME "gncJobLookup"
+  QofBook *arg1 = (QofBook *) 0 ;
+  GUID *arg2 = (GUID *) 0 ;
+  GUID g2 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  GncJob *result = 0 ;
+  
+  {
+    arg1 = (QofBook *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_QofBook, 1, 0);
+  }
+  g2 = gnc_scm2guid(s_1); arg2 = &g2; 
+  result = (GncJob *)gncJobLookup((QofBook const *)arg1,(GUID const *)arg2);
+  {
+    gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p__gncJob, 0);
+  }
+  
   
   
   return gswig_result;
@@ -9757,7 +9923,7 @@ _wrap_gncOrderSetActive (SCM s_0, SCM s_1)
   {
     arg1 = (GncOrder *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncOrder, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   gncOrderSetActive(arg1,arg2);
   gswig_result = SCM_UNSPECIFIED;
   
@@ -9832,7 +9998,7 @@ _wrap_gncOrderGetID (SCM s_0)
   result = (char *)gncOrderGetID((struct _gncOrder const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -9923,7 +10089,7 @@ _wrap_gncOrderGetNotes (SCM s_0)
   result = (char *)gncOrderGetNotes((struct _gncOrder const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -9949,7 +10115,7 @@ _wrap_gncOrderGetReference (SCM s_0)
   result = (char *)gncOrderGetReference((struct _gncOrder const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -10086,6 +10252,33 @@ _wrap_gncOrderIsClosed (SCM s_0)
   }
   result = gncOrderIsClosed((struct _gncOrder const *)arg1);
   gswig_result = result ? SCM_BOOL_T : SCM_BOOL_F;
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gncOrderLookup (SCM s_0, SCM s_1)
+{
+#define FUNC_NAME "gncOrderLookup"
+  QofBook *arg1 = (QofBook *) 0 ;
+  GUID *arg2 = (GUID *) 0 ;
+  GUID g2 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  GncOrder *result = 0 ;
+  
+  {
+    arg1 = (QofBook *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_QofBook, 1, 0);
+  }
+  g2 = gnc_scm2guid(s_1); arg2 = &g2; 
+  result = (GncOrder *)gncOrderLookup((QofBook const *)arg1,(GUID const *)arg2);
+  {
+    gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p__gncOrder, 0);
+  }
+  
   
   
   return gswig_result;
@@ -10750,7 +10943,7 @@ _wrap_gncOwnerGetName (SCM s_0)
   result = (char *)gncOwnerGetName((struct _gncOwner const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -11315,7 +11508,7 @@ _wrap_gncAmountTypeToString (SCM s_0)
   result = (char *)gncAmountTypeToString(arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -11368,7 +11561,7 @@ _wrap_gncTaxIncludedTypeToString (SCM s_0)
   result = (char *)gncTaxIncludedTypeToString(arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -11736,6 +11929,33 @@ _wrap_gncTaxTableCommitEdit (SCM s_0)
 
 
 static SCM
+_wrap_gncTaxTableLookup (SCM s_0, SCM s_1)
+{
+#define FUNC_NAME "gncTaxTableLookup"
+  QofBook *arg1 = (QofBook *) 0 ;
+  GUID *arg2 = (GUID *) 0 ;
+  GUID g2 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  GncTaxTable *result = 0 ;
+  
+  {
+    arg1 = (QofBook *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_QofBook, 1, 0);
+  }
+  g2 = gnc_scm2guid(s_1); arg2 = &g2; 
+  result = (GncTaxTable *)gncTaxTableLookup((QofBook const *)arg1,(GUID const *)arg2);
+  {
+    gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p__gncTaxTable, 0);
+  }
+  
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
 _wrap_gncTaxTableLookupByName (SCM s_0, SCM s_1)
 {
 #define FUNC_NAME "gncTaxTableLookupByName"
@@ -11803,7 +12023,7 @@ _wrap_gncTaxTableGetName (SCM s_0)
   result = (char *)gncTaxTableGetName((struct _gncTaxTable const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -11850,7 +12070,7 @@ _wrap_gncTaxTableReturnChild (SCM s_0, SCM s_1)
   {
     arg1 = (GncTaxTable *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncTaxTable, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   result = (GncTaxTable *)gncTaxTableReturnChild(arg1,arg2);
   {
     gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p__gncTaxTable, 0);
@@ -12562,7 +12782,7 @@ _wrap_gncVendorSetActive (SCM s_0, SCM s_1)
   {
     arg1 = (GncVendor *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncVendor, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   gncVendorSetActive(arg1,arg2);
   gswig_result = SCM_UNSPECIFIED;
   
@@ -12584,7 +12804,7 @@ _wrap_gncVendorSetTaxTableOverride (SCM s_0, SCM s_1)
   {
     arg1 = (GncVendor *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncVendor, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   gncVendorSetTaxTableOverride(arg1,arg2);
   gswig_result = SCM_UNSPECIFIED;
   
@@ -12724,7 +12944,7 @@ _wrap_gncVendorGetID (SCM s_0)
   result = (char *)gncVendorGetID((struct _gncVendor const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -12750,7 +12970,7 @@ _wrap_gncVendorGetName (SCM s_0)
   result = (char *)gncVendorGetName((struct _gncVendor const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -12799,7 +13019,7 @@ _wrap_gncVendorGetNotes (SCM s_0)
   result = (char *)gncVendorGetNotes((struct _gncVendor const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -12957,7 +13177,7 @@ _wrap_gncVendorGetJoblist (SCM s_0, SCM s_1)
   {
     arg1 = (GncVendor *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncVendor, 1, 0);
   }
-  arg2 = SCM_NFALSEP(s_1) ? TRUE : FALSE;
+  arg2 = scm_is_true(s_1) ? TRUE : FALSE;
   result = (GList *)gncVendorGetJoblist((struct _gncVendor const *)arg1,arg2);
   {
     gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_GList, 0);
@@ -13009,6 +13229,33 @@ _wrap_gncVendorCompare (SCM s_0, SCM s_1)
   result = (int)gncVendorCompare((struct _gncVendor const *)arg1,(struct _gncVendor const *)arg2);
   {
     gswig_result = scm_long2num(result);
+  }
+  
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gncVendorLookup (SCM s_0, SCM s_1)
+{
+#define FUNC_NAME "gncVendorLookup"
+  QofBook *arg1 = (QofBook *) 0 ;
+  GUID *arg2 = (GUID *) 0 ;
+  GUID g2 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  GncVendor *result = 0 ;
+  
+  {
+    arg1 = (QofBook *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_QofBook, 1, 0);
+  }
+  g2 = gnc_scm2guid(s_1); arg2 = &g2; 
+  result = (GncVendor *)gncVendorLookup((QofBook const *)arg1,(GUID const *)arg2);
+  {
+    gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p__gncVendor, 0);
   }
   
   
@@ -13842,6 +14089,7 @@ SWIG_init(void)
   scm_c_define_gsubr("gncBillTermSetDiscountDays", 2, 0, 0, (swig_guile_proc) _wrap_gncBillTermSetDiscountDays);
   scm_c_define_gsubr("gncBillTermSetDiscount", 2, 0, 0, (swig_guile_proc) _wrap_gncBillTermSetDiscount);
   scm_c_define_gsubr("gncBillTermSetCutoff", 2, 0, 0, (swig_guile_proc) _wrap_gncBillTermSetCutoff);
+  scm_c_define_gsubr("gncBillTermLookup", 2, 0, 0, (swig_guile_proc) _wrap_gncBillTermLookup);
   scm_c_define_gsubr("gncBillTermLookupByName", 2, 0, 0, (swig_guile_proc) _wrap_gncBillTermLookupByName);
   scm_c_define_gsubr("gncBillTermGetTerms", 1, 0, 0, (swig_guile_proc) _wrap_gncBillTermGetTerms);
   scm_c_define_gsubr("gncBillTermGetName", 1, 0, 0, (swig_guile_proc) _wrap_gncBillTermGetName);
@@ -13877,6 +14125,7 @@ SWIG_init(void)
   scm_c_define_gsubr("gncCustomerSetTaxTable", 2, 0, 0, (swig_guile_proc) _wrap_gncCustomerSetTaxTable);
   scm_c_define_gsubr("gncCustomerAddJob", 2, 0, 0, (swig_guile_proc) _wrap_gncCustomerAddJob);
   scm_c_define_gsubr("gncCustomerRemoveJob", 2, 0, 0, (swig_guile_proc) _wrap_gncCustomerRemoveJob);
+  scm_c_define_gsubr("gncCustomerLookup", 2, 0, 0, (swig_guile_proc) _wrap_gncCustomerLookup);
   scm_c_define_gsubr("gncCustomerGetID", 1, 0, 0, (swig_guile_proc) _wrap_gncCustomerGetID);
   scm_c_define_gsubr("gncCustomerGetName", 1, 0, 0, (swig_guile_proc) _wrap_gncCustomerGetName);
   scm_c_define_gsubr("gncCustomerGetAddr", 1, 0, 0, (swig_guile_proc) _wrap_gncCustomerGetAddr);
@@ -13933,6 +14182,7 @@ SWIG_init(void)
   scm_c_define_gsubr("gncEmployeeGetCurrency", 1, 0, 0, (swig_guile_proc) _wrap_gncEmployeeGetCurrency);
   scm_c_define_gsubr("gncEmployeeGetActive", 1, 0, 0, (swig_guile_proc) _wrap_gncEmployeeGetActive);
   scm_c_define_gsubr("gncEmployeeGetCCard", 1, 0, 0, (swig_guile_proc) _wrap_gncEmployeeGetCCard);
+  scm_c_define_gsubr("gncEmployeeLookup", 2, 0, 0, (swig_guile_proc) _wrap_gncEmployeeLookup);
   scm_c_define_gsubr("gncEmployeeIsDirty", 1, 0, 0, (swig_guile_proc) _wrap_gncEmployeeIsDirty);
   scm_c_define_gsubr("EMPLOYEE-ID", 0, 0, 0, (swig_guile_proc) _wrap_EMPLOYEE_ID);
   scm_c_define_gsubr("EMPLOYEE-USERNAME", 0, 0, 0, (swig_guile_proc) _wrap_EMPLOYEE_USERNAME);
@@ -14013,6 +14263,7 @@ SWIG_init(void)
   scm_c_define_gsubr("gncEntryGetOrder", 1, 0, 0, (swig_guile_proc) _wrap_gncEntryGetOrder);
   scm_c_define_gsubr("gncEntryGetInvoice", 1, 0, 0, (swig_guile_proc) _wrap_gncEntryGetInvoice);
   scm_c_define_gsubr("gncEntryGetBill", 1, 0, 0, (swig_guile_proc) _wrap_gncEntryGetBill);
+  scm_c_define_gsubr("gncEntryLookup", 2, 0, 0, (swig_guile_proc) _wrap_gncEntryLookup);
   scm_c_define_gsubr("gncEntryIsOpen", 1, 0, 0, (swig_guile_proc) _wrap_gncEntryIsOpen);
   scm_c_define_gsubr("gncEntryBeginEdit", 1, 0, 0, (swig_guile_proc) _wrap_gncEntryBeginEdit);
   scm_c_define_gsubr("gncEntryCommitEdit", 1, 0, 0, (swig_guile_proc) _wrap_gncEntryCommitEdit);
@@ -14093,6 +14344,7 @@ SWIG_init(void)
   scm_c_define_gsubr("gncOwnerApplyPayment", 9, 0, 0, (swig_guile_proc) _wrap_gncOwnerApplyPayment);
   scm_c_define_gsubr("gncInvoiceGetInvoiceFromTxn", 1, 0, 0, (swig_guile_proc) _wrap_gncInvoiceGetInvoiceFromTxn);
   scm_c_define_gsubr("gncInvoiceGetInvoiceFromLot", 1, 0, 0, (swig_guile_proc) _wrap_gncInvoiceGetInvoiceFromLot);
+  scm_c_define_gsubr("gncInvoiceLookup", 2, 0, 0, (swig_guile_proc) _wrap_gncInvoiceLookup);
   scm_c_define_gsubr("gncInvoiceBeginEdit", 1, 0, 0, (swig_guile_proc) _wrap_gncInvoiceBeginEdit);
   scm_c_define_gsubr("gncInvoiceCommitEdit", 1, 0, 0, (swig_guile_proc) _wrap_gncInvoiceCommitEdit);
   scm_c_define_gsubr("gncInvoiceCompare", 2, 0, 0, (swig_guile_proc) _wrap_gncInvoiceCompare);
@@ -14134,6 +14386,7 @@ SWIG_init(void)
   scm_c_define_gsubr("gncJobGetReference", 1, 0, 0, (swig_guile_proc) _wrap_gncJobGetReference);
   scm_c_define_gsubr("gncJobGetOwner", 1, 0, 0, (swig_guile_proc) _wrap_gncJobGetOwner);
   scm_c_define_gsubr("gncJobGetActive", 1, 0, 0, (swig_guile_proc) _wrap_gncJobGetActive);
+  scm_c_define_gsubr("gncJobLookup", 2, 0, 0, (swig_guile_proc) _wrap_gncJobLookup);
   scm_c_define_gsubr("gncJobCompare", 2, 0, 0, (swig_guile_proc) _wrap_gncJobCompare);
   scm_c_define_gsubr("JOB-ID", 0, 0, 0, (swig_guile_proc) _wrap_JOB_ID);
   scm_c_define_gsubr("JOB-NAME", 0, 0, 0, (swig_guile_proc) _wrap_JOB_NAME);
@@ -14166,6 +14419,7 @@ SWIG_init(void)
   scm_c_define_gsubr("gncOrderCommitEdit", 1, 0, 0, (swig_guile_proc) _wrap_gncOrderCommitEdit);
   scm_c_define_gsubr("gncOrderCompare", 2, 0, 0, (swig_guile_proc) _wrap_gncOrderCompare);
   scm_c_define_gsubr("gncOrderIsClosed", 1, 0, 0, (swig_guile_proc) _wrap_gncOrderIsClosed);
+  scm_c_define_gsubr("gncOrderLookup", 2, 0, 0, (swig_guile_proc) _wrap_gncOrderLookup);
   scm_c_define_gsubr("ORDER-ID", 0, 0, 0, (swig_guile_proc) _wrap_ORDER_ID);
   scm_c_define_gsubr("ORDER-REFERENCE", 0, 0, 0, (swig_guile_proc) _wrap_ORDER_REFERENCE);
   scm_c_define_gsubr("ORDER-OWNER", 0, 0, 0, (swig_guile_proc) _wrap_ORDER_OWNER);
@@ -14247,6 +14501,7 @@ SWIG_init(void)
   scm_c_define_gsubr("gncTaxTableChanged", 1, 0, 0, (swig_guile_proc) _wrap_gncTaxTableChanged);
   scm_c_define_gsubr("gncTaxTableBeginEdit", 1, 0, 0, (swig_guile_proc) _wrap_gncTaxTableBeginEdit);
   scm_c_define_gsubr("gncTaxTableCommitEdit", 1, 0, 0, (swig_guile_proc) _wrap_gncTaxTableCommitEdit);
+  scm_c_define_gsubr("gncTaxTableLookup", 2, 0, 0, (swig_guile_proc) _wrap_gncTaxTableLookup);
   scm_c_define_gsubr("gncTaxTableLookupByName", 2, 0, 0, (swig_guile_proc) _wrap_gncTaxTableLookupByName);
   scm_c_define_gsubr("gncTaxTableGetTables", 1, 0, 0, (swig_guile_proc) _wrap_gncTaxTableGetTables);
   scm_c_define_gsubr("gncTaxTableGetName", 1, 0, 0, (swig_guile_proc) _wrap_gncTaxTableGetName);
@@ -14304,6 +14559,7 @@ SWIG_init(void)
   scm_c_define_gsubr("gncVendorGetJoblist", 2, 0, 0, (swig_guile_proc) _wrap_gncVendorGetJoblist);
   scm_c_define_gsubr("gncVendorIsDirty", 1, 0, 0, (swig_guile_proc) _wrap_gncVendorIsDirty);
   scm_c_define_gsubr("gncVendorCompare", 2, 0, 0, (swig_guile_proc) _wrap_gncVendorCompare);
+  scm_c_define_gsubr("gncVendorLookup", 2, 0, 0, (swig_guile_proc) _wrap_gncVendorLookup);
   scm_c_define_gsubr("VENDOR-ID", 0, 0, 0, (swig_guile_proc) _wrap_VENDOR_ID);
   scm_c_define_gsubr("VENDOR-NAME", 0, 0, 0, (swig_guile_proc) _wrap_VENDOR_NAME);
   scm_c_define_gsubr("VENDOR-ADDR", 0, 0, 0, (swig_guile_proc) _wrap_VENDOR_ADDR);
@@ -14364,7 +14620,7 @@ SWIG_init(void)
 static void SWIG_init_helper(void *data)
 {
 SWIG_init();
-scm_c_export("gncTaxTableReturnGUID", "gncInvoiceReturnGUID", "gncJobReturnGUID", "gncVendorReturnGUID", "gncCustomerReturnGUID", "gncEmployeeReturnGUID", "gncTaxTableLookupFlip", "gncInvoiceLookupFlip", "gncJobLookupFlip", "gncVendorLookupFlip", "gncCustomerLookupFlip", "gncEmployeeLookupFlip", "GNC-ADDRESS-MODULE-NAME", "GNC-ID-ADDRESS", "gnc-address-get-type", "gncAddressCreate", "gncAddressDestroy", "gncAddressBeginEdit", "gncAddressCommitEdit", "gncAddressSetName", "gncAddressSetAddr1", "gncAddressSetAddr2", "gncAddressSetAddr3", "gncAddressSetAddr4", "gncAddressSetPhone", "gncAddressSetFax", "gncAddressSetEmail", "gncAddressClearDirty", "gncAddressGetName", "gncAddressGetAddr1", "gncAddressGetAddr2", "gncAddressGetAddr3", "gncAddressGetAddr4", "gncAddressGetPhone", "gncAddressGetFax", "gncAddressGetEmail", "gncAddressIsDirty", "gncAddressCompare", "ADDRESS-NAME", "ADDRESS-ONE", "ADDRESS-TWO", "ADDRESS-THREE", "ADDRESS-FOUR", "ADDRESS-PHONE", "ADDRESS-FAX", "ADDRESS-EMAIL", "ADDRESS-OWNER", "GNC-ID-BILLTERM", "gnc-billterm-get-type", "GNC-BILLTERM-NAME", "GNC-BILLTERM-DESC", "GNC-BILLTERM-DUEDAYS", "GNC-BILLTERM-DISCDAYS", "GNC-BILLTERM-CUTOFF", "GNC-BILLTERM-TYPE", "GNC-BILLTERM-DISCOUNT", "GNC-BILLTERM-REFCOUNT", "GNC-TERM-TYPE-DAYS", "GNC-TERM-TYPE-PROXIMO", "gncBillTermCreate", "gncBillTermDestroy", "gncBillTermIncRef", "gncBillTermDecRef", "gncBillTermChanged", "gncBillTermBeginEdit", "gncBillTermCommitEdit", "gncBillTermSetName", "gncBillTermSetDescription", "gncBillTermSetType", "gncBillTermSetDueDays", "gncBillTermSetDiscountDays", "gncBillTermSetDiscount", "gncBillTermSetCutoff", "gncBillTermLookupByName", "gncBillTermGetTerms", "gncBillTermGetName", "gncBillTermGetDescription", "gncBillTermGetType", "gncBillTermGetDueDays", "gncBillTermGetDiscountDays", "gncBillTermGetDiscount", "gncBillTermGetCutoff", "gncBillTermIsDirty", "gncBillTermGetParent", "gncBillTermReturnChild", "gncBillTermGetRefcount", "gncBillTermCompare", "gncBillTermComputeDueDate", "gncBillTermComputeDiscountDate", "GNC-ID-CUSTOMER", "gnc-customer-get-type", "gncCustomerCreate", "gncCustomerDestroy", "gncCustomerBeginEdit", "gncCustomerCommitEdit", "gncCustomerSetID", "gncCustomerSetName", "gncCustomerSetNotes", "gncCustomerSetTerms", "gncCustomerSetTaxIncluded", "gncCustomerSetActive", "gncCustomerSetDiscount", "gncCustomerSetCredit", "gncCustomerSetCurrency", "gncCustomerSetTaxTableOverride", "gncCustomerSetTaxTable", "gncCustomerAddJob", "gncCustomerRemoveJob", "gncCustomerGetID", "gncCustomerGetName", "gncCustomerGetAddr", "gncCustomerGetShipAddr", "gncCustomerGetNotes", "gncCustomerGetTerms", "gncCustomerGetTaxIncluded", "gncCustomerGetActive", "gncCustomerGetDiscount", "gncCustomerGetCredit", "gncCustomerGetCurrency", "gncCustomerGetTaxTableOverride", "gncCustomerGetTaxTable", "gncCustomerGetJoblist", "gncCustomerIsDirty", "gncCustomerCompare", "CUSTOMER-ID", "CUSTOMER-NAME", "CUSTOMER-ADDR", "CUSTOMER-SHIPADDR", "CUSTOMER-NOTES", "CUSTOMER-DISCOUNT", "CUSTOMER-CREDIT", "CUSTOMER-TT-OVER", "CUSTOMER-TAX-INC", "CUSTOMER-TERMS", "CUSTOMER-ACTIVE", "CUSTOMER-SLOTS", "GNC-ID-EMPLOYEE", "gnc-employee-get-type", "gncEmployeeCreate", "gncEmployeeDestroy", "gncEmployeeBeginEdit", "gncEmployeeCommitEdit", "gncEmployeeCompare", "gncEmployeeSetID", "gncEmployeeSetUsername", "gncEmployeeSetLanguage", "gncEmployeeSetAcl", "gncEmployeeSetWorkday", "gncEmployeeSetRate", "gncEmployeeSetCurrency", "gncEmployeeSetActive", "gncEmployeeSetCCard", "qofEmployeeSetAddr", "gncEmployeeGetBook", "gncEmployeeGetID", "gncEmployeeGetUsername", "gncEmployeeGetAddr", "gncEmployeeGetLanguage", "gncEmployeeGetAcl", "gncEmployeeGetWorkday", "gncEmployeeGetRate", "gncEmployeeGetCurrency", "gncEmployeeGetActive", "gncEmployeeGetCCard", "gncEmployeeIsDirty", "EMPLOYEE-ID", "EMPLOYEE-USERNAME", "EMPLOYEE-ADDR", "EMPLOYEE-LANGUAGE", "EMPLOYEE-ACL", "EMPLOYEE-WORKDAY", "EMPLOYEE-RATE", "EMPLOYEE-CC", "GNC-PAYMENT-CASH", "GNC-PAYMENT-CARD", "GNC-DISC-PRETAX", "GNC-DISC-SAMETIME", "GNC-DISC-POSTTAX", "GNC-ID-ENTRY", "gnc-entry-get-type", "gncEntryDiscountHowToString", "gncEntryDiscountStringToHow", "gncEntryPaymentTypeToString", "gncEntryPaymentStringToType", "gncEntryCreate", "gncEntryDestroy", "gncEntrySetDate", "gncEntrySetDateEntered", "gncEntrySetDescription", "gncEntrySetAction", "gncEntrySetNotes", "gncEntrySetQuantity", "gncEntrySetInvAccount", "gncEntrySetInvPrice", "gncEntrySetInvTaxable", "gncEntrySetInvTaxIncluded", "gncEntrySetInvTaxTable", "gncEntrySetInvDiscount", "gncEntrySetInvDiscountType", "gncEntrySetInvDiscountHow", "qofEntrySetInvDiscType", "qofEntrySetInvDiscHow", "gncEntrySetBillAccount", "gncEntrySetBillPrice", "gncEntrySetBillTaxable", "gncEntrySetBillTaxIncluded", "gncEntrySetBillTaxTable", "gncEntrySetBillable", "gncEntrySetBillTo", "gncEntrySetBillPayment", "gncEntryGetDate", "gncEntryGetDateEntered", "gncEntryGetDescription", "gncEntryGetAction", "gncEntryGetNotes", "gncEntryGetQuantity", "gncEntryGetInvAccount", "gncEntryGetInvPrice", "gncEntryGetInvDiscount", "gncEntryGetInvDiscountType", "gncEntryGetInvDiscountHow", "qofEntryGetInvDiscType", "qofEntryGetInvDiscHow", "gncEntryGetInvTaxable", "gncEntryGetInvTaxIncluded", "gncEntryGetInvTaxTable", "gncEntryGetBillAccount", "gncEntryGetBillPrice", "gncEntryGetBillTaxable", "gncEntryGetBillTaxIncluded", "gncEntryGetBillTaxTable", "gncEntryGetBillable", "gncEntryGetBillTo", "gncEntryGetBillPayment", "gncEntryCopy", "gncEntryReturnValue", "gncEntryReturnDiscountValue", "gncEntryReturnTaxValue", "gncEntryReturnTaxValues", "gncEntryGetValue", "gncEntryComputeValue", "gncEntryGetOrder", "gncEntryGetInvoice", "gncEntryGetBill", "gncEntryIsOpen", "gncEntryBeginEdit", "gncEntryCommitEdit", "gncEntryCompare", "ENTRY-DATE", "ENTRY-DATE-ENTERED", "ENTRY-DESC", "ENTRY-ACTION", "ENTRY-NOTES", "ENTRY-QTY", "ENTRY-IPRICE", "ENTRY-IACCT", "ENTRY-BACCT", "ENTRY-BPRICE", "ENTRY-BILLABLE", "ENTRY-BILLTO", "ENTRY-ORDER", "ENTRY-INVOICE", "ENTRY-BILL", "ENTRY-INV-DISC-TYPE", "ENTRY-INV-DISC-HOW", "ENTRY-INV-TAXABLE", "ENTRY-BILL-TAXABLE", "ENTRY-INV-TAX-INC", "ENTRY-BILL-TAX-INC", "ENTRY-INV-DISCOUNT", "ENTRY-BILL-PAY-TYPE", "GNC-ID-INVOICE", "gnc-invoice-get-type", "gncInvoiceCreate", "gncInvoiceDestroy", "gncInvoiceSetID", "gncInvoiceSetOwner", "gncInvoiceSetDateOpened", "gncInvoiceSetDatePosted", "gncInvoiceSetTerms", "gncInvoiceSetBillingID", "gncInvoiceSetNotes", "gncInvoiceSetCurrency", "gncInvoiceSetActive", "gncInvoiceSetBillTo", "gncInvoiceSetToChargeAmount", "gncInvoiceAddEntry", "gncInvoiceRemoveEntry", "gncInvoiceAddPrice", "gncInvoiceRemovePrice", "gncBillAddEntry", "gncBillRemoveEntry", "gncBillAddPrice", "gncBillRemovePrice", "gncInvoiceSortEntries", "gncInvoiceGetID", "gncInvoiceGetOwner", "gncInvoiceGetDateOpened", "gncInvoiceGetDatePosted", "gncInvoiceGetDateDue", "gncInvoiceGetTerms", "gncInvoiceGetBillingID", "gncInvoiceGetNotes", "gncInvoiceGetOwnerType", "gncInvoiceGetType", "gncInvoiceGetCurrency", "gncInvoiceGetBillTo", "gncInvoiceGetToChargeAmount", "gncInvoiceGetActive", "gncInvoiceGetPostedLot", "gncInvoiceGetPostedTxn", "gncInvoiceGetPostedAcc", "gncInvoiceGetTotal", "gncInvoiceGetTotalOf", "gncInvoiceGetTotalSubtotal", "gncInvoiceGetTotalTax", "gncInvoiceGetEntries", "gncInvoiceGetPrices", "gncInvoiceGetPrice", "gncInvoicePostToAccount", "gncInvoiceUnpost", "gncOwnerApplyPayment", "gncInvoiceGetInvoiceFromTxn", "gncInvoiceGetInvoiceFromLot", "gncInvoiceBeginEdit", "gncInvoiceCommitEdit", "gncInvoiceCompare", "gncInvoiceIsPosted", "gncInvoiceIsPaid", "INVOICE-ID", "INVOICE-OWNER", "INVOICE-OPENED", "INVOICE-POSTED", "INVOICE-DUE", "INVOICE-IS-POSTED", "INVOICE-IS-PAID", "INVOICE-TERMS", "INVOICE-BILLINGID", "INVOICE-NOTES", "INVOICE-ACC", "INVOICE-POST-TXN", "INVOICE-POST-LOT", "INVOICE-TYPE", "INVOICE-BILLTO", "INVOICE-ENTRIES", "INVOICE-JOB", "INVOICE-FROM-LOT", "INVOICE-FROM-TXN", "gncInvoiceGetBook", "GNC-ID-JOB", "gnc-job-get-type", "gncJobCreate", "gncJobDestroy", "gncJobSetID", "gncJobSetName", "gncJobSetReference", "gncJobSetOwner", "gncJobSetActive", "gncJobBeginEdit", "gncJobCommitEdit", "gncJobGetID", "gncJobGetName", "gncJobGetReference", "gncJobGetOwner", "gncJobGetActive", "gncJobCompare", "JOB-ID", "JOB-NAME", "JOB-REFERENCE", "JOB-OWNER", "Q-JOB-OWNER", "JOB-ACTIVE", "GNC-ID-ORDER", "gnc-order-get-type", "gncOrderCreate", "gncOrderDestroy", "gncOrderSetID", "gncOrderSetOwner", "gncOrderSetDateOpened", "gncOrderSetDateClosed", "gncOrderSetNotes", "gncOrderSetReference", "gncOrderSetActive", "gncOrderAddEntry", "gncOrderRemoveEntry", "gncOrderGetID", "gncOrderGetOwner", "gncOrderGetDateOpened", "gncOrderGetDateClosed", "gncOrderGetNotes", "gncOrderGetReference", "gncOrderGetActive", "gncOrderGetEntries", "gncOrderBeginEdit", "gncOrderCommitEdit", "gncOrderCompare", "gncOrderIsClosed", "ORDER-ID", "ORDER-REFERENCE", "ORDER-OWNER", "ORDER-OPENED", "ORDER-CLOSED", "ORDER-IS-CLOSED", "ORDER-NOTES", "GNC-ID-OWNER", "GNC-OWNER-NONE", "GNC-OWNER-UNDEFINED", "GNC-OWNER-CUSTOMER", "GNC-OWNER-JOB", "GNC-OWNER-VENDOR", "GNC-OWNER-EMPLOYEE", "qofOwnerGetType", "qofOwnerGetOwner", "qofOwnerSetEntity", "gncOwnerRegister", "gncOwnerInitUndefined", "gncOwnerInitCustomer", "gncOwnerInitJob", "gncOwnerInitVendor", "gncOwnerInitEmployee", "gncOwnerGetType", "gncOwnerGetUndefined", "gncOwnerGetCustomer", "gncOwnerGetJob", "gncOwnerGetVendor", "gncOwnerGetEmployee", "gncOwnerCopy", "gncOwnerEqual", "gncOwnerCompare", "gncOwnerGetName", "gncOwnerGetCurrency", "gncOwnerGetGUID", "gncOwnerReturnGUID", "gncOwnerIsValid", "gncOwnerGetEndOwner", "gncOwnerGetEndGUID", "gncOwnerAttachToLot", "gncOwnerGetOwnerFromLot", "gncOwnerGetOwnerFromTypeGuid", "gncOwnerGetSlots", "OWNER-TYPE", "OWNER-TYPE-STRING", "OWNER-CUSTOMER", "OWNER-JOB", "OWNER-VENDOR", "OWNER-EMPLOYEE", "OWNER-PARENT", "OWNER-PARENTG", "OWNER-NAME", "OWNER-FROM-LOT", "gncOwnerCreate", "gncOwnerDestroy", "GNC-ID-TAXTABLE", "gnc-taxtable-get-type", "GNC-AMT-TYPE-VALUE", "GNC-AMT-TYPE-PERCENT", "GNC-TAXINCLUDED-YES", "GNC-TAXINCLUDED-NO", "GNC-TAXINCLUDED-USEGLOBAL", "gncAmountTypeToString", "gncAmountStringToType", "gncTaxIncludedTypeToString", "gncTaxIncludedStringToType", "gncTaxTableCreate", "gncTaxTableDestroy", "gncTaxTableEntryCreate", "gncTaxTableEntryDestroy", "gncTaxTableSetName", "gncTaxTableIncRef", "gncTaxTableDecRef", "gncTaxTableEntrySetAccount", "gncTaxTableEntrySetType", "gncTaxTableEntrySetAmount", "gncTaxTableAddEntry", "gncTaxTableRemoveEntry", "gncTaxTableChanged", "gncTaxTableBeginEdit", "gncTaxTableCommitEdit", "gncTaxTableLookupByName", "gncTaxTableGetTables", "gncTaxTableGetName", "gncTaxTableGetParent", "gncTaxTableReturnChild", "gncTaxTableGetEntries", "gncTaxTableGetRefcount", "gncTaxTableLastModified", "gncTaxTableEntryGetAccount", "gncTaxTableEntryGetType", "gncTaxTableEntryGetAmount", "gncTaxTableCompare", "gncTaxTableEntryCompare", "-gncAccountValue-account-set", "-gncAccountValue-account-get", "-gncAccountValue-value-set", "-gncAccountValue-value-get", "new--gncAccountValue", "delete--gncAccountValue", "gncAccountValueAdd", "gncAccountValueAddList", "gncAccountValueTotal", "gncAccountValueDestroy", "GNC-TT-NAME", "GNC-TT-REFCOUNT", "GNC-ID-VENDOR", "gnc-vendor-get-type", "gncVendorCreate", "gncVendorDestroy", "gncVendorSetID", "gncVendorSetName", "gncVendorSetNotes", "gncVendorSetTerms", "gncVendorSetTaxIncluded", "gncVendorSetCurrency", "gncVendorSetActive", "gncVendorSetTaxTableOverride", "gncVendorSetTaxTable", "gncVendorAddJob", "gncVendorRemoveJob", "gncVendorBeginEdit", "gncVendorCommitEdit", "gncVendorGetID", "gncVendorGetName", "gncVendorGetAddr", "gncVendorGetNotes", "gncVendorGetTerms", "gncVendorGetTaxIncluded", "gncVendorGetCurrency", "gncVendorGetActive", "gncVendorGetTaxTableOverride", "gncVendorGetTaxTable", "gncVendorGetJoblist", "gncVendorIsDirty", "gncVendorCompare", "VENDOR-ID", "VENDOR-NAME", "VENDOR-ADDR", "VENDOR-NOTES", "VENDOR-TERMS", "VENDOR-TAX-INC", "VENDOR-ACTIVE", "VENDOR-TAX-OVERRIDE", "VENDOR-TAX-TABLE", "gnc-account-value-pointer-p", "gnc-scm-to-account-value-ptr", "gnc-account-value-ptr-to-scm", "URL-TYPE-CUSTOMER", "URL-TYPE-VENDOR", "URL-TYPE-EMPLOYEE", "URL-TYPE-JOB", "URL-TYPE-INVOICE", "URL-TYPE-OWNERREPORT", NULL);
+scm_c_export("gncTaxTableReturnGUID", "gncInvoiceReturnGUID", "gncJobReturnGUID", "gncVendorReturnGUID", "gncCustomerReturnGUID", "gncEmployeeReturnGUID", "gncTaxTableLookupFlip", "gncInvoiceLookupFlip", "gncJobLookupFlip", "gncVendorLookupFlip", "gncCustomerLookupFlip", "gncEmployeeLookupFlip", "GNC-ADDRESS-MODULE-NAME", "GNC-ID-ADDRESS", "gnc-address-get-type", "gncAddressCreate", "gncAddressDestroy", "gncAddressBeginEdit", "gncAddressCommitEdit", "gncAddressSetName", "gncAddressSetAddr1", "gncAddressSetAddr2", "gncAddressSetAddr3", "gncAddressSetAddr4", "gncAddressSetPhone", "gncAddressSetFax", "gncAddressSetEmail", "gncAddressClearDirty", "gncAddressGetName", "gncAddressGetAddr1", "gncAddressGetAddr2", "gncAddressGetAddr3", "gncAddressGetAddr4", "gncAddressGetPhone", "gncAddressGetFax", "gncAddressGetEmail", "gncAddressIsDirty", "gncAddressCompare", "ADDRESS-NAME", "ADDRESS-ONE", "ADDRESS-TWO", "ADDRESS-THREE", "ADDRESS-FOUR", "ADDRESS-PHONE", "ADDRESS-FAX", "ADDRESS-EMAIL", "ADDRESS-OWNER", "GNC-ID-BILLTERM", "gnc-billterm-get-type", "GNC-BILLTERM-NAME", "GNC-BILLTERM-DESC", "GNC-BILLTERM-DUEDAYS", "GNC-BILLTERM-DISCDAYS", "GNC-BILLTERM-CUTOFF", "GNC-BILLTERM-TYPE", "GNC-BILLTERM-DISCOUNT", "GNC-BILLTERM-REFCOUNT", "GNC-TERM-TYPE-DAYS", "GNC-TERM-TYPE-PROXIMO", "gncBillTermCreate", "gncBillTermDestroy", "gncBillTermIncRef", "gncBillTermDecRef", "gncBillTermChanged", "gncBillTermBeginEdit", "gncBillTermCommitEdit", "gncBillTermSetName", "gncBillTermSetDescription", "gncBillTermSetType", "gncBillTermSetDueDays", "gncBillTermSetDiscountDays", "gncBillTermSetDiscount", "gncBillTermSetCutoff", "gncBillTermLookup", "gncBillTermLookupByName", "gncBillTermGetTerms", "gncBillTermGetName", "gncBillTermGetDescription", "gncBillTermGetType", "gncBillTermGetDueDays", "gncBillTermGetDiscountDays", "gncBillTermGetDiscount", "gncBillTermGetCutoff", "gncBillTermIsDirty", "gncBillTermGetParent", "gncBillTermReturnChild", "gncBillTermGetRefcount", "gncBillTermCompare", "gncBillTermComputeDueDate", "gncBillTermComputeDiscountDate", "GNC-ID-CUSTOMER", "gnc-customer-get-type", "gncCustomerCreate", "gncCustomerDestroy", "gncCustomerBeginEdit", "gncCustomerCommitEdit", "gncCustomerSetID", "gncCustomerSetName", "gncCustomerSetNotes", "gncCustomerSetTerms", "gncCustomerSetTaxIncluded", "gncCustomerSetActive", "gncCustomerSetDiscount", "gncCustomerSetCredit", "gncCustomerSetCurrency", "gncCustomerSetTaxTableOverride", "gncCustomerSetTaxTable", "gncCustomerAddJob", "gncCustomerRemoveJob", "gncCustomerLookup", "gncCustomerGetID", "gncCustomerGetName", "gncCustomerGetAddr", "gncCustomerGetShipAddr", "gncCustomerGetNotes", "gncCustomerGetTerms", "gncCustomerGetTaxIncluded", "gncCustomerGetActive", "gncCustomerGetDiscount", "gncCustomerGetCredit", "gncCustomerGetCurrency", "gncCustomerGetTaxTableOverride", "gncCustomerGetTaxTable", "gncCustomerGetJoblist", "gncCustomerIsDirty", "gncCustomerCompare", "CUSTOMER-ID", "CUSTOMER-NAME", "CUSTOMER-ADDR", "CUSTOMER-SHIPADDR", "CUSTOMER-NOTES", "CUSTOMER-DISCOUNT", "CUSTOMER-CREDIT", "CUSTOMER-TT-OVER", "CUSTOMER-TAX-INC", "CUSTOMER-TERMS", "CUSTOMER-ACTIVE", "CUSTOMER-SLOTS", "GNC-ID-EMPLOYEE", "gnc-employee-get-type", "gncEmployeeCreate", "gncEmployeeDestroy", "gncEmployeeBeginEdit", "gncEmployeeCommitEdit", "gncEmployeeCompare", "gncEmployeeSetID", "gncEmployeeSetUsername", "gncEmployeeSetLanguage", "gncEmployeeSetAcl", "gncEmployeeSetWorkday", "gncEmployeeSetRate", "gncEmployeeSetCurrency", "gncEmployeeSetActive", "gncEmployeeSetCCard", "qofEmployeeSetAddr", "gncEmployeeGetBook", "gncEmployeeGetID", "gncEmployeeGetUsername", "gncEmployeeGetAddr", "gncEmployeeGetLanguage", "gncEmployeeGetAcl", "gncEmployeeGetWorkday", "gncEmployeeGetRate", "gncEmployeeGetCurrency", "gncEmployeeGetActive", "gncEmployeeGetCCard", "gncEmployeeLookup", "gncEmployeeIsDirty", "EMPLOYEE-ID", "EMPLOYEE-USERNAME", "EMPLOYEE-ADDR", "EMPLOYEE-LANGUAGE", "EMPLOYEE-ACL", "EMPLOYEE-WORKDAY", "EMPLOYEE-RATE", "EMPLOYEE-CC", "GNC-PAYMENT-CASH", "GNC-PAYMENT-CARD", "GNC-DISC-PRETAX", "GNC-DISC-SAMETIME", "GNC-DISC-POSTTAX", "GNC-ID-ENTRY", "gnc-entry-get-type", "gncEntryDiscountHowToString", "gncEntryDiscountStringToHow", "gncEntryPaymentTypeToString", "gncEntryPaymentStringToType", "gncEntryCreate", "gncEntryDestroy", "gncEntrySetDate", "gncEntrySetDateEntered", "gncEntrySetDescription", "gncEntrySetAction", "gncEntrySetNotes", "gncEntrySetQuantity", "gncEntrySetInvAccount", "gncEntrySetInvPrice", "gncEntrySetInvTaxable", "gncEntrySetInvTaxIncluded", "gncEntrySetInvTaxTable", "gncEntrySetInvDiscount", "gncEntrySetInvDiscountType", "gncEntrySetInvDiscountHow", "qofEntrySetInvDiscType", "qofEntrySetInvDiscHow", "gncEntrySetBillAccount", "gncEntrySetBillPrice", "gncEntrySetBillTaxable", "gncEntrySetBillTaxIncluded", "gncEntrySetBillTaxTable", "gncEntrySetBillable", "gncEntrySetBillTo", "gncEntrySetBillPayment", "gncEntryGetDate", "gncEntryGetDateEntered", "gncEntryGetDescription", "gncEntryGetAction", "gncEntryGetNotes", "gncEntryGetQuantity", "gncEntryGetInvAccount", "gncEntryGetInvPrice", "gncEntryGetInvDiscount", "gncEntryGetInvDiscountType", "gncEntryGetInvDiscountHow", "qofEntryGetInvDiscType", "qofEntryGetInvDiscHow", "gncEntryGetInvTaxable", "gncEntryGetInvTaxIncluded", "gncEntryGetInvTaxTable", "gncEntryGetBillAccount", "gncEntryGetBillPrice", "gncEntryGetBillTaxable", "gncEntryGetBillTaxIncluded", "gncEntryGetBillTaxTable", "gncEntryGetBillable", "gncEntryGetBillTo", "gncEntryGetBillPayment", "gncEntryCopy", "gncEntryReturnValue", "gncEntryReturnDiscountValue", "gncEntryReturnTaxValue", "gncEntryReturnTaxValues", "gncEntryGetValue", "gncEntryComputeValue", "gncEntryGetOrder", "gncEntryGetInvoice", "gncEntryGetBill", "gncEntryLookup", "gncEntryIsOpen", "gncEntryBeginEdit", "gncEntryCommitEdit", "gncEntryCompare", "ENTRY-DATE", "ENTRY-DATE-ENTERED", "ENTRY-DESC", "ENTRY-ACTION", "ENTRY-NOTES", "ENTRY-QTY", "ENTRY-IPRICE", "ENTRY-IACCT", "ENTRY-BACCT", "ENTRY-BPRICE", "ENTRY-BILLABLE", "ENTRY-BILLTO", "ENTRY-ORDER", "ENTRY-INVOICE", "ENTRY-BILL", "ENTRY-INV-DISC-TYPE", "ENTRY-INV-DISC-HOW", "ENTRY-INV-TAXABLE", "ENTRY-BILL-TAXABLE", "ENTRY-INV-TAX-INC", "ENTRY-BILL-TAX-INC", "ENTRY-INV-DISCOUNT", "ENTRY-BILL-PAY-TYPE", "GNC-ID-INVOICE", "gnc-invoice-get-type", "gncInvoiceCreate", "gncInvoiceDestroy", "gncInvoiceSetID", "gncInvoiceSetOwner", "gncInvoiceSetDateOpened", "gncInvoiceSetDatePosted", "gncInvoiceSetTerms", "gncInvoiceSetBillingID", "gncInvoiceSetNotes", "gncInvoiceSetCurrency", "gncInvoiceSetActive", "gncInvoiceSetBillTo", "gncInvoiceSetToChargeAmount", "gncInvoiceAddEntry", "gncInvoiceRemoveEntry", "gncInvoiceAddPrice", "gncInvoiceRemovePrice", "gncBillAddEntry", "gncBillRemoveEntry", "gncBillAddPrice", "gncBillRemovePrice", "gncInvoiceSortEntries", "gncInvoiceGetID", "gncInvoiceGetOwner", "gncInvoiceGetDateOpened", "gncInvoiceGetDatePosted", "gncInvoiceGetDateDue", "gncInvoiceGetTerms", "gncInvoiceGetBillingID", "gncInvoiceGetNotes", "gncInvoiceGetOwnerType", "gncInvoiceGetType", "gncInvoiceGetCurrency", "gncInvoiceGetBillTo", "gncInvoiceGetToChargeAmount", "gncInvoiceGetActive", "gncInvoiceGetPostedLot", "gncInvoiceGetPostedTxn", "gncInvoiceGetPostedAcc", "gncInvoiceGetTotal", "gncInvoiceGetTotalOf", "gncInvoiceGetTotalSubtotal", "gncInvoiceGetTotalTax", "gncInvoiceGetEntries", "gncInvoiceGetPrices", "gncInvoiceGetPrice", "gncInvoicePostToAccount", "gncInvoiceUnpost", "gncOwnerApplyPayment", "gncInvoiceGetInvoiceFromTxn", "gncInvoiceGetInvoiceFromLot", "gncInvoiceLookup", "gncInvoiceBeginEdit", "gncInvoiceCommitEdit", "gncInvoiceCompare", "gncInvoiceIsPosted", "gncInvoiceIsPaid", "INVOICE-ID", "INVOICE-OWNER", "INVOICE-OPENED", "INVOICE-POSTED", "INVOICE-DUE", "INVOICE-IS-POSTED", "INVOICE-IS-PAID", "INVOICE-TERMS", "INVOICE-BILLINGID", "INVOICE-NOTES", "INVOICE-ACC", "INVOICE-POST-TXN", "INVOICE-POST-LOT", "INVOICE-TYPE", "INVOICE-BILLTO", "INVOICE-ENTRIES", "INVOICE-JOB", "INVOICE-FROM-LOT", "INVOICE-FROM-TXN", "gncInvoiceGetBook", "GNC-ID-JOB", "gnc-job-get-type", "gncJobCreate", "gncJobDestroy", "gncJobSetID", "gncJobSetName", "gncJobSetReference", "gncJobSetOwner", "gncJobSetActive", "gncJobBeginEdit", "gncJobCommitEdit", "gncJobGetID", "gncJobGetName", "gncJobGetReference", "gncJobGetOwner", "gncJobGetActive", "gncJobLookup", "gncJobCompare", "JOB-ID", "JOB-NAME", "JOB-REFERENCE", "JOB-OWNER", "Q-JOB-OWNER", "JOB-ACTIVE", "GNC-ID-ORDER", "gnc-order-get-type", "gncOrderCreate", "gncOrderDestroy", "gncOrderSetID", "gncOrderSetOwner", "gncOrderSetDateOpened", "gncOrderSetDateClosed", "gncOrderSetNotes", "gncOrderSetReference", "gncOrderSetActive", "gncOrderAddEntry", "gncOrderRemoveEntry", "gncOrderGetID", "gncOrderGetOwner", "gncOrderGetDateOpened", "gncOrderGetDateClosed", "gncOrderGetNotes", "gncOrderGetReference", "gncOrderGetActive", "gncOrderGetEntries", "gncOrderBeginEdit", "gncOrderCommitEdit", "gncOrderCompare", "gncOrderIsClosed", "gncOrderLookup", "ORDER-ID", "ORDER-REFERENCE", "ORDER-OWNER", "ORDER-OPENED", "ORDER-CLOSED", "ORDER-IS-CLOSED", "ORDER-NOTES", "GNC-ID-OWNER", "GNC-OWNER-NONE", "GNC-OWNER-UNDEFINED", "GNC-OWNER-CUSTOMER", "GNC-OWNER-JOB", "GNC-OWNER-VENDOR", "GNC-OWNER-EMPLOYEE", "qofOwnerGetType", "qofOwnerGetOwner", "qofOwnerSetEntity", "gncOwnerRegister", "gncOwnerInitUndefined", "gncOwnerInitCustomer", "gncOwnerInitJob", "gncOwnerInitVendor", "gncOwnerInitEmployee", "gncOwnerGetType", "gncOwnerGetUndefined", "gncOwnerGetCustomer", "gncOwnerGetJob", "gncOwnerGetVendor", "gncOwnerGetEmployee", "gncOwnerCopy", "gncOwnerEqual", "gncOwnerCompare", "gncOwnerGetName", "gncOwnerGetCurrency", "gncOwnerGetGUID", "gncOwnerReturnGUID", "gncOwnerIsValid", "gncOwnerGetEndOwner", "gncOwnerGetEndGUID", "gncOwnerAttachToLot", "gncOwnerGetOwnerFromLot", "gncOwnerGetOwnerFromTypeGuid", "gncOwnerGetSlots", "OWNER-TYPE", "OWNER-TYPE-STRING", "OWNER-CUSTOMER", "OWNER-JOB", "OWNER-VENDOR", "OWNER-EMPLOYEE", "OWNER-PARENT", "OWNER-PARENTG", "OWNER-NAME", "OWNER-FROM-LOT", "gncOwnerCreate", "gncOwnerDestroy", "GNC-ID-TAXTABLE", "gnc-taxtable-get-type", "GNC-AMT-TYPE-VALUE", "GNC-AMT-TYPE-PERCENT", "GNC-TAXINCLUDED-YES", "GNC-TAXINCLUDED-NO", "GNC-TAXINCLUDED-USEGLOBAL", "gncAmountTypeToString", "gncAmountStringToType", "gncTaxIncludedTypeToString", "gncTaxIncludedStringToType", "gncTaxTableCreate", "gncTaxTableDestroy", "gncTaxTableEntryCreate", "gncTaxTableEntryDestroy", "gncTaxTableSetName", "gncTaxTableIncRef", "gncTaxTableDecRef", "gncTaxTableEntrySetAccount", "gncTaxTableEntrySetType", "gncTaxTableEntrySetAmount", "gncTaxTableAddEntry", "gncTaxTableRemoveEntry", "gncTaxTableChanged", "gncTaxTableBeginEdit", "gncTaxTableCommitEdit", "gncTaxTableLookup", "gncTaxTableLookupByName", "gncTaxTableGetTables", "gncTaxTableGetName", "gncTaxTableGetParent", "gncTaxTableReturnChild", "gncTaxTableGetEntries", "gncTaxTableGetRefcount", "gncTaxTableLastModified", "gncTaxTableEntryGetAccount", "gncTaxTableEntryGetType", "gncTaxTableEntryGetAmount", "gncTaxTableCompare", "gncTaxTableEntryCompare", "-gncAccountValue-account-set", "-gncAccountValue-account-get", "-gncAccountValue-value-set", "-gncAccountValue-value-get", "new--gncAccountValue", "delete--gncAccountValue", "gncAccountValueAdd", "gncAccountValueAddList", "gncAccountValueTotal", "gncAccountValueDestroy", "GNC-TT-NAME", "GNC-TT-REFCOUNT", "GNC-ID-VENDOR", "gnc-vendor-get-type", "gncVendorCreate", "gncVendorDestroy", "gncVendorSetID", "gncVendorSetName", "gncVendorSetNotes", "gncVendorSetTerms", "gncVendorSetTaxIncluded", "gncVendorSetCurrency", "gncVendorSetActive", "gncVendorSetTaxTableOverride", "gncVendorSetTaxTable", "gncVendorAddJob", "gncVendorRemoveJob", "gncVendorBeginEdit", "gncVendorCommitEdit", "gncVendorGetID", "gncVendorGetName", "gncVendorGetAddr", "gncVendorGetNotes", "gncVendorGetTerms", "gncVendorGetTaxIncluded", "gncVendorGetCurrency", "gncVendorGetActive", "gncVendorGetTaxTableOverride", "gncVendorGetTaxTable", "gncVendorGetJoblist", "gncVendorIsDirty", "gncVendorCompare", "gncVendorLookup", "VENDOR-ID", "VENDOR-NAME", "VENDOR-ADDR", "VENDOR-NOTES", "VENDOR-TERMS", "VENDOR-TAX-INC", "VENDOR-ACTIVE", "VENDOR-TAX-OVERRIDE", "VENDOR-TAX-TABLE", "gnc-account-value-pointer-p", "gnc-scm-to-account-value-ptr", "gnc-account-value-ptr-to-scm", "URL-TYPE-CUSTOMER", "URL-TYPE-VENDOR", "URL-TYPE-EMPLOYEE", "URL-TYPE-JOB", "URL-TYPE-INVOICE", "URL-TYPE-OWNERREPORT", NULL);
 }
 
 SCM

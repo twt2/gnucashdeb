@@ -142,7 +142,7 @@ qof_backend_init(QofBackend *be)
 
     /* to be removed */
     be->price_lookup = NULL;
-    be->export = NULL;
+    be->export_fn = NULL;
 }
 
 void
@@ -332,7 +332,8 @@ config_foreach_cb (const char *key, KvpValue *value, gpointer data)
         return;
     }
     switch (option.type)
-    { /* set the KvpFrame value into the option */
+    {
+        /* set the KvpFrame value into the option */
     case KVP_TYPE_GINT64   :
     {
         int64 = kvp_value_get_gint64(value);
@@ -389,7 +390,8 @@ config_foreach_cb (const char *key, KvpValue *value, gpointer data)
     /* manipulate the option */
     helper->fcn (&option, helper->data);
     switch (option.type)
-    { /* set the option value into the KvpFrame */
+    {
+        /* set the option value into the KvpFrame */
     case KVP_TYPE_GINT64   :
     {
         kvp_frame_set_gint64(helper->recursive, key,
@@ -502,6 +504,8 @@ qof_backend_commit_exists(const QofBackend *be)
     }
 }
 
+static GSList* backend_module_list = NULL;
+
 gboolean
 qof_load_backend_library (const char *directory, const char* module_name)
 {
@@ -523,7 +527,26 @@ qof_load_backend_library (const char *directory, const char* module_name)
         module_init_func();
 
     g_module_make_resident(backend);
+    backend_module_list = g_slist_prepend( backend_module_list, backend );
     return TRUE;
+}
+
+void
+qof_finalize_backend_libraries(void)
+{
+    GSList* node;
+    GModule* backend;
+    void (*module_finalize_func) (void);
+
+    for (node = backend_module_list; node != NULL; node = node->next)
+    {
+        backend = (GModule*)node->data;
+
+        if (g_module_symbol(backend, "qof_backend_module_finalize",
+                            (gpointer)&module_finalize_func))
+            module_finalize_func();
+
+    }
 }
 
 /************************* END OF FILE ********************************/

@@ -60,14 +60,12 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libgncmod_test_la_DEPENDENCIES =  \
-	${top_builddir}/src/gnc-module/libgnc-module.la \
-	$(am__DEPENDENCIES_1)
-am_libgncmod_test_la_OBJECTS = gncmod-test.lo test-stuff.lo
-libgncmod_test_la_OBJECTS = $(am_libgncmod_test_la_OBJECTS)
-libgncmod_test_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+libtest_core_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+am_libtest_core_la_OBJECTS = test-stuff.lo
+libtest_core_la_OBJECTS = $(am_libtest_core_la_OBJECTS)
+libtest_core_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(libgncmod_test_la_LDFLAGS) $(LDFLAGS) -o $@
+	$(libtest_core_la_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -81,8 +79,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libgncmod_test_la_SOURCES)
-DIST_SOURCES = $(libgncmod_test_la_SOURCES)
+SOURCES = $(libtest_core_la_SOURCES)
+DIST_SOURCES = $(libtest_core_la_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -138,7 +136,6 @@ GDK_PIXBUF_LIBS = @GDK_PIXBUF_LIBS@
 GETTEXT_PACKAGE = @GETTEXT_PACKAGE@
 GLADE_CFLAGS = @GLADE_CFLAGS@
 GLADE_LIBS = @GLADE_LIBS@
-GLIB26_LIBS = @GLIB26_LIBS@
 GLIB_CFLAGS = @GLIB_CFLAGS@
 GLIB_GENMARSHAL = @GLIB_GENMARSHAL@
 GLIB_LIBS = @GLIB_LIBS@
@@ -164,9 +161,9 @@ GNC_SRFI_LOAD_PATH = @GNC_SRFI_LOAD_PATH@
 GNC_TEST_SRFI_LOAD_CMD = @GNC_TEST_SRFI_LOAD_CMD@
 GNC_UI_DIR = @GNC_UI_DIR@
 GNOME_CFLAGS = @GNOME_CFLAGS@
+GNOME_KEYRING_CFLAGS = @GNOME_KEYRING_CFLAGS@
+GNOME_KEYRING_LIBS = @GNOME_KEYRING_LIBS@
 GNOME_LIBS = @GNOME_LIBS@
-GNOME_PRINT_CFLAGS = @GNOME_PRINT_CFLAGS@
-GNOME_PRINT_LIBS = @GNOME_PRINT_LIBS@
 GNUCASH_MAJOR_VERSION = @GNUCASH_MAJOR_VERSION@
 GNUCASH_MICRO_VERSION = @GNUCASH_MICRO_VERSION@
 GNUCASH_MINOR_VERSION = @GNUCASH_MINOR_VERSION@
@@ -239,7 +236,6 @@ PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PERL = @PERL@
-PERLINCL = @PERLINCL@
 PKG_CONFIG = @PKG_CONFIG@
 POFILES = @POFILES@
 POSUB = @POSUB@
@@ -341,19 +337,16 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_LTLIBRARIES = libgncmod-test.la
-libgncmod_test_la_SOURCES = gncmod-test.c test-stuff.c
-libgncmod_test_la_LDFLAGS = -module
-libgncmod_test_la_LIBADD = \
-  ${top_builddir}/src/gnc-module/libgnc-module.la \
+noinst_LTLIBRARIES = libtest-core.la
+libtest_core_la_SOURCES = test-stuff.c
+libtest_core_la_LDFLAGS = -module
+libtest_core_la_LIBADD = \
   ${GLIB_LIBS}
 
 noinst_HEADERS = test-stuff.h
 AM_CPPFLAGS = \
   -I${top_srcdir}/src \
-  -I${top_srcdir}/src/gnc-module \
-  ${GLIB_CFLAGS} \
-  ${GUILE_INCS}
+  ${GLIB_CFLAGS}
 
 all: all-am
 
@@ -398,8 +391,8 @@ clean-noinstLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libgncmod-test.la: $(libgncmod_test_la_OBJECTS) $(libgncmod_test_la_DEPENDENCIES) 
-	$(libgncmod_test_la_LINK)  $(libgncmod_test_la_OBJECTS) $(libgncmod_test_la_LIBADD) $(LIBS)
+libtest-core.la: $(libtest_core_la_OBJECTS) $(libtest_core_la_DEPENDENCIES) 
+	$(libtest_core_la_LINK)  $(libtest_core_la_OBJECTS) $(libtest_core_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -407,7 +400,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gncmod-test.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-stuff.Plo@am__quote@
 
 .c.o:

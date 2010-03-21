@@ -285,6 +285,8 @@ _("Parse ambiguity between formats")
 /* src/import-export/qif-import/qif-import/qif-file.scm */
 _("Value '%s' could be %s or %s.")
 /* src/tax/us/txf-de_DE.scm */
+_("No help available.")
+/* src/tax/us/txf-de_DE.scm */
 _("The electronic tax number of your business")
 /* src/tax/us/de_DE.scm */
 _("Tax")
@@ -294,6 +296,8 @@ _("Tax Number")
 _("Tax")
 /* src/tax/us/gnucash/tax/de_DE.scm */
 _("Tax Number")
+/* src/tax/us/txf.scm */
+_("No help available.")
 /* src/business/business-utils/business-utils.scm */
 _("Business")
 /* src/business/business-utils/business-utils.scm */
@@ -726,6 +730,104 @@ _("Receivables Account")
 _("The receivables account you wish to examine")
 /* src/business/business-reports/receivables.scm */
 _("Receivable Aging")
+/* src/business/business-reports/taxinvoice.scm */
+_("n/a")
+/* src/business/business-reports/taxinvoice.scm */
+_("Headings 1")
+/* src/business/business-reports/taxinvoice.scm */
+_("Headings 2")
+/* src/business/business-reports/taxinvoice.scm */
+_("Notes")
+/* src/business/business-reports/taxinvoice.scm */
+_("Display")
+/* src/business/business-reports/taxinvoice.scm */
+_("Report title")
+/* src/business/business-reports/taxinvoice.scm */
+_("Invoice number")
+/* src/business/business-reports/taxinvoice.scm */
+_("Template file")
+/* src/business/business-reports/taxinvoice.scm */
+_("CSS stylesheet file")
+/* src/business/business-reports/taxinvoice.scm */
+_("Heading font")
+/* src/business/business-reports/taxinvoice.scm */
+_("Text font")
+/* src/business/business-reports/taxinvoice.scm */
+_("Logo filename")
+/* src/business/business-reports/taxinvoice.scm */
+_("Logo width")
+/* src/business/business-reports/taxinvoice.scm */
+_("Units")
+/* src/business/business-reports/taxinvoice.scm */
+_("Qty")
+/* src/business/business-reports/taxinvoice.scm */
+_("Unit Price")
+/* src/business/business-reports/taxinvoice.scm */
+_("Discount Rate")
+/* src/business/business-reports/taxinvoice.scm */
+_("Discount Amount")
+/* src/business/business-reports/taxinvoice.scm */
+_("Net Price")
+/* src/business/business-reports/taxinvoice.scm */
+_("Tax Rate")
+/* src/business/business-reports/taxinvoice.scm */
+_("Tax Amount")
+/* src/business/business-reports/taxinvoice.scm */
+_("Total Price")
+/* src/business/business-reports/taxinvoice.scm */
+_("Sub-total")
+/* src/business/business-reports/taxinvoice.scm */
+_("Amount Due")
+/* src/business/business-reports/taxinvoice.scm */
+_("Payment rec'd...")
+/* src/business/business-reports/taxinvoice.scm */
+_("Extra notes")
+/* src/business/business-reports/taxinvoice.scm */
+_("The file name of the eguile template part of this report.  This file should either be in your .gnucash directory, or else in its proper place within the GnuCash installation directories.")
+/* src/business/business-reports/taxinvoice.scm */
+_("The file name of the CSS stylesheet to use with this report.  This file should either be in your .gnucash directory, or else in its proper place within the GnuCash installation directories.")
+/* src/business/business-reports/taxinvoice.scm */
+_("Font to use for the main heading")
+/* src/business/business-reports/taxinvoice.scm */
+_("Font to use for everything else")
+/* src/business/business-reports/taxinvoice.scm */
+_("Name of a file containing a logo to be used on the report")
+/* src/business/business-reports/taxinvoice.scm */
+_("Width of the logo in CSS format, e.g. 10% or 32px.  Leave blank to display the logo at its natural width.  The height of the logo will be scaled accordingly.")
+/* src/business/business-reports/taxinvoice.scm */
+_("Invoice")
+/* src/business/business-reports/taxinvoice.scm */
+_("Units")
+/* src/business/business-reports/taxinvoice.scm */
+_("Qty")
+/* src/business/business-reports/taxinvoice.scm */
+_("Unit Price")
+/* src/business/business-reports/taxinvoice.scm */
+_("Discount Rate")
+/* src/business/business-reports/taxinvoice.scm */
+_("Discount Amount")
+/* src/business/business-reports/taxinvoice.scm */
+_("Net Price")
+/* src/business/business-reports/taxinvoice.scm */
+_("Tax Rate")
+/* src/business/business-reports/taxinvoice.scm */
+_("Tax Amount")
+/* src/business/business-reports/taxinvoice.scm */
+_("Total Price")
+/* src/business/business-reports/taxinvoice.scm */
+_("Sub-total")
+/* src/business/business-reports/taxinvoice.scm */
+_("Amount Due")
+/* src/business/business-reports/taxinvoice.scm */
+_("Payment received, thank you")
+/* src/business/business-reports/taxinvoice.scm */
+_("Notes added at end of invoice -- may contain HTML markup")
+/* src/business/business-reports/taxinvoice.scm */
+_("Tax Invoice")
+/* src/business/business-reports/taxinvoice.scm */
+_("Tax Invoice")
+/* src/business/business-reports/taxinvoice.scm */
+_("Display a customer invoice with tax columns (using eguile template)")
 /* src/business/business-reports/business-reports.scm */
 _("_Business")
 /* src/business/business-reports/job-report.scm */
@@ -832,6 +934,40 @@ _("Date Range")
 _("No valid %s selected.  Click on the Options button to select a company.")
 /* src/business/business-reports/job-report.scm */
 _("Job Report")
+/* src/business/business-reports/taxinvoice.eguile.scm */
+_("Invoice")
+/* src/business/business-reports/taxinvoice.eguile.scm */
+_("Company Name")
+/* src/business/business-reports/taxinvoice.eguile.scm */
+_("Phone:")
+/* src/business/business-reports/taxinvoice.eguile.scm */
+_("Fax:")
+/* src/business/business-reports/taxinvoice.eguile.scm */
+_("Email:")
+/* src/business/business-reports/taxinvoice.eguile.scm */
+_("Website:")
+/* src/business/business-reports/taxinvoice.eguile.scm */
+_("Invoice number:")
+/* src/business/business-reports/taxinvoice.eguile.scm */
+_("Invoice in progress...")
+/* src/business/business-reports/taxinvoice.eguile.scm */
+_("Invoice date:")
+/* src/business/business-reports/taxinvoice.eguile.scm */
+_("Due date:")
+/* src/business/business-reports/taxinvoice.eguile.scm */
+_("Date")
+/* src/business/business-reports/taxinvoice.eguile.scm */
+_("Description")
+/* src/business/business-reports/taxinvoice.eguile.scm */
+_("<h2>Tax Invoice</h2>")
+/* src/business/business-reports/taxinvoice.eguile.scm */
+_("<p>No invoice has been selected -- please use the Options menu to select one.")
+/* src/business/business-reports/taxinvoice.eguile.scm */
+_("<h2>Tax Invoice</h2>")
+/* src/business/business-reports/taxinvoice.eguile.scm */
+_("<p>This report is designed for customer (sales) invoices only.""\n")
+/* src/business/business-reports/taxinvoice.eguile.scm */
+_("<p>Please use the Options menu to select an <em>Invoice</em>, not a Bill or Expense Voucher.")
 /* src/business/business-reports/gnucash/report/owner-report.scm */
 _("From")
 /* src/business/business-reports/gnucash/report/owner-report.scm */
@@ -1198,6 +1334,104 @@ _("Receivables Account")
 _("The receivables account you wish to examine")
 /* src/business/business-reports/gnucash/report/receivables.scm */
 _("Receivable Aging")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("n/a")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Headings 1")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Headings 2")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Notes")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Display")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Report title")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Invoice number")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Template file")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("CSS stylesheet file")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Heading font")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Text font")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Logo filename")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Logo width")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Units")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Qty")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Unit Price")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Discount Rate")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Discount Amount")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Net Price")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Tax Rate")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Tax Amount")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Total Price")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Sub-total")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Amount Due")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Payment rec'd...")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Extra notes")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("The file name of the eguile template part of this report.  This file should either be in your .gnucash directory, or else in its proper place within the GnuCash installation directories.")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("The file name of the CSS stylesheet to use with this report.  This file should either be in your .gnucash directory, or else in its proper place within the GnuCash installation directories.")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Font to use for the main heading")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Font to use for everything else")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Name of a file containing a logo to be used on the report")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Width of the logo in CSS format, e.g. 10% or 32px.  Leave blank to display the logo at its natural width.  The height of the logo will be scaled accordingly.")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Invoice")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Units")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Qty")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Unit Price")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Discount Rate")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Discount Amount")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Net Price")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Tax Rate")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Tax Amount")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Total Price")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Sub-total")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Amount Due")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Payment received, thank you")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Notes added at end of invoice -- may contain HTML markup")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Tax Invoice")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Tax Invoice")
+/* src/business/business-reports/gnucash/report/taxinvoice.scm */
+_("Display a customer invoice with tax columns (using eguile template)")
 /* src/business/business-reports/gnucash/report/business-reports.scm */
 _("_Business")
 /* src/business/business-reports/gnucash/report/job-report.scm */
@@ -1304,6 +1538,40 @@ _("Date Range")
 _("No valid %s selected.  Click on the Options button to select a company.")
 /* src/business/business-reports/gnucash/report/job-report.scm */
 _("Job Report")
+/* src/business/business-reports/gnucash/report/taxinvoice.eguile.scm */
+_("Invoice")
+/* src/business/business-reports/gnucash/report/taxinvoice.eguile.scm */
+_("Company Name")
+/* src/business/business-reports/gnucash/report/taxinvoice.eguile.scm */
+_("Phone:")
+/* src/business/business-reports/gnucash/report/taxinvoice.eguile.scm */
+_("Fax:")
+/* src/business/business-reports/gnucash/report/taxinvoice.eguile.scm */
+_("Email:")
+/* src/business/business-reports/gnucash/report/taxinvoice.eguile.scm */
+_("Website:")
+/* src/business/business-reports/gnucash/report/taxinvoice.eguile.scm */
+_("Invoice number:")
+/* src/business/business-reports/gnucash/report/taxinvoice.eguile.scm */
+_("Invoice in progress...")
+/* src/business/business-reports/gnucash/report/taxinvoice.eguile.scm */
+_("Invoice date:")
+/* src/business/business-reports/gnucash/report/taxinvoice.eguile.scm */
+_("Due date:")
+/* src/business/business-reports/gnucash/report/taxinvoice.eguile.scm */
+_("Date")
+/* src/business/business-reports/gnucash/report/taxinvoice.eguile.scm */
+_("Description")
+/* src/business/business-reports/gnucash/report/taxinvoice.eguile.scm */
+_("<h2>Tax Invoice</h2>")
+/* src/business/business-reports/gnucash/report/taxinvoice.eguile.scm */
+_("<p>No invoice has been selected -- please use the Options menu to select one.")
+/* src/business/business-reports/gnucash/report/taxinvoice.eguile.scm */
+_("<h2>Tax Invoice</h2>")
+/* src/business/business-reports/gnucash/report/taxinvoice.eguile.scm */
+_("<p>This report is designed for customer (sales) invoices only.""\n")
+/* src/business/business-reports/gnucash/report/taxinvoice.eguile.scm */
+_("<p>Please use the Options menu to select an <em>Invoice</em>, not a Bill or Expense Voucher.")
 /* src/business/business-reports/gnucash/report/invoice.scm */
 _("Invoice Number")
 /* src/business/business-reports/gnucash/report/invoice.scm */
@@ -2691,7 +2959,15 @@ _("Transfer")
 /* src/report/standard-reports/register.scm */
 _("Shares")
 /* src/report/standard-reports/register.scm */
+_("Lot")
+/* src/report/standard-reports/register.scm */
 _("Price")
+/* src/report/standard-reports/register.scm */
+_("Value")
+/* src/report/standard-reports/register.scm */
+_("Debit Value")
+/* src/report/standard-reports/register.scm */
+_("Credit Value")
 /* src/report/standard-reports/register.scm */
 _("Balance")
 /* src/report/standard-reports/register.scm */
@@ -2747,6 +3023,12 @@ _("Display the number of shares?")
 /* src/report/standard-reports/register.scm */
 _("Display")
 /* src/report/standard-reports/register.scm */
+_("Lot")
+/* src/report/standard-reports/register.scm */
+_("Display the name of lot the shares are in?")
+/* src/report/standard-reports/register.scm */
+_("Display")
+/* src/report/standard-reports/register.scm */
 _("Price")
 /* src/report/standard-reports/register.scm */
 _("Display the shares price?")
@@ -2767,6 +3049,12 @@ _("Two Column Display")
 /* src/report/standard-reports/register.scm */
 _("Display")
 /* src/report/standard-reports/register.scm */
+_("Value")
+/* src/report/standard-reports/register.scm */
+_("Display the value in transaction currency?")
+/* src/report/standard-reports/register.scm */
+_("Display")
+/* src/report/standard-reports/register.scm */
 _("Running Balance")
 /* src/report/standard-reports/register.scm */
 _("Display a running balance")
@@ -2781,7 +3069,13 @@ _("Total Debits")
 /* src/report/standard-reports/register.scm */
 _("Total Credits")
 /* src/report/standard-reports/register.scm */
+_("Total Value Debits")
+/* src/report/standard-reports/register.scm */
+_("Total Value Credits")
+/* src/report/standard-reports/register.scm */
 _("Net Change")
+/* src/report/standard-reports/register.scm */
+_("Value Change")
 /* src/report/standard-reports/register.scm */
 _("Client")
 /* src/report/standard-reports/register.scm */
@@ -2880,10 +3174,6 @@ _("Display any foreign currency amount in an account")
 _("Show Exchange Rates")
 /* src/report/standard-reports/balance-sheet.scm */
 _("Show the exchange rates used")
-/* src/report/standard-reports/balance-sheet.scm */
-_("Compute unrealized gains and losses")
-/* src/report/standard-reports/balance-sheet.scm */
-_("Include unrealized gains and losses in the computation.  Will produce incorrect results if the current file uses commodity trading accounts")
 /* src/report/standard-reports/balance-sheet.scm */
 _("Assets")
 /* src/report/standard-reports/balance-sheet.scm */
@@ -3198,6 +3488,2224 @@ _("Increase in capital")
 _("Decrease in capital")
 /* src/report/standard-reports/equity-statement.scm */
 _("Capital")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Account Summary")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Report Title")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Title for this report")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Company name")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Name of company/individual")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Accounts to include")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Report on these accounts, if display depth allows.")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Levels of Subaccounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Maximum number of levels in the account tree displayed")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Depth limit behavior")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("How to treat accounts which exceed the specified depth limit (if any)")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Parent account balances")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Parent account subtotals")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Include accounts with zero total balances")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Include accounts with zero total (recursive) balances in this report")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Omit zero balance figures")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Show blank space in place of any zero balances which would be shown")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Show accounting-style rules")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Use rules beneath columns of added numbers like accountants do")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Display accounts as hyperlinks")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Shows each account in the table as a hyperlink to its register window")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Account Balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Show an account's balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Account Code")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Show an account's account code")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Account Type")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Show an account's account type")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Account Description")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Show an account's description")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Account Notes")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Show an account's notes")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Commodities")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Report's currency")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Price Source")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Show Foreign Currencies")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Display any foreign currency amount in an account")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Show Exchange Rates")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Show the exchange rates used")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Recursive Balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Show the total balance, including balances in subaccounts, of any account at the depth limit")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Raise Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Shows accounts deeper than the depth limit at the depth limit")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Omit Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Disregard completely any accounts deeper than the depth limit")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Code")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Type")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Description")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Account title")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-summary.scm */
+_("Notes")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Average Balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("From")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("To")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Step Size")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Report's currency")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Price Source")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Include Sub-Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Exclude transactions between selected accounts?")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Include sub-accounts of all selected accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Exclude transactions that only involve two accounts, both of which are selected below.  This only affects the profit and loss columns of the table.")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Do transaction report on this account")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Show table")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Display a table of the selected data.")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Show plot")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Display a graph of the selected data.")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Plot Type")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("The type of graph to generate")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Average")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Average Balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Profit")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Profit (Gain minus Loss)")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Gain/Loss")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Gain And Loss")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Plot Width")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Plot Height")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Period start")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Period end")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Average")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Maximum")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Minimum")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Gain")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Loss")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Profit")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Plot Type")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Show plot")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Show table")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Plot Width")
+/* src/report/standard-reports/gnucash/report/standard-reports/average-balance.scm */
+_("Plot Height")
+/* src/report/standard-reports/gnucash/report/standard-reports/cash-flow.scm */
+_("Cash Flow")
+/* src/report/standard-reports/gnucash/report/standard-reports/cash-flow.scm */
+_("From")
+/* src/report/standard-reports/gnucash/report/standard-reports/cash-flow.scm */
+_("To")
+/* src/report/standard-reports/gnucash/report/standard-reports/cash-flow.scm */
+_("Account Display Depth")
+/* src/report/standard-reports/gnucash/report/standard-reports/cash-flow.scm */
+_("Always show sub-accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/cash-flow.scm */
+_("Account")
+/* src/report/standard-reports/gnucash/report/standard-reports/cash-flow.scm */
+_("Report's currency")
+/* src/report/standard-reports/gnucash/report/standard-reports/cash-flow.scm */
+_("Price Source")
+/* src/report/standard-reports/gnucash/report/standard-reports/cash-flow.scm */
+_("Show Exchange Rates")
+/* src/report/standard-reports/gnucash/report/standard-reports/cash-flow.scm */
+_("Show Full Account Names")
+/* src/report/standard-reports/gnucash/report/standard-reports/cash-flow.scm */
+_("Show the exchange rates used")
+/* src/report/standard-reports/gnucash/report/standard-reports/cash-flow.scm */
+_("Show full account names (including parent accounts)")
+/* src/report/standard-reports/gnucash/report/standard-reports/cash-flow.scm */
+_("%s to %s")
+/* src/report/standard-reports/gnucash/report/standard-reports/cash-flow.scm */
+_("%s and subaccounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/cash-flow.scm */
+_("%s and selected subaccounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/cash-flow.scm */
+_("Selected Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/cash-flow.scm */
+_("Money into selected accounts comes from")
+/* src/report/standard-reports/gnucash/report/standard-reports/cash-flow.scm */
+_("Money In")
+/* src/report/standard-reports/gnucash/report/standard-reports/cash-flow.scm */
+_("Money out of selected accounts goes to")
+/* src/report/standard-reports/gnucash/report/standard-reports/cash-flow.scm */
+_("Money Out")
+/* src/report/standard-reports/gnucash/report/standard-reports/cash-flow.scm */
+_("Difference")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-journal.scm */
+_("General Journal")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-journal.scm */
+_("Register")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-journal.scm */
+_("Debit")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-journal.scm */
+_("Credit")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-journal.scm */
+_("Title")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-journal.scm */
+_("Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-journal.scm */
+_("Num")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-journal.scm */
+_("Description")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-journal.scm */
+_("Account")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-journal.scm */
+_("Shares")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-journal.scm */
+_("Price")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-journal.scm */
+_("Amount")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-journal.scm */
+_("Running Balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-journal.scm */
+_("Totals")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Num")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Description")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Memo")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Account")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Transfer")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Shares")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Lot")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Price")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Value")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Debit Value")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Credit Value")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("-- Split Transaction --")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Debit")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Credit")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("General")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Title")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("The title of the report")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Register Report")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display the date?")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Num")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display the check number?")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Description")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display the description?")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Memo")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display the memo?")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Account")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display the account?")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Shares")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display the number of shares?")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Lot")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display the name of lot the shares are in?")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Price")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display the shares price?")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Amount")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display the amount?")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Single")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Single Column Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Double")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Two Column Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Value")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display the value in transaction currency?")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Running Balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display a running balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Totals")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Display the totals?")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Total Debits")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Total Credits")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Total Value Debits")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Total Value Credits")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Net Change")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Value Change")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Client")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Invoice")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Charge")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Amount")
+/* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
+_("Register")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Balance Sheet")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Report Title")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Title for this report")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Company name")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Name of company/individual")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Balance Sheet Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Single column Balance Sheet")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Print liability/equity section in the same column under the assets section as opposed to a second column right of the assets section")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Accounts to include")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Report on these accounts, if display depth allows.")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Levels of Subaccounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Maximum number of levels in the account tree displayed")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Flatten list to depth limit")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Displays accounts which exceed the depth limit at the depth limit")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Parent account balances")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Parent account subtotals")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Include accounts with zero total balances")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Include accounts with zero total (recursive) balances in this report")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Omit zero balance figures")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Show blank space in place of any zero balances which would be shown")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Show accounting-style rules")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Use rules beneath columns of added numbers like accountants do")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Display accounts as hyperlinks")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Shows each account in the table as a hyperlink to its register window")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Label the assets section")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Whether or not to include a label for the assets section")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Include assets total")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Whether or not to include a line indicating total assets")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Label the liabilities section")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Whether or not to include a label for the liabilities section")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Include liabilities total")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Whether or not to include a line indicating total liabilities")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Label the equity section")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Whether or not to include a label for the equity section")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Include equity total")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Whether or not to include a line indicating total equity")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Commodities")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Report's currency")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Price Source")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Show Foreign Currencies")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Display any foreign currency amount in an account")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Show Exchange Rates")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Show the exchange rates used")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Assets")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Total Assets")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Liabilities")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Total Liabilities")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Equity")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Retained Earnings")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Retained Losses")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Trading Gains")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Trading Losses")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Unrealized Gains")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Unrealized Losses")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Total Equity")
+/* src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm */
+_("Total Liabilities & Equity")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-flow.scm */
+_("Budget Flow")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-flow.scm */
+_("Account")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-flow.scm */
+_("Price Source")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-flow.scm */
+_("Budget")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-flow.scm */
+_("Period")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-flow.scm */
+_("Report's currency")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-flow.scm */
+_("Budget")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-flow.scm */
+_("Period")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-flow.scm */
+_("Report on these accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-flow.scm */
+_("%s: %s - %s")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Report Title")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Title for this report")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Company name")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Name of company/individual")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Start Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("End Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Accounts to include")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Report on these accounts, if display depth allows.")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Levels of Subaccounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Maximum number of levels in the account tree displayed")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Flatten list to depth limit")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Displays accounts which exceed the depth limit at the depth limit")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Parent account balances")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Parent account subtotals")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Include accounts with zero total balances")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Include accounts with zero total (recursive) balances in this report")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Omit zero balance figures")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Show blank space in place of any zero balances which would be shown")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Show accounting-style rules")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Use rules beneath columns of added numbers like accountants do")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Display accounts as hyperlinks")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Shows each account in the table as a hyperlink to its register window")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Label the revenue section")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Whether or not to include a label for the revenue section")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Include revenue total")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Whether or not to include a line indicating total revenue")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Label the expense section")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Whether or not to include a label for the expense section")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Include expense total")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Whether or not to include a line indicating total expense")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Commodities")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Report's currency")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Price Source")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Show Foreign Currencies")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Display any foreign currency amount in an account")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Show Exchange Rates")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Show the exchange rates used")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Entries")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Closing Entries pattern")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Any text in the Description column which identifies closing entries")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Closing Entries pattern is case-sensitive")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Causes the Closing Entries Pattern match to be case-sensitive")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Closing Entries Pattern is regular expression")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Causes the Closing Entries Pattern to be treated as a regular expression")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Display as a two column report")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Divides the report into an income column and an expense column")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Display in standard, income first, order")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Causes the report to display in the standard order, placing income before expenses")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Closing Entries")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("For Period Covering %s to %s")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("for Period")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("%s to %s")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Revenues")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Total Revenue")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Expenses")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Total Expenses")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Net income")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Net loss")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Income Statement")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Profit & Loss")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Income Piechart")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Expense Piechart")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Asset Piechart")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Liability Piechart")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Shows a piechart with the Income per given time interval")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Shows a piechart with the Expenses per given time interval")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Shows a piechart with the Assets balance at a given time")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Shows a piechart with the Liabilities balance at a given time")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Income Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Expense Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Assets")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Liabilities")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("From")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("To")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Report's currency")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Price Source")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Show Accounts until level")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Show long account names")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Show Totals")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Maximum Slices")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Plot Width")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Plot Height")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Sort Method")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Report on these accounts, if chosen account level allows.")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Show accounts to this depth and not further")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Show the full account name in legend?")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Show the total balance in legend?")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Maximum number of slices in pie")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Other")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("%s to %s")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Balance at %s")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("and")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Equity Statement")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Report Title")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Title for this report")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Company name")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Name of company/individual")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Start Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("End Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Accounts to include")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Report only on these accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Show accounting-style rules")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Use rules beneath columns of added numbers like accountants do")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Commodities")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Report's currency")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Price Source")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Show Foreign Currencies")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Display any foreign currency amount in an account")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Show Exchange Rates")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Show the exchange rates used")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Entries")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Closing Entries pattern")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Any text in the Description column which identifies closing entries")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Closing Entries pattern is case-sensitive")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Causes the Closing Entries Pattern match to be case-sensitive")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Closing Entries Pattern is regular expression")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Causes the Closing Entries Pattern to be treated as a regular expression")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("General")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("General")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Closing Entries")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("For Period Covering %s to %s")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("for Period")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("%s to %s")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Capital")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Net income")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Net loss")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Investments")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Withdrawals")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Unrealized Gains")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Unrealized Losses")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Increase in capital")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Decrease in capital")
+/* src/report/standard-reports/gnucash/report/standard-reports/equity-statement.scm */
+_("Capital")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Transaction Report")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Sorting")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Primary Key")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Primary Subtotal")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Primary Subtotal for Date Key")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Secondary Key")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Secondary Subtotal")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Secondary Subtotal for Date Key")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Void Transactions?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Table for Exporting")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Common Currency")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Report Currency")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Split Transaction")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Total For ")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Grand Total")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Reconciled Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Num")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Description")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Account Name")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Other Account Name")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Shares")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Price")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Amount")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Running Balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Use Full Account Name?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Memo")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Account Code")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Other Account Code")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Use Full Other Account Name?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Sorting")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Show Account Code?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Sorting")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Show Full Account Name?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Notes")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Reconciled Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Num")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Description")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Memo")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Notes")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Memo")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Account")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Transfer from/to")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Shares")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Price")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Amount")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Debit")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Credit")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("From")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("To")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Style")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Report style")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Multi-Line")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display N lines")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Single")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display 1 line")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Convert all transactions into a common currency")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Formats the table suitable for cut & paste exporting with extra cells")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Report Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Report on these accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Filter Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Filter on these accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Filter Type")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Filter account")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("None")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Do not do any filtering")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Include Transactions to/from Filter Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Include transactions to/from filter accounts only")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Exclude Transactions to/from Filter Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Exclude transactions to/from all filter accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("How to handle void transactions")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Non-void only")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Show only non-voided transactions")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Void only")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Show only voided transactions")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Both")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Show both (and include void transactions in totals)")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("None")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Do not sort")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Account Name")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Sort & subtotal by account name")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Account Code")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Sort & subtotal by account code")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Sort by date")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Exact Time")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Sort by exact time")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Reconciled Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Sort by the Reconciled Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Register Order")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Sort as with the register")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Other Account Name")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Sort by account transferred from/to's name")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Other Account Code")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Sort by account transferred from/to's code")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Amount")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Sort by amount")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Description")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Sort by description")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Number")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Sort by check/transaction number")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Memo")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Sort by memo")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Ascending")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("smallest to largest, earliest to latest")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Descending")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("largest to smallest, latest to earliest")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("None")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("None")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Weekly")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Weekly")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Monthly")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Monthly")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Quarterly")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Quarterly")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Yearly")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Yearly")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Sort by this criterion first")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Show Full Account Name?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Show the full account name for subtotals and subtitles?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Show Account Code?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Show the account code for subtotals and subtitles?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Subtotal according to the primary key?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Do a date subtotal")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Primary Sort Order")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Order of primary sorting")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Sort by this criterion second")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Subtotal according to the secondary key?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Do a date subtotal")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Secondary Sort Order")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Order of Secondary sorting")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display the date?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Reconciled Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display the reconciled date?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Num")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display the check number?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Description")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display the description?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Notes")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display the notes if the memo is unavailable?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Account Name")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display the account name?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Use Full Account Name?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display the full account name")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Account Code")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display the account code")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Other Account Name")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display the other account name? (if this is a split transaction, this parameter is guessed).")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Use Full Other Account Name?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display the full account name")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Other Account Code")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display the other account code")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Shares")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display the number of shares?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Price")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display the shares price?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Running Balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display a running balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Totals")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display the totals?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Memo")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display the memo?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Notes")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Amount")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display the amount?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("None")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("No amount display")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Single")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Single Column Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Double")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Two Column Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Sign Reverses?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Reverse amount display for certain account types")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("None")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Don't change any displayed amounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Income and Expense")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Reverse amount display for Income and Expense Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Credit Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Reverse amount display for Liability, Payable, Equity, Credit Card, and Income accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("From %s To %s")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Colors")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Primary Subtotals/headings")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Colors")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Secondary Subtotals/headings")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Colors")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Grand Total")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Colors")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Split Odd")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Colors")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Split Even")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Display")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Sign Reverses?")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("Style")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("-- Split Transaction --")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("No matching transactions found")
+/* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
+_("No transactions were found that match the time interval and account selection specified in the Options panel.")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Advanced Portfolio")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Price Source")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Share decimal places")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Include accounts with no shares")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Show ticker symbols")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Show listings")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Show prices")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Show number of shares")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Basis calculation method")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Set preference for price list data")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Ignore brokerage fees when calculating returns")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Report Currency")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("The source of price information")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Most recent")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("The most recent recorded price")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Nearest in time")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("The price recorded nearest in time to the report date")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Most recent to report")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("The most recent recorded price before report date")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Basis calculation method")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Average")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Use average cost of all shares for basis")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("FIFO")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Use first-in first-out method for basis")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("FILO")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Use first-in last-out method for basis")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Prefer use of price editor pricing over transactions, where applicable.")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Ignore brokerage fees when calculating returns")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Display the ticker symbols")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Display exchange listings")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Display numbers of shares in accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("The number of decimal places to use for share numbers")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Display share prices")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Stock Accounts to report on")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Include accounts that have a zero share balances.")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Account")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Total")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Symbol")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Listing")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Shares")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Price")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Basis")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Value")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Money In")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Money Out")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Income")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Realized Gain")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Unrealized Gain")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Total Gain")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Total Return")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("Brokerage Fees")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("* this commodity data was built using transaction pricing instead of the price list.")
+/* src/report/standard-reports/gnucash/report/standard-reports/advanced-portfolio.scm */
+_("If you are in a multi-currency situation, the exchanges may not be correct.")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Report Title")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Title for this report")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Company name")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Name of company/individual")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Budget")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Budget to use.")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Report for range of budget periods")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Create report for a budget period range instead of the entire budget.")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Range start")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Select a budget period that begins the reporting range.")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Range end")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Select a budget period that ends the reporting range.")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Accounts to include")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Report on these accounts, if display depth allows.")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Levels of Subaccounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Maximum number of levels in the account tree displayed")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Flatten list to depth limit")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Displays accounts which exceed the depth limit at the depth limit")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Parent account balances")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Parent account subtotals")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Include accounts with zero total balances")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Include accounts with zero total (recursive) balances in this report")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Omit zero balance figures")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Show blank space in place of any zero balances which would be shown")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Show accounting-style rules")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Use rules beneath columns of added numbers like accountants do")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Display accounts as hyperlinks")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Shows each account in the table as a hyperlink to its register window")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Label the revenue section")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Whether or not to include a label for the revenue section")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Include revenue total")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Whether or not to include a line indicating total revenue")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Label the expense section")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Whether or not to include a label for the expense section")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Include expense total")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Whether or not to include a line indicating total expense")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Commodities")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Report's currency")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Price Source")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Show Foreign Currencies")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Display any foreign currency amount in an account")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Show Exchange Rates")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Show the exchange rates used")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Entries")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Display as a two column report")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Divides the report into an income column and an expense column")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Display in standard, income first, order")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Causes the report to display in the standard order, placing income before expenses")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Reporting range end period cannot be less than start period.")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("for Budget %s Period %u")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("for Budget %s Periods %u - %u")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("for Budget %s")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Revenues")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Total Revenue")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Expenses")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Total Expenses")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Net income")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Net loss")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Budget Income Statement")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-income-statement.scm */
+_("Budget Profit & Loss")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-barchart.scm */
+_("Budget Barchart")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-barchart.scm */
+_("Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-barchart.scm */
+_("Budget")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-barchart.scm */
+_("Running Sum")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-barchart.scm */
+_("Budget")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-barchart.scm */
+_("Calculate as running sum?")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-barchart.scm */
+_("Report on these accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-barchart.scm */
+_("Budget")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-barchart.scm */
+_("Actual")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-barchart.scm */
+_("Budget Barchart")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Income/Expense Chart")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("From")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("To")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Step Size")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Report's currency")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Price Source")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Show Income/Expense")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Show Net Profit")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Show Asset & Liability bars")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Show Net Worth bars")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Plot Width")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Plot Height")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Report on these accounts, if chosen account level allows.")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Show Income and Expenses?")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Show the Asset and the Liability bars?")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Show the net profit?")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Show a Net Worth bar?")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Show table")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Display a table of the selected data.")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Show table")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("%s to %s")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Income")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Expense")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Assets")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Liabilities")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Net Profit")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Net Worth")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Income Chart")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Asset Chart")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Expense Chart")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Liability Chart")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Income")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Expense")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Assets")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Liabilities")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Net Profit")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Net Worth")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Net Worth Barchart")
+/* src/report/standard-reports/gnucash/report/standard-reports/net-barchart.scm */
+_("Income & Expense Chart")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Budget Balance Sheet")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Report Title")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Title for this report")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Company name")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Name of company/individual")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Single column Balance Sheet")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Print liability/equity section in the same column under the assets section as opposed to a second column right of the assets section")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Accounts to include")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Report on these accounts, if display depth allows.")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Levels of Subaccounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Maximum number of levels in the account tree displayed")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Flatten list to depth limit")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Displays accounts which exceed the depth limit at the depth limit")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Parent account balances")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Parent account subtotals")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Include accounts with zero total balances")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Include accounts with zero total (recursive) balances in this report")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Omit zero balance figures")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Show blank space in place of any zero balances which would be shown")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Show accounting-style rules")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Use rules beneath columns of added numbers like accountants do")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Display accounts as hyperlinks")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Shows each account in the table as a hyperlink to its register window")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Label the assets section")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Whether or not to include a label for the assets section")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Include assets total")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Whether or not to include a line indicating total assets")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Label the liabilities section")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Whether or not to include a label for the liabilities section")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Include liabilities total")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Whether or not to include a line indicating total liabilities")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Label the equity section")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Whether or not to include a label for the equity section")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Include equity total")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Whether or not to include a line indicating total equity")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Include new/existing totals")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Whether or not to include lines indicating change in totals introduced by budget")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Commodities")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Report's currency")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Price Source")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Show Foreign Currencies")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Display any foreign currency amount in an account")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Show Exchange Rates")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Show the exchange rates used")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Budget")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Budget to use.")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Assets")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Existing Assets")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Allocated Assets")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Unallocated Assets")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Total Assets")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Liabilities")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Existing Liabilities")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("New Liabilities")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Total Liabilities")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Equity")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Existing Retained Earnings")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Existing Retained Losses")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("New Retained Earnings")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("New Retained Losses")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Total Retained Earnings")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Total Retained Losses")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Unrealized Gains")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Unrealized Losses")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Existing Equity")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("New Equity")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Total Equity")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm */
+_("Total Liabilities & Equity")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Income Barchart")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Expense Barchart")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Asset Barchart")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Liability Barchart")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Shows a barchart with the Income per interval developing over time")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Shows a barchart with the Expenses per interval developing over time")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Shows a barchart with the Assets developing over time")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Shows a barchart with the Liabilities developing over time")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Income Over Time")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Expense Over Time")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Assets Over Time")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Liabilities Over Time")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("From")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("To")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Step Size")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Report's currency")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Price Source")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Show Accounts until level")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Show long account names")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Use Stacked Bars")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Maximum Bars")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Plot Width")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Plot Height")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Sort Method")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Report on these accounts, if chosen account level allows.")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Show accounts to this depth and not further")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Show the full account name in legend?")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Show barchart as stacked barchart?")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Maximum number of bars in the chart")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Show table")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Display a table of the selected data.")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Show table")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("%s to %s")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Balances %s to %s")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Other")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("and")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("and")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Grand Total")
+/* src/report/standard-reports/gnucash/report/standard-reports/portfolio.scm */
+_("Investment Portfolio")
+/* src/report/standard-reports/gnucash/report/standard-reports/portfolio.scm */
+_("Price Source")
+/* src/report/standard-reports/gnucash/report/standard-reports/portfolio.scm */
+_("Share decimal places")
+/* src/report/standard-reports/gnucash/report/standard-reports/portfolio.scm */
+_("Include accounts with no shares")
+/* src/report/standard-reports/gnucash/report/standard-reports/portfolio.scm */
+_("Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/portfolio.scm */
+_("Report Currency")
+/* src/report/standard-reports/gnucash/report/standard-reports/portfolio.scm */
+_("The number of decimal places to use for share numbers")
+/* src/report/standard-reports/gnucash/report/standard-reports/portfolio.scm */
+_("Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/portfolio.scm */
+_("Stock Accounts to report on")
+/* src/report/standard-reports/gnucash/report/standard-reports/portfolio.scm */
+_("Include accounts that have a zero share balances.")
+/* src/report/standard-reports/gnucash/report/standard-reports/portfolio.scm */
+_("Account")
+/* src/report/standard-reports/gnucash/report/standard-reports/portfolio.scm */
+_("Symbol")
+/* src/report/standard-reports/gnucash/report/standard-reports/portfolio.scm */
+_("Listing")
+/* src/report/standard-reports/gnucash/report/standard-reports/portfolio.scm */
+_("Units")
+/* src/report/standard-reports/gnucash/report/standard-reports/portfolio.scm */
+_("Price")
+/* src/report/standard-reports/gnucash/report/standard-reports/portfolio.scm */
+_("Value")
+/* src/report/standard-reports/gnucash/report/standard-reports/portfolio.scm */
+_("Total")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("General Ledger")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Sorting")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Filter Type")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Void Transactions?")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Reconciled Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Num")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Description")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Memo")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Account Name")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Use Full Account Name?")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Account Code")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Other Account Name")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Use Full Other Account Name?")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Other Account Code")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Shares")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Price")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Amount")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Running Balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Totals")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Sign Reverses?")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Style")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Primary Key")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Show Full Account Name?")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Show Account Code?")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Primary Subtotal")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Primary Subtotal for Date Key")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Primary Sort Order")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Secondary Key")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Secondary Subtotal")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Secondary Subtotal for Date Key")
+/* src/report/standard-reports/gnucash/report/standard-reports/general-ledger.scm */
+_("Secondary Sort Order")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("From")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("To")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Step Size")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Price")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Report's currency")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Price of Commodity")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Price Source")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Invert prices")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Show Income/Expense")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Show Net Profit")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Show Asset & Liability bars")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Show Net Worth bars")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Marker")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Marker Color")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Plot Width")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Plot Height")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Calculate the price of this commodity.")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("The source of price information")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Weighted Average")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("The weighted average of all currency transactions of the past")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Actual Transactions")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("The instantaneous price of actual currency transactions in the past")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Price Database")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("The recorded prices")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Plot commodity per currency rather than currency per commodity.")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Color of the marker")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("%s to %s")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Days")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Weeks")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Double-Weeks")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Months")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Years")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("All Prices equal")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("All the prices found are equal. This would result in a plot with one straight line. Unfortunately, the plotting tool can't handle that.")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("All Prices at the same date")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("All the prices found are from the same date. This would result in a plot with one straight line. Unfortunately, the plotting tool can't handle that.")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Only one price")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("There was only one single price found for the selected commodities in the selected time period. This doesn't give a useful plot.")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("No data")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("There is no price information available for the selected commodities in the selected time period.")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Identical commodities")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Your selected commodity and the currency of the report are identical. It doesn't make sense to show prices for identical commodities.")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Price")
+/* src/report/standard-reports/gnucash/report/standard-reports/price-scatter.scm */
+_("Price Scatterplot")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Income vs. Day of Week")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Expenses vs. Day of Week")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Shows a piechart with the total income for each day of the week")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Shows a piechart with the total expenses for each day of the week")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Income vs. Day of Week")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Expenses vs. Day of Week")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("From")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("To")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Report's currency")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Price Source")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Show Accounts until level")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Include Sub-Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Show long account names")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Show Totals")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Maximum Slices")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Plot Width")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Plot Height")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Sort Method")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Include sub-accounts of all selected accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Report on these accounts, if chosen account level allows.")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Show accounts to this depth and not further")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Show the total balance in legend?")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Sunday")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Monday")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Tuesday")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Wednesday")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Thursday")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Friday")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("Saturday")
+/* src/report/standard-reports/gnucash/report/standard-reports/daily-reports.scm */
+_("%s to %s")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Trial Balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Report Title")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Title for this report")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Company name")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Name of company/individual")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Start of Adjusting/Closing")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Date of Report")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Report variation")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Kind of trial balance to generate")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Accounts to include")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Report on these accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Levels of Subaccounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Maximum number of levels in the account tree displayed")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Merchandising")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Gross adjustment accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Do not net, but show gross debit/credit adjustments to these accounts. Merchandising businesses will normally select their inventory accounts here.")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Income summary accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Adjustments made to these accounts are gross adjusted (see above) in the Adjustments, Adjusted Trial Balance, and Income Statement columns. Mostly useful for merchandising businesses.")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Entries")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Adjusting Entries pattern")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Any text in the Description column which identifies adjusting entries")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Adjusting Entries pattern is case-sensitive")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Causes the Adjusting Entries Pattern match to be case-sensitive")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Adjusting Entries Pattern is regular expression")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Causes the Adjusting Entries Pattern to be treated as a regular expression")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Closing Entries pattern")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Any text in the Description column which identifies closing entries")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Closing Entries pattern is case-sensitive")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Causes the Closing Entries Pattern match to be case-sensitive")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Closing Entries Pattern is regular expression")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Causes the Closing Entries Pattern to be treated as a regular expression")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Include accounts with zero total balances")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Include accounts with zero total (recursive) balances in this report")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Display accounts as hyperlinks")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Shows each account in the table as a hyperlink to its register window")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Commodities")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Report's currency")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Price Source")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Show Foreign Currencies")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Display any foreign currency amount in an account")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Show Exchange Rates")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Show the exchange rates used")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("General")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("General")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Current Trial Balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Uses the exact balances in the general ledger")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Pre-adjustment Trial Balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Ignores Adjusting/Closing entries")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Work Sheet")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Creates a complete end-of-period work sheet")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Adjusting Entries")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Closing Entries")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("for Period")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("%s to %s")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("For Period Covering %s to %s")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Trial Balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Adjustments")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Adjusted Trial Balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Income Statement")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Balance Sheet")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Debit")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Credit")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Account Name")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Unrealized Gains")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Unrealized Losses")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Net Income")
+/* src/report/standard-reports/gnucash/report/standard-reports/trial-balance.scm */
+_("Net Loss")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Budget Report")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Account Display Depth")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Always show sub-accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Account")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Price Source")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Show Exchange Rates")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Show Full Account Names")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Select Columns")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Show Budget")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Display a column for the budget values")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Show Actual")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Display a column for the actual values")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Show Difference")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Display the difference as budget - actual")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Show Column with Totals")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Display a column with the row totals")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Roll up budget amounts to parent")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("If parent account does not have its own budget value, use the sum of the child account budget values")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Include accounts with zero total balances and budget values")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Include accounts with zero total (recursive) balances and budget values in this report")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Compress prior/later periods")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Accumulate columns for periods before and after the current period to allow focus on the current period.")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Flatten list to depth limit")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Displays accounts which exceed the depth limit at the depth limit")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Budget")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Budget")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Show full account names (including parent accounts)")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Bgt")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Act")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("Diff")
+/* src/report/standard-reports/gnucash/report/standard-reports/budget.scm */
+_("%s: %s")
 /* src/report/standard-reports/transaction.scm */
 _("Transaction Report")
 /* src/report/standard-reports/transaction.scm */
@@ -3223,7 +5731,7 @@ _("Common Currency")
 /* src/report/standard-reports/transaction.scm */
 _("Report Currency")
 /* src/report/standard-reports/transaction.scm */
-_("Split")
+_("Split Transaction")
 /* src/report/standard-reports/transaction.scm */
 _("Total For ")
 /* src/report/standard-reports/transaction.scm */
@@ -4861,6 +7369,10 @@ _("Default")
 /* src/report/report-system/report.scm */
 _("Stylesheet")
 /* src/report/report-system/report.scm */
+_("Could not open the file: ")
+/* src/report/report-system/report.scm */
+_(". The error is: ")
+/* src/report/report-system/report.scm */
 _("Your report \"%s\" has been saved into the configuration file \"%s\".")
 /* src/report/report-system/gnucash/report/eguile-gnc.scm */
 _("An error occurred when processing the template:")
@@ -5135,7 +7647,7 @@ _(":")
 /* src/report/locale-specific/us/taxtxf.scm */
 _("  In ")
 /* src/report/locale-specific/us/taxtxf.scm */
-_("Split")
+_("Split Transaction")
 /* src/report/locale-specific/us/taxtxf.scm */
 _("Account: ")
 /* src/report/locale-specific/us/taxtxf.scm */
@@ -5193,7 +7705,7 @@ _("Period from %s to %s<BR>Tax Year %s<BR>Tax Entity Type: %s<BR>All amounts in 
 /* src/report/locale-specific/us/taxtxf.scm */
 _("None specified")
 /* src/report/locale-specific/us/taxtxf.scm */
-_("The following Account(s) have errors with their Income Tax code assignments (use 'Edit->Income Tax Options' to correct):")
+_("The following Account(s) have errors with their Income Tax code assignments (use 'Edit->Tax Report Options' to correct):")
 /* src/report/locale-specific/us/taxtxf.scm */
 _("Account")
 /* src/report/locale-specific/us/taxtxf.scm */
@@ -5215,9 +7727,9 @@ _("Line (Code): ")
 /* src/report/locale-specific/us/taxtxf.scm */
 _(" Line ")
 /* src/report/locale-specific/us/taxtxf.scm */
-_("The Income Tax Report is only available for valid Income Tax Entity Types. Go to the Edit->Income Tax Options dialog to change your Income Tax Entity Type selection and set up tax-related accounts.")
+_("The Income Tax Report is only available for valid Income Tax Entity Types. Go to the Edit->Tax Report Options dialog to change your Income Tax Entity Type selection and set up tax-related accounts.")
 /* src/report/locale-specific/us/taxtxf.scm */
-_("No Tax Related accounts were found with your account selection. Change your selection or go to the Edit->Income Tax Options dialog to set up tax-related accounts.")
+_("No Tax Related accounts were found with your account selection. Change your selection or go to the Edit->Tax Report Options dialog to set up tax-related accounts.")
 /* src/report/locale-specific/us/taxtxf.scm */
 _("Selected Report Options:<BR>")
 /* src/report/locale-specific/us/taxtxf.scm */
@@ -5509,7 +8021,7 @@ _(":")
 /* src/report/locale-specific/us/gnucash/report/taxtxf.scm */
 _("  In ")
 /* src/report/locale-specific/us/gnucash/report/taxtxf.scm */
-_("Split")
+_("Split Transaction")
 /* src/report/locale-specific/us/gnucash/report/taxtxf.scm */
 _("Account: ")
 /* src/report/locale-specific/us/gnucash/report/taxtxf.scm */
@@ -5567,7 +8079,7 @@ _("Period from %s to %s<BR>Tax Year %s<BR>Tax Entity Type: %s<BR>All amounts in 
 /* src/report/locale-specific/us/gnucash/report/taxtxf.scm */
 _("None specified")
 /* src/report/locale-specific/us/gnucash/report/taxtxf.scm */
-_("The following Account(s) have errors with their Income Tax code assignments (use 'Edit->Income Tax Options' to correct):")
+_("The following Account(s) have errors with their Income Tax code assignments (use 'Edit->Tax Report Options' to correct):")
 /* src/report/locale-specific/us/gnucash/report/taxtxf.scm */
 _("Account")
 /* src/report/locale-specific/us/gnucash/report/taxtxf.scm */
@@ -5589,9 +8101,9 @@ _("Line (Code): ")
 /* src/report/locale-specific/us/gnucash/report/taxtxf.scm */
 _(" Line ")
 /* src/report/locale-specific/us/gnucash/report/taxtxf.scm */
-_("The Income Tax Report is only available for valid Income Tax Entity Types. Go to the Edit->Income Tax Options dialog to change your Income Tax Entity Type selection and set up tax-related accounts.")
+_("The Income Tax Report is only available for valid Income Tax Entity Types. Go to the Edit->Tax Report Options dialog to change your Income Tax Entity Type selection and set up tax-related accounts.")
 /* src/report/locale-specific/us/gnucash/report/taxtxf.scm */
-_("No Tax Related accounts were found with your account selection. Change your selection or go to the Edit->Income Tax Options dialog to set up tax-related accounts.")
+_("No Tax Related accounts were found with your account selection. Change your selection or go to the Edit->Tax Report Options dialog to set up tax-related accounts.")
 /* src/report/locale-specific/us/gnucash/report/taxtxf.scm */
 _("Selected Report Options:<BR>")
 /* src/report/locale-specific/us/gnucash/report/taxtxf.scm */
@@ -6366,6 +8878,228 @@ _("Date: ")
 _("Fancy")
 /* src/report/stylesheets/gnucash/report/stylesheet-fancy.scm */
 _("Technicolor")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("General")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Preparer")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Name of person preparing the report")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("General")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Prepared for")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Name of organization or company prepared for")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("General")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Show preparer info")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Name of organization or company")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("General")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Enable Links")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Enable hyperlinks in reports")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("General")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Footer")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("String to placed as a footer")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Images")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Background Tile")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Background tile for reports.")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Images")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Heading Banner")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Banner for top of report.")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Images")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Heading Alignment")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Banner for top of report.")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Left")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Align the banner to the left")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Center")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Align the banner in the center")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Right")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Align the banner to the right")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Images")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Logo")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Company logo image.")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Background Color")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("General background color for report.")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Text Color")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Normal body text color.")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Link Color")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Link text color.")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Table Cell Color")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Default background for table cells.")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Alternate Table Cell Color")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Default alternate background for table cells.")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Subheading/Subtotal Cell Color")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Default color for subtotal rows.")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Sub-subheading/total Cell Color")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Color for subsubtotals")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Grand Total Cell Color")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Color for grand totals")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Tables")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Table cell spacing")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Space between table cells")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Tables")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Table cell padding")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Space between table cells")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Tables")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Table border width")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Bevel depth on tables")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("General")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Preparer")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("General")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Prepared for")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("General")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Show preparer info")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("General")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Enable Links")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("General")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Footer")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Background Color")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Text Color")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Link Color")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Table Cell Color")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Alternate Table Cell Color")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Subheading/Subtotal Cell Color")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Sub-subheading/total Cell Color")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Grand Total Cell Color")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Images")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Background Tile")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Images")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Heading Banner")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Images")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Logo")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Images")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Heading Alignment")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Tables")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Table cell spacing")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Tables")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Table cell padding")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Tables")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Table border width")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Prepared by: ")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Prepared for: ")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Date: ")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Footer")
+/* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
+_("Footer")
 /* src/report/stylesheets/gnucash/report/stylesheet-easy.scm */
 _("General")
 /* src/report/stylesheets/gnucash/report/stylesheet-easy.scm */
@@ -6578,6 +9312,228 @@ _("Date: ")
 _("Easy")
 /* src/report/stylesheets/gnucash/report/stylesheet-easy.scm */
 _("Easy")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("General")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Preparer")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Name of person preparing the report")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("General")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Prepared for")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Name of organization or company prepared for")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("General")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Show preparer info")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Name of organization or company")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("General")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Enable Links")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Enable hyperlinks in reports")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("General")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Footer")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("String to placed as a footer")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Images")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Background Tile")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Background tile for reports.")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Images")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Heading Banner")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Banner for top of report.")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Images")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Heading Alignment")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Banner for top of report.")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Left")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Align the banner to the left")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Center")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Align the banner in the center")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Right")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Align the banner to the right")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Images")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Logo")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Company logo image.")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Background Color")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("General background color for report.")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Text Color")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Normal body text color.")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Link Color")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Link text color.")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Table Cell Color")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Default background for table cells.")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Alternate Table Cell Color")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Default alternate background for table cells.")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Subheading/Subtotal Cell Color")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Default color for subtotal rows.")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Sub-subheading/total Cell Color")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Color for subsubtotals")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Grand Total Cell Color")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Color for grand totals")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Tables")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Table cell spacing")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Space between table cells")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Tables")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Table cell padding")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Space between table cells")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Tables")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Table border width")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Bevel depth on tables")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("General")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Preparer")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("General")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Prepared for")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("General")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Show preparer info")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("General")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Enable Links")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("General")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Footer")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Background Color")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Text Color")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Link Color")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Table Cell Color")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Alternate Table Cell Color")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Subheading/Subtotal Cell Color")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Sub-subheading/total Cell Color")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Colors")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Grand Total Cell Color")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Images")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Background Tile")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Images")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Heading Banner")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Images")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Logo")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Images")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Heading Alignment")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Tables")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Table cell spacing")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Tables")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Table cell padding")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Tables")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Table border width")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Prepared by: ")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Prepared for: ")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Date: ")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Footer")
+/* src/report/stylesheets/stylesheet-footer.scm */
+_("Footer")
 /* src/report/stylesheets/stylesheet-easy.scm */
 _("General")
 /* src/report/stylesheets/stylesheet-easy.scm */

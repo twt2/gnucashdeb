@@ -37,7 +37,6 @@ libgnc_gnome_la_SOURCES = \
   dialog-sx-from-trans.c \
   dialog-sx-since-last-run.c \
   dialog-tax-info.c \
-  dialog-userpass.c \
   druid-acct-period.c \
   druid-hierarchy.c \
   druid-merge.c \
@@ -55,7 +54,8 @@ libgnc_gnome_la_SOURCES = \
   lot-viewer.c \
   reconcile-list.c \
   top-level.c \
-  window-reconcile.c
+  window-reconcile.c \
+  window-autoclear.c
 
 gnomeappdir = ${datadir}/applications
 
@@ -92,7 +92,8 @@ noinst_HEADERS = \
   lot-viewer.h \
   reconcile-list.h \
   top-level.h \
-  window-reconcile.h
+  window-reconcile.h \
+  window-autoclear.h
 
 if BUILDING_FROM_SVN
 swig-gnome.c: gnome.i dialog-progress.h ${top_srcdir}/src/base-typemaps.i
@@ -124,7 +125,6 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/libqof/qof \
   ${GUILE_INCS} \
   ${GNOME_CFLAGS} \
-  ${GNOME_PRINT_CFLAGS} \
   ${GLADE_CFLAGS} \
   $(GLIB_CFLAGS)
 

@@ -422,14 +422,29 @@
     (define (add-payment-row table used-columns split total-collector)
       (let* ((t (xaccSplitGetParent split))
 	     (currency (xaccTransGetCurrency t))
+	     (invoice (opt-val invoice-page invoice-name))
+	     (owner '())
 	     ;; XXX Need to know when to reverse the value
 	     (amt (gnc:make-gnc-monetary currency (xaccSplitGetValue split)))
 	     (payment-style "grand-total")
 	     (row '()))
 	
-	(total-collector 'add 
-			 (gnc:gnc-monetary-commodity amt)
-			 (gnc:gnc-monetary-amount amt))
+	; Update to fix bug 564380, payment on bill doubles bill. Mike Evans <mikee@saxicola.co.uk>
+	(if (not (null? invoice))
+	(begin
+	  (set! owner (gncInvoiceGetOwner invoice))
+	  (let ((type (gncOwnerGetType
+                       (gncOwnerGetEndOwner owner))))
+	    (cond
+	      ((eqv? type GNC-OWNER-CUSTOMER)
+	       (total-collector 'add 
+			  (gnc:gnc-monetary-commodity amt)
+			 (gnc:gnc-monetary-amount amt)))
+	      ((eqv? type GNC-OWNER-VENDOR)
+	       (total-collector 'add 
+			  (gnc:gnc-monetary-commodity amt)
+			 (gnc:gnc-monetary-amount (gnc:monetary-neg amt))))
+	      ))))
 
 	(if (date-col used-columns)
 	    (addto! row
@@ -629,7 +644,7 @@
 
 (define (make-myname-table book)
   (let* ((table (gnc:make-html-table))
-	 (slots (gnc-book-get-slots book))
+	 (slots (qof-book-get-slots book))
 	 (name (kvp-frame-get-slot-path-gslist
 		slots (append gnc:*kvp-option-path*
 			      (list gnc:*business-label* gnc:*company-name*))))
@@ -734,7 +749,7 @@
 
         (if (opt-val "Display" "My Company ID")
           (let* ((book (gncInvoiceGetBook invoice))
-                 (slots (gnc-book-get-slots book))
+                 (slots (qof-book-get-slots book))
 	         (taxid (kvp-frame-get-slot-path-gslist
 		    slots (append gnc:*kvp-option-path*
 		                  (list gnc:*business-label* gnc:*company-id*)))))

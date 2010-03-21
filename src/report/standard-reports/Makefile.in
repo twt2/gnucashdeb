@@ -200,7 +200,6 @@ GDK_PIXBUF_LIBS = @GDK_PIXBUF_LIBS@
 GETTEXT_PACKAGE = @GETTEXT_PACKAGE@
 GLADE_CFLAGS = @GLADE_CFLAGS@
 GLADE_LIBS = @GLADE_LIBS@
-GLIB26_LIBS = @GLIB26_LIBS@
 GLIB_CFLAGS = @GLIB_CFLAGS@
 GLIB_GENMARSHAL = @GLIB_GENMARSHAL@
 GLIB_LIBS = @GLIB_LIBS@
@@ -226,9 +225,9 @@ GNC_SRFI_LOAD_PATH = @GNC_SRFI_LOAD_PATH@
 GNC_TEST_SRFI_LOAD_CMD = @GNC_TEST_SRFI_LOAD_CMD@
 GNC_UI_DIR = @GNC_UI_DIR@
 GNOME_CFLAGS = @GNOME_CFLAGS@
+GNOME_KEYRING_CFLAGS = @GNOME_KEYRING_CFLAGS@
+GNOME_KEYRING_LIBS = @GNOME_KEYRING_LIBS@
 GNOME_LIBS = @GNOME_LIBS@
-GNOME_PRINT_CFLAGS = @GNOME_PRINT_CFLAGS@
-GNOME_PRINT_LIBS = @GNOME_PRINT_LIBS@
 GNUCASH_MAJOR_VERSION = @GNUCASH_MAJOR_VERSION@
 GNUCASH_MICRO_VERSION = @GNUCASH_MICRO_VERSION@
 GNUCASH_MINOR_VERSION = @GNUCASH_MINOR_VERSION@
@@ -301,7 +300,6 @@ PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PERL = @PERL@
-PERLINCL = @PERLINCL@
 PKG_CONFIG = @PKG_CONFIG@
 POFILES = @POFILES@
 POSUB = @POSUB@
@@ -452,7 +450,7 @@ gncscmreportmod_DATA = \
 
 
 #For executing test cases
-@GNUCASH_SEPARATE_BUILDDIR_TRUE@SCM_FILE_LINKS = ${gncscmmod_DATA}
+@GNUCASH_SEPARATE_BUILDDIR_TRUE@SCM_FILE_LINKS = ${gncscmmod_DATA} ${gncscmreportmod_DATA}
 noinst_DATA = .scm-links
 EXTRA_DIST = ${gncscmmod_DATA} ${gncscmreportmod_DATA}
 CLEANFILES = .scm-links
@@ -928,10 +926,12 @@ uninstall-am: uninstall-gncscmmodDATA uninstall-gncscmreportmodDATA \
 	$(RM) -rf gnucash
 	mkdir -p  gnucash
 	mkdir -p  gnucash/report
+	mkdir -p  gnucash/report/standard-reports
 @GNUCASH_SEPARATE_BUILDDIR_TRUE@	for X in ${SCM_FILE_LINKS} ; do \
 @GNUCASH_SEPARATE_BUILDDIR_TRUE@	  $(LN_S) -f ${srcdir}/$$X . ; \
 @GNUCASH_SEPARATE_BUILDDIR_TRUE@	done
 	( cd gnucash/report; for A in $(gncscmmod_DATA) ; do $(LN_S) -f ../../$$A . ; done )
+	( cd gnucash/report/standard-reports; for A in $(gncscmreportmod_DATA) ; do $(LN_S) -f ../../../$$A . ; done )
 # Windows knows no "ln -s" but uses "cp": must copy every time (see bug #566567).
 @OS_WIN32_FALSE@	touch .scm-links
 

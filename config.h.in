@@ -54,12 +54,6 @@
 /* GnuCash Minor version number */
 #undef GNUCASH_MINOR_VERSION
 
-/* GOffice has been built with cairo support */
-#undef GOFFICE_WITH_CAIRO
-
-/* GtkHTML uses GtkPrint for printing operations */
-#undef GTKHTML_USES_GTKPRINT
-
 /* Don't use deprecated gtk functions */
 #undef GTK_DISABLE_DEPRECATED
 
@@ -80,6 +74,9 @@
 
 /* Define to 1 if you have the `dcgettext' function. */
 #undef HAVE_DCGETTEXT
+
+/* Define to 1 if you have the <dirent.h> header file. */
+#undef HAVE_DIRENT_H
 
 /* Define to 1 if you have the `dlerror' function. */
 #undef HAVE_DLERROR
@@ -111,29 +108,17 @@
 /* Define to 1 if you have the `getuid' function. */
 #undef HAVE_GETUID
 
-/* System has glib 2.9.0 or better */
-#undef HAVE_GLIB29
-
-/* System has glib 2.12.0 or better */
-#undef HAVE_GLIB_2_12
-
-/* System has glib 2.8.0 or better */
-#undef HAVE_GLIB_2_8
-
 /* Define to 1 if you have the <glob.h> header file. */
 #undef HAVE_GLOB_H
 
 /* Define to 1 if you have the `gmtime_r' function. */
 #undef HAVE_GMTIME_R
 
-/* System has goffice 0.5.1 or better */
-#undef HAVE_GOFFICE_0_5
+/* System has gnome-keyring 0.6 or better */
+#undef HAVE_GNOME_KEYRING
 
 /* System has gtkhtml 3.16.0 or better */
 #undef HAVE_GTKHTML_3_16
-
-/* System has gtk 2.10.0 or better */
-#undef HAVE_GTK_2_10
 
 /* Guile present */
 #undef HAVE_GUILE
@@ -158,9 +143,6 @@
 
 /* Define to 1 if you have the `m' library (-lm). */
 #undef HAVE_LIBM
-
-/* Define to 1 if you have the `popt' library (-lpopt). */
-#undef HAVE_LIBPOPT
 
 /* Define to 1 if you have the `pthread' library (-lpthread). */
 #undef HAVE_LIBPTHREAD
@@ -189,8 +171,11 @@
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
-/* Define to 1 if you have the <popt.h> header file. */
-#undef HAVE_POPT_H
+/* System has no suitable keyring service */
+#undef HAVE_NO_KEYRING
+
+/* System has an OS X Key chain */
+#undef HAVE_OSX_KEYCHAIN
 
 /* Define to 1 if you have the `pthread_mutex_init' function. */
 #undef HAVE_PTHREAD_MUTEX_INIT
@@ -236,6 +221,9 @@
 
 /* Define to 1 if you have the <sys/times.h> header file. */
 #undef HAVE_SYS_TIMES_H
+
+/* Define to 1 if you have the <sys/time.h> header file. */
+#undef HAVE_SYS_TIME_H
 
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H

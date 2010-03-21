@@ -24,6 +24,7 @@ GNC_TEST_DEPS = \
 TESTS_ENVIRONMENT = \
   GNC_ACCOUNT_PATH=${top_srcdir}/accounts/C \
   SRCDIR=${srcdir} \
+  GNC_DBD_DIR=@GNC_DBD_DIR@ \
   $(shell ${top_srcdir}/src/gnc-test-env --no-exports ${GNC_TEST_DEPS})
 
 check_PROGRAMS = \
@@ -33,7 +34,7 @@ check_PROGRAMS = \
 
 #noinst_HEADERS = test-file-stuff.h
 
-LDADD = ${top_builddir}/src/test-core/libgncmod-test.la \
+LDADD = ${top_builddir}/src/test-core/libtest-core.la \
         ${top_builddir}/src/gnc-module/libgnc-module.la \
         ${top_builddir}/src/engine/libgncmod-engine.la \
         ${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \

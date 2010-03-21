@@ -139,7 +139,7 @@
 (define (account-namestring account show-account-code show-account-name show-account-full-name)
   ;;# on multi-line splits we can get an empty ('()) account
   (if (null? account)
-        (_ "Split")
+        (_ "Split Transaction")
         (string-append 
            ;; display account code?
            (if show-account-code
@@ -171,7 +171,9 @@
   (let ((account (xaccSplitGetAccount (xaccSplitGetOtherSplit split))))
     (add-subheading-row (gnc:make-html-text
                          (gnc:html-markup-anchor
+                          (if (not (null? account))
                            (gnc:account-anchor-text account)
+                           "")
                            (account-namestring account
                                                (used-sort-account-code      column-vector)
                                                #t

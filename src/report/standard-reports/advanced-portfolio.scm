@@ -614,7 +614,7 @@
 	    ;; now we determine which price data to use, the pricelist or the txn
 	    ;; and if we have a choice, use whichever is newest.
 	    (set! use-txn (if (not price) #t 
-			      (if prefer-pricelist #f
+			      (if (or prefer-pricelist (not pricing-txn)) #f
 				  (if (not (gnc:timepair-le txn-date (gnc-price-get-time price)))
 				      #t #f))))
 	    (gnc:debug "use txn is " use-txn)
@@ -643,8 +643,8 @@
 	    ;; what this means is gain = moneyout - moneyin + basis-of-current-shares, and
 	    ;; adjust for brokers and dividends.
 	    (gaincoll 'add currency (sum-basis basis-list))
-	    (gnc:debug (list "basis we're using to build rows is " (sum-basis basis-list)))
-	    (gnc:debug (list "but the actual basis list is " basis-list))
+	    (gnc:debug "basis we're using to build rows is " (sum-basis basis-list))
+	    (gnc:debug "but the actual basis list is " basis-list)
 
 	    (gaincoll 'merge moneyoutcoll #f)
 	    (gaincoll 'minusmerge moneyincoll #f)

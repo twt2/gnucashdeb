@@ -1,10 +1,11 @@
 NONGUI_SUBDIRS = \
   libqof \
+  debug \
   doc \
   pixmaps \
+  test-core \
   core-utils \
   gnc-module \
-  test-core \
   engine \
   backend \
   scm \
@@ -51,6 +52,4 @@ EXTRA_DIST = \
   base-typemaps.i \
   README.modules \
   gnc-test-env \
-  valgrind-gnucash.supp \
-  guile-mappings.h \
-  glib-compat.h
+  guile-mappings.h

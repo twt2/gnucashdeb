@@ -271,6 +271,7 @@ function inst_autotools() {
             make install
         qpopd
         quiet autoconf --help && quiet automake --help || die "autoconf/automake not installed correctly"
+        rm -rf ${TMP_UDIR}/autoconf-* ${TMP_UDIR}/automake-*
     fi
     if quiet libtoolize --help
     then
@@ -285,6 +286,7 @@ function inst_autotools() {
             make install
         qpopd
         quiet libtoolize --help || die "libtool/libtoolize not installed correctly"
+        rm -rf ${TMP_UDIR}/libtool-*
     fi
     [ ! -d $_AUTOTOOLS_UDIR/share/aclocal ] || add_to_env "-I $_AUTOTOOLS_UDIR/share/aclocal" ACLOCAL_FLAGS
 }
@@ -311,6 +313,7 @@ function inst_gmp() {
             make install
         qpopd
         quiet ${LD} $GMP_LDFLAGS -lgmp -o $TMP_UDIR/ofile || die "Gmp not installed correctly"
+        rm -rf ${TMP_UDIR}/gmp-*
     fi
 }
 
@@ -378,6 +381,36 @@ function inst_guile() {
         qpopd
         guile -c '(use-modules (srfi srfi-39))' &&
         guile -c "(use-modules (ice-9 slib)) (require 'printf)" || die "guile not installed correctly"
+
+        # If this libguile is used from MSVC compiler, we must
+        # deactivate some macros of scmconfig.h again.
+        SCMCONFIG_H=$_GUILE_UDIR/include/libguile/scmconfig.h
+        cat >> ${SCMCONFIG_H} <<EOF
+
+#ifdef _MSC_VER
+# undef HAVE_STDINT_H
+# undef HAVE_INTTYPES_H
+# undef HAVE_UNISTD_H
+#endif
+EOF
+        # Also, for MSVC compiler we need to create an import library
+        pexports $_GUILE_UDIR/bin/libguile.dll > $_GUILE_UDIR/lib/libguile.def
+        ${DLLTOOL} -d $_GUILE_UDIR/lib/libguile.def -D $_GUILE_UDIR/bin/libguile.dll -l $_GUILE_UDIR/lib/libguile.lib
+        # Also, for MSVC compiler we need to slightly modify the gc.h header
+        GC_H=$_GUILE_UDIR/include/libguile/gc.h
+        grep -v 'extern .*_freelist2;' ${GC_H} > ${GC_H}.tmp
+        grep -v 'extern int scm_block_gc;' ${GC_H}.tmp > ${GC_H}
+        cat >> ${GC_H} <<EOF
+#ifdef _MSC_VER
+# define LIBGUILEDECL __declspec (dllimport)
+#else
+# define LIBGUILEDECL /* */
+#endif
+extern LIBGUILEDECL SCM scm_freelist2;
+extern LIBGUILEDECL struct scm_t_freelist scm_master_freelist2;
+extern LIBGUILEDECL int scm_block_gc;
+EOF
+        rm -rf ${TMP_UDIR}/guile-*
     fi
     if [ "$CROSS_COMPILE" = "yes" ]; then
         mkdir -p $_GUILE_UDIR/bin
@@ -446,6 +479,7 @@ function inst_openssl() {
             cp -a include/openssl $_OPENSSL_UDIR/include
         qpopd
         quiet ${LD} -L$_OPENSSL_UDIR/lib -leay32 -lssl32 -o $TMP_UDIR/ofile || die "openssl not installed correctly"
+        rm -rf ${TMP_UDIR}/openssl-*
     fi
     _eay32dll=$(echo $(which libeay32.dll))  # which sucks
     if [ -z "$_eay32dll" ] ; then
@@ -494,8 +528,12 @@ function inst_libxslt() {
     else
         [ "$CROSS_COMPILE" = "yes" ] && die "xsltproc unavailable"
         wget_unpacked $LIBXSLT_URL $DOWNLOAD_DIR $LIBXSLT_DIR
+        wget_unpacked $LIBXSLT_LIBXML2_URL $DOWNLOAD_DIR $LIBXSLT_DIR
         qpushd $_LIBXSLT_UDIR
             mv libxslt-* mydir
+            cp -r mydir/* .
+            rm -rf mydir
+            mv libxml2-* mydir
             cp -r mydir/* .
             rm -rf mydir
         qpopd
@@ -531,6 +569,7 @@ function inst_gnome() {
         wget_unpacked $GLIB_URL $DOWNLOAD_DIR $GNOME_DIR
         wget_unpacked $GLIB_DEV_URL $DOWNLOAD_DIR $GNOME_DIR
         wget_unpacked $LIBJPEG_URL $DOWNLOAD_DIR $GNOME_DIR
+        wget_unpacked $LIBJPEG_DEV_URL $DOWNLOAD_DIR $GNOME_DIR
         wget_unpacked $LIBPNG_URL $DOWNLOAD_DIR $GNOME_DIR
         wget_unpacked $LIBPNG_DEV_URL $DOWNLOAD_DIR $GNOME_DIR
         wget_unpacked $LIBTIFF_URL $DOWNLOAD_DIR $GNOME_DIR
@@ -538,9 +577,11 @@ function inst_gnome() {
         wget_unpacked $ZLIB_URL $DOWNLOAD_DIR $GNOME_DIR
         wget_unpacked $ZLIB_DEV_URL $DOWNLOAD_DIR $GNOME_DIR
         wget_unpacked $PKG_CONFIG_URL $DOWNLOAD_DIR $GNOME_DIR
+        wget_unpacked $PKG_CONFIG_DEV_URL $DOWNLOAD_DIR $GNOME_DIR
         wget_unpacked $CAIRO_URL $DOWNLOAD_DIR $GNOME_DIR
         wget_unpacked $CAIRO_DEV_URL $DOWNLOAD_DIR $GNOME_DIR
         wget_unpacked $EXPAT_URL $DOWNLOAD_DIR $GNOME_DIR
+        wget_unpacked $EXPAT_DEV_URL $DOWNLOAD_DIR $GNOME_DIR
         wget_unpacked $FONTCONFIG_URL $DOWNLOAD_DIR $GNOME_DIR
         wget_unpacked $FONTCONFIG_DEV_URL $DOWNLOAD_DIR $GNOME_DIR
         wget_unpacked $FREETYPE_URL $DOWNLOAD_DIR $GNOME_DIR
@@ -604,6 +645,7 @@ EOF
             chmod +x bin/pkg-config{.exe,-msys.sh}
             sed '/Requires/s,\(.*\) enchant\(.*\) iso-codes\(.*\),\1\2\3,' lib/pkgconfig/libgtkhtml-3.14.pc > tmp
             mv tmp lib/pkgconfig/libgtkhtml-3.14.pc
+            rm -rf $TMP_UDIR/gtk-doc-*
         qpopd
         wget_unpacked $PIXMAN_URL $DOWNLOAD_DIR $TMP_DIR
         assert_one_dir $TMP_UDIR/pixman-*
@@ -614,6 +656,7 @@ EOF
             make
             make install
         qpopd
+        rm -rf $TMP_UDIR/pixman-*
         ${PKG_CONFIG} --exists pixman-1 || die "pixman not installed correctly"
         quiet gconftool-2 --version &&
         quiet ${PKG_CONFIG} --exists gconf-2.0 libgnome-2.0 libgnomeui-2.0 libgtkhtml-3.14 &&
@@ -665,6 +708,43 @@ function inst_pcre() {
     quiet ${LD} $PCRE_LDFLAGS -lpcre -o $TMP_UDIR/ofile || die "pcre not installed correctly"
 }
 
+function inst_libbonoboui() {
+    setup libbonoboui
+    _LIBBONOBOUI_UDIR=`unix_path $LIBBONOBOUI_DIR`
+    add_to_env $_LIBBONOBOUI_UDIR/bin PATH
+    add_to_env $_LIBBONOBOUI_UDIR/lib/pkgconfig PKG_CONFIG_PATH
+    if quiet ${PKG_CONFIG} --exists --atleast-version=2.24.2 libbonoboui-2.0 && [ -f $_LIBBONOBOUI_UDIR/bin/libbonoboui*.dll ]
+    then
+        echo "libbonoboui already installed.  skipping."
+    else
+        wget_unpacked $LIBBONOBOUI_SRC_URL $DOWNLOAD_DIR $TMP_DIR
+        mydir=`pwd`
+        assert_one_dir $TMP_UDIR/libbonoboui-*
+        qpushd $TMP_UDIR/libbonoboui-*
+            [ -n "$LIBBONOBOUI_PATCH" -a -f "$LIBBONOBOUI_PATCH" ] && \
+                patch -p1 < $LIBBONOBOUI_PATCH
+            #libtoolize --force
+            #aclocal ${ACLOCAL_FLAGS} -I .
+            #automake
+            #autoconf
+            ./configure ${HOST_XCOMPILE} --prefix=$_LIBBONOBOUI_UDIR \
+                POPT_LIBS="-lpopt" \
+                CPPFLAGS="${GNOME_CPPFLAGS}" \
+                LDFLAGS="${GNOME_LDFLAGS}" \
+                --enable-static=no
+            make
+            make install
+
+            # We override the $GNOME_DIR libbonoboui files because
+            # those erroneously depend on the obsolete libxml2.dll
+            cp -a $_LIBBONOBOUI_UDIR/bin/libbonoboui*.dll $_GNOME_UDIR/bin
+            cp -a $_LIBBONOBOUI_UDIR/lib/libbonoboui* $_GNOME_UDIR/lib
+        qpopd
+        ${PKG_CONFIG} --exists --atleast-version=2.24.2 libbonoboui-2.0 && [ -f $_LIBBONOBOUI_UDIR/bin/libbonoboui*.dll ] || die "libbonoboui not installed correctly"
+        rm -rf ${TMP_UDIR}/libbonoboui-*
+    fi
+}
+
 function inst_libgsf() {
     setup libGSF
     _LIBGSF_UDIR=`unix_path $LIBGSF_DIR`
@@ -699,7 +779,6 @@ function inst_goffice() {
     then
         echo "goffice already installed.  skipping."
     else
-        rm -rf $TMP_UDIR/goffice-*
         wget_unpacked $GOFFICE_URL $DOWNLOAD_DIR $TMP_DIR
         mydir=`pwd`
         assert_one_dir $TMP_UDIR/goffice-*
@@ -718,7 +797,9 @@ function inst_goffice() {
             make
             make install
         qpopd
-        ${PKG_CONFIG} --exists libgoffice-0.8 || die "goffice not installed correctly"
+        ${PKG_CONFIG} --exists libgoffice-0.8 && [ -f $_GOFFICE_UDIR/bin/libgoffice*.dll ] || die "goffice not installed correctly"
+        rm -rf ${TMP_UDIR}/goffice-*
+        rm -rf ${TMP_UDIR}/libgsf-*
     fi
 }
 
@@ -739,6 +820,7 @@ function inst_glade() {
             make install
         qpopd
         quiet glade-3 --version || die "glade not installed correctly"
+        rm -rf ${TMP_UDIR}/glade3-*
     fi
 }
 
@@ -851,6 +933,7 @@ function inst_libofx() {
             make install
         qpopd
         quiet ${PKG_CONFIG} --exists libofx || die "Libofx not installed correctly"
+        rm -rf ${TMP_UDIR}/libofx-*
     fi
 }
 
@@ -914,6 +997,7 @@ function inst_gwenhywfar() {
             make install
         qpopd
         ${PKG_CONFIG} --exists gwenhywfar || die "Gwenhywfar not installed correctly"
+        rm -rf ${TMP_UDIR}/gwenhywfar-*
     fi
     [ ! -d $_GWENHYWFAR_UDIR/share/aclocal ] || add_to_env "-I $_GWENHYWFAR_UDIR/share/aclocal" ACLOCAL_FLAGS
 }
@@ -941,6 +1025,7 @@ function inst_ktoblzcheck() {
             make install
         qpopd
         ${PKG_CONFIG} --exists ktoblzcheck || die "Ktoblzcheck not installed correctly"
+        rm -rf ${TMP_UDIR}/ktoblzcheck-*
     fi
 }
 
@@ -1045,6 +1130,7 @@ function inst_aqbanking() {
             fi
         qpopd
         ${PKG_CONFIG} --exists aqbanking || die "AqBanking not installed correctly"
+        rm -rf ${TMP_UDIR}/aqbanking-*
     fi
     [ ! -d $_AQBANKING_UDIR/share/aclocal ] || add_to_env "-I $_AQBANKING_UDIR/share/aclocal" ACLOCAL_FLAGS
 }
@@ -1071,6 +1157,7 @@ function inst_libdbi() {
             make install
         qpopd
         test -f ${_SQLITE3_UDIR}/bin/libsqlite3-0.dll || die "SQLite3 not installed correctly"
+        rm -rf ${TMP_UDIR}/sqlite-*
     fi
     if test -f ${_MYSQL_LIB_UDIR}/lib/libmysql.dll -a \
 	        -f ${_MYSQL_LIB_UDIR}/lib/libmysqlclient.a
@@ -1086,6 +1173,7 @@ function inst_libdbi() {
 		dlltool --input-def $LIBMYSQL_DEF --dllname libmysql.dll --output-lib libmysqlclient.a -k
         test -f ${_MYSQL_LIB_UDIR}/lib/libmysql.dll || die "mysql not installed correctly - libmysql.dll"
         test -f ${_MYSQL_LIB_UDIR}/lib/libmysqlclient.a || die "mysql not installed correctly - libmysqlclient.a"
+        rm -rf ${TMP_UDIR}/mysql*
     fi
     if test -f ${_PGSQL_UDIR}/lib/libpq.dll
     then
@@ -1116,6 +1204,7 @@ function inst_libdbi() {
             make install
         qpopd
         test -f ${_LIBDBI_UDIR}/bin/libdbi-0.dll || die "libdbi not installed correctly"
+        rm -rf ${TMP_UDIR}/libdbi-0*
     fi
     if test -f ${_LIBDBI_DRIVERS_UDIR}/lib/dbd/libdbdsqlite3.dll -a \
             -f ${_LIBDBI_DRIVERS_UDIR}/lib/dbd/libdbdmysql.dll -a \
@@ -1151,6 +1240,25 @@ function inst_libdbi() {
         test -f ${_LIBDBI_DRIVERS_UDIR}/lib/dbd/libdbdsqlite3.dll || die "libdbi sqlite3 driver not installed correctly"
         test -f ${_LIBDBI_DRIVERS_UDIR}/lib/dbd/libdbdmysql.dll || die "libdbi mysql driver not installed correctly"
         test -f ${_LIBDBI_DRIVERS_UDIR}/lib/dbd/libdbdpgsql.dll || die "libdbi pgsql driver not installed correctly"
+        rm -rf ${TMP_UDIR}/libdbi-drivers-*
+    fi
+}
+
+function inst_cmake() {
+    setup CMake
+    _CMAKE_UDIR=`unix_path ${CMAKE_DIR}`
+    add_to_env ${_CMAKE_UDIR}/bin PATH
+    if [ -f ${_CMAKE_UDIR}/bin/cmake.exe ]
+    then
+        echo "cmake already installed.  skipping."
+    else
+        wget_unpacked $CMAKE_URL $DOWNLOAD_DIR $CMAKE_DIR
+
+        assert_one_dir ${_CMAKE_UDIR}/cmake-2*
+        mv ${_CMAKE_UDIR}/cmake-2*/* ${_CMAKE_UDIR}
+        rm -rf ${_CMAKE_UDIR}/cmake-2*
+
+        [ -f ${_CMAKE_UDIR}/bin/cmake.exe ] || die "cmake not installed correctly"
     fi
 }
 
@@ -1267,7 +1375,7 @@ function make_install() {
         qpushd $_BUILD_UDIR/src/bin
             rm gnucash-setup-env
             make PATH_SEPARATOR=";" \
-                bindir="${_INSTALL_UDIR}/bin:${_INSTALL_UDIR}/lib:${_INSTALL_UDIR}/lib/gnucash:${_GNUTLS_UTIR}/bin:${_GMP_UDIR}/bin:${_GOFFICE_UDIR}/bin:${_LIBGSF_UDIR}/bin:${_PCRE_UDIR}/bin:${_GNOME_UDIR}/bin:${_GUILE_UDIR}/bin:${_WEBKIT_UDIR}/bin:${_REGEX_UDIR}/bin:${_AUTOTOOLS_UDIR}/bin:${AQBANKING_UPATH}:${_LIBOFX_UDIR}/bin:${_OPENSP_UDIR}/bin:${_LIBDBI_UDIR}/bin:${_SQLITE3_UDIR}/bin" \
+                bindir="${_INSTALL_UDIR}/bin:${_INSTALL_UDIR}/lib:${_INSTALL_UDIR}/lib/gnucash:${_GNUTLS_UTIR}/bin:${_GMP_UDIR}/bin:${_GOFFICE_UDIR}/bin:${_LIBGSF_UDIR}/bin:${_PCRE_UDIR}/bin:${_GNOME_UDIR}/bin:${_GUILE_UDIR}/bin:${_WEBKIT_UDIR}/bin:${_REGEX_UDIR}/bin:${_AUTOTOOLS_UDIR}/bin:${AQBANKING_UPATH}:${_LIBOFX_UDIR}/bin:${_OPENSP_UDIR}/bin:${_LIBDBI_UDIR}/bin:${_SQLITE3_UDIR}/bin:${MYSQL_LIB_DIR}/lib:${PGSQL_DIR}/lib:${PGSQL_DIR}/bin" \
                 gnucash-setup-env gnucash-valgrind
         qpopd
     fi
@@ -1293,7 +1401,7 @@ function make_install() {
             for file in *.schemas; do
                 gconftool-2 \
                     --config-source=xml:merged:${_INSTALL_WFSDIR}/etc/gconf/gconf.xml.defaults \
-                    --install-schema-file $file
+                    --install-schema-file $file >/dev/null
             done
             gconftool-2 --shutdown
         qpopd
@@ -1306,7 +1414,7 @@ function make_install() {
 		# src/bin/gnucash-setup-env.in and src/bin/gnucash-setup-env-osx.in
         qpushd $_INSTALL_UDIR/bin
             echo "setlocal" > gnucash.cmd
-            echo "set PATH=${INSTALL_DIR}\\bin;${INSTALL_DIR}\\lib;${INSTALL_DIR}\\lib\\gnucash;${GNUTLS_DIR}\\bin;${GMP_DIR}\\bin;${GOFFICE_DIR}\\bin;${LIBGSF_DIR}\\bin;${PCRE_DIR}\\bin;${WEBKIT_DIR}\\bin;${GNOME_DIR}\\bin;${GUILE_DIR}\\bin;${REGEX_DIR}\\bin;${AUTOTOOLS_DIR}\\bin;${AQBANKING_PATH};${LIBOFX_DIR}\\bin;${OPENSP_DIR}\\bin;${LIBDBI_DIR}\\bin;${SQLITE3_DIR}\\bin;%PATH%" >> gnucash.cmd
+            echo "set PATH=${INSTALL_DIR}\\bin;${INSTALL_DIR}\\lib;${INSTALL_DIR}\\lib\\gnucash;${GNUTLS_DIR}\\bin;${GMP_DIR}\\bin;${GOFFICE_DIR}\\bin;${LIBGSF_DIR}\\bin;${PCRE_DIR}\\bin;${WEBKIT_DIR}\\bin;${GNOME_DIR}\\bin;${GUILE_DIR}\\bin;${REGEX_DIR}\\bin;${AUTOTOOLS_DIR}\\bin;${AQBANKING_PATH};${LIBOFX_DIR}\\bin;${OPENSP_DIR}\\bin;${LIBDBI_DIR}\\bin;${SQLITE3_DIR}\\bin;${MYSQL_LIB_DIR}\\lib;${PGSQL_DIR}\\lib;${PGSQL_DIR}\\bin;%PATH%" >> gnucash.cmd
             echo "set GUILE_WARN_DEPRECATED=no" >> gnucash.cmd
             echo "set GNC_MODULE_PATH=${INSTALL_DIR}\\lib\\gnucash" >> gnucash.cmd
             echo "set GUILE_LOAD_PATH=${INSTALL_DIR}\\share\\gnucash\\guile-modules;${INSTALL_DIR}\\share\\gnucash\\scm;%GUILE_LOAD_PATH%" >> gnucash.cmd
@@ -1322,9 +1430,10 @@ function make_install() {
 function make_chm() {
     _CHM_TYPE=$1
     _CHM_LANG=$2
+    _XSLTPROC_OPTS=$3
     echo "Processing $_CHM_TYPE ($_CHM_LANG) ..."
     qpushd $_CHM_TYPE/$_CHM_LANG
-        xsltproc $XSLTPROCFLAGS ../../../docbook-xsl/htmlhelp/htmlhelp.xsl gnucash-$_CHM_TYPE.xml
+        xsltproc $XSLTPROCFLAGS $_XSLTPROC_OPTS ../../../docbook-xsl/htmlhelp/htmlhelp.xsl gnucash-$_CHM_TYPE.xml
         count=0
         echo >> htmlhelp.hhp
         echo "[ALIAS]" >> htmlhelp.hhp
@@ -1342,7 +1451,7 @@ function make_chm() {
         echo "[MAP]" >> htmlhelp.hhp
         cat mymaps >> htmlhelp.hhp
         rm mymaps
-        hhc htmlhelp.hhp || true
+        hhc htmlhelp.hhp  >/dev/null  || true
         cp -fv htmlhelp.chm $_DOCS_INST_UDIR/$_CHM_LANG/gnucash-$_CHM_TYPE.chm
         cp -fv htmlhelp.hhmap $_DOCS_INST_UDIR/$_CHM_LANG/gnucash-$_CHM_TYPE.hhmap
     qpopd
@@ -1369,10 +1478,11 @@ function inst_docs() {
         fi
         setup docs
         _DOCS_INST_UDIR=`unix_path $INSTALL_DIR`/share/gnucash/help
-        mkdir -p $_DOCS_INST_UDIR/{C,de_DE,it_IT}
+        mkdir -p $_DOCS_INST_UDIR/{C,de_DE,it_IT,ja_JP}
         make_chm guide C
         make_chm guide de_DE
         make_chm guide it_IT
+        make_chm guide ja_JP "--stringparam chunker.output.encoding Shift_JIS --stringparam htmlhelp.encoding Shift_JIS"
         make_chm help C
         make_chm help de_DE
 #        make_chm help it_IT

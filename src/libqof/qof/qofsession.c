@@ -37,7 +37,13 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#else
+# ifdef __GNUC__
+#  warning "<unistd.h> required."
+# endif
+#endif
 
 #include <glib.h>
 #include "qof.h"
@@ -46,9 +52,6 @@
 #include "qofsession-p.h"
 #include "qofobject-p.h"
 #include "qofla-dir.h" /* for QOF_LIB_DIR */
-
-/** \deprecated should not be static */
-static QofSession * current_session = NULL;
 
 static GHookList * session_closed_hooks = NULL;
 static QofLogModule log_module = QOF_MOD_SESSION;
@@ -226,29 +229,6 @@ qof_session_new (void)
     QofSession *session = g_new0(QofSession, 1);
     qof_session_init(session);
     return session;
-}
-
-/** \deprecated Each application should keep
-their \b own session context. */
-QofSession *
-qof_session_get_current_session (void)
-{
-    if (!current_session)
-    {
-        qof_event_suspend ();
-        current_session = qof_session_new ();
-        qof_event_resume ();
-    }
-
-    return current_session;
-}
-
-/** \deprecated Each application should keep
-their \b own session context. */
-void
-qof_session_set_current_session (QofSession *session)
-{
-    current_session = session;
 }
 
 QofBook *
@@ -1089,7 +1069,7 @@ qof_session_load_backend(QofSession * session, const char * access_method)
     {
         prov = p->data;
         /* Does this provider handle the desired access method? */
-        if (0 == strcasecmp (access_method, prov->access_method))
+        if (0 == g_ascii_strcasecmp (access_method, prov->access_method))
         {
             /* More than one backend could provide this
             access method, check file type compatibility. */
@@ -1160,8 +1140,7 @@ void
 qof_session_begin (QofSession *session, const char * book_id,
                    gboolean ignore_lock, gboolean create_if_nonexistent)
 {
-    char *p, *access_method, *msg;
-    int err;
+    gchar **splituri;
 
     if (!session) return;
 
@@ -1194,36 +1173,16 @@ qof_session_begin (QofSession *session, const char * book_id,
     /* Store the session URL  */
     session->book_id = g_strdup (book_id);
 
-    /* Look for something of the form of "file:/", "http://" or
+    /* Look for something of the form of "file://", "http://" or
      * "postgres://". Everything before the colon is the access
      * method.  Load the first backend found for that access method.
      */
-    p = strchr (book_id, ':');
-    if (p)
-    {
-        access_method = g_strdup (book_id);
-        p = strchr (access_method, ':');
-        *p = '\0';
-        qof_session_load_backend(session, access_method);
-        g_free (access_method);
-#ifdef G_OS_WIN32
-        if (NULL == session->backend)
-        {
-            /* Clear the error condition of previous errors */
-            qof_session_clear_error (session);
-
-            /* On windows, a colon can be part of a normal filename. So if
-            no backend was found (which means the part before the colon
-            wasn't an access method), fall back to the file backend. */
-            qof_session_load_backend(session, "file");
-        }
-#endif
-    }
-    else
-    {
-        /* If no colon found, assume it must be a file-path */
+    splituri = g_strsplit ( book_id, "://", 2 );
+    if ( splituri[1] == NULL ) /* no access method in the uri, use generic "file" backend */
         qof_session_load_backend(session, "file");
-    }
+    else                       /* access method found, load appropriate backend */
+        qof_session_load_backend(session, splituri[0]);
+    g_strfreev ( splituri );
 
     /* No backend was found. That's bad. */
     if (NULL == session->backend)
@@ -1239,6 +1198,8 @@ qof_session_begin (QofSession *session, const char * book_id,
     /* If there's a begin method, call that. */
     if (session->backend->session_begin)
     {
+        char *msg;
+        int err;
 
         (session->backend->session_begin)(session->backend, session,
                                           session->book_id, ignore_lock,
@@ -1447,7 +1408,7 @@ qof_session_save (QofSession *session,
             {
                 /** \todo check the access_method too, not in scope here, yet. */
                 /*	if((TRUE == prov->partial_book_supported) &&
-                (0 == strcasecmp (access_method, prov->access_method)))
+                (0 == g_ascii_strcasecmp (access_method, prov->access_method)))
                 {*/
                 if (NULL == prov->backend_new) continue;
                 /* Use the providers creation callback */
@@ -1546,7 +1507,7 @@ leave:
 
 /* ====================================================================== */
 gboolean
-qof_session_save_in_progress(QofSession *session)
+qof_session_save_in_progress(const QofSession *session)
 {
     return (session && g_atomic_int_get(&session->lock) != 1);
 }
@@ -1596,8 +1557,6 @@ qof_session_destroy (QofSession *session)
     }
 
     session->books  = NULL;
-    if (session == current_session)
-        current_session = NULL;
 
     g_free (session);
 
@@ -1688,11 +1647,11 @@ qof_session_export (QofSession *tmp_session,
         return FALSE;
 
     be->percentage = percentage_func;
-    if (be->export)
+    if (be->export_fn)
     {
         int err;
 
-        (be->export)(be, book);
+        (be->export_fn)(be, book);
         err = qof_backend_get_error(be);
 
         if (ERR_BACKEND_NO_ERR != err)

@@ -29,7 +29,9 @@
 # include <sys/types.h>
 #endif
 #include <ctype.h>
-#include <dirent.h>
+#ifdef HAVE_DIRENT_H
+# include <dirent.h>
+#endif
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <stdlib.h>
@@ -39,7 +41,9 @@
 # include <sys/times.h>
 #endif
 #include <time.h>
-#include <unistd.h>
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
 #include "qof.h"
 #include "md5.h"
 
@@ -56,9 +60,6 @@
 /* Static global variables *****************************************/
 static gboolean guid_initialized = FALSE;
 static struct md5_ctx guid_context;
-#ifndef HAVE_GLIB29
-static GMemChunk *guid_memchunk = NULL;
-#endif
 
 /* This static indicates the debugging module that this .o belongs to.  */
 static QofLogModule log_module = QOF_MOD_ENGINE;
@@ -85,7 +86,6 @@ gnc_value_get_guid (const GValue *value)
 
 
 /* Memory management routines ***************************************/
-#ifdef HAVE_GLIB29
 GUID *
 guid_malloc (void)
 {
@@ -100,41 +100,6 @@ guid_free (GUID *guid)
 
     g_slice_free(GUID, guid);
 }
-#else /* !HAVE_GLIB29 */
-
-static void
-guid_memchunk_init (void)
-{
-    if (!guid_memchunk)
-        guid_memchunk = g_mem_chunk_create (GUID, 512, G_ALLOC_AND_FREE);
-}
-
-static void
-guid_memchunk_shutdown (void)
-{
-    if (guid_memchunk)
-    {
-        g_mem_chunk_destroy (guid_memchunk);
-        guid_memchunk = NULL;
-    }
-}
-
-GUID *
-guid_malloc (void)
-{
-    if (!guid_memchunk) guid_memchunk_init();
-    return g_chunk_new (GUID, guid_memchunk);
-}
-
-void
-guid_free (GUID *guid)
-{
-    if (!guid)
-        return;
-
-    g_chunk_free (guid, guid_memchunk);
-}
-#endif
 
 
 GUID *
@@ -254,8 +219,13 @@ init_from_file(const char *filename, size_t max_size)
 
     file_bytes = init_from_stream(fp, max_size);
 
+#ifdef HAVE_SCANF_LLD
     PINFO ("guid_init got %llu bytes from %s", (unsigned long long int) file_bytes,
            filename);
+#else
+    PINFO ("guid_init got %lu bytes from %s", (unsigned long int) file_bytes,
+           filename);
+#endif
 
     total += file_bytes;
 
@@ -292,8 +262,8 @@ init_from_dir(const char *dirname, unsigned int max_files)
         md5_process_bytes(de, strlen(de), &guid_context);
         total += strlen(de);
 
-        result = snprintf(filename, sizeof(filename),
-                          "%s/%s", dirname, de);
+        result = g_snprintf(filename, sizeof(filename),
+                            "%s/%s", dirname, de);
         if ((result < 0) || (result >= (int)sizeof(filename)))
             continue;
 
@@ -368,17 +338,18 @@ guid_init(void)
     /* files */
     {
         const char * files[] =
-            { "/etc/passwd",
-              "/proc/loadavg",
-              "/proc/meminfo",
-              "/proc/net/dev",
-              "/proc/rtc",
-              "/proc/self/environ",
-              "/proc/self/stat",
-              "/proc/stat",
-              "/proc/uptime",
-              NULL
-            };
+        {
+            "/etc/passwd",
+            "/proc/loadavg",
+            "/proc/meminfo",
+            "/proc/net/dev",
+            "/proc/rtc",
+            "/proc/self/environ",
+            "/proc/self/stat",
+            "/proc/stat",
+            "/proc/uptime",
+            NULL
+        };
         int i;
 
         for (i = 0; files[i] != NULL; i++)
@@ -411,6 +382,7 @@ guid_init(void)
 
     /* process and parent ids */
     {
+#ifdef HAVE_UNISTD_H
         pid_t pid;
 
         pid = getpid();
@@ -421,6 +393,7 @@ guid_init(void)
         pid = getppid();
         md5_process_bytes(&pid, sizeof(pid), &guid_context);
         bytes += sizeof(pid);
+#endif
 #endif
     }
 
@@ -478,12 +451,21 @@ guid_init(void)
     /* time in secs and clock ticks */
     bytes += init_from_time();
 
+#ifdef HAVE_SCANF_LLD
     PINFO ("got %llu bytes", (unsigned long long int) bytes);
 
     if (bytes < THRESHOLD)
         PWARN("only got %llu bytes.\n"
               "The identifiers might not be very random.\n",
               (unsigned long long int)bytes);
+#else
+    PINFO ("got %lu bytes", (unsigned long int) bytes);
+
+    if (bytes < THRESHOLD)
+        PWARN("only got %lu bytes.\n"
+              "The identifiers might not be very random.\n",
+              (unsigned long int)bytes);
+#endif
 
     guid_initialized = TRUE;
 }
@@ -509,9 +491,6 @@ guid_init_only_salt(const void *salt, size_t salt_len)
 void
 guid_shutdown (void)
 {
-#ifndef HAVE_GLIB29
-    guid_memchunk_shutdown();
-#endif
 }
 
 #define GUID_PERIOD 5000
@@ -546,7 +525,7 @@ guid_new(GUID *guid)
     * Something must be broken somewhere, and merely adding more salt
     * is just hiding the problem, not fixing it.
     */
-    init_from_int (433781*counter);
+    init_from_int (433781 * counter);
     init_from_buff (guid->data, GUID_DATA_SIZE);
 
     if (counter == 0)

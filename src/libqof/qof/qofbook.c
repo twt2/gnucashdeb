@@ -146,7 +146,7 @@ qof_book_destroy (QofBook *book)
     cols = book->hash_of_collections;
     g_object_unref (book);
     g_hash_table_destroy (cols);
-    book->hash_of_collections = NULL;
+    /*book->hash_of_collections = NULL;*/
 
     LEAVE ("book=%p", book);
 }
@@ -262,10 +262,17 @@ qof_book_set_backend (QofBook *book, QofBackend *be)
 
 void qof_book_kvp_changed (QofBook *book)
 {
+    qof_book_begin_edit(book);
     qof_book_mark_dirty(book);
+    qof_book_commit_edit(book);
 }
 
 /* ====================================================================== */
+
+KvpFrame *qof_book_get_slots(const QofBook *book)
+{
+    return qof_instance_get_slots(QOF_INSTANCE(book));
+}
 
 /* Store arbitrary pointers in the QofBook for data storage extensibility */
 /* XXX if data is NULL, we should remove the key from the hash table!
@@ -441,24 +448,70 @@ qof_book_get_counter (const QofBook *book, const char *counter_name)
 }
 
 /* Determine whether this book uses trading accounts */
-gboolean qof_book_use_trading_accounts (const QofBook *book)
+gboolean
+qof_book_use_trading_accounts (const QofBook *book)
 {
     const char *opt;
     kvp_value *kvp_val;
-    
-    
-    kvp_val = kvp_frame_get_slot_path (qof_book_get_slots (book), 
-                                       BOOK_OPTIONS_NAME, 
+
+
+    kvp_val = kvp_frame_get_slot_path (qof_book_get_slots (book),
+                                       BOOK_OPTIONS_NAME,
                                        ACCOUNT_OPTIONS_SECTION,
                                        TRADING_ACCOUNTS_OPTION, NULL);
     if (kvp_val == NULL)
         return FALSE;
-    
+
     opt = kvp_value_get_string (kvp_val);
-    
+
     if (opt && opt[0] == 't' && opt[1] == 0)
         return TRUE;
     return FALSE;
+}
+
+const char*
+qof_book_get_string_option(const QofBook* book, const char* opt_name)
+{
+    return kvp_frame_get_string(qof_book_get_slots(book), opt_name);
+}
+
+void
+qof_book_set_string_option(QofBook* book, const char* opt_name, const char* opt_val)
+{
+    qof_book_begin_edit(book);
+    kvp_frame_set_string(qof_book_get_slots(book), opt_name, opt_val);
+    qof_book_mark_dirty(book);
+    qof_book_commit_edit(book);
+}
+
+void
+qof_book_begin_edit (QofBook *book)
+{
+    qof_begin_edit(&book->inst);
+}
+
+static void commit_err (QofInstance *inst, QofBackendError errcode)
+{
+    PERR ("Failed to commit: %d", errcode);
+//  gnc_engine_signal_commit_error( errcode );
+}
+
+#if 0
+static void lot_free(QofInstance* inst)
+{
+    GNCLot* lot = GNC_LOT(inst);
+
+    gnc_lot_free(lot);
+}
+#endif
+
+static void noop (QofInstance *inst) {}
+
+void
+qof_book_commit_edit(QofBook *book)
+{
+    if (!qof_commit_edit (QOF_INSTANCE(book))) return;
+    qof_commit_edit_part2 (&book->inst, commit_err, noop, noop/*lot_free*/);
 }
 
 /* QofObject function implementation and registration */

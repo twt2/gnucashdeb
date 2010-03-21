@@ -12,6 +12,7 @@ dist_doc_DATA = \
   AUTHORS \
   COPYING \
   ChangeLog \
+  ChangeLog.2009 \
   ChangeLog.2008 \
   ChangeLog.2007 \
   ChangeLog.2006 \
@@ -38,7 +39,6 @@ dist_doc_DATA = \
 # CVS dirs.
 
 EXTRA_DIST = \
-  gnucash.lsm \
   make-gnucash-potfiles.in \
   macros/aqbanking.m4 \
   macros/as-scrub-include.m4 \
@@ -191,7 +191,17 @@ if BUILDING_FROM_SVN
 # idea? Before a release, NEWS will get updated because of the version
 # change, so this should fit just fine.)
 ChangeLog: NEWS
-	$(SVN) log -v --xml -r HEAD:17790 http://svn.gnucash.org/repo/gnucash | \
+	$(SVN) log -v --xml -r HEAD:18543 http://svn.gnucash.org/repo/gnucash | \
 	  $(XSLTPROC) --stringparam strip-prefix "gnucash/trunk" \
 	  --stringparam include-rev "yes" $(srcdir)/macros/svn2cl.xsl - > $@
 endif
+
+ASTYLE = /usr/bin/astyle
+.PHONY: indent
+indent:
+	$(ASTYLE) --indent=spaces=4 --brackets=break --suffix=none `find ${srcdir}/src -name '*.[hc]'`
+# Use the following line if you've got astyle-1.24, but don't use
+# --pad=oper with astyle 1.22 as it will reformat e.g. "return +1;" in
+# a very ugly way.
+#	$(ASTYLE) --indent=spaces=4 --brackets=break --pad-oper -pad-header --suffix=none `find ${srcdir}/src -name '*.[hc]'`
+	@echo "### GnuCash development hint: The above command might have re-indented much more files than what you intended. Please commit only those which you really want to have changed, and revert the changes in the others so that other devevelopers do not have unnecessary merge conflicts. Thanks! ###"

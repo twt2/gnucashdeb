@@ -2491,81 +2491,74 @@ SWIG_Python_MustGetPtr(PyObject *obj, swig_type_info *ty, int argnum, int flags)
 #define SWIGTYPE_p_GNCNumericErrorCode swig_types[8]
 #define SWIGTYPE_p_GNCPlaceholderType swig_types[9]
 #define SWIGTYPE_p_GNCPolicy swig_types[10]
-#define SWIGTYPE_p_GType swig_types[11]
-#define SWIGTYPE_p_GValue swig_types[12]
-#define SWIGTYPE_p_GncBillTermType swig_types[13]
-#define SWIGTYPE_p_GncJob swig_types[14]
-#define SWIGTYPE_p_GncTaxIncluded swig_types[15]
-#define SWIGTYPE_p_GncTaxTable swig_types[16]
-#define SWIGTYPE_p_KvpFrame swig_types[17]
-#define SWIGTYPE_p_KvpValueType swig_types[18]
-#define SWIGTYPE_p_QofBackendError swig_types[19]
-#define SWIGTYPE_p_QofBackendOption_s swig_types[20]
-#define SWIGTYPE_p_QofBackendProvider_s swig_types[21]
-#define SWIGTYPE_p_QofBackend_s swig_types[22]
-#define SWIGTYPE_p_QofBook swig_types[23]
-#define SWIGTYPE_p_QofCollection_s swig_types[24]
-#define SWIGTYPE_p_QofInstance swig_types[25]
-#define SWIGTYPE_p_QofInstanceClass swig_types[26]
-#define SWIGTYPE_p_QuoteSourceType swig_types[27]
-#define SWIGTYPE_p_Split swig_types[28]
-#define SWIGTYPE_p_SplitList swig_types[29]
-#define SWIGTYPE_p_Timespec swig_types[30]
-#define SWIGTYPE_p_Transaction swig_types[31]
-#define SWIGTYPE_p_TransactionCallback swig_types[32]
-#define SWIGTYPE_p__GUID swig_types[33]
-#define SWIGTYPE_p__GncCommodityClass swig_types[34]
-#define SWIGTYPE_p__GncCommodityNamespaceClass swig_types[35]
-#define SWIGTYPE_p__GncLotClass swig_types[36]
-#define SWIGTYPE_p__QofBook swig_types[37]
-#define SWIGTYPE_p__QofBookClass swig_types[38]
-#define SWIGTYPE_p__QofSession swig_types[39]
-#define SWIGTYPE_p__SplitClass swig_types[40]
-#define SWIGTYPE_p__TransactionClass swig_types[41]
-#define SWIGTYPE_p__gncAddress swig_types[42]
-#define SWIGTYPE_p__gncAddressClass swig_types[43]
-#define SWIGTYPE_p__gncBillTerm swig_types[44]
-#define SWIGTYPE_p__gncBillTermClass swig_types[45]
-#define SWIGTYPE_p__gncCustomer swig_types[46]
-#define SWIGTYPE_p__gncCustomerClass swig_types[47]
-#define SWIGTYPE_p__gncEmployee swig_types[48]
-#define SWIGTYPE_p__gncEmployeeClass swig_types[49]
-#define SWIGTYPE_p__gncVendor swig_types[50]
-#define SWIGTYPE_p__gncVendorClass swig_types[51]
-#define SWIGTYPE_p__gnc_monetary swig_types[52]
-#define SWIGTYPE_p__gnc_numeric swig_types[53]
-#define SWIGTYPE_p_char swig_types[54]
-#define SWIGTYPE_p_double swig_types[55]
-#define SWIGTYPE_p_f_p_Account_p_void__p_void swig_types[56]
-#define SWIGTYPE_p_f_p_Account_p_void__void swig_types[57]
-#define SWIGTYPE_p_f_p_GNCLot_p_void__gboolean swig_types[58]
-#define SWIGTYPE_p_f_p_GNCLot_p_void__p_void swig_types[59]
-#define SWIGTYPE_p_f_p_QofBook_gboolean_p_void__void swig_types[60]
-#define SWIGTYPE_p_f_p_QofBook_p_void_p_void__void swig_types[61]
-#define SWIGTYPE_p_f_p_QofInstance_p_void__void swig_types[62]
-#define SWIGTYPE_p_f_p_gnc_commodity_p_void__gboolean swig_types[63]
-#define SWIGTYPE_p_f_p_q_const__char_double__void swig_types[64]
-#define SWIGTYPE_p_f_p_struct_QofBackendOption_s_p_void__void swig_types[65]
-#define SWIGTYPE_p_f_p_struct_QofCollection_s_p_void__void swig_types[66]
-#define SWIGTYPE_p_float swig_types[67]
-#define SWIGTYPE_p_gboolean swig_types[68]
-#define SWIGTYPE_p_gchar swig_types[69]
-#define SWIGTYPE_p_gconstpointer swig_types[70]
-#define SWIGTYPE_p_gint16 swig_types[71]
-#define SWIGTYPE_p_gint32 swig_types[72]
-#define SWIGTYPE_p_gint64 swig_types[73]
-#define SWIGTYPE_p_gnc_commodity swig_types[74]
-#define SWIGTYPE_p_gnc_commodity_namespace swig_types[75]
-#define SWIGTYPE_p_gnc_commodity_table swig_types[76]
-#define SWIGTYPE_p_gnc_quote_source swig_types[77]
-#define SWIGTYPE_p_guchar swig_types[78]
-#define SWIGTYPE_p_guint8 swig_types[79]
-#define SWIGTYPE_p_gunichar swig_types[80]
-#define SWIGTYPE_p_int swig_types[81]
-#define SWIGTYPE_p_unsigned_int swig_types[82]
-#define SWIGTYPE_p_void swig_types[83]
-static swig_type_info *swig_types[85];
-static swig_module_info swig_module = {swig_types, 84, 0, 0, 0, 0};
+#define SWIGTYPE_p_GNC_INTERNAL_GUID swig_types[11]
+#define SWIGTYPE_p_GType swig_types[12]
+#define SWIGTYPE_p_GValue swig_types[13]
+#define SWIGTYPE_p_GncBillTermType swig_types[14]
+#define SWIGTYPE_p_GncJob swig_types[15]
+#define SWIGTYPE_p_GncLotClass swig_types[16]
+#define SWIGTYPE_p_GncTaxIncluded swig_types[17]
+#define SWIGTYPE_p_GncTaxTable swig_types[18]
+#define SWIGTYPE_p_KvpFrame swig_types[19]
+#define SWIGTYPE_p_KvpValueType swig_types[20]
+#define SWIGTYPE_p_QofBackendError swig_types[21]
+#define SWIGTYPE_p_QofBackendOption_s swig_types[22]
+#define SWIGTYPE_p_QofBackendProvider_s swig_types[23]
+#define SWIGTYPE_p_QofBackend_s swig_types[24]
+#define SWIGTYPE_p_QofBook swig_types[25]
+#define SWIGTYPE_p_QofCollection_s swig_types[26]
+#define SWIGTYPE_p_QofInstance swig_types[27]
+#define SWIGTYPE_p_QofInstanceClass swig_types[28]
+#define SWIGTYPE_p_QuoteSourceType swig_types[29]
+#define SWIGTYPE_p_Split swig_types[30]
+#define SWIGTYPE_p_SplitList swig_types[31]
+#define SWIGTYPE_p_Timespec swig_types[32]
+#define SWIGTYPE_p_Transaction swig_types[33]
+#define SWIGTYPE_p_TransactionCallback swig_types[34]
+#define SWIGTYPE_p__GncCommodityClass swig_types[35]
+#define SWIGTYPE_p__GncCommodityNamespaceClass swig_types[36]
+#define SWIGTYPE_p__QofSession swig_types[37]
+#define SWIGTYPE_p__SplitClass swig_types[38]
+#define SWIGTYPE_p__TransactionClass swig_types[39]
+#define SWIGTYPE_p__gncAddress swig_types[40]
+#define SWIGTYPE_p__gncAddressClass swig_types[41]
+#define SWIGTYPE_p__gncBillTerm swig_types[42]
+#define SWIGTYPE_p__gncBillTermClass swig_types[43]
+#define SWIGTYPE_p__gncCustomer swig_types[44]
+#define SWIGTYPE_p__gncCustomerClass swig_types[45]
+#define SWIGTYPE_p__gncEmployee swig_types[46]
+#define SWIGTYPE_p__gncEmployeeClass swig_types[47]
+#define SWIGTYPE_p__gncVendor swig_types[48]
+#define SWIGTYPE_p__gncVendorClass swig_types[49]
+#define SWIGTYPE_p__gnc_monetary swig_types[50]
+#define SWIGTYPE_p__gnc_numeric swig_types[51]
+#define SWIGTYPE_p_char swig_types[52]
+#define SWIGTYPE_p_double swig_types[53]
+#define SWIGTYPE_p_f_p_Account_p_void__p_void swig_types[54]
+#define SWIGTYPE_p_f_p_Account_p_void__void swig_types[55]
+#define SWIGTYPE_p_f_p_GNCLot_p_void__gboolean swig_types[56]
+#define SWIGTYPE_p_f_p_GNCLot_p_void__p_void swig_types[57]
+#define SWIGTYPE_p_f_p_QofInstance_p_void__void swig_types[58]
+#define SWIGTYPE_p_f_p_gnc_commodity_p_void__gboolean swig_types[59]
+#define SWIGTYPE_p_f_p_q_const__char_double__void swig_types[60]
+#define SWIGTYPE_p_f_p_struct_QofBackendOption_s_p_void__void swig_types[61]
+#define SWIGTYPE_p_float swig_types[62]
+#define SWIGTYPE_p_gboolean swig_types[63]
+#define SWIGTYPE_p_gchar swig_types[64]
+#define SWIGTYPE_p_gconstpointer swig_types[65]
+#define SWIGTYPE_p_gint64 swig_types[66]
+#define SWIGTYPE_p_gnc_commodity swig_types[67]
+#define SWIGTYPE_p_gnc_commodity_namespace swig_types[68]
+#define SWIGTYPE_p_gnc_commodity_table swig_types[69]
+#define SWIGTYPE_p_gnc_quote_source swig_types[70]
+#define SWIGTYPE_p_guchar swig_types[71]
+#define SWIGTYPE_p_guint8 swig_types[72]
+#define SWIGTYPE_p_gunichar swig_types[73]
+#define SWIGTYPE_p_int swig_types[74]
+#define SWIGTYPE_p_unsigned_int swig_types[75]
+#define SWIGTYPE_p_void swig_types[76]
+static swig_type_info *swig_types[78];
+static swig_module_info swig_module = {swig_types, 77, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3016,6 +3009,29 @@ SWIG_From_unsigned_SS_int  (unsigned int value)
 }
 
 
+SWIGINTERNINLINE PyObject *
+SWIG_From_unsigned_SS_char  (unsigned char value)
+{    
+  return SWIG_From_unsigned_SS_long  (value);
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_unsigned_SS_char (PyObject * obj, unsigned char *val)
+{
+  unsigned long v;
+  int res = SWIG_AsVal_unsigned_SS_long (obj, &v);
+  if (SWIG_IsOK(res)) {
+    if ((v > UCHAR_MAX)) {
+      return SWIG_OverflowError;
+    } else {
+      if (val) *val = (unsigned char)(v);
+    }
+  }  
+  return res;
+}
+
+
 SWIGINTERNINLINE int
 SWIG_AsVal_size_t (PyObject * obj, size_t *val)
 {
@@ -3046,7 +3062,7 @@ SWIGINTERN PyObject *_wrap_gncSplitGetGUID(PyObject *SWIGUNUSEDPARM(self), PyObj
   }
   arg1 = (Split *)(argp1);
   result = (GUID *)gncSplitGetGUID(arg1);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__GUID, 0 |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -3068,7 +3084,7 @@ SWIGINTERN PyObject *_wrap_gncTransGetGUID(PyObject *SWIGUNUSEDPARM(self), PyObj
   }
   arg1 = (Transaction *)(argp1);
   result = (GUID *)gncTransGetGUID(arg1);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__GUID, 0 |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -3090,7 +3106,7 @@ SWIGINTERN PyObject *_wrap_gncAccountGetGUID(PyObject *SWIGUNUSEDPARM(self), PyO
   }
   arg1 = (Account *)(argp1);
   result = (GUID *)gncAccountGetGUID(arg1);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__GUID, 0 |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -3130,10 +3146,10 @@ SWIGINTERN PyObject *_wrap_xaccSplitConvertAmount(PyObject *SWIGUNUSEDPARM(self)
   arg1 = (Split *)(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_Account, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "xaccSplitConvertAmount" "', argument " "2"" of type '" "Account *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "xaccSplitConvertAmount" "', argument " "2"" of type '" "Account const *""'"); 
   }
   arg2 = (Account *)(argp2);
-  result = xaccSplitConvertAmount((Split const *)arg1,arg2);
+  result = xaccSplitConvertAmount((Split const *)arg1,(Account const *)arg2);
   resultobj = SWIG_NewPointerObj((gnc_numeric *)memcpy((gnc_numeric *)malloc(sizeof(gnc_numeric)),&result,sizeof(gnc_numeric)), SWIGTYPE_p__gnc_numeric, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
@@ -4221,7 +4237,7 @@ SWIGINTERN PyObject *_wrap_xaccSplitLookup(PyObject *SWIGUNUSEDPARM(self), PyObj
   Split *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:xaccSplitLookup",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__GUID, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccSplitLookup" "', argument " "1"" of type '" "GUID const *""'"); 
   }
@@ -4231,7 +4247,7 @@ SWIGINTERN PyObject *_wrap_xaccSplitLookup(PyObject *SWIGUNUSEDPARM(self), PyObj
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "xaccSplitLookup" "', argument " "2"" of type '" "QofBook *""'"); 
   }
   arg2 = (QofBook *)(argp2);
-  result = (Split *)xaccSplitLookup((union _GUID const *)arg1,arg2);
+  result = (Split *)xaccSplitLookup((union GNC_INTERNAL_GUID const *)arg1,arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Split, 0 |  0 );
   return resultobj;
 fail:
@@ -5346,7 +5362,7 @@ SWIGINTERN PyObject *_wrap_xaccAccountLookup(PyObject *SWIGUNUSEDPARM(self), PyO
   Account *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:xaccAccountLookup",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__GUID, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccAccountLookup" "', argument " "1"" of type '" "GUID const *""'"); 
   }
@@ -5356,7 +5372,7 @@ SWIGINTERN PyObject *_wrap_xaccAccountLookup(PyObject *SWIGUNUSEDPARM(self), PyO
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "xaccAccountLookup" "', argument " "2"" of type '" "QofBook *""'"); 
   }
   arg2 = (QofBook *)(argp2);
-  result = (Account *)xaccAccountLookup((union _GUID const *)arg1,arg2);
+  result = (Account *)xaccAccountLookup((union GNC_INTERNAL_GUID const *)arg1,arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Account, 0 |  0 );
   return resultobj;
 fail:
@@ -5506,6 +5522,39 @@ SWIGINTERN PyObject *_wrap_xaccAccountSetDescription(PyObject *SWIGUNUSEDPARM(se
   }
   arg2 = (char *)(buf2);
   xaccAccountSetDescription(arg1,(char const *)arg2);
+  resultobj = SWIG_Py_Void();
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_xaccAccountSetColor(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Account *arg1 = (Account *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:xaccAccountSetColor",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Account, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccAccountSetColor" "', argument " "1"" of type '" "Account *""'"); 
+  }
+  arg1 = (Account *)(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "xaccAccountSetColor" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  xaccAccountSetColor(arg1,(char const *)arg2);
   resultobj = SWIG_Py_Void();
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return resultobj;
@@ -6033,6 +6082,28 @@ SWIGINTERN PyObject *_wrap_xaccAccountGetDescription(PyObject *SWIGUNUSEDPARM(se
   }
   arg1 = (Account *)(argp1);
   result = (char *)xaccAccountGetDescription((Account const *)arg1);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_xaccAccountGetColor(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Account *arg1 = (Account *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:xaccAccountGetColor",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Account, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccAccountGetColor" "', argument " "1"" of type '" "Account const *""'"); 
+  }
+  arg1 = (Account *)(argp1);
+  result = (char *)xaccAccountGetColor((Account const *)arg1);
   resultobj = SWIG_FromCharPtr((const char *)result);
   return resultobj;
 fail:
@@ -10331,7 +10402,7 @@ SWIGINTERN PyObject *_wrap_xaccTransLookup(PyObject *SWIGUNUSEDPARM(self), PyObj
   Transaction *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:xaccTransLookup",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__GUID, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccTransLookup" "', argument " "1"" of type '" "GUID const *""'"); 
   }
@@ -10341,7 +10412,7 @@ SWIGINTERN PyObject *_wrap_xaccTransLookup(PyObject *SWIGUNUSEDPARM(self), PyObj
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "xaccTransLookup" "', argument " "2"" of type '" "QofBook *""'"); 
   }
   arg2 = (QofBook *)(argp2);
-  result = (Transaction *)xaccTransLookup((union _GUID const *)arg1,arg2);
+  result = (Transaction *)xaccTransLookup((union GNC_INTERNAL_GUID const *)arg1,arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Transaction, 0 |  0 );
   return resultobj;
 fail:
@@ -11399,15 +11470,15 @@ SWIGINTERN PyObject *_wrap_xaccTransGetAccountConvRate(PyObject *SWIGUNUSEDPARM(
   if (!PyArg_ParseTuple(args,(char *)"OO:xaccTransGetAccountConvRate",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Transaction, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccTransGetAccountConvRate" "', argument " "1"" of type '" "Transaction *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccTransGetAccountConvRate" "', argument " "1"" of type '" "Transaction const *""'"); 
   }
   arg1 = (Transaction *)(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_Account, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "xaccTransGetAccountConvRate" "', argument " "2"" of type '" "Account *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "xaccTransGetAccountConvRate" "', argument " "2"" of type '" "Account const *""'"); 
   }
   arg2 = (Account *)(argp2);
-  result = xaccTransGetAccountConvRate(arg1,arg2);
+  result = xaccTransGetAccountConvRate((Transaction const *)arg1,(Account const *)arg2);
   resultobj = SWIG_NewPointerObj((gnc_numeric *)memcpy((gnc_numeric *)malloc(sizeof(gnc_numeric)),&result,sizeof(gnc_numeric)), SWIGTYPE_p__gnc_numeric, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
@@ -12062,6 +12133,105 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_GncLotClass_parent_class_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GncLotClass *arg1 = (GncLotClass *) 0 ;
+  QofInstanceClass arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:GncLotClass_parent_class_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GncLotClass, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GncLotClass_parent_class_set" "', argument " "1"" of type '" "GncLotClass *""'"); 
+  }
+  arg1 = (GncLotClass *)(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_QofInstanceClass,  0 );
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GncLotClass_parent_class_set" "', argument " "2"" of type '" "QofInstanceClass""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "GncLotClass_parent_class_set" "', argument " "2"" of type '" "QofInstanceClass""'");
+    } else {
+      arg2 = *((QofInstanceClass *)(argp2));
+    }
+  }
+  if (arg1) (arg1)->parent_class = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_GncLotClass_parent_class_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GncLotClass *arg1 = (GncLotClass *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  QofInstanceClass result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:GncLotClass_parent_class_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GncLotClass, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GncLotClass_parent_class_get" "', argument " "1"" of type '" "GncLotClass *""'"); 
+  }
+  arg1 = (GncLotClass *)(argp1);
+  result =  ((arg1)->parent_class);
+  resultobj = SWIG_NewPointerObj((QofInstanceClass *)memcpy((QofInstanceClass *)malloc(sizeof(QofInstanceClass)),&result,sizeof(QofInstanceClass)), SWIGTYPE_p_QofInstanceClass, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_GncLotClass(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GncLotClass *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":new_GncLotClass")) SWIG_fail;
+  result = (GncLotClass *)calloc(1, sizeof(GncLotClass));
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GncLotClass, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_GncLotClass(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GncLotClass *arg1 = (GncLotClass *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_GncLotClass",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GncLotClass, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_GncLotClass" "', argument " "1"" of type '" "GncLotClass *""'"); 
+  }
+  arg1 = (GncLotClass *)(argp1);
+  free((char *) arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *GncLotClass_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char*)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_GncLotClass, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
 SWIGINTERN PyObject *_wrap_gnc_lot_get_type(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GType result;
@@ -12131,7 +12301,7 @@ SWIGINTERN PyObject *_wrap_gnc_lot_lookup(PyObject *SWIGUNUSEDPARM(self), PyObje
   GNCLot *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:gnc_lot_lookup",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__GUID, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_lot_lookup" "', argument " "1"" of type '" "GUID const *""'"); 
   }
@@ -12141,7 +12311,7 @@ SWIGINTERN PyObject *_wrap_gnc_lot_lookup(PyObject *SWIGUNUSEDPARM(self), PyObje
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gnc_lot_lookup" "', argument " "2"" of type '" "QofBook *""'"); 
   }
   arg2 = (QofBook *)(argp2);
-  result = (GNCLot *)gnc_lot_lookup((union _GUID const *)arg1,arg2);
+  result = (GNCLot *)gnc_lot_lookup((union GNC_INTERNAL_GUID const *)arg1,arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNCLot, 0 |  0 );
   return resultobj;
 fail:
@@ -12360,6 +12530,36 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_gnc_lot_set_account(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GNCLot *arg1 = (GNCLot *) 0 ;
+  Account *arg2 = (Account *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:gnc_lot_set_account",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNCLot, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_lot_set_account" "', argument " "1"" of type '" "GNCLot *""'"); 
+  }
+  arg1 = (GNCLot *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_Account, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gnc_lot_set_account" "', argument " "2"" of type '" "Account *""'"); 
+  }
+  arg2 = (Account *)(argp2);
+  gnc_lot_set_account(arg1,arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_gnc_lot_get_balance(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GNCLot *arg1 = (GNCLot *) 0 ;
@@ -12515,6 +12715,27 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_gnc_lot_set_closed_unknown(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GNCLot *arg1 = (GNCLot *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:gnc_lot_set_closed_unknown",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNCLot, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_lot_set_closed_unknown" "', argument " "1"" of type '" "GNCLot *""'"); 
+  }
+  arg1 = (GNCLot *)(argp1);
+  gnc_lot_set_closed_unknown(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_gnc_lot_get_title(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GNCLot *arg1 = (GNCLot *) 0 ;
@@ -12621,6 +12842,58 @@ SWIGINTERN PyObject *_wrap_gnc_lot_set_notes(PyObject *SWIGUNUSEDPARM(self), PyO
   return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gnc_lot_get_marker(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GNCLot *arg1 = (GNCLot *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  unsigned char result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:gnc_lot_get_marker",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNCLot, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_lot_get_marker" "', argument " "1"" of type '" "GNCLot const *""'"); 
+  }
+  arg1 = (GNCLot *)(argp1);
+  result = (unsigned char)gnc_lot_get_marker((GNCLot const *)arg1);
+  resultobj = SWIG_From_unsigned_SS_char((unsigned char)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gnc_lot_set_marker(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GNCLot *arg1 = (GNCLot *) 0 ;
+  unsigned char arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  unsigned char val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:gnc_lot_set_marker",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNCLot, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_lot_set_marker" "', argument " "1"" of type '" "GNCLot *""'"); 
+  }
+  arg1 = (GNCLot *)(argp1);
+  ecode2 = SWIG_AsVal_unsigned_SS_char(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "gnc_lot_set_marker" "', argument " "2"" of type '" "unsigned char""'");
+  } 
+  arg2 = (unsigned char)(val2);
+  gnc_lot_set_marker(arg1,arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
   return NULL;
 }
 
@@ -13365,6 +13638,18 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_qof_finalize_backend_libraries(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  
+  if (!PyArg_ParseTuple(args,(char *)":qof_finalize_backend_libraries")) SWIG_fail;
+  qof_finalize_backend_libraries();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_qof_book_get_backend(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   QofBook *arg1 = (QofBook *) 0 ;
@@ -13444,40 +13729,6 @@ SWIGINTERN PyObject *_wrap_qof_session_destroy(PyObject *SWIGUNUSEDPARM(self), P
   }
   arg1 = (QofSession *)(argp1);
   qof_session_destroy(arg1);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_qof_session_get_current_session(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  QofSession *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)":qof_session_get_current_session")) SWIG_fail;
-  result = (QofSession *)qof_session_get_current_session();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__QofSession, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_qof_session_set_current_session(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  QofSession *arg1 = (QofSession *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:qof_session_set_current_session",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofSession, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_session_set_current_session" "', argument " "1"" of type '" "QofSession *""'"); 
-  }
-  arg1 = (QofSession *)(argp1);
-  qof_session_set_current_session(arg1);
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -13782,10 +14033,10 @@ SWIGINTERN PyObject *_wrap_qof_session_save_in_progress(PyObject *SWIGUNUSEDPARM
   if (!PyArg_ParseTuple(args,(char *)"O:qof_session_save_in_progress",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofSession, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_session_save_in_progress" "', argument " "1"" of type '" "QofSession *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_session_save_in_progress" "', argument " "1"" of type '" "QofSession const *""'"); 
   }
   arg1 = (QofSession *)(argp1);
-  result = qof_session_save_in_progress(arg1);
+  result = qof_session_save_in_progress((struct _QofSession const *)arg1);
   {
     if (result == TRUE)
     {
@@ -14403,1009 +14654,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap__QofBook_inst_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  QofInstance arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:_QofBook_inst_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_inst_set" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_QofInstance,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "_QofBook_inst_set" "', argument " "2"" of type '" "QofInstance""'"); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "_QofBook_inst_set" "', argument " "2"" of type '" "QofInstance""'");
-    } else {
-      arg2 = *((QofInstance *)(argp2));
-    }
-  }
-  if (arg1) (arg1)->inst = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBook_inst_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  QofInstance result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:_QofBook_inst_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_inst_get" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  result =  ((arg1)->inst);
-  resultobj = SWIG_NewPointerObj((QofInstance *)memcpy((QofInstance *)malloc(sizeof(QofInstance)),&result,sizeof(QofInstance)), SWIGTYPE_p_QofInstance, SWIG_POINTER_OWN |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBook_dirty_time_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  time_t arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:_QofBook_dirty_time_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_dirty_time_set" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  ecode2 = SWIG_AsVal_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "_QofBook_dirty_time_set" "', argument " "2"" of type '" "time_t""'");
-  } 
-  arg2 = (time_t)(val2);
-  if (arg1) (arg1)->dirty_time = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBook_dirty_time_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  time_t result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:_QofBook_dirty_time_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_dirty_time_get" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  result = (time_t) ((arg1)->dirty_time);
-  resultobj = SWIG_From_int((int)(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBook_dirty_cb_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  QofBookDirtyCB arg2 = (QofBookDirtyCB) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:_QofBook_dirty_cb_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_dirty_cb_set" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  {
-    int res = SWIG_ConvertFunctionPtr(obj1, (void**)(&arg2), SWIGTYPE_p_f_p_QofBook_gboolean_p_void__void);
-    if (!SWIG_IsOK(res)) {
-      SWIG_exception_fail(SWIG_ArgError(res), "in method '" "_QofBook_dirty_cb_set" "', argument " "2"" of type '" "QofBookDirtyCB""'"); 
-    }
-  }
-  if (arg1) (arg1)->dirty_cb = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBook_dirty_cb_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  QofBookDirtyCB result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:_QofBook_dirty_cb_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_dirty_cb_get" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  result = (QofBookDirtyCB) ((arg1)->dirty_cb);
-  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_QofBook_gboolean_p_void__void);
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBook_dirty_data_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  gpointer arg2 = (gpointer) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res2 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:_QofBook_dirty_data_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_dirty_data_set" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1,SWIG_as_voidptrptr(&arg2), 0, SWIG_POINTER_DISOWN);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "_QofBook_dirty_data_set" "', argument " "2"" of type '" "gpointer""'"); 
-  }
-  if (arg1) (arg1)->dirty_data = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBook_dirty_data_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  gpointer result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:_QofBook_dirty_data_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_dirty_data_get" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  result = (gpointer) ((arg1)->dirty_data);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_void, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBook_hash_of_collections_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  GHashTable *arg2 = (GHashTable *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:_QofBook_hash_of_collections_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_hash_of_collections_set" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_GHashTable, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "_QofBook_hash_of_collections_set" "', argument " "2"" of type '" "GHashTable *""'"); 
-  }
-  arg2 = (GHashTable *)(argp2);
-  if (arg1) (arg1)->hash_of_collections = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBook_hash_of_collections_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  GHashTable *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:_QofBook_hash_of_collections_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_hash_of_collections_get" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  result = (GHashTable *) ((arg1)->hash_of_collections);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GHashTable, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBook_data_tables_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  GHashTable *arg2 = (GHashTable *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:_QofBook_data_tables_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_data_tables_set" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_GHashTable, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "_QofBook_data_tables_set" "', argument " "2"" of type '" "GHashTable *""'"); 
-  }
-  arg2 = (GHashTable *)(argp2);
-  if (arg1) (arg1)->data_tables = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBook_data_tables_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  GHashTable *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:_QofBook_data_tables_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_data_tables_get" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  result = (GHashTable *) ((arg1)->data_tables);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GHashTable, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBook_data_table_finalizers_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  GHashTable *arg2 = (GHashTable *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:_QofBook_data_table_finalizers_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_data_table_finalizers_set" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_GHashTable, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "_QofBook_data_table_finalizers_set" "', argument " "2"" of type '" "GHashTable *""'"); 
-  }
-  arg2 = (GHashTable *)(argp2);
-  if (arg1) (arg1)->data_table_finalizers = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBook_data_table_finalizers_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  GHashTable *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:_QofBook_data_table_finalizers_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_data_table_finalizers_get" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  result = (GHashTable *) ((arg1)->data_table_finalizers);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GHashTable, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBook_book_open_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  char arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  char val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:_QofBook_book_open_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_book_open_set" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  ecode2 = SWIG_AsVal_char(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "_QofBook_book_open_set" "', argument " "2"" of type '" "char""'");
-  } 
-  arg2 = (char)(val2);
-  if (arg1) (arg1)->book_open = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBook_book_open_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  char result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:_QofBook_book_open_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_book_open_get" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  result = (char) ((arg1)->book_open);
-  resultobj = SWIG_From_char((char)(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBook_shutting_down_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  gboolean arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:_QofBook_shutting_down_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_shutting_down_set" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  {
-    if (obj1 == Py_True)
-    arg2 = TRUE;
-    else if (obj1 == Py_False)
-    arg2 = FALSE;
-    else
-    {
-      PyErr_SetString(
-        PyExc_ValueError,
-        "Python object passed to a gboolean argument was not True "
-        "or False" );
-      return NULL;
-    }
-  }
-  if (arg1) (arg1)->shutting_down = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBook_shutting_down_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  gboolean result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:_QofBook_shutting_down_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_shutting_down_get" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  result =  ((arg1)->shutting_down);
-  {
-    if (result == TRUE)
-    {
-      Py_INCREF(Py_True);
-      resultobj = Py_True;
-    }
-    else if (result == FALSE)
-    {
-      Py_INCREF(Py_False);
-      resultobj = Py_False;
-    }
-    else
-    {
-      PyErr_SetString(
-        PyExc_ValueError,
-        "function returning gboolean returned a value that wasn't "
-        "TRUE or FALSE.");
-      return NULL;        
-    }
-  }
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBook_version_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  gint32 arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:_QofBook_version_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_version_set" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  {
-    arg2 = (gint32)PyInt_AsLong(obj1);
-  }
-  if (arg1) (arg1)->version = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBook_version_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  gint32 result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:_QofBook_version_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_version_get" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  result =  ((arg1)->version);
-  {
-    resultobj = PyInt_FromLong(result);
-  }
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBook_backend_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  QofBackend *arg2 = (QofBackend *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:_QofBook_backend_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_backend_set" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_QofBackend_s, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "_QofBook_backend_set" "', argument " "2"" of type '" "QofBackend *""'"); 
-  }
-  arg2 = (QofBackend *)(argp2);
-  if (arg1) (arg1)->backend = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBook_backend_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  QofBackend *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:_QofBook_backend_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBook_backend_get" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  result = (QofBackend *) ((arg1)->backend);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_QofBackend_s, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_new__QofBook(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)":new__QofBook")) SWIG_fail;
-  result = (struct _QofBook *)calloc(1, sizeof(struct _QofBook));
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__QofBook, SWIG_POINTER_NEW |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_delete__QofBook(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBook *arg1 = (struct _QofBook *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:delete__QofBook",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBook, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete__QofBook" "', argument " "1"" of type '" "struct _QofBook *""'"); 
-  }
-  arg1 = (struct _QofBook *)(argp1);
-  free((char *) arg1);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_QofBook_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *obj;
-  if (!PyArg_ParseTuple(args,(char*)"O:swigregister", &obj)) return NULL;
-  SWIG_TypeNewClientData(SWIGTYPE_p__QofBook, SWIG_NewClientData(obj));
-  return SWIG_Py_Void();
-}
-
-SWIGINTERN PyObject *_wrap__QofBookClass_parent_class_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBookClass *arg1 = (struct _QofBookClass *) 0 ;
-  QofInstanceClass arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:_QofBookClass_parent_class_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBookClass, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBookClass_parent_class_set" "', argument " "1"" of type '" "struct _QofBookClass *""'"); 
-  }
-  arg1 = (struct _QofBookClass *)(argp1);
-  {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_QofInstanceClass,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "_QofBookClass_parent_class_set" "', argument " "2"" of type '" "QofInstanceClass""'"); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "_QofBookClass_parent_class_set" "', argument " "2"" of type '" "QofInstanceClass""'");
-    } else {
-      arg2 = *((QofInstanceClass *)(argp2));
-    }
-  }
-  if (arg1) (arg1)->parent_class = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap__QofBookClass_parent_class_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBookClass *arg1 = (struct _QofBookClass *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  QofInstanceClass result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:_QofBookClass_parent_class_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBookClass, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "_QofBookClass_parent_class_get" "', argument " "1"" of type '" "struct _QofBookClass *""'"); 
-  }
-  arg1 = (struct _QofBookClass *)(argp1);
-  result =  ((arg1)->parent_class);
-  resultobj = SWIG_NewPointerObj((QofInstanceClass *)memcpy((QofInstanceClass *)malloc(sizeof(QofInstanceClass)),&result,sizeof(QofInstanceClass)), SWIGTYPE_p_QofInstanceClass, SWIG_POINTER_OWN |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_new__QofBookClass(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBookClass *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)":new__QofBookClass")) SWIG_fail;
-  result = (struct _QofBookClass *)calloc(1, sizeof(struct _QofBookClass));
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__QofBookClass, SWIG_POINTER_NEW |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_delete__QofBookClass(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _QofBookClass *arg1 = (struct _QofBookClass *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:delete__QofBookClass",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofBookClass, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete__QofBookClass" "', argument " "1"" of type '" "struct _QofBookClass *""'"); 
-  }
-  arg1 = (struct _QofBookClass *)(argp1);
-  free((char *) arg1);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_QofBookClass_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *obj;
-  if (!PyArg_ParseTuple(args,(char*)"O:swigregister", &obj)) return NULL;
-  SWIG_TypeNewClientData(SWIGTYPE_p__QofBookClass, SWIG_NewClientData(obj));
-  return SWIG_Py_Void();
-}
-
-SWIGINTERN PyObject *_wrap_qof_book_get_type(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  GType result;
-  
-  if (!PyArg_ParseTuple(args,(char *)":qof_book_get_type")) SWIG_fail;
-  result = qof_book_get_type();
-  resultobj = SWIG_NewPointerObj((GType *)memcpy((GType *)malloc(sizeof(GType)),&result,sizeof(GType)), SWIGTYPE_p_GType, SWIG_POINTER_OWN |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_qof_book_register(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  gboolean result;
-  
-  if (!PyArg_ParseTuple(args,(char *)":qof_book_register")) SWIG_fail;
-  result = qof_book_register();
-  {
-    if (result == TRUE)
-    {
-      Py_INCREF(Py_True);
-      resultobj = Py_True;
-    }
-    else if (result == FALSE)
-    {
-      Py_INCREF(Py_False);
-      resultobj = Py_False;
-    }
-    else
-    {
-      PyErr_SetString(
-        PyExc_ValueError,
-        "function returning gboolean returned a value that wasn't "
-        "TRUE or FALSE.");
-      return NULL;        
-    }
-  }
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_qof_book_new(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  QofBook *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)":qof_book_new")) SWIG_fail;
-  result = (QofBook *)qof_book_new();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_QofBook, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_qof_book_destroy(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  QofBook *arg1 = (QofBook *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:qof_book_destroy",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_book_destroy" "', argument " "1"" of type '" "QofBook *""'"); 
-  }
-  arg1 = (QofBook *)(argp1);
-  qof_book_destroy(arg1);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_qof_book_mark_closed(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  QofBook *arg1 = (QofBook *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:qof_book_mark_closed",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_book_mark_closed" "', argument " "1"" of type '" "QofBook *""'"); 
-  }
-  arg1 = (QofBook *)(argp1);
-  qof_book_mark_closed(arg1);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_qof_book_get_collection(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  QofBook *arg1 = (QofBook *) 0 ;
-  QofIdType arg2 = (QofIdType) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  QofCollection *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:qof_book_get_collection",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_book_get_collection" "', argument " "1"" of type '" "QofBook const *""'"); 
-  }
-  arg1 = (QofBook *)(argp1);
-  {
-    arg2 = (QofIdType)PyString_AsString(obj1);
-  }
-  result = (QofCollection *)qof_book_get_collection((QofBook const *)arg1,(gchar const *)arg2);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_QofCollection_s, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_qof_book_foreach_collection(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  QofBook *arg1 = (QofBook *) 0 ;
-  QofCollectionForeachCB arg2 = (QofCollectionForeachCB) 0 ;
-  gpointer arg3 = (gpointer) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res3 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOO:qof_book_foreach_collection",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_book_foreach_collection" "', argument " "1"" of type '" "QofBook const *""'"); 
-  }
-  arg1 = (QofBook *)(argp1);
-  {
-    int res = SWIG_ConvertFunctionPtr(obj1, (void**)(&arg2), SWIGTYPE_p_f_p_struct_QofCollection_s_p_void__void);
-    if (!SWIG_IsOK(res)) {
-      SWIG_exception_fail(SWIG_ArgError(res), "in method '" "qof_book_foreach_collection" "', argument " "2"" of type '" "QofCollectionForeachCB""'"); 
-    }
-  }
-  res3 = SWIG_ConvertPtr(obj2,SWIG_as_voidptrptr(&arg3), 0, 0);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "qof_book_foreach_collection" "', argument " "3"" of type '" "gpointer""'"); 
-  }
-  qof_book_foreach_collection((QofBook const *)arg1,arg2,arg3);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_qof_book_set_data(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  QofBook *arg1 = (QofBook *) 0 ;
-  gchar *arg2 = (gchar *) 0 ;
-  gpointer arg3 = (gpointer) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res3 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOO:qof_book_set_data",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_book_set_data" "', argument " "1"" of type '" "QofBook *""'"); 
-  }
-  arg1 = (QofBook *)(argp1);
-  {
-    arg2 = (gchar const *)PyString_AsString(obj1);
-  }
-  res3 = SWIG_ConvertPtr(obj2,SWIG_as_voidptrptr(&arg3), 0, 0);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "qof_book_set_data" "', argument " "3"" of type '" "gpointer""'"); 
-  }
-  qof_book_set_data(arg1,(gchar const *)arg2,arg3);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_qof_book_set_data_fin(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  QofBook *arg1 = (QofBook *) 0 ;
-  gchar *arg2 = (gchar *) 0 ;
-  gpointer arg3 = (gpointer) 0 ;
-  QofBookFinalCB arg4 = (QofBookFinalCB) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res3 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOOO:qof_book_set_data_fin",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_book_set_data_fin" "', argument " "1"" of type '" "QofBook *""'"); 
-  }
-  arg1 = (QofBook *)(argp1);
-  {
-    arg2 = (gchar const *)PyString_AsString(obj1);
-  }
-  res3 = SWIG_ConvertPtr(obj2,SWIG_as_voidptrptr(&arg3), 0, 0);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "qof_book_set_data_fin" "', argument " "3"" of type '" "gpointer""'"); 
-  }
-  {
-    int res = SWIG_ConvertFunctionPtr(obj3, (void**)(&arg4), SWIGTYPE_p_f_p_QofBook_p_void_p_void__void);
-    if (!SWIG_IsOK(res)) {
-      SWIG_exception_fail(SWIG_ArgError(res), "in method '" "qof_book_set_data_fin" "', argument " "4"" of type '" "QofBookFinalCB""'"); 
-    }
-  }
-  qof_book_set_data_fin(arg1,(gchar const *)arg2,arg3,arg4);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_qof_book_get_data(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  QofBook *arg1 = (QofBook *) 0 ;
-  gchar *arg2 = (gchar *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  gpointer result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:qof_book_get_data",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_book_get_data" "', argument " "1"" of type '" "QofBook const *""'"); 
-  }
-  arg1 = (QofBook *)(argp1);
-  {
-    arg2 = (gchar const *)PyString_AsString(obj1);
-  }
-  result = (gpointer)qof_book_get_data((QofBook const *)arg1,(gchar const *)arg2);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_void, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_qof_book_use_trading_accounts(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   QofBook *arg1 = (QofBook *) 0 ;
@@ -15525,234 +14773,6 @@ SWIGINTERN PyObject *_wrap_qof_book_not_saved(PyObject *SWIGUNUSEDPARM(self), Py
   }
   return resultobj;
 fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_qof_book_mark_saved(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  QofBook *arg1 = (QofBook *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:qof_book_mark_saved",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_book_mark_saved" "', argument " "1"" of type '" "QofBook *""'"); 
-  }
-  arg1 = (QofBook *)(argp1);
-  qof_book_mark_saved(arg1);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_qof_book_mark_dirty(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  QofBook *arg1 = (QofBook *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:qof_book_mark_dirty",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_book_mark_dirty" "', argument " "1"" of type '" "QofBook *""'"); 
-  }
-  arg1 = (QofBook *)(argp1);
-  qof_book_mark_dirty(arg1);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_qof_book_print_dirty(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  QofBook *arg1 = (QofBook *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:qof_book_print_dirty",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_book_print_dirty" "', argument " "1"" of type '" "QofBook const *""'"); 
-  }
-  arg1 = (QofBook *)(argp1);
-  qof_book_print_dirty((QofBook const *)arg1);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_qof_book_get_dirty_time(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  QofBook *arg1 = (QofBook *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  time_t result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:qof_book_get_dirty_time",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_book_get_dirty_time" "', argument " "1"" of type '" "QofBook const *""'"); 
-  }
-  arg1 = (QofBook *)(argp1);
-  result = (time_t)qof_book_get_dirty_time((QofBook const *)arg1);
-  resultobj = SWIG_From_int((int)(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_qof_book_set_dirty_cb(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  QofBook *arg1 = (QofBook *) 0 ;
-  QofBookDirtyCB arg2 = (QofBookDirtyCB) 0 ;
-  gpointer arg3 = (gpointer) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res3 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOO:qof_book_set_dirty_cb",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_book_set_dirty_cb" "', argument " "1"" of type '" "QofBook *""'"); 
-  }
-  arg1 = (QofBook *)(argp1);
-  {
-    int res = SWIG_ConvertFunctionPtr(obj1, (void**)(&arg2), SWIGTYPE_p_f_p_QofBook_gboolean_p_void__void);
-    if (!SWIG_IsOK(res)) {
-      SWIG_exception_fail(SWIG_ArgError(res), "in method '" "qof_book_set_dirty_cb" "', argument " "2"" of type '" "QofBookDirtyCB""'"); 
-    }
-  }
-  res3 = SWIG_ConvertPtr(obj2,SWIG_as_voidptrptr(&arg3), 0, 0);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "qof_book_set_dirty_cb" "', argument " "3"" of type '" "gpointer""'"); 
-  }
-  qof_book_set_dirty_cb(arg1,arg2,arg3);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_qof_book_kvp_changed(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  QofBook *arg1 = (QofBook *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:qof_book_kvp_changed",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_book_kvp_changed" "', argument " "1"" of type '" "QofBook *""'"); 
-  }
-  arg1 = (QofBook *)(argp1);
-  qof_book_kvp_changed(arg1);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_qof_book_equal(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  QofBook *arg1 = (QofBook *) 0 ;
-  QofBook *arg2 = (QofBook *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  gboolean result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:qof_book_equal",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_book_equal" "', argument " "1"" of type '" "QofBook const *""'"); 
-  }
-  arg1 = (QofBook *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "qof_book_equal" "', argument " "2"" of type '" "QofBook const *""'"); 
-  }
-  arg2 = (QofBook *)(argp2);
-  result = qof_book_equal((QofBook const *)arg1,(QofBook const *)arg2);
-  {
-    if (result == TRUE)
-    {
-      Py_INCREF(Py_True);
-      resultobj = Py_True;
-    }
-    else if (result == FALSE)
-    {
-      Py_INCREF(Py_False);
-      resultobj = Py_False;
-    }
-    else
-    {
-      PyErr_SetString(
-        PyExc_ValueError,
-        "function returning gboolean returned a value that wasn't "
-        "TRUE or FALSE.");
-      return NULL;        
-    }
-  }
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_qof_book_get_counter(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  QofBook *arg1 = (QofBook *) 0 ;
-  char *arg2 = (char *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res2 ;
-  char *buf2 = 0 ;
-  int alloc2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  gint64 result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:qof_book_get_counter",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_QofBook, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_book_get_counter" "', argument " "1"" of type '" "QofBook const *""'"); 
-  }
-  arg1 = (QofBook *)(argp1);
-  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "qof_book_get_counter" "', argument " "2"" of type '" "char const *""'");
-  }
-  arg2 = (char *)(buf2);
-  result = qof_book_get_counter((QofBook const *)arg1,(char const *)arg2);
-  {
-    resultobj = PyInt_FromLong(result);
-  }
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  return resultobj;
-fail:
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
 }
 
@@ -15920,12 +14940,12 @@ SWIGINTERN PyObject *_wrap_qof_collection_lookup_entity(PyObject *SWIGUNUSEDPARM
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_collection_lookup_entity" "', argument " "1"" of type '" "QofCollection const *""'"); 
   }
   arg1 = (QofCollection *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p__GUID, 0 |  0 );
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "qof_collection_lookup_entity" "', argument " "2"" of type '" "GUID const *""'"); 
   }
   arg2 = (GUID *)(argp2);
-  result = (QofInstance *)qof_collection_lookup_entity((struct QofCollection_s const *)arg1,(union _GUID const *)arg2);
+  result = (QofInstance *)qof_collection_lookup_entity((struct QofCollection_s const *)arg1,(union GNC_INTERNAL_GUID const *)arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_QofInstance, 0 |  0 );
   return resultobj;
 fail:
@@ -16251,7 +15271,7 @@ SWIGINTERN PyObject *_wrap_GUID_data_set(PyObject *SWIGUNUSEDPARM(self), PyObjec
   PyObject * obj1 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:GUID_data_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__GUID, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GUID_data_set" "', argument " "1"" of type '" "GUID *""'"); 
   }
@@ -16285,7 +15305,7 @@ SWIGINTERN PyObject *_wrap_GUID_data_get(PyObject *SWIGUNUSEDPARM(self), PyObjec
   guchar *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:GUID_data_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__GUID, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GUID_data_get" "', argument " "1"" of type '" "GUID *""'"); 
   }
@@ -16310,7 +15330,7 @@ SWIGINTERN PyObject *_wrap_GUID___align_me_set(PyObject *SWIGUNUSEDPARM(self), P
   PyObject * obj1 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:GUID___align_me_set",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__GUID, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GUID___align_me_set" "', argument " "1"" of type '" "GUID *""'"); 
   }
@@ -16337,7 +15357,7 @@ SWIGINTERN PyObject *_wrap_GUID___align_me_get(PyObject *SWIGUNUSEDPARM(self), P
   gint result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:GUID___align_me_get",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__GUID, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GUID___align_me_get" "', argument " "1"" of type '" "GUID *""'"); 
   }
@@ -16356,7 +15376,7 @@ SWIGINTERN PyObject *_wrap_new_GUID(PyObject *SWIGUNUSEDPARM(self), PyObject *ar
   
   if (!PyArg_ParseTuple(args,(char *)":new_GUID")) SWIG_fail;
   result = (GUID *)calloc(1, sizeof(GUID));
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__GUID, SWIG_POINTER_NEW |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNC_INTERNAL_GUID, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -16371,7 +15391,7 @@ SWIGINTERN PyObject *_wrap_delete_GUID(PyObject *SWIGUNUSEDPARM(self), PyObject 
   PyObject * obj0 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:delete_GUID",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__GUID, SWIG_POINTER_DISOWN |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNC_INTERNAL_GUID, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_GUID" "', argument " "1"" of type '" "GUID *""'"); 
   }
@@ -16387,7 +15407,7 @@ fail:
 SWIGINTERN PyObject *GUID_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *obj;
   if (!PyArg_ParseTuple(args,(char*)"O:swigregister", &obj)) return NULL;
-  SWIG_TypeNewClientData(SWIGTYPE_p__GUID, SWIG_NewClientData(obj));
+  SWIG_TypeNewClientData(SWIGTYPE_p_GNC_INTERNAL_GUID, SWIG_NewClientData(obj));
   return SWIG_Py_Void();
 }
 
@@ -16419,7 +15439,7 @@ SWIGINTERN PyObject *_wrap_gnc_value_get_guid(PyObject *SWIGUNUSEDPARM(self), Py
   }
   arg1 = (GValue *)(argp1);
   result = (GUID *)gnc_value_get_guid((GValue const *)arg1);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__GUID, 0 |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -16514,7 +15534,7 @@ SWIGINTERN PyObject *_wrap_guid_new(PyObject *SWIGUNUSEDPARM(self), PyObject *ar
   PyObject * obj0 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:guid_new",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__GUID, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "guid_new" "', argument " "1"" of type '" "GUID *""'"); 
   }
@@ -16533,7 +15553,7 @@ SWIGINTERN PyObject *_wrap_guid_new_return(PyObject *SWIGUNUSEDPARM(self), PyObj
   
   if (!PyArg_ParseTuple(args,(char *)":guid_new_return")) SWIG_fail;
   result = guid_new_return();
-  resultobj = SWIG_NewPointerObj((GUID *)memcpy((GUID *)malloc(sizeof(GUID)),&result,sizeof(GUID)), SWIGTYPE_p__GUID, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((GUID *)memcpy((GUID *)malloc(sizeof(GUID)),&result,sizeof(GUID)), SWIGTYPE_p_GNC_INTERNAL_GUID, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -16546,7 +15566,7 @@ SWIGINTERN PyObject *_wrap_guid_null(PyObject *SWIGUNUSEDPARM(self), PyObject *a
   
   if (!PyArg_ParseTuple(args,(char *)":guid_null")) SWIG_fail;
   result = (GUID *)guid_null();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__GUID, 0 |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -16559,7 +15579,7 @@ SWIGINTERN PyObject *_wrap_guid_malloc(PyObject *SWIGUNUSEDPARM(self), PyObject 
   
   if (!PyArg_ParseTuple(args,(char *)":guid_malloc")) SWIG_fail;
   result = (GUID *)guid_malloc();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__GUID, 0 |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -16574,7 +15594,7 @@ SWIGINTERN PyObject *_wrap_guid_free(PyObject *SWIGUNUSEDPARM(self), PyObject *a
   PyObject * obj0 = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:guid_free",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__GUID, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "guid_free" "', argument " "1"" of type '" "GUID *""'"); 
   }
@@ -16596,13 +15616,13 @@ SWIGINTERN PyObject *_wrap_guid_copy(PyObject *SWIGUNUSEDPARM(self), PyObject *a
   GUID *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:guid_copy",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__GUID, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "guid_copy" "', argument " "1"" of type '" "GUID const *""'"); 
   }
   arg1 = (GUID *)(argp1);
-  result = (GUID *)guid_copy((union _GUID const *)arg1);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__GUID, 0 |  0 );
+  result = (GUID *)guid_copy((union GNC_INTERNAL_GUID const *)arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -16618,12 +15638,12 @@ SWIGINTERN PyObject *_wrap_guid_to_string(PyObject *SWIGUNUSEDPARM(self), PyObje
   gchar *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:guid_to_string",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__GUID, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "guid_to_string" "', argument " "1"" of type '" "GUID const *""'"); 
   }
   arg1 = (GUID *)(argp1);
-  result = (gchar *)guid_to_string((union _GUID const *)arg1);
+  result = (gchar *)guid_to_string((union GNC_INTERNAL_GUID const *)arg1);
   {
     resultobj = PyString_FromString(result);
   }
@@ -16644,7 +15664,7 @@ SWIGINTERN PyObject *_wrap_guid_to_string_buff(PyObject *SWIGUNUSEDPARM(self), P
   gchar *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:guid_to_string_buff",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__GUID, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "guid_to_string_buff" "', argument " "1"" of type '" "GUID const *""'"); 
   }
@@ -16652,7 +15672,7 @@ SWIGINTERN PyObject *_wrap_guid_to_string_buff(PyObject *SWIGUNUSEDPARM(self), P
   {
     arg2 = (gchar *)PyString_AsString(obj1);
   }
-  result = (gchar *)guid_to_string_buff((union _GUID const *)arg1,arg2);
+  result = (gchar *)guid_to_string_buff((union GNC_INTERNAL_GUID const *)arg1,arg2);
   {
     resultobj = PyString_FromString(result);
   }
@@ -16676,7 +15696,7 @@ SWIGINTERN PyObject *_wrap_string_to_guid(PyObject *SWIGUNUSEDPARM(self), PyObje
   {
     arg1 = (gchar const *)PyString_AsString(obj0);
   }
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p__GUID, 0 |  0 );
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "string_to_guid" "', argument " "2"" of type '" "GUID *""'"); 
   }
@@ -16721,17 +15741,17 @@ SWIGINTERN PyObject *_wrap_guid_equal(PyObject *SWIGUNUSEDPARM(self), PyObject *
   gboolean result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:guid_equal",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__GUID, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "guid_equal" "', argument " "1"" of type '" "GUID const *""'"); 
   }
   arg1 = (GUID *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p__GUID, 0 |  0 );
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "guid_equal" "', argument " "2"" of type '" "GUID const *""'"); 
   }
   arg2 = (GUID *)(argp2);
-  result = guid_equal((union _GUID const *)arg1,(union _GUID const *)arg2);
+  result = guid_equal((union GNC_INTERNAL_GUID const *)arg1,(union GNC_INTERNAL_GUID const *)arg2);
   {
     if (result == TRUE)
     {
@@ -16771,17 +15791,17 @@ SWIGINTERN PyObject *_wrap_guid_compare(PyObject *SWIGUNUSEDPARM(self), PyObject
   gint result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:guid_compare",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__GUID, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "guid_compare" "', argument " "1"" of type '" "GUID const *""'"); 
   }
   arg1 = (GUID *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p__GUID, 0 |  0 );
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "guid_compare" "', argument " "2"" of type '" "GUID const *""'"); 
   }
   arg2 = (GUID *)(argp2);
-  result = (gint)guid_compare((union _GUID const *)arg1,(union _GUID const *)arg2);
+  result = (gint)guid_compare((union GNC_INTERNAL_GUID const *)arg1,(union GNC_INTERNAL_GUID const *)arg2);
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
@@ -19127,30 +18147,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_gnc_commodity_get_mark(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  gnc_commodity *arg1 = (gnc_commodity *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  gint16 result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:gnc_commodity_get_mark",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_gnc_commodity, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_commodity_get_mark" "', argument " "1"" of type '" "gnc_commodity const *""'"); 
-  }
-  arg1 = (gnc_commodity *)(argp1);
-  result = gnc_commodity_get_mark((gnc_commodity const *)arg1);
-  {
-    resultobj = PyInt_FromLong(result);
-  }
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_gnc_commodity_get_quote_flag(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   gnc_commodity *arg1 = (gnc_commodity *) 0 ;
@@ -20133,7 +19129,7 @@ SWIGINTERN PyObject *_wrap_gnc_commodity_find_commodity_by_guid(PyObject *SWIGUN
   gnc_commodity *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:gnc_commodity_find_commodity_by_guid",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__GUID, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_commodity_find_commodity_by_guid" "', argument " "1"" of type '" "GUID const *""'"); 
   }
@@ -20143,7 +19139,7 @@ SWIGINTERN PyObject *_wrap_gnc_commodity_find_commodity_by_guid(PyObject *SWIGUN
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gnc_commodity_find_commodity_by_guid" "', argument " "2"" of type '" "QofBook *""'"); 
   }
   arg2 = (QofBook *)(argp2);
-  result = (gnc_commodity *)gnc_commodity_find_commodity_by_guid((union _GUID const *)arg1,arg2);
+  result = (gnc_commodity *)gnc_commodity_find_commodity_by_guid((union GNC_INTERNAL_GUID const *)arg1,arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_gnc_commodity, 0 |  0 );
   return resultobj;
 fail:
@@ -20164,7 +19160,7 @@ SWIGINTERN PyObject *_wrap_gnc_commodity_find_namespace_by_guid(PyObject *SWIGUN
   gnc_commodity_namespace *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:gnc_commodity_find_namespace_by_guid",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__GUID, 0 |  0 );
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_commodity_find_namespace_by_guid" "', argument " "1"" of type '" "GUID const *""'"); 
   }
@@ -20174,7 +19170,7 @@ SWIGINTERN PyObject *_wrap_gnc_commodity_find_namespace_by_guid(PyObject *SWIGUN
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gnc_commodity_find_namespace_by_guid" "', argument " "2"" of type '" "QofBook *""'"); 
   }
   arg2 = (QofBook *)(argp2);
-  result = (gnc_commodity_namespace *)gnc_commodity_find_namespace_by_guid((union _GUID const *)arg1,arg2);
+  result = (gnc_commodity_namespace *)gnc_commodity_find_namespace_by_guid((union GNC_INTERNAL_GUID const *)arg1,arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_gnc_commodity_namespace, 0 |  0 );
   return resultobj;
 fail:
@@ -20780,32 +19776,6 @@ SWIGINTERN PyObject *_wrap_gnc_commodity_table_foreach_commodity(PyObject *SWIGU
       return NULL;        
     }
   }
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_gnc_commodity_set_mark(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  gnc_commodity *arg1 = (gnc_commodity *) 0 ;
-  gint16 arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:gnc_commodity_set_mark",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_gnc_commodity, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_commodity_set_mark" "', argument " "1"" of type '" "gnc_commodity *""'"); 
-  }
-  arg1 = (gnc_commodity *)(argp1);
-  {
-    arg2 = (gint16)PyInt_AsLong(obj1);
-  }
-  gnc_commodity_set_mark(arg1,arg2);
-  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -21901,6 +20871,37 @@ SWIGINTERN PyObject *_wrap_gncCustomerRemoveJob(PyObject *SWIGUNUSEDPARM(self), 
   arg2 = (GncJob *)(argp2);
   gncCustomerRemoveJob(arg1,arg2);
   resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gncCustomerLookup(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  QofBook *arg1 = (QofBook *) 0 ;
+  GUID *arg2 = (GUID *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  GncCustomer *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:gncCustomerLookup",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_QofBook, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncCustomerLookup" "', argument " "1"" of type '" "QofBook const *""'"); 
+  }
+  arg1 = (QofBook *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gncCustomerLookup" "', argument " "2"" of type '" "GUID const *""'"); 
+  }
+  arg2 = (GUID *)(argp2);
+  result = (GncCustomer *)gncCustomerLookup((QofBook const *)arg1,(union GNC_INTERNAL_GUID const *)arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__gncCustomer, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -23083,6 +22084,37 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_gncEmployeeLookup(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  QofBook *arg1 = (QofBook *) 0 ;
+  GUID *arg2 = (GUID *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  GncEmployee *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:gncEmployeeLookup",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_QofBook, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncEmployeeLookup" "', argument " "1"" of type '" "QofBook const *""'"); 
+  }
+  arg1 = (QofBook *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gncEmployeeLookup" "', argument " "2"" of type '" "GUID const *""'"); 
+  }
+  arg2 = (GUID *)(argp2);
+  result = (GncEmployee *)gncEmployeeLookup((QofBook const *)arg1,(union GNC_INTERNAL_GUID const *)arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__gncEmployee, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_gncEmployeeIsDirty(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GncEmployee *arg1 = (GncEmployee *) 0 ;
@@ -23964,6 +22996,37 @@ SWIGINTERN PyObject *_wrap_gncVendorCompare(PyObject *SWIGUNUSEDPARM(self), PyOb
   arg2 = (GncVendor *)(argp2);
   result = (int)gncVendorCompare((struct _gncVendor const *)arg1,(struct _gncVendor const *)arg2);
   resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gncVendorLookup(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  QofBook *arg1 = (QofBook *) 0 ;
+  GUID *arg2 = (GUID *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  GncVendor *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:gncVendorLookup",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_QofBook, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncVendorLookup" "', argument " "1"" of type '" "QofBook const *""'"); 
+  }
+  arg1 = (QofBook *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gncVendorLookup" "', argument " "2"" of type '" "GUID const *""'"); 
+  }
+  arg2 = (GUID *)(argp2);
+  result = (GncVendor *)gncVendorLookup((QofBook const *)arg1,(union GNC_INTERNAL_GUID const *)arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__gncVendor, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -24993,6 +24056,37 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_gncBillTermLookup(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  QofBook *arg1 = (QofBook *) 0 ;
+  GUID *arg2 = (GUID *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  GncBillTerm *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:gncBillTermLookup",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_QofBook, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncBillTermLookup" "', argument " "1"" of type '" "QofBook const *""'"); 
+  }
+  arg1 = (QofBook *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_GNC_INTERNAL_GUID, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gncBillTermLookup" "', argument " "2"" of type '" "GUID const *""'"); 
+  }
+  arg2 = (GUID *)(argp2);
+  result = (GncBillTerm *)gncBillTermLookup((QofBook const *)arg1,(union GNC_INTERNAL_GUID const *)arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__gncBillTerm, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_gncBillTermLookupByName(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   QofBook *arg1 = (QofBook *) 0 ;
@@ -25538,6 +24632,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"xaccAccountSetName", _wrap_xaccAccountSetName, METH_VARARGS, NULL},
 	 { (char *)"xaccAccountSetCode", _wrap_xaccAccountSetCode, METH_VARARGS, NULL},
 	 { (char *)"xaccAccountSetDescription", _wrap_xaccAccountSetDescription, METH_VARARGS, NULL},
+	 { (char *)"xaccAccountSetColor", _wrap_xaccAccountSetColor, METH_VARARGS, NULL},
 	 { (char *)"xaccAccountSetNotes", _wrap_xaccAccountSetNotes, METH_VARARGS, NULL},
 	 { (char *)"xaccAccountSetLastNum", _wrap_xaccAccountSetLastNum, METH_VARARGS, NULL},
 	 { (char *)"gnc_account_set_policy", _wrap_gnc_account_set_policy, METH_VARARGS, NULL},
@@ -25554,6 +24649,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"xaccAccountGetName", _wrap_xaccAccountGetName, METH_VARARGS, NULL},
 	 { (char *)"xaccAccountGetCode", _wrap_xaccAccountGetCode, METH_VARARGS, NULL},
 	 { (char *)"xaccAccountGetDescription", _wrap_xaccAccountGetDescription, METH_VARARGS, NULL},
+	 { (char *)"xaccAccountGetColor", _wrap_xaccAccountGetColor, METH_VARARGS, NULL},
 	 { (char *)"xaccAccountGetNotes", _wrap_xaccAccountGetNotes, METH_VARARGS, NULL},
 	 { (char *)"xaccAccountGetLastNum", _wrap_xaccAccountGetLastNum, METH_VARARGS, NULL},
 	 { (char *)"gnc_account_get_policy", _wrap_gnc_account_get_policy, METH_VARARGS, NULL},
@@ -25737,6 +24833,11 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"xaccTransGetVoidStatus", _wrap_xaccTransGetVoidStatus, METH_VARARGS, NULL},
 	 { (char *)"xaccTransGetVoidReason", _wrap_xaccTransGetVoidReason, METH_VARARGS, NULL},
 	 { (char *)"xaccTransGetVoidTime", _wrap_xaccTransGetVoidTime, METH_VARARGS, NULL},
+	 { (char *)"GncLotClass_parent_class_set", _wrap_GncLotClass_parent_class_set, METH_VARARGS, NULL},
+	 { (char *)"GncLotClass_parent_class_get", _wrap_GncLotClass_parent_class_get, METH_VARARGS, NULL},
+	 { (char *)"new_GncLotClass", _wrap_new_GncLotClass, METH_VARARGS, NULL},
+	 { (char *)"delete_GncLotClass", _wrap_delete_GncLotClass, METH_VARARGS, NULL},
+	 { (char *)"GncLotClass_swigregister", GncLotClass_swigregister, METH_VARARGS, NULL},
 	 { (char *)"gnc_lot_get_type", _wrap_gnc_lot_get_type, METH_VARARGS, NULL},
 	 { (char *)"gnc_lot_new", _wrap_gnc_lot_new, METH_VARARGS, NULL},
 	 { (char *)"gnc_lot_destroy", _wrap_gnc_lot_destroy, METH_VARARGS, NULL},
@@ -25749,15 +24850,19 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gnc_lot_get_split_list", _wrap_gnc_lot_get_split_list, METH_VARARGS, NULL},
 	 { (char *)"gnc_lot_count_splits", _wrap_gnc_lot_count_splits, METH_VARARGS, NULL},
 	 { (char *)"gnc_lot_get_account", _wrap_gnc_lot_get_account, METH_VARARGS, NULL},
+	 { (char *)"gnc_lot_set_account", _wrap_gnc_lot_set_account, METH_VARARGS, NULL},
 	 { (char *)"gnc_lot_get_balance", _wrap_gnc_lot_get_balance, METH_VARARGS, NULL},
 	 { (char *)"gnc_lot_get_balance_before", _wrap_gnc_lot_get_balance_before, METH_VARARGS, NULL},
 	 { (char *)"gnc_lot_is_closed", _wrap_gnc_lot_is_closed, METH_VARARGS, NULL},
 	 { (char *)"gnc_lot_get_earliest_split", _wrap_gnc_lot_get_earliest_split, METH_VARARGS, NULL},
 	 { (char *)"gnc_lot_get_latest_split", _wrap_gnc_lot_get_latest_split, METH_VARARGS, NULL},
+	 { (char *)"gnc_lot_set_closed_unknown", _wrap_gnc_lot_set_closed_unknown, METH_VARARGS, NULL},
 	 { (char *)"gnc_lot_get_title", _wrap_gnc_lot_get_title, METH_VARARGS, NULL},
 	 { (char *)"gnc_lot_get_notes", _wrap_gnc_lot_get_notes, METH_VARARGS, NULL},
 	 { (char *)"gnc_lot_set_title", _wrap_gnc_lot_set_title, METH_VARARGS, NULL},
 	 { (char *)"gnc_lot_set_notes", _wrap_gnc_lot_set_notes, METH_VARARGS, NULL},
+	 { (char *)"gnc_lot_get_marker", _wrap_gnc_lot_get_marker, METH_VARARGS, NULL},
+	 { (char *)"gnc_lot_set_marker", _wrap_gnc_lot_set_marker, METH_VARARGS, NULL},
 	 { (char *)"gnc_lot_get_slots", _wrap_gnc_lot_get_slots, METH_VARARGS, NULL},
 	 { (char *)"gnc_lot_make_default", _wrap_gnc_lot_make_default, METH_VARARGS, NULL},
 	 { (char *)"qof_backend_run_begin", _wrap_qof_backend_run_begin, METH_VARARGS, NULL},
@@ -25786,12 +24891,11 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"qof_backend_load_config", _wrap_qof_backend_load_config, METH_VARARGS, NULL},
 	 { (char *)"qof_backend_get_config", _wrap_qof_backend_get_config, METH_VARARGS, NULL},
 	 { (char *)"qof_load_backend_library", _wrap_qof_load_backend_library, METH_VARARGS, NULL},
+	 { (char *)"qof_finalize_backend_libraries", _wrap_qof_finalize_backend_libraries, METH_VARARGS, NULL},
 	 { (char *)"qof_book_get_backend", _wrap_qof_book_get_backend, METH_VARARGS, NULL},
 	 { (char *)"qof_book_set_backend", _wrap_qof_book_set_backend, METH_VARARGS, NULL},
 	 { (char *)"qof_session_new", _wrap_qof_session_new, METH_VARARGS, NULL},
 	 { (char *)"qof_session_destroy", _wrap_qof_session_destroy, METH_VARARGS, NULL},
-	 { (char *)"qof_session_get_current_session", _wrap_qof_session_get_current_session, METH_VARARGS, NULL},
-	 { (char *)"qof_session_set_current_session", _wrap_qof_session_set_current_session, METH_VARARGS, NULL},
 	 { (char *)"qof_session_swap_data", _wrap_qof_session_swap_data, METH_VARARGS, NULL},
 	 { (char *)"qof_session_begin", _wrap_qof_session_begin, METH_VARARGS, NULL},
 	 { (char *)"qof_session_load", _wrap_qof_session_load, METH_VARARGS, NULL},
@@ -25818,57 +24922,9 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"qof_session_export", _wrap_qof_session_export, METH_VARARGS, NULL},
 	 { (char *)"qof_backend_get_registered_access_method_list", _wrap_qof_backend_get_registered_access_method_list, METH_VARARGS, NULL},
 	 { (char *)"qof_session_ensure_all_data_loaded", _wrap_qof_session_ensure_all_data_loaded, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_inst_set", _wrap__QofBook_inst_set, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_inst_get", _wrap__QofBook_inst_get, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_dirty_time_set", _wrap__QofBook_dirty_time_set, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_dirty_time_get", _wrap__QofBook_dirty_time_get, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_dirty_cb_set", _wrap__QofBook_dirty_cb_set, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_dirty_cb_get", _wrap__QofBook_dirty_cb_get, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_dirty_data_set", _wrap__QofBook_dirty_data_set, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_dirty_data_get", _wrap__QofBook_dirty_data_get, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_hash_of_collections_set", _wrap__QofBook_hash_of_collections_set, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_hash_of_collections_get", _wrap__QofBook_hash_of_collections_get, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_data_tables_set", _wrap__QofBook_data_tables_set, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_data_tables_get", _wrap__QofBook_data_tables_get, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_data_table_finalizers_set", _wrap__QofBook_data_table_finalizers_set, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_data_table_finalizers_get", _wrap__QofBook_data_table_finalizers_get, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_book_open_set", _wrap__QofBook_book_open_set, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_book_open_get", _wrap__QofBook_book_open_get, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_shutting_down_set", _wrap__QofBook_shutting_down_set, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_shutting_down_get", _wrap__QofBook_shutting_down_get, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_version_set", _wrap__QofBook_version_set, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_version_get", _wrap__QofBook_version_get, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_backend_set", _wrap__QofBook_backend_set, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_backend_get", _wrap__QofBook_backend_get, METH_VARARGS, NULL},
-	 { (char *)"new__QofBook", _wrap_new__QofBook, METH_VARARGS, NULL},
-	 { (char *)"delete__QofBook", _wrap_delete__QofBook, METH_VARARGS, NULL},
-	 { (char *)"_QofBook_swigregister", _QofBook_swigregister, METH_VARARGS, NULL},
-	 { (char *)"_QofBookClass_parent_class_set", _wrap__QofBookClass_parent_class_set, METH_VARARGS, NULL},
-	 { (char *)"_QofBookClass_parent_class_get", _wrap__QofBookClass_parent_class_get, METH_VARARGS, NULL},
-	 { (char *)"new__QofBookClass", _wrap_new__QofBookClass, METH_VARARGS, NULL},
-	 { (char *)"delete__QofBookClass", _wrap_delete__QofBookClass, METH_VARARGS, NULL},
-	 { (char *)"_QofBookClass_swigregister", _QofBookClass_swigregister, METH_VARARGS, NULL},
-	 { (char *)"qof_book_get_type", _wrap_qof_book_get_type, METH_VARARGS, NULL},
-	 { (char *)"qof_book_register", _wrap_qof_book_register, METH_VARARGS, NULL},
-	 { (char *)"qof_book_new", _wrap_qof_book_new, METH_VARARGS, NULL},
-	 { (char *)"qof_book_destroy", _wrap_qof_book_destroy, METH_VARARGS, NULL},
-	 { (char *)"qof_book_mark_closed", _wrap_qof_book_mark_closed, METH_VARARGS, NULL},
-	 { (char *)"qof_book_get_collection", _wrap_qof_book_get_collection, METH_VARARGS, NULL},
-	 { (char *)"qof_book_foreach_collection", _wrap_qof_book_foreach_collection, METH_VARARGS, NULL},
-	 { (char *)"qof_book_set_data", _wrap_qof_book_set_data, METH_VARARGS, NULL},
-	 { (char *)"qof_book_set_data_fin", _wrap_qof_book_set_data_fin, METH_VARARGS, NULL},
-	 { (char *)"qof_book_get_data", _wrap_qof_book_get_data, METH_VARARGS, NULL},
 	 { (char *)"qof_book_use_trading_accounts", _wrap_qof_book_use_trading_accounts, METH_VARARGS, NULL},
 	 { (char *)"qof_book_shutting_down", _wrap_qof_book_shutting_down, METH_VARARGS, NULL},
 	 { (char *)"qof_book_not_saved", _wrap_qof_book_not_saved, METH_VARARGS, NULL},
-	 { (char *)"qof_book_mark_saved", _wrap_qof_book_mark_saved, METH_VARARGS, NULL},
-	 { (char *)"qof_book_mark_dirty", _wrap_qof_book_mark_dirty, METH_VARARGS, NULL},
-	 { (char *)"qof_book_print_dirty", _wrap_qof_book_print_dirty, METH_VARARGS, NULL},
-	 { (char *)"qof_book_get_dirty_time", _wrap_qof_book_get_dirty_time, METH_VARARGS, NULL},
-	 { (char *)"qof_book_set_dirty_cb", _wrap_qof_book_set_dirty_cb, METH_VARARGS, NULL},
-	 { (char *)"qof_book_kvp_changed", _wrap_qof_book_kvp_changed, METH_VARARGS, NULL},
-	 { (char *)"qof_book_equal", _wrap_qof_book_equal, METH_VARARGS, NULL},
-	 { (char *)"qof_book_get_counter", _wrap_qof_book_get_counter, METH_VARARGS, NULL},
 	 { (char *)"qof_get_alt_dirty_mode", _wrap_qof_get_alt_dirty_mode, METH_VARARGS, NULL},
 	 { (char *)"qof_set_alt_dirty_mode", _wrap_qof_set_alt_dirty_mode, METH_VARARGS, NULL},
 	 { (char *)"qof_collection_new", _wrap_qof_collection_new, METH_VARARGS, NULL},
@@ -25979,7 +25035,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gnc_commodity_get_cusip", _wrap_gnc_commodity_get_cusip, METH_VARARGS, NULL},
 	 { (char *)"gnc_commodity_get_unique_name", _wrap_gnc_commodity_get_unique_name, METH_VARARGS, NULL},
 	 { (char *)"gnc_commodity_get_fraction", _wrap_gnc_commodity_get_fraction, METH_VARARGS, NULL},
-	 { (char *)"gnc_commodity_get_mark", _wrap_gnc_commodity_get_mark, METH_VARARGS, NULL},
 	 { (char *)"gnc_commodity_get_quote_flag", _wrap_gnc_commodity_get_quote_flag, METH_VARARGS, NULL},
 	 { (char *)"gnc_commodity_get_quote_source", _wrap_gnc_commodity_get_quote_source, METH_VARARGS, NULL},
 	 { (char *)"gnc_commodity_get_default_quote_source", _wrap_gnc_commodity_get_default_quote_source, METH_VARARGS, NULL},
@@ -26026,7 +25081,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gnc_commodity_table_get_commodities", _wrap_gnc_commodity_table_get_commodities, METH_VARARGS, NULL},
 	 { (char *)"gnc_commodity_table_get_quotable_commodities", _wrap_gnc_commodity_table_get_quotable_commodities, METH_VARARGS, NULL},
 	 { (char *)"gnc_commodity_table_foreach_commodity", _wrap_gnc_commodity_table_foreach_commodity, METH_VARARGS, NULL},
-	 { (char *)"gnc_commodity_set_mark", _wrap_gnc_commodity_set_mark, METH_VARARGS, NULL},
 	 { (char *)"gnc_commodity_table_new", _wrap_gnc_commodity_table_new, METH_VARARGS, NULL},
 	 { (char *)"gnc_commodity_table_destroy", _wrap_gnc_commodity_table_destroy, METH_VARARGS, NULL},
 	 { (char *)"gnc_commodity_obtain_twin", _wrap_gnc_commodity_obtain_twin, METH_VARARGS, NULL},
@@ -26065,6 +25119,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gncCustomerSetTaxTable", _wrap_gncCustomerSetTaxTable, METH_VARARGS, NULL},
 	 { (char *)"gncCustomerAddJob", _wrap_gncCustomerAddJob, METH_VARARGS, NULL},
 	 { (char *)"gncCustomerRemoveJob", _wrap_gncCustomerRemoveJob, METH_VARARGS, NULL},
+	 { (char *)"gncCustomerLookup", _wrap_gncCustomerLookup, METH_VARARGS, NULL},
 	 { (char *)"gncCustomerGetID", _wrap_gncCustomerGetID, METH_VARARGS, NULL},
 	 { (char *)"gncCustomerGetName", _wrap_gncCustomerGetName, METH_VARARGS, NULL},
 	 { (char *)"gncCustomerGetAddr", _wrap_gncCustomerGetAddr, METH_VARARGS, NULL},
@@ -26108,6 +25163,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gncEmployeeGetCurrency", _wrap_gncEmployeeGetCurrency, METH_VARARGS, NULL},
 	 { (char *)"gncEmployeeGetActive", _wrap_gncEmployeeGetActive, METH_VARARGS, NULL},
 	 { (char *)"gncEmployeeGetCCard", _wrap_gncEmployeeGetCCard, METH_VARARGS, NULL},
+	 { (char *)"gncEmployeeLookup", _wrap_gncEmployeeLookup, METH_VARARGS, NULL},
 	 { (char *)"gncEmployeeIsDirty", _wrap_gncEmployeeIsDirty, METH_VARARGS, NULL},
 	 { (char *)"gnc_vendor_get_type", _wrap_gnc_vendor_get_type, METH_VARARGS, NULL},
 	 { (char *)"gncVendorCreate", _wrap_gncVendorCreate, METH_VARARGS, NULL},
@@ -26138,6 +25194,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gncVendorGetJoblist", _wrap_gncVendorGetJoblist, METH_VARARGS, NULL},
 	 { (char *)"gncVendorIsDirty", _wrap_gncVendorIsDirty, METH_VARARGS, NULL},
 	 { (char *)"gncVendorCompare", _wrap_gncVendorCompare, METH_VARARGS, NULL},
+	 { (char *)"gncVendorLookup", _wrap_gncVendorLookup, METH_VARARGS, NULL},
 	 { (char *)"gnc_address_get_type", _wrap_gnc_address_get_type, METH_VARARGS, NULL},
 	 { (char *)"gncAddressCreate", _wrap_gncAddressCreate, METH_VARARGS, NULL},
 	 { (char *)"gncAddressDestroy", _wrap_gncAddressDestroy, METH_VARARGS, NULL},
@@ -26177,6 +25234,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gncBillTermSetDiscountDays", _wrap_gncBillTermSetDiscountDays, METH_VARARGS, NULL},
 	 { (char *)"gncBillTermSetDiscount", _wrap_gncBillTermSetDiscount, METH_VARARGS, NULL},
 	 { (char *)"gncBillTermSetCutoff", _wrap_gncBillTermSetCutoff, METH_VARARGS, NULL},
+	 { (char *)"gncBillTermLookup", _wrap_gncBillTermLookup, METH_VARARGS, NULL},
 	 { (char *)"gncBillTermLookupByName", _wrap_gncBillTermLookupByName, METH_VARARGS, NULL},
 	 { (char *)"gncBillTermGetTerms", _wrap_gncBillTermGetTerms, METH_VARARGS, NULL},
 	 { (char *)"gncBillTermGetName", _wrap_gncBillTermGetName, METH_VARARGS, NULL},
@@ -26204,16 +25262,18 @@ static swig_type_info _swigt__p_AccountClass = {"_p_AccountClass", "AccountClass
 static swig_type_info _swigt__p_GCompareFunc = {"_p_GCompareFunc", "GCompareFunc *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GFunc = {"_p_GFunc", "GFunc *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GHashTable = {"_p_GHashTable", "GHashTable *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_GList = {"_p_GList", "GList *|CommodityList *|MonetaryList *|QofBookList *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_GList = {"_p_GList", "GList *|CommodityList *|MonetaryList *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GNCAccountType = {"_p_GNCAccountType", "enum GNCAccountType *|GNCAccountType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GNCLot = {"_p_GNCLot", "GNCLot *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GNCNumericErrorCode = {"_p_GNCNumericErrorCode", "enum GNCNumericErrorCode *|GNCNumericErrorCode *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GNCPlaceholderType = {"_p_GNCPlaceholderType", "enum GNCPlaceholderType *|GNCPlaceholderType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GNCPolicy = {"_p_GNCPolicy", "GNCPolicy *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_GNC_INTERNAL_GUID = {"_p_GNC_INTERNAL_GUID", "GUID *|union GNC_INTERNAL_GUID *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GType = {"_p_GType", "GType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GValue = {"_p_GValue", "GValue *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GncBillTermType = {"_p_GncBillTermType", "enum GncBillTermType *|GncBillTermType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GncJob = {"_p_GncJob", "GncJob *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_GncLotClass = {"_p_GncLotClass", "GncLotClass *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GncTaxIncluded = {"_p_GncTaxIncluded", "GncTaxIncluded *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GncTaxTable = {"_p_GncTaxTable", "GncTaxTable *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_KvpFrame = {"_p_KvpFrame", "KvpFrame *", 0, 0, (void*)0, 0};
@@ -26232,12 +25292,8 @@ static swig_type_info _swigt__p_SplitList = {"_p_SplitList", "SplitList *", 0, 0
 static swig_type_info _swigt__p_Timespec = {"_p_Timespec", "Timespec *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_Transaction = {"_p_Transaction", "Transaction *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_TransactionCallback = {"_p_TransactionCallback", "TransactionCallback *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__GUID = {"_p__GUID", "GUID *|union _GUID *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__GncCommodityClass = {"_p__GncCommodityClass", "struct _GncCommodityClass *|gnc_commodityClass *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__GncCommodityNamespaceClass = {"_p__GncCommodityNamespaceClass", "struct _GncCommodityNamespaceClass *|gnc_commodity_namespaceClass *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__GncLotClass = {"_p__GncLotClass", "struct _GncLotClass *|GNCLotClass *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__QofBook = {"_p__QofBook", "struct _QofBook *|_QofBook *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__QofBookClass = {"_p__QofBookClass", "struct _QofBookClass *|QofBookClass *|_QofBookClass *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__QofSession = {"_p__QofSession", "struct _QofSession *|QofSession *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__SplitClass = {"_p__SplitClass", "struct _SplitClass *|SplitClass *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__TransactionClass = {"_p__TransactionClass", "struct _TransactionClass *|TransactionClass *", 0, 0, (void*)0, 0};
@@ -26259,19 +25315,14 @@ static swig_type_info _swigt__p_f_p_Account_p_void__p_void = {"_p_f_p_Account_p_
 static swig_type_info _swigt__p_f_p_Account_p_void__void = {"_p_f_p_Account_p_void__void", "AccountCb|void (*)(Account *,void *)", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_f_p_GNCLot_p_void__gboolean = {"_p_f_p_GNCLot_p_void__gboolean", "gboolean (*)(GNCLot *,void *)|gboolean (*)(GNCLot *,gpointer)", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_f_p_GNCLot_p_void__p_void = {"_p_f_p_GNCLot_p_void__p_void", "void *(*)(GNCLot *,void *)|gpointer (*)(GNCLot *,gpointer)", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_f_p_QofBook_gboolean_p_void__void = {"_p_f_p_QofBook_gboolean_p_void__void", "void (*)(QofBook *,gboolean,void *)|QofBookDirtyCB", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_f_p_QofBook_p_void_p_void__void = {"_p_f_p_QofBook_p_void_p_void__void", "QofBookFinalCB|void (*)(QofBook *,void *,void *)", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_f_p_QofInstance_p_void__void = {"_p_f_p_QofInstance_p_void__void", "QofInstanceForeachCB|void (*)(QofInstance *,void *)", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_f_p_gnc_commodity_p_void__gboolean = {"_p_f_p_gnc_commodity_p_void__gboolean", "gboolean (*)(gnc_commodity *,void *)|gboolean (*)(gnc_commodity *,gpointer)", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_f_p_q_const__char_double__void = {"_p_f_p_q_const__char_double__void", "QofPercentageFunc|void (*)(char const *,double)", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_f_p_struct_QofBackendOption_s_p_void__void = {"_p_f_p_struct_QofBackendOption_s_p_void__void", "void (*)(struct QofBackendOption_s *,void *)|QofBackendOptionCB", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_f_p_struct_QofCollection_s_p_void__void = {"_p_f_p_struct_QofCollection_s_p_void__void", "QofCollectionForeachCB|void (*)(struct QofCollection_s *,void *)", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_float = {"_p_float", "float *|gfloat *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_gboolean = {"_p_gboolean", "gboolean *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_gchar = {"_p_gchar", "gchar *|QofIdType", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_gconstpointer = {"_p_gconstpointer", "gconstpointer *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_gint16 = {"_p_gint16", "gint16 *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_gint32 = {"_p_gint32", "gint32 *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_gint64 = {"_p_gint64", "gint64 *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_gnc_commodity = {"_p_gnc_commodity", "gnc_commodity *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_gnc_commodity_namespace = {"_p_gnc_commodity_namespace", "gnc_commodity_namespace *", 0, 0, (void*)0, 0};
@@ -26296,10 +25347,12 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_GNCNumericErrorCode,
   &_swigt__p_GNCPlaceholderType,
   &_swigt__p_GNCPolicy,
+  &_swigt__p_GNC_INTERNAL_GUID,
   &_swigt__p_GType,
   &_swigt__p_GValue,
   &_swigt__p_GncBillTermType,
   &_swigt__p_GncJob,
+  &_swigt__p_GncLotClass,
   &_swigt__p_GncTaxIncluded,
   &_swigt__p_GncTaxTable,
   &_swigt__p_KvpFrame,
@@ -26318,12 +25371,8 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_Timespec,
   &_swigt__p_Transaction,
   &_swigt__p_TransactionCallback,
-  &_swigt__p__GUID,
   &_swigt__p__GncCommodityClass,
   &_swigt__p__GncCommodityNamespaceClass,
-  &_swigt__p__GncLotClass,
-  &_swigt__p__QofBook,
-  &_swigt__p__QofBookClass,
   &_swigt__p__QofSession,
   &_swigt__p__SplitClass,
   &_swigt__p__TransactionClass,
@@ -26345,19 +25394,14 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_f_p_Account_p_void__void,
   &_swigt__p_f_p_GNCLot_p_void__gboolean,
   &_swigt__p_f_p_GNCLot_p_void__p_void,
-  &_swigt__p_f_p_QofBook_gboolean_p_void__void,
-  &_swigt__p_f_p_QofBook_p_void_p_void__void,
   &_swigt__p_f_p_QofInstance_p_void__void,
   &_swigt__p_f_p_gnc_commodity_p_void__gboolean,
   &_swigt__p_f_p_q_const__char_double__void,
   &_swigt__p_f_p_struct_QofBackendOption_s_p_void__void,
-  &_swigt__p_f_p_struct_QofCollection_s_p_void__void,
   &_swigt__p_float,
   &_swigt__p_gboolean,
   &_swigt__p_gchar,
   &_swigt__p_gconstpointer,
-  &_swigt__p_gint16,
-  &_swigt__p_gint32,
   &_swigt__p_gint64,
   &_swigt__p_gnc_commodity,
   &_swigt__p_gnc_commodity_namespace,
@@ -26382,10 +25426,12 @@ static swig_cast_info _swigc__p_GNCLot[] = {  {&_swigt__p_GNCLot, 0, 0, 0},{0, 0
 static swig_cast_info _swigc__p_GNCNumericErrorCode[] = {  {&_swigt__p_GNCNumericErrorCode, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_GNCPlaceholderType[] = {  {&_swigt__p_GNCPlaceholderType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_GNCPolicy[] = {  {&_swigt__p_GNCPolicy, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_GNC_INTERNAL_GUID[] = {  {&_swigt__p_GNC_INTERNAL_GUID, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_GType[] = {  {&_swigt__p_GType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_GValue[] = {  {&_swigt__p_GValue, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_GncBillTermType[] = {  {&_swigt__p_GncBillTermType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_GncJob[] = {  {&_swigt__p_GncJob, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_GncLotClass[] = {  {&_swigt__p_GncLotClass, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_GncTaxIncluded[] = {  {&_swigt__p_GncTaxIncluded, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_GncTaxTable[] = {  {&_swigt__p_GncTaxTable, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_KvpFrame[] = {  {&_swigt__p_KvpFrame, 0, 0, 0},{0, 0, 0, 0}};
@@ -26404,12 +25450,8 @@ static swig_cast_info _swigc__p_SplitList[] = {  {&_swigt__p_SplitList, 0, 0, 0}
 static swig_cast_info _swigc__p_Timespec[] = {  {&_swigt__p_Timespec, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_Transaction[] = {  {&_swigt__p_Transaction, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_TransactionCallback[] = {  {&_swigt__p_TransactionCallback, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__GUID[] = {  {&_swigt__p__GUID, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__GncCommodityClass[] = {  {&_swigt__p__GncCommodityClass, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__GncCommodityNamespaceClass[] = {  {&_swigt__p__GncCommodityNamespaceClass, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__GncLotClass[] = {  {&_swigt__p__GncLotClass, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__QofBook[] = {  {&_swigt__p__QofBook, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__QofBookClass[] = {  {&_swigt__p__QofBookClass, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__QofSession[] = {  {&_swigt__p__QofSession, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__SplitClass[] = {  {&_swigt__p__SplitClass, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__TransactionClass[] = {  {&_swigt__p__TransactionClass, 0, 0, 0},{0, 0, 0, 0}};
@@ -26431,19 +25473,14 @@ static swig_cast_info _swigc__p_f_p_Account_p_void__p_void[] = {  {&_swigt__p_f_
 static swig_cast_info _swigc__p_f_p_Account_p_void__void[] = {  {&_swigt__p_f_p_Account_p_void__void, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_f_p_GNCLot_p_void__gboolean[] = {  {&_swigt__p_f_p_GNCLot_p_void__gboolean, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_f_p_GNCLot_p_void__p_void[] = {  {&_swigt__p_f_p_GNCLot_p_void__p_void, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_f_p_QofBook_gboolean_p_void__void[] = {  {&_swigt__p_f_p_QofBook_gboolean_p_void__void, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_f_p_QofBook_p_void_p_void__void[] = {  {&_swigt__p_f_p_QofBook_p_void_p_void__void, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_f_p_QofInstance_p_void__void[] = {  {&_swigt__p_f_p_QofInstance_p_void__void, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_f_p_gnc_commodity_p_void__gboolean[] = {  {&_swigt__p_f_p_gnc_commodity_p_void__gboolean, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_f_p_q_const__char_double__void[] = {  {&_swigt__p_f_p_q_const__char_double__void, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_f_p_struct_QofBackendOption_s_p_void__void[] = {  {&_swigt__p_f_p_struct_QofBackendOption_s_p_void__void, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_f_p_struct_QofCollection_s_p_void__void[] = {  {&_swigt__p_f_p_struct_QofCollection_s_p_void__void, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_float[] = {  {&_swigt__p_float, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_gboolean[] = {  {&_swigt__p_gboolean, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_gchar[] = {  {&_swigt__p_gchar, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_gconstpointer[] = {  {&_swigt__p_gconstpointer, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_gint16[] = {  {&_swigt__p_gint16, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_gint32[] = {  {&_swigt__p_gint32, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_gint64[] = {  {&_swigt__p_gint64, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_gnc_commodity[] = {  {&_swigt__p_gnc_commodity, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_gnc_commodity_namespace[] = {  {&_swigt__p_gnc_commodity_namespace, 0, 0, 0},{0, 0, 0, 0}};
@@ -26468,10 +25505,12 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_GNCNumericErrorCode,
   _swigc__p_GNCPlaceholderType,
   _swigc__p_GNCPolicy,
+  _swigc__p_GNC_INTERNAL_GUID,
   _swigc__p_GType,
   _swigc__p_GValue,
   _swigc__p_GncBillTermType,
   _swigc__p_GncJob,
+  _swigc__p_GncLotClass,
   _swigc__p_GncTaxIncluded,
   _swigc__p_GncTaxTable,
   _swigc__p_KvpFrame,
@@ -26490,12 +25529,8 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_Timespec,
   _swigc__p_Transaction,
   _swigc__p_TransactionCallback,
-  _swigc__p__GUID,
   _swigc__p__GncCommodityClass,
   _swigc__p__GncCommodityNamespaceClass,
-  _swigc__p__GncLotClass,
-  _swigc__p__QofBook,
-  _swigc__p__QofBookClass,
   _swigc__p__QofSession,
   _swigc__p__SplitClass,
   _swigc__p__TransactionClass,
@@ -26517,19 +25552,14 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_f_p_Account_p_void__void,
   _swigc__p_f_p_GNCLot_p_void__gboolean,
   _swigc__p_f_p_GNCLot_p_void__p_void,
-  _swigc__p_f_p_QofBook_gboolean_p_void__void,
-  _swigc__p_f_p_QofBook_p_void_p_void__void,
   _swigc__p_f_p_QofInstance_p_void__void,
   _swigc__p_f_p_gnc_commodity_p_void__gboolean,
   _swigc__p_f_p_q_const__char_double__void,
   _swigc__p_f_p_struct_QofBackendOption_s_p_void__void,
-  _swigc__p_f_p_struct_QofCollection_s_p_void__void,
   _swigc__p_float,
   _swigc__p_gboolean,
   _swigc__p_gchar,
   _swigc__p_gconstpointer,
-  _swigc__p_gint16,
-  _swigc__p_gint32,
   _swigc__p_gint64,
   _swigc__p_gnc_commodity,
   _swigc__p_gnc_commodity_namespace,
@@ -27125,6 +26155,7 @@ SWIGEXPORT void SWIG_init(void) {
   SWIG_Python_SetConstant(d, "ACCOUNT_NAME_",SWIG_FromCharPtr("name"));
   SWIG_Python_SetConstant(d, "ACCOUNT_CODE_",SWIG_FromCharPtr("code"));
   SWIG_Python_SetConstant(d, "ACCOUNT_DESCRIPTION_",SWIG_FromCharPtr("desc"));
+  SWIG_Python_SetConstant(d, "ACCOUNT_COLOR_",SWIG_FromCharPtr("color"));
   SWIG_Python_SetConstant(d, "ACCOUNT_NOTES_",SWIG_FromCharPtr("notes"));
   SWIG_Python_SetConstant(d, "ACCOUNT_BALANCE_",SWIG_FromCharPtr("balance"));
   SWIG_Python_SetConstant(d, "ACCOUNT_CLEARED_",SWIG_FromCharPtr("cleared"));
@@ -27213,7 +26244,7 @@ SWIGEXPORT void SWIG_init(void) {
   SWIG_Python_SetConstant(d, "ERR_RPC_FAILED",SWIG_From_int((int)(ERR_RPC_FAILED)));
   SWIG_Python_SetConstant(d, "ERR_RPC_NOT_ADDED",SWIG_From_int((int)(ERR_RPC_NOT_ADDED)));
   SWIG_Python_SetConstant(d, "QOF_MOD_SESSION",SWIG_FromCharPtr("qof.session"));
-  SWIG_Python_SetConstant(d, "QOF_STDOUT",SWIG_FromCharPtr("file:"));
+  SWIG_Python_SetConstant(d, "QOF_STDOUT",SWIG_FromCharPtr(">"));
   SWIG_Python_SetConstant(d, "QOF_ID_NULL",SWIG_FromCharPtr("null"));
   SWIG_Python_SetConstant(d, "QOF_ID_BOOK",SWIG_FromCharPtr("Book"));
   SWIG_Python_SetConstant(d, "QOF_ID_SESSION",SWIG_FromCharPtr("Session"));

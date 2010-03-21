@@ -24,7 +24,7 @@
    @addtogroup SchedXaction Scheduled/Periodic/Recurring Transactions
 
    Scheduled Transactions provide a framework for remembering
-   information about a transactions that are set to occur in the 
+   information about a transactions that are set to occur in the
    future, either once or periodically.
  @{ */
 /**
@@ -86,48 +86,49 @@ typedef struct _SchedXaction SchedXaction;
  **/
 struct _SchedXaction
 {
-  QofInstance     inst;
-  gchar           *name;
+    QofInstance     inst;
+    gchar           *name;
 
-  GList           *schedule;
-  
-  GDate           last_date;
-  
-  GDate           start_date;
-  /* if end_date is invalid, then no end. */
-  GDate           end_date;
+    GList           *schedule;
 
-  /* if num_occurances_total == 0, then no limit */
-  gint            num_occurances_total;
-  /* reminaing occurances are as-of the 'last_date'. */
-  gint            num_occurances_remain;
+    GDate           last_date;
 
-  /* the current instance-count of the SX. */
-  gint            instance_num;
-  
-  gboolean        enabled;
-  gboolean        autoCreateOption;
-  gboolean        autoCreateNotify;
-  gint            advanceCreateDays;
-  gint            advanceRemindDays;
- 
-  Account        *template_acct;
-  
-  /** The list of deferred SX instances.  This list is of temporalStateData
-   * instances.  */
-  GList /* <temporalStateData*> */ *deferredList;
+    GDate           start_date;
+    /* if end_date is invalid, then no end. */
+    GDate           end_date;
+
+    /* if num_occurances_total == 0, then no limit */
+    gint            num_occurances_total;
+    /* remaining occurrences are as-of the 'last_date'. */
+    gint            num_occurances_remain;
+
+    /* the current instance-count of the SX. */
+    gint            instance_num;
+
+    gboolean        enabled;
+    gboolean        autoCreateOption;
+    gboolean        autoCreateNotify;
+    gint            advanceCreateDays;
+    gint            advanceRemindDays;
+
+    Account        *template_acct;
+
+    /** The list of deferred SX instances.  This list is of temporalStateData
+     * instances.  */
+    GList /* <temporalStateData*> */ *deferredList;
 };
 
 struct _SchedXactionClass
 {
-  QofInstanceClass parent_class;
+    QofInstanceClass parent_class;
 };
 
 /** Just the variable temporal bits from the SX structure. */
-typedef struct _temporalStateData {
-  GDate last_date;
-  gint num_occur_rem;
-  gint num_inst;
+typedef struct _temporalStateData
+{
+    GDate last_date;
+    gint num_occur_rem;
+    gint num_inst;
 } temporalStateData;
 
 #define xaccSchedXactionSetGUID(X,G) qof_instance_set_guid(QOF_INSTANCE(X),(G))
@@ -148,7 +149,8 @@ void gnc_sx_begin_edit (SchedXaction *sx);
 void gnc_sx_commit_edit (SchedXaction *sx);
 
 /** @return GList<Recurrence*> **/
-/*@ dependent @*/ GList* gnc_sx_get_schedule(const SchedXaction *sx);
+/*@ dependent @*/
+GList* gnc_sx_get_schedule(const SchedXaction *sx);
 /** @param[in] schedule A GList<Recurrence*> **/
 void gnc_sx_set_schedule(SchedXaction *sx, /*@ null @*//*@ only @*/ GList *schedule);
 
@@ -176,12 +178,12 @@ void xaccSchedXactionSetLastOccurDate( SchedXaction *sx, GDate* newLastOccur );
 
 /**
  * Returns true if the scheduled transaction has a defined number of
- * occurances, false if not.
+ * occurrences, false if not.
 */
 gboolean xaccSchedXactionHasOccurDef( const SchedXaction *sx );
 gint xaccSchedXactionGetNumOccur( const SchedXaction *sx );
 /**
- * Set to '0' to turn off number-of-occurances definition.
+ * Set to '0' to turn off number-of-occurrences definition.
 */
 void xaccSchedXactionSetNumOccur( SchedXaction *sx, gint numNum );
 gint xaccSchedXactionGetRemOccur( const SchedXaction *sx );
@@ -243,10 +245,10 @@ void gnc_sx_destroy_temporal_state( void *stateData );
 void *gnc_sx_clone_temporal_state( void *stateData );
 /** @} */
 
-/** \brief Returns the next occurance of a scheduled transaction.
+/** \brief Returns the next occurrence of a scheduled transaction.
  *
- *   If the transaction hasn't occured, then it's based off the start date.
- * Otherwise, it's based off the last-occurance date.
+ *   If the transaction hasn't occurred, then it's based off the start date.
+ * Otherwise, it's based off the last-occurrence date.
  *
  * If state data is NULL, the current value of the SX is used for
  * computation.  Otherwise, the values in the state data are used.  This
@@ -314,12 +316,12 @@ gboolean SXRegister (void);
 #define xaccSchedXactionGetSlots(X) qof_instance_get_slots(QOF_INSTANCE(X))
 
 /** \deprecated to be replaced with 'dirty' kvp's */
-KvpValue *xaccSchedXactionGetSlot( const SchedXaction *sx, 
-				    const char *slot );
+KvpValue *xaccSchedXactionGetSlot( const SchedXaction *sx,
+                                   const char *slot );
 /** \deprecated to be replaced with 'dirty' kvp's */
-void xaccSchedXactionSetSlot( SchedXaction *sx, 
-			      const char *slot,
-			      const KvpValue *value );
+void xaccSchedXactionSetSlot( SchedXaction *sx,
+                              const char *slot,
+                              const KvpValue *value );
 
 
 #endif /* XACC_SCHEDXACTION_H */

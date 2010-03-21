@@ -3,6 +3,7 @@
 /* Includes the header in the wrapper code */
 #include <config.h>
 #include <option-util.h>
+#include <guile-mappings.h>
 #include <gnc-euro.h>
 #include <gnc-exp-parser.h>
 #include <gnc-ui-util.h>
@@ -91,13 +92,13 @@ void gnc_register_kvp_option_generator(QofIdType id_type, SCM generator);
 %typemap(in) GList * {
   SCM path_scm = $input;
   GList *path = NULL;
-  while (!SCM_NULLP (path_scm))
+  while (!scm_is_null (path_scm))
   {
     SCM key_scm = SCM_CAR (path_scm);
     char *key;
-    if (!SCM_STRINGP (key_scm))
+    if (!scm_is_string (key_scm))
       break;
-    key = g_strdup (SCM_STRING_CHARS (key_scm));
+    key = g_strdup (scm_to_locale_string (key_scm));
     path = g_list_prepend (path, key);
     path_scm = SCM_CDR (path_scm);
   }

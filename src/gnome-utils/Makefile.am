@@ -18,7 +18,7 @@ AM_CPPFLAGS = \
   ${GLADE_CFLAGS} \
   ${GTK_CFLAGS} \
   ${GNOME_CFLAGS} \
-  ${GNOME_PRINT_CFLAGS} \
+  ${GNOME_KEYRING_CFLAGS} \
   ${GUILE_INCS} \
   ${QOF_CFLAGS} \
   ${GOFFICE_CFLAGS} \
@@ -33,12 +33,14 @@ libgncmod_gnome_utils_la_SOURCES = \
   dialog-book-close.c \
   dialog-commodity.c \
   dialog-file-access.c \
+  dialog-object-references.c \
   dialog-options.c \
   dialog-preferences.c \
   dialog-query-list.c \
   dialog-reset-warnings.c \
   dialog-totd.c \
   dialog-transfer.c \
+  dialog-userpass.c \
   dialog-utils.c \
   druid-utils.c \
   druid-gconf-setup.c \
@@ -65,8 +67,11 @@ libgncmod_gnome_utils_la_SOURCES = \
   gnc-recurrence.c \
   gnc-general-select.c \
   gnc-gnome-utils.c \
+  gnc-gobject-utils.c \
+  gnc-gtk-utils.c \
   gnc-gui-query.c \
   gnc-icons.c \
+  gnc-keyring.c \
   gnc-main-window.c \
   gnc-menu-extensions.c \
   gnc-plugin-file-history.c \
@@ -82,7 +87,6 @@ libgncmod_gnome_utils_la_SOURCES = \
   gnc-tree-model.c \
   gnc-tree-model-account-types.c \
   gnc-tree-model-account.c \
-  gnc-tree-model-account-drag.c \
   gnc-tree-model-budget.c \
   gnc-tree-model-commodity.c \
   gnc-tree-model-price.c \
@@ -108,6 +112,7 @@ gncinclude_HEADERS = \
   dialog-commodity.h \
   dialog-file-access.h \
   dialog-preferences.h \
+  dialog-object-references.h \
   dialog-options.h \
   dialog-query-list.h \
   dialog-reset-warnings.h \
@@ -136,6 +141,7 @@ gncinclude_HEADERS = \
   gnc-gnome-utils.h \
   gnc-gui-query.h \
   gnc-icons.h \
+  gnc-keyring.h \
   gnc-main-window.h \
   gnc-menu-extensions.h \
   gnc-plugin-file-history.h \
@@ -151,7 +157,6 @@ gncinclude_HEADERS = \
   gnc-tree-model.h \
   gnc-tree-model-account-types.h \
   gnc-tree-model-account.h \
-  gnc-tree-model-account-drag.h \
   gnc-tree-model-budget.h \
   gnc-tree-model-commodity.h \
   gnc-tree-model-price.h \
@@ -172,6 +177,8 @@ noinst_HEADERS = \
   gnc-druid-provider-edge-gnome.h \
   gnc-druid-provider-file-gnome.h \
   gnc-druid-provider-multifile-gnome.h \
+  gnc-gobject-utils.h \
+  gnc-gtk-utils.h \
   search-param.h
 
 libgncmod_gnome_utils_la_LDFLAGS = -avoid-version
@@ -185,7 +192,7 @@ libgncmod_gnome_utils_la_LIBADD = \
   $(top_builddir)/lib/libc/libc-missing.la \
   ${top_builddir}/src/libqof/qof/libgnc-qof.la \
   ${GNOME_LIBS} \
-  ${GNOME_PRINT_LIBS} \
+  ${GNOME_KEYRING_LIBS} \
   ${GLADE_LIBS} \
   ${GUILE_LIBS} \
   ${GLIB_LIBS} \

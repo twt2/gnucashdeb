@@ -40,6 +40,9 @@
 #ifndef QOF_BOOK_H
 #define QOF_BOOK_H
 
+/* We only want a few things exported to Guile */
+#ifndef SWIG
+
 typedef struct _QofBookClass  QofBookClass;
 
 #include "qofid.h"
@@ -128,16 +131,21 @@ GType qof_book_get_type(void);
  * used for anchoring data.
  */
 
-/** Lookup an entity by guid, returning pointer to the entity */
-#define QOF_BOOK_LOOKUP_ENTITY(book,guid,e_type,c_type) ({  \
-  QofInstance *val = NULL;                                    \
-  if ((guid != NULL) && (book != NULL)) {		      \
-    QofCollection *col;                                     \
+/** This macro looks up an entity by GUID and returns a pointer to the
+ * entity by ending with a "return" statement. Hence, this macro can
+ * only be used as the last statement in the definition of a function,
+ * but not somewhere inline in the code. */
+#define QOF_BOOK_RETURN_ENTITY(book,guid,e_type,c_type) {   \
+  QofInstance *val = NULL;                                  \
+  if ((guid != NULL) && (book != NULL)) {		    \
+    const QofCollection *col;                               \
     col = qof_book_get_collection (book, e_type);           \
     val = qof_collection_lookup_entity (col, guid);         \
   }                                                         \
-  (c_type *) val;                                           \
-})
+  return (c_type *) val;                                    \
+}
+
+
 
 /** GList of QofBook */
 typedef GList                 QofBookList;
@@ -189,7 +197,7 @@ void qof_book_foreach_collection (const QofBook *, QofCollectionForeachCB, gpoin
  *  between multiple users).  To store application runtime data, use
  *  qof_book_set_data() instead.
  */
-#define qof_book_get_slots(book) qof_instance_get_slots(QOF_INSTANCE(book))
+KvpFrame *qof_book_get_slots(const QofBook *book);
 
 /** The qof_book_set_data() allows arbitrary pointers to structs
  *    to be stored in QofBook. This is the "preferred" method for
@@ -213,6 +221,8 @@ void qof_book_set_data_fin (QofBook *book, const gchar *key, gpointer data,
 /** Retrieves arbitrary pointers to structs stored by qof_book_set_data. */
 gpointer qof_book_get_data (const QofBook *book, const gchar *key);
 
+#endif /* SWIG */
+
 /** Returns flag indicating whether this book uses trading accounts */
 gboolean qof_book_use_trading_accounts (const QofBook *book);
 
@@ -228,6 +238,9 @@ gboolean qof_book_shutting_down (const QofBook *book);
  *    flag, when it actually does save the data.)
  */
 gboolean qof_book_not_saved (const QofBook *book);
+
+/* The following functions are not useful in scripting languages */
+#ifndef SWIG
 
 /** The qof_book_mark_saved() routine marks the book as having been
  *    saved (to a file, to a database). Used by backends to mark the
@@ -270,8 +283,16 @@ gboolean qof_book_equal (const QofBook *book_1, const QofBook *book_2);
  */
 gint64 qof_book_get_counter (const QofBook *book, const char *counter_name);
 
+const char* qof_book_get_string_option(const QofBook* book, const char* opt_name);
+void qof_book_set_string_option(QofBook* book, const char* opt_name, const char* opt_val);
+
+void qof_book_begin_edit(QofBook *book);
+void qof_book_commit_edit(QofBook *book);
+
 /** deprecated */
 #define qof_book_get_guid(X) qof_entity_get_guid (QOF_INSTANCE(X))
+
+#endif /* SWIG */
 
 #endif /* QOF_BOOK_H */
 /** @} */

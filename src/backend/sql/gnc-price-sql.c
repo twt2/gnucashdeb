@@ -55,12 +55,12 @@ static const GncSqlColumnTableEntry col_table[] =
 {
 	/*@ -full_init_block @*/
     { "guid",           CT_GUID,           0,                    COL_NNUL|COL_PKEY, "guid" },
-    { "commodity_guid", CT_COMMODITYREF,   0,                    COL_NNUL,          NULL, PRICE_COMMODITY },
-    { "currency_guid",  CT_COMMODITYREF,   0,                    COL_NNUL,          NULL, PRICE_CURRENCY },
-    { "date",           CT_TIMESPEC,       0,                    COL_NNUL,          NULL, PRICE_DATE },
-    { "source",         CT_STRING,         PRICE_MAX_SOURCE_LEN, 0,                 NULL, PRICE_SOURCE },
-    { "type",           CT_STRING,         PRICE_MAX_TYPE_LEN,   0,                 NULL, PRICE_TYPE },
-    { "value",          CT_NUMERIC,        0,                    COL_NNUL,          NULL, PRICE_VALUE },
+    { "commodity_guid", CT_COMMODITYREF,   0,                    COL_NNUL,          "commodity" },
+    { "currency_guid",  CT_COMMODITYREF,   0,                    COL_NNUL,          "currency" },
+    { "date",           CT_TIMESPEC,       0,                    COL_NNUL,          "date" },
+    { "source",         CT_STRING,         PRICE_MAX_SOURCE_LEN, 0,                 "source" },
+    { "type",           CT_STRING,         PRICE_MAX_TYPE_LEN,   0,                 "type" },
+    { "value",          CT_NUMERIC,        0,                    COL_NNUL,          "value" },
     { NULL }
 	/*@ +full_init_block @*/
 };
@@ -111,6 +111,7 @@ load_all_prices( GncSqlBackend* be )
 
             	if( pPrice != NULL ) {
                 	(void)gnc_pricedb_add_price( pPriceDB, pPrice );
+					gnc_price_unref( pPrice );
             	}
 				row = gnc_sql_result_get_next_row( result );
         	}

@@ -1221,6 +1221,7 @@ static swig_module_info swig_module = {swig_types, 6, 0, 0, 0, 0};
 /* -------- TYPES TABLE (END) -------- */
 
 
+#include <guile-mappings.h>
 #include <gnc-glib-utils.h>
 #include <gnc-main.h>
 #include <glib.h>
@@ -1252,7 +1253,7 @@ _wrap_g_find_program_in_path (SCM s_0)
   result = (gchar *)g_find_program_in_path((char const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -1385,7 +1386,7 @@ _wrap_gnc_utf8_strip_invalid_strdup (SCM s_0)
   result = (gchar *)gnc_utf8_strip_invalid_strdup((char const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -1414,7 +1415,7 @@ _wrap_gnc_locale_from_utf8 (SCM s_0)
   result = (gchar *)gnc_locale_from_utf8((char const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -1443,7 +1444,7 @@ _wrap_gnc_locale_to_utf8 (SCM s_0)
   result = (gchar *)gnc_locale_to_utf8((char const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
