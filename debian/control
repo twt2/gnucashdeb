@@ -4,15 +4,12 @@ Priority: optional
 Maintainer: Thomas Bushnell, BSG <tb@debian.org>
 Uploaders: Micha Lenk <micha@debian.org>
 Standards-Version: 3.8.4
-Build-Depends: libfinance-quote-perl, guile-1.6-slib, guile-1.6-dev,
-  m4, gettext, slib (>= 3a2-5), debhelper (>= 5), zlib1g-dev,
-  libxml-parser-perl, x11-common, libglib2.0-dev (>= 2.4.7),
-  libxml2-dev (>= 2.4.16), libgtk2.0-dev (>= 2.4.13),
-  libglade2-dev (>= 2.3.6), libltdl-dev,
-  libgconf2-dev, libgnomeui-dev (>= 2.0.0), libgsf-gnome-1-dev (>= 1.12.2),
-  libpango1.0-dev (>= 1.6.0), libgtkhtml3.14-dev, gconf2, libgoffice-0.8-dev,
-  dpkg-dev (>= 1.13.19), swig, libofx-dev, ofx, libaqbanking29-dev, dpatch
-Build-Conflicts: guile-1.8-dev, guile-1.8
+Build-Depends: debhelper (>= 7.0.50), intltool, pkg-config,
+  libglib2.0-dev (>= 2.6.0), guile-1.6-dev, guile-1.6-slib,
+  libgconf2-dev, libxml2-dev (>= 2.5.10), zlib1g-dev, libofx-dev,
+  libaqbanking29-dev, libpopt-dev (>= 1.5), libgtk2.0-dev (>= 2.6),
+  libgnomeui-dev (>= 2.4), libglade2-dev (>= 2.4), libgoffice-0-8-dev,
+  libgtkhtml3.14-dev, libltdl-dev
 Homepage: http://www.gnucash.org/
 Vcs-Browser: http://git.debian.org/?p=pkg-gnucash/gnucash.git
 Vcs-Git: git://git.debian.org/pkg-gnucash/gnucash.git
@@ -20,10 +17,7 @@ Vcs-Git: git://git.debian.org/pkg-gnucash/gnucash.git
 Package: gnucash
 Architecture: any
 Depends: gnucash-common (>= ${source:Version}), ${shlibs:Depends},
-  ${misc:Depends}, slib (>= 3a2-5), guile-1.6-slib, libfinance-quote-perl,
-  libdate-manip-perl, libcrypt-ssleay-perl
-Recommends: gnucash-docs
-Replaces: gnucash-common (<< 1.9.8-1)
+  ${misc:Depends}, ${perl:Depends}
 Description: A personal finance and money tracking program
  Gnucash can track finances in multiple accounts, keeping running
  and reconciled balances. It has an X based graphical user interface,
@@ -34,20 +28,20 @@ Package: gnucash-dbg
 Section: debug
 Priority: extra
 Architecture: any
-Depends: gnucash (= ${binary:Version})
-Recommends: libglib2.0-0-dbg, libxml2-dbg, libgtk2.0-0-dbg, libgnomeui-0-dbg,
-  libgoffice-dbg, libaqbanking29-dbg
+Depends: gnucash (= ${binary:Version}), ${misc:Depends}
 Description: Debugging symbols for Gnucash
  Gnucash can track finances in multiple accounts, keeping running
  and reconciled balances. It has an X based graphical user interface,
  double entry, a hierarchy of accounts, expense accounts (categories),
  and can import Quicken QIF files and OFX files.
+ .
+ This package contains debugging symbols needed for debugging gnucash.
 
 Package: gnucash-common
 Architecture: all
+Depends: ${misc:Depends}
 Conflicts: gnucash (<< ${source:Version})
 Recommends: gnucash (>= ${source:Version})
-Replaces: gnucash (<< 1.8.8-5)
 Description: A personal finance and money tracking program
  Gnucash can track finances in multiple accounts, keeping running
  and reconciled balances. It has an X based graphical user interface,

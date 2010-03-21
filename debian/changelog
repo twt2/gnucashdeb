@@ -1,3 +1,13 @@
+gnucash (2.3.11-1) experimental; urgency=low
+
+  * New experimental release.
+  * Restarted packaging from scratch.
+  * Moved gnucash's manpage from package gnucash-common to package gnucash.
+  * Registered gnucash-design.info properly (closes: #476895).
+  * Switched to dpkg-source 3.0 (plain) format.
+
+ -- Micha Lenk <micha@debian.org>  Fri, 01 Jan 2010 12:15:53 +0100
+
 gnucash (2.2.9-5) unstable; urgency=low
 
   * Transition build-dep from libgoffice-0-8-dev to libgoffice-0.8-dev

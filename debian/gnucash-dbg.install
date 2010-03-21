@@ -1,0 +1,6 @@
+usr/bin/gnc-fq-*
+usr/bin/gnc-test-env
+usr/bin/gnucash-env
+usr/bin/gnucash-gdb
+usr/bin/gnucash-make-guids
+usr/bin/gnucash-valgrind

@@ -1,5 +1,4 @@
-?package(gnucash):needs="x11" section="Applications/Office"      \
-        title="GnuCash"                                          \
-        longtitle="GnuCash personal finance tracking program"    \
-        command="gnucash"                                        \
-        icon="/usr/share/gnucash/pixmaps/gnucash-icon-16x16.png"
+?package(gnucash):needs="X11" section="Applications/Office"	\
+  title="Gnucash"						\
+  longtitle="Gnucash personal finance tracking program"		\
+  command="/usr/bin/gnucash"

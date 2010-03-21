@@ -1,4 +1,5 @@
-/usr/lib/
-/usr/bin/
-/etc
-/usr/share/applications/gnucash.desktop
+usr/lib/gnucash/lib*.so*
+usr/lib/gnucash/gnucash/lib*.so*
+usr/bin/gnucash
+usr/bin/gnucash-bin
+usr/bin/gnucash-setup-env
