@@ -1,29 +1,38 @@
+SUBDIRS = . test
+
 lib_LTLIBRARIES = libgnc-core-utils.la
 
 libgnc_core_utils_la_SOURCES = \
-  gnc-main.c \
+  binreloc.c \
+  gnc-filepath-utils.c \
   gnc-gconf-utils.c \
   gnc-gdate-utils.c \
   gnc-gkeyfile-utils.c \
   gnc-glib-utils.c \
-  gnc-gobject-utils.c \
-  swig-core-utils.c \
-  gnc-gtk-utils.c
+  gnc-jalali.c \
+  gnc-main.c \
+  gnc-path.c \
+  gnc-uri-utils.c \
+  swig-core-utils.c
 
 libgnc_core_utils_la_LIBADD = \
   ${GUILE_LIBS} \
   ${GLIB_LIBS} \
+  ${BINRELOC_LIBS} \
   ${GCONF_LIBS} \
-  ${GTK_LIBS}
+  ${QOF_LIBS}
 
 noinst_HEADERS = \
+  binreloc.h \
   gnc-main.h \
+  gnc-filepath-utils.h \
   gnc-gconf-utils.h \
   gnc-gdate-utils.h \
   gnc-gkeyfile-utils.h \
   gnc-glib-utils.h \
-  gnc-gobject-utils.h \
-  gnc-gtk-utils.h
+  gnc-jalali.h \
+  gnc-path.h \
+  gnc-uri-utils.h
 
 if BUILDING_FROM_SVN
 swig-core-utils.c: core-utils.i ${top_srcdir}/src/base-typemaps.i
@@ -31,11 +40,14 @@ swig-core-utils.c: core-utils.i ${top_srcdir}/src/base-typemaps.i
 	-I${top_srcdir}/src -o $@ $<
 endif
 
-AM_CFLAGS = \
+AM_CPPFLAGS = \
   ${GUILE_INCS} \
   ${GLIB_CFLAGS} \
   ${GCONF_CFLAGS} \
-  ${GTK_CFLAGS}
+  ${QOF_CFLAGS} \
+  -I${top_srcdir}/src/libqof/qof \
+  -I${top_srcdir}/src
+
 
 gncmoddir = ${GNC_SHAREDIR}/guile-modules/gnucash
 gncmod_DATA = core-utils.scm
@@ -61,8 +73,20 @@ if ! OS_WIN32
 endif
 
 noinst_DATA = .scm-links
-EXTRA_DIST = $(gncmod_DATA) core-utils.i
-CLEANFILES = gnucash .scm-links
+BUILT_SOURCES = gncla-dir.h
+EXTRA_DIST = $(gncmod_DATA) core-utils.i gncla-dir.h.in
+CLEANFILES = $(BUILT_SOURCES) gnucash .scm-links
 MAINTAINERCLEANFILES = swig-core-utils.c
 
 INCLUDES = -DG_LOG_DOMAIN=\"gnc.core-utils\"
+
+gncla-dir.h: gncla-dir.h.in ${top_builddir}/config.status Makefile
+	rm -f $@.tmp
+	sed < $< > $@.tmp \
+		-e 's#@-DATADIRNAME-@#${DATADIRNAME}#g' \
+		-e 's#@-libdir-@#${libdir}#g' \
+		-e 's#@-sysconfdir-@#${sysconfdir}#g' \
+		-e 's#@-datadir-@#${datadir}#g' \
+		-e 's#@-prefix-@#${prefix}#g'
+	mv $@.tmp $@
+

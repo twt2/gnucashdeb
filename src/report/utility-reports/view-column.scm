@@ -35,7 +35,7 @@
 (require 'printf)
 
 (gnc:module-load "gnucash/report/report-system" 0)
-(gnc:module-load "gnucash/gnome-utils" 0) ;for gnc-build-url
+(gnc:module-load "gnucash/html" 0) ;for gnc-build-url
 
 (define (make-options)
   (let* ((options (gnc:new-options))
@@ -239,6 +239,7 @@
 (gnc:define-report 
  'version 1
  'name (N_ "Multicolumn View")
+ 'report-guid "d8ba4a2e89e8479ca9f6eccdeb164588"
  'menu-name (N_ "Custom Multicolumn Report")
  'menu-path (list gnc:menuname-utility)
  'renderer render-view

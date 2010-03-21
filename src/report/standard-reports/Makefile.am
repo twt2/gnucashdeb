@@ -12,20 +12,29 @@ libgncmod_standard_reports_la_LIBADD = \
   ${GUILE_LIBS} \
   ${GLIB_LIBS}
 
-AM_CFLAGS = \
+AM_CPPFLAGS = \
   -I${top_srcdir}/src \
   -I${top_srcdir}/src/gnc-module \
-  ${GUILE_INCS} ${GLIB_CFLAGS}
+  ${GUILE_INCS} \
+  ${GLIB_CFLAGS}
 
 gncscmmoddir = ${GNC_SHAREDIR}/guile-modules/gnucash/report/
 gncscmmod_DATA = \
+   standard-reports.scm
+
+gncscmreportmoddir = ${GNC_SHAREDIR}/guile-modules/gnucash/report/standard-reports
+gncscmreportmod_DATA = \
    account-piecharts.scm \
    account-summary.scm \
    advanced-portfolio.scm \
    average-balance.scm \
    balance-sheet.scm \
-   cash-flow.scm \
    budget.scm \
+   budget-balance-sheet.scm \
+   budget-barchart.scm \
+   budget-flow.scm \
+   budget-income-statement.scm \
+   cash-flow.scm \
    category-barchart.scm \
    daily-reports.scm \
    equity-statement.scm \
@@ -34,7 +43,6 @@ gncscmmod_DATA = \
    portfolio.scm \
    price-scatter.scm \
    register.scm \
-   standard-reports.scm \
    trial-balance.scm \
    general-journal.scm \
    general-ledger.scm \
@@ -42,19 +50,21 @@ gncscmmod_DATA = \
 
 if GNUCASH_SEPARATE_BUILDDIR
 #For executing test cases
-SCM_FILE_LINKS = ${gncscmmod_DATA}
+SCM_FILE_LINKS = ${gncscmmod_DATA} ${gncscmreportmod_DATA}
 endif
 
 .scm-links:
 	$(RM) -rf gnucash
 	mkdir -p  gnucash
 	mkdir -p  gnucash/report
+	mkdir -p  gnucash/report/standard-reports
 if GNUCASH_SEPARATE_BUILDDIR
 	for X in ${SCM_FILE_LINKS} ; do \
 	  $(LN_S) -f ${srcdir}/$$X . ; \
 	done
 endif
 	( cd gnucash/report; for A in $(gncscmmod_DATA) ; do $(LN_S) -f ../../$$A . ; done )
+	( cd gnucash/report/standard-reports; for A in $(gncscmreportmod_DATA) ; do $(LN_S) -f ../../../$$A . ; done )
 if ! OS_WIN32
 # Windows knows no "ln -s" but uses "cp": must copy every time (see bug #566567).
 	touch .scm-links
@@ -65,7 +75,7 @@ clean-local:
 
 noinst_DATA = .scm-links
 
-EXTRA_DIST = ${gncscmmod_DATA}
+EXTRA_DIST = ${gncscmmod_DATA} ${gncscmreportmod_DATA}
 
 CLEANFILES = .scm-links
 DISTCLEANFILES = ${SCM_FILE_LINKS}

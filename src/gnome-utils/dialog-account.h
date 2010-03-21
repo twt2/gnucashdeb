@@ -70,19 +70,20 @@ void gnc_ui_new_account_window (QofBook *book, Account *parent);
  *  restrict the available account type values to the list specified
  *  by the caller.
  *
- *  @param unused This parameter is not used.
+ *  @param book The book in which the new account should be created.
+ *  This is a required argument.
  *
  *  @param valid_types A GList of GNCAccountType gints [as pointers]
  *  which are allowed to be created.  The calling function is
  *  responsible for freeing this list.
  */
 void gnc_ui_new_account_with_types (QofBook *book,
-				    GList *valid_types);
+                                    GList *valid_types);
 /** @} */
 
 
 
-/** @name Modal 
+/** @name Modal
  @{ */
 
 /** Disply a modal window for creating a new account
@@ -107,7 +108,7 @@ Account * gnc_ui_new_accounts_from_name_window (const char *name);
  */
 /* Note that the caller owns the valid_types list */
 Account * gnc_ui_new_accounts_from_name_window_with_types (const char *name,
-							   GList *valid_types);
+        GList *valid_types);
 
 
 /** Display a modal window for creating a new account.  This function
@@ -129,9 +130,9 @@ Account * gnc_ui_new_accounts_from_name_window_with_types (const char *name,
  *  @return A pointer to the newly created account.
  */
 Account * gnc_ui_new_accounts_from_name_with_defaults (const char *name,
-						       GList *valid_types,
-						       gnc_commodity * default_commodity,
-						       Account * parent);
+        GList *valid_types,
+        gnc_commodity * default_commodity,
+        Account * parent);
 
 /*
  * register a callback that get's called when the account has changed

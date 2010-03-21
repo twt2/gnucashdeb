@@ -206,7 +206,7 @@
   (gnc:txf-get-format (if income?
                           txf-income-categories
                           txf-expense-categories)
-                      code))
+                      code ""))
 
 (define (gnc:account-get-txf-payer-source account)
   (let ((pns (xaccAccountGetTaxUSPayerNameSource account)))
@@ -341,9 +341,9 @@
                            "Aufwendungen"))
                (category-key (if (eq? type ACCT-TYPE-INCOME)
                                  (gnc:txf-get-category-key 
-                                  txf-income-categories code)
+                                  txf-income-categories code "")
                                  (gnc:txf-get-category-key
-                                  txf-expense-categories code)))
+                                  txf-expense-categories code "")))
                (value-name (if (equal? "ReinvD" action)
                                (string-append 
                                 (substring value 1 (string-length value))
@@ -749,7 +749,7 @@
                                        (cons (current-time) 0))))))
 	  (tax-nr (or 
 		   (kvp-frame-get-slot-path-gslist
-		    (gnc-book-get-slots (gnc-get-current-book))
+		    (qof-book-get-slots (gnc-get-current-book))
 		    (append gnc:*kvp-option-path*
 			    (list gnc:*tax-label* gnc:*tax-nr-label*)))
 		   ""))
@@ -857,6 +857,7 @@
 (gnc:define-report
  'version 1
  'name reportname
+ 'report-guid "758b125c05e54531a7dec5f1ef0ef9c8"
  'menu-name (N_ "Tax Report & XML Export")
  ;;'menu-path (list gnc:menuname-taxes)
  'menu-tip (N_ "Taxable Income / Deductible Expenses / Export to .XML file")

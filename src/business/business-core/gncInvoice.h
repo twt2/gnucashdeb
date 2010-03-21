@@ -23,12 +23,12 @@
     @{ */
 /** @addtogroup Invoice
 
-An invoice holds a list of entries, a pointer to the customer, 
-and the job, the dates entered and posted, as well as the account, 
+An invoice holds a list of entries, a pointer to the customer,
+and the job, the dates entered and posted, as well as the account,
 transaction and lot for the posted invoice.
     @{ */
 /** @file gncInvoice.h
-    @brief  Business Invoice Interface 
+    @brief  Business Invoice Interface
     @author Copyright (C) 2001,2006 Derek Atkins <warlord@MIT.EDU>
     @author Copyright (c) 2005 Neil Williams <linux@codehelp.co.uk>
 */
@@ -45,6 +45,8 @@ typedef struct _gncInvoiceClass GncInvoiceClass;
 #include "gncOwner.h"
 #include "gnc-lot.h"
 #include "qofbook.h"
+#include "qofbook.h"
+#include "gnc-pricedb.h"
 
 #define GNC_ID_INVOICE    "gncInvoice"
 
@@ -62,13 +64,13 @@ typedef struct _gncInvoiceClass GncInvoiceClass;
      (G_TYPE_INSTANCE_GET_CLASS ((o), GNC_TYPE_INVOICE, GncInvoiceClass))
 GType gnc_invoice_get_type(void);
 
-/** @name Create/Destroy Functions 
+/** @name Create/Destroy Functions
  @{ */
 GncInvoice *gncInvoiceCreate (QofBook *book);
 void gncInvoiceDestroy (GncInvoice *invoice);
 /** @} */
 
-/** @name Set Functions 
+/** @name Set Functions
  @{ */
 void gncInvoiceSetID (GncInvoice *invoice, const char *id);
 void gncInvoiceSetOwner (GncInvoice *invoice, GncOwner *owner);
@@ -85,35 +87,40 @@ void gncInvoiceSetToChargeAmount (GncInvoice *invoice, gnc_numeric amount);
 
 void gncInvoiceAddEntry (GncInvoice *invoice, GncEntry *entry);
 void gncInvoiceRemoveEntry (GncInvoice *invoice, GncEntry *entry);
+void gncInvoiceAddPrice (GncInvoice *invoice, GNCPrice *price);
+void gncInvoiceRemovePrice (GncInvoice *invoice, GNCPrice *price);
 
 /** Call this function when adding an entry to a bill instead of an invoice */
 void gncBillAddEntry (GncInvoice *bill, GncEntry *entry);
 void gncBillRemoveEntry (GncInvoice *bill, GncEntry *entry);
+void gncBillAddPrice (GncInvoice *bill, GNCPrice *price);
+void gncBillRemovePrice (GncInvoice *bill, GNCPrice *price);
 
 /** Call this function when an Entry is changed and you want to
     re-sort the list of entries
 */
 void gncInvoiceSortEntries (GncInvoice *invoice);
 
-/** @name Get Functions 
+/** @name Get Functions
  @{ */
-const char * gncInvoiceGetID (GncInvoice *invoice);
+const char * gncInvoiceGetID (const GncInvoice *invoice);
 GncOwner * gncInvoiceGetOwner (GncInvoice *invoice);
-Timespec gncInvoiceGetDateOpened (GncInvoice *invoice);
-Timespec gncInvoiceGetDatePosted (GncInvoice *invoice);
-Timespec gncInvoiceGetDateDue (GncInvoice *invoice);
-GncBillTerm * gncInvoiceGetTerms (GncInvoice *invoice);
-const char * gncInvoiceGetBillingID (GncInvoice *invoice);
-const char * gncInvoiceGetNotes (GncInvoice *invoice);
-const char * gncInvoiceGetType (GncInvoice *invoice); 
-gnc_commodity * gncInvoiceGetCurrency (GncInvoice *invoice);
+Timespec gncInvoiceGetDateOpened (const GncInvoice *invoice);
+Timespec gncInvoiceGetDatePosted (const GncInvoice *invoice);
+Timespec gncInvoiceGetDateDue (const GncInvoice *invoice);
+GncBillTerm * gncInvoiceGetTerms (const GncInvoice *invoice);
+const char * gncInvoiceGetBillingID (const GncInvoice *invoice);
+const char * gncInvoiceGetNotes (const GncInvoice *invoice);
+GncOwnerType gncInvoiceGetOwnerType (GncInvoice *invoice);
+const char * gncInvoiceGetType (GncInvoice *invoice);
+gnc_commodity * gncInvoiceGetCurrency (const GncInvoice *invoice);
 GncOwner * gncInvoiceGetBillTo (GncInvoice *invoice);
-gnc_numeric gncInvoiceGetToChargeAmount (GncInvoice *invoice);
-gboolean gncInvoiceGetActive (GncInvoice *invoice);
+gnc_numeric gncInvoiceGetToChargeAmount (const GncInvoice *invoice);
+gboolean gncInvoiceGetActive (const GncInvoice *invoice);
 
-GNCLot * gncInvoiceGetPostedLot (GncInvoice *invoice);
-Transaction * gncInvoiceGetPostedTxn (GncInvoice *invoice);
-Account * gncInvoiceGetPostedAcc (GncInvoice *invoice);
+GNCLot * gncInvoiceGetPostedLot (const GncInvoice *invoice);
+Transaction * gncInvoiceGetPostedTxn (const GncInvoice *invoice);
+Account * gncInvoiceGetPostedAcc (const GncInvoice *invoice);
 /** @} */
 
 /** return the "total" amount of the invoice */
@@ -124,6 +131,8 @@ gnc_numeric gncInvoiceGetTotalTax (GncInvoice *invoice);
 
 typedef GList EntryList;
 EntryList * gncInvoiceGetEntries (GncInvoice *invoice);
+GList * gncInvoiceGetPrices(GncInvoice *invoice);
+GNCPrice * gncInvoiceGetPrice(GncInvoice *invoice, gnc_commodity* commodity);
 
 /** Post this invoice to an account.  Returns the new Transaction
  * that is tied to this invoice.   The transaction is set with
@@ -132,8 +141,8 @@ EntryList * gncInvoiceGetEntries (GncInvoice *invoice);
  */
 Transaction *
 gncInvoicePostToAccount (GncInvoice *invoice, Account *acc,
-			 Timespec *posted_date, Timespec *due_date,
-			 const char *memo, gboolean accumulatesplits);
+                         Timespec *posted_date, Timespec *due_date,
+                         const char *memo, gboolean accumulatesplits);
 
 /**
  * UNpost this invoice.  This will destroy the posted transaction and
@@ -159,31 +168,33 @@ gncInvoiceUnpost (GncInvoice *invoice, gboolean reset_tax_tables);
  */
 Transaction *
 gncOwnerApplyPayment (GncOwner *owner, GncInvoice *invoice,
-		      Account *posted_acc, Account *xfer_acc,
-		      gnc_numeric amount, Timespec date,
-		      const char *memo, const char *num);
+                      Account *posted_acc, Account *xfer_acc,
+                      gnc_numeric amount, gnc_numeric exch, Timespec date,
+                      const char *memo, const char *num);
 
 
 /** Given a transaction, find and return the Invoice */
-GncInvoice * gncInvoiceGetInvoiceFromTxn (Transaction *txn);
+GncInvoice * gncInvoiceGetInvoiceFromTxn (const Transaction *txn);
 
 /** Given a LOT, find and return the Invoice attached to the lot */
 GncInvoice * gncInvoiceGetInvoiceFromLot (GNCLot *lot);
 
 /** Return a pointer to the instance gncInvoice that is identified
- *  by the guid, and is residing in the book. Returns NULL if the 
+ *  by the guid, and is residing in the book. Returns NULL if the
  *  instance can't be found.
  *  Equivalent function prototype is
  *  GncInvoice * gncInvoiceLookup (QofBook *book, const GUID *guid);
  */
-#define gncInvoiceLookup(book,guid)    \
-       QOF_BOOK_LOOKUP_ENTITY((book),(guid),GNC_ID_INVOICE, GncInvoice)
+static inline GncInvoice * gncInvoiceLookup (const QofBook *book, const GUID *guid)
+{
+    QOF_BOOK_RETURN_ENTITY(book, guid, GNC_ID_INVOICE, GncInvoice);
+}
 
 void gncInvoiceBeginEdit (GncInvoice *invoice);
 void gncInvoiceCommitEdit (GncInvoice *invoice);
-int gncInvoiceCompare (GncInvoice *a, GncInvoice *b);
-gboolean gncInvoiceIsPosted (GncInvoice *invoice);
-gboolean gncInvoiceIsPaid (GncInvoice *invoice);
+int gncInvoiceCompare (const GncInvoice *a, const GncInvoice *b);
+gboolean gncInvoiceIsPosted (const GncInvoice *invoice);
+gboolean gncInvoiceIsPaid (const GncInvoice *invoice);
 
 #define INVOICE_ID	"id"
 #define INVOICE_OWNER	"owner"

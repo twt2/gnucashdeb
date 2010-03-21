@@ -24,7 +24,7 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-module (gnucash report net-barchart))
+(define-module (gnucash report standard-reports net-barchart))
 
 (use-modules (srfi srfi-1))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
@@ -421,6 +421,7 @@
 (gnc:define-report
  'version 1
  'name (N_ "Net Worth Barchart")
+ 'report-guid "cbba1696c8c24744848062c7f1cf4a72"
  'menu-path (list gnc:menuname-asset-liability)
  'options-generator (lambda () (options-generator #f))
  'renderer (lambda (report-obj) (net-renderer report-obj #f)))
@@ -428,6 +429,7 @@
 (gnc:define-report
  'version 1
  'name reportname
+ 'report-guid "80769921e87943adade887b9835a7685"
  'menu-name (N_ "Income & Expense Chart")
  'menu-path (list gnc:menuname-income-expense)
  'options-generator (lambda () (options-generator #t))

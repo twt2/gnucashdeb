@@ -1211,11 +1211,12 @@ SWIG_Guile_GetArgs (SCM *dest, SCM rest,
 #define SWIGTYPE_p_GtkWidget swig_types[1]
 #define SWIGTYPE_p_char swig_types[2]
 #define SWIGTYPE_p_double swig_types[3]
-#define SWIGTYPE_p_int swig_types[4]
-#define SWIGTYPE_p_unsigned_int swig_types[5]
-#define SWIGTYPE_p_unsigned_long swig_types[6]
-static swig_type_info *swig_types[8];
-static swig_module_info swig_module = {swig_types, 7, 0, 0, 0, 0};
+#define SWIGTYPE_p_float swig_types[4]
+#define SWIGTYPE_p_int swig_types[5]
+#define SWIGTYPE_p_unsigned_int swig_types[6]
+#define SWIGTYPE_p_unsigned_long swig_types[7]
+static swig_type_info *swig_types[9];
+static swig_module_info swig_module = {swig_types, 8, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1228,6 +1229,7 @@ static swig_module_info swig_module = {swig_types, 7, 0, 0, 0, 0};
 #include <dialog-column-view.h>
 #include <gnc-plugin-page-report.h>
 #include <window-report.h>
+#include <dialog-custom-report.h>
 
 SCM scm_init_sw_report_gnome_module (void);
 
@@ -1316,6 +1318,26 @@ _wrap_gnc_column_view_edit_options (SCM s_0, SCM s_1)
 }
 
 
+static SCM
+_wrap_gnc_ui_custom_report (SCM s_0)
+{
+#define FUNC_NAME "gnc-ui-custom-report"
+  GncMainWindow *arg1 = (GncMainWindow *) 0 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  
+  {
+    arg1 = (GncMainWindow *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_GncMainWindow, 1, 0);
+  }
+  gnc_ui_custom_report(arg1);
+  gswig_result = SCM_UNSPECIFIED;
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -1326,6 +1348,7 @@ static swig_type_info _swigt__p_GncMainWindow = {"_p_GncMainWindow", "GncMainWin
 static swig_type_info _swigt__p_GtkWidget = {"_p_GtkWidget", "GtkWidget *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "gchar *|char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_double = {"_p_double", "double *|gdouble *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_float = {"_p_float", "float *|gfloat *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_int = {"_p_int", "int *|gint *|time_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_int = {"_p_unsigned_int", "guint *|unsigned int *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_long = {"_p_unsigned_long", "SCM *|unsigned long *", 0, 0, (void*)0, 0};
@@ -1335,6 +1358,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_GtkWidget,
   &_swigt__p_char,
   &_swigt__p_double,
+  &_swigt__p_float,
   &_swigt__p_int,
   &_swigt__p_unsigned_int,
   &_swigt__p_unsigned_long,
@@ -1344,6 +1368,7 @@ static swig_cast_info _swigc__p_GncMainWindow[] = {  {&_swigt__p_GncMainWindow, 
 static swig_cast_info _swigc__p_GtkWidget[] = {  {&_swigt__p_GtkWidget, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_double[] = {  {&_swigt__p_double, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_float[] = {  {&_swigt__p_float, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_int[] = {  {&_swigt__p_unsigned_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_long[] = {  {&_swigt__p_unsigned_long, 0, 0, 0},{0, 0, 0, 0}};
@@ -1353,6 +1378,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_GtkWidget,
   _swigc__p_char,
   _swigc__p_double,
+  _swigc__p_float,
   _swigc__p_int,
   _swigc__p_unsigned_int,
   _swigc__p_unsigned_long,
@@ -1609,6 +1635,7 @@ SWIG_init(void)
   scm_c_define_gsubr("gnc-main-window-open-report", 2, 0, 0, (swig_guile_proc) _wrap_gnc_main_window_open_report);
   scm_c_define_gsubr("gnc-report-window-default-params-editor", 2, 0, 0, (swig_guile_proc) _wrap_gnc_report_window_default_params_editor);
   scm_c_define_gsubr("gnc-column-view-edit-options", 2, 0, 0, (swig_guile_proc) _wrap_gnc_column_view_edit_options);
+  scm_c_define_gsubr("gnc-ui-custom-report", 1, 0, 0, (swig_guile_proc) _wrap_gnc_ui_custom_report);
 }
 
 #ifdef __cplusplus
@@ -1619,7 +1646,7 @@ SWIG_init(void)
 static void SWIG_init_helper(void *data)
 {
 SWIG_init();
-scm_c_export("gnc-report-raise-editor", "gnc-main-window-open-report", "gnc-report-window-default-params-editor", "gnc-column-view-edit-options", NULL);
+scm_c_export("gnc-report-raise-editor", "gnc-main-window-open-report", "gnc-report-window-default-params-editor", "gnc-column-view-edit-options", "gnc-ui-custom-report", NULL);
 }
 
 SCM

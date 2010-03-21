@@ -1,4 +1,4 @@
-/* 
+/*
  * gnc-sx-instance-model.c
  *
  * Copyright (C) 2006 Josh Sled <jsled@asynchronous.org>
@@ -34,7 +34,6 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <stdlib.h>
-#include "glib-compat.h"
 
 #include "Account.h"
 #include "SX-book.h"
@@ -42,7 +41,6 @@
 #include "Scrub.h"
 #include "Split.h"
 #include "Transaction.h"
-#include "gnc-book.h"
 #include "gnc-commodity.h"
 #include "gnc-event.h"
 #include "gnc-exp-parser.h"
@@ -52,7 +50,7 @@
 #include "qof.h"
 
 #undef G_LOG_DOMAIN
-#define G_LOG_DOMAIN "gnc.app-util.sx"
+#define G_LOG_DOMAIN "gnc.app-utils.sx"
 
 static GObjectClass *parent_class = NULL;
 
@@ -208,7 +206,7 @@ _get_vars_helper(Transaction *txn, void *var_hash_data)
         {
             first_cmdty = split_cmdty;
         }
-                
+
         if (! gnc_commodity_equal(split_cmdty, first_cmdty))
         {
             GncSxVariable *var;
@@ -337,11 +335,17 @@ gnc_sx_instance_new(GncSxInstances *parent, GncSxInstanceState state, GDate *dat
     return rtn;
 }
 
+static gint
+_compare_GncSxVariables(gconstpointer a, gconstpointer b)
+{
+    return strcmp(((const GncSxVariable*)a)->name, ((const GncSxVariable*)b)->name);
+}
+
 static void
 _build_list_from_hash_elts(gpointer key, gpointer value, gpointer user_data)
 {
     GList **list = (GList**)user_data;
-    *list = g_list_append(*list, value);
+    *list = g_list_insert_sorted(*list, value, _compare_GncSxVariables);
 }
 
 GList *
@@ -439,11 +443,11 @@ gnc_sx_get_instances(GDate *range_end, gboolean include_disabled)
     instances->include_disabled = include_disabled;
     instances->range_end = *range_end;
 
-    if (include_disabled) 
+    if (include_disabled)
     {
         instances->sx_instance_list = gnc_g_list_map(all_sxes, (GncGMapFunc)_gnc_sx_gen_instances, range_end);
-    } 
-    else 
+    }
+    else
     {
         GList *sx_iter = g_list_first(all_sxes);
         GList *enabled_sxes = NULL;
@@ -472,8 +476,10 @@ GType
 gnc_sx_instance_model_get_type(void)
 {
     static GType type = 0;
-    if (type == 0) {
-        static const GTypeInfo info = {
+    if (type == 0)
+    {
+        static const GTypeInfo info =
+        {
             sizeof (GncSxInstanceModelClass),
             NULL,   /* base_init */
             NULL,   /* base_finalize */
@@ -516,7 +522,7 @@ gnc_sx_instance_free(GncSxInstance *instance)
         g_hash_table_destroy(instance->variable_bindings);
     }
     instance->variable_bindings = NULL;
-     
+
     g_free(instance);
 }
 
@@ -672,8 +678,8 @@ _gnc_sx_instance_event_handler(QofInstance *ent, QofEventId event_type, gpointer
                 {
                     /* it's moved from disabled to enabled, add the instances */
                     instances->sx_instance_list
-                        = g_list_append(instances->sx_instance_list,
-                                        _gnc_sx_gen_instances((gpointer)sx, (gpointer)&instances->range_end));
+                    = g_list_append(instances->sx_instance_list,
+                                    _gnc_sx_gen_instances((gpointer)sx, (gpointer) & instances->range_end));
                     g_signal_emit_by_name(instances, "added", (gpointer)sx);
                 }
             }
@@ -705,8 +711,8 @@ _gnc_sx_instance_event_handler(QofInstance *ent, QofEventId event_type, gpointer
             {
                 /* generate instances, add to instance list, emit update. */
                 instances->sx_instance_list
-                    = g_list_append(instances->sx_instance_list,
-                                    _gnc_sx_gen_instances((gpointer)sx, (gpointer)&instances->range_end));
+                = g_list_append(instances->sx_instance_list,
+                                _gnc_sx_gen_instances((gpointer)sx, (gpointer) & instances->range_end));
                 g_signal_emit_by_name(instances, "added", (gpointer)sx);
             }
         }
@@ -826,7 +832,7 @@ gnc_sx_instance_model_update_sx_instances(GncSxInstanceModel *model, SchedXactio
         {
             GList *var_iter;
             GncSxInstance *inst = (GncSxInstance*)inst_iter->data;
-            
+
             for (var_iter = removed_var_names; var_iter != NULL; var_iter = var_iter->next)
             {
                 gchar *to_remove_key = (gchar*)var_iter->data;
@@ -837,10 +843,10 @@ gnc_sx_instance_model_update_sx_instances(GncSxInstanceModel *model, SchedXactio
             {
                 gchar *to_add_key = (gchar*)var_iter->data;
                 if (!g_hash_table_lookup_extended(
-                        inst->variable_bindings, to_add_key, NULL, NULL))
+                            inst->variable_bindings, to_add_key, NULL, NULL))
                 {
                     GncSxVariable *parent_var
-                        = g_hash_table_lookup(existing->variable_names, to_add_key);
+                    = g_hash_table_lookup(existing->variable_names, to_add_key);
                     GncSxVariable *var_copy;
 
                     g_assert(parent_var != NULL);
@@ -873,13 +879,13 @@ static void
 increment_sx_state(GncSxInstance *inst, GDate **last_occur_date, int *instance_count, int *remain_occur_count)
 {
     if (!g_date_valid(*last_occur_date)
-        || (g_date_valid(*last_occur_date)
-            && g_date_compare(*last_occur_date, &inst->date) <= 0))
+            || (g_date_valid(*last_occur_date)
+                && g_date_compare(*last_occur_date, &inst->date) <= 0))
     {
         *last_occur_date = &inst->date;
     }
 
-    *instance_count = gnc_sx_get_instance_count(inst->parent->sx, inst->temporal_state);
+    *instance_count = gnc_sx_get_instance_count(inst->parent->sx, inst->temporal_state) + 1;
 
     if (*remain_occur_count > 0)
     {
@@ -915,6 +921,8 @@ _get_template_split_account(GncSxInstance *instance, Split *template_split, Acco
         g_critical("%s", err->str);
         if (creation_errors != NULL)
             *creation_errors = g_list_append(*creation_errors, err);
+        else
+            g_string_free(err, TRUE);
         return FALSE;
     }
     acct_guid = kvp_value_get_guid( kvp_val );
@@ -930,6 +938,8 @@ _get_template_split_account(GncSxInstance *instance, Split *template_split, Acco
         g_critical("%s", err->str);
         if (creation_errors != NULL)
             *creation_errors = g_list_append(*creation_errors, err);
+        else
+            g_string_free(err, TRUE);
         return FALSE;
     }
 
@@ -964,10 +974,13 @@ _get_sx_formula_value(GncSxInstance *instance, Split *template_split, gnc_numeri
                             formula_str,
                             parseErrorLoc,
                             gnc_exp_parser_error_string());
+            g_critical("%s", err->str);
             if (creation_errors != NULL)
                 *creation_errors = g_list_append(*creation_errors, err);
+            else
+                g_string_free(err, TRUE);
         }
-        
+
         if (parser_vars != NULL)
         {
             g_hash_table_destroy(parser_vars);
@@ -1023,7 +1036,7 @@ create_each_transaction_helper(Transaction *template_txn, void *user_data)
                      g_date_get_day(&creation_data->instance->date),
                      g_date_get_month(&creation_data->instance->date),
                      g_date_get_year(&creation_data->instance->date));
-        
+
     /* the accounts and amounts are in the kvp_frames of the splits. */
     template_splits = xaccTransGetSplitList(template_txn);
     txn_splits = xaccTransGetSplitList(new_txn);
@@ -1037,28 +1050,28 @@ create_each_transaction_helper(Transaction *template_txn, void *user_data)
     }
 
     for (;
-         txn_splits && template_splits;
-         txn_splits = txn_splits->next, template_splits = template_splits->next)
+            txn_splits && template_splits;
+            txn_splits = txn_splits->next, template_splits = template_splits->next)
     {
         Split *template_split;
         Account *split_acct;
         gnc_commodity *split_cmdty = NULL;
-             
+
         /* FIXME: Ick.  This assumes that the split lists will be ordered
            identically. :( They are, but we'd rather not have to count on
            it. --jsled */
         template_split = (Split*)template_splits->data;
         copying_split = (Split*)txn_splits->data;
 
-        /* clear out any copied Split frame data. */
-        qof_instance_set_slots(QOF_INSTANCE(copying_split), kvp_frame_new());
-
         if (!_get_template_split_account(creation_data->instance, template_split, &split_acct, creation_data->creation_errors))
         {
             err_flag = TRUE;
             break;
         }
-             
+
+        /* clear out any copied Split frame data. */
+        qof_instance_set_slots(QOF_INSTANCE(copying_split), kvp_frame_new());
+
         split_cmdty = xaccAccountGetCommodity(split_acct);
         if (first_cmdty == NULL)
         {
@@ -1066,8 +1079,7 @@ create_each_transaction_helper(Transaction *template_txn, void *user_data)
             xaccTransSetCurrency(new_txn, first_cmdty);
         }
 
-        xaccAccountBeginEdit(split_acct);
-        xaccAccountInsertSplit(split_acct, copying_split);
+        xaccSplitSetAccount(copying_split, split_acct);
 
         {
             gnc_numeric credit_num, debit_num, final;
@@ -1078,16 +1090,20 @@ create_each_transaction_helper(Transaction *template_txn, void *user_data)
 
             _get_credit_formula_value(creation_data->instance, template_split, &credit_num, creation_data->creation_errors);
             _get_debit_formula_value(creation_data->instance, template_split, &debit_num, creation_data->creation_errors);
-                       
+
             final = gnc_numeric_sub_fixed( debit_num, credit_num );
-                        
+
             gncn_error = gnc_numeric_check(final);
-            if (gncn_error != GNC_ERROR_OK) {
+            if (gncn_error != GNC_ERROR_OK)
+            {
                 GString *err = g_string_new("");
-                g_string_printf(err, "Error %d in SX [%s] final gnc_numeric value, using 0 instead.", 
-                                gncn_error,
-                                xaccSchedXactionGetName(creation_data->instance->parent->sx));
-                *creation_data->creation_errors = g_list_append(*creation_data->creation_errors, err);
+                g_string_printf(err, "error %d in SX [%s] final gnc_numeric value, using 0 instead",
+                                gncn_error, xaccSchedXactionGetName(creation_data->instance->parent->sx));
+                g_critical("%s", err->str);
+                if (creation_data->creation_errors != NULL)
+                    *creation_data->creation_errors = g_list_append(*creation_data->creation_errors, err);
+                else
+                    g_string_free(err, TRUE);
                 final = gnc_numeric_zero();
             }
 
@@ -1134,7 +1150,7 @@ create_each_transaction_helper(Transaction *template_txn, void *user_data)
                                 gnc_commodity_get_mnemonic(split_cmdty),
                                 gnc_commodity_get_mnemonic(first_cmdty));
                 exchange_rate_var = (GncSxVariable*)g_hash_table_lookup(creation_data->instance->variable_bindings,
-                                                                        exchange_rate_var_name->str);
+                                    exchange_rate_var_name->str);
                 if (exchange_rate_var != NULL)
                 {
                     exchange_rate = exchange_rate_var->value;
@@ -1147,8 +1163,6 @@ create_each_transaction_helper(Transaction *template_txn, void *user_data)
 
             xaccSplitScrub(copying_split);
         }
-
-        xaccAccountCommitEdit(split_acct);
     }
 
     if (err_flag)
@@ -1171,7 +1185,7 @@ create_each_transaction_helper(Transaction *template_txn, void *user_data)
     if (creation_data->created_txn_guids != NULL)
     {
         *creation_data->created_txn_guids
-            = g_list_append(*(creation_data->created_txn_guids), (gpointer)xaccTransGetGUID(new_txn));
+        = g_list_append(*(creation_data->created_txn_guids), (gpointer)xaccTransGetGUID(new_txn));
     }
 
     return FALSE;
@@ -1235,7 +1249,7 @@ gnc_sx_instance_model_effect_change(GncSxInstanceModel *model,
             }
 
             if (inst->orig_state == SX_INSTANCE_STATE_POSTPONED
-                && inst->state != SX_INSTANCE_STATE_POSTPONED)
+                    && inst->state != SX_INSTANCE_STATE_POSTPONED)
             {
                 // remove from postponed list
                 g_assert(inst->temporal_state != NULL);
@@ -1271,7 +1285,7 @@ gnc_sx_instance_model_effect_change(GncSxInstanceModel *model,
                 break;
             }
         }
-          
+
         xaccSchedXactionSetLastOccurDate(instances->sx, last_occur_date);
         gnc_sx_set_instance_count(instances->sx, instance_count);
         xaccSchedXactionSetRemOccur(instances->sx, remain_occur_count);
@@ -1280,8 +1294,8 @@ gnc_sx_instance_model_effect_change(GncSxInstanceModel *model,
 
 void
 gnc_sx_instance_model_change_instance_state(GncSxInstanceModel *model,
-                                            GncSxInstance *instance,
-                                            GncSxInstanceState new_state)
+        GncSxInstance *instance,
+        GncSxInstanceState new_state)
 {
     if (instance->state == new_state)
         return;
@@ -1422,8 +1436,8 @@ gnc_sx_instance_model_summarize(GncSxInstanceModel *model, GncSxSummary *summary
     // if all the instances are 'auto-create, no-notify', then we don't need
     // the dialog.
     summary->need_dialog
-        = (summary->num_instances != 0
-           && summary->num_auto_create_no_notify_instances != summary->num_instances);
+    = (summary->num_instances != 0
+       && summary->num_auto_create_no_notify_instances != summary->num_instances);
 }
 
 void

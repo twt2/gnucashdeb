@@ -33,35 +33,36 @@
 
 #include "Account.h"
 
-#define GNC_TYPE_ACCOUNT_SEL          (gnc_account_sel_get_type())	
+#define GNC_TYPE_ACCOUNT_SEL          (gnc_account_sel_get_type())
 #define GNC_ACCOUNT_SEL(obj)          G_TYPE_CHECK_INSTANCE_CAST (obj, GNC_TYPE_ACCOUNT_SEL, GNCAccountSel)
 #define GNC_ACCOUNT_SEL_CLASS(klass)  G_TYPE_CHECK_CLASS_CAST (klass, GNC_TYPE_ACCOUNT_SEL, GNCAccountSelClass)
 #define GNC_IS_ACCOUNT_SEL(obj)       G_TYPE_CHECK_INSTANCE_TYPE (obj, GNC_TYPE_ACCOUNT_SEL)
 
 typedef struct
 {
-        GtkHBox hbox;
-        gboolean initDone;
-	gboolean isModal;
-	GtkListStore *store;
-        GtkComboBoxEntry *combo;
-        GList *acctTypeFilters;
-        gint eventHandlerId;
-        /* The state of this pointer also serves as a flag about what state
-         * the widget is in WRT the new-account-button ability. */
-        GtkWidget *newAccountButton;
+    GtkHBox hbox;
+    gboolean initDone;
+    gboolean isModal;
+    GtkListStore *store;
+    GtkComboBoxEntry *combo;
+    GList *acctTypeFilters;
+    GList *acctCommodityFilters;
+    gint eventHandlerId;
+    /* The state of this pointer also serves as a flag about what state
+     * the widget is in WRT the new-account-button ability. */
+    GtkWidget *newAccountButton;
 
 #if 0 /* completion not implemented. */
-        GCompletion *completion;
+    GCompletion *completion;
 #endif /* 0 - completion not implemented */
 } GNCAccountSel;
 
 typedef struct
 {
-        GtkHBoxClass parent_class;
+    GtkHBoxClass parent_class;
 
-        /* Signals for notification/filtering of changes */
-        void (*account_sel_changed) (GNCAccountSel *gas);
+    /* Signals for notification/filtering of changes */
+    void (*account_sel_changed) (GNCAccountSel *gas);
 } GNCAccountSelClass;
 
 GType      gnc_account_sel_get_type (void);
@@ -72,8 +73,7 @@ GtkWidget* gnc_account_sel_new (void);
  * list, then it doesn't change the state of the GAS.  If the account is
  * NULL, then the first list selection is made if set_default_acct is TRUE.
  **/
-void       gnc_account_sel_set_account( GNCAccountSel *gas, Account *acct, 
-					gboolean set_default_acct );
+void       gnc_account_sel_set_account( GNCAccountSel *gas, Account *acct, gboolean set_default_acct );
 /**
  * Returns the currently-selected Account.  If, for some reason the selection
  * is in a bad state, NULL will be returned.
@@ -82,10 +82,11 @@ Account*   gnc_account_sel_get_account( GNCAccountSel *gas );
 
 /**
  * The GNCAccountSel can be setup to filter the accounts displayed.
- * @param filters A GList of GNCAccountType identifiers which are allowed.
+ * @param typeFilters A GList of GNCAccountType identifiers which are allowed.
+ * @param commodityFilters A GList of gnc_commodity types which are allowed.
  * The list is copied, of course.
  **/
-void gnc_account_sel_set_acct_filters( GNCAccountSel *gas, GList *filters );
+void gnc_account_sel_set_acct_filters( GNCAccountSel *gas, GList *typeFilters, GList *commodityFilters );
 
 /**
  * Conditional inclusion of a new-account button to the right of the
@@ -93,14 +94,14 @@ void gnc_account_sel_set_acct_filters( GNCAccountSel *gas, GList *filters );
  * @param state TRUE if the new-account button is desired, FALSE otherwise.
  **/
 void gnc_account_sel_set_new_account_ability( GNCAccountSel *gas,
-                                              gboolean state );
+        gboolean state );
 
 /**
  * Conditional call of the new-account window in modal mode.
  * @param state TRUE if the new-account window should be modal, FALSE otherwise.
  **/
 void gnc_account_sel_set_new_account_modal( GNCAccountSel *gas,
-                                              gboolean state );
+        gboolean state );
 
 gint gnc_account_sel_get_num_account( GNCAccountSel *gas );
 void gnc_account_sel_purge_account( GNCAccountSel *gas, Account *acc, gboolean recursive);

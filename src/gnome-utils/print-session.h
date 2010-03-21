@@ -1,5 +1,5 @@
 /********************************************************************\
- * print-session.h -- data structures for printing via gnome print  *  
+ * print-session.h -- data structures for printing via gtkprint     *
  *                       (GnuCash)                                  *
  * Copyright (C) 2000 Bill Gribble <grib@billgribble.com>           *
  *                                                                  *
@@ -24,8 +24,6 @@
 #ifndef PRINT_SESSION_H
 #define PRINT_SESSION_H
 
-#ifndef GTKHTML_USES_GTKPRINT
-
 /** @addtogroup Printing
     @{ */
 /** @file print-session.h
@@ -33,60 +31,38 @@
     @author Copyright (C) 2000 Bill Gribble <grib@billgribble.com>
 */
 
-#include <libgnomeprint/gnome-print.h>
-#include <libgnomeprint/gnome-print-job.h>
-#include <libgnomeprintui/gnome-print-dialog.h>
-#include <libgnomeprintui/gnome-print-preview.h>
-
-typedef struct {
-  gboolean             hand_built_pages;
-  gint                 print_type;
-
-  GnomePrintJob      * job;
-  GnomePrintContext  * context;		/* Convenience only. Owned by the job */
-  GnomeFont          * default_font;
-} PrintSession;
-
-
 /** @addtogroup Basic Session Functions
     @{ */
 
-/** Create a new print 'session'.  Once created, a series of commands
- *  can be issued on the session to create the output page.  The
- *  output will be printed when the session is done.  This function
- *  will present the standard print/preview selection box to the user
- *  and wait for the result.
+#include <gtk/gtkprintoperation.h>
+
+/**
+ * Retrieve the print settings from the GtkPrintOperation @a op and save them in
+ * a static variable.
  *
- *  If the hand_built_pages argument is set to TRUE, this function
- *  will perform a couple of extra setup steps.  Specifically it will
- *  call the gnome begin page, set color and set font functions.  The
- *  code will also call close page when the #gnc_print_session_done
- *  function is called.
- *
- *  @param hand_built_pages If TRUE, this funciton will perform extra setup.
- *
- *  @return A pointer to the data structure describing this print session.
+ * @param op non-NULL print operation
  */
-PrintSession * gnc_print_session_create(gboolean hand_built_pages);
+void gnc_print_operation_save_print_settings(GtkPrintOperation *op);
 
-
-/** Destroy a print 'session' without producing any output.
+/**
+ * If print settings have been saved by
+ * gnc_print_operation_save_print_settings(), then set them on the given
+ * GtkPrintOperation @a op.  Set the default page setup as well.
  *
- *  @param ps A pointer to the session to be destroyed.
+ * @param op non-NULL print operation
  */
-void gnc_print_session_destroy(PrintSession * ps);
+void gnc_print_operation_init(GtkPrintOperation *op);
 
-
-/** Finish a print 'session'.  The output from this session will be
- *  printed to the device selected when the session was created.
+/**
+ * Run a page setup dialog and save the resulting GtkPageSetup in a static
+ * variable.
  *
- *  @param ps A pointer to the session to be closed.
+ * @param parent Transient parent, or NULL
  */
-void gnc_print_session_done(PrintSession * ps);
+void gnc_ui_page_setup(GtkWindow *parent);
+
 
 /** @} */
 /** @} */
-
-#endif /* GTKHTML_USES_GTKPRINT */
 
 #endif

@@ -27,7 +27,7 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-module (gnucash report cash-flow))
+(define-module (gnucash report standard-reports cash-flow))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (ice-9 slib))
 (use-modules (gnucash gnc-module))
@@ -180,14 +180,12 @@
     (define (account-full-name<? a b)
       (string<? (gnc-account-get-full-name a) (gnc-account-get-full-name b)))
 
-    ;; helper for account depth
+    ;; return maximum depth over accounts and their children, if any
     (define (accounts-get-children-depth accounts)
       (apply max
 	     (map (lambda (acct)
-		    (let ((children (gnc-account-get-children acct)))
-		      (if (null? children)
-			  1
-			  (+ 1 (accounts-get-children-depth children)))))
+		    (let ((acct-depth (gnc-account-get-current-depth acct)))
+		      (+ acct-depth (- (gnc-account-get-tree-depth acct) 1))))
 		  accounts)))
 
 
@@ -444,7 +442,7 @@
            table
            "grand-total"
            (list
-             (_ "Money In")
+             (gnc:make-html-table-header-cell/markup "text-cell" (_ "Money In"))
              (gnc:make-html-table-header-cell/markup
               "total-number-cell" (gnc:sum-collector-commodity money-in-collector report-currency exchange-fn))))
 
@@ -489,7 +487,7 @@
            table
            "grand-total"
            (list
-             (_ "Money Out")
+             (gnc:make-html-table-header-cell/markup "text-cell" (_ "Money Out"))
              (gnc:make-html-table-header-cell/markup
               "total-number-cell" (gnc:sum-collector-commodity money-out-collector report-currency exchange-fn))))
 
@@ -499,7 +497,7 @@
            table
            "grand-total"
            (list
-             (_ "Difference")
+             (gnc:make-html-table-header-cell/markup "text-cell" (_ "Difference"))
              (gnc:make-html-table-header-cell/markup
               "total-number-cell" (gnc:sum-collector-commodity money-diff-collector report-currency exchange-fn))))
 
@@ -528,6 +526,7 @@
 (gnc:define-report 
  'version 1
  'name reportname
+ 'report-guid "f8748b813fab4220ba26e743aedf38da"
  'menu-path (list gnc:menuname-income-expense)
  'options-generator cash-flow-options-generator
  'renderer cash-flow-renderer)

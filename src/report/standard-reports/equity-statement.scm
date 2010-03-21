@@ -45,7 +45,7 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-module (gnucash report equity-statement))
+(define-module (gnucash report standard-reports equity-statement))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (ice-9 slib))
 (use-modules (gnucash gnc-module))
@@ -133,7 +133,8 @@
                ACCT-TYPE-ASSET ACCT-TYPE-LIABILITY
                ACCT-TYPE-STOCK ACCT-TYPE-MUTUAL ACCT-TYPE-CURRENCY
                ACCT-TYPE-PAYABLE ACCT-TYPE-RECEIVABLE
-               ACCT-TYPE-EQUITY ACCT-TYPE-INCOME ACCT-TYPE-EXPENSE)
+               ACCT-TYPE-EQUITY ACCT-TYPE-INCOME ACCT-TYPE-EXPENSE
+               ACCT-TYPE-TRADING)
          (gnc-account-get-descendants-sorted (gnc-get-current-root-account))))
       #f #t))
     
@@ -245,7 +246,8 @@
           (assoc-ref split-up-accounts ACCT-TYPE-LIABILITY))
          (income-expense-accounts
           (append (assoc-ref split-up-accounts ACCT-TYPE-INCOME)
-                  (assoc-ref split-up-accounts ACCT-TYPE-EXPENSE)))
+                  (assoc-ref split-up-accounts ACCT-TYPE-EXPENSE)
+                  (assoc-ref split-up-accounts ACCT-TYPE-TRADING)))
          (equity-accounts
           (assoc-ref split-up-accounts ACCT-TYPE-EQUITY))
 
@@ -691,6 +693,7 @@
 (gnc:define-report 
  'version 1
  'name reportname
+ 'report-guid "c2a996c8970f43448654ca84f17dda24"
  'menu-path (list gnc:menuname-income-expense)
  'options-generator equity-statement-options-generator
  'renderer (lambda (report-obj)

@@ -253,6 +253,12 @@
 			    (lambda () '()) #f))
 
   (gnc:register-inv-option
+   (gnc:make-string-option 
+    invoice-page (N_ "Custom Title") 
+    "z" (N_ "A custom string to replace Invoice, Bill or Expense Voucher") 
+    ""))
+
+  (gnc:register-inv-option
    (gnc:make-simple-boolean-option
     (N_ "Display Columns") (N_ "Date")
     "b" (N_ "Display the date?") #f))
@@ -433,14 +439,30 @@
     (define (add-payment-row table used-columns split total-collector)
       (let* ((t (xaccSplitGetParent split))
 	     (currency (xaccTransGetCurrency t))
+	     (invoice (opt-val invoice-page invoice-name))
+	     (owner '())
 	     ;; XXX Need to know when to reverse the value
 	     (amt (gnc:make-gnc-monetary currency (xaccSplitGetValue split)))
 	     (payment-style "grand-total")
 	     (row '()))
-	
-	(total-collector 'add 
-			 (gnc:gnc-monetary-commodity amt)
-			 (gnc:gnc-monetary-amount amt))
+	     
+	; Update to fix bug 564380, payment on bill doubles bill. Mike Evans <mikee@saxicola.co.uk>
+	(if (not (null? invoice))
+	(begin
+	  (set! owner (gncInvoiceGetOwner invoice))
+	  (let ((type (gncOwnerGetType
+                       (gncOwnerGetEndOwner owner))))
+	    (cond
+	      ((eqv? type GNC-OWNER-CUSTOMER)
+	       (total-collector 'add 
+			  (gnc:gnc-monetary-commodity amt)
+			 (gnc:gnc-monetary-amount amt)))
+	      ((eqv? type GNC-OWNER-VENDOR)
+	       (total-collector 'add 
+			  (gnc:gnc-monetary-commodity amt)
+			 (gnc:gnc-monetary-amount (gnc:monetary-neg amt))))
+	      ))))
+
 
 	(if (date-col used-columns)
 	    (addto! row
@@ -664,9 +686,9 @@
      'attribute (list "valign" "top"))
     table))
 
-(define (make-myname-table book date-format)
+(define (make-myname-table book date-format title)
   (let* ((table (gnc:make-html-table))
-	 (slots (gnc-book-get-slots book))
+	 (slots (qof-book-get-slots book))
 	 (name (kvp-frame-get-slot-path-gslist
 		slots (append gnc:*kvp-option-path*
 			      (list gnc:*business-label* gnc:*company-name*))))
@@ -704,7 +726,7 @@
      'attribute (list "cellpadding" 0)
      'attribute (list "width" "100%"))
     (gnc:html-table-cell-append-objects!
-	invoice-cell (_"INVOICE"))
+	invoice-cell title)
     (gnc:html-table-cell-set-style!
 	invoice-cell "td"
 	'font-size "+2")
@@ -754,14 +776,22 @@
     (gnc:option-value
      (gnc:lookup-option (gnc:report-options report-obj) section name)))
 
+  (define (title-string title custom-title)
+    (if (not (equal? "" custom-title))
+	(string-expand custom-title
+		       #\space "&nbsp;")
+	title))
+
   (let* ((document (gnc:make-html-document))
 	 (table '())
 	 (orders '())
 	 (invoice (opt-val invoice-page invoice-name))
 	 (owner '())
 	 (references? (opt-val "Display" "References"))
-	 (title (_ "Invoice"))
+	 (default-title (_ "Invoice"))
+	 (custom-title (opt-val invoice-page "Custom Title"))
 	 (invoice? #f))
+
 
     (define (add-order o)
       (if (and references? (not (member o orders)))
@@ -776,20 +806,22 @@
 	      ((eqv? type GNC-OWNER-CUSTOMER)
 	       (set! invoice? #t))
 	      ((eqv? type GNC-OWNER-VENDOR)
-	       (set! title (_ "Bill")))
+	       (set! default-title (_ "Bill")))
 	      ((eqv? type GNC-OWNER-EMPLOYEE)
-	       (set! title (_ "Expense Voucher")))))
-	  (set! title (sprintf #f (_"%s #%d") title
-			       (gncInvoiceGetID invoice)))))
+	       (set! default-title (_ "Expense Voucher")))))
+	  ))
+
     ;; oli-custom - title redundant, "Invoice" moved to myname-table,
     ;; invoice number moved below
     ;;(gnc:html-document-set-title! document title)
 
+    
     (if (not (null? invoice))
 	(let* ((book (gncInvoiceGetBook invoice))
-	      (slots (gnc-book-get-slots book))
+	      (slots (qof-book-get-slots book))
 	      (date-object #f)
-	      (helper-table (gnc:make-html-table)))
+	      (helper-table (gnc:make-html-table))
+	      (title (title-string default-title custom-title)))
 	  (set! table (make-entry-table invoice
 					(gnc:report-options report-obj)
 					add-order invoice?))
@@ -819,7 +851,7 @@
 	  (gnc:html-document-add-object!
 	   document (make-myname-table
 		     book ;;(opt-val "Display" "Today Date Format")))
-		     ""))
+		     "" title))
 
 	  (make-break! document)
 	  (make-break! document)
@@ -843,15 +875,14 @@
 		  (set! date-table (make-date-table))
 		  ;; oli-custom - moved invoice number here
 		  (gnc:html-table-append-row!
-		   date-table (list (sprintf #f (_ "Invoice&nbsp;#&nbsp;%d")
-                                             (gncInvoiceGetID invoice))))
-		  (make-date-row! date-table (_ "Invoice&nbsp;Date") post-date)
-		  (make-date-row! date-table (_ "Due&nbsp;Date") due-date)
+		   date-table (list (sprintf #f "%s&nbsp;#" title) (gncInvoiceGetID invoice)))
+		  (make-date-row! date-table (string-append title "&nbsp;" (_ "Date")) post-date)
+		  (make-date-row! date-table (_ "Due Date") due-date)
 		  date-table)
 		(gnc:make-html-text
 		  ;; oli-custom - FIXME: I have a feeling I broke a
 		 ;; translation by not using string-expand for &nbsp;
-		  (string-append title (N_ "<br>Invoice&nbsp;in&nbsp;progress...."))))))
+		  (string-append title "<br>" (N_ "Invoice in progress..."))))))
 	  
 	  (gnc:html-table-append-row!
 	  	helper-table
@@ -957,19 +988,22 @@
 
     document))
 
+(define fancy-invoice-guid "3ce293441e894423a2425d7a22dd1ac6")
+
 (gnc:define-report
  'version 1
  'name (N_ "Fancy Invoice")
+ 'report-guid fancy-invoice-guid
  'menu-path (list gnc:menuname-business-reports)
  'options-generator options-generator
  'renderer reg-renderer
  'in-menu? #t)
 
 (define (gnc:fancy-invoice-report-create-internal invoice)
-  (let* ((options (gnc:make-report-options (N_ "Fancy Invoice")))
+  (let* ((options (gnc:make-report-options fancy-invoice-guid))
          (invoice-op (gnc:lookup-option options invoice-page invoice-name)))
 
     (gnc:option-set-value invoice-op invoice)
-    (gnc:make-report (N_ "Fancy Invoice") options)))
+    (gnc:make-report fancy-invoice-guid options)))
 
 (export gnc:fancy-invoice-report-create-internal)

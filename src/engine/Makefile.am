@@ -2,14 +2,15 @@ SUBDIRS = . test-core test
 
 pkglib_LTLIBRARIES = libgncmod-engine.la
 
-AM_CFLAGS = \
+AM_CPPFLAGS = \
 	-I${top_srcdir}/lib/libc \
 	-I${top_srcdir}/src/core-utils \
 	-I${top_srcdir}/src \
 	-I${top_builddir}/src \
 	-I${top_srcdir}/src/gnc-module \
-	${QOF_CFLAGS} \
+	-I${top_srcdir}/src/libqof/qof \
 	${GLIB_CFLAGS} \
+	${IGE_MAC_CFLAGS} \
 	${GUILE_INCS}
 
 libgncmod_engine_la_SOURCES = \
@@ -26,17 +27,14 @@ libgncmod_engine_la_SOURCES = \
   Split.c \
   TransLog.c \
   Transaction.c \
-  binreloc.c \
   cap-gains.c \
   cashobjects.c \
   gnc-associate-account.c \
   gnc-budget.c \
   gnc-commodity.c \
   gnc-engine.c \
-  gnc-filepath-utils.c \
   gnc-hooks.c \
   gnc-lot.c \
-  gnc-path.c \
   gnc-pricedb.c \
   gnc-session.c \
   gnc-session-scm.c \
@@ -69,20 +67,16 @@ gncinclude_HEADERS = \
   Split.h \
   TransLog.h \
   Transaction.h \
-  binreloc.h \
   cap-gains.h \
   cashobjects.h \
   engine-helpers.h \
   glib-helpers.h \
   gnc-associate-account.h \
-  gnc-book.h \
   gnc-budget.h \
   gnc-commodity.h \
   gnc-engine.h \
   gnc-event.h \
-  gnc-filepath-utils.h \
   gnc-hooks.h \
-  gnc-path.h \
   gnc-pricedb.h \
   gnc-session.h \
   gnc-session-scm.h \
@@ -111,11 +105,11 @@ libgncmod_engine_la_LDFLAGS = -avoid-version
 libgncmod_engine_la_LIBADD = \
   ../gnc-module/libgnc-module.la \
   ../core-utils/libgnc-core-utils.la \
+  ${top_builddir}/src/libqof/qof/libgnc-qof.la \
   ${GUILE_LIBS} \
-  ${QOF_LIBS} \
   ${REGEX_LIBS} \
   ${GLIB_LIBS} \
-  ${BINRELOC_LIBS} \
+  ${IGE_MAC_LIBS} \
   ${top_builddir}/lib/libc/libc-missing.la
 
 gncmoddir = ${GNC_SHAREDIR}/guile-modules/gnucash
@@ -134,7 +128,6 @@ EXTRA_DIST = \
   extensions.txt \
   iso-4217-currencies.scm \
   iso-currencies-to-c \
-  gncla-dir.h.in \
   kvp_doc.txt \
   SX-book-p.h \
   engine.i \
@@ -170,27 +163,16 @@ if BUILDING_FROM_SVN
 swig-engine.c: engine.i ${top_srcdir}/src/base-typemaps.i \
                ${gncinclude_HEADERS} ${noinst_HEADERS}
 	$(SWIG) -guile $(SWIG_ARGS) -Linkage module \
-	-I${top_srcdir}/lib/libqof/qof -I${top_srcdir}/src -o $@ $<
+	-I${top_srcdir}/src/libqof/qof -I${top_srcdir}/src -o $@ $<
 endif
 
 iso-4217-currencies.c: iso-4217-currencies.scm iso-currencies-to-c
 	-chmod u+x ${srcdir}/iso-currencies-to-c
 	GUILE_LOAD_PATH=@GNC_SRFI_LOAD_PATH@:${GUILE_LOAD_PATH} srcdir=${srcdir} ${srcdir}/iso-currencies-to-c
 
-gncla-dir.h: gncla-dir.h.in ${top_builddir}/config.status Makefile
-	rm -f $@.tmp
-	sed < $< > $@.tmp \
-		-e 's#@-DATADIRNAME-@#${DATADIRNAME}#g' \
-		-e 's#@-libdir-@#${libdir}#g' \
-		-e 's#@-sysconfdir-@#${sysconfdir}#g' \
-		-e 's#@-datadir-@#${datadir}#g' \
-		-e 's#@-prefix-@#${prefix}#g'
-	mv $@.tmp $@
+BUILT_SOURCES = iso-4217-currencies.c
 
-BUILT_SOURCES = iso-4217-currencies.c \
-  gncla-dir.h
-
-CLEANFILES = $(BUILT_SOURCES) gnucash .scm-links gncla-dir.h \
+CLEANFILES = $(BUILT_SOURCES) gnucash .scm-links \
 	${SCM_FILE_LINKS}
 MAINTAINERCLEANFILES = swig-engine.c
 

@@ -247,6 +247,11 @@
 ;;          gnc:account-get-trans-type-balance-interval, matching
 ;;          closing transactions to be ignored when balance-mode is
 ;;          'pre-closing.
+;;
+;;     report-budget: budget
+;;
+;;	    (optional) a budget used to ignore accounts with zero 
+;;	    budget or balance (if zb-balance-mode is set to omit).
 ;; 
 ;;     account-type: unimplemented
 ;;     account-class: unimplemented
@@ -601,6 +606,7 @@
          ;; someone was thinking price-source?
 	 (exchange-fn (or (get-val env 'exchange-fn)
                           #f))
+         (get-balance-fn (or (get-val env 'get-balance-fn) #f))
          ;;'weighted-average))
 	 (column-header (let ((cell (get-val env 'column-header)))
 			  (if (equal? cell #t)
@@ -627,6 +633,7 @@
 				 (list 'regexp #f)
 				 )
 				))
+	 (report-budget (or (get-val env 'report-budget) #f))
 	 ;; local variables
 	 (toplvl-accts
 	  (gnc-account-get-children-sorted (gnc-get-current-root-account)))
@@ -637,71 +644,76 @@
 
     ;; the following function was adapted from html-utilities.scm
     ;; 
-    ;;
-    ;; there's got to be a prettier way to do this. maybe even make two
-    ;; of these. The balance-mode is only used by trial-balance.scm. so 
-    ;; make two versions of this animal, one that cares about balance-mode 
-    ;; one that doesn't. then check for a balance-mode !'post-closing and
-    ;; call the right one. later.
-    (define (get-balance-nosub-mode account start-date end-date)
-      (let* ((post-closing-bal
-	      (if start-date
-		  (gnc:account-get-comm-balance-interval
-		   account start-date end-date #f)
-		  (gnc:account-get-comm-balance-at-date
-		   account end-date #f)))
-	     (closing (lambda(a)
-			(gnc:account-get-trans-type-balance-interval
-			 (list account) closing-pattern
-			 start-date end-date)
-			)
-		      )
-	     (adjusting (lambda(a)
-			  (gnc:account-get-trans-type-balance-interval
-			   (list account) adjusting-pattern
-			   start-date end-date)
-			  )
-			)
-	     )
-	;; what the heck is this? how about (case balance-mode blah)...
-	(or (and (equal? balance-mode 'post-closing) post-closing-bal)
-	    (and (equal? balance-mode 'pre-closing)
-		 (let* ((closing-amt (closing account))
-			)
-		   (post-closing-bal 'minusmerge closing-amt #f)
-		   post-closing-bal)
-		 )
-	    (and (equal? balance-mode 'pre-adjusting)
-		 (let* ((closing-amt (closing account))
-			(adjusting-amt (adjusting account))
-			)
-		   (post-closing-bal 'minusmerge closing-amt #f)
-		   (post-closing-bal 'minusmerge adjusting-amt #f)
-		   post-closing-bal)
-		 )
-	    ;; error if we get here.
-	    )
-	)
-      )
 
     ;; helper to calculate the balances for all required accounts
-    (define (calculate-balances accts start-date end-date)
+    (define (calculate-balances accts start-date end-date get-balance-fn)
       (define (calculate-balances-helper accts start-date end-date acct-balances)
         (if (not (null? accts))
             (begin
-                ;; using the existing function that cares about balance-mode
-                ;; maybe this should get replaces at some point.
-                (hash-set! acct-balances (gncAccountGetGUID (car accts))
-                    (get-balance-nosub-mode (car accts) start-date end-date))
-                (calculate-balances-helper (cdr accts) start-date end-date acct-balances)
-            )
+              ;; using the existing function that cares about balance-mode
+              ;; maybe this should get replaces at some point.
+              (hash-set! acct-balances (gncAccountGetGUID (car accts))
+                         (get-balance-fn (car accts) start-date end-date))
+              (calculate-balances-helper (cdr accts) start-date end-date acct-balances)
+              )
             acct-balances)
         )
-        
-      (calculate-balances-helper accts start-date end-date
-                                 (make-hash-table 23))                                 
-      )
 
+      (define (calculate-balances-simple accts start-date end-date hash-table)
+        (define (merge-splits splits subtract?)
+          (for-each
+           (lambda (split)
+             (let* ((acct (xaccSplitGetAccount split))
+                    (guid (gncAccountGetGUID acct))
+                    (acct-comm (xaccAccountGetCommodity acct))
+                    (shares (xaccSplitGetAmount split))
+                    (hash (hash-ref hash-table guid)))
+;                (gnc:debug "Merging split for " (xaccAccountGetName acct) " for "
+;                           (gnc-commodity-numeric->string acct-comm shares)
+;                           " into hash entry " hash)
+               (if (not hash)
+                   (begin (set! hash (gnc:make-commodity-collector))
+                          (hash-set! hash-table guid hash)))
+               (hash 'add acct-comm (if subtract?
+                                        (gnc-numeric-neg shares)
+                                        shares))))
+           splits))
+
+        ;; If you pass a null account list to gnc:account-get-trans-type-splits-interval
+        ;; it returns splits from all accounts rather than from no accounts.  This is
+        ;; probably a bug but we'll work around it for now.
+        (if (not (null? accts))
+            (begin
+              (merge-splits (gnc:account-get-trans-type-splits-interval
+                             accts #f start-date end-date)
+                            #f)
+              (cond
+               ((equal? balance-mode 'post-closing) #t)
+      
+               ((equal? balance-mode 'pre-closing)
+                (merge-splits (gnc:account-get-trans-type-splits-interval
+                               accts closing-pattern start-date end-date)
+                              #t))
+      
+               ((equal? balance-mode 'pre-adjusting)
+                (merge-splits (gnc:account-get-trans-type-splits-interval
+                               accts closing-pattern start-date end-date)
+                              #t)
+                (merge-splits (gnc:account-get-trans-type-splits-interval
+                               accts adjusting-pattern start-date end-date)
+                              #t))
+               (else (begin (display "you fail it")
+                            (newline))))))
+        hash-table
+        )
+
+      (if get-balance-fn
+          (calculate-balances-helper accts start-date end-date
+                                     (make-hash-table 23))                               
+          (calculate-balances-simple accts start-date end-date
+                                     (make-hash-table 23))                               
+          )
+      )
 
     (define (traverse-accounts! accts acct-depth logi-depth new-balances)
       
@@ -827,10 +839,15 @@
 	     (set! acct-depth-reached (max acct-depth-reached acct-depth))
 	     (set! logi-depth-reached (max logi-depth-reached logi-depth))
 	     (set! disp-depth-reached (max disp-depth-reached disp-depth))
+
 	     (or (not (use-acct? acct))
 		 ;; ok, so we'll consider parent accounts with zero
 		 ;; recursive-bal to be zero balance leaf accounts
 		 (and (gnc-commodity-collector-allzero? recursive-bal)
+		      (or (not report-budget)
+             		  (gnc-numeric-zero-p
+				(gnc:budget-account-get-rolledup-net 
+					report-budget account #f #f)))
 		      (equal? zero-mode 'omit-leaf-acct))
 		 (begin
 		   (set! row-env
@@ -896,7 +913,8 @@
       ) ;; end of definition of traverse-accounts!
 
     ;; do it
-    (traverse-accounts! toplvl-accts 0 0 (calculate-balances accounts start-date end-date))
+    (traverse-accounts! toplvl-accts 0 0
+                        (calculate-balances accounts start-date end-date get-balance-fn))
     
     ;; set the column-header colspan
     (if gnc:colspans-are-working-right
@@ -1029,6 +1047,11 @@
 ;; Here are some standard functions to help process gnc:html-acct-tables.
 ;; 
 
+(define (gnc:html-make-nbsps n)
+  (if (> n 0)
+      (string-append "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" (gnc:html-make-nbsps (- n 1)))
+      ""))
+
 ;; Stylesheets define the following cell styles which these functions
 ;; use: "text-cell" "total-label-cell" "number-cell"
 ;; "total-number-cell".  Row styles include "normal-row",
@@ -1065,16 +1088,15 @@
 	 (tbl-width (or table-width (+ amt-depth amt-colspan)))
 	 (row
 	  (append
-	   (gnc:html-make-empty-cells lbl-depth)  ;; padding before label
 	   (list
 	    (if label-markup                      ;; the actual label
 		(gnc:make-html-table-cell/size/markup
-		 1 lbl-colspan label-markup label)
+		 1 1 label-markup (gnc:make-html-text (gnc:html-make-nbsps lbl-depth)) label)
 		(gnc:make-html-table-cell/size
-		 1 lbl-colspan label))
+		 1 1 (gnc:make-html-text (gnc:html-make-nbsps lbl-depth)) label))
 	    )
 	   (gnc:html-make-empty-cells             ;; padding after label
-            (+ (- amt-depth (+ lbl-depth lbl-colspan))
+            (+ (- amt-depth (/ tbl-width 2))
                (if total-rule? -1 0)
                )
             )
@@ -1285,7 +1307,7 @@
 	      label
               indented-depth
               account-colspan               ;; label-colspan
-              #f                            ;; label-markup
+              "anchor-cell"                 ;; label-markup
 	      amount
 	      (+ account-cols (- 0 1)
 		 (- logical-cols display-depth)

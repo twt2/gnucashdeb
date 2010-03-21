@@ -325,9 +325,7 @@
          (value (budget->guid default-value))
          (option-set #f)
          (value->string (lambda ()
-                          (string-append
-                           "'" (gnc:value->string (if option-set option #f)))))
-
+                          (string-append "'" (gnc:value->string value))))
          )
     (gnc:make-option
      section name sort-tag 'budget documentation-string
@@ -445,9 +443,18 @@
                  (setter-function-called-cb x)))
      (lambda () default-value)
      (gnc:restore-form-generator value->string)
-     (lambda (f p) (kvp-frame-set-slot-path-gslist f value p))
+     (lambda (f p) (kvp-frame-set-slot-path-gslist f 
+		    ;; As no boolean KvpValue exists, as a workaround
+		    ;; we store the string "t" for TRUE and "f" for
+		    ;; FALSE in a string KvpValue.
+                    (if value "t" "f") 
+                    p))
      (lambda (f p)
        (let ((v (kvp-frame-get-slot-path-gslist f p)))
+	 ;; As no boolean KvpValue exists, as a workaround we store
+	 ;; the string "t" for TRUE and "f" for FALSE.
+         (cond ((equal? v "t") (set! v #t))
+               ((equal? v "f") (set! v #f)))
          (if (and v (boolean? v) (not (equal? v default-value)))
              (set! value v))))
      (lambda (x)

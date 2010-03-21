@@ -1,5 +1,5 @@
-/* 
- * gnc-plugin-file-history.h -- 
+/*
+ * gnc-plugin-file-history.h --
  * Copyright (C) 2003,2005 David Hampton <hampton@employees.org>
  *
  * This program is free software; you can redistribute it and/or
@@ -56,14 +56,16 @@ G_BEGIN_DECLS
 /* typedefs & structures */
 
 /** The instance data structure for a file history plugin. */
-typedef struct {
-	GncPlugin gnc_plugin;
+typedef struct
+{
+    GncPlugin gnc_plugin;
 } GncPluginFileHistory;
 
 
 /** The class data structure for a file history plugin. */
-typedef struct {
-	GncPluginClass gnc_plugin;
+typedef struct
+{
+    GncPluginClass gnc_plugin;
 } GncPluginFileHistoryClass;
 
 /* function prototypes */
@@ -96,9 +98,9 @@ void gnc_history_add_file (const char *filename);
 /** Remove all occurences of a file name from the history list.  Move
  *  the other key values up in the list to fill the gaps.
  *
- *  @param filename The name of the file to remove from the list.
+ *  @param oldfile The name of the file to remove from the list.
  */
-void gnc_history_remove_file (const char *filename);
+void gnc_history_remove_file (const char *oldfile);
 
 
 /** Retrieve the name of the file most recently accessed.  This is the

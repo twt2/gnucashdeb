@@ -5,6 +5,7 @@
 #include <glib.h>
 #include <qof.h>
 #include <Query.h>
+#include <guile-mappings.h>
 #include <gnc-budget.h>
 #include <gnc-commodity.h>
 #include <gnc-engine.h>
@@ -23,7 +24,6 @@ SCM scm_init_sw_engine_module (void);
 
 %import "base-typemaps.i"
 
-
 GLIST_HELPER_INOUT(SplitList, SWIGTYPE_p_Split);
 GLIST_HELPER_INOUT(TransList, SWIGTYPE_p_Transaction);
 GLIST_HELPER_INOUT(LotList, SWIGTYPE_p_GNCLot);
@@ -32,28 +32,22 @@ GLIST_HELPER_INOUT(PriceList, SWIGTYPE_p_GNCPrice);
 // TODO: free PriceList?
 GLIST_HELPER_INOUT(CommodityList, SWIGTYPE_p_gnc_commodity);
 
+%typemap(newfree) gchar * "g_free($1);"
+
+/* These need to be here so that they are *before* the function
+declarations in the header files, some of which are included by
+engine-common.i */
+
+%newobject gnc_account_get_full_name;
+
+%include "engine-common.i"
 
 %inline %{
-static const GUID * gncSplitGetGUID(Split *x)
-{ return qof_instance_get_guid(QOF_INSTANCE(x)); }
-static const GUID * gncTransGetGUID(Transaction *x)
-{ return qof_instance_get_guid(QOF_INSTANCE(x)); }
-static const GUID * gncAccountGetGUID(Account *x)
-{ return qof_instance_get_guid(QOF_INSTANCE(x)); }
 static const GUID * gncPriceGetGUID(GNCPrice *x)
 { return qof_instance_get_guid(QOF_INSTANCE(x)); }
 static const GUID * gncBudgetGetGUID(GncBudget *x)
 { return qof_instance_get_guid(QOF_INSTANCE(x)); }
 %}
-
-%typemap(newfree) AccountList * "g_list_free($1);"
-%typemap(newfree) SplitList * "g_list_free($1);"
-%typemap(newfree) TransList * "g_list_free($1);"
-%typemap(newfree) PriceList * "g_list_free($1);"
-%typemap(newfree) LotList * "g_list_free($1);"
-%typemap(newfree) CommodityList * "g_list_free($1);"
-
-%typemap(newfree) gchar * "g_free($1);"
 
 /* NB: The object ownership annotations should already cover all the
 functions currently used in guile, but not all the functions that are
@@ -83,18 +77,7 @@ functions. */
   static QofIdType QOF_ID_BOOK_SCM (void) { return QOF_ID_BOOK; }
 }
 
-%include <Split.h>
 %include <engine-helpers.h>
-AccountList * gnc_account_get_children (const Account *account);
-AccountList * gnc_account_get_children_sorted (const Account *account);
-AccountList * gnc_account_get_descendants (const Account *account);
-AccountList * gnc_account_get_descendants_sorted (const Account *account);
-%ignore gnc_account_get_children;
-%ignore gnc_account_get_children_sorted;
-%ignore gnc_account_get_descendants;
-%ignore gnc_account_get_descendants_sorted;
-%include <Account.h>
-%include <Transaction.h>
 %include <gnc-pricedb.h>
 
 QofSession * qof_session_new (void);
@@ -132,6 +115,10 @@ SplitList * qof_query_run (QofQuery *q);
 %ignore qof_query_run;
 %include <qofquery.h>
 %include <qofquerycore.h>
+%include <qofbookslots.h>
+%include <qofbook.h>
+
+KvpFrame* qof_book_get_slots(QofBook* book);
 
 gnc_numeric gnc_numeric_create(gint64 num, gint64 denom);
 gnc_numeric gnc_numeric_zero(void);
@@ -170,15 +157,15 @@ gchar * gnc_build_book_path (const gchar *filename);
   SCM path_scm = $input;
   GList *path = NULL;
 
-  while (!SCM_NULLP (path_scm))
+  while (!scm_is_null (path_scm))
   {
     SCM key_scm = SCM_CAR (path_scm);
     char *key;
 
-    if (!SCM_STRINGP (key_scm))
+    if (!scm_is_string (key_scm))
       break;
 
-    key = g_strdup (SCM_STRING_CHARS (key_scm));
+    key = g_strdup (scm_to_locale_string (key_scm));
 
     path = g_list_prepend (path, key);
 
@@ -193,7 +180,6 @@ void gnc_quote_source_set_fq_installed (GList *sources_list);
 %ignore gnc_quote_source_set_fq_installed;
 %include <gnc-commodity.h>
 
-%include <gnc-lot.h>
 %include <gnc-session-scm.h>
 void gnc_hook_add_scm_dangler (const gchar *name, SCM proc);
 void gnc_hook_run (const gchar *name, gpointer data);
@@ -212,12 +198,6 @@ void kvp_frame_set_slot_path_gslist(
 KvpValue * kvp_frame_get_slot_path_gslist (KvpFrame *frame, GSList *key_path);
 
 %clear GSList *key_path;
-
-%inline %{
-static KvpFrame * gnc_book_get_slots(QofBook *book) {
-   return qof_instance_get_slots(QOF_INSTANCE(book));
-}
-%}
 
 
 %init {
@@ -246,6 +226,8 @@ static KvpFrame * gnc_book_get_slots(QofBook *book) {
     SET_ENUM("ACCT-TYPE-EQUITY");
     SET_ENUM("ACCT-TYPE-RECEIVABLE");
     SET_ENUM("ACCT-TYPE-PAYABLE");
+    SET_ENUM("ACCT-TYPE-ROOT");
+    SET_ENUM("ACCT-TYPE-TRADING");
     SET_ENUM("NUM-ACCOUNT-TYPES");
     SET_ENUM("ACCT-TYPE-CHECKING");
     SET_ENUM("ACCT-TYPE-SAVINGS");
@@ -314,6 +296,10 @@ static KvpFrame * gnc_book_get_slots(QofBook *book) {
     SET_ENUM("TRANS-DATE-POSTED");
     SET_ENUM("TRANS-DESCRIPTION");
     SET_ENUM("TRANS-NUM");
+    
+    SET_ENUM("BOOK-OPTIONS-NAME");
+    SET_ENUM("ACCOUNT-OPTIONS-SECTION");
+    SET_ENUM("TRADING-ACCOUNTS-OPTION");
 
     SET_ENUM("ACCOUNT-CODE-");  /* sic */
 

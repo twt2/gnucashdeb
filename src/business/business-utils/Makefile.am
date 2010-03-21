@@ -1,15 +1,15 @@
 pkglib_LTLIBRARIES = libgncmod-business-utils.la
 
-AM_CFLAGS = \
+AM_CPPFLAGS = \
   -I${top_srcdir}/src \
   -I${top_builddir}/src \
   -I${top_srcdir}/src/engine \
   -I${top_srcdir}/src/gnc-module \
   -I${top_srcdir}/src/app-utils \
   -I${top_srcdir}/src/business/business-core \
+  -I${top_srcdir}/src/libqof/qof \
   ${GUILE_INCS} \
   ${GLIB_CFLAGS} \
-  ${QOF_CFLAGS} \
   ${GNOME_CFLAGS}
 
 libgncmod_business_utils_la_SOURCES = \
@@ -24,9 +24,9 @@ libgncmod_business_utils_la_LDFLAGS = -avoid-version
 libgncmod_business_utils_la_LIBADD = \
   ${top_builddir}/src/gnc-module/libgnc-module.la \
   ${top_builddir}/src/app-utils/libgncmod-app-utils.la \
+  ${top_builddir}/src/libqof/qof/libgnc-qof.la \
   ${GUILE_LIBS} \
   ${GLIB_LIBS} \
-  ${QOF_LIBS} \
   ${EFENCE_LIBS}
 
 # Guile Modules

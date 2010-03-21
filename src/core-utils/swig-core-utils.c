@@ -1209,17 +1209,19 @@ SWIG_Guile_GetArgs (SCM *dest, SCM rest,
 
 #define SWIGTYPE_p_char swig_types[0]
 #define SWIGTYPE_p_double swig_types[1]
-#define SWIGTYPE_p_int swig_types[2]
-#define SWIGTYPE_p_unsigned_int swig_types[3]
-#define SWIGTYPE_p_unsigned_long swig_types[4]
-static swig_type_info *swig_types[6];
-static swig_module_info swig_module = {swig_types, 5, 0, 0, 0, 0};
+#define SWIGTYPE_p_float swig_types[2]
+#define SWIGTYPE_p_int swig_types[3]
+#define SWIGTYPE_p_unsigned_int swig_types[4]
+#define SWIGTYPE_p_unsigned_long swig_types[5]
+static swig_type_info *swig_types[7];
+static swig_module_info swig_module = {swig_types, 6, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
 /* -------- TYPES TABLE (END) -------- */
 
 
+#include <guile-mappings.h>
 #include <gnc-glib-utils.h>
 #include <gnc-main.h>
 #include <glib.h>
@@ -1251,7 +1253,7 @@ _wrap_g_find_program_in_path (SCM s_0)
   result = (gchar *)g_find_program_in_path((char const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -1384,7 +1386,7 @@ _wrap_gnc_utf8_strip_invalid_strdup (SCM s_0)
   result = (gchar *)gnc_utf8_strip_invalid_strdup((char const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -1413,7 +1415,7 @@ _wrap_gnc_locale_from_utf8 (SCM s_0)
   result = (gchar *)gnc_locale_from_utf8((char const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -1442,7 +1444,7 @@ _wrap_gnc_locale_to_utf8 (SCM s_0)
   result = (gchar *)gnc_locale_to_utf8((char const *)arg1);
   {
     gswig_result = scm_makfrom0str((const char *)result);
-    if (!SCM_NFALSEP(gswig_result)) {
+    if (!scm_is_true(gswig_result)) {
       gswig_result = scm_makstr(0, 0);
     }
   }
@@ -1485,6 +1487,7 @@ extern "C" {
 
 static swig_type_info _swigt__p_char = {"_p_char", "gchar *|char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_double = {"_p_double", "double *|gdouble *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_float = {"_p_float", "float *|gfloat *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_int = {"_p_int", "int *|gint *|time_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_int = {"_p_unsigned_int", "guint *|unsigned int *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_long = {"_p_unsigned_long", "SCM *|unsigned long *", 0, 0, (void*)0, 0};
@@ -1492,6 +1495,7 @@ static swig_type_info _swigt__p_unsigned_long = {"_p_unsigned_long", "SCM *|unsi
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_char,
   &_swigt__p_double,
+  &_swigt__p_float,
   &_swigt__p_int,
   &_swigt__p_unsigned_int,
   &_swigt__p_unsigned_long,
@@ -1499,6 +1503,7 @@ static swig_type_info *swig_type_initial[] = {
 
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_double[] = {  {&_swigt__p_double, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_float[] = {  {&_swigt__p_float, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_int[] = {  {&_swigt__p_unsigned_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_long[] = {  {&_swigt__p_unsigned_long, 0, 0, 0},{0, 0, 0, 0}};
@@ -1506,6 +1511,7 @@ static swig_cast_info _swigc__p_unsigned_long[] = {  {&_swigt__p_unsigned_long, 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_char,
   _swigc__p_double,
+  _swigc__p_float,
   _swigc__p_int,
   _swigc__p_unsigned_int,
   _swigc__p_unsigned_long,

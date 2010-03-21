@@ -1,9 +1,7 @@
 # Order is important here.
 SUBDIRS = . overrides test
 
-AM_CFLAGS = -I${top_builddir} ${GLIB_CFLAGS} ${GNOME_CFLAGS} ${GTK_CFLAGS} \
-  ${GUILE_INCS} \
-  ${QOF_CFLAGS} \
+AM_CPPFLAGS = -I${top_builddir} ${GLIB_CFLAGS} ${GNOME_CFLAGS} ${GTK_CFLAGS} \
   -DPKGSYSCONFDIR=\"${GNC_CONFIGDIR}\" \
   -DPKGDATADIR=\"${GNC_SHAREDIR}\" \
   -DGNC_HELPDIR=\"${GNC_HELPDIR}\" \
@@ -15,28 +13,52 @@ AM_CFLAGS = -I${top_builddir} ${GLIB_CFLAGS} ${GNOME_CFLAGS} ${GTK_CFLAGS} \
   -I${top_srcdir}/src/engine \
   -I${top_srcdir}/src/gnome \
   -I${top_builddir}/src/gnome-utils \
-  -I${top_srcdir}/src/gnc-module
+  -I${top_srcdir}/src/gnc-module \
+  -I${top_srcdir}/src/libqof/qof \
+  ${GUILE_INCS}
 
 bin_PROGRAMS = gnucash-bin
 gnucash_bin_SOURCES = gnucash-bin.c
-gnucash_bin_LDADD = ${GUILE_LIBS} ${GLIB_LIBS} ${GNOME_LIBS} ${GTK_LIBS} \
-${QOF_LIBS} \
-${top_builddir}/src/engine/libgncmod-engine.la \
-${top_builddir}/src/gnome/libgnc-gnome.la \
-${top_builddir}/src/gnome-utils/libgncmod-gnome-utils.la \
-${top_builddir}/src/app-utils/libgncmod-app-utils.la \
-${top_builddir}/src/core-utils/libgnc-core-utils.la \
-${top_builddir}/src/gnc-module/libgnc-module.la
+gnucash_bin_LDADD = \
+  ${top_builddir}/src/libqof/qof/libgnc-qof.la \
+  ${GUILE_LIBS} \
+  ${GLIB_LIBS} \
+  ${GNOME_LIBS} \
+  ${GTK_LIBS} \
+  ${top_builddir}/src/engine/libgncmod-engine.la \
+  ${top_builddir}/src/gnome/libgnc-gnome.la \
+  ${top_builddir}/src/gnome-utils/libgncmod-gnome-utils.la \
+  ${top_builddir}/src/app-utils/libgncmod-app-utils.la \
+  ${top_builddir}/src/core-utils/libgnc-core-utils.la \
+  ${top_builddir}/src/gnc-module/libgnc-module.la
 
-gnucash: gnucash.in ${top_builddir}/config.status Makefile
+GNUCASH_BIN_INSTALL_NAME=`echo gnucash-bin | sed -e '$(transform)'`
+GNUCASH_SETUP_ENV_INSTALL_NAME=`echo gnucash-setup-env | sed -e '$(transform)'`
+
+gnucash: gnucash.in gnucash-setup-env ${top_builddir}/config.status Makefile
 	rm -f $@.tmp
 	sed < $< > $@.tmp \
 	    -e 's#@-BIN_DIR-@#${bindir}#g' \
-	    -e 's#@-GNC_GUILE_MODULE_DIR-@#${GNC_SHAREDIR}/guile-modules#g' \
-	    -e 's#@-GNC_SCM_INSTALL_DIR-@#${GNC_SCM_INSTALL_DIR}#g' \
-            -e 's#@-GNC_LIB_INSTALLDIR-@#${libdir}#' \
-            -e 's#@-GNC_PKGLIB_INSTALLDIR-@#${pkglibdir}#g' \
-	    -e 's#@-PATH_SEPARATOR-@#${PATH_SEPARATOR}#g'
+	    -e "s#@-GNUCASH_SETUP_ENV_INSTALL_NAME-@#${GNUCASH_SETUP_ENV_INSTALL_NAME}#g" \
+	    -e "s#@-GNUCASH_BIN_INSTALL_NAME-@#${GNUCASH_BIN_INSTALL_NAME}#g"
+	mv $@.tmp $@
+	chmod u+x $@
+
+gnucash-gdb: gnucash-gdb.in gnucash-setup-env ${top_builddir}/config.status Makefile
+	rm -f $@.tmp
+	sed < $< > $@.tmp \
+	    -e 's#@-BIN_DIR-@#${bindir}#g' \
+	    -e "s#@-GNUCASH_SETUP_ENV_INSTALL_NAME-@#${GNUCASH_SETUP_ENV_INSTALL_NAME}#g" \
+	    -e "s#@-GNUCASH_BIN_INSTALL_NAME-@#${GNUCASH_BIN_INSTALL_NAME}#g"
+	mv $@.tmp $@
+	chmod u+x $@
+
+gnucash-ddd: gnucash-ddd.in gnucash-setup-env ${top_builddir}/config.status Makefile
+	rm -f $@.tmp
+	sed < $< > $@.tmp \
+	    -e 's#@-BIN_DIR-@#${bindir}#g' \
+	    -e "s#@-GNUCASH_SETUP_ENV_INSTALL_NAME-@#${GNUCASH_SETUP_ENV_INSTALL_NAME}#g" \
+	    -e "s#@-GNUCASH_BIN_INSTALL_NAME-@#${GNUCASH_BIN_INSTALL_NAME}#g"
 	mv $@.tmp $@
 	chmod u+x $@
 
@@ -44,15 +66,29 @@ gnucash-valgrind: gnucash-valgrind.in ${top_builddir}/config.status Makefile
 	rm -f $@.tmp
 	sed < $< > $@.tmp \
 	    -e 's#@-BIN_DIR-@#${bindir}#g' \
-	    -e 's#@-GNC_GUILE_MODULE_DIR-@#${GNC_SHAREDIR}/guile-modules#g' \
-	    -e 's#@-GNC_SCM_INSTALL_DIR-@#${GNC_SCM_INSTALL_DIR}#g' \
-            -e 's#@-GNC_LIB_INSTALLDIR-@#${libdir}#' \
-            -e 's#@-GNC_PKGLIB_INSTALLDIR-@#${pkglibdir}#g' \
-	    -e "s#@-TOP_SRC_DIR-@#`pwd`/${top_srcdir}#g"
+	    -e "s#@-TOP_SRC_DIR-@#${abs_top_srcdir}#g" \
+	    -e "s#@-GNUCASH_SETUP_ENV_INSTALL_NAME-@#${GNUCASH_SETUP_ENV_INSTALL_NAME}#g" \
+	    -e "s#@-GNUCASH_BIN_INSTALL_NAME-@#${GNUCASH_BIN_INSTALL_NAME}#g"
 	mv $@.tmp $@
 	chmod u+x $@
 
-CLEANFILES = $(BUILT_SOURCES) gnucash gnucash-valgrind
+gnucash-setup-env: ${GNUCASH_SETUP_ENV}.in ${top_builddir}/config.status Makefile
+	rm -f $@.tmp
+	sed < $< > $@.tmp \
+	    -e 's#@-BIN_DIR-@#${bindir}#g' \
+		-e 's#@-GNC_DBD_DIR-@#${GNC_DBD_DIR}#g' \
+	    -e 's#@-GNC_STANDARD_REPORTS_DIR-@#${GNC_SHAREDIR}/guile-modules/gnucash/report/standard-reports#g' \
+	    -e 's#@-GNC_GUILE_MODULE_DIR-@#${GNC_SHAREDIR}/guile-modules#g' \
+	    -e 's#@-GNC_SCM_INSTALL_DIR-@#${GNC_SCM_INSTALL_DIR}#g' \
+        -e 's#@-GNC_LIB_INSTALLDIR-@#${libdir}#' \
+        -e 's#@-GNC_PKGLIB_INSTALLDIR-@#${pkglibdir}#g' \
+	    -e "s#@-TOP_SRC_DIR-@#`pwd`/${top_srcdir}#g" \
+	    -e 's#@-PATH_SEPARATOR-@#${PATH_SEPARATOR}#g' \
+	-e 's#@-PREFIX-@#${prefix}#g'
+	mv $@.tmp $@
+	chmod u+x $@
+
+CLEANFILES = $(BUILT_SOURCES) gnucash gnucash-valgrind gnucash-gdb gnucash-ddd gnucash-setup-env
 
 # We handle gnucash scripts in a somewhat unexpected way, but we do
 # this so that a user who doesn't necessarily have the right
@@ -71,13 +107,27 @@ CLEANFILES = $(BUILT_SOURCES) gnucash gnucash-valgrind
 # by these top-level "common" scripts.
 gnc_common_scripts = gnucash-env gnucash-make-guids
 
-bin_SCRIPTS = ${gnc_common_scripts} update-gnucash-gconf gnucash gnucash-valgrind
+bin_SCRIPTS = \
+    ${gnc_common_scripts} \
+	update-gnucash-gconf \
+	gnucash \
+	gnucash-valgrind \
+	gnucash-gdb \
+	gnucash-ddd \
+	gnucash-setup-env
 
 # if you change gncoverridedir, make sure you change ./overrides/Makefile.am too.
 gncoverridesdir = ${GNC_LIBEXECDIR}/overrides
 
-EXTRA_DIST = generate-gnc-script update-gnucash-gconf.in \
-	gnucash.in gnucash-valgrind.in
+EXTRA_DIST = \
+    generate-gnc-script \
+	update-gnucash-gconf.in \
+	gnucash.in \
+	gnucash-valgrind.in \
+	gnucash-gdb.in \
+	gnucash-ddd.in \
+	gnucash-setup-env.in\
+	gnucash-setup-env-osx.in
 
 ## Gnucash scripts -- real code is in overrides, these just get you there.
 ${gnc_common_scripts}: generate-gnc-script ${top_builddir}/config.status

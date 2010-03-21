@@ -15,8 +15,9 @@ test_link_module_SOURCES=test-link-module.c
 test_link_module_LDADD= \
   ${top_builddir}/src/engine/libgncmod-engine.la \
   ${top_builddir}/src/app-utils/libgncmod-app-utils.la \
+  ${top_builddir}/src/gnome-utils/libgncmod-gnome-utils.la \
   ../libgncmod-register-core.la
 
 #EXTRA_DIST = test-load-module
 
-AM_CFLAGS = ${GLIB_CFLAGS} -I${top_srcdir}/src/test-core -I..
+AM_CPPFLAGS = ${GLIB_CFLAGS} -I${top_srcdir}/src/test-core -I..

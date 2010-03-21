@@ -58,25 +58,18 @@ int libgncmod_business_core_gnc_module_age      = 0;
 char *
 libgncmod_business_core_gnc_module_path(void)
 {
-  return g_strdup("gnucash/business-core");
+    return g_strdup("gnucash/business-core");
 }
 
 char *
 libgncmod_business_core_gnc_module_description(void)
 {
-  return g_strdup("The GnuCash business core");
+    return g_strdup("The GnuCash business core");
 }
 
-int
-libgncmod_business_core_gnc_module_init(int refcount)
+void
+gnc_module_init_business_core_init(void)
 {
-  /* load the engine (we depend on it) */
-  if(!gnc_module_load("gnucash/engine", 0)) {
-    return FALSE;
-  }
-
-  if(refcount == 0)
-  {
     /* initialize known types */
     gncInvoiceRegister ();
     gncJobRegister ();
@@ -89,16 +82,31 @@ libgncmod_business_core_gnc_module_init(int refcount)
     gncOwnerRegister ();
     gncTaxTableRegister ();
     gncVendorRegister ();
-  }
-
-  scm_init_sw_business_core_module();
-  scm_c_eval_string("(use-modules (sw_business_core))");
-  scm_c_eval_string("(use-modules (gnucash business-core))");
-
-  return TRUE;
 }
 
 int
-libgncmod_business_core_gnc_module_end(int refcount) {
-  return TRUE;
+libgncmod_business_core_gnc_module_init(int refcount)
+{
+    /* load the engine (we depend on it) */
+    if (!gnc_module_load("gnucash/engine", 0))
+    {
+        return FALSE;
+    }
+
+    if (refcount == 0)
+    {
+        gnc_module_init_business_core_init();
+    }
+
+    scm_init_sw_business_core_module();
+    scm_c_eval_string("(use-modules (sw_business_core))");
+    scm_c_eval_string("(use-modules (gnucash business-core))");
+
+    return TRUE;
+}
+
+int
+libgncmod_business_core_gnc_module_end(int refcount)
+{
+    return TRUE;
 }

@@ -24,7 +24,7 @@
 /** @addtogroup Customer
     @{ */
 /** @file gncCustomer.h
-    @brief Core Customer Interface 
+    @brief Core Customer Interface
     @author Copyright (C) 2001,2002 Derek Atkins <warlord@MIT.EDU>
 */
 
@@ -78,7 +78,7 @@ typedef struct _gncCustomerClass GncCustomerClass;
      (G_TYPE_INSTANCE_GET_CLASS ((o), GNC_TYPE_CUSTOMER, GncCustomerClass))
 GType gnc_customer_get_type(void);
 
-/** @name Create/Destroy Functions 
+/** @name Create/Destroy Functions
  @{ */
 GncCustomer *gncCustomerCreate (QofBook *book);
 void gncCustomerDestroy (GncCustomer *customer);
@@ -86,7 +86,7 @@ void gncCustomerBeginEdit (GncCustomer *customer);
 void gncCustomerCommitEdit (GncCustomer *customer);
 /** @} */
 
-/** @name Set Functions 
+/** @name Set Functions
  @{ */
 
 void gncCustomerSetID (GncCustomer *customer, const char *id);
@@ -107,37 +107,39 @@ void gncCustomerRemoveJob (GncCustomer *customer, GncJob *job);
 
 /** @} */
 
-/** @name Get Functions 
+/** @name Get Functions
  @{ */
 /** Return a pointer to the instance gncCustomer that is identified
- *  by the guid, and is residing in the book. Returns NULL if the 
+ *  by the guid, and is residing in the book. Returns NULL if the
  *  instance can't be found.
  *  Equivalent function prototype is
  *  GncCustomer * gncCustomerLookup (QofBook *book, const GUID *guid);
  */
-#define gncCustomerLookup(book,guid)    \
-       QOF_BOOK_LOOKUP_ENTITY((book),(guid),GNC_ID_CUSTOMER, GncCustomer)
+static inline GncCustomer * gncCustomerLookup (const QofBook *book, const GUID *guid)
+{
+    QOF_BOOK_RETURN_ENTITY(book, guid, GNC_ID_CUSTOMER, GncCustomer);
+}
 
-const char * gncCustomerGetID (GncCustomer *customer);
-const char * gncCustomerGetName (GncCustomer *customer);
-GncAddress * gncCustomerGetAddr (GncCustomer *customer);
-GncAddress * gncCustomerGetShipAddr (GncCustomer *customer);
-const char * gncCustomerGetNotes (GncCustomer *customer);
-GncBillTerm * gncCustomerGetTerms (GncCustomer *customer);
-GncTaxIncluded gncCustomerGetTaxIncluded (GncCustomer *customer);
-gboolean gncCustomerGetActive (GncCustomer *customer);
-gnc_numeric gncCustomerGetDiscount (GncCustomer *customer);
-gnc_numeric gncCustomerGetCredit (GncCustomer *customer);
-gnc_commodity * gncCustomerGetCurrency (GncCustomer *customer);
+const char * gncCustomerGetID (const GncCustomer *customer);
+const char * gncCustomerGetName (const GncCustomer *customer);
+GncAddress * gncCustomerGetAddr (const GncCustomer *customer);
+GncAddress * gncCustomerGetShipAddr (const GncCustomer *customer);
+const char * gncCustomerGetNotes (const GncCustomer *customer);
+GncBillTerm * gncCustomerGetTerms (const GncCustomer *customer);
+GncTaxIncluded gncCustomerGetTaxIncluded (const GncCustomer *customer);
+gboolean gncCustomerGetActive (const GncCustomer *customer);
+gnc_numeric gncCustomerGetDiscount (const GncCustomer *customer);
+gnc_numeric gncCustomerGetCredit (const GncCustomer *customer);
+gnc_commodity * gncCustomerGetCurrency (const GncCustomer *customer);
 
-gboolean gncCustomerGetTaxTableOverride (GncCustomer *customer);
-GncTaxTable* gncCustomerGetTaxTable (GncCustomer *customer);
+gboolean gncCustomerGetTaxTableOverride (const GncCustomer *customer);
+GncTaxTable* gncCustomerGetTaxTable (const GncCustomer *customer);
 
-GList * gncCustomerGetJoblist (GncCustomer *customer, gboolean show_all);
+GList * gncCustomerGetJoblist (const GncCustomer *customer, gboolean show_all);
 /** @} */
 
 gboolean gncCustomerIsDirty (GncCustomer *customer);
-int gncCustomerCompare (GncCustomer *a, GncCustomer *b);
+int gncCustomerCompare (const GncCustomer *a, const GncCustomer *b);
 
 #define CUSTOMER_ID			"id"
 #define CUSTOMER_NAME		"name"

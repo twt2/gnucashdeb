@@ -32,9 +32,10 @@
 #include "Account.h"
 #include "Transaction.h"
 #include "gnc-lot.h"
+#include "gncOwner.h"
 
 gboolean gncInvoiceRegister (void);
-gint64 gncInvoiceNextID (QofBook *book);
+gint64 gncInvoiceNextID (QofBook *book, GncOwner *owner);
 void gncInvoiceSetPostedAcc (GncInvoice *invoice, Account *acc);
 void gncInvoiceSetPostedTxn (GncInvoice *invoice, Transaction *txn);
 void gncInvoiceSetPostedLot (GncInvoice *invoice, GNCLot *lot);
@@ -43,9 +44,9 @@ void gncInvoiceSetPaidTxn (GncInvoice *invoice, Transaction *txn);
 
 /** The gncCloneInvoice() routine makes a copy of the indicated
  *  invoice, placing it in the indicated book.  It copies
- *  the name, description, type, due-days, discount, etc. 
+ *  the name, description, type, due-days, discount, etc.
  *  It also copies (as needed) both parents and children, so that
- *  the parent-child relationship is correctly mirrored in the 
+ *  the parent-child relationship is correctly mirrored in the
  *  clone.
  *  It then adds a pair of 'gemini' kvp pointers so that each copy
  *  can be found from the other.
@@ -59,7 +60,7 @@ GncInvoice * gncCloneInvoice (GncInvoice *from, QofBook *);
  *  gncCloneInvoice()) and placed into the book.
  *
  * We called this routine 'Obtain' instead of "Get" to distinguish
- * it from the other Get routines, which work in fundamentally  
+ * it from the other Get routines, which work in fundamentally
  * different ways.
  */
 GncInvoice * gncInvoiceObtainTwin (GncInvoice *from, QofBook *book);

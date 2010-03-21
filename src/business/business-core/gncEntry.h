@@ -34,15 +34,17 @@
 typedef struct _gncEntry GncEntry;
 typedef struct _gncEntryClass GncEntryClass;
 
-typedef enum {
-  GNC_PAYMENT_CASH = 1,
-  GNC_PAYMENT_CARD
+typedef enum
+{
+    GNC_PAYMENT_CASH = 1,
+    GNC_PAYMENT_CARD
 } GncEntryPaymentType;
 
-typedef enum {
-  GNC_DISC_PRETAX = 1,
-  GNC_DISC_SAMETIME,
-  GNC_DISC_POSTTAX
+typedef enum
+{
+    GNC_DISC_PRETAX = 1,
+    GNC_DISC_SAMETIME,
+    GNC_DISC_POSTTAX
 } GncDiscountHow;
 
 #ifdef GNUCASH_MAJOR_VERSION
@@ -84,7 +86,7 @@ gboolean gncEntryDiscountStringToHow (const char *str, GncDiscountHow *how);
 const char * gncEntryPaymentTypeToString (GncEntryPaymentType type);
 gboolean gncEntryPaymentStringToType (const char *str, GncEntryPaymentType *type);
 
-/** @name Create/Destroy Functions 
+/** @name Create/Destroy Functions
  @{ */
 GncEntry *gncEntryCreate (QofBook *book);
 void gncEntryDestroy (GncEntry *entry);
@@ -92,7 +94,7 @@ void gncEntryDestroy (GncEntry *entry);
 
 /* SET FUNCTIONS */
 
-/** @name Generic (shared) data 
+/** @name Generic (shared) data
  @{ */
 void gncEntrySetDate (GncEntry *entry, Timespec date);
 void gncEntrySetDateEntered (GncEntry *entry, Timespec date);
@@ -102,7 +104,7 @@ void gncEntrySetNotes (GncEntry *entry, const char *notes);
 void gncEntrySetQuantity (GncEntry *entry, gnc_numeric quantity);
 /** @} */
 
-/** @name Customer Invoices 
+/** @name Customer Invoices
  @{ */
 void gncEntrySetInvAccount (GncEntry *entry, Account *acc);
 void gncEntrySetInvPrice (GncEntry *entry, gnc_numeric price);
@@ -116,7 +118,7 @@ void qofEntrySetInvDiscType (GncEntry *entry, const char *type);
 void qofEntrySetInvDiscHow  (GncEntry *entry, const char *type);
 /** @} */
 
-/** @name Vendor Bills (and Employee Expenses) 
+/** @name Vendor Bills (and Employee Expenses)
  @{ */
 void gncEntrySetBillAccount (GncEntry *entry, Account *acc);
 void gncEntrySetBillPrice (GncEntry *entry, gnc_numeric price);
@@ -127,52 +129,52 @@ void gncEntrySetBillable (GncEntry *entry, gboolean billable);
 void gncEntrySetBillTo (GncEntry *entry, GncOwner *billto);
 /** @} */
 
-/** @name employee-stuff 
+/** @name employee-stuff
  @{ */
 void gncEntrySetBillPayment (GncEntry *entry, GncEntryPaymentType type);
 /** @} */
 
 /* GET FUNCTIONS */
-/** @name Generic (shared) data 
+/** @name Generic (shared) data
  @{ */
-Timespec gncEntryGetDate (GncEntry *entry);
-Timespec gncEntryGetDateEntered (GncEntry *entry);
-const char * gncEntryGetDescription (GncEntry *entry);
-const char * gncEntryGetAction (GncEntry *entry);
-const char * gncEntryGetNotes (GncEntry *notes);
-gnc_numeric gncEntryGetQuantity (GncEntry *entry);
+Timespec gncEntryGetDate (const GncEntry *entry);
+Timespec gncEntryGetDateEntered (const GncEntry *entry);
+const char * gncEntryGetDescription (const GncEntry *entry);
+const char * gncEntryGetAction (const GncEntry *entry);
+const char * gncEntryGetNotes (const GncEntry *notes);
+gnc_numeric gncEntryGetQuantity (const GncEntry *entry);
 /** @} */
 
-/** @name Customer Invoices 
+/** @name Customer Invoices
  @{ */
-Account * gncEntryGetInvAccount (GncEntry *entry);
-gnc_numeric gncEntryGetInvPrice (GncEntry *entry);
-gnc_numeric gncEntryGetInvDiscount (GncEntry *entry);
-GncAmountType gncEntryGetInvDiscountType (GncEntry *entry);
-GncDiscountHow gncEntryGetInvDiscountHow (GncEntry *entry);
-char* qofEntryGetInvDiscType (GncEntry *entry);
-char* qofEntryGetInvDiscHow (GncEntry *entry);
-gboolean gncEntryGetInvTaxable (GncEntry *entry);
-gboolean gncEntryGetInvTaxIncluded (GncEntry *entry);
-GncTaxTable * gncEntryGetInvTaxTable (GncEntry *entry);
+Account * gncEntryGetInvAccount (const GncEntry *entry);
+gnc_numeric gncEntryGetInvPrice (const GncEntry *entry);
+gnc_numeric gncEntryGetInvDiscount (const GncEntry *entry);
+GncAmountType gncEntryGetInvDiscountType (const GncEntry *entry);
+GncDiscountHow gncEntryGetInvDiscountHow (const GncEntry *entry);
+char* qofEntryGetInvDiscType (const GncEntry *entry);
+char* qofEntryGetInvDiscHow (const GncEntry *entry);
+gboolean gncEntryGetInvTaxable (const GncEntry *entry);
+gboolean gncEntryGetInvTaxIncluded (const GncEntry *entry);
+GncTaxTable * gncEntryGetInvTaxTable (const GncEntry *entry);
 /** @} */
 
-/** @name Vendor Bills (and Employee Expenses) 
+/** @name Vendor Bills (and Employee Expenses)
  @{ */
-Account * gncEntryGetBillAccount (GncEntry *entry);
-gnc_numeric gncEntryGetBillPrice (GncEntry *entry);
-gboolean gncEntryGetBillTaxable (GncEntry *entry);
-gboolean gncEntryGetBillTaxIncluded (GncEntry *entry);
-GncTaxTable * gncEntryGetBillTaxTable (GncEntry *entry);
-gboolean gncEntryGetBillable (GncEntry *entry);
+Account * gncEntryGetBillAccount (const GncEntry *entry);
+gnc_numeric gncEntryGetBillPrice (const GncEntry *entry);
+gboolean gncEntryGetBillTaxable (const GncEntry *entry);
+gboolean gncEntryGetBillTaxIncluded (const GncEntry *entry);
+GncTaxTable * gncEntryGetBillTaxTable (const GncEntry *entry);
+gboolean gncEntryGetBillable (const GncEntry *entry);
 GncOwner *gncEntryGetBillTo (GncEntry *entry);
 
-GncEntryPaymentType gncEntryGetBillPayment (GncEntry* entry);
+GncEntryPaymentType gncEntryGetBillPayment (const GncEntry* entry);
 /** @} */
 
 void gncEntryCopy (const GncEntry *src, GncEntry *dest);
 
-/** @name Getting Values 
+/** @name Getting Values
 
  * The first three return the rounded values -- the last returns the
  * list of unrounded account-values.  The list belongs to the entry
@@ -197,36 +199,38 @@ AccountValueList * gncEntryReturnTaxValues (GncEntry *entry, gboolean is_inv);
  * values from these two functions are NOT rounded.
  */
 void gncEntryGetValue (GncEntry *entry, gboolean is_inv, gnc_numeric *value,
-		       gnc_numeric *discount, gnc_numeric *tax_value,
-		       GList **tax_values);
+                       gnc_numeric *discount, gnc_numeric *tax_value,
+                       GList **tax_values);
 
 void gncEntryComputeValue (gnc_numeric qty, gnc_numeric price,
-			   GncTaxTable *tax_table, gboolean tax_included,
-			   gnc_numeric discount, GncAmountType discount_type,
-			   GncDiscountHow discount_how, int SCU,
-			   /* return values */
-			   gnc_numeric *value, gnc_numeric *discount_value,
-			   GList **tax_values);
+                           const GncTaxTable *tax_table, gboolean tax_included,
+                           gnc_numeric discount, GncAmountType discount_type,
+                           GncDiscountHow discount_how, int SCU,
+                           /* return values */
+                           gnc_numeric *value, gnc_numeric *discount_value,
+                           GList **tax_values);
 
 /** @} */
 
-GncOrder * gncEntryGetOrder (GncEntry *entry);
-GncInvoice * gncEntryGetInvoice (GncEntry *entry);
-GncInvoice * gncEntryGetBill (GncEntry *entry);
+GncOrder * gncEntryGetOrder (const GncEntry *entry);
+GncInvoice * gncEntryGetInvoice (const GncEntry *entry);
+GncInvoice * gncEntryGetBill (const GncEntry *entry);
 
 /** Return a pointer to the instance gncEntry that is identified
- *  by the guid, and is residing in the book. Returns NULL if the 
+ *  by the guid, and is residing in the book. Returns NULL if the
  *  instance can't be found.
  *  Equivalent function prototype is
  *  GncEntry * gncEntryLookup (QofBook *book, const GUID *guid);
  */
-#define gncEntryLookup(book,guid)    \
-       QOF_BOOK_LOOKUP_ENTITY((book),(guid),GNC_ID_ENTRY, GncEntry)
+static inline GncEntry * gncEntryLookup (const QofBook *book, const GUID *guid)
+{
+    QOF_BOOK_RETURN_ENTITY(book, guid, GNC_ID_ENTRY, GncEntry);
+}
 
-gboolean gncEntryIsOpen (GncEntry *entry);
+gboolean gncEntryIsOpen (const GncEntry *entry);
 void gncEntryBeginEdit (GncEntry *entry);
 void gncEntryCommitEdit (GncEntry *entry);
-int gncEntryCompare (GncEntry *a, GncEntry *b);
+int gncEntryCompare (const GncEntry *a, const GncEntry *b);
 
 #define ENTRY_DATE			"date"
 #define ENTRY_DATE_ENTERED 	"date-entered"

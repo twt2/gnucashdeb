@@ -78,31 +78,33 @@ void gncOrderRemoveEntry (GncOrder *order, GncEntry *entry);
 
 /* Get Functions */
 
-const char * gncOrderGetID (GncOrder *order);
+const char * gncOrderGetID (const GncOrder *order);
 GncOwner * gncOrderGetOwner (GncOrder *order);
-Timespec gncOrderGetDateOpened (GncOrder *order);
-Timespec gncOrderGetDateClosed (GncOrder *order);
-const char * gncOrderGetNotes (GncOrder *order);
-const char * gncOrderGetReference (GncOrder *order);
-gboolean gncOrderGetActive (GncOrder *order);
+Timespec gncOrderGetDateOpened (const GncOrder *order);
+Timespec gncOrderGetDateClosed (const GncOrder *order);
+const char * gncOrderGetNotes (const GncOrder *order);
+const char * gncOrderGetReference (const GncOrder *order);
+gboolean gncOrderGetActive (const GncOrder *order);
 
 /* Get the list Entries */
 GList * gncOrderGetEntries (GncOrder *order);
 
 void gncOrderBeginEdit (GncOrder *order);
 void gncOrderCommitEdit (GncOrder *order);
-int gncOrderCompare (GncOrder *a, GncOrder *b);
+int gncOrderCompare (const GncOrder *a, const GncOrder *b);
 
-gboolean gncOrderIsClosed (GncOrder *order);
+gboolean gncOrderIsClosed (const GncOrder *order);
 
 /** Return a pointer to the instance gncOrder that is identified
- *  by the guid, and is residing in the book. Returns NULL if the 
+ *  by the guid, and is residing in the book. Returns NULL if the
  *  instance can't be found.
  *  Equivalent function prototype is
  *  GncOrder * gncOrderLookup (QofBook *book, const GUID *guid);
  */
-#define gncOrderLookup(book,guid)    \
-       QOF_BOOK_LOOKUP_ENTITY((book),(guid),GNC_ID_ORDER, GncOrder)
+static inline GncOrder * gncOrderLookup (const QofBook *book, const GUID *guid)
+{
+    QOF_BOOK_RETURN_ENTITY(book, guid, GNC_ID_ORDER, GncOrder);
+}
 
 #define ORDER_ID	"id"
 #define ORDER_REFERENCE	"reference"

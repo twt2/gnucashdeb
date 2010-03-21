@@ -2,6 +2,7 @@
 %{
 /* Includes the header in the wrapper code */
 #include <config.h>
+#include <guile-mappings.h>
 #include <gncAddress.h>
 #include <gncBillTerm.h>
 #include <gncCustomer.h>
@@ -14,6 +15,9 @@
 #include <gncTaxTable.h>
 #include <gncVendor.h>
 #include <gncBusGuile.h>
+#ifdef _MSC_VER
+# define snprintf _snprintf
+#endif
 #include "engine-helpers.h"
 #include "gncBusGuile.h"
 
@@ -73,6 +77,7 @@ static GncEmployee * gncEmployeeLookupFlip(GUID g, QofBook *b)
 %}
 
 GLIST_HELPER_INOUT(EntryList, SWIGTYPE_p__gncEntry);
+GLIST_HELPER_INOUT(GncTaxTableEntryList, SWIGTYPE_p__gncTaxTableEntry);
 
 %typemap(in) GncAccountValue * "$1 = gnc_scm_to_account_value_ptr($input);"
 %typemap(out) GncAccountValue * "$result = gnc_account_value_ptr_to_scm($1);"
@@ -80,11 +85,11 @@ GLIST_HELPER_INOUT(EntryList, SWIGTYPE_p__gncEntry);
   SCM list = $input;
   GList *c_list = NULL;
 
-  while (!SCM_NULLP(list)) {
+  while (!scm_is_null(list)) {
         GncAccountValue *p;
 
         SCM p_scm = SCM_CAR(list);
-        if (SCM_FALSEP(p_scm) || SCM_NULLP(p_scm))
+        if (scm_is_false(p_scm) || scm_is_null(p_scm))
            p = NULL;
         else
            p = gnc_scm_to_account_value_ptr(p_scm);
@@ -124,6 +129,7 @@ GLIST_HELPER_INOUT(EntryList, SWIGTYPE_p__gncEntry);
 #define URL_TYPE_CUSTOMER GNC_ID_CUSTOMER
 #define URL_TYPE_VENDOR GNC_ID_VENDOR
 #define URL_TYPE_EMPLOYEE GNC_ID_EMPLOYEE
+#define URL_TYPE_JOB GNC_ID_JOB
 #define URL_TYPE_INVOICE GNC_ID_INVOICE
 // not exactly clean
 #define URL_TYPE_OWNERREPORT "owner-report"
@@ -145,6 +151,7 @@ GLIST_HELPER_INOUT(EntryList, SWIGTYPE_p__gncEntry);
     SET_ENUM("URL-TYPE-CUSTOMER");
     SET_ENUM("URL-TYPE-VENDOR");
     SET_ENUM("URL-TYPE-EMPLOYEE");
+    SET_ENUM("URL-TYPE-JOB");
     SET_ENUM("URL-TYPE-INVOICE");
     SET_ENUM("URL-TYPE-OWNERREPORT");
 

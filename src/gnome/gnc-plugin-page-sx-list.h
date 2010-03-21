@@ -1,4 +1,4 @@
-/* 
+/*
  * gnc-plugin-page-sx-list.h
  *
  * Copyright (C) 2006 Josh Sled <jsled@asynchronous.org>
@@ -22,7 +22,7 @@
 
 /** @addtogroup ContentPlugins
     @{ */
-/** @addtogroup GncPluginPageSxList An Plugin Page for the SX List.
+/** @addtogroup GncPluginPageSxList A SX List Plugin Page
     @{ */
 /** @brief Functions providing a list of scheduled transactions as a plugin page.
     @author Josh Sled <jsled@asynchronous.org>

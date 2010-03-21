@@ -3,6 +3,7 @@
 /* Includes the header in the wrapper code */
 #include <config.h>
 #include <option-util.h>
+#include <guile-mappings.h>
 #include <gnc-euro.h>
 #include <gnc-exp-parser.h>
 #include <gnc-ui-util.h>
@@ -24,6 +25,8 @@ typedef void (*GNCOptionChangeCallback) (gpointer user_data);
 typedef int GNCOptionDBHandle;
 
 QofBook * gnc_get_current_book (void);
+const gchar * gnc_get_current_book_tax_name (void);
+const gchar * gnc_get_current_book_tax_type (void);
 Account * gnc_get_current_root_account (void);
 
 %newobject gnc_gettext_helper;
@@ -61,8 +64,6 @@ void gnc_option_db_register_option(GNCOptionDBHandle handle,
 
 const char * gnc_locale_default_iso_currency_code (void);
 
-char * gnc_account_get_full_name (const Account *account);
-
 GNCPrintAmountInfo gnc_default_print_info (gboolean use_symbol);
 GNCPrintAmountInfo gnc_account_print_info (const Account *account,
         gboolean use_symbol);
@@ -91,13 +92,13 @@ void gnc_register_kvp_option_generator(QofIdType id_type, SCM generator);
 %typemap(in) GList * {
   SCM path_scm = $input;
   GList *path = NULL;
-  while (!SCM_NULLP (path_scm))
+  while (!scm_is_null (path_scm))
   {
     SCM key_scm = SCM_CAR (path_scm);
     char *key;
-    if (!SCM_STRINGP (key_scm))
+    if (!scm_is_string (key_scm))
       break;
-    key = g_strdup (SCM_STRING_CHARS (key_scm));
+    key = g_strdup (scm_to_locale_string (key_scm));
     path = g_list_prepend (path, key);
     path_scm = SCM_CDR (path_scm);
   }

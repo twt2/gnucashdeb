@@ -30,7 +30,7 @@
 
     @{ */
 /** @file gnc-glib-utils.h
- *  @brief glib helper routines.
+ *  @brief GLib helper routines
  *  @author Copyright (C) 2006 David Hampton <hampton@employees.org>
  */
 
@@ -40,7 +40,7 @@
 #include <glib.h>
 
 /** @name Character Sets
- @{ 
+ @{
 */
 
 /** Collate two UTF-8 strings.  This function performs basic argument
@@ -57,10 +57,12 @@ int safe_utf8_collate (const char *str1, const char *str2);
 
 /**
  * @brief Validates UTF-8 encoded text for use in GnuCash.
+ *
  * Validates the strict subset of UTF-8 that is valid XML text, as detailed in
  * http://www.w3.org/TR/REC-xml/#NT-Char linked from bug #346535.
  *
- * (copied from g_utf8_validate):
+ * <em>Copied from g_utf8_validate():</em>
+ *
  * Validates UTF-8 encoded text, where @a str is the text to validate; if
  * @a str is nul-terminated, then @a max_len can be -1, otherwise @a max_len
  * should be the number of bytes to validate. If @a end is non-%NULL, then the
@@ -72,7 +74,7 @@ int safe_utf8_collate (const char *str1, const char *str2);
  * routines @e require valid UTF-8 as input;
  * so data read from a file or the network should be checked
  * with g_utf8_validate() before doing anything else with it.
- * 
+ *
  * @param str a pointer to character data
  * @param max_len max bytes to validate, or -1 to go until NUL
  * @param end return location for end of valid data
@@ -107,9 +109,8 @@ void gnc_utf8_strip_invalid (gchar *str);
 gchar *gnc_utf8_strip_invalid_strdup (const gchar* str);
 
 /**
- * @brief Converts a string from UTF-8 to the current locale.
- * Converts a string from UTF-8 to the encoding used for strings
- * in the current locale.
+ * @brief Converts a string from UTF-8 to the encoding used for
+ * strings in the current locale.
  *
  * This essentially is a wrapper for g_locale_from_utf8 that can
  * be swigified for use with Scheme to avoid adding a dependency
@@ -122,9 +123,8 @@ gchar *gnc_utf8_strip_invalid_strdup (const gchar* str);
 gchar *gnc_locale_from_utf8(const gchar* str);
 
 /**
- * @brief Converts a string to UTF-8 from the current locale.
- * Converts a string to UTF-8 from the encoding used for strings
- * in the current locale.
+ * @brief Converts a string to UTF-8 from the encoding used for
+ * strings in the current locale.
  *
  * This essentially is a wrapper for g_locale_to_utf8 that can
  * be swigified for use with Scheme to avoid adding a dependency
@@ -139,7 +139,7 @@ gchar *gnc_locale_to_utf8(const gchar* str);
 /** @} */
 
 /** @name GList Manipulation
- @{ 
+ @{
 */
 typedef gpointer (*GncGMapFunc)(gpointer data, gpointer user_data);
 
@@ -158,7 +158,7 @@ void gnc_g_list_cut(GList **list, GList *cut_point);
 /** @} */
 
 /** @name Message Logging
- @{ 
+ @{
 */
 void gnc_scm_log_warn(const gchar *msg);
 void gnc_scm_log_error(const gchar *msg);
@@ -168,7 +168,7 @@ void gnc_scm_log_debug(const gchar *msg);
 /** @} */
 
 /** @name glib Miscellaneous Functions
- @{ 
+ @{
 */
 
 /** Kill a process.  On UNIX send a SIGKILL, on Windows call TerminateProcess.

@@ -41,6 +41,11 @@
 (define optname-from-date (N_ "From"))
 (define optname-to-date (N_ "To"))
 
+;; let's define a name for the report-guid's, much prettier
+(define employee-report-guid "08ae9c2e884b4f9787144f47eacd7f44")
+(define vendor-report-guid "d7d1e53505ee4b1b82efad9eacedaea0")
+(define customer-report-guid "c146317be32e4948a561ec7fc89d15c1")
+
 (define acct-string (N_ "Account"))
 (define owner-string (N_ "Company"))
 (define owner-page gnc:pagename-general)
@@ -520,7 +525,7 @@
 
 (define (make-myname-table book date-format)
   (let* ((table (gnc:make-html-table))
-	 (slots (gnc-book-get-slots book))
+	 (slots (qof-book-get-slots book))
 	 (name (kvp-frame-get-slot-path-gslist
 		slots (append gnc:*kvp-option-path*
 			      (list gnc:*business-label* gnc:*company-name*))))
@@ -688,6 +693,7 @@
 (gnc:define-report
  'version 1
  'name (N_ "Customer Report")
+ 'report-guid customer-report-guid
  'menu-path (list gnc:menuname-business-reports)
  'options-generator customer-options-generator
  'renderer reg-renderer
@@ -696,6 +702,7 @@
 (gnc:define-report
  'version 1
  'name (N_ "Vendor Report")
+ 'report-guid vendor-report-guid
  'menu-path (list gnc:menuname-business-reports)
  'options-generator vendor-options-generator
  'renderer reg-renderer
@@ -704,31 +711,32 @@
 (gnc:define-report
  'version 1
  'name (N_ "Employee Report")
+ 'report-guid employee-report-guid 
  'menu-path (list gnc:menuname-business-reports)
  'options-generator employee-options-generator
  'renderer reg-renderer
  'in-menu? #t)
 
-(define (owner-report-create-internal report-name owner account)
-  (let* ((options (gnc:make-report-options report-name))
+(define (owner-report-create-internal report-guid owner account)
+  (let* ((options (gnc:make-report-options report-guid))
 	 (owner-op (gnc:lookup-option options owner-page owner-string))
 	 (account-op (gnc:lookup-option options owner-page acct-string)))
 
     (gnc:option-set-value owner-op owner)
     (gnc:option-set-value account-op account)
-    (gnc:make-report report-name options)))
+    (gnc:make-report report-guid options)))
 
 (define (owner-report-create owner account)
   (let ((type (gncOwnerGetType (gncOwnerGetEndOwner owner))))
     (cond
       ((eqv? type GNC-OWNER-CUSTOMER)
-       (owner-report-create-internal (N_ "Customer Report") owner account))
+       (owner-report-create-internal customer-report-guid owner account))
 
       ((eqv? type GNC-OWNER-VENDOR)
-       (owner-report-create-internal (N_ "Vendor Report") owner account))
+       (owner-report-create-internal vendor-report-guid owner account))
 
       ((eqv? type GNC-OWNER-EMPLOYEE)
-       (owner-report-create-internal (N_ "Employee Report") owner account))
+       (owner-report-create-internal employee-report-guid owner account))
 
       (else #f))))
 

@@ -12,7 +12,7 @@
 (debug-enable 'backtrace)
 
 (gnc:module-load "gnucash/report/report-system" 0)
-(gnc:module-load "gnucash/gnome-utils" 0) ;for gnc-build-url
+(gnc:module-load "gnucash/html" 0) ;for gnc-build-url
 
 ;; This function will generate a set of options that GnuCash
 ;; will use to display a dialog where the user can select
@@ -20,7 +20,7 @@
 (define (options-generator)    
   (let* ((options (gnc:new-options)) 
          ;; This is just a helper function for making options.
-         ;; See gnucash/src/scm/options.scm for details.
+         ;; See gnucash/src/app-utils/options.scm for details.
          (add-option 
           (lambda (new-option)
             (gnc:register-option options new-option))))
@@ -466,6 +466,13 @@ new, totally cool report, consult the mailing list %s.")
  ;; for making its menu item in the main menu. You need to use the
  ;; untranslated value here!
  'name (N_ "Hello, World")
+
+ ;; The GUID for this report. This string should be unique, set once
+ ;; and left alone forever after that. In theory, you could use any
+ ;; unique string, even a meaningful one (!) but its probably best to
+ ;; use a true uuid. Get them from `uuidgen | sed -e s/-//g` and paste
+ ;; the results in here. You must make a new guid for each report!
+ 'report-guid "898d78ec92854402bf76e20a36d24ade"
 
  ;; The name in the menu
  ;; (only necessary if it differs from the name)

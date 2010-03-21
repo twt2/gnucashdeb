@@ -678,7 +678,7 @@
 				 share-amount value-amount)
 			   (list transaction-comm 
 				 (gnc-numeric-neg value-amount)
-				 (gnc-numeric-neg share-amount))))
+                                 (gnc-numeric-neg share-amount))))
 		      ;; second commodity already existing in comm-list?
 		      (pair (assoc (car foreignlist) (cadr comm-list))))
 		   ;; if not, create a new entry in comm-list.
@@ -780,8 +780,8 @@
 (define (gnc:make-exchange-function exchange-alist)
   (let ((exchangelist exchange-alist))
     (lambda (foreign domestic)
-      (gnc:debug "foreign: " foreign)
-      (gnc:debug "domestic: " domestic)
+      (gnc:debug "foreign: " (gnc:monetary->string foreign))
+      (gnc:debug "domestic: " (gnc-commodity-get-printname domestic))
       (if foreign
           (or (gnc:exchange-by-euro foreign domestic #f)
               (gnc:exchange-if-same foreign domestic)
@@ -898,8 +898,8 @@
 (define (gnc:exchange-by-pricealist-nearest
 	 pricealist foreign domestic date)
   (begin 
-    (gnc:debug "foreign " foreign)
-    (gnc:debug "domestic " domestic)
+    (gnc:debug "foreign " (gnc:monetary->string foreign))
+    (gnc:debug "domestic " (gnc-commodity-get-printname domestic))
     (gnc:debug "pricealist " pricealist)
     
     (if (and (record? foreign) (gnc:gnc-monetary? foreign)

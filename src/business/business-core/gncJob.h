@@ -76,13 +76,13 @@ void gncJobCommitEdit (GncJob *job);
 @{
 */
 
-const char * gncJobGetID (GncJob *job);
-const char * gncJobGetName (GncJob *job);
-const char * gncJobGetReference (GncJob *job);
+const char * gncJobGetID (const GncJob *job);
+const char * gncJobGetName (const GncJob *job);
+const char * gncJobGetReference (const GncJob *job);
 GncOwner * gncJobGetOwner (GncJob *job);
 
 /** @} */
-gboolean gncJobGetActive (GncJob *job);
+gboolean gncJobGetActive (const GncJob *job);
 
 /** Return a pointer to the instance gncJob that is identified
  *  by the guid, and is residing in the book. Returns NULL if the
@@ -90,8 +90,10 @@ gboolean gncJobGetActive (GncJob *job);
  *  Equivalent function prototype is
  *  GncJob * gncJobLookup (QofBook *book, const GUID *guid);
  */
-#define gncJobLookup(book,guid)    \
-       QOF_BOOK_LOOKUP_ENTITY((book),(guid),GNC_ID_JOB, GncJob)
+static inline GncJob * gncJobLookup (const QofBook *book, const GUID *guid)
+{
+    QOF_BOOK_RETURN_ENTITY(book, guid, GNC_ID_JOB, GncJob);
+}
 
 /* Other functions */
 

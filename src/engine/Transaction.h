@@ -20,7 +20,7 @@
 /** @addtogroup Engine
     @{ */
 /** @addtogroup Transaction Financial Transactions
-    A good overview of transactions, splits and accounts can be 
+    A good overview of transactions, splits and accounts can be
     found in the texinfo documentation, together with an overview of
     how to use this API.
 
@@ -31,27 +31,27 @@ a (possibly) different currency than the amount, a Memo, a pointer to
 the parent Transaction, a pointer to the debited Account, a reconciled
 flag and timestamp, an "Action" field, and a key-value frame which can
 store arbitrary data.
-                                                                              
-Transactions embody the notion of "double entry" accounting. 
-A Transaction consists of a date, a description, an ID number, 
+
+Transactions embody the notion of "double entry" accounting.
+A Transaction consists of a date, a description, an ID number,
 a list of one or more Splits, and a key-value frame.  The transaction
 also specifies the currency with which all of the splits will be valued.
-When double-entry rules are enforced, the sum total value of the splits 
-are zero.  If there are only two splits, then the value of one must be 
-positive, the other negative: this denotes that one account is debited, 
+When double-entry rules are enforced, the sum total value of the splits
+are zero.  If there are only two splits, then the value of one must be
+positive, the other negative: this denotes that one account is debited,
 and another is credited by an equal amount.  By forcing the value of the
 splits to always 'add up' to zero, we can guarantee that the balances
 of the accounts are always correctly balanced.
 
 The engine does not enforce double-entry accounting, but provides an API
 to enable user-code to find unbalanced transactions and 'repair' them so
-that they are in balance. 
+that they are in balance.
 
 Note the sum of the values of Splits in a Transaction is always computed
 with respect to a currency; thus splits can be balanced even when they
 are in different currencies, as long as they share a common currency.
 This feature allows currency-trading accounts to be established.
-                                                                              
+
 Every Split must point to its parent Transaction, and that Transaction
 must in turn include that Split in the Transaction's list of Splits. A
 Split can belong to at most one Transaction. These relationships are
@@ -67,9 +67,9 @@ A Split can belong to at most one Account. Besides merely containing a
 list of Splits, the Account structure also gives the Account a name, a
 code number, description and notes fields, a key-value frame, a pointer
 to the commodity that is used for all splits in this account. The
-commodity can be the name of anything traded and tradable: a stock 
+commodity can be the name of anything traded and tradable: a stock
 (e.g. "IBM", "McDonald's"), a currency (e.g. "USD", "GBP"), or anything
-added to the commodity table.  
+added to the commodity table.
 
 Accounts can be arranged in a hierarchical tree. The nodes of the tree
 are called "Account Groups". By accounting
@@ -77,7 +77,7 @@ convention, the value of an Account is equal to the value of all of its
 Splits plus the value of all of its sub-Accounts.
 
     @{ */
-/** @file Transaction.h 
+/** @file Transaction.h
     @brief API for Transactions and Splits (journal entries)
     @author Copyright (C) 1997 Robin D. Clark
     @author Copyright (C) 1997-2001 Linas Vepstas <linas@linas.org>
@@ -127,20 +127,26 @@ GType gnc_transaction_get_type(void);
 /** @name Transaction creation and editing
  @{
 */
-/** 
+/**
  The xaccMallocTransaction() will malloc memory and initialize it.
  Once created, it is usually unsafe to merely "free" this memory;
- the xaccTransDestroy() method should be called. */ 
-Transaction * xaccMallocTransaction (QofBook *book); 
+ the xaccTransDestroy() method should be called. */
+Transaction * xaccMallocTransaction (QofBook *book);
 
-/**
- The xaccTransDestroy() method will remove all 
- of the splits from each of their accounts, free the memory
- associated with them.  This routine must be followed by either
- an xaccTransCommitEdit(), in which case the transaction 
- memory will be freed, or by xaccTransRollbackEdit(), in which 
- case nothing at all is freed, and everything is put back into 
- original order. */
+/** Destroys a transaction.
+ *  Each split in transaction @a trans is removed from its
+ *  account and destroyed as well.
+ *
+ *  If the transaction has not already been opened for editing with
+ *  ::xaccTransBeginEdit() then the changes are committed immediately.
+ *  Otherwise, the caller must follow up with either
+ *  ::xaccTransCommitEdit(), in which case the transaction and
+ *  split memory will be freed, or xaccTransRollbackEdit(), in which
+ *  case nothing at all is freed, and everything is put back into
+ *  original order.
+ *
+ *  @param trans the transaction to destroy
+ */
 void          xaccTransDestroy (Transaction *trans);
 
 /**
@@ -180,7 +186,7 @@ gboolean xaccTransEqual(const Transaction *ta,
                         gboolean assume_ordered);
 
 /** The xaccTransBeginEdit() method must be called before any changes
-    are made to a transaction or any of its component splits.  If 
+    are made to a transaction or any of its component splits.  If
     this is not done, errors will result. */
 void          xaccTransBeginEdit (Transaction *trans);
 
@@ -191,17 +197,17 @@ void          xaccTransBeginEdit (Transaction *trans);
     of xaccTransDestroy() was called on the transaction. */
 void          xaccTransCommitEdit (Transaction *trans);
 
-/** The xaccTransRollbackEdit() routine rejects all edits made, and 
-    sets the transaction back to where it was before the editing 
+/** The xaccTransRollbackEdit() routine rejects all edits made, and
+    sets the transaction back to where it was before the editing
     started.  This includes restoring any deleted splits, removing
     any added splits, and undoing the effects of xaccTransDestroy,
     as well as restoring share quantities, memos, descriptions, etc. */
 void          xaccTransRollbackEdit (Transaction *trans);
 
 /** The xaccTransIsOpen() method returns TRUE if the transaction
-    is open for editing. Otherwise, it returns false.  
+    is open for editing. Otherwise, it returns false.
     XXX this routne should probably be deprecated.  its, umm,
-    hard to imagine legitamate uses (but it is used by
+    hard to imagine legitimate uses (but it is used by
     the import/export code for reasons I can't understand.)
  */
 gboolean      xaccTransIsOpen (const Transaction *trans);
@@ -209,24 +215,25 @@ gboolean      xaccTransIsOpen (const Transaction *trans);
 /** The xaccTransLookup() subroutine will return the
     transaction associated with the given id, or NULL
     if there is no such transaction. */
+/*@ dependent @*//*@ null @*/
 Transaction * xaccTransLookup (const GUID *guid, QofBook *book);
 #define xaccTransLookupDirect(g,b) xaccTransLookup(&(g),b)
 
-Split * xaccTransFindSplitByAccount(const Transaction *trans, 
+Split * xaccTransFindSplitByAccount(const Transaction *trans,
                                     const Account *acc);
 
 /** The xaccTransScrubGains() routine performs a number of cleanup
  *  functions on the indicated transaction, with the end-goal of
  *  setting up a consistent set of gains/losses for all the splits
  *  in the transaction.  This includes making sure that the lot
- *  assignments of all the splits are good, and that the lots 
+ *  assignments of all the splits are good, and that the lots
  *  balance appropriately.
  */
 void xaccTransScrubGains (Transaction *trans, Account *gain_acc);
 
 
-/** \warning XXX FIXME 
- * gnc_book_count_transactions is a utility function, 
+/** \warning XXX FIXME
+ * gnc_book_count_transactions is a utility function,
  * probably needs to be moved to a utility file somewhere.
  */
 guint gnc_book_count_transactions(QofBook *book);
@@ -237,6 +244,10 @@ guint gnc_book_count_transactions(QofBook *book);
 /** @name Transaction general getters/setters
  @{
 */
+
+/** Determine whether this transaction should use commodity trading accounts
+ */
+gboolean xaccTransUseTradingAccounts(const Transaction *trans);
 
 /** Sorts the splits in a transaction, putting the debits first,
  *  followed by the credits.
@@ -273,18 +284,18 @@ const char *  xaccTransGetNotes (const Transaction *trans);
 
 
 /** Add a split to the transaction
- * 
- The xaccTransAppendSplit() method will append the indicated 
+ *
+ The xaccTransAppendSplit() method will append the indicated
  split to the collection of splits in this transaction.
  @note If the split is already a part of another transaction,
  it will be removed from that transaction first.
 */
 #define xaccTransAppendSplit(t, s) xaccSplitSetParent((s), (t))
 
-/** The xaccTransGetSplit() method returns a pointer to each of the 
+/** The xaccTransGetSplit() method returns a pointer to each of the
     splits in this transaction.
-    @param trans The transaction  
-    @param i The split number.  Valid values for i are zero to 
+    @param trans The transaction
+    @param i The split number.  Valid values for i are zero to
     (number_of__splits-1).  An invalid value of i will cause NULL to
     be returned.  A convenient way of cycling through all splits is
     to start at zero, and keep incrementing until a null value is returned. */
@@ -294,9 +305,10 @@ Split *       xaccTransGetSplit (const Transaction *trans, int i);
 int xaccTransGetSplitIndex(const Transaction *trans, const Split *split);
 
 /** The xaccTransGetSplitList() method returns a GList of the splits
-    in a transaction.  
+    in a transaction.
     @return The list of splits. This list must NOT be modified.  Do *NOT* free
     this list when you are done with it. */
+/*@ dependent @*/
 SplitList *   xaccTransGetSplitList (const Transaction *trans);
 gboolean xaccTransStillHasSplit(const Transaction *trans, const Split *s);
 
@@ -314,37 +326,57 @@ int           xaccTransCountSplits (const Transaction *trans);
 gboolean      xaccTransHasReconciledSplits (const Transaction *trans);
 /** FIXME: document me */
 gboolean      xaccTransHasReconciledSplitsByAccount (const Transaction *trans,
-						     const Account *account);
+        const Account *account);
 
 /** FIXME: document me */
 gboolean      xaccTransHasSplitsInState (const Transaction *trans, const char state);
 /** FIXME: document me */
 gboolean      xaccTransHasSplitsInStateByAccount (const Transaction *trans,
-						  const char state,
-						  const Account *account);
+        const char state,
+        const Account *account);
 
 
 /** Returns the valuation commodity of this transaction.
  *
  * Each transaction's valuation commodity, or 'currency' is, by definition,
  * the common currency in which all splits in the transaction can be valued.
- * The total value of the transaction must be zero when all splits 
+ * The total value of the transaction must be zero when all splits
  * are valued in this currency.
  * @note What happens if the Currency isn't set?  Ans: bad things.  */
+/*@ dependent @*/
 gnc_commodity * xaccTransGetCurrency (const Transaction *trans);
 
 /** Set the commodity of this transaction. */
 void xaccTransSetCurrency (Transaction *trans, gnc_commodity *curr);
 
-/** The xaccTransGetImbalance() method returns the total value of the
+/** The xaccTransGetImbalanceValue() method returns the total value of the
  * transaction.  In a pure double-entry system, this imbalance
  * should be exactly zero, and if it is not, something is broken.
  * However, when double-entry semantics are not enforced, unbalanced
  * transactions can sneak in, and this routine can be used to find
  * out how much things are off by.  The value returned is denominated
  * in the currency that is returned by the xaccTransFindCommonCurrency()
- * method. */
-gnc_numeric xaccTransGetImbalance (const Transaction * trans);
+ * method.
+ *
+ * If the use of currency exchange accounts is enabled then the a
+ * a transaction must be balanced in each currency it uses to be considered
+ * to be balanced.  The method xaccTransGetImbalance is used by most
+ * code to take this into consideration.  This method is only used in a few
+ * places that want the transaction value even if currency exchange accounts
+ * are enabled. */
+gnc_numeric xaccTransGetImbalanceValue (const Transaction * trans);
+
+/** The xaccTransGetImbalance method returns a list giving the value of
+ * the transaction in each currency for which the balance is not zero.
+ * If the use of currency accounts is disabled, then this will be only
+ * the common currency for the transaction and xaccTransGetImbalance
+ * becomes equivalent to xaccTransGetImbalanceValue.  Otherwise it will
+ * return a list containing the imbalance in each currency. */
+MonetaryList *xaccTransGetImbalance (const Transaction * trans);
+
+/** Returns true if the transaction is balanced according to the rules
+ * currently in effect. */
+gboolean xaccTransIsBalanced(const Transaction * trans);
 
 /** The xaccTransGetAccountValue() method returns the total value applied
  *  to a particular account.  In some cases there may be multiple Splits
@@ -352,8 +384,8 @@ gnc_numeric xaccTransGetImbalance (const Transaction * trans);
  *  trying to balance Lots) -- this function is just a convienience to
  *  view everything at once.
  */
-gnc_numeric xaccTransGetAccountValue (const Transaction *trans, 
-				      const Account *account);
+gnc_numeric xaccTransGetAccountValue (const Transaction *trans,
+                                      const Account *account);
 
 /** Same as xaccTransGetAccountValue, but uses the Account's commodity. */
 gnc_numeric xaccTransGetAccountAmount (const Transaction *trans,
@@ -366,7 +398,7 @@ gnc_numeric xaccTransGetAccountAmount (const Transaction *trans,
  *
  * If 'acc' is NULL, return unity.
  */
-gnc_numeric xaccTransGetAccountConvRate(Transaction *txn, Account *acc);
+gnc_numeric xaccTransGetAccountConvRate(const Transaction *txn, const Account *acc);
 
 /** Get the account balance for the specified account after the last
     split in the specified transaction. */
@@ -397,7 +429,7 @@ int  xaccTransOrder     (const Transaction *ta, const Transaction *tb);
 /** @name Transaction date setters/getters
 @{
 */
-   
+
 /** The xaccTransSetDate() method does the same thing as
     xaccTransSetDate[Posted]Secs(), but takes a convenient
     day-month-year format.
@@ -428,7 +460,7 @@ void          xaccTransSetDateEnteredSecs (Transaction *trans, time_t time);
 /** Modify the date of when the transaction was entered. The entered
  * date is the date when the register entry was made. */
 void          xaccTransSetDateEnteredTS (Transaction *trans,
-                                        const Timespec *ts);
+        const Timespec *ts);
 
 /** Dates and txn-type for A/R and A/P "invoice" postings */
 void	      xaccTransSetDateDueTS (Transaction *trans, const Timespec *ts);
@@ -481,8 +513,8 @@ void	      xaccTransGetDateDueTS (const Transaction *trans, Timespec *ts);
  *  @param reason The textual reason why this transaction is being
  *  voided.
  */
-void xaccTransVoid(Transaction *transaction, 
-		   const char *reason);
+void xaccTransVoid(Transaction *transaction,
+                   const char *reason);
 
 /** xaccTransUnvoid restores a voided transaction to its original
  *  state.  At some point when gnucash is enhanced to support an audit
@@ -510,7 +542,7 @@ Transaction * xaccTransReverse(Transaction *transaction);
  *
  *  @param trans a Transaction that has been reversed
  *
- *  @param the transaction that reversed the given transaction, or
+ *  @return the transaction that reversed the given transaction, or
  *  NULL if the given transaction has not been reversed.
  */
 Transaction * xaccTransGetReversedBy(const Transaction *trans);
@@ -561,6 +593,10 @@ Timespec xaccTransGetVoidTime(const Transaction *tr);
 #define TRANS_VOID_TIME		"void-time"
 #define TRANS_SPLITLIST		"split-list" /* for guid_match_all */
 /**@}*/
+
+#ifdef DUMP_FUNCTIONS
+void xaccTransDump (const Transaction *trans, const char *tag);
+#endif
 
 #define RECONCILED_MATCH_TYPE	"reconciled-match"
 

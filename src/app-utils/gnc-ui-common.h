@@ -26,19 +26,15 @@
 #define GNC_UI_COMMON_H
 
 #if defined(GNOME)
-  #include <gtk/gtk.h>
-#elif defined(MOTIF)
-  #include <Xm/Xm.h>
+#include <gtk/gtk.h>
 #else
-  **** No GUI selected ***
+/* **** No GUI selected *** */
 #endif
 
 #if defined(GNOME)
-  typedef GtkWidget *gncUIWidget;
-#elif defined(MOTIF)
-  typedef Widget gncUIWidget;
-#elif defined(KDE)
-  typedef void *gncUIWidget;
+typedef GtkWidget *gncUIWidget;
+#else
+typedef void *gncUIWidget;
 #endif
 
 #endif

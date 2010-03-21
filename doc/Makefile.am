@@ -7,6 +7,7 @@ doc_DATA = \
   README-de.win32-bin.txt \
   README-fr.win32-bin.txt \
   README-it.win32-bin.txt \
+  README-nl.win32-bin.txt \
   README.win32-bin.txt \
   guile-hackers.txt \
   projects.html 
@@ -22,12 +23,6 @@ EXTRA_DIST = \
   ${doc_DATA} \
   misc-notes.txt \
   README.build-system \
-  README.francais \
-  README.german \
-  README-de.win32-bin.txt \
-  README-fr.win32-bin.txt \
-  README-it.win32-bin.txt \
-  README.win32-bin.txt \
   README.HBCI \
   README.OFX \
   README.translator.txt \
@@ -62,7 +57,7 @@ gnucash.1: gnucash.1.in Makefile
 	mv $@.tmp $@
 
 tip_of_the_day.list: tip_of_the_day.list.in Makefile
-	gcc -E -P -x c -D'N_(x)=x' -o $@.tmp $<
+	${CC} -E -P -x c -D'N_(x)=x' -o $@.tmp $<
 	cat -s $@.tmp | ${SED} -e 's/^ *\"\(.*\)\" *$$/\1/' > $@
 	rm -f $@.tmp
 

@@ -6,12 +6,14 @@ docdir = ${GNC_DOC_INSTALL_DIR}
 GNC_CTAGS_FILE = @GNC_CTAGS_FILE@
 GNC_ETAGS_FILE = @GNC_ETAGS_FILE@
 
-noinst_DATA = make-gnucash-patch make-gnucash-potfiles
+noinst_DATA = make-gnucash-potfiles
 
 dist_doc_DATA = \
   AUTHORS \
   COPYING \
   ChangeLog \
+  ChangeLog.2009 \
+  ChangeLog.2008 \
   ChangeLog.2007 \
   ChangeLog.2006 \
   ChangeLog.2005 \
@@ -23,7 +25,6 @@ dist_doc_DATA = \
   LICENSE \
   NEWS \
   README \
-  README.patches \
   README.dependencies
 
 # All the other files that go in the distribution tarfile that aren't
@@ -38,8 +39,6 @@ dist_doc_DATA = \
 # CVS dirs.
 
 EXTRA_DIST = \
-  gnucash.lsm \
-  make-gnucash-patch.in \
   make-gnucash-potfiles.in \
   macros/aqbanking.m4 \
   macros/as-scrub-include.m4 \
@@ -82,13 +81,6 @@ EXTRA_DIST = \
 ## brackets here, instead of the usual @...@.  This prevents autoconf
 ## from substituting the values directly into the left-hand sides of
 ## the sed substitutions.
-make-gnucash-patch: make-gnucash-patch.in Makefile
-	rm -f $@.tmp
-	sed < $< > $@.tmp \
-            -e 's:@-PERL-@:${PERL}:g'
-	chmod +x $@.tmp
-	mv $@.tmp $@
-
 make-gnucash-potfiles: make-gnucash-potfiles.in Makefile
 	rm -f $@.tmp
 	sed < $< > $@.tmp \
@@ -99,14 +91,17 @@ make-gnucash-potfiles: make-gnucash-potfiles.in Makefile
 
 DISTCLEANFILES = \
   intltool-extract intltool-update intltool-merge\
-  cscope.files cscope.out etags.files make-gnucash-patch \
+  cscope.files cscope.out etags.files \
   make-gnucash-potfiles po/.intltool-merge-cache
 
 cscope.files:
 	find src lib -name '*.[ch]' > cscope.files
+if GNUCASH_SEPARATE_BUILDDIR
+	find ${srcdir}/src ${srcdir}/lib -name '*.[ch]' >> cscope.files
+endif
 
-cscope.out: cscope.files
-	cscope -b
+${srcdir}/cscope.out: cscope.files
+	cscope -b -f ${srcdir}/cscope.out
 
 
 # make sure etags.files is up to date.
@@ -132,7 +127,7 @@ endif
 
 .PHONY: etags ctags
 
-ACLOCAL_AMFLAGS = -I macros -I m4
+ACLOCAL_AMFLAGS = -I macros
 
 .PHONY: doc
 doc:
@@ -196,7 +191,17 @@ if BUILDING_FROM_SVN
 # idea? Before a release, NEWS will get updated because of the version
 # change, so this should fit just fine.)
 ChangeLog: NEWS
-	$(SVN) log -v --xml -r HEAD:17790 http://svn.gnucash.org/repo/gnucash | \
-	  $(XSLTPROC) --stringparam strip-prefix "gnucash/branches/2.2" \
+	$(SVN) log -v --xml -r HEAD:18543 http://svn.gnucash.org/repo/gnucash | \
+	  $(XSLTPROC) --stringparam strip-prefix "gnucash/trunk" \
 	  --stringparam include-rev "yes" $(srcdir)/macros/svn2cl.xsl - > $@
 endif
+
+ASTYLE = /usr/bin/astyle
+.PHONY: indent
+indent:
+	$(ASTYLE) --indent=spaces=4 --brackets=break --suffix=none `find ${srcdir}/src -name '*.[hc]'`
+# Use the following line if you've got astyle-1.24, but don't use
+# --pad=oper with astyle 1.22 as it will reformat e.g. "return +1;" in
+# a very ugly way.
+#	$(ASTYLE) --indent=spaces=4 --brackets=break --pad-oper -pad-header --suffix=none `find ${srcdir}/src -name '*.[hc]'`
+	@echo "### GnuCash development hint: The above command might have re-indented much more files than what you intended. Please commit only those which you really want to have changed, and revert the changes in the others so that other devevelopers do not have unnecessary merge conflicts. Thanks! ###"

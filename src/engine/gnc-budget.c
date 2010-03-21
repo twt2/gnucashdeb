@@ -29,8 +29,6 @@
 #include <time.h>
 #include "qof.h"
 
-#include "glib-compat.h"
-
 #include "Account.h"
 
 #include "gnc-budget.h"
@@ -39,59 +37,227 @@
 
 static QofLogModule log_module = GNC_MOD_ENGINE;
 
-struct gnc_budget_private{
-    QofInstance inst;
-
-    gchar* name;
-    gchar* description;
-    Recurrence recurrence;
-    guint  num_periods;
+enum
+{
+    PROP_0,
+    PROP_NAME,
+    PROP_DESCRIPTION,
+    PROP_NUM_PERIODS,
+    PROP_RECURRENCE,
 };
+
+struct budget_s
+{
+    QofInstance inst;
+};
+
+typedef struct
+{
+    QofInstanceClass parent_class;
+} BudgetClass;
+
+typedef struct BudgetPrivate
+{
+    /* The name is an arbitrary string assigned by the user. */
+    gchar* name;
+
+    /* The description is an arbitrary string assigned by the user. */
+    gchar* description;
+
+    /* Recurrence (period info) for the budget */
+    Recurrence recurrence;
+
+    /* Number of periods */
+    guint  num_periods;
+} BudgetPrivate;
+
+#define GET_PRIVATE(o) \
+  (G_TYPE_INSTANCE_GET_PRIVATE((o), GNC_TYPE_BUDGET, BudgetPrivate))
 
 struct _GncBudgetClass
 {
-  QofInstanceClass parent_class;
+    QofInstanceClass parent_class;
 };
 
 /* GObject Initialization */
-QOF_GOBJECT_IMPL(gnc_budget, GncBudget, QOF_TYPE_INSTANCE);
+G_DEFINE_TYPE(GncBudget, gnc_budget, QOF_TYPE_INSTANCE)
 
 static void
 gnc_budget_init(GncBudget* budget)
 {
+    BudgetPrivate* priv;
+    GDate date;
+
+    priv = GET_PRIVATE(budget);
+    priv->name = CACHE_INSERT(_("Unnamed Budget"));
+    priv->description = CACHE_INSERT("");
+
+    priv->num_periods = 12;
+    g_date_set_time_t(&date, time(NULL));
+    g_date_subtract_days(&date, g_date_get_day(&date) - 1);
+    recurrenceSet(&priv->recurrence, 1, PERIOD_MONTH, &date, WEEKEND_ADJ_NONE);
 }
 
 static void
-gnc_budget_dispose_real (GObject *budgetp)
+gnc_budget_dispose (GObject *budgetp)
 {
+    G_OBJECT_CLASS(gnc_budget_parent_class)->dispose(budgetp);
 }
 
 static void
-gnc_budget_finalize_real(GObject* budgetp)
+gnc_budget_finalize(GObject* budgetp)
 {
+    G_OBJECT_CLASS(gnc_budget_parent_class)->finalize(budgetp);
+}
+
+static void
+gnc_budget_get_property( GObject* object,
+                         guint prop_id,
+                         GValue* value,
+                         GParamSpec* pspec)
+{
+    GncBudget* budget;
+    BudgetPrivate* priv;
+
+    g_return_if_fail(GNC_IS_BUDGET(object));
+
+    budget = GNC_BUDGET(object);
+    priv = GET_PRIVATE(budget);
+    switch ( prop_id )
+    {
+    case PROP_NAME:
+        g_value_set_string(value, priv->name);
+        break;
+    case PROP_DESCRIPTION:
+        g_value_set_string(value, priv->description);
+        break;
+    case PROP_NUM_PERIODS:
+        g_value_set_uint(value, priv->num_periods);
+        break;
+    case PROP_RECURRENCE:
+        /* TODO: Make this a BOXED type */
+        g_value_set_pointer(value, &priv->recurrence);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
+gnc_budget_set_property( GObject* object,
+                         guint prop_id,
+                         const GValue* value,
+                         GParamSpec* pspec)
+{
+    GncBudget* budget;
+
+    g_return_if_fail(GNC_IS_BUDGET(object));
+
+    budget = GNC_BUDGET(object);
+    switch ( prop_id )
+    {
+    case PROP_NAME:
+        gnc_budget_set_name(budget, g_value_get_string(value));
+        break;
+    case PROP_DESCRIPTION:
+        gnc_budget_set_description(budget, g_value_get_string(value));
+        break;
+    case PROP_NUM_PERIODS:
+        gnc_budget_set_num_periods(budget, g_value_get_uint(value));
+        break;
+    case PROP_RECURRENCE:
+        gnc_budget_set_recurrence(budget, g_value_get_pointer(value));
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
+gnc_budget_class_init(GncBudgetClass* klass)
+{
+    GObjectClass* gobject_class = G_OBJECT_CLASS(klass);
+
+    gobject_class->dispose = gnc_budget_dispose;
+    gobject_class->finalize = gnc_budget_finalize;
+    gobject_class->get_property = gnc_budget_get_property;
+    gobject_class->set_property = gnc_budget_set_property;
+
+    g_type_class_add_private(klass, sizeof(BudgetPrivate));
+
+    g_object_class_install_property(
+        gobject_class,
+        PROP_NAME,
+        g_param_spec_string( "name",
+                             "Budget Name",
+                             "The name is an arbitrary string "
+                             "assigned by the user.  It is intended "
+                             "to be a short, 5 to 30 character long string "
+                             "that is displayed by the GUI as the "
+                             "budget mnemonic",
+                             NULL,
+                             G_PARAM_READWRITE));
+
+    g_object_class_install_property(
+        gobject_class,
+        PROP_DESCRIPTION,
+        g_param_spec_string( "description",
+                             "Budget Description",
+                             "The description is an arbitrary string "
+                             "assigned by the user.  It is intended "
+                             "to be a longer, 1-5 sentence description of "
+                             "what the budget is all about.",
+                             NULL,
+                             G_PARAM_READWRITE));
+
+    g_object_class_install_property(
+        gobject_class,
+        PROP_NUM_PERIODS,
+        g_param_spec_uint( "num-periods",
+                           "Number of Periods",
+                           "The number of periods for this budget.",
+                           0,
+                           G_MAXUINT32,
+                           12,
+                           G_PARAM_READWRITE));
+
+    g_object_class_install_property(
+        gobject_class,
+        PROP_RECURRENCE,
+        g_param_spec_pointer( "recurrence",
+                              "Budget Recurrence",
+                              "about.",
+                              G_PARAM_READWRITE));
 }
 
 static void commit_err (QofInstance *inst, QofBackendError errcode)
 {
-  PERR ("Failed to commit: %d", errcode);
+    PERR ("Failed to commit: %d", errcode);
+    gnc_engine_signal_commit_error( errcode );
 }
 
 static void
 gnc_budget_free(QofInstance *inst)
 {
-    GncBudget *budget = GNC_BUDGET(inst);
-    if (budget == NULL)
-        return;
+    GncBudget *budget;
+    BudgetPrivate* priv;
 
-    g_return_if_fail(GNC_IS_BUDGET(budget));
+    if (inst == NULL)
+        return;
+    g_return_if_fail(GNC_IS_BUDGET(inst));
+
+    budget = GNC_BUDGET(inst);
+    priv = GET_PRIVATE(budget);
 
     /* We first send the message that this object is about to be
      * destroyed so that any GUI elements can remove it before it is
      * actually gone. */
     qof_event_gen( &budget->inst, QOF_EVENT_DESTROY, NULL);
 
-    CACHE_REMOVE(budget->name);
-    CACHE_REMOVE(budget->description);
+    CACHE_REMOVE(priv->name);
+    CACHE_REMOVE(priv->description);
 
     /* qof_instance_release (&budget->inst); */
     g_object_unref(budget);
@@ -109,7 +275,7 @@ void
 gnc_budget_commit_edit(GncBudget *bgt)
 {
     if (!qof_commit_edit(QOF_INSTANCE(bgt))) return;
-    qof_commit_edit_part2(QOF_INSTANCE(bgt), commit_err, 
+    qof_commit_edit_part2(QOF_INSTANCE(bgt), commit_err,
                           noop, gnc_budget_free);
 }
 
@@ -117,22 +283,12 @@ GncBudget*
 gnc_budget_new(QofBook *book)
 {
     GncBudget* budget;
-    GDate date;
+
     g_return_val_if_fail(book, NULL);
 
     ENTER(" ");
     budget = g_object_new(GNC_TYPE_BUDGET, NULL);
     qof_instance_init_data (&budget->inst, GNC_ID_BUDGET, book);
-
-    g_date_set_time_t(&date, time(NULL));
-    g_date_subtract_days(&date, g_date_get_day(&date)-1);
-    recurrenceSet(&budget->recurrence, 1, PERIOD_MONTH, &date);
-
-	gnc_budget_begin_edit(budget);
-    gnc_budget_set_name(budget, _("Unnamed Budget"));
-    gnc_budget_set_description(budget, "");
-    gnc_budget_set_num_periods(budget, 12);
-	gnc_budget_commit_edit(budget);
 
     qof_event_gen( &budget->inst, QOF_EVENT_CREATE , NULL);
 
@@ -153,10 +309,15 @@ gnc_budget_destroy(GncBudget *budget)
 void
 gnc_budget_set_name(GncBudget* budget, const gchar* name)
 {
+    BudgetPrivate* priv;
+
     g_return_if_fail(GNC_IS_BUDGET(budget) && name);
 
+    priv = GET_PRIVATE(budget);
+    if ( name == priv->name ) return;
+
     gnc_budget_begin_edit(budget);
-    CACHE_REPLACE(budget->name, name);
+    CACHE_REPLACE(priv->name, name);
     qof_instance_set_dirty(&budget->inst);
     gnc_budget_commit_edit(budget);
 
@@ -167,17 +328,21 @@ const gchar*
 gnc_budget_get_name(GncBudget* budget)
 {
     g_return_val_if_fail(GNC_IS_BUDGET(budget), NULL);
-    return budget->name;
+    return GET_PRIVATE(budget)->name;
 }
 
 void
 gnc_budget_set_description(GncBudget* budget, const gchar* description)
 {
+    BudgetPrivate* priv;
+
     g_return_if_fail(GNC_IS_BUDGET(budget));
     g_return_if_fail(description);
 
+    priv = GET_PRIVATE(budget);
+    if ( description == priv->description ) return;
     gnc_budget_begin_edit(budget);
-    CACHE_REPLACE(budget->description, description);
+    CACHE_REPLACE(priv->description, description);
     qof_instance_set_dirty(&budget->inst);
     gnc_budget_commit_edit(budget);
 
@@ -188,15 +353,19 @@ const gchar*
 gnc_budget_get_description(GncBudget* budget)
 {
     g_return_val_if_fail(GNC_IS_BUDGET(budget), NULL);
-    return budget->description;
+    return GET_PRIVATE(budget)->description;
 }
 
 void
 gnc_budget_set_recurrence(GncBudget *budget, const Recurrence *r)
 {
+    BudgetPrivate* priv;
+
     g_return_if_fail(budget && r);
+    priv = GET_PRIVATE(budget);
+
     gnc_budget_begin_edit(budget);
-    budget->recurrence = *r;
+    priv->recurrence = *r;
     qof_instance_set_dirty(&budget->inst);
     gnc_budget_commit_edit(budget);
 
@@ -207,7 +376,7 @@ const Recurrence *
 gnc_budget_get_recurrence(GncBudget *budget)
 {
     g_return_val_if_fail(budget, NULL);
-    return (&budget->recurrence);
+    return (&GET_PRIVATE(budget)->recurrence);
 }
 
 const GUID*
@@ -221,10 +390,15 @@ gnc_budget_get_guid(GncBudget* budget)
 void
 gnc_budget_set_num_periods(GncBudget* budget, guint num_periods)
 {
+    BudgetPrivate* priv;
+
     g_return_if_fail(GNC_IS_BUDGET(budget));
 
+    priv = GET_PRIVATE(budget);
+    if ( priv->num_periods == num_periods ) return;
+
     gnc_budget_begin_edit(budget);
-    budget->num_periods = num_periods;
+    priv->num_periods = num_periods;
     qof_instance_set_dirty(&budget->inst);
     gnc_budget_commit_edit(budget);
 
@@ -235,7 +409,7 @@ guint
 gnc_budget_get_num_periods(GncBudget* budget)
 {
     g_return_val_if_fail(GNC_IS_BUDGET(budget), 0);
-    return budget->num_periods;
+    return GET_PRIVATE(budget)->num_periods;
 }
 
 #define BUF_SIZE (10 + GUID_ENCODING_LENGTH + \
@@ -245,7 +419,7 @@ gnc_budget_get_num_periods(GncBudget* budget)
 /* What happens when account is deleted, after we have an entry for it? */
 void
 gnc_budget_unset_account_period_value(GncBudget *budget, Account *account,
-                                    guint period_num)
+                                      guint period_num)
 {
     const GUID *guid;
     KvpFrame *frame;
@@ -319,7 +493,7 @@ xaccAccountChildrenHaveSameCommodity(Account *account)
 
     comm = xaccAccountGetCommodity(account);
     different =
-      gnc_account_foreach_descendant_until(account, is_same_commodity, comm);
+        gnc_account_foreach_descendant_until(account, is_same_commodity, comm);
     return (different == NULL);
 }
 #endif
@@ -370,7 +544,16 @@ gnc_budget_get_period_start_date(GncBudget *budget, guint period_num)
 {
     Timespec ts;
     timespecFromTime_t(
-        &ts,  recurrenceGetPeriodTime(&budget->recurrence, period_num, FALSE));
+        &ts,  recurrenceGetPeriodTime(&GET_PRIVATE(budget)->recurrence, period_num, FALSE));
+    return ts;
+}
+
+Timespec
+gnc_budget_get_period_end_date(GncBudget *budget, guint period_num)
+{
+    Timespec ts;
+    timespecFromTime_t(
+        &ts,  recurrenceGetPeriodTime(&GET_PRIVATE(budget)->recurrence, period_num, TRUE));
     return ts;
 }
 
@@ -380,7 +563,7 @@ gnc_budget_get_account_period_actual_value(
 {
     // FIXME: maybe zero is not best error return val.
     g_return_val_if_fail(GNC_IS_BUDGET(budget) && acc, gnc_numeric_zero());
-    return recurrenceGetAccountPeriodValue(&budget->recurrence, 
+    return recurrenceGetAccountPeriodValue(&GET_PRIVATE(budget)->recurrence,
                                            acc, period_num);
 }
 
@@ -416,65 +599,97 @@ gnc_budget_get_default (QofBook *book)
 
     g_return_val_if_fail(book, NULL);
     col = qof_book_get_collection(book, GNC_ID_BUDGET);
-    if (qof_collection_count(col) > 0) {
+    if (qof_collection_count(col) > 0)
+    {
         qof_collection_foreach(col, just_get_one, &bgt);
     }
     return bgt;
 }
 
+#ifdef _MSC_VER
+/* MSVC compiler doesn't have C99 "designated initializers"
+ * so we wrap them in a macro that is empty on MSVC. */
+# define DI(x) /* */
+#else
+# define DI(x) x
+#endif
+
 /* Define the QofObject. */
 static QofObject budget_object_def =
 {
-    interface_version: QOF_OBJECT_VERSION,
-    e_type:            GNC_ID_BUDGET,
-    type_label:        "Budget",
-    create:            (gpointer)gnc_budget_new,
-    book_begin:        NULL,
-    book_end:          NULL,
-    is_dirty:          qof_collection_is_dirty,
-    mark_clean:        qof_collection_mark_clean,
-    foreach:           qof_collection_foreach,
-    printable:         (const char* (*)(gpointer)) gnc_budget_get_name,
-    version_cmp:       (int (*)(gpointer, gpointer)) qof_instance_version_cmp,
+    DI(.interface_version = ) QOF_OBJECT_VERSION,
+    DI(.e_type            = ) GNC_ID_BUDGET,
+    DI(.type_label        = ) "Budget",
+    DI(.create            = ) (gpointer)gnc_budget_new,
+    DI(.book_begin        = ) NULL,
+    DI(.book_end          = ) NULL,
+    DI(.is_dirty          = ) qof_collection_is_dirty,
+    DI(.mark_clean        = ) qof_collection_mark_clean,
+    DI(.foreach           = ) qof_collection_foreach,
+    DI(.printable         = ) (const char * (*)(gpointer)) gnc_budget_get_name,
+    DI(.version_cmp       = ) (int (*)(gpointer, gpointer)) qof_instance_version_cmp,
 };
 
 
 /* Static wrapper getters for the recurrence params */
-static PeriodType gnc_budget_get_rec_pt(const GncBudget *bgt) 
-{ return recurrenceGetPeriodType(&(bgt->recurrence)); }
-static guint gnc_budget_get_rec_mult(const GncBudget *bgt) 
-{ return recurrenceGetMultiplier(&(bgt->recurrence)); }
-static GDate gnc_budget_get_rec_date(const GncBudget *bgt) 
-{ return recurrenceGetDate(&(bgt->recurrence)); }
+static PeriodType gnc_budget_get_rec_pt(const GncBudget *bgt)
+{
+    return recurrenceGetPeriodType(&(GET_PRIVATE(bgt)->recurrence));
+}
+static guint gnc_budget_get_rec_mult(const GncBudget *bgt)
+{
+    return recurrenceGetMultiplier(&(GET_PRIVATE(bgt)->recurrence));
+}
+static GDate gnc_budget_get_rec_date(const GncBudget *bgt)
+{
+    return recurrenceGetDate(&(GET_PRIVATE(bgt)->recurrence));
+}
 
 /* Register ourselves with the engine. */
 gboolean gnc_budget_register (void)
 {
-    static QofParam params[] = {
-        { "name", QOF_TYPE_STRING,
-          (QofAccessFunc) gnc_budget_get_name,
-          (QofSetterFunc) gnc_budget_set_name },
-        { "description", QOF_TYPE_STRING, 
-          (QofAccessFunc) gnc_budget_get_description, 
-          (QofSetterFunc) gnc_budget_set_description },
-        { "recurrence_period_type", QOF_TYPE_INT32,
-          (QofAccessFunc) gnc_budget_get_rec_pt, NULL },
+    static QofParam params[] =
+    {
+        {
+            "name", QOF_TYPE_STRING,
+            (QofAccessFunc) gnc_budget_get_name,
+            (QofSetterFunc) gnc_budget_set_name
+        },
+        {
+            "description", QOF_TYPE_STRING,
+            (QofAccessFunc) gnc_budget_get_description,
+            (QofSetterFunc) gnc_budget_set_description
+        },
+        {
+            "recurrence_period_type", QOF_TYPE_INT32,
+            (QofAccessFunc) gnc_budget_get_rec_pt, NULL
+        },
         /* Signedness problem: Should be unsigned. */
-        { "recurrence_multiplier", QOF_TYPE_INT32,
-          (QofAccessFunc) gnc_budget_get_rec_mult, NULL },
+        {
+            "recurrence_multiplier", QOF_TYPE_INT32,
+            (QofAccessFunc) gnc_budget_get_rec_mult, NULL
+        },
         /* This is the same way that SchedXaction.c uses QOF_TYPE_DATE
            but I don't think QOF actually supports a GDate, so I think
            this is wrong. */
-        { "recurrence_date", QOF_TYPE_DATE,
-          (QofAccessFunc) gnc_budget_get_rec_date, NULL },
+        {
+            "recurrence_date", QOF_TYPE_DATE,
+            (QofAccessFunc) gnc_budget_get_rec_date, NULL
+        },
         /* Signedness problem: Should be unsigned. */
-        { "num_periods", QOF_TYPE_INT32, 
-          (QofAccessFunc) gnc_budget_get_num_periods,
-          (QofSetterFunc) gnc_budget_set_num_periods },        
-        { QOF_PARAM_BOOK, QOF_ID_BOOK, 
-          (QofAccessFunc) qof_instance_get_book, NULL },
-        { QOF_PARAM_GUID, QOF_TYPE_GUID, 
-          (QofAccessFunc) qof_instance_get_guid, NULL },
+        {
+            "num_periods", QOF_TYPE_INT32,
+            (QofAccessFunc) gnc_budget_get_num_periods,
+            (QofSetterFunc) gnc_budget_set_num_periods
+        },
+        {
+            QOF_PARAM_BOOK, QOF_ID_BOOK,
+            (QofAccessFunc) qof_instance_get_book, NULL
+        },
+        {
+            QOF_PARAM_GUID, QOF_TYPE_GUID,
+            (QofAccessFunc) qof_instance_get_guid, NULL
+        },
         { NULL },
     };
 
