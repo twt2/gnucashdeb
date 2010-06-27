@@ -1,3 +1,10 @@
+gnucash (2.2.9-6) unstable; urgency=low
+
+  * Added patch 10_fix_broken_SCIM_input_bug_587298 to fix SCIM input
+    problems (closes: #587298, LP: #520976)
+
+ -- Micha Lenk <micha@debian.org>  Sun, 27 Jun 2010 20:11:53 +0200
+
 gnucash (2.2.9-5) unstable; urgency=low
 
   * Transition build-dep from libgoffice-0-8-dev to libgoffice-0.8-dev
