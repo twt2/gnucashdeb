@@ -23,7 +23,7 @@ configure: configure-stamp
 configure-stamp:
 	dh_testdir
 	$(checkdir)
-	env LDFLAGS="-L/usr/X11R6/lib" GUILE=/usr/bin/guile-1.6 CFLAGS="$(CFLAGS)" ./configure --disable-static --enable-ofx --enable-aqbanking --enable-hbci --enable-python-bindings --enable-locale-specific-tax --sysconfdir=/etc --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --libexecdir=/usr/lib --libdir=/usr/lib/gnucash --disable-error-on-warning 
+	env LDFLAGS="-L/usr/X11R6/lib" GUILE=/usr/bin/guile-1.6 CFLAGS="$(CFLAGS)" ./configure --disable-static --enable-ofx --enable-aqbanking --enable-hbci --enable-python-bindings --enable-locale-specific-tax --sysconfdir=/etc --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --libexecdir=/usr/lib --libdir=/usr/lib/gnucash --disable-error-on-warning --with-qt3-wizard-package=libaqbanking29-plugins-qt
 	touch configure-stamp
 
 build: patch build-stamp
