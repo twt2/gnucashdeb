@@ -1,3 +1,10 @@
+gnucash (2.2.9-7) unstable; urgency=low
+
+  * Added patch 11_migrate_AqBanking_configuration_bug_593544.dpatch for
+    migrating old AqBanking configuration on upgrade (closes: #593544).
+
+ -- Micha Lenk <micha@debian.org>  Thu, 19 Aug 2010 09:40:23 +0200
+
 gnucash (2.2.9-6) unstable; urgency=low
 
   * Added patch 10_fix_broken_SCIM_input_bug_587298 to fix SCIM input
