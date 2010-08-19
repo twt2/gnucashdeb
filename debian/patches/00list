@@ -3,3 +3,4 @@
 04_renew-gui.dpatch
 05_missing_mnemonic_r18419_bug_548371
 10_fix_broken_SCIM_input_bug_587298
+11_migrate_AqBanking_configuration_bug_593544.dpatch
