@@ -1,3 +1,9 @@
+gnucash (2.2.9-7~squeeze1) testing-proposed-updates; urgency=low
+
+  * Build for Debian Squeeze (no source changes)
+
+ -- Micha Lenk <micha@debian.org>  Wed, 15 Sep 2010 20:50:01 +0200
+
 gnucash (2.2.9-7) unstable; urgency=low
 
   * Added patch 11_migrate_AqBanking_configuration_bug_593544.dpatch for
