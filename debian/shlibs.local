@@ -45,3 +45,4 @@ libgw-gnome-utils 0
 libgw-kvp 0
 libgw-register-core 0
 libgw-report-gnome 0
+libgoffice-0.8 8 libgoffice-0.8-8 (>= 0.8.8)
