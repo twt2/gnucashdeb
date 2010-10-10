@@ -1,3 +1,16 @@
+gnucash (2.2.9-8) unstable; urgency=low
+
+  * Fix package name in message about missing AqBanking wizard
+    (closes: #589039).
+  * 12_do_not_accidentally_delete_main_account_file_bug_525549.dpatch
+    added (closes: #525549).
+  * Added shlibs.local entry for libgoffice-0.8-8 because this library
+    provides a shlibs file unconditionally tied to the upstream version (which
+    is more than required by Gnucash). This is a workaround for Debian bug
+    #599225 and should facilitate transition to testing w/o upload via t-p-u.
+
+ -- Micha Lenk <micha@debian.org>  Sun, 10 Oct 2010 14:19:22 +0200
+
 gnucash (2.2.9-7) unstable; urgency=low
 
   * Added patch 11_migrate_AqBanking_configuration_bug_593544.dpatch for
