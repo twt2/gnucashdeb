@@ -1,3 +1,13 @@
+gnucash (2.2.9-9) unstable; urgency=low
+
+  * Added patch 13_fix_double_edit_segfault_bug_593856.dpatch to fix
+    segfault in transaction editing (closes: #593856).
+  * Increased version in build-dep on libglib2.0-dev to avoid segfault on open
+    (Debian bug #587743) if gnucash is built with older libglib2.0-dev versions
+    (makes backporting easier).
+
+ -- Micha Lenk <micha@debian.org>  Mon, 01 Nov 2010 12:43:22 +0100
+
 gnucash (2.2.9-8) unstable; urgency=low
 
   * Fix package name in message about missing AqBanking wizard
