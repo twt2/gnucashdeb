@@ -1,0 +1,102 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+Author: Tim Retout <diocles@debian.org>, Charles Day <cedayiv@gmail.com>
+Origin: backport, http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=51;filename=593856.patch;att=1;bug=593856
+Bug: https://bugzilla.gnome.org/show_bug.cgi?id=499215
+Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=593856
+Applied Upstream: 2.3.0, commit:http://svn.gnucash.org/trac/changeset/17962
+Subject: Register: Fix transaction pasting, which was fairly broken
+
+Original commit message (SVN r17962):
+
+  Bug #499215, #530819, #551643: Register: Fix transaction pasting, which was
+  fairly broken. Pasting was being committed immediately, the transaction was not
+  checked properly before opening, the blank split was being destroyed while the
+  transaction was left pending, and more. These problems left the register in an
+  inconsistent state that was being noticed in g_assert() calls in several spots.
+  GnuCash would then crash.
+
+Comments by Tim Retout in the Debian BTS:
+
+  The attached patch is upstream's commit r17962, but with the debug
+  information removed to keep the patch as small as possible.  (You could
+  alternatively look at backporting that as well.)
+  
+  With this applied, in both the upstream test case and the one above,
+  gnucash shows a message like "the transaction is already being edited in
+  another register", and does not crash.
+
+@DPATCH@
+
+--- gnucash-2.2.9.orig/src/register/ledger-core/split-register.c
++++ gnucash-2.2.9/src/register/ledger-core/split-register.c
+@@ -684,6 +684,7 @@
+   SRInfo *info = gnc_split_register_get_info(reg);
+   CursorClass cursor_class;
+   Transaction *trans;
++  Transaction *blank_trans;
+   Split *blank_split;
+   Split *trans_split;
+   Split *split;
+@@ -693,6 +694,7 @@
+ 
+   blank_split = xaccSplitLookup (&info->blank_split_guid,
+                                  gnc_get_current_book ());
++  blank_trans = xaccSplitGetParent (blank_split);
+   split = gnc_split_register_get_current_split (reg);
+   trans = gnc_split_register_get_current_trans (reg);
+ 
+@@ -766,15 +768,15 @@
+     if (!result)
+       return;
+ 
+-    gnc_suspend_gui_refresh ();
+-
+-    /* in pasting, the old split is deleted. */
+-    if (split == blank_split)
++    /* Open the transaction for editing. */
++    if (gnc_split_register_begin_edit_or_warn(info, trans))
+     {
+-      info->blank_split_guid = *guid_null();
+-      blank_split = NULL;
++      LEAVE("can't begin editing");
++      return;
+     }
+ 
++    gnc_suspend_gui_refresh ();
++
+     split_index = xaccTransGetSplitIndex(trans, split);
+     trans_split_index = xaccTransGetSplitIndex(trans, trans_split);
+ 
+@@ -785,17 +787,30 @@
+       new_guid = &info->default_account;
+       gnc_copy_trans_scm_onto_trans_swap_accounts(copied_item, trans,
+                                                   &copied_leader_guid,
+-                                                  new_guid, TRUE,
++                                                  new_guid, FALSE,
+                                                   gnc_get_current_book ());
+     }
+     else
+-      gnc_copy_trans_scm_onto_trans(copied_item, trans, TRUE,
++      gnc_copy_trans_scm_onto_trans(copied_item, trans, FALSE,
+                                     gnc_get_current_book ());
+ 
+     num_splits = xaccTransCountSplits(trans);
+     if (split_index >= num_splits)
+       split_index = 0;
+ 
++    if (trans == blank_trans)
++    {
++      /* In pasting, the blank split is deleted. Pick a new one. */
++      blank_split = xaccTransGetSplit(trans, 0);
++      info->blank_split_guid = *xaccSplitGetGUID (blank_split);
++      info->blank_split_edited = TRUE;
++      DEBUG("replacement blank_split=%p", blank_split);
++
++      /* NOTE: At this point, the blank transaction virtual cell is still
++       *       anchored by the old, deleted blank split. The register will
++       *       have to be reloaded (redrawn) to correct this. */
++    }
++
+     info->cursor_hint_trans = trans;
+     info->cursor_hint_split = xaccTransGetSplit(trans, split_index);
+     info->cursor_hint_trans_split = xaccTransGetSplit(trans,
