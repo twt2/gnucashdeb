@@ -1,3 +1,10 @@
+gnucash (2.2.9-10) unstable; urgency=low
+
+  * Don't ship gnc-test-env, only needed at build time (closes: #603329,
+    CVE-2010-3999)
+
+ -- Micha Lenk <micha@debian.org>  Wed, 01 Dec 2010 23:39:17 +0100
+
 gnucash (2.2.9-9) unstable; urgency=low
 
   * Added patch 13_fix_double_edit_segfault_bug_593856.dpatch to fix
