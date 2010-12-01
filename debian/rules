@@ -74,6 +74,9 @@ install-stamp: build-stamp
 	-rm -f debian/tmp/usr/share/info/dir*
 #	convert debian/tmp/usr/share/gnucash/pixmaps/gnucash-icon.png debian/tmp/usr/share/gnucash/pixmaps/gnucash-icon.xpm
 #	rm debian/tmp/usr/share/gnucash/pixmaps/gnucash-icon.png
+	
+	# Don't ship gnc-test-env, only needed at build time (Debian Bug#603329, CVE-2010-3999)
+	rm -v debian/tmp/usr/bin/gnc-test-env
 
 	touch install-stamp
 
