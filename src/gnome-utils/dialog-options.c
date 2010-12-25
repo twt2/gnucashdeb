@@ -1235,7 +1235,7 @@ gnc_options_dialog_append_page(GNCOptionWin * propertybox,
     gtk_box_pack_end(GTK_BOX(page_content_box), buttonbox, FALSE, FALSE, 0);
 
     /* The reset button on each option page */
-    reset_button = gtk_button_new_with_label (_("Defaults"));
+    reset_button = gtk_button_new_with_label (_("Reset defaults"));
     gtk_tooltips_set_tip(tooltips, reset_button,
                          _("Reset all values to their defaults."), NULL);
 
@@ -1247,7 +1247,7 @@ gnc_options_dialog_append_page(GNCOptionWin * propertybox,
     gtk_notebook_append_page(GTK_NOTEBOOK(propertybox->notebook),
                              page_content_box, page_label);
 
-    /* Switch to selection from a list if the page count threshhold is reached */
+    /* Switch to selection from a list if the page count threshold is reached */
     page_count = gtk_notebook_page_num(GTK_NOTEBOOK(propertybox->notebook),
                                        page_content_box);
 
@@ -1976,7 +1976,7 @@ gnc_option_set_ui_widget_number_range (GNCOption *option, GtkBox *page_box,
     adj = GTK_ADJUSTMENT(gtk_adjustment_new(lower_bound, lower_bound,
                                             upper_bound, step_size,
                                             step_size * 5.0,
-                                            step_size * 5.0));
+                                            0));
     value = gtk_spin_button_new(adj, step_size, num_decimals);
     gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(value), TRUE);
 
@@ -2266,7 +2266,7 @@ gnc_option_set_ui_value_text (GNCOption *option, gboolean use_default,
     if (scm_is_string(value))
     {
         const gchar *string = scm_to_locale_string(value);
-        gtk_text_buffer_set_text (buffer, string, scm_i_string_length(value));
+        gtk_text_buffer_set_text (buffer, string, scm_c_string_length(value));
         return FALSE;
     }
     else

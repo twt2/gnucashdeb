@@ -24,7 +24,7 @@
 #ifndef GNC_ENTRY_LEDGER_H
 #define GNC_ENTRY_LEDGER_H
 
-#include "QueryNew.h"
+#include "qof.h"
 #include "gncEntry.h"
 #include "gncOrder.h"
 #include "table-allgui.h"
@@ -119,16 +119,26 @@ gboolean gnc_entry_ledger_check_close (GtkWidget *parent, GncEntryLedger *ledger
 
 void gnc_entry_ledger_reset_query (GncEntryLedger *ledger);
 
+/** Returns the GncEntry at the given location, or NULL if the
+ * location is not valid. */
+GncEntry * gnc_entry_ledger_get_entry (GncEntryLedger *ledger,
+                                       VirtualCellLocation vcell_loc);
+
+/** Returns the GncEntry that represents the blank new line at the
+ * bottom of the ledger */
 GncEntry * gnc_entry_ledger_get_blank_entry (GncEntryLedger *ledger);
 
+/** Looks up the cell location of the given "entry" and writes the
+ * location into the variable pointed to by vcell_loc (which must be
+ * non-NULL). Returns TRUE if the entry was found, otherwise FALSE. */
 gboolean gnc_entry_ledger_get_entry_virt_loc (GncEntryLedger *ledger,
-        GncEntry *entry,
+        const GncEntry *entry,
         VirtualCellLocation *vcell_loc);
 
 void gnc_entry_ledger_delete_current_entry (GncEntryLedger *ledger);
 void gnc_entry_ledger_duplicate_current_entry (GncEntryLedger *ledger);
 
-QueryNew * gnc_entry_ledger_get_query (GncEntryLedger *ledger);
+QofQuery * gnc_entry_ledger_get_query (GncEntryLedger *ledger);
 
 void gnc_entry_ledger_set_gconf_section (GncEntryLedger *ledger, const gchar *string);
 

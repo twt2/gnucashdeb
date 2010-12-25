@@ -154,42 +154,53 @@ static gnc_quote_source currency_quote_source =
 
 static gnc_quote_source single_quote_sources[] =
 {
-    { FALSE, 0, 0, "AEX", "AEX", "aex" },
-    { FALSE, 0, 0, "AEX Futures", "AEX_FUTURES", "aex_futures" },
-    { FALSE, 0, 0, "AEX Options", "AEX_OPTIONS", "aex_options" },
-    { FALSE, 0, 0, "AMFI India", "AMFIINDIA", "amfiindia" },
-    { FALSE, 0, 0, "ASE", "ASEGR", "asegr" },
-    { FALSE, 0, 0, "ASX", "ASX", "asx" },
-    { FALSE, 0, 0, "BMO NesbittBurns", "BMONESBITTBURNS", "bmonesbittburns" },
-    { FALSE, 0, 0, "Deka Investments", "DEKA", "deka" },
-    { FALSE, 0, 0, "DWS", "DWS", "dwsfunds" },
+    { FALSE, 0, 0, "Amsterdam Euronext eXchange, NL", "AEX", "aex" },
+    { FALSE, 0, 0, "AEX Futures (now in AEX)", "AEX_FUTURES", "aex_futures" },
+    { FALSE, 0, 0, "AEX Options (now in AEX)", "AEX_OPTIONS", "aex_options" },
+    { FALSE, 0, 0, "American International Assurance, HK", "AIAHK", "aiahk" },
+    { FALSE, 0, 0, "Association  of  Mutual  Funds  in  India", "AMFIINDIA", "amfiindia" },
+    { FALSE, 0, 0, "Athens Stock Exchange, GR", "ASEGR", "asegr" },
+    { FALSE, 0, 0, "Australian Stock Exchange, AU", "ASX", "asx" },
+    { FALSE, 0, 0, "BMO NesbittBurns, CA", "BMONESBITTBURNS", "bmonesbittburns" },
+    { FALSE, 0, 0, "BUX/Magyar Tökepiac, HU", "BUX", "bux" },
+    { FALSE, 0, 0, "Cominvest, ex-Adig, DE", "COMINVEST", "cominvest" },
+    { FALSE, 0, 0, "Deka Investments, DE", "DEKA", "deka" },
+    { FALSE, 0, 0, "DWS, DE", "DWS", "dwsfunds" },
     { FALSE, 0, 0, "Fidelity Direct", "FIDELITY_DIRECT", "fidelity_direct" },
     { FALSE, 0, 0, "Finance Canada", "FINANCECANADA", "financecanada" },
-    { FALSE, 0, 0, "First Trust Portfolios", "FTPORTFOLIOS_DIRECT", "ftportfolios_direct" },
-    { FALSE, 0, 0, "Fund Library", "FUNDLIBRARY", "fundlibrary" },
-    { FALSE, 0, 0, "Man Investments", "maninv", "maninv" },
-    { FALSE, 0, 0, "Motley Fool", "FOOL", "fool" },
-    { FALSE, 0, 0, "NZX", "NZX", "nzx" },
-    { FALSE, 0, 0, "Platinum Asset Management", "PLATINUM", "platinum" },
-    { FALSE, 0, 0, "SEB", "SEB_FUNDS", "seb_funds" },
-    { FALSE, 0, 0, "Sharenet", "sharenet", "sharenet" },
+    { FALSE, 0, 0, "Finanzpartner, DE", "FINANZPARTNER", "finanzpartner" },
+    { FALSE, 0, 0, "First Trust Portfolios, US", "FTPORTFOLIOS_DIRECT", "ftportfolios_direct" },
+    { FALSE, 0, 0, "Fund Library, CA", "FUNDLIBRARY", "fundlibrary" },
+    { FALSE, 0, 0, "GoldMoney spot rates, JE", "GOLDMONEY", "goldmoney" },
+    { FALSE, 0, 0, "HElsinki stock eXchange, FI", "HEX", "hex" },
+    { FALSE, 0, 0, "Man Investments, AU", "maninv", "maninv" },
+    { FALSE, 0, 0, "Morningstar, SE", "MORNINGSTAR", "morningstar" },
+    { FALSE, 0, 0, "Motley Fool, US", "FOOL", "fool" },
+    { FALSE, 0, 0, "New Zealand stock eXchange, NZ", "NZX", "nzx" },
+    { FALSE, 0, 0, "Paris Stock Exchange/Boursorama, FR", "BOURSO", "bourso" },
+    { FALSE, 0, 0, "Paris Stock Exchange/LeRevenu, FR", "LEREVENU", "lerevenu" },
+    { FALSE, 0, 0, "Platinum Asset Management, AU", "PLATINUM", "platinum" },
+    { FALSE, 0, 0, "Skandinaviska Enskilda Banken, SE", "SEB_FUNDS", "seb_funds" },
+    { FALSE, 0, 0, "Sharenet, ZA", "ZA", "za" },
+    { FALSE, 0, 0, "StockHouse Canada", "STOCKHOUSE_FUND", "stockhousecanada_fund" },
     { FALSE, 0, 0, "TD Waterhouse Canada", "TDWATERHOUSE", "tdwaterhouse" },
-    { FALSE, 0, 0, "TD Efunds", "TDEFUNDS", "tdefunds" },
-    { FALSE, 0, 0, "TIAA-CREF", "TIAACREF", "tiaacref" },
-    { FALSE, 0, 0, "T. Rowe Price", "TRPRICE_DIRECT", "troweprice_direct" },
-    { FALSE, 0, 0, "Trustnet", "TRUSTNET", "trustnet" },
-    { FALSE, 0, 0, "Union Investments", "UNIONFUNDS", "unionfunds" },
+    { FALSE, 0, 0, "TD Efunds, CA", "TDEFUNDS", "tdefunds" },
+    { FALSE, 0, 0, "TIAA-CREF, US", "TIAACREF", "tiaacref" },
+    { FALSE, 0, 0, "Toronto Stock eXchange, CA", "TSX", "tsx" },
+    { FALSE, 0, 0, "T. Rowe Price, US", "TRPRICE_DIRECT", "troweprice_direct" },
+    { FALSE, 0, 0, "Trustnet, GB", "TRUSTNET", "trustnet" },
+    { FALSE, 0, 0, "Union Investment, DE", "UNIONFUNDS", "unionfunds" },
     { FALSE, 0, 0, "US Treasury Bonds", "usfedbonds", "usfedbonds" },
     { FALSE, 0, 0, "US Govt. Thrift Savings Plan", "TSP", "tsp" },
-    { FALSE, 0, 0, "Vanguard", "VANGUARD", "vanguard" },
-    { FALSE, 0, 0, "VWD", "VWD", "vwd" },
-    { FALSE, 0, 0, "Yahoo", "YAHOO", "yahoo" },
+    { FALSE, 0, 0, "Vanguard", "VANGUARD", "vanguard" }, /* No module seen in F::Q 1.17. */
+    { FALSE, 0, 0, "VWD, DE (unmaintained)", "VWD", "vwd" },
+    { FALSE, 0, 0, "Yahoo USA", "YAHOO", "yahoo" },
     { FALSE, 0, 0, "Yahoo Asia", "YAHOO_ASIA", "yahoo_asia" },
     { FALSE, 0, 0, "Yahoo Australia", "YAHOO_AUSTRALIA", "yahoo_australia" },
     { FALSE, 0, 0, "Yahoo Brasil", "YAHOO_BRASIL", "yahoo_brasil" },
     { FALSE, 0, 0, "Yahoo Europe", "YAHOO_EUROPE", "yahoo_europe" },
     { FALSE, 0, 0, "Yahoo New Zealand", "YAHOO_NZ", "yahoo_nz" },
-    { FALSE, 0, 0, "Zuerich Investments", "ZIFUNDS", "zifunds" }, /* Removed from F::Q 1.11. */
+    { FALSE, 0, 0, "Zuerich Investments (outdated)", "ZIFUNDS", "zifunds" }, /* Removed from F::Q 1.11. */
 };
 static gnc_quote_source multiple_quote_sources[] =
 {
@@ -203,11 +214,13 @@ static gnc_quote_source multiple_quote_sources[] =
     { FALSE, 0, 0, "Greece (ASE, ...)", "GREECE", "greece" },
     { FALSE, 0, 0, "India Mutual (AMFI, ...)", "INDIAMUTUAL", "indiamutual" },
     { FALSE, 0, 0, "Fidelity (Fidelity, ...)", "FIDELITY", "fidelity" },
+    { FALSE, 0, 0, "Finland (HEX, ...)", "FINLAND", "finland" },
     { FALSE, 0, 0, "First Trust (First Trust, ...)", "FTPORTFOLIOS", "ftportfolios" },
+    { FALSE, 0, 0, "France (Boursorama, ...)", "FRANCE", "france" },
     { FALSE, 0, 0, "Nasdaq (Yahoo, ...)", "NASDAQ", "nasdaq" },
     { FALSE, 0, 0, "New Zealand (Yahoo, ...)", "NZ", "nz" },
     { FALSE, 0, 0, "NYSE (Yahoo, ...)", "NYSE", "nyse" },
-    { FALSE, 0, 0, "South Africa (Sharenet, ...)", "ZA", "za" },
+    /*    { FALSE, 0, 0, "South Africa (Sharenet, ...)", "ZA", "za" }, */
     { FALSE, 0, 0, "T. Rowe Price", "TRPRICE", "troweprice" },
     { FALSE, 0, 0, "U.K. Unit Trusts", "UKUNITTRUSTS", "uk_unit_trusts" },
     { FALSE, 0, 0, "USA (Yahoo, Fool ...)", "USA", "usa" },
@@ -1454,6 +1467,7 @@ gnc_commodity_equal(const gnc_commodity * a, const gnc_commodity * b)
 {
     CommodityPrivate* priv_a;
     CommodityPrivate* priv_b;
+    gboolean same_book;
 
     if (a == b) return TRUE;
 
@@ -1465,8 +1479,11 @@ gnc_commodity_equal(const gnc_commodity * a, const gnc_commodity * b)
 
     priv_a = GET_PRIVATE(a);
     priv_b = GET_PRIVATE(b);
+    same_book = qof_instance_get_book(QOF_INSTANCE(a)) == qof_instance_get_book(QOF_INSTANCE(b));
 
-    if (priv_a->namespace != priv_b->namespace)
+    if ((same_book && priv_a->namespace != priv_b->namespace)
+            || (!same_book && safe_strcmp( gnc_commodity_namespace_get_name(priv_a->namespace),
+                                           gnc_commodity_namespace_get_name(priv_b->namespace)) != 0))
     {
         DEBUG ("namespaces differ: %p(%s) vs %p(%s)",
                priv_a->namespace, gnc_commodity_namespace_get_name(priv_a->namespace),
@@ -2128,7 +2145,7 @@ gnc_commodity_table_find_namespace(const gnc_commodity_table * table,
 
 
 gnc_commodity *
-gnc_commodity_find_commodity_by_guid(const GUID *guid, QofBook *book)
+gnc_commodity_find_commodity_by_guid(const GncGUID *guid, QofBook *book)
 {
     QofCollection *col;
     if (!guid || !book) return NULL;
@@ -2137,7 +2154,7 @@ gnc_commodity_find_commodity_by_guid(const GUID *guid, QofBook *book)
 }
 
 gnc_commodity_namespace *
-gnc_commodity_find_namespace_by_guid(const GUID *guid, QofBook *book)
+gnc_commodity_find_namespace_by_guid(const GncGUID *guid, QofBook *book)
 {
     QofCollection *col;
     if (!guid || !book) return NULL;
@@ -2336,6 +2353,8 @@ gnc_commodity_table_copy(gnc_commodity_table *dest,
  * gnc_commodity_table_add_default_data
  ********************************************************************/
 
+#define CUR_I18N(String) dgettext ("iso_4217", String)
+
 gboolean
 gnc_commodity_table_add_default_data(gnc_commodity_table *table, QofBook *book)
 {
@@ -2382,6 +2401,7 @@ static QofObject commodity_object_def =
     DI(.interface_version = ) QOF_OBJECT_VERSION,
     DI(.e_type            = ) GNC_ID_COMMODITY,
     DI(.type_label        = ) "Commodity",
+    DI(.create            = ) NULL,
     DI(.book_begin        = ) NULL,
     DI(.book_end          = ) NULL,
     DI(.is_dirty          = ) qof_collection_is_dirty,
@@ -2395,6 +2415,7 @@ static QofObject namespace_object_def =
     DI(.interface_version = ) QOF_OBJECT_VERSION,
     DI(.e_type            = ) GNC_ID_COMMODITY_NAMESPACE,
     DI(.type_label        = ) "Namespace",
+    DI(.create            = ) NULL,
     DI(.book_begin        = ) NULL,
     DI(.book_end          = ) NULL,
     DI(.is_dirty          = ) NULL,

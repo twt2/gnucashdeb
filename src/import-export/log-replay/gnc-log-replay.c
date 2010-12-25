@@ -65,9 +65,9 @@ typedef struct _split_record
 {
     enum _enum_action {LOG_BEGIN_EDIT, LOG_ROLLBACK, LOG_COMMIT, LOG_DELETE} log_action;
     int log_action_present;
-    GUID trans_guid;
+    GncGUID trans_guid;
     int trans_guid_present;
-    GUID split_guid;
+    GncGUID split_guid;
     int  split_guid_present;
     Timespec log_date;
     int log_date_present;
@@ -75,7 +75,7 @@ typedef struct _split_record
     int date_entered_present;
     Timespec date_posted;
     int date_posted_present;
-    GUID acc_guid;
+    GncGUID acc_guid;
     int acc_guid_present;
     char acc_name[STRING_FIELD_SIZE];
     int acc_name_present;
@@ -282,11 +282,11 @@ static void dump_split_record(split_record record)
     }
     if (record.trans_guid_present)
     {
-        DEBUG("Transaction GUID: %s", guid_to_string (&(record.trans_guid)));
+        DEBUG("Transaction GncGUID: %s", guid_to_string (&(record.trans_guid)));
     }
     if (record.split_guid_present)
     {
-        DEBUG("Split GUID: %s", guid_to_string (&(record.split_guid)));
+        DEBUG("Split GncGUID: %s", guid_to_string (&(record.split_guid)));
     }
     if (record.log_date_present)
     {
@@ -305,7 +305,7 @@ static void dump_split_record(split_record record)
     }
     if (record.acc_guid_present)
     {
-        DEBUG("Account GUID: %s", guid_to_string (&(record.acc_guid)));
+        DEBUG("Account GncGUID: %s", guid_to_string (&(record.acc_guid)));
     }
     if (record.acc_name_present)
     {
@@ -359,6 +359,7 @@ static void  process_trans_record(  FILE *log_file)
 {
     char read_buf[2048];
     char *read_retval;
+    char * trans_ro = NULL;
     const char * record_end_str = "===== END";
     int first_record = TRUE;
     int record_ended = FALSE;
@@ -395,6 +396,12 @@ static void  process_trans_record(  FILE *log_file)
                     if ((trans = xaccTransLookup (&(record.trans_guid), book)) != NULL
                             && first_record == TRUE)
                     {
+                        first_record = FALSE;
+                        if (xaccTransGetReadOnly(trans))
+                        {
+                            PWARN("Destroying a read only transaction.");
+                            xaccTransClearReadOnly(trans);
+                        }
                         xaccTransBeginEdit(trans);
                         xaccTransDestroy(trans);
                     }
@@ -402,25 +409,33 @@ static void  process_trans_record(  FILE *log_file)
                     {
                         PERR("The transaction to delete was not found!");
                     }
+                    else
+                        xaccTransDestroy(trans);
                     break;
                 case LOG_COMMIT:
                     DEBUG("process_trans_record(): Playing back LOG_COMMIT");
                     if (record.trans_guid_present == TRUE
-                            && (trans = xaccTransLookupDirect (record.trans_guid, book)) != NULL
                             && first_record == TRUE)
                     {
-                        DEBUG("process_trans_record(): Transaction to be edited was found");/*Destroy the current transaction, we will create a new one to replace it*/
-                        xaccTransBeginEdit(trans);
-                        xaccTransDestroy(trans);
-                        xaccTransCommitEdit(trans);
-                    }
+                        trans = xaccTransLookupDirect (record.trans_guid, book);
+                        if (trans != NULL)
+                        {
+                            DEBUG("process_trans_record(): Transaction to be edited was found");
+                            xaccTransBeginEdit(trans);
+                            trans_ro = g_strdup(xaccTransGetReadOnly(trans));
+                            if (trans_ro)
+                            {
+                                PWARN("Replaying a read only transaction.");
+                                xaccTransClearReadOnly(trans);
+                            }
+                        }
+                        else
+                        {
+                            DEBUG("process_trans_record(): Creating a new transaction");
+                            trans = xaccMallocTransaction (book);
+                            xaccTransBeginEdit(trans);
+                        }
 
-                    if (record.trans_guid_present == TRUE
-                            && first_record == TRUE)
-                    {
-                        DEBUG("process_trans_record(): Creating the new transaction");
-                        trans = xaccMallocTransaction (book);
-                        xaccTransBeginEdit(trans);
                         xaccTransSetGUID (trans, &(record.trans_guid));
                         /*Fill the transaction info*/
                         if (record.date_entered_present)
@@ -446,14 +461,28 @@ static void  process_trans_record(  FILE *log_file)
                     }
                     if (record.split_guid_present == TRUE) /*Fill the split info*/
                     {
-                        split = xaccMallocSplit(book);
+                        gboolean is_new_split;
+
+                        split = xaccSplitLookupDirect (record.split_guid, book);
+                        if (split != NULL)
+                        {
+                            DEBUG("process_trans_record(): Split to be edited was found");
+                            is_new_split = FALSE;
+                        }
+                        else
+                        {
+                            DEBUG("process_trans_record(): Creating a new split");
+                            split = xaccMallocSplit(book);
+                            is_new_split = TRUE;
+                        }
                         xaccSplitSetGUID (split, &(record.split_guid));
                         if (record.acc_guid_present)
                         {
                             acct = xaccAccountLookupDirect(record.acc_guid, book);
                             xaccAccountInsertSplit(acct, split);
                         }
-                        xaccTransAppendSplit(trans, split);
+                        if (is_new_split)
+                            xaccTransAppendSplit(trans, split);
 
                         if (record.split_memo_present)
                         {
@@ -497,7 +526,9 @@ static void  process_trans_record(  FILE *log_file)
             if (trans != NULL) /*If we played with a transaction, commit it here*/
             {
                 xaccTransScrubCurrencyFromSplits(trans);
+                xaccTransSetReadOnly(trans, trans_ro);
                 xaccTransCommitEdit(trans);
+                g_free(trans_ro);
             }
         }
     }
@@ -524,6 +555,9 @@ void gnc_file_log_replay (void)
 
     qof_log_set_level(GNC_MOD_IMPORT, QOF_LOG_DEBUG);
     ENTER(" ");
+
+    /* Don't log the log replay. This would only result in redundant logs */
+    xaccLogDisable();
 
     default_dir = gnc_get_default_directory(GCONF_SECTION);
 
@@ -607,6 +641,9 @@ void gnc_file_log_replay (void)
         }
         g_free(selected_filename);
     }
+    /* Start logging again */
+    xaccLogEnable();
+
     LEAVE("");
 }
 

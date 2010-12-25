@@ -124,8 +124,8 @@ gnc_book_dom_tree_create(QofBook *book)
      * And that's OK, since its probably a performance boost anyway.
      */
     xmlAddChild(ret, gnc_commodity_dom_tree_create(
-                    gnc_book_get_commodity_table(book)));
-    xmlAddChild(ret, gnc_pricedb_dom_tree_create(gnc_book_get_pricedb(book)));
+                    gnc_commodity_table_get_table(book)));
+    xmlAddChild(ret, gnc_pricedb_dom_tree_create(gnc_pricedb_get_db(book)));
     if (allow_incompat)
     {
         accnode = gnc_account_dom_tree_create(account, FALSE);
@@ -186,7 +186,7 @@ static gboolean
 book_id_handler(xmlNodePtr node, gpointer book_pdata)
 {
     QofBook *book = book_pdata;
-    GUID *guid;
+    GncGUID *guid;
 
     guid = dom_tree_to_guid(node);
     qof_instance_set_guid(QOF_INSTANCE(book), guid);

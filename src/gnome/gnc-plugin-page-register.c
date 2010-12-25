@@ -70,7 +70,7 @@
 #include "gnucash-sheet.h"
 #include "lot-viewer.h"
 #include "Scrub.h"
-#include "QueryNew.h"
+#include "qof.h"
 #include "window-reconcile.h"
 #include "window-autoclear.h"
 #include "window-report.h"
@@ -78,9 +78,7 @@
 /* This static indicates the debugging module that this .o belongs to.  */
 static QofLogModule log_module = GNC_MOD_GUI;
 
-#define DEFAULT_LINES_OPTION_SECTION GCONF_GENERAL_REGISTER
-#define DEFAULT_LINES_OPTION_NAME    KEY_NUMBER_OF_ROWS
-#define DEFAULT_LINES_AMOUNT         20
+#define DEFAULT_LINES_AMOUNT         50
 
 static void gnc_plugin_page_register_class_init (GncPluginPageRegisterClass *klass);
 static void gnc_plugin_page_register_init (GncPluginPageRegister *plugin_page);
@@ -173,7 +171,7 @@ static GtkActionEntry gnc_plugin_page_register_actions [] =
     /* File menu */
 
     {
-        "FilePrintAction", GTK_STOCK_PRINT, N_("_Print Check..."), "<control>p", NULL,
+        "FilePrintAction", GTK_STOCK_PRINT, N_("_Print Checks..."), "<control>p", NULL,
         G_CALLBACK (gnc_plugin_page_register_cmd_print_check)
     },
 
@@ -462,10 +460,8 @@ typedef struct GncPluginPageRegisterPrivate
 
     gint event_handler_id;
     gint component_manager_id;
-    GUID key;  /* The guid of the Account we're watching */
+    GncGUID key;  /* The guid of the Account we're watching */
 
-    const char *lines_opt_section;
-    const char *lines_opt_name;
     gint lines_default;
     gboolean read_only;
 
@@ -683,8 +679,6 @@ gnc_plugin_page_register_init (GncPluginPageRegister *plugin_page)
     gnc_plugin_init_short_names (action_group, toolbar_labels);
     gnc_plugin_set_important_actions (action_group, important_actions);
 
-    priv->lines_opt_section = DEFAULT_LINES_OPTION_SECTION;
-    priv->lines_opt_name    = DEFAULT_LINES_OPTION_NAME;
     priv->lines_default     = DEFAULT_LINES_AMOUNT;
     priv->read_only         = FALSE;
     priv->fd.cleared_match  = CLEARED_ALL;
@@ -832,17 +826,9 @@ gnc_plugin_page_register_create_widget (GncPluginPage *plugin_page)
     priv->widget = gtk_vbox_new (FALSE, 0);
     gtk_widget_show (priv->widget);
 
-    if (priv->lines_opt_section)
-    {
-        numRows = gnc_gconf_get_float (priv->lines_opt_section,
-                                       priv->lines_opt_name, NULL);
-    }
-    else
-    {
-        numRows = priv->lines_default;
-    }
+    numRows = priv->lines_default;
+    numRows = MIN(numRows, DEFAULT_LINES_AMOUNT);
 
-    numRows = MIN(numRows, 50);
     gnc_window = GNC_WINDOW(GNC_PLUGIN_PAGE(page)->window);
     gsr = gnc_split_reg_new(priv->ledger,
                             gnc_window_get_gtk_window(gnc_window),
@@ -1511,16 +1497,16 @@ gnc_ppr_update_status_query (GncPluginPageRegister *page)
     }
 
     /* Remove the old status match */
-    param_list = gncQueryBuildParamList (SPLIT_RECONCILE, NULL);
+    param_list = qof_query_build_param_list (SPLIT_RECONCILE, NULL);
     if (param_list)
     {
-        gncQueryPurgeTerms (query, param_list);
+        qof_query_purge_terms (query, param_list);
         g_slist_free(param_list);
     }
 
     /* Install the new status match */
     if (priv->fd.cleared_match != CLEARED_ALL)
-        xaccQueryAddClearedMatch(query, priv->fd.cleared_match, QUERY_AND);
+        xaccQueryAddClearedMatch(query, priv->fd.cleared_match, QOF_QUERY_AND);
 
     gnc_ledger_display_refresh (priv->ledger);
     LEAVE(" ");
@@ -1562,10 +1548,10 @@ gnc_ppr_update_date_query (GncPluginPageRegister *page)
     }
 
     /* Delete any existing old date spec. */
-    param_list = gncQueryBuildParamList(SPLIT_TRANS, TRANS_DATE_POSTED, NULL);
+    param_list = qof_query_build_param_list(SPLIT_TRANS, TRANS_DATE_POSTED, NULL);
     if (param_list)
     {
-        gncQueryPurgeTerms (query, param_list);
+        qof_query_purge_terms (query, param_list);
         g_slist_free(param_list);
     }
 
@@ -1575,7 +1561,7 @@ gnc_ppr_update_date_query (GncPluginPageRegister *page)
         xaccQueryAddDateMatchTT(query,
                                 priv->fd.start_time != 0, priv->fd.start_time,
                                 priv->fd.end_time != 0,   priv->fd.end_time,
-                                QUERY_AND);
+                                QOF_QUERY_AND);
     }
 
     gnc_ledger_display_refresh (priv->ledger);
@@ -2092,7 +2078,8 @@ gnc_plugin_page_register_cmd_print_check (GtkAction *action,
     SplitRegister * reg;
     Split         * split;
     Transaction   * trans;
-
+    GList         * splits = NULL, *item;
+    GNCLedgerDisplayType ledger_type;
 
     ENTER("(action %p, plugin_page %p)", action, plugin_page);
 
@@ -2100,12 +2087,71 @@ gnc_plugin_page_register_cmd_print_check (GtkAction *action,
 
     priv = GNC_PLUGIN_PAGE_REGISTER_GET_PRIVATE(plugin_page);
     reg = gnc_ledger_display_get_split_register (priv->ledger);
-    split    = gnc_split_register_get_current_split(reg);
-    trans    = xaccSplitGetParent(split);
-
-    if (split && trans)
+    ledger_type = gnc_ledger_display_type(priv->ledger);
+    if (ledger_type == LD_SINGLE || ledger_type == LD_SUBACCOUNT)
     {
-        gnc_ui_print_check_dialog_create(plugin_page, split);
+        split    = gnc_split_register_get_current_split(reg);
+        trans    = xaccSplitGetParent(split);
+
+        if (split && trans)
+        {
+            splits = g_list_append(splits, split);
+            gnc_ui_print_check_dialog_create(plugin_page, splits);
+            g_list_free(splits);
+        }
+    }
+    else if (ledger_type == LD_GL && reg->type == SEARCH_LEDGER)
+    {
+        Account *common_acct = NULL, *account;
+        splits = qof_query_run(gnc_ledger_display_get_query(priv->ledger));
+        /* Make sure each split is from the same account */
+        for (item = splits; item; item = g_list_next(item))
+        {
+            split = (Split *) item->data;
+            if (common_acct == NULL)
+            {
+                common_acct = xaccSplitGetAccount(split);
+            }
+            else
+            {
+                if (xaccSplitGetAccount(split) != common_acct)
+                {
+                    GtkWidget *dialog, *window;
+                    gint response;
+                    const gchar *title = _("Print checks from multiple accounts?");
+                    const gchar *message =
+                        _("This search result contains splits from more than one account. "
+                          "Do you want to print the checks even though they are not all "
+                          "from the same account?");
+                    window = gnc_plugin_page_get_window(GNC_PLUGIN_PAGE(plugin_page));
+                    dialog = gtk_message_dialog_new(GTK_WINDOW(window),
+                                                    GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                    GTK_MESSAGE_WARNING,
+                                                    GTK_BUTTONS_CANCEL,
+                                                    "%s", title);
+                    gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog),
+                            "%s", message);
+                    gtk_dialog_add_button(GTK_DIALOG(dialog), _("_Print checks"),
+                                          GTK_RESPONSE_YES);
+                    response = gnc_dialog_run(GTK_DIALOG(dialog), "print_multi_acct_checks");
+                    gtk_widget_destroy(dialog);
+                    if (response != GTK_RESPONSE_YES)
+                    {
+                        LEAVE("Multiple accounts");
+                        return;
+                    }
+                    break;
+                }
+            }
+        }
+        gnc_ui_print_check_dialog_create(plugin_page, splits);
+    }
+    else
+    {
+        gnc_error_dialog(gnc_plugin_page_get_window(GNC_PLUGIN_PAGE(plugin_page)), "%s",
+                         _("You can only print checks from a bank account register or search results."));
+        LEAVE("Unsupported ledger type");
+        return;
     }
     LEAVE(" ");
 }
@@ -2996,7 +3042,7 @@ gnc_plugin_page_register_cmd_scrub_all (GtkAction *action,
     gnc_suspend_gui_refresh();
     root = gnc_get_current_root_account();
 
-    for (node = xaccQueryGetSplits(query); node; node = node->next)
+    for (node = qof_query_run(query); node; node = node->next)
     {
         split = node->data;
         trans = xaccSplitGetParent(split);
@@ -3052,12 +3098,12 @@ gnc_plugin_page_register_cmd_transaction_report (GtkAction *action,
     if (!split)
         return;
 
-    query = xaccMallocQuery ();
+    query = qof_query_create_for(GNC_ID_SPLIT);
 
-    xaccQuerySetBook (query, gnc_get_current_book ());
+    qof_query_set_book (query, gnc_get_current_book ());
 
     xaccQueryAddGUIDMatch (query, xaccSplitGetGUID (split),
-                           GNC_ID_SPLIT, QUERY_AND);
+                           GNC_ID_SPLIT, QOF_QUERY_AND);
 
     window = GNC_MAIN_WINDOW(GNC_PLUGIN_PAGE(plugin_page)->window);
     id = report_helper (priv->ledger, split, query);
@@ -3072,8 +3118,6 @@ gnc_plugin_page_register_cmd_transaction_report (GtkAction *action,
 
 void
 gnc_plugin_page_register_set_options (GncPluginPage *plugin_page,
-                                      const char *lines_opt_section,
-                                      const char *lines_opt_name,
                                       gint lines_default,
                                       gboolean read_only)
 {
@@ -3084,9 +3128,7 @@ gnc_plugin_page_register_set_options (GncPluginPage *plugin_page,
 
     page = GNC_PLUGIN_PAGE_REGISTER (plugin_page);
     priv = GNC_PLUGIN_PAGE_REGISTER_GET_PRIVATE(page);
-    priv->lines_opt_section = lines_opt_section;
-    priv->lines_opt_name 	= lines_opt_name;
-    priv->lines_default  	= lines_default;
+    priv->lines_default     = lines_default;
     priv->read_only         = read_only;
 }
 
@@ -3186,7 +3228,7 @@ gppr_account_destroy_cb (Account *account)
     GncPluginPageRegister *page;
     GncPluginPageRegisterPrivate *priv;
     GNCLedgerDisplayType ledger_type;
-    const GUID *acct_guid;
+    const GncGUID *acct_guid;
     const GList *citem;
     GList *item, *kill = NULL;
 

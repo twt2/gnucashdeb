@@ -52,6 +52,7 @@
 #ifndef HAVE_LOCALTIME_R
 #include "localtime_r.h"
 #endif
+#include "platform.h"
 
 #define NANOS_PER_SECOND 1000000000
 
@@ -69,11 +70,13 @@
 #  define GNC_T_FMT "%r"
 #endif
 
-/* The default date format for use with strftime. */
 const char *gnc_default_strftime_date_format =
 #ifdef G_OS_WIN32
+    /* The default date format for use with strftime in Win32. */
     N_("%B %#d, %Y")
 #else
+    /* The default date format for use with strftime in other OS. */
+    /* Translators: call "man strftime" for possible values. */
     N_("%B %e, %Y")
 #endif
     ;
@@ -1420,10 +1423,18 @@ gnc_timezone (const struct tm *tm)
      * already adjusted for daylight savings time. */
     return -(tm->tm_gmtoff);
 #else
-    /* timezone is seconds *west* of UTC and is
-     * not adjusted for daylight savings time.
-     * In Spring, we spring forward, wheee! */
-    return (long int)(timezone - (tm->tm_isdst > 0 ? 3600 : 0));
+    {
+        long tz_seconds;
+        /* timezone is seconds *west* of UTC and is
+         * not adjusted for daylight savings time.
+         * In Spring, we spring forward, wheee! */
+# if COMPILER(MSVC)
+        _get_timezone(&tz_seconds);
+# else
+        tz_seconds = timezone;
+# endif
+        return (long int)(tz_seconds - (tm->tm_isdst > 0 ? 3600 : 0));
+    }
 #endif
 }
 
@@ -1439,6 +1450,22 @@ time_t
 timespecToTime_t (Timespec ts)
 {
     return ts.tv_sec;
+}
+
+GDate timespec_to_gdate (Timespec ts)
+{
+    GDate result;
+    g_date_clear(&result, 1);
+    g_date_set_time_t(&result, timespecToTime_t(ts));
+    g_assert(g_date_valid(&result));
+    return result;
+}
+
+Timespec gdate_to_timespec (GDate d)
+{
+    return gnc_dmy2timespec(g_date_get_day(&d),
+                            g_date_get_month(&d),
+                            g_date_get_year(&d));
 }
 
 void
@@ -1555,3 +1582,10 @@ timespec_get_type( void )
 
     return type;
 }
+
+/* For emacs we set some variables concerning indentation:
+ * Local Variables: *
+ * indent-tabs-mode:nil *
+ * c-basic-offset:4 *
+ * tab-width:8 *
+ * End: */

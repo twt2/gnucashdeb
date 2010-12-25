@@ -4,8 +4,9 @@
  *  Authors: Derek Atkins <warlord@MIT.EDU>
  *
  * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,7 +23,7 @@
 #define _GNCSEARCH_INT64_H
 
 #include "search-core-type.h"
-#include "QueryNew.h"
+#include "qof.h"
 
 #define GNC_TYPE_SEARCH_INT64		(gnc_search_int64_get_type ())
 #define GNCSEARCH_INT64(obj)		GTK_CHECK_CAST (obj, GNC_TYPE_SEARCH_INT64, GNCSearchInt64)
@@ -36,7 +37,7 @@ struct _GNCSearchInt64
 {
     GNCSearchCoreType parent;
 
-    query_compare_t	how;
+    QofQueryCompare	how;
     gint64		value;
 };
 
@@ -54,7 +55,7 @@ GNCSearchInt64	*gnc_search_int64_new	(void);
 
 /* methods */
 void	gnc_search_int64_set_value (GNCSearchInt64 *fi, gint64 val);
-void	gnc_search_int64_set_how (GNCSearchInt64 *fi, query_compare_t how);
+void	gnc_search_int64_set_how (GNCSearchInt64 *fi, QofQueryCompare how);
 
 #endif /* ! _GNCSEARCH_INT64_H */
 

@@ -24,6 +24,7 @@
  ********************************************************************/
 
 #include "config.h"
+#include "platform.h"
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
@@ -47,6 +48,7 @@
 #include "gnc-html-webkit.h"
 #include "gnc-html-history.h"
 #include "gnc-html-graph-gog-webkit.h"
+#include "print-session.h"
 
 G_DEFINE_TYPE(GncHtmlWebkit, gnc_html_webkit, GNC_TYPE_HTML )
 
@@ -78,6 +80,8 @@ extern GHashTable* gnc_html_url_handlers;
 static char error_404_format[] = "<html><body><h3>%s</h3><p>%s</body></html>";
 static char error_404_title[] = N_("Not found");
 static char error_404_body[] = N_("The specified URL could not be loaded.");
+
+#define BASE_URI_NAME "base-uri"
 
 static WebKitNavigationResponse webkit_navigation_requested_cb(
     WebKitWebView* web_view,
@@ -112,12 +116,33 @@ gnc_html_webkit_init( GncHtmlWebkit* self )
     GncHtmlWebkitPrivate* priv;
     GncHtmlWebkitPrivate* new_priv;
 
+    WebKitWebSettings* webkit_settings = NULL;
+    const char* default_font_family = NULL;
+
     new_priv = g_realloc( GNC_HTML(self)->priv, sizeof(GncHtmlWebkitPrivate) );
     priv = self->priv = new_priv;
     GNC_HTML(self)->priv = (GncHtmlPrivate*)priv;
 
     priv->html_string = NULL;
     priv->web_view = WEBKIT_WEB_VIEW(webkit_web_view_new());
+
+    /* Get the default font family from GtkStyle of a GtkWidget(priv-web_view). */
+    default_font_family = pango_font_description_get_family( gtk_rc_get_style(GTK_WIDGET(priv->web_view))->font_desc );
+
+    /* Set default webkit settings */
+    webkit_settings = webkit_web_view_get_settings (priv->web_view);
+    g_object_set (G_OBJECT(webkit_settings), "default-encoding", "utf-8", NULL);
+    if (default_font_family == NULL)
+    {
+        PWARN("webkit_settings: Cannot get default font family.");
+    }
+    else
+    {
+        g_object_set (G_OBJECT(webkit_settings),
+                      "default-font-family", default_font_family,
+                      NULL);
+        PINFO("webkit_settings: Set default font to [%s]", default_font_family);
+    }
 
     gtk_container_add( GTK_CONTAINER(priv->base.container),
                        GTK_WIDGET(priv->web_view) );
@@ -417,14 +442,15 @@ load_to_stream( GncHtmlWebkit* self, URLType type,
                     g_free( priv->html_string );
                 }
                 priv->html_string = g_strdup( fdata );
-                webkit_web_view_load_html_string( priv->web_view, fdata, "base-uri" );
+                impl_webkit_show_data( GNC_HTML(self), fdata, strlen(fdata) );
+//                webkit_web_view_load_html_string( priv->web_view, fdata, BASE_URI_NAME );
             }
             else
             {
                 fdata = fdata ? fdata :
                         g_strdup_printf( error_404_format,
                                          _(error_404_title), _(error_404_body) );
-                webkit_web_view_load_html_string( priv->web_view, fdata, "base-uri" );
+                webkit_web_view_load_html_string( priv->web_view, fdata, BASE_URI_NAME );
             }
 
             g_free( fdata );
@@ -435,8 +461,7 @@ load_to_stream( GncHtmlWebkit* self, URLType type,
                 {
                     gtk_main_iteration();
                 }
-//				gtk_html_jump_to_anchor( GTK_HTML(priv->html), label );
-                g_assert( FALSE );
+                /* No action required: Webkit jumps to the anchor on its own. */
             }
 
             return;
@@ -484,7 +509,7 @@ load_to_stream( GncHtmlWebkit* self, URLType type,
                    label ? label : "(null)" );
             fdata = g_strdup_printf( error_404_format,
                                      _(error_404_title), _(error_404_body) );
-            webkit_web_view_load_html_string( priv->web_view, fdata, "base-uri" );
+            webkit_web_view_load_html_string( priv->web_view, fdata, BASE_URI_NAME );
             g_free( fdata );
         }
 
@@ -530,17 +555,25 @@ webkit_navigation_requested_cb( WebKitWebView* web_view, WebKitWebFrame* frame,
     GncHtmlWebkit* self = GNC_HTML_WEBKIT(data);
     const gchar* url = webkit_network_request_get_uri( request );
 
-    DEBUG( "requesting %s", url );
-    if ( strcmp( url, "base-uri" ) == 0 )
+    ENTER( "requesting %s", url );
+    if ( strcmp( url, BASE_URI_NAME ) == 0 )
     {
+        LEAVE("URI is %s", BASE_URI_NAME);
         return WEBKIT_NAVIGATION_RESPONSE_ACCEPT;
     }
 
     type = gnc_html_parse_url( GNC_HTML(self), url, &location, &label );
+    if ( strcmp( type, "file" ) == 0 )
+    {
+        LEAVE("URI type is 'file'");
+        return WEBKIT_NAVIGATION_RESPONSE_ACCEPT;
+    }
     gnc_html_show_url( GNC_HTML(self), type, location, label, 0 );
 //	load_to_stream( self, type, location, label );
     g_free( location );
     g_free( label );
+
+    LEAVE("");
     return WEBKIT_NAVIGATION_RESPONSE_IGNORE;
 }
 
@@ -664,14 +697,40 @@ static void
 impl_webkit_show_data( GncHtml* self, const gchar* data, int datalen )
 {
     GncHtmlWebkitPrivate* priv;
+#if HAVE(WEBKIT_WEB_VIEW_LOAD_URI)
+#define TEMPLATE_REPORT_FILE_NAME "gnc-report-XXXXXX.html"
+    int fd;
+    gchar* uri;
+    gchar *filename;
+#endif
 
     g_return_if_fail( self != NULL );
     g_return_if_fail( GNC_IS_HTML_WEBKIT(self) );
 
-    DEBUG( "datalen %d, data %20.20s", datalen, data );
+    ENTER( "datalen %d, data %20.20s", datalen, data );
 
     priv = GNC_HTML_WEBKIT_GET_PRIVATE(self);
-    webkit_web_view_load_html_string( priv->web_view, data, "base-uri" );
+
+#if HAVE(WEBKIT_WEB_VIEW_LOAD_URI)
+    /* Export the HTML to a file and load the file URI.   On Linux, this seems to get around some
+       security problems (otherwise, it can complain that embedded images aren't permitted to be
+       viewed because they are local resources).  On Windows, this allows the embedded images to
+       be viewed (maybe for the same reason as on Linux, but I haven't found where it puts those
+       messages. */
+    filename = g_build_filename(g_get_tmp_dir(), TEMPLATE_REPORT_FILE_NAME, (gchar *)NULL);
+    fd = g_mkstemp( filename );
+    impl_webkit_export_to_file( self, filename );
+    close( fd );
+    uri = g_strdup_printf( "file:///%s", filename );
+    g_free(filename);
+    DEBUG("Loading uri '%s'", uri);
+    webkit_web_view_load_uri( priv->web_view, uri );
+    g_free( uri );
+#else
+    webkit_web_view_load_html_string( priv->web_view, data, BASE_URI_NAME );
+#endif
+
+    LEAVE("");
 }
 
 /********************************************************************
@@ -804,9 +863,7 @@ impl_webkit_show_url( GncHtml* self, URLType type,
     }
     else if ( safe_strcmp( type, URL_TYPE_JUMP ) == 0 )
     {
-//		gtk_html_jump_to_anchor( GTK_HTML(priv->html), label );
-        g_assert( FALSE );
-
+        /* Webkit jumps to the anchor on its own */
     }
     else if ( safe_strcmp( type, URL_TYPE_SECURE ) == 0 ||
               safe_strcmp( type, URL_TYPE_HTTP ) == 0 ||
@@ -947,7 +1004,11 @@ impl_webkit_copy_to_clipboard( GncHtml* self )
 }
 
 /**************************************************************
- * gnc_html_export_to_file : wrapper around the builtin function in webkit
+ * gnc_html_export_to_file
+ *
+ * @param self GncHtmlWebkit object
+ * @param filepath Where to write the HTML
+ * @return TRUE if successful, FALSE if unsucessful
  **************************************************************/
 static gboolean
 impl_webkit_export_to_file( GncHtml* self, const char *filepath )
@@ -1001,13 +1062,13 @@ impl_webkit_export_to_file( GncHtml* self, const char *filepath )
 static void
 impl_webkit_print( GncHtml* self )
 {
-#ifndef G_OS_WIN32
+#if !HAVE(WEBKIT_WEB_FRAME_PRINT_FULL)
     extern void webkit_web_frame_print( WebKitWebFrame * frame );
 #endif
 
     GncHtmlWebkitPrivate* priv;
     WebKitWebFrame* frame;
-#ifdef G_OS_WIN32
+#if HAVE(WEBKIT_WEB_FRAME_PRINT_FULL)
     GtkPrintOperation* op = gtk_print_operation_new();
     GError* error = NULL;
 #endif
@@ -1015,8 +1076,11 @@ impl_webkit_print( GncHtml* self )
     priv = GNC_HTML_WEBKIT_GET_PRIVATE(self);
     frame = webkit_web_view_get_main_frame( priv->web_view );
 
+#if HAVE(WEBKIT_WEB_FRAME_PRINT_FULL)
+    gnc_print_operation_init( op );
 #ifdef G_OS_WIN32
     gtk_print_operation_set_unit( op, GTK_UNIT_POINTS );
+#endif
     webkit_web_frame_print_full( frame, op, GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG, &error );
     g_object_unref( op );
 

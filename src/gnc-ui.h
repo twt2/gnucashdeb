@@ -43,6 +43,9 @@
 #ifdef G_OS_WIN32
 #    define HF_GUIDE         "gnucash-guide.chm"
 #    define HF_HELP          "gnucash-help.chm"
+#elif defined MAC_INTEGRATION
+#    define HF_GUIDE         "Gnucash Guide"
+#    define HF_HELP          "Gnucash Help"
 #else
 #    define HF_GUIDE         "gnucash-guide.xml"
 #    define HF_HELP          "gnucash-help.xml"
@@ -78,13 +81,13 @@ gnc_ok_cancel_dialog(gncUIWidget parent,
                      gint default_result,
                      const char *format, ...) G_GNUC_PRINTF (3, 4);
 
-
-
 extern void
 gnc_warning_dialog(gncUIWidget parent,
                    const char *format, ...) G_GNUC_PRINTF (2, 3);
 
-
+extern void
+gnc_info_dialog(GtkWidget *parent,
+                const char *format, ...) G_GNUC_PRINTF (2, 3);
 
 extern void
 gnc_error_dialog(GtkWidget *parent,
@@ -114,7 +117,7 @@ typedef enum
 
 void gnc_price_edit_dialog (gncUIWidget parent, QofSession *session,
                             GNCPrice *price, GNCPriceEditType type);
-GNCPrice* gnc_price_edit_by_guid (GtkWidget * parent, const GUID * guid);
+GNCPrice* gnc_price_edit_by_guid (GtkWidget * parent, const GncGUID * guid);
 void     gnc_prices_dialog (gncUIWidget parent);
 void     gnc_commodities_dialog (gncUIWidget parent);
 

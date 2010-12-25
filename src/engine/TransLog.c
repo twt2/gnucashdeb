@@ -33,6 +33,9 @@
 #include "TransactionP.h"
 #include "TransLog.h"
 #include "qof.h"
+#ifdef _MSC_VER
+# define g_fopen fopen
+#endif
 
 /*
  * Some design philosphy that I think would be good to keep in mind:
@@ -169,7 +172,7 @@ xaccOpenLog (void)
     {
         int norr = errno;
         printf ("Error: xaccOpenLog(): cannot open journal \n"
-		"\t %d %s\n", norr, g_strerror (norr) ? g_strerror (norr) : "");
+                "\t %d %s\n", norr, g_strerror (norr) ? g_strerror (norr) : "");
 
         g_free (filename);
         g_free (timestamp);

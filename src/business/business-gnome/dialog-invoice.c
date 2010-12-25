@@ -30,9 +30,7 @@
 #include <libguile.h>
 #include "swig-runtime.h"
 
-#include "gncObject.h"
-#include "QueryCore.h"
-#include "QueryNew.h"
+#include "qof.h"
 
 #include "dialog-utils.h"
 #include "gnc-component-manager.h"
@@ -40,7 +38,6 @@
 #include "gnc-gconf-utils.h"
 #include "gnc-gui-query.h"
 #include "gnc-ui-util.h"
-#include "qof.h"
 #include "gnc-date-edit.h"
 #include "gnc-amount-edit.h"
 #include "gnucash-sheet.h"
@@ -111,7 +108,7 @@ struct _invoice_select_window
 {
     QofBook *	book;
     GncOwner *	owner;
-    QueryNew *	q;
+    QofQuery *	q;
     GncOwner	owner_def;
 };
 
@@ -172,7 +169,7 @@ struct _invoice_window
     invoice_sort_type_t	last_sort;
 
     InvoiceDialogType	dialog_type;
-    GUID		invoice_guid;
+    GncGUID		invoice_guid;
     gint		component_id;
     QofBook *	book;
     GncInvoice *	created_invoice;
@@ -403,7 +400,7 @@ gnc_invoice_window_ok_cb (GtkWidget *widget, gpointer data)
         return;
 
     /* Ok, we don't need this anymore */
-    iw->invoice_guid = *xaccGUIDNULL ();
+    iw->invoice_guid = *guid_null ();
 
     /* if this is a NEW_INVOICE, and created_invoice is NON-NULL, the
      * open up a new window with the invoice.  This used to be done
@@ -441,7 +438,7 @@ gnc_invoice_window_destroy_cb (GtkWidget *widget, gpointer data)
     {
         gncInvoiceBeginEdit (invoice);
         gncInvoiceDestroy (invoice);
-        iw->invoice_guid = *xaccGUIDNULL ();
+        iw->invoice_guid = *guid_null ();
     }
 
     gnc_entry_ledger_destroy (iw->ledger);
@@ -635,7 +632,6 @@ gnc_invoice_window_postCB (GtkWidget *widget, gpointer data)
         return;
 
     /* Check that there is at least one Entry */
-    invoice = iw_get_invoice (iw);
     if (gncInvoiceGetEntries (invoice) == NULL)
     {
         gnc_error_dialog (iw_get_window(iw), "%s",
@@ -677,7 +673,7 @@ gnc_invoice_window_postCB (GtkWidget *widget, gpointer data)
     acct_commodities = gnc_business_commodities(&(iw->owner));
 
     /* Get the due date and posted account */
-    timespecFromTime_t (&postdate, time(NULL));
+    postdate = gncInvoiceGetDateOpened (invoice);
     ddue = postdate;
     memo = NULL;
 
@@ -913,7 +909,7 @@ void gnc_invoice_window_payment_cb (GtkWidget *widget, gpointer data)
 void
 gnc_invoice_window_sort (InvoiceWindow *iw, invoice_sort_type_t sort_code)
 {
-    QueryNew *query = gnc_entry_ledger_get_query (iw->ledger);
+    QofQuery *query = gnc_entry_ledger_get_query (iw->ledger);
     GSList *p1 = NULL, *p2 = NULL, *p3 = NULL, *standard;
 
     if (iw->last_sort == sort_code)
@@ -952,7 +948,7 @@ gnc_invoice_window_sort (InvoiceWindow *iw, invoice_sort_type_t sort_code)
         g_return_if_fail (FALSE);
     }
 
-    gncQuerySetSortOrder (query, p1, p2, p3);
+    qof_query_set_sort_order (query, p1, p2, p3);
     iw->last_sort = sort_code;
     gnc_entry_ledger_display_refresh (iw->ledger);
 }
@@ -1345,7 +1341,7 @@ gnc_invoice_reset_total_label (GtkLabel *label, gnc_numeric amt, gnc_commodity *
 {
     char string[256];
 
-    amt = gnc_numeric_convert (amt, gnc_commodity_get_fraction(com), GNC_RND_ROUND);
+    amt = gnc_numeric_convert (amt, gnc_commodity_get_fraction(com), GNC_HOW_RND_ROUND_HALF_UP);
     xaccSPrintAmount (string, amt, gnc_default_print_info (TRUE));
     gtk_label_set_text (label, string);
 }
@@ -1400,7 +1396,7 @@ gnc_invoice_redraw_all_cb (GnucashRegister *g_reg, gpointer data)
     {
         amount = gncInvoiceGetTotalOf (invoice, GNC_PAYMENT_CASH);
         amount = gnc_numeric_sub (amount, to_charge_amt,
-                                  gnc_commodity_get_fraction (currency), GNC_RND_ROUND);
+                                  gnc_commodity_get_fraction (currency), GNC_HOW_RND_ROUND_HALF_UP);
         gnc_invoice_reset_total_label (GTK_LABEL (iw->total_cash_label), amount, currency);
     }
 
@@ -1408,7 +1404,7 @@ gnc_invoice_redraw_all_cb (GnucashRegister *g_reg, gpointer data)
     {
         amount = gncInvoiceGetTotalOf (invoice, GNC_PAYMENT_CARD);
         amount = gnc_numeric_add (amount, to_charge_amt,
-                                  gnc_commodity_get_fraction (currency), GNC_RND_ROUND);
+                                  gnc_commodity_get_fraction (currency), GNC_HOW_RND_ROUND_HALF_UP);
         gnc_invoice_reset_total_label (GTK_LABEL (iw->total_charge_label), amount, currency);
     }
 }
@@ -1786,7 +1782,7 @@ gnc_invoice_id_changed_cb (GtkWidget *unused, gpointer data)
 static gboolean
 find_handler (gpointer find_data, gpointer user_data)
 {
-    const GUID *invoice_guid = find_data;
+    const GncGUID *invoice_guid = find_data;
     InvoiceWindow *iw = user_data;
 
     return(iw && guid_equal(&iw->invoice_guid, invoice_guid));
@@ -1810,7 +1806,7 @@ gnc_invoice_new_page (QofBook *bookp, InvoiceDialogType type,
      */
     if (invoice)
     {
-        GUID invoice_guid;
+        GncGUID invoice_guid;
 
         invoice_guid = *gncInvoiceGetGUID (invoice);
         iw = gnc_find_first_gui_component (DIALOG_VIEW_INVOICE_CM_CLASS,
@@ -1869,7 +1865,7 @@ gnc_invoice_recreate_page (GncMainWindow *window,
     char *tmp_string = NULL, *owner_type = NULL;
     InvoiceDialogType type;
     GncInvoice *invoice;
-    GUID guid;
+    GncGUID guid;
     QofBook *book;
     GncOwner owner = { 0 };
 
@@ -1885,7 +1881,7 @@ gnc_invoice_recreate_page (GncMainWindow *window,
     type = InvoiceDialogTypefromString(tmp_string);
     g_free(tmp_string);
 
-    /* Get Invoice GUID */
+    /* Get Invoice GncGUID */
     tmp_string = g_key_file_get_string(key_file, group_name,
                                        KEY_INVOICE_GUID, &error);
     if (error)
@@ -1918,7 +1914,7 @@ gnc_invoice_recreate_page (GncMainWindow *window,
         goto give_up;
     }
 
-    /* Get Owner GUID */
+    /* Get Owner GncGUID */
     tmp_string = g_key_file_get_string(key_file, group_name,
                                        KEY_OWNER_GUID, &error);
     if (error)
@@ -2117,13 +2113,6 @@ gnc_invoice_create_page (InvoiceWindow *iw, gpointer page)
     /* Create the register */
     {
         GtkWidget *regWidget, *frame, *window;
-        guint num_rows;
-
-        num_rows = gnc_gconf_get_float(GCONF_SECTION_INVOICE,
-                                       KEY_NUMBER_OF_ROWS, NULL);
-        if (num_rows == 0)
-            num_rows = 10;
-        gnucash_register_set_initial_rows( num_rows );
 
         /* Watch the order of operations, here... */
         regWidget = gnucash_register_new (gnc_entry_ledger_get_table
@@ -2173,7 +2162,7 @@ gnc_invoice_window_new_invoice (QofBook *bookp, GncOwner *owner,
          * Try to find an existing window for this invoice.  If found,
          * bring it to the front.
          */
-        GUID invoice_guid;
+        GncGUID invoice_guid;
 
         invoice_guid = *gncInvoiceGetGUID (invoice);
         iw = gnc_find_first_gui_component (DIALOG_NEW_INVOICE_CM_CLASS,
@@ -2374,16 +2363,16 @@ free_invoice_cb (gpointer user_data)
 
     g_return_if_fail (sw);
 
-    gncQueryDestroy (sw->q);
+    qof_query_destroy (sw->q);
     g_free (sw);
 }
 
 GNCSearchWindow *
 gnc_invoice_search (GncInvoice *start, GncOwner *owner, QofBook *book)
 {
-    GNCIdType type = GNC_INVOICE_MODULE_NAME;
+    QofIdType type = GNC_INVOICE_MODULE_NAME;
     struct _invoice_select_window *sw;
-    QueryNew *q, *q2 = NULL;
+    QofQuery *q, *q2 = NULL;
     GncOwnerType owner_type = GNC_OWNER_CUSTOMER;
     static GList *inv_params = NULL, *bill_params = NULL, *emp_params = NULL, *params;
     static GList *columns = NULL;
@@ -2437,6 +2426,9 @@ gnc_invoice_search (GncInvoice *start, GncOwner *owner, QofBook *book)
                                                _("Date Opened"), NULL, type,
                                                INVOICE_OPENED, NULL);
         inv_params = gnc_search_param_prepend (inv_params,
+                                               _("Due Date"), NULL, type,
+                                               INVOICE_DUE, NULL);
+        inv_params = gnc_search_param_prepend (inv_params,
                                                _("Company Name "), NULL, type,
                                                INVOICE_OWNER, OWNER_PARENT,
                                                OWNER_NAME, NULL);
@@ -2467,6 +2459,9 @@ gnc_invoice_search (GncInvoice *start, GncOwner *owner, QofBook *book)
         bill_params = gnc_search_param_prepend (bill_params,
                                                 _("Date Opened"), NULL, type,
                                                 INVOICE_OPENED, NULL);
+        bill_params = gnc_search_param_prepend (bill_params,
+                                                _("Due Date"), NULL, type,
+                                                INVOICE_DUE, NULL);
         bill_params = gnc_search_param_prepend (bill_params,
                                                 _("Company Name "), NULL, type,
                                                 INVOICE_OWNER, OWNER_PARENT,
@@ -2499,6 +2494,9 @@ gnc_invoice_search (GncInvoice *start, GncOwner *owner, QofBook *book)
                                                _("Date Opened"), NULL, type,
                                                INVOICE_OPENED, NULL);
         emp_params = gnc_search_param_prepend (emp_params,
+                                               _("Due Date"), NULL, type,
+                                               INVOICE_DUE, NULL);
+        emp_params = gnc_search_param_prepend (emp_params,
                                                _("Employee Name"), NULL, type,
                                                INVOICE_OWNER, OWNER_PARENT,
                                                OWNER_NAME, NULL);
@@ -2522,6 +2520,8 @@ gnc_invoice_search (GncInvoice *start, GncOwner *owner, QofBook *book)
         columns = gnc_search_param_prepend (columns, _("Company"), NULL, type,
                                             INVOICE_OWNER, OWNER_PARENT,
                                             OWNER_NAME, NULL);
+        columns = gnc_search_param_prepend (columns, _("Due"), NULL, type,
+                                            INVOICE_DUE, NULL);
         columns = gnc_search_param_prepend (columns, _("Opened"), NULL, type,
                                             INVOICE_OPENED, NULL);
         columns = gnc_search_param_prepend (columns, _("Num"), NULL, type,
@@ -2529,15 +2529,15 @@ gnc_invoice_search (GncInvoice *start, GncOwner *owner, QofBook *book)
     }
 
     /* Build the queries */
-    q = gncQueryCreateFor (type);
-    gncQuerySetBook (q, book);
+    q = qof_query_create_for (type);
+    qof_query_set_book (q, book);
 
     /* If owner is supplied, limit all searches to invoices who's owner
      * or end-owner is the supplied owner!  Show all invoices by this
      * owner.  If a Job is supplied, search for all invoices for that
      * job, but if a Customer is supplied, search for all invoices owned
      * by that Customer or any of that Customer's Jobs.  In other words,
-     * match on <supplied-owner's guid> == Invoice->Owner->GUID or
+     * match on <supplied-owner's guid> == Invoice->Owner->GncGUID or
      * Invoice->owner->parentGUID.
      */
     if (owner)
@@ -2552,25 +2552,36 @@ gnc_invoice_search (GncInvoice *start, GncOwner *owner, QofBook *book)
             owner_type = gncOwnerGetType(tmp);
         }
 
-        /* Then if there's an actual owner (and not just a type)
-         * then add it to the query and limit the search to this owner
+        /* Then if there's an actual owner add it to the query
+         * and limit the search to this owner
+         * If there's only a type, limit the search to this type.
          */
         if (gncOwnerGetGUID (owner))
         {
-            q2 = gncQueryCreate ();
-            gncQueryAddGUIDMatch (q2, g_slist_prepend
-                                  (g_slist_prepend (NULL, QUERY_PARAM_GUID),
-                                   INVOICE_OWNER),
-                                  gncOwnerGetGUID (owner), QUERY_OR);
+            q2 = qof_query_create ();
+            qof_query_add_guid_match (q2, g_slist_prepend
+                                      (g_slist_prepend (NULL, QOF_PARAM_GUID),
+                                       INVOICE_OWNER),
+                                      gncOwnerGetGUID (owner), QOF_QUERY_OR);
 
-            gncQueryAddGUIDMatch (q2, g_slist_prepend
-                                  (g_slist_prepend (NULL, OWNER_PARENTG),
-                                   INVOICE_OWNER),
-                                  gncOwnerGetGUID (owner), QUERY_OR);
+            qof_query_add_guid_match (q2, g_slist_prepend
+                                      (g_slist_prepend (NULL, OWNER_PARENTG),
+                                       INVOICE_OWNER),
+                                      gncOwnerGetGUID (owner), QOF_QUERY_OR);
 
-            gncQueryMergeInPlace (q, q2, QUERY_AND);
-            gncQueryDestroy (q2);
-            q2 = gncQueryCopy (q);
+            qof_query_merge_in_place (q, q2, QOF_QUERY_AND);
+            qof_query_destroy (q2);
+            q2 = qof_query_copy (q);
+        }
+        else
+        {
+            QofQueryPredData *inv_type_pred;
+            GSList *param_list = NULL;
+            inv_type_pred = qof_query_string_predicate(QOF_COMPARE_EQUAL,
+                            gncInvoiceGetTypeFromOwnerType(owner_type),
+                            QOF_STRING_MATCH_NORMAL, FALSE);
+            param_list = g_slist_prepend (param_list, INVOICE_TYPE);
+            qof_query_add_term (q, param_list, inv_type_pred, QOF_QUERY_AND);
         }
     }
 
@@ -2578,10 +2589,10 @@ gnc_invoice_search (GncInvoice *start, GncOwner *owner, QofBook *book)
     if (start)
     {
         if (q2 == NULL)
-            q2 = gncQueryCopy (q);
+            q2 = qof_query_copy (q);
 
-        gncQueryAddGUIDMatch (q2, g_slist_prepend (NULL, QUERY_PARAM_GUID),
-                              gncInvoiceGetGUID (start), QUERY_AND);
+        qof_query_add_guid_match (q2, g_slist_prepend (NULL, QOF_PARAM_GUID),
+                                  gncInvoiceGetGUID (start), QOF_QUERY_AND);
     }
 #endif
 
@@ -2654,9 +2665,9 @@ gnc_invoice_search_edit (gpointer start, gpointer book)
 DialogQueryList *
 gnc_invoice_show_bills_due (QofBook *book, double days_in_advance)
 {
-    GNCIdType type = GNC_INVOICE_MODULE_NAME;
+    QofIdType type = GNC_INVOICE_MODULE_NAME;
     Query *q;
-    QueryPredData_t pred_data;
+    QofQueryPredData* pred_data;
     time_t end_date;
     GList *res;
     gint len;
@@ -2681,9 +2692,9 @@ gnc_invoice_show_bills_due (QofBook *book, double days_in_advance)
     }
 
     /* Create the query to search for invoices; set the book */
-    q = gncQueryCreate();
-    gncQuerySearchFor(q, GNC_INVOICE_MODULE_NAME);
-    gncQuerySetBook (q, book);
+    q = qof_query_create();
+    qof_query_search_for(q, GNC_INVOICE_MODULE_NAME);
+    qof_query_set_book (q, book);
 
     /* we want to find all invoices where:
      *      invoice -> is_posted == TRUE
@@ -2692,18 +2703,18 @@ gnc_invoice_show_bills_due (QofBook *book, double days_in_advance)
      * AND  invoice -> due >= (today - days_in_advance)
      */
 
-    gncQueryAddBooleanMatch (q, g_slist_prepend(NULL, INVOICE_IS_POSTED), TRUE,
-                             QUERY_AND);
+    qof_query_add_boolean_match (q, g_slist_prepend(NULL, INVOICE_IS_POSTED), TRUE,
+                                 QOF_QUERY_AND);
 
-    gncQueryAddBooleanMatch (q, g_slist_prepend(g_slist_prepend(NULL, LOT_IS_CLOSED),
-                             INVOICE_POST_LOT), FALSE, QUERY_AND);
+    qof_query_add_boolean_match (q, g_slist_prepend(g_slist_prepend(NULL, LOT_IS_CLOSED),
+                                 INVOICE_POST_LOT), FALSE, QOF_QUERY_AND);
 
     /* Watch out: Do *not* translate the string "Invoice" here because
        it must match the QofObject.type_label string exactly, which
        implies it is used in untranslated form! */
-    pred_data = gncQueryStringPredicate (COMPARE_NEQ, "Invoice",
-                                         STRING_MATCH_NORMAL, FALSE);
-    gncQueryAddTerm (q, g_slist_prepend(NULL, INVOICE_TYPE), pred_data, QUERY_AND);
+    pred_data = qof_query_string_predicate (QOF_COMPARE_NEQ, "Invoice",
+                                            QOF_STRING_MATCH_NORMAL, FALSE);
+    qof_query_add_term (q, g_slist_prepend(NULL, INVOICE_TYPE), pred_data, QOF_QUERY_AND);
 
     end_date = time(NULL);
     if (days_in_advance < 0)
@@ -2712,10 +2723,10 @@ gnc_invoice_show_bills_due (QofBook *book, double days_in_advance)
 
     ts.tv_sec = (gint64) end_date;
     ts.tv_nsec = 0;
-    pred_data = gncQueryDatePredicate (COMPARE_LTE, DATE_MATCH_NORMAL, ts);
-    gncQueryAddTerm (q, g_slist_prepend(NULL, INVOICE_DUE), pred_data, QUERY_AND);
+    pred_data = qof_query_date_predicate (QOF_COMPARE_LTE, QOF_DATE_MATCH_NORMAL, ts);
+    qof_query_add_term (q, g_slist_prepend(NULL, INVOICE_DUE), pred_data, QOF_QUERY_AND);
 
-    res = gncQueryRun(q);
+    res = qof_query_run(q);
     len = g_list_length (res);
     if (!res || len <= 0)
         return NULL;

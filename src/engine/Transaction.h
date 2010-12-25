@@ -175,7 +175,7 @@ Transaction * xaccTransClone (const Transaction *t);
  *
  * @param assume_ordered If TRUE, assume that the splits in each
  * transaction appear in the same order.  This saves some time looking
- * up splits by GUID, and is required for checking duplicated
+ * up splits by GncGUID, and is required for checking duplicated
  * transactions because all the splits have new GUIDs.
  */
 gboolean xaccTransEqual(const Transaction *ta,
@@ -216,7 +216,7 @@ gboolean      xaccTransIsOpen (const Transaction *trans);
     transaction associated with the given id, or NULL
     if there is no such transaction. */
 /*@ dependent @*//*@ null @*/
-Transaction * xaccTransLookup (const GUID *guid, QofBook *book);
+Transaction * xaccTransLookup (const GncGUID *guid, QofBook *book);
 #define xaccTransLookupDirect(g,b) xaccTransLookup(&(g),b)
 
 Split * xaccTransFindSplitByAccount(const Transaction *trans,
@@ -281,6 +281,13 @@ const char *  xaccTransGetDescription (const Transaction *trans);
  *
  The Notes field is only visible in the register in double-line mode */
 const char *  xaccTransGetNotes (const Transaction *trans);
+
+
+/** Sets whether or not this transaction is a "closing transaction" */
+void          xaccTransSetIsClosingTxn (Transaction *trans, gboolean is_closing);
+
+/** Returns whether this transaction is a "closing transaction" */
+gboolean      xaccTransGetIsClosingTxn (const Transaction *trans);
 
 
 /** Add a split to the transaction
@@ -417,7 +424,7 @@ gnc_numeric xaccTransGetAccountBalance (const Transaction *trans,
  *      num field (compare as an integer)
  *      date entered (compare as a date)
  *      description field (comcpare as a string using strcmp())
- *      GUID (compare as a guid)
+ *      GncGUID (compare as a guid)
  *    Finally, it returns zero if all of the above match.
  *    Note that it does *NOT* compare its member splits.
  */
@@ -442,11 +449,19 @@ int  xaccTransOrder     (const Transaction *ta, const Transaction *tb);
 void          xaccTransSetDate (Transaction *trans,
                                 int day, int mon, int year);
 
+/** This method modifies <i>posted</i> date of the transaction,
+ * specified by a GDate. The posted date is the date when this
+ * transaction was posted at the bank.
+ *
+ * This is identical to xaccTransSetDate(), but different from
+ * xaccTransSetDatePostedSecs which artificially introduces the
+ * time-of-day part, which needs to be ignored. */
+void xaccTransSetDatePostedGDate (Transaction *trans, GDate date);
+
 /** The xaccTransSetDatePostedSecs() method will modify the <i>posted</i>
     date of the transaction, specified by a time_t (see ctime(3)). The
     posted date is the date when this transaction was posted at the
     bank. */
-#define xaccTransSetDateSecs xaccTransSetDatePostedSecs
 void          xaccTransSetDatePostedSecs (Transaction *trans, time_t time);
 
 /**  The xaccTransSetDatePostedTS() method does the same thing as
@@ -480,6 +495,9 @@ void          xaccTransGetDatePostedTS (const Transaction *trans, Timespec *ts);
     having different function names, GetDate and GetDatePosted refer
     to the same single date.)*/
 Timespec      xaccTransRetDatePostedTS (const Transaction *trans);
+/** Retrieve the posted date of the transaction. The posted date is
+    the date when this transaction was posted at the bank. */
+GDate      xaccTransGetDatePostedGDate (const Transaction *trans);
 
 /** Retrieve the date of when the transaction was entered. The entered
  * date is the date when the register entry was made.*/
@@ -586,6 +604,7 @@ Timespec xaccTransGetVoidTime(const Transaction *tr);
 #define TRANS_DATE_DUE		"date-due"
 #define TRANS_IMBALANCE		"trans-imbalance"
 #define TRANS_IS_BALANCED	"trans-balanced?"
+#define TRANS_IS_CLOSING        "trans-is-closing?"
 #define TRANS_NOTES		"notes"
 #define TRANS_TYPE		"type"
 #define TRANS_VOID_STATUS	"void-p"

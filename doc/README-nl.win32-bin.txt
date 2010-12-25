@@ -1,4 +1,4 @@
-GnuCash is een vrij, open source boekhoudprogramma, uitgegeven
+﻿GnuCash is een vrij, open source boekhoudprogramma, uitgegeven
 onder de GNU General Public License (GPL) en is beschikbaar voor
 GNU/Linux, *BSD, Solaris, Mac OSX, en Microsoft Windows.
 
@@ -48,4 +48,4 @@ De ontwikkeling van GnuCash begon in 1997, de de eerste uitgave was in 1998.
 
 -------------------
 
-This is the Dutch GnuCash 2.2.x README file for Windows binary packages.
+Dit is het Nederlandstalige GnuCash 2.2.x LEESMIJ bestand voor het Windows installatie programma.

@@ -72,7 +72,7 @@ typedef enum
 struct _customer_select_window
 {
     QofBook *	book;
-    QueryNew *	q;
+    QofQuery *	q;
 };
 
 struct _customer_window
@@ -115,7 +115,7 @@ struct _customer_window
     GncTaxIncluded taxincluded;
     GncBillTerm *	terms;
     CustomerDialogType	dialog_type;
-    GUID		customer_guid;
+    GncGUID		customer_guid;
     gint		component_id;
     QofBook *	book;
     GncCustomer *	created_customer;
@@ -319,7 +319,7 @@ gnc_customer_window_ok_cb (GtkWidget *widget, gpointer data)
             gnc_ui_to_customer (cw, customer);
         }
         cw->created_customer = customer;
-        cw->customer_guid = *xaccGUIDNULL ();
+        cw->customer_guid = *guid_null ();
     }
 
     gnc_close_gui_component (cw->component_id);
@@ -351,7 +351,7 @@ gnc_customer_window_destroy_cb (GtkWidget *widget, gpointer data)
     {
         gncCustomerBeginEdit (customer);
         gncCustomerDestroy (customer);
-        cw->customer_guid = *xaccGUIDNULL ();
+        cw->customer_guid = *guid_null ();
     }
 
     gnc_unregister_gui_component (cw->component_id);
@@ -428,7 +428,7 @@ gnc_customer_window_refresh_handler (GHashTable *changes, gpointer user_data)
 static gboolean
 find_handler (gpointer find_data, gpointer user_data)
 {
-    const GUID *customer_guid = find_data;
+    const GncGUID *customer_guid = find_data;
     CustomerWindow *cw = user_data;
 
     return(cw && guid_equal(&cw->customer_guid, customer_guid));
@@ -449,7 +449,7 @@ gnc_customer_new_window (QofBook *bookp, GncCustomer *cust)
      */
     if (cust)
     {
-        GUID customer_guid;
+        GncGUID customer_guid;
 
         customer_guid = *gncCustomerGetGUID(cust);
         cw = gnc_find_first_gui_component (DIALOG_EDIT_CUSTOMER_CM_CLASS,
@@ -783,15 +783,15 @@ free_userdata_cb (gpointer user_data)
 
     g_return_if_fail (sw);
 
-    gncQueryDestroy (sw->q);
+    qof_query_destroy (sw->q);
     g_free (sw);
 }
 
 GNCSearchWindow *
 gnc_customer_search (GncCustomer *start, QofBook *book)
 {
-    QueryNew *q, *q2 = NULL;
-    GNCIdType type = GNC_CUSTOMER_MODULE_NAME;
+    QofQuery *q, *q2 = NULL;
+    QofIdType type = GNC_CUSTOMER_MODULE_NAME;
     struct _customer_select_window *sw;
     static GList *params = NULL;
     static GList *columns = NULL;
@@ -833,15 +833,15 @@ gnc_customer_search (GncCustomer *start, QofBook *book)
     }
 
     /* Build the queries */
-    q = gncQueryCreateFor (type);
-    gncQuerySetBook (q, book);
+    q = qof_query_create_for (type);
+    qof_query_set_book (q, book);
 
 #if 0
     if (start)
     {
-        q2 = gncQueryCopy (q);
-        gncQueryAddGUIDMatch (q2, g_slist_prepend (NULL, QUERY_PARAM_GUID),
-                              gncCustomerGetGUID (start), QUERY_AND);
+        q2 = qof_query_copy (q);
+        qof_query_add_guid_match (q2, g_slist_prepend (NULL, QOF_PARAM_GUID),
+                                  gncCustomerGetGUID (start), QOF_QUERY_AND);
     }
 #endif
 

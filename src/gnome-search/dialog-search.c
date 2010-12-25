@@ -35,16 +35,16 @@
 #include "gnc-gui-query.h"
 #include "gnc-query-list.h"
 #include "gnc-gconf-utils.h"
-#include "gncObject.h"
-#include "QueryNew.h"
-#include "QueryObject.h"
-#include "QueryCore.h"
+#include "qof.h"
 
 #include "Transaction.h"	/* for the SPLIT_* and TRANS_* */
 
 #include "dialog-search.h"
 #include "search-core-type.h"
 #include "search-param.h"
+
+/* This static indicates the debugging module that this .o belongs to.  */
+static QofLogModule log_module = G_LOG_DOMAIN;
 
 #define DIALOG_SEARCH_CM_CLASS "dialog-search"
 #define KEY_ACTIVE_ONLY "search_for_active_only"
@@ -102,14 +102,14 @@ struct _GNCSearchWindow
 
     /* What we're searching for, and how */
     const gchar *  type_label;
-    GNCIdTypeConst search_for;
+    QofIdTypeConst search_for;
     GNCSearchType	grouping;	/* Match Any, Match All */
     const QofParam * get_guid;	/* Function to GetGUID from the object */
     int		search_type;	/* New, Narrow, Add, Delete */
 
     /* Our query status */
-    QueryNew *	q;
-    QueryNew *	start_q;	/* The query to start from, if any */
+    QofQuery *	q;
+    QofQuery *	start_q;	/* The query to start from, if any */
 
     /* The list of criteria */
     GNCSearchParam * last_param;
@@ -346,33 +346,33 @@ static void
 search_update_query (GNCSearchWindow *sw)
 {
     static GSList *active_params = NULL;
-    QueryNew *q, *q2, *new_q;
+    QofQuery *q, *q2, *new_q;
     GList *node;
-    QueryOp op;
-    QueryPredData_t pdata;
+    QofQueryOp op;
+    QofQueryPredData* pdata;
 
     if (sw->grouping == GNC_SEARCH_MATCH_ANY)
-        op = QUERY_OR;
+        op = QOF_QUERY_OR;
     else
-        op = QUERY_AND;
+        op = QOF_QUERY_AND;
 
     if (active_params == NULL)
-        active_params = g_slist_prepend (NULL, QUERY_PARAM_ACTIVE);
+        active_params = g_slist_prepend (NULL, QOF_PARAM_ACTIVE);
 
     /* Make sure we supply a book! */
     if (sw->start_q == NULL)
     {
-        sw->start_q = gncQueryCreateFor (sw->search_for);
-        gncQuerySetBook (sw->start_q, gnc_get_current_book ());
+        sw->start_q = qof_query_create_for (sw->search_for);
+        qof_query_set_book (sw->start_q, gnc_get_current_book ());
     }
     else
     {
         /* We've got a query -- purge it of any "active" parameters */
-        gncQueryPurgeTerms (sw->start_q, active_params);
+        qof_query_purge_terms (sw->start_q, active_params);
     }
 
     /* Now create a new query to work from */
-    q = gncQueryCreateFor (sw->search_for);
+    q = qof_query_create_for (sw->search_for);
 
     /* Walk the list of criteria */
     for (node = sw->crit_list; node; node = node->next)
@@ -381,8 +381,8 @@ search_update_query (GNCSearchWindow *sw)
 
         pdata = gnc_search_core_type_get_predicate (data->element);
         if (pdata)
-            gncQueryAddTerm (q, gnc_search_param_get_param_path (data->param),
-                             pdata, op);
+            qof_query_add_term (q, gnc_search_param_get_param_path (data->param),
+                                pdata, op);
     }
 
     /* Now combine this query with the existing query, depending on
@@ -393,22 +393,22 @@ search_update_query (GNCSearchWindow *sw)
     switch (sw->search_type)
     {
     case 0:			/* New */
-        new_q = gncQueryMerge (sw->start_q, q, QUERY_AND);
-        gncQueryDestroy (q);
+        new_q = qof_query_merge (sw->start_q, q, QOF_QUERY_AND);
+        qof_query_destroy (q);
         break;
     case 1:			/* Refine */
-        new_q = gncQueryMerge (sw->q, q, QUERY_AND);
-        gncQueryDestroy (q);
+        new_q = qof_query_merge (sw->q, q, QOF_QUERY_AND);
+        qof_query_destroy (q);
         break;
     case 2:			/* Add */
-        new_q = gncQueryMerge (sw->q, q, QUERY_OR);
-        gncQueryDestroy (q);
+        new_q = qof_query_merge (sw->q, q, QOF_QUERY_OR);
+        qof_query_destroy (q);
         break;
     case 3:			/* Delete */
-        q2 = gncQueryInvert (q);
-        new_q = gncQueryMerge (sw->q, q2, QUERY_AND);
-        gncQueryDestroy (q2);
-        gncQueryDestroy (q);
+        q2 = qof_query_invert (q);
+        new_q = qof_query_merge (sw->q, q2, QOF_QUERY_AND);
+        qof_query_destroy (q2);
+        qof_query_destroy (q);
         break;
     default:
         g_warning ("bad search type: %d", sw->search_type);
@@ -418,13 +418,13 @@ search_update_query (GNCSearchWindow *sw)
 
     if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (sw->active_only_check)))
     {
-        gncQueryAddBooleanMatch (new_q, active_params, TRUE, QUERY_AND);
+        qof_query_add_boolean_match (new_q, active_params, TRUE, QOF_QUERY_AND);
         active_params = NULL;
     }
 
     /* Destroy the old query */
     if (sw->q)
-        gncQueryDestroy (sw->q);
+        qof_query_destroy (sw->q);
 
     /* And save the new one */
     sw->q = new_q;
@@ -519,22 +519,22 @@ search_new_item_cb (GtkButton *button, GNCSearchWindow *sw)
 
     if (res)
     {
-        const GUID *guid = (const GUID *) ((sw->get_guid->param_getfcn)(res, sw->get_guid));
-        QueryOp op = QUERY_OR;
+        const GncGUID *guid = (const GncGUID *) ((sw->get_guid->param_getfcn)(res, sw->get_guid));
+        QofQueryOp op = QOF_QUERY_OR;
 
         if (!sw->q)
         {
             if (!sw->start_q)
             {
-                sw->start_q = gncQueryCreateFor (sw->search_for);
-                gncQuerySetBook (sw->start_q, gnc_get_current_book ());
+                sw->start_q = qof_query_create_for (sw->search_for);
+                qof_query_set_book (sw->start_q, gnc_get_current_book ());
             }
-            sw->q = gncQueryCopy (sw->start_q);
-            op = QUERY_AND;
+            sw->q = qof_query_copy (sw->start_q);
+            op = QOF_QUERY_AND;
         }
 
-        gncQueryAddGUIDMatch (sw->q, g_slist_prepend (NULL, QUERY_PARAM_GUID),
-                              guid, op);
+        qof_query_add_guid_match (sw->q, g_slist_prepend (NULL, QOF_PARAM_GUID),
+                                  guid, op);
 
         /* Watch this entity so we'll refresh once it's actually changed */
         gnc_gui_component_watch_entity (sw->component_id, guid, QOF_EVENT_MODIFY);
@@ -790,8 +790,8 @@ gnc_search_dialog_close_cb (GtkDialog *dialog, GNCSearchWindow *sw)
     g_list_free (sw->crit_list);
 
     /* Destroy the queries */
-    if (sw->q) gncQueryDestroy (sw->q);
-    if (sw->start_q) gncQueryDestroy (sw->start_q);
+    if (sw->q) qof_query_destroy (sw->q);
+    if (sw->start_q) qof_query_destroy (sw->start_q);
 
     /* Destroy the user_data */
     if (sw->free_cb)
@@ -819,6 +819,52 @@ close_handler (gpointer data)
     g_return_if_fail (sw);
     gtk_widget_destroy (sw->dialog);
     /* DRH: should sw be freed here? */
+}
+
+static const gchar *
+type_label_to_new_button(const gchar* type_label)
+{
+    if (g_strcmp0(type_label, "Bill") == 0)
+    {
+        return _("New Bill");
+    }
+    else if (g_strcmp0(type_label, "Customer") == 0)
+    {
+        return _("New Customer");
+    }
+    else if (g_strcmp0(type_label, "Employee") == 0)
+    {
+        return _("New Employee");
+    }
+    else if (g_strcmp0(type_label, "Expense Voucher") == 0)
+    {
+        return _("New Expense Voucher");
+    }
+    else if (g_strcmp0(type_label, "Invoice") == 0)
+    {
+        return _("New Invoice");
+    }
+    else if (g_strcmp0(type_label, "Job") == 0)
+    {
+        return _("New Job");
+    }
+    else if (g_strcmp0(type_label, "Order") == 0)
+    {
+        return _("New Order");
+    }
+    else if (g_strcmp0(type_label, "Transaction") == 0)
+    {
+        return _("New Transaction");
+    }
+    else if (g_strcmp0(type_label, "Vendor") == 0)
+    {
+        return _("New Vendor");
+    }
+    else
+    {
+        PWARN("No translatable new-button label found for search type \"%s\", please add one into dialog-search.c!", type_label);
+        return _("New item");
+    }
 }
 
 static void
@@ -849,7 +895,7 @@ gnc_search_dialog_init_widgets (GNCSearchWindow *sw, const gchar *title)
     if (sw->type_label)
         type_label = sw->type_label;
     else
-        type_label = _(gncObjectGetTypeLabel (sw->search_for));
+        type_label = _(qof_object_get_type_label (sw->search_for));
     gtk_label_set_text (GTK_LABEL (label), type_label);
 
     /* Set the 'add criterion' button */
@@ -890,7 +936,7 @@ gnc_search_dialog_init_widgets (GNCSearchWindow *sw, const gchar *title)
     /* Figure out if we this object-type has an "active" parameter, and
      * if not, then set the active-check button insensitive
      */
-    if (gncQueryObjectGetParameter (sw->search_for, QUERY_PARAM_ACTIVE) == NULL)
+    if (qof_class_get_parameter (sw->search_for, QOF_PARAM_ACTIVE) == NULL)
         gtk_widget_set_sensitive (sw->active_only_check, FALSE);
 
     /* Deal with the cancel button */
@@ -899,6 +945,11 @@ gnc_search_dialog_init_widgets (GNCSearchWindow *sw, const gchar *title)
 
     /* Deal with the new_item button */
     new_item_button = glade_xml_get_widget (xml, "new_item_button");
+    gtk_button_set_label (GTK_BUTTON(new_item_button),
+                          type_label_to_new_button(type_label));
+#if 1
+    /* This old implementation part will be de-activated and removed
+     * once the string freeze is lifted again after 2.4.0 release. */
     {
         char *desc =
             /* Translators: %s is either "item" or the name of some other
@@ -907,6 +958,8 @@ gnc_search_dialog_init_widgets (GNCSearchWindow *sw, const gchar *title)
         gtk_button_set_label (GTK_BUTTON(new_item_button), desc);
         g_free (desc);
     }
+#endif
+
     /* add the first criterion */
     gnc_search_dialog_add_criterion (sw);
 
@@ -967,10 +1020,10 @@ gnc_search_dialog_raise (GNCSearchWindow *sw)
 }
 
 GNCSearchWindow *
-gnc_search_dialog_create (GNCIdTypeConst obj_type, const gchar *title,
+gnc_search_dialog_create (QofIdTypeConst obj_type, const gchar *title,
                           GList *param_list,
                           GList *display_list,
-                          QueryNew *start_query, QueryNew *show_start_query,
+                          QofQuery *start_query, QofQuery *show_start_query,
                           GNCSearchCallbackButton *callbacks,
                           GNCSearchResultCB result_callback,
                           GNCSearchNewItemCB new_item_cb,
@@ -1005,7 +1058,7 @@ gnc_search_dialog_create (GNCIdTypeConst obj_type, const gchar *title,
     /* Grab the get_guid function */
     sw->get_guid = qof_class_get_parameter (sw->search_for, QOF_PARAM_GUID);
     if (start_query)
-        sw->start_q = gncQueryCopy (start_query);
+        sw->start_q = qof_query_copy (start_query);
     sw->q = show_start_query;
 
     gnc_search_dialog_init_widgets (sw, title);
@@ -1075,7 +1128,7 @@ void gnc_search_dialog_set_select_cb (GNCSearchWindow *sw,
 /* TEST CODE BELOW HERE */
 
 static GList *
-get_params_list (GNCIdTypeConst type)
+get_params_list (QofIdTypeConst type)
 {
     GList *list = NULL;
 
@@ -1084,7 +1137,7 @@ get_params_list (GNCIdTypeConst type)
                                      type, SPLIT_TRANS, TRANS_SPLITLIST,
                                      SPLIT_ACCOUNT_GUID, NULL);
     list = gnc_search_param_prepend (list, "Split Account", GNC_ID_ACCOUNT,
-                                     type, SPLIT_ACCOUNT, QUERY_PARAM_GUID,
+                                     type, SPLIT_ACCOUNT, QOF_PARAM_GUID,
                                      NULL);
     list = gnc_search_param_prepend (list, "Split->Txn->Void?", NULL, type,
                                      SPLIT_TRANS, TRANS_VOID_STATUS, NULL);
@@ -1105,7 +1158,7 @@ get_params_list (GNCIdTypeConst type)
 }
 
 static GList *
-get_display_list (GNCIdTypeConst type)
+get_display_list (QofIdTypeConst type)
 {
     GList *list = NULL;
 
@@ -1152,3 +1205,10 @@ gnc_search_dialog_test (void)
                                    NULL, NULL, buttons, NULL, NULL, NULL, NULL,
                                    NULL, NULL);
 }
+
+// Local Variables:
+// mode: c
+// indent-tabs-mode: nil
+// c-block-comment-prefix: "* "
+// eval: (c-add-style "gnc" '("k&r" (c-basic-offset . 4) (c-offsets-alist (case-label . +))) t)
+// End:

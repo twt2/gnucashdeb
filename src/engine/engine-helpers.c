@@ -111,6 +111,12 @@ gnc_timepair2timespec(SCM x)
     return(result);
 }
 
+GDate gnc_timepair_to_GDate(SCM x)
+{
+    Timespec tspec = gnc_timepair2timespec(x);
+    return timespec_to_gdate(tspec);
+}
+
 int
 gnc_timepair_p(SCM x)
 {
@@ -120,7 +126,7 @@ gnc_timepair_p(SCM x)
 }
 
 SCM
-gnc_guid2scm(GUID guid)
+gnc_guid2scm(GncGUID guid)
 {
     char string[GUID_ENCODING_LENGTH + 1];
 
@@ -130,13 +136,13 @@ gnc_guid2scm(GUID guid)
     return scm_makfrom0str(string);
 }
 
-GUID
+GncGUID
 gnc_scm2guid(SCM guid_scm)
 {
-    GUID guid;
+    GncGUID guid;
     const gchar * str;
 
-    if (GUID_ENCODING_LENGTH != scm_i_string_length (guid_scm))
+    if (GUID_ENCODING_LENGTH != scm_c_string_length (guid_scm))
     {
         return *guid_null();
     }
@@ -148,13 +154,13 @@ gnc_scm2guid(SCM guid_scm)
 int
 gnc_guid_p(SCM guid_scm)
 {
-    GUID guid;
+    GncGUID guid;
     const gchar * str;
 
     if (!scm_is_string(guid_scm))
         return FALSE;
 
-    if (GUID_ENCODING_LENGTH != scm_i_string_length (guid_scm))
+    if (GUID_ENCODING_LENGTH != scm_c_string_length (guid_scm))
     {
         return FALSE;
     }
@@ -394,7 +400,7 @@ gnc_guid_glist2scm (const GList *account_guids)
 
     for (node = account_guids; node; node = node->next)
     {
-        GUID *guid = node->data;
+        GncGUID *guid = node->data;
 
         if (guid)
             guids = scm_cons (gnc_guid2scm (*guid), guids);
@@ -414,7 +420,7 @@ gnc_scm2guid_glist (SCM guids_scm)
     while (!scm_is_null (guids_scm))
     {
         SCM guid_scm = SCM_CAR (guids_scm);
-        GUID *guid = NULL;
+        GncGUID *guid = NULL;
 
         if (guid_scm != SCM_BOOL_F)
         {
@@ -640,7 +646,7 @@ static KvpValue *
 gnc_scm2KvpValue (SCM value_scm)
 {
     KvpValueType value_t;
-    KvpValue *value;
+    KvpValue *value = NULL;
     SCM type_scm;
     SCM val_scm;
 
@@ -677,7 +683,7 @@ gnc_scm2KvpValue (SCM value_scm)
     {
         if (val_scm != SCM_BOOL_F)
         {
-            GUID guid = gnc_scm2guid (val_scm);
+            GncGUID guid = gnc_scm2guid (val_scm);
             value = kvp_value_new_guid (&guid);
         }
         else
@@ -689,6 +695,13 @@ gnc_scm2KvpValue (SCM value_scm)
     {
         Timespec ts = gnc_timepair2timespec (val_scm);
         value = kvp_value_new_timespec(ts);
+        break;
+    }
+
+    case KVP_TYPE_GDATE:
+    {
+        Timespec ts = gnc_timepair2timespec (val_scm);
+        value = kvp_value_new_gdate(timespec_to_gdate(ts));
         break;
     }
 
@@ -742,9 +755,6 @@ gnc_scm2KvpValue (SCM value_scm)
         break;
     }
 
-    default:
-        PWARN ("unexpected type: %d", value_t);
-        return NULL;
     }
 
     return value;
@@ -1114,7 +1124,7 @@ gnc_scm2query_term_query_v2 (SCM qt_scm)
         qof_query_add_term (q, path, pd, QOF_QUERY_OR);
         if (inverted)
         {
-            Query *outq = qof_query_invert (q);
+            QofQuery *outq = qof_query_invert (q);
             qof_query_destroy (q);
             q = outq;
         }
@@ -1171,7 +1181,7 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
         query_term_scm = SCM_CDR (query_term_scm);
         sense = scm_is_true (scm);
 
-        q = xaccMallocQuery ();
+        q = qof_query_create_for(GNC_ID_SPLIT);
 
         if (!safe_strcmp (pd_type, "pd-date"))
         {
@@ -1249,7 +1259,7 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
             amount = scm_num2dbl (scm, G_STRFUNC);
 
             val = double_to_gnc_numeric (amount, GNC_DENOM_AUTO,
-                                         GNC_HOW_DENOM_SIGFIGS(6) | GNC_HOW_RND_ROUND);
+                                         GNC_HOW_DENOM_SIGFIGS(6) | GNC_HOW_RND_ROUND_HALF_UP);
 
             if (!safe_strcmp (pr_type, "pr-price"))
             {
@@ -1409,7 +1419,7 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
         }
         else if (!safe_strcmp (pd_type, "pd-guid"))
         {
-            GUID guid;
+            GncGUID guid;
             QofIdType id_type;
 
             /* guid */
@@ -1481,24 +1491,24 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
 
     if (ok)
     {
-        Query *out_q;
+        QofQuery *out_q;
 
         if (sense)
             out_q = q;
         else
         {
-            out_q = xaccQueryInvert (q);
-            xaccFreeQuery (q);
+            out_q = qof_query_invert (q);
+            qof_query_destroy (q);
         }
 
         return out_q;
     }
 
-    xaccFreeQuery (q);
+    qof_query_destroy (q);
     return NULL;
 }
 
-static Query *
+static QofQuery *
 gnc_scm2query_term_query (SCM query_term_scm, query_version_t vers)
 {
     switch (vers)
@@ -1541,10 +1551,10 @@ gnc_query_terms2scm (const GList *terms)
     return scm_reverse (or_terms);
 }
 
-static Query *
+static QofQuery *
 gnc_scm2query_and_terms (SCM and_terms, query_version_t vers)
 {
-    Query *q = NULL;
+    QofQuery *q = NULL;
 
     if (!scm_is_list (and_terms))
         return NULL;
@@ -1560,18 +1570,18 @@ gnc_scm2query_and_terms (SCM and_terms, query_version_t vers)
             q = gnc_scm2query_term_query (term, vers);
         else
         {
-            Query *q_and;
-            Query *q_new;
+            QofQuery *q_and;
+            QofQuery *q_new;
 
             q_and = gnc_scm2query_term_query (term, vers);
 
             if (q_and)
             {
-                q_new = xaccQueryMerge (q, q_and, QOF_QUERY_AND);
+                q_new = qof_query_merge (q, q_and, QOF_QUERY_AND);
 
                 if (q_new)
                 {
-                    xaccFreeQuery (q);
+                    qof_query_destroy (q);
                     q = q_new;
                 }
             }
@@ -1581,15 +1591,15 @@ gnc_scm2query_and_terms (SCM and_terms, query_version_t vers)
     return q;
 }
 
-static Query *
+static QofQuery *
 gnc_scm2query_or_terms (SCM or_terms, query_version_t vers)
 {
-    Query *q = NULL;
+    QofQuery *q = NULL;
 
     if (!scm_is_list (or_terms))
         return NULL;
 
-    q = xaccMallocQuery ();
+    q = qof_query_create_for(GNC_ID_SPLIT);
 
     while (!scm_is_null (or_terms))
     {
@@ -1602,18 +1612,18 @@ gnc_scm2query_or_terms (SCM or_terms, query_version_t vers)
             q = gnc_scm2query_and_terms (and_terms, vers);
         else
         {
-            Query *q_or;
-            Query *q_new;
+            QofQuery *q_or;
+            QofQuery *q_new;
 
             q_or = gnc_scm2query_and_terms (and_terms, vers);
 
             if (q_or)
             {
-                q_new = xaccQueryMerge (q, q_or, QOF_QUERY_OR);
+                q_new = qof_query_merge (q, q_or, QOF_QUERY_OR);
 
                 if (q_new)
                 {
-                    xaccFreeQuery (q);
+                    qof_query_destroy (q);
                     q = q_new;
                 }
             }
@@ -1846,10 +1856,10 @@ gnc_query_sort_to_list (const gchar * symbol)
     return path;
 }
 
-static Query *
+static QofQuery *
 gnc_scm2query_v1 (SCM query_scm)
 {
-    Query *q = NULL;
+    QofQuery *q = NULL;
     gboolean ok = TRUE;
     const gchar * primary_sort = NULL;
     const gchar * secondary_sort = NULL;
@@ -1897,7 +1907,7 @@ gnc_scm2query_v1 (SCM query_scm)
         if (safe_strcmp ("terms", symbol) == 0)
         {
             if (q)
-                xaccFreeQuery (q);
+                qof_query_destroy (q);
 
             q = gnc_scm2query_or_terms (value, gnc_QUERY_v1);
             if (!q)
@@ -1989,19 +1999,19 @@ gnc_scm2query_v1 (SCM query_scm)
         qof_query_set_sort_order (q, s1, s2, s3);
         qof_query_set_sort_increasing (q, primary_increasing, secondary_increasing,
                                        tertiary_increasing);
-        xaccQuerySetMaxSplits (q, max_splits);
+        qof_query_set_max_results (q, max_splits);
 
         return q;
     }
 
-    xaccFreeQuery (q);
+    qof_query_destroy (q);
     return NULL;
 }
 
-static Query *
+static QofQuery *
 gnc_scm2query_v2 (SCM query_scm)
 {
-    Query *q = NULL;
+    QofQuery *q = NULL;
     gboolean ok = TRUE;
     const gchar * search_for = NULL;
     GSList *sp1 = NULL, *sp2 = NULL, *sp3 = NULL;
@@ -2048,7 +2058,7 @@ gnc_scm2query_v2 (SCM query_scm)
         if (!safe_strcmp ("terms", symbol))
         {
             if (q)
-                xaccFreeQuery (q);
+                qof_query_destroy (q);
 
             q = gnc_scm2query_or_terms (value, gnc_QUERY_v2);
             if (!q)
@@ -2128,16 +2138,16 @@ gnc_scm2query_v2 (SCM query_scm)
         return q;
     }
 
-    xaccFreeQuery (q);
+    qof_query_destroy (q);
     return NULL;
 }
 
-Query *
+QofQuery *
 gnc_scm2query (SCM query_scm)
 {
     SCM q_type;
     const gchar *type;
-    Query *q = NULL;
+    QofQuery *q = NULL;
 
     /* Not a list or NULL?  No need to go further */
     if (!scm_is_list (query_scm) || scm_is_null (query_scm))

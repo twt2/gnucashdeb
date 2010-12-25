@@ -53,6 +53,11 @@
 #include "gnc-session.h"
 #include "import-account-matcher.h"
 
+#if AQBANKING_VERSION_INT > 49908
+/* For aqbanking > 4.99.8. See below. */
+# include <aqbanking/dlg_setup.h>
+#endif
+
 /* This static indicates the debugging module that this .o belongs to.  */
 static QofLogModule log_module = G_LOG_DOMAIN;
 
@@ -174,7 +179,7 @@ dai_destroy_cb(GtkObject *object, gpointer user_data)
 
     if (info->gnc_hash)
     {
-#ifdef AQBANKING_VERSION_4_PLUS
+#ifdef AQBANKING_VERSION_4_EXACTLY
         AB_Banking_OnlineFini(info->api, 0);
 #else
         AB_Banking_OnlineFini(info->api);
@@ -228,6 +233,43 @@ dai_wizard_button_clicked_cb(GtkButton *button, gpointer user_data)
         LEAVE("Wizard is still running");
         return;
     }
+
+#if AQBANKING_VERSION_INT > 49908
+    /* For aqbanking5 > 4.99.8: Use AB_Banking_GetNewUserDialog(). */
+    {
+        GWEN_DIALOG *dlg =
+            AB_SetupDialog_new(banking);
+        int rv;
+
+        PERR ("Unfortunately starting the setup wizard of aqbanking is not yet implemented in gnucash for aqbanking5. Please see http://lists.gnucash.org/pipermail/gnucash-devel/2010-August/029188.html and http://lists.gnucash.org/pipermail/gnucash-devel/2010-August/029189.html .");
+
+        if (AB_Banking_OnlineInit(banking) != 0)
+        {
+            PERR("Got error on AB_Banking_OnlineInit!");
+        }
+
+        rv = GWEN_Gui_ExecDialog(dlg, 0);
+        if (rv <= 0)
+        {
+            /* Dialog was aborted/rejected */
+            druid_disable_next_button(info);
+        }
+        else
+        {
+            /* Dialog accepted, all fine */
+            druid_enable_next_button(info);
+        }
+        GWEN_Dialog_free(dlg);
+
+        if (AB_Banking_OnlineFini(banking) != 0)
+        {
+            PERR("Got error on AB_Banking_OnlineFini!");
+        }
+    }
+#else
+    /* Previous implementation for aqbanking <= 4.99.8: Use the
+     * external application. */
+
 
     /* This is the point where we look for and start an external
      * application shipped with aqbanking that contains the setup druid
@@ -327,6 +369,7 @@ dai_wizard_button_clicked_cb(GtkButton *button, gpointer user_data)
     }
 
     GWEN_Buffer_free(buf);
+#endif
 
     LEAVE(" ");
 }
@@ -352,7 +395,7 @@ dai_match_page_prepare_cb(GnomeDruidPage *druid_page, GtkWidget *widget,
         info->match_page_prepared = TRUE;
 
     /* Load aqbanking accounts */
-#ifdef AQBANKING_VERSION_4_PLUS
+#ifdef AQBANKING_VERSION_4_EXACTLY
     AB_Banking_OnlineInit(info->api, 0);
 #else
     AB_Banking_OnlineInit(info->api);
@@ -395,7 +438,7 @@ banking_has_accounts(AB_BANKING *banking)
 
     g_return_val_if_fail(banking, FALSE);
 
-#ifdef AQBANKING_VERSION_4_PLUS
+#ifdef AQBANKING_VERSION_4_EXACTLY
     AB_Banking_OnlineInit(banking, 0);
 #else
     AB_Banking_OnlineInit(banking);
@@ -410,7 +453,7 @@ banking_has_accounts(AB_BANKING *banking)
     if (accl)
         AB_Account_List2_free(accl);
 
-#ifdef AQBANKING_VERSION_4_PLUS
+#ifdef AQBANKING_VERSION_4_EXACTLY
     AB_Banking_OnlineFini(banking, 0);
 #else
     AB_Banking_OnlineFini(banking);

@@ -1,6 +1,6 @@
 /* strptime.h
  *
- * $Id: strptime.h 18787 2010-03-02 21:40:02Z cstim $
+ * $Id: strptime.h 18961 2010-03-24 19:28:20Z cstim $
  *
  * Ethereal - Network traffic analyzer
  * By Gerald Combs <gerald@ethereal.com>

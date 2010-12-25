@@ -36,10 +36,10 @@ test_trans_query (Transaction *trans, gpointer data)
 {
     QofBook *book = data;
     GList *list;
-    Query *q;
+    QofQuery *q;
 
     q = make_trans_query (trans, ALL_QT);
-    xaccQuerySetBook (q, book);
+    qof_query_set_book (q, book);
 
     list = xaccQueryGetTransactions (q, QUERY_TXN_MATCH_ANY);
     if (g_list_length (list) != 1)
@@ -59,7 +59,7 @@ test_trans_query (Transaction *trans, gpointer data)
     }
 
     success ("found right transaction");
-    xaccFreeQuery (q);
+    qof_query_destroy (q);
     g_list_free (list);
 
     return 0;

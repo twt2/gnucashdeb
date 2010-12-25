@@ -28,8 +28,7 @@
 #include <glib/gi18n.h>
 
 #include "gnc-date.h"
-#include "QueryCore.h"
-#include "QueryNew.h"
+#include "qof.h"
 #include "Transaction.h"
 #include "gnc-ui-util.h"
 #include "gnc-gconf-utils.h"
@@ -141,8 +140,8 @@ gnc_reconcile_list_new(Account *account, GNCReconcileListType type,
     list->list_type = type;
     list->statement_date = statement_date;
 
-    query = xaccMallocQuery();
-    xaccQuerySetBook(query, gnc_get_current_book ());
+    query = qof_query_create_for(GNC_ID_SPLIT);
+    qof_query_set_book(query, gnc_get_current_book ());
 
     include_children = xaccAccountGetReconcileChildrenStatus(account);
     if (include_children)
@@ -151,22 +150,22 @@ gnc_reconcile_list_new(Account *account, GNCReconcileListType type,
     /* match the account */
     accounts = g_list_prepend (accounts, account);
 
-    xaccQueryAddAccountMatch (query, accounts, GUID_MATCH_ANY, QUERY_AND);
+    xaccQueryAddAccountMatch (query, accounts, QOF_GUID_MATCH_ANY, QOF_QUERY_AND);
 
     g_list_free (accounts);
 
     /* limit the matches to CREDITs and DEBITs only, depending on the type */
     if (type == RECLIST_CREDIT)
         xaccQueryAddValueMatch(query, gnc_numeric_zero (),
-                               NUMERIC_MATCH_CREDIT,
-                               COMPARE_GTE, QUERY_AND);
+                               QOF_NUMERIC_MATCH_CREDIT,
+                               QOF_COMPARE_GTE, QOF_QUERY_AND);
     else
         xaccQueryAddValueMatch(query, gnc_numeric_zero (),
-                               NUMERIC_MATCH_DEBIT,
-                               COMPARE_GTE, QUERY_AND);
+                               QOF_NUMERIC_MATCH_DEBIT,
+                               QOF_COMPARE_GTE, QOF_QUERY_AND);
 
     /* limit the matches only to Cleared and Non-reconciled splits */
-    xaccQueryAddClearedMatch(query, CLEARED_NO | CLEARED_CLEARED, QUERY_AND);
+    xaccQueryAddClearedMatch(query, CLEARED_NO | CLEARED_CLEARED, QOF_QUERY_AND);
 
     /* initialize the QueryList */
     gnc_reconcile_list_construct (list, query);
@@ -177,7 +176,7 @@ gnc_reconcile_list_new(Account *account, GNCReconcileListType type,
 
     if (auto_check)
     {
-        for (splits = xaccQueryGetSplits(query); splits; splits = splits->next)
+        for (splits = qof_query_run(query); splits; splits = splits->next)
         {
             Split *split = splits->data;
             char recn = xaccSplitGetReconcile(split);
@@ -193,7 +192,7 @@ gnc_reconcile_list_new(Account *account, GNCReconcileListType type,
     }
 
     /* Free the query -- we don't need it anymore */
-    xaccFreeQuery(query);
+    qof_query_destroy(query);
 
     return GTK_WIDGET(list);
 }
@@ -209,7 +208,7 @@ gnc_reconcile_list_init (GNCReconcileList *list)
     list->sibling = NULL;
 
     param = gnc_search_param_new();
-    gnc_search_param_set_param_fcn (param, QUERYCORE_BOOLEAN,
+    gnc_search_param_set_param_fcn (param, QOF_TYPE_BOOLEAN,
                                     gnc_reconcile_list_is_reconciled, list);
     gnc_search_param_set_title (param, _("Reconciled:R") + 11);
     gnc_search_param_set_justify (param, GTK_JUSTIFY_CENTER);
@@ -649,7 +648,7 @@ gnc_reconcile_list_fill(GNCReconcileList *list)
 
     print_info = gnc_account_print_info (list->account, FALSE);
 
-    for (splits = xaccQueryGetSplits (list->query); splits; splits = splits->next)
+    for (splits = qof_query_run (list->query); splits; splits = splits->next)
     {
         gnc_numeric amount;
         Timespec ts;

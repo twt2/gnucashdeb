@@ -41,7 +41,7 @@ gnc_scm_to_kvp_value_ptr(SCM val)
     }
     else if (gnc_guid_p(val))
     {
-        GUID tmpguid = gnc_scm2guid(val);
+        GncGUID tmpguid = gnc_scm2guid(val);
         return kvp_value_new_guid(&tmpguid);
     }
     else if (gnc_timepair_p(val))
@@ -89,7 +89,7 @@ gnc_kvp_value_ptr_to_scm(KvpValue* val)
         break;
     case KVP_TYPE_GUID:
     {
-        GUID *tempguid = kvp_value_get_guid(val);
+        GncGUID *tempguid = kvp_value_get_guid(val);
         return gnc_guid2scm(*tempguid);
     }
     break;
@@ -104,8 +104,10 @@ gnc_kvp_value_ptr_to_scm(KvpValue* val)
             return SWIG_NewPointerObj(frame, SWIG_TypeQuery("_p_KvpFrame"), 0);
     }
     break;
+    case KVP_TYPE_GDATE:
+        return gnc_timespec2timepair(gdate_to_timespec(kvp_value_get_gdate(val)));
 
-    /* FIXME: handle types below */
+        /* FIXME: handle types below */
     case KVP_TYPE_BINARY:
         break;
     case KVP_TYPE_GLIST:

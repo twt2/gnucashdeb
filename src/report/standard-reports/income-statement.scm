@@ -43,7 +43,7 @@
 
 (define-module (gnucash report standard-reports income-statement))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
-(use-modules (ice-9 slib))
+(use-modules (gnucash printf))
 (use-modules (gnucash gnc-module))
 
 (gnc:module-load "gnucash/report/report-system" 0)
@@ -60,7 +60,7 @@
 (define optname-end-date (N_ "End Date"))
 ;; FIXME this could use an indent option
 
-(define optname-accounts (N_ "Accounts to include"))
+(define optname-accounts (N_ "Accounts"))
 (define opthelp-accounts
   (N_ "Report on these accounts, if display depth allows."))
 (define optname-depth-limit (N_ "Levels of Subaccounts"))

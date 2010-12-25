@@ -8,6 +8,7 @@ libgnc_qof_la_LIBADD= \
 
 AM_CPPFLAGS = \
   -I$(top_srcdir)/lib/libc \
+  -I$(top_srcdir)/src \
   $(GLIB_CFLAGS)
 
 libgnc_qof_la_SOURCES =  \
@@ -67,9 +68,6 @@ qofinclude_HEADERS = \
    qofbookmerge.h    \
    qof-gobject.h
 
-nodist_qofinclude_HEADERS = \
-   qofla-dir.h     
-
 noinst_HEADERS = \
    md5.h  \
    qofclass-p.h  \
@@ -84,7 +82,6 @@ noinst_HEADERS = \
    qofsession-p.h
 
 EXTRA_DIST = \
-  qofla-dir.h.in \
   qofmath128.c
 
 if OS_WIN32
@@ -92,15 +89,6 @@ libgnc_qof_la_SOURCES += qof-win32.c
 else
 EXTRA_DIST += qof-win32.c
 endif
-
-qofla-dir.h: $(srcdir)/qofla-dir.h.in Makefile
-	rm -f $@.tmp
-	sed < $< > $@.tmp \
-		-e 's#@-libdir-@#${QOF_LIB_DIR}#g'
-	mv $@.tmp $@
-
-BUILT_SOURCES = qofla-dir.h
-CLEANFILES = $(BUILT_SOURCES)
 
 ## For testing the qofmath128 routines
 # run "make check" (to build the test program) and then run test-qofmath

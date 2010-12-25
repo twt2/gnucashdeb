@@ -29,10 +29,12 @@
 #include <glade/glade.h>
 
 #include "gnc-ui.h"
+#include "gnc-ui-util.h"
 #include "gnc-uri-utils.h"
 #include "dialog-utils.h"
 #include "dialog-file-access.h"
 #include "gnc-file.h"
+#include "gnc-plugin-file-history.h"
 #include "gnc-session.h"
 
 static QofLogModule log_module = GNC_MOD_GUI;
@@ -41,9 +43,7 @@ static QofLogModule log_module = GNC_MOD_GUI;
 #define DEFAULT_DATABASE "gnucash"
 #define FILE_ACCESS_OPEN    0
 #define FILE_ACCESS_SAVE_AS 1
-
-void gnc_ui_file_access_response_cb( GtkDialog *, gint, GtkDialog * );
-static void cb_uri_type_changed_cb( GtkComboBox* cb );
+#define FILE_ACCESS_EXPORT  2
 
 typedef struct FileAccessWindow
 {
@@ -60,6 +60,11 @@ typedef struct FileAccessWindow
     GtkEntry* tf_username;
     GtkEntry* tf_password;
 } FileAccessWindow;
+
+void gnc_ui_file_access_file_activated_cb( GtkFileChooser *chooser,
+        FileAccessWindow *faw );
+void gnc_ui_file_access_response_cb( GtkDialog *, gint, GtkDialog * );
+static void cb_uri_type_changed_cb( GtkComboBox* cb );
 
 static gchar*
 geturl( FileAccessWindow* faw )
@@ -96,6 +101,14 @@ geturl( FileAccessWindow* faw )
 }
 
 void
+gnc_ui_file_access_file_activated_cb( GtkFileChooser *chooser, FileAccessWindow *faw )
+{
+    g_return_if_fail( chooser != NULL );
+
+    gnc_ui_file_access_response_cb( GTK_DIALOG(faw->dialog), GTK_RESPONSE_OK, NULL );
+}
+
+void
 gnc_ui_file_access_response_cb(GtkDialog *dialog, gint response, GtkDialog *unused)
 {
     FileAccessWindow* faw;
@@ -125,6 +138,10 @@ gnc_ui_file_access_response_cb(GtkDialog *dialog, gint response, GtkDialog *unus
         else if ( faw->type == FILE_ACCESS_SAVE_AS )
         {
             gnc_file_do_save_as( url );
+        }
+        else if ( faw->type == FILE_ACCESS_EXPORT )
+        {
+            gnc_file_do_export( url );
         }
         break;
 
@@ -233,8 +250,11 @@ gnc_ui_file_access( int type )
     gint active_access_method_index = -1;
     const gchar* default_db;
     const gchar *button_label = NULL;
+    const gchar *gconf_section = NULL;
+    gchar *last;
+    gchar *starting_dir = NULL;
 
-    g_return_if_fail( type == FILE_ACCESS_OPEN || type == FILE_ACCESS_SAVE_AS );
+    g_return_if_fail( type == FILE_ACCESS_OPEN || type == FILE_ACCESS_SAVE_AS || type == FILE_ACCESS_EXPORT );
 
     faw = g_new0(FileAccessWindow, 1);
     g_return_if_fail( faw != NULL );
@@ -263,12 +283,21 @@ gnc_ui_file_access( int type )
         gtk_window_set_title(GTK_WINDOW(faw->dialog), _("Open..."));
         button_label = "gtk-open";
         fileChooserAction = GTK_FILE_CHOOSER_ACTION_OPEN;
+        gconf_section = GCONF_DIR_OPEN_SAVE;
         break;
 
     case FILE_ACCESS_SAVE_AS:
         gtk_window_set_title(GTK_WINDOW(faw->dialog), _("Save As..."));
         button_label = "gtk-save-as";
         fileChooserAction = GTK_FILE_CHOOSER_ACTION_SAVE;
+        gconf_section = GCONF_DIR_OPEN_SAVE;
+        break;
+
+    case FILE_ACCESS_EXPORT:
+        gtk_window_set_title(GTK_WINDOW(faw->dialog), _("Export"));
+        button_label = "gtk-save-as";
+        fileChooserAction = GTK_FILE_CHOOSER_ACTION_SAVE;
+        gconf_section = GCONF_DIR_EXPORT;
         break;
     }
 
@@ -283,6 +312,24 @@ gnc_ui_file_access( int type )
     fileChooser = GTK_FILE_CHOOSER_WIDGET(gtk_file_chooser_widget_new( fileChooserAction ));
     faw->fileChooser = GTK_FILE_CHOOSER(fileChooser);
     gtk_container_add( GTK_CONTAINER(align), GTK_WIDGET(fileChooser) );
+
+    /* Set the default directory */
+    if (type == FILE_ACCESS_OPEN || type == FILE_ACCESS_SAVE_AS)
+    {
+        last = gnc_history_get_last();
+        if ( last && gnc_uri_is_file_uri ( last ) )
+        {
+            gchar *filepath = gnc_uri_get_path ( last );
+            starting_dir = g_path_get_dirname( filepath );
+            g_free ( filepath );
+        }
+    }
+    if (!starting_dir)
+        starting_dir = gnc_get_default_directory(gconf_section);
+    gtk_file_chooser_set_current_folder(faw->fileChooser, starting_dir);
+
+    g_object_connect( G_OBJECT(faw->fileChooser), "signal::file-activated",
+                      gnc_ui_file_access_file_activated_cb, faw, NULL );
 
     uri_type_container = glade_xml_get_widget( xml, "vb_uri_type_container" );
     faw->cb_uri_type = GTK_COMBO_BOX(gtk_combo_box_new_text());
@@ -397,4 +444,11 @@ void
 gnc_ui_file_access_for_save_as( void )
 {
     gnc_ui_file_access( FILE_ACCESS_SAVE_AS );
+}
+
+
+void
+gnc_ui_file_access_for_export( void )
+{
+    gnc_ui_file_access( FILE_ACCESS_EXPORT );
 }

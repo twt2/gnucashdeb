@@ -390,7 +390,7 @@ void qof_book_set_version (QofBook *book, gint32 version)
 }
 
 gint64
-qof_book_get_counter (const QofBook *book, const char *counter_name)
+qof_book_get_counter (QofBook *book, const char *counter_name)
 {
     QofBackend *be;
     KvpFrame *kvp;
@@ -439,9 +439,12 @@ qof_book_get_counter (const QofBook *book, const char *counter_name)
     counter++;
 
     /* Save off the new counter */
+    qof_book_begin_edit(book);
     value = kvp_value_new_gint64 (counter);
     kvp_frame_set_slot_path (kvp, value, "counters", counter_name, NULL);
     kvp_value_delete (value);
+    qof_book_mark_dirty(book);
+    qof_book_commit_edit(book);
 
     /* and return the value */
     return counter;
@@ -454,11 +457,11 @@ qof_book_use_trading_accounts (const QofBook *book)
     const char *opt;
     kvp_value *kvp_val;
 
-
     kvp_val = kvp_frame_get_slot_path (qof_book_get_slots (book),
-                                       BOOK_OPTIONS_NAME,
-                                       ACCOUNT_OPTIONS_SECTION,
-                                       TRADING_ACCOUNTS_OPTION, NULL);
+                                       KVP_OPTION_PATH,
+                                       OPTION_SECTION_ACCOUNTS,
+                                       OPTION_NAME_TRADING_ACCOUNTS,
+                                       NULL);
     if (kvp_val == NULL)
         return FALSE;
 

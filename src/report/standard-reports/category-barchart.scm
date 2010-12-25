@@ -26,11 +26,10 @@
 (define-module (gnucash report standard-reports category-barchart))
 (use-modules (srfi srfi-1))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
-(use-modules (ice-9 slib))
 (use-modules (ice-9 regex))
 (use-modules (gnucash gnc-module))
 
-(require 'printf)
+(use-modules (gnucash printf))
 
 (gnc:module-load "gnucash/report/report-system" 0)
 
@@ -66,8 +65,8 @@ developing over time"))
 (define reportname-liabilities (N_ "Liabilities Over Time"))
 
 ;; Option names
-(define optname-from-date (N_ "From"))
-(define optname-to-date (N_ "To"))
+(define optname-from-date (N_ "Start Date"))
+(define optname-to-date (N_ "End Date"))
 (define optname-stepsize (N_ "Step Size"))
 (define optname-report-currency (N_ "Report's currency"))
 (define optname-price-source (N_ "Price Source"))
@@ -262,7 +261,7 @@ developing over time"))
                (all-data '()))
           
           ;; Converts a commodity-collector into one single double
-          ;; number, depending on the report currency and the
+          ;; number, depending on the report's currency and the
           ;; exchange-fn calculated above. Returns a double.
           (define (collector->double c date)
             ;; Future improvement: Let the user choose which kind of
@@ -561,7 +560,7 @@ developing over time"))
                           all-data)
                      (if (> (gnc:html-table-num-columns table) 2)
                          (list (_ "Grand Total"))
-                         (list nil)
+                         '()
                          )
                      ))
 

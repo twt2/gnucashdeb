@@ -37,6 +37,7 @@
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (gnucash gnc-module))
 
+(gnc:module-load "gnucash/html" 0)   ; added for 'gnc-html-engine-supports-css'
 (gnc:module-load "gnucash/report/report-system" 0)
 
 (define (footer-options)
@@ -177,7 +178,7 @@
     (opt-register 
      (gnc:make-number-range-option 
       (N_ "Tables")
-      (N_ "Table cell padding") "b" (N_ "Space between table cells")
+      (N_ "Table cell padding") "b" (N_ "Space between table cell edge and content")
       1 0 20 0 1))
 
     (opt-register 
@@ -185,6 +186,8 @@
       (N_ "Tables")
       (N_ "Table border width") "c" (N_ "Bevel depth on tables")
       1 0 20 0 1))
+    (register-font-options options)
+
     options))
 
 (define (footer-renderer options doc)
@@ -237,19 +240,143 @@
 ;;;;
 ;;;;
 ;;;;
-    (gnc:html-document-set-style!
-     ssdoc "number-header"
-     'tag "th"
-     'attribute (list "align" "right"))
-;;;;
-;;;;
-;;;;
+    (if (gnc-html-engine-supports-css)
+        (begin ;; this is for webkit
+          (gnc:html-document-set-style!
+             ssdoc "column-heading-left"
+             'tag "th"
+             'attribute (list "class" "column-heading-left"))
 
-    (gnc:html-document-set-style!
-     ssdoc "number-cell"
-     'tag "td"
-     'attribute (list "align" "right")
-     'attribute (list "nowrap"))
+          (gnc:html-document-set-style!
+             ssdoc "column-heading-center"
+             'tag "th"
+             'attribute (list "class" "column-heading-center"))
+
+          (gnc:html-document-set-style!
+             ssdoc "column-heading-right"
+             'tag "th"
+             'attribute (list "class" "column-heading-right"))
+
+          (gnc:html-document-set-style!
+             ssdoc "date-cell"
+             'tag "td"
+             'attribute (list "class" "date-cell"))
+
+          (gnc:html-document-set-style!
+             ssdoc "anchor-cell"
+             'tag "td"
+             'attribute (list "class" "anchor-cell"))
+
+          (gnc:html-document-set-style!
+             ssdoc "number-cell"
+             'tag "td"
+             'attribute (list "class" "number-cell"))
+
+          (gnc:html-document-set-style!
+             ssdoc "number-cell-neg"
+             'tag "td"
+             'attribute (list "class" "number-cell neg"))
+
+          (gnc:html-document-set-style!
+             ssdoc "number-header"
+             'tag "th"
+             'attribute (list "class" "number-header"))
+
+          (gnc:html-document-set-style!
+             ssdoc "text-cell"
+             'tag "td"
+             'attribute (list "class" "text-cell"))
+
+          (gnc:html-document-set-style!
+             ssdoc "total-number-cell"
+             'tag '("td" "b")
+             'attribute (list "class" "total-number-cell"))
+
+          (gnc:html-document-set-style!
+             ssdoc "total-number-cell-neg"
+             'tag '("td" "b")
+             'attribute (list "class" "total-number-cell neg"))
+
+          (gnc:html-document-set-style!
+             ssdoc "total-label-cell"
+             'tag '("td" "b")
+             'attribute (list "class" "total-label-cell"))
+
+          (gnc:html-document-set-style!
+             ssdoc "centered-label-cell"
+             'tag '("td" "b")
+             'attribute (list "class" "centered-label-cell"))
+        )
+        (begin ;; this is for gtkhtml
+          (gnc:html-document-set-style!
+             ssdoc "column-heading-left"
+             'tag "th"
+             'attribute (list "align" "left"))
+
+          (gnc:html-document-set-style!
+             ssdoc "column-heading-center"
+             'tag "th"
+             'attribute (list "align" "center"))
+
+          (gnc:html-document-set-style!
+             ssdoc "column-heading-right"
+             'tag "th"
+             'attribute (list "align" "right"))
+
+          (gnc:html-document-set-style!
+             ssdoc "date-cell"
+             'tag "td"
+             'attribute (list "nowrap" "nowrap"))
+
+          (gnc:html-document-set-style!
+             ssdoc "anchor-cell"
+             'tag "td"
+             'attribute (list "align" "left")
+             'attribute (list "nowrap"))
+
+          (gnc:html-document-set-style!
+             ssdoc "number-cell"
+             'tag "td"
+             'attribute (list "align" "right")
+             'attribute (list "nowrap"))
+
+          (gnc:html-document-set-style!
+             ssdoc "number-cell-neg"
+             'tag "td"
+             'attribute (list "align" "right")
+             'attribute (list "nowrap"))
+
+          (gnc:html-document-set-style!
+             ssdoc "number-header"
+             'tag "th"
+             'attribute (list "align" "right"))
+
+          (gnc:html-document-set-style!
+             ssdoc "text-cell"
+             'tag "td"
+             'attribute (list "align" "left"))
+
+          (gnc:html-document-set-style!
+             ssdoc "total-number-cell"
+             'tag '("td" "b")
+             'attribute (list "align" "right"))
+
+          (gnc:html-document-set-style!
+             ssdoc "total-number-cell-neg"
+             'tag '("td" "b")
+             'attribute (list "align" "right"))
+
+          (gnc:html-document-set-style!
+             ssdoc "total-label-cell"
+             'tag '("td" "b")
+             'attribute (list "align" "left"))
+
+          (gnc:html-document-set-style!
+             ssdoc "centered-label-cell"
+             'tag '("td" "b")
+             'attribute (list "align" "center"))
+        )
+    )
 
     (if (and bgpixmap
 	     (not (string=? bgpixmap "")))
@@ -284,31 +411,12 @@
      'attribute (list "bgcolor" grand-total-color)
      'tag "tr")   
 
-    (gnc:html-document-set-style!
-     ssdoc "text-cell"
-     'tag "td"
-     'attribute (list "align" "left"))
-
-    (gnc:html-document-set-style!
-     ssdoc "total-number-cell"
-     'tag '("td" "b")
-     'attribute (list "align" "right"))
-
-    (gnc:html-document-set-style!
-     ssdoc "total-label-cell"
-     'tag '("td" "b")
-     'attribute (list "align" "left"))
-
-    (gnc:html-document-set-style!
-     ssdoc "centered-label-cell"
-     'tag '("td" "b")
-     'attribute (list "align" "center"))
-
     ;; don't surround marked-up links with <a> </a>
     (if (not links?)
-	(gnc:html-document-set-style!
-	 ssdoc "a" 'tag ""))
+	  (gnc:html-document-set-style! ssdoc "a" 'tag ""))
     
+    (add-css-information-to-doc options ssdoc)
+
     (let ((t (gnc:make-html-table)))
       ;; we don't want a bevel for this table, but we don't want 
       ;; that to propagate 
@@ -355,7 +463,7 @@
           (gnc:html-table-set-cell!
             t 0 0
             (gnc:make-html-text
-	      (gnc:html-markup-img logopixmap)))))
+	      (gnc:html-markup-img (make-file-url logopixmap))))))
       
       (if (and headpixmap (> (string-length headpixmap) 0))
         (begin
@@ -364,7 +472,7 @@
             (gnc:make-html-text 
                (string-append 
                  "<div align=\"" align "\">"
-                 "<img src=\"" headpixmap "\">"
+                 "<img src=\"" (make-file-url headpixmap) "\">"
                  "</div>")))
         )
         (gnc:html-table-set-cell!
@@ -380,8 +488,8 @@
 	; I think this is the correct place to put the footer
        (gnc:html-table-set-cell!
        t 3 headcolumn
-       (gnc:make-html-text footer-text))
-    ssdoc)))
+       (gnc:make-html-text footer-text)))
+    ssdoc))
 
 (gnc:define-html-style-sheet 
  'version 1

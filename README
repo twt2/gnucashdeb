@@ -127,7 +127,7 @@ Features include:
     to conform more with the new GNOME Human Interface Guidelines.
 
 Home Page:
-http://gnucash.org/
+http://www.gnucash.org/
 
 Precompiled binaries:
 http://www.gnucash.org/pub/gnucash/
@@ -199,10 +199,10 @@ You can also run gnucash --help for the command line options.
 
 You can start GnuCash at the command-line, with "gnucash" or "gnucash
 <filename>", where <filename> is a GnuCash account file.  Sample
-accounts can be found in "data" subdirectory.  *.xac files are GnuCash
-accounts that can opened with the "Open File" menu entry.  *.qif files
-are Quicken Import Format files that can be opened with the "Import
-QIF" menu entry.
+accounts can be found in the "doc/examples" subdirectory.  *.gnucash
+files are GnuCash accounts that can opened with the "Open File" menu entry.
+*.qif files are Quicken Import Format files that can be opened with the
+"Import QIF" menu entry.
 
 GnuCash responds to the following environment variables:
 
@@ -224,13 +224,13 @@ GnuCash responds to the following environment variables:
 ####################
 Internationalization
 --------------------
-Message catalogues exist for many different languages. These are
+Message catalogs exist for many different languages. These are
 enabled with environment variables. For example, 
 
-Francais, en bash:
+Francais, in bash:
     export LANG=fr_FR
 
-Francais, en tcsh:
+Francais, in tcsh:
     setenv LANG fr_FR
 
 German version:
@@ -444,9 +444,10 @@ Submitting a Patch:
 
       svn diff > /tmp/mypatch
 
-  and send /tmp/mypatch to gnucash-devel@gnucash.org with `[PATCH]'
-  prefixed to the Subject: of the email.  Note that this
-  ONLY WORKS if you have NOT added any new files to the source tree.
+  and attach it to the appropriate bug or enhancement request in
+  Bugzilla (https://bugzilla.gnome.org). Create a new bug if you don't
+  find one that's applicable. Please don't submit patches to either of
+  the mailing lists, as they tend to be forgotten.
 
   If your patch adds new files, use the `-N' flag to diff between a
   clean directory and your development directory.  E.g.

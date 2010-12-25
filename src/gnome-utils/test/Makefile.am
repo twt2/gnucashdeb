@@ -8,12 +8,11 @@ TESTS_GUI = test-gnc-recurrence test-gnc-dialog
 
 ##lib_LTLIBRARIES = libgncgnome.la
 
-GNC_TEST_DEPS = @GNC_TEST_SRFI_LOAD_CMD@ \
-  --gnc-module-dir ${top_builddir}/src/engine \
+GNC_TEST_DEPS = --gnc-module-dir ${top_builddir}/src/engine \
   --gnc-module-dir ${top_builddir}/src/gnome-utils \
   --guile-load-dir ${top_builddir}/src/gnc-module \
   --guile-load-dir ${top_builddir}/src/engine \
-  --library-dir    ${top_builddir}/lib/libqof/qof \
+  --library-dir    ${top_builddir}/src/libqof/qof \
   --library-dir    ${top_builddir}/src/core-utils \
   --library-dir    ${top_builddir}/src/gnc-module \
   --library-dir    ${top_builddir}/src/engine \

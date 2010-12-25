@@ -175,6 +175,7 @@ const char *trans_notes_str = "notes";
 const char *void_reason_str = "void-reason";
 const char *void_time_str = "void-time";
 const char *void_former_notes_str = "void-former-notes";
+const char *trans_is_closing_str = "book_closing";
 
 /* KVP entry for date-due value */
 #define TRANS_DATE_DUE_KVP       "trans-date-due"
@@ -677,6 +678,8 @@ xaccTransEqual(const Transaction *ta, const Transaction *tb,
                gboolean check_balances,
                gboolean assume_ordered)
 {
+    gboolean same_book;
+
     if (!ta && !tb) return TRUE; /* Arguable.  FALSE may be better. */
 
     if (!ta || !tb)
@@ -686,6 +689,8 @@ xaccTransEqual(const Transaction *ta, const Transaction *tb,
     }
 
     if (ta == tb) return TRUE;
+
+    same_book = qof_instance_get_book(QOF_INSTANCE(ta)) == qof_instance_get_book(QOF_INSTANCE(tb));
 
     if (check_guids)
     {
@@ -706,26 +711,37 @@ xaccTransEqual(const Transaction *ta, const Transaction *tb,
 
     if (timespec_cmp(&(ta->date_entered), &(tb->date_entered)))
     {
-        PWARN ("date entered differs");
+        char buf1[100];
+        char buf2[100];
+
+        (void)gnc_timespec_to_iso8601_buff(ta->date_entered, buf1);
+        (void)gnc_timespec_to_iso8601_buff(tb->date_entered, buf2);
+        PWARN ("date entered differs: '%s' vs '%s'", buf1, buf2);
         return FALSE;
     }
 
     if (timespec_cmp(&(ta->date_posted), &(tb->date_posted)))
     {
-        PWARN ("date posted differs");
+        char buf1[100];
+        char buf2[100];
+
+        (void)gnc_timespec_to_iso8601_buff(ta->date_posted, buf1);
+        (void)gnc_timespec_to_iso8601_buff(tb->date_posted, buf2);
+        PWARN ("date posted differs: '%s' vs '%s'", buf1, buf2);
         return FALSE;
     }
 
-    /* Since we use cached strings, we can just compare pointer
+    /* If the same book, since we use cached strings, we can just compare pointer
      * equality for num and description
      */
-    if (ta->num != tb->num)
+    if ((same_book && ta->num != tb->num) || (!same_book && safe_strcmp(ta->num, tb->num) != 0))
     {
         PWARN ("num differs: %s vs %s", ta->num, tb->num);
         return FALSE;
     }
 
-    if (ta->description != tb->description)
+    if ((same_book && ta->description != tb->description)
+            || (!same_book && safe_strcmp(ta->description, tb->description)))
     {
         PWARN ("descriptions differ: %s vs %s", ta->description, tb->description);
         return FALSE;
@@ -821,7 +837,7 @@ gboolean xaccTransUseTradingAccounts(const Transaction *trans)
 \********************************************************************/
 
 Transaction *
-xaccTransLookup (const GUID *guid, QofBook *book)
+xaccTransLookup (const GncGUID *guid, QofBook *book)
 {
     QofCollection *col;
     if (!guid || !book) return NULL;
@@ -960,7 +976,7 @@ xaccTransGetAccountAmount (const Transaction *trans, const Account *acc)
     if (!trans || !acc) return total;
 
     total = gnc_numeric_convert (total, xaccAccountGetCommoditySCU (acc),
-                                 GNC_RND_ROUND);
+                                 GNC_HOW_RND_ROUND_HALF_UP);
     FOR_EACH_SPLIT(trans, if (acc == xaccSplitGetAccount(s))
                    total = gnc_numeric_add_fixed(
                                total, xaccSplitGetAmount(s)));
@@ -1010,7 +1026,7 @@ xaccTransGetAccountConvRate(const Transaction *txn, const Account *acc)
         if (gnc_numeric_zero_p (value))
             PWARN("How can amount be nonzero and value be zero?");
 
-        convrate = gnc_numeric_div(amount, value, GNC_DENOM_AUTO, GNC_DENOM_REDUCE);
+        convrate = gnc_numeric_div(amount, value, GNC_DENOM_AUTO, GNC_HOW_DENOM_REDUCE);
         return convrate;
     }
 
@@ -1185,7 +1201,7 @@ do_destroy (Transaction *trans)
 /********************************************************************\
 \********************************************************************/
 
-/* Temporary hack for data consitency */
+/* Temporary hack for data consistency */
 static int scrub_data = 1;
 void xaccEnableDataScrubbing(void)
 {
@@ -1298,13 +1314,13 @@ xaccTransCommitEdit (Transaction *trans)
     if (was_trans_emptied(trans))
         qof_instance_set_destroying(trans, TRUE);
 
-    /* Before commiting the transaction, we're gonna enforce certain
+    /* Before committing the transaction, we are going to enforce certain
      * constraints.  In particular, we want to enforce the cap-gains
      * and the balanced lot constraints.  These constraints might
      * change the number of splits in this transaction, and the
      * transaction itself might be deleted.  This is also why
      * we can't really enforce these constraints elsewhere: they
-     * can cause pointers to splits and transactions to disapear out
+     * can cause pointers to splits and transactions to disappear out
      * from under the holder.
      */
     if (!qof_instance_get_destroying(trans) && scrub_data &&
@@ -1313,7 +1329,7 @@ xaccTransCommitEdit (Transaction *trans)
         /* If scrubbing gains recurses through here, don't call it again. */
         scrub_data = 0;
         /* The total value of the transaction should sum to zero.
-         * Call the trans scrub routine to fix it.   Indirectly, this
+         * Call the trans scrub routine to fix it. Indirectly, this
          * routine also performs a number of other transaction fixes too.
          */
         xaccTransScrubImbalance (trans, NULL, NULL);
@@ -1338,7 +1354,7 @@ xaccTransCommitEdit (Transaction *trans)
         tv.tv_usec = 0;
 #endif
         trans->date_entered.tv_sec = tv.tv_sec;
-        trans->date_entered.tv_nsec = 1000 * tv.tv_usec;
+//        trans->date_entered.tv_nsec = 1000 * tv.tv_usec;
         qof_instance_set_dirty(QOF_INSTANCE(trans));
     }
 
@@ -1585,6 +1601,28 @@ xaccTransSetDatePostedSecs (Transaction *trans, time_t secs)
 }
 
 void
+xaccTransSetDatePostedGDate (Transaction *trans, GDate date)
+{
+    KvpValue* kvp_value;
+    KvpFrame* frame;
+    if (!trans) return;
+
+    /* We additionally save this date into a kvp frame to ensure in
+     * the future a date which was set as *date* (without time) can
+     * clearly be distinguished from the Timespec. */
+    kvp_value = kvp_value_new_gdate(date);
+    frame = kvp_frame_set_value_nc(trans->inst.kvp_data, TRANS_DATE_POSTED, kvp_value);
+    if (!frame)
+    {
+        kvp_value_delete(kvp_value);
+    }
+
+    xaccTransSetDateInternal(trans, &trans->date_posted,
+                             gdate_to_timespec(date));
+    set_gains_date_dirty (trans);
+}
+
+void
 xaccTransSetDateEnteredSecs (Transaction *trans, time_t secs)
 {
     Timespec ts = {secs, 0};
@@ -1631,11 +1669,12 @@ xaccTransSetDateEnteredTS (Transaction *trans, const Timespec *ts)
 void
 xaccTransSetDate (Transaction *trans, int day, int mon, int year)
 {
-    Timespec ts;
+    GDate *date;
     if (!trans) return;
-    ts = gnc_dmy2timespec(day, mon, year);
-    xaccTransSetDateInternal(trans, &trans->date_posted, ts);
-    set_gains_date_dirty (trans);
+    date = g_date_new_dmy(day, mon, year);
+    g_assert(g_date_valid(date));
+    xaccTransSetDatePostedGDate(trans, *date);
+    g_date_free(date);
 }
 
 void
@@ -1747,6 +1786,21 @@ xaccTransSetNotes (Transaction *trans, const char *notes)
     xaccTransCommitEdit(trans);
 }
 
+void
+xaccTransSetIsClosingTxn (Transaction *trans, gboolean is_closing)
+{
+    if (!trans) return;
+    xaccTransBeginEdit(trans);
+
+    if (is_closing)
+      kvp_frame_set_gint64 (trans->inst.kvp_data, trans_is_closing_str, 1);
+    else
+      kvp_frame_replace_value_nc (trans->inst.kvp_data, trans_is_closing_str, NULL);
+    qof_instance_set_dirty(QOF_INSTANCE(trans));
+    xaccTransCommitEdit(trans);
+}
+
+
 /********************************************************************\
 \********************************************************************/
 
@@ -1803,6 +1857,14 @@ xaccTransGetNotes (const Transaction *trans)
            kvp_frame_get_string (trans->inst.kvp_data, trans_notes_str) : NULL;
 }
 
+gboolean
+xaccTransGetIsClosingTxn (const Transaction *trans)
+{
+    return trans ?
+        kvp_frame_get_gint64 (trans->inst.kvp_data, trans_is_closing_str)
+        : FALSE;
+}
+
 /********************************************************************\
 \********************************************************************/
 
@@ -1831,6 +1893,29 @@ xaccTransRetDatePostedTS (const Transaction *trans)
 {
     Timespec ts = {0, 0};
     return trans ? trans->date_posted : ts;
+}
+
+GDate
+xaccTransGetDatePostedGDate (const Transaction *trans)
+{
+    GDate result;
+    if (trans)
+    {
+        /* Can we look up this value in the kvp slot? If yes, use it
+         * from there because it doesn't suffer from time zone
+         * shifts. */
+        const KvpValue* kvp_value =
+            kvp_frame_get_slot(trans->inst.kvp_data, TRANS_DATE_POSTED);
+        if (kvp_value)
+            result = kvp_value_get_gdate(kvp_value);
+        else
+            result = timespec_to_gdate(xaccTransRetDatePostedTS(trans));
+    }
+    else
+    {
+        g_date_clear(&result, 1);
+    }
+    return result;
 }
 
 Timespec
@@ -2088,7 +2173,7 @@ xaccTransReverse (Transaction *orig)
 Transaction *
 xaccTransGetReversedBy(const Transaction *trans)
 {
-    GUID *guid;
+    GncGUID *guid;
 
     g_return_val_if_fail(trans, NULL);
     guid = kvp_frame_get_guid(trans->inst.kvp_data, TRANS_REVERSED_BY);
@@ -2278,6 +2363,10 @@ gboolean xaccTransRegister (void)
             TRANS_NOTES, QOF_TYPE_STRING,
             (QofAccessFunc)xaccTransGetNotes,
             (QofSetterFunc)qofTransSetNotes
+        },
+        {
+            TRANS_IS_CLOSING, QOF_TYPE_BOOLEAN,
+            (QofAccessFunc)xaccTransGetIsClosingTxn, NULL
         },
         {
             TRANS_IS_BALANCED, QOF_TYPE_BOOLEAN,

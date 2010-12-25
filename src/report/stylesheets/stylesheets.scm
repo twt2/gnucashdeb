@@ -1,6 +1,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  stylesheets.scm
-;;  load the standard report definitions
+;;  load the standard stylesheet definitions
 ;;
 ;;  Copyright (c) 2001 Linux Developers Group, Inc. 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -9,7 +9,6 @@
 
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (gnucash report stylesheet-plain))
-(use-modules (gnucash report stylesheet-css))
 (use-modules (gnucash report stylesheet-fancy))
 (use-modules (gnucash report stylesheet-footer))
 (use-modules (gnucash report stylesheet-easy))

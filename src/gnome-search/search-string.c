@@ -6,8 +6,9 @@
  * Copyright (c) 2006 David Hampton <hampton@employees.org>
  *
  * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,7 +33,7 @@
 
 #include "search-string.h"
 #include "search-core-utils.h"
-#include "QueryCore.h"
+#include "qof.h"
 
 #define d(x)
 
@@ -41,7 +42,7 @@ static void grab_focus (GNCSearchCoreType *fe);
 static GNCSearchCoreType *gncs_clone(GNCSearchCoreType *fe);
 static gboolean gncs_validate (GNCSearchCoreType *fe);
 static GtkWidget *gncs_get_widget(GNCSearchCoreType *fe);
-static QueryPredData_t gncs_get_predicate (GNCSearchCoreType *fe);
+static QofQueryPredData* gncs_get_predicate (GNCSearchCoreType *fe);
 
 static void gnc_search_string_class_init	(GNCSearchStringClass *class);
 static void gnc_search_string_init	(GNCSearchString *gspaper);
@@ -334,11 +335,11 @@ gncs_get_widget (GNCSearchCoreType *fe)
     return box;
 }
 
-static QueryPredData_t gncs_get_predicate (GNCSearchCoreType *fe)
+static QofQueryPredData* gncs_get_predicate (GNCSearchCoreType *fe)
 {
     GNCSearchString *ss = (GNCSearchString *)fe;
-    query_compare_t how;
-    string_match_t options = STRING_MATCH_NORMAL;
+    QofQueryCompare how;
+    QofStringMatch options = QOF_STRING_MATCH_NORMAL;
     gboolean is_regex = FALSE;
 
     g_return_val_if_fail (ss, NULL);
@@ -350,13 +351,13 @@ static QueryPredData_t gncs_get_predicate (GNCSearchCoreType *fe)
         is_regex = TRUE;
         /* FALLTHROUGH */
     case SEARCH_STRING_CONTAINS:
-        how = COMPARE_EQUAL;
+        how = QOF_COMPARE_EQUAL;
         break;
     case SEARCH_STRING_NOT_MATCHES_REGEX:
         is_regex = TRUE;
         /* FALLTHROUGH */
     case SEARCH_STRING_NOT_CONTAINS:
-        how = COMPARE_NEQ;
+        how = QOF_COMPARE_NEQ;
         break;
     default:
         g_warning ("invalid string choice: %d", ss->how);
@@ -364,9 +365,9 @@ static QueryPredData_t gncs_get_predicate (GNCSearchCoreType *fe)
     }
 
     if (ss->ign_case)
-        options = STRING_MATCH_CASEINSENSITIVE;
+        options = QOF_STRING_MATCH_CASEINSENSITIVE;
 
-    return gncQueryStringPredicate (how, ss->value, options, is_regex);
+    return qof_query_string_predicate (how, ss->value, options, is_regex);
 }
 
 static GNCSearchCoreType *gncs_clone(GNCSearchCoreType *fe)

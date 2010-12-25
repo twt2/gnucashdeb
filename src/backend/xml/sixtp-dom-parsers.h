@@ -32,7 +32,7 @@
 #include "qof.h"
 #include "gnc-budget.h"
 
-GUID* dom_tree_to_guid(xmlNodePtr node);
+GncGUID* dom_tree_to_guid(xmlNodePtr node);
 
 gnc_commodity* dom_tree_to_commodity_ref(xmlNodePtr node, QofBook *book);
 gnc_commodity *dom_tree_to_commodity_ref_no_engine(xmlNodePtr node, QofBook *);
@@ -60,6 +60,7 @@ kvp_value* dom_tree_to_timespec_kvp_value(xmlNodePtr node);
 kvp_value* dom_tree_to_binary_kvp_value(xmlNodePtr node);
 kvp_value* dom_tree_to_list_kvp_value(xmlNodePtr node);
 kvp_value* dom_tree_to_frame_kvp_value(xmlNodePtr node);
+kvp_value* dom_tree_to_gdate_kvp_value (xmlNodePtr node);
 
 gboolean dom_tree_to_integer(xmlNodePtr node, gint64 *daint);
 gboolean dom_tree_to_guint16(xmlNodePtr node, guint16 *i);

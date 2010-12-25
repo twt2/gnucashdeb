@@ -183,7 +183,7 @@ TESTS = \
 GNC_TEST_DEPS = \
   --gnc-module-dir ${top_builddir}/src/engine \
   --guile-load-dir ${top_builddir}/src/engine \
-  --library-dir    ${top_builddir}/lib/libqof/qof \
+  --library-dir    ${top_builddir}/src/libqof/qof \
   --library-dir    ${top_builddir}/src/core-utils \
   --library-dir    ${top_builddir}/src/gnc-module \
   --library-dir    ${top_builddir}/src/engine \
@@ -237,7 +237,6 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/engine \
   -I${top_srcdir}/src/engine/test-core \
   -I${top_srcdir}/src/backend/xml \
-  -I${top_srcdir}/src/backend/qsf \
   -I${top_srcdir}/src/libqof/qof \
   ${LIBXML2_CFLAGS} \
   ${GLIB_CFLAGS} \

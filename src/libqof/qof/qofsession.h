@@ -120,10 +120,9 @@ void qof_session_swap_data (QofSession *session_1, QofSession *session_2);
 /** The qof_session_begin () method begins a new session.
  *    It takes as an argument the book id. The book id must be a string
  *    in the form of a URI/URL. The access method specified depends
- *    on the loaded backends. In the absence of a customised backend,
- *    only QSF XML would be accepted). Paths may be relative or absolute.
- *    If the path is relative; that is, if the argument is "file:somefile.xml"
- *    then the current working directory is assumed. Customised backends can
+ *    on the loaded backends. Paths may be relative or absolute.
+ *    If the path is relative; that is, if the argument is "file://somefile.xml"
+ *    then the current working directory is assumed. Customized backends can
  *    choose to search other, application-specific, directories as well.
  *
  *    The 'ignore_lock' argument, if set to TRUE, will cause this routine
@@ -132,20 +131,25 @@ void qof_session_swap_data (QofSession *session_1, QofSession *session_2);
  *    obeyed.
  *
  *    If the datastore exists, can be reached (e.g over the net),
- *    connected to, opened and read, and a lock can be obtained then
- *    a lock will be obtained.   Note that multi-user datastores
- *    (e.g. the SQL backend) typically will not need to get a global
- *    lock, and thus, the user will not be locked out.  That's the
- *    whole point of 'multi-user'.
+ *    connected to, opened and read, and a lock can be obtained then a
+ *    lock will be obtained.  Note that while multi-user datastores
+ *    (e.g. the SQL backend) typically will have record-level locking
+ *    and therefor should not need to get a global lock, qof works by
+ *    having a local copy of the whole database and can't be trusted
+ *    to handle multiple users writing data, so we lock the database
+ *    anyway.
  *
- *    If the file/database doesn't exist, and the create_if_nonexistent
- *    flag is set to TRUE, then the database is created.
+ *    If qof_session_begin is called with create == TRUE, then it will
+ *    check for the existence of the file or database and return after
+ *    posting a QOF_BACKEND_STORE_EXISTS error if it exists, unless
+ *    force is also set to true.
  *
  *    If an error occurs, it will be pushed onto the session error
  *    stack, and that is where it should be examined.
  */
 void qof_session_begin (QofSession *session, const char * book_id,
-                        gboolean ignore_lock, gboolean create_if_nonexistent);
+                        gboolean ignore_lock, gboolean create,
+                        gboolean force);
 
 
 /**
@@ -222,9 +226,6 @@ const char * qof_session_get_url (const QofSession *session);
 /* gboolean qof_session_not_saved(const QofSession *session); <- unimplemented */
 gboolean qof_session_save_in_progress(const QofSession *session);
 
-/** Allows the backend to warn the user if a dataset already exists. */
-gboolean qof_session_save_may_clobber_data (const QofSession *session);
-
 /** The qof_session_save() method will commit all changes that have been
  *    made to the session. For the file backend, this is nothing
  *    more than a write to the file of the current Accounts & etc.
@@ -262,13 +263,13 @@ using the GnuCash XML v2 file backend will be switched to QSF.
 
 Copied entities are identical to the source entity, all parameters
 defined with ::QofAccessFunc and ::QofSetterFunc in QOF are copied
-and the ::GUID of the original ::QofInstance is set in the new entity.
+and the ::GncGUID of the original ::QofInstance is set in the new entity.
 Sessions containing copied entities are intended for use
 as mechanisms for data export.
 
 It is acceptable to add entities to new_session in batches. Note that
 any of these calls will fail if an entity already exists in new_session
-with the same GUID as any entity to be copied.
+with the same GncGUID as any entity to be copied.
 
 To merge a whole QofBook or where there is any possibility
 of collisions or requirement for user intervention,
@@ -281,13 +282,13 @@ see \ref BookMerge
 /** \brief Copy a single QofInstance to another session
 
 Checks first that no entity in the session book contains
-the GUID of the source entity.
+the GncGUID of the source entity.
 
  @param new_session - the target session
  @param original - the QofInstance* to copy
 
 @return FALSE without copying if the session contains an entity
-with the same GUID already, otherwise TRUE.
+with the same GncGUID already, otherwise TRUE.
 */
 
 gboolean qof_instance_copy_to_session(QofSession* new_session, QofInstance* original);
@@ -295,19 +296,19 @@ gboolean qof_instance_copy_to_session(QofSession* new_session, QofInstance* orig
 /** @brief Copy a GList of entities to another session
 
 The QofBook in the new_session must \b not contain any entities
-with the same GUID as any of the source entities - there is
+with the same GncGUID as any of the source entities - there is
 no support for handling collisions, instead use \ref BookMerge
 
 Note that the GList (e.g. from ::qof_sql_query_run) can contain
 QofInstance pointers of any ::QofIdType, in any sequence. As long
-as all members of the list are ::QofInstance*, and all GUID's are
+as all members of the list are ::QofInstance*, and all GncGUID's are
 unique, the list can be copied.
 
  @param new_session - the target session
  @param entity_list - a GList of QofInstance pointers of any type(s).
 
 @return FALSE, without copying, if new_session contains any entities
-with the same GUID. Otherwise TRUE.
+with the same GncGUID. Otherwise TRUE.
 
 */
 gboolean qof_instance_copy_list(QofSession *new_session, GList *entity_list);
@@ -315,14 +316,14 @@ gboolean qof_instance_copy_list(QofSession *new_session, GList *entity_list);
 /** @brief Copy a QofCollection of entities.
 
 The QofBook in the new_session must \b not contain any entities
-with the same GUID as any entities in the collection - there is
+with the same GncGUID as any entities in the collection - there is
 no support for handling collisions - instead, use \ref BookMerge
 
 @param new_session - the target session
 @param entity_coll - a QofCollection of any QofIdType.
 
 @return FALSE, without copying, if new_session contains any entities
-with the same GUID. Otherwise TRUE.
+with the same GncGUID. Otherwise TRUE.
 */
 
 gboolean qof_instance_copy_coll(QofSession *new_session, QofCollection *entity_coll);
@@ -333,7 +334,7 @@ gboolean qof_instance_copy_coll(QofSession *new_session, QofCollection *entity_c
 ::qof_instance_copy_to_session for more information.
 
 The QofBook in the new_session must \b not contain any entities
-with the same GUID as any entities to be copied - there is
+with the same GncGUID as any entities to be copied - there is
 no support for handling collisions - instead, use \ref BookMerge
 
 Objects can be defined solely in terms of QOF data types or

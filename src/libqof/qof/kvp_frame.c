@@ -57,11 +57,12 @@ struct _KvpValue
         double dbl;
         gnc_numeric numeric;
         gchar *str;
-        GUID *guid;
+        GncGUID *guid;
         Timespec timespec;
         KvpValueBinaryData binary;
         GList *list;
         KvpFrame *frame;
+        GDate gdate;
     } value;
 };
 
@@ -417,6 +418,15 @@ kvp_frame_set_numeric(KvpFrame * frame, const char * path, gnc_numeric nval)
 }
 
 void
+kvp_frame_set_gdate(KvpFrame * frame, const char * path, GDate nval)
+{
+    KvpValue *value;
+    value = kvp_value_new_gdate (nval);
+    frame = kvp_frame_set_value_nc (frame, path, value);
+    if (!frame) kvp_value_delete (value);
+}
+
+void
 kvp_frame_set_string(KvpFrame * frame, const char * path, const char* str)
 {
     KvpValue *value;
@@ -426,7 +436,7 @@ kvp_frame_set_string(KvpFrame * frame, const char * path, const char* str)
 }
 
 void
-kvp_frame_set_guid(KvpFrame * frame, const char * path, const GUID *guid)
+kvp_frame_set_guid(KvpFrame * frame, const char * path, const GncGUID *guid)
 {
     KvpValue *value;
     value = kvp_value_new_guid (guid);
@@ -595,6 +605,16 @@ kvp_frame_add_numeric(KvpFrame * frame, const char * path, gnc_numeric nval)
 }
 
 void
+kvp_frame_add_gdate(KvpFrame * frame, const char * path, GDate nval)
+{
+    KvpValue *value;
+    value = kvp_value_new_gdate (nval);
+    frame = kvp_frame_add_value_nc (frame, path, value);
+    if (!frame) kvp_value_delete (value);
+}
+
+
+void
 kvp_frame_add_string(KvpFrame * frame, const char * path, const char* str)
 {
     KvpValue *value;
@@ -604,7 +624,7 @@ kvp_frame_add_string(KvpFrame * frame, const char * path, const char* str)
 }
 
 void
-kvp_frame_add_guid(KvpFrame * frame, const char * path, const GUID *guid)
+kvp_frame_add_guid(KvpFrame * frame, const char * path, const GncGUID *guid)
 {
     KvpValue *value;
     value = kvp_value_new_guid (guid);
@@ -894,7 +914,7 @@ kvp_frame_get_string(const KvpFrame *frame, const char *path)
     return kvp_value_get_string(kvp_frame_get_slot (frame, key));
 }
 
-GUID *
+GncGUID *
 kvp_frame_get_guid(const KvpFrame *frame, const char *path)
 {
     char *key = NULL;
@@ -1163,15 +1183,15 @@ kvp_value_new_string(const char * value)
 }
 
 KvpValue *
-kvp_value_new_guid(const GUID * value)
+kvp_value_new_guid(const GncGUID * value)
 {
     KvpValue * retval;
     if (!value) return NULL;
 
     retval = g_new0(KvpValue, 1);
     retval->type       = KVP_TYPE_GUID;
-    retval->value.guid = g_new0(GUID, 1);
-    memcpy(retval->value.guid, value, sizeof(GUID));
+    retval->value.guid = g_new0(GncGUID, 1);
+    memcpy(retval->value.guid, value, sizeof(GncGUID));
     return retval;
 }
 
@@ -1181,6 +1201,15 @@ kvp_value_new_timespec(Timespec value)
     KvpValue * retval = g_new0(KvpValue, 1);
     retval->type       = KVP_TYPE_TIMESPEC;
     retval->value.timespec = value;
+    return retval;
+}
+
+KvpValue *
+kvp_value_new_gdate(GDate value)
+{
+    KvpValue * retval = g_new0(KvpValue, 1);
+    retval->type       = KVP_TYPE_GDATE;
+    retval->value.gdate = value;
     return retval;
 }
 
@@ -1285,7 +1314,8 @@ kvp_value_delete(KvpValue * value)
     case KVP_TYPE_GINT64:
     case KVP_TYPE_DOUBLE:
     case KVP_TYPE_NUMERIC:
-    default:
+    case KVP_TYPE_TIMESPEC:
+    case KVP_TYPE_GDATE:
         break;
     }
     g_free(value);
@@ -1354,7 +1384,7 @@ kvp_value_get_string(const KvpValue * value)
     }
 }
 
-GUID *
+GncGUID *
 kvp_value_get_guid(const KvpValue * value)
 {
     if (!value) return NULL;
@@ -1379,6 +1409,18 @@ kvp_value_get_timespec(const KvpValue * value)
         return value->value.timespec;
     else
         return ts;
+}
+
+GDate
+kvp_value_get_gdate(const KvpValue * value)
+{
+    GDate date;
+    g_date_clear(&date, 1);
+    if (!value) return date;
+    if (value->type == KVP_TYPE_GDATE)
+        return value->value.gdate;
+    else
+        return date;
 }
 
 void *
@@ -1481,6 +1523,9 @@ kvp_value_copy(const KvpValue * value)
     case KVP_TYPE_GUID:
         return kvp_value_new_guid(value->value.guid);
         break;
+    case KVP_TYPE_GDATE:
+        return kvp_value_new_gdate(value->value.gdate);
+        break;
     case KVP_TYPE_TIMESPEC:
         return kvp_value_new_timespec(value->value.timespec);
         break;
@@ -1556,6 +1601,9 @@ kvp_value_compare(const KvpValue * kva, const KvpValue * kvb)
         break;
     case KVP_TYPE_TIMESPEC:
         return timespec_cmp(&(kva->value.timespec), &(kvb->value.timespec));
+        break;
+    case KVP_TYPE_GDATE:
+        return g_date_compare(&(kva->value.gdate), &(kvb->value.gdate));
         break;
     case KVP_TYPE_BINARY:
         /* I don't know that this is a good compare. Ab is bigger than Acef.
@@ -1757,12 +1805,15 @@ kvp_value_to_bare_string(const KvpValue *val)
             g_hash_table_foreach(frame->hash, kvp_frame_to_bare_string_helper, &tmp1);
         }
         return tmp1;
-        break;
     }
-    default:
-        return g_strdup_printf(" ");
-        break;
+    case KVP_TYPE_GDATE:
+        return g_strdup_printf("%04d-%02d-%02d",
+                               g_date_get_year(&val->value.gdate),
+                               g_date_get_month(&val->value.gdate),
+                               g_date_get_day(&val->value.gdate));
     }
+    g_assert(FALSE); /* must not be reached */
+    return g_strdup("");
 }
 
 gchar*
@@ -1837,10 +1888,14 @@ kvp_value_to_string(const KvpValue *val)
         return tmp2;
         break;
 
-    default:
-        return g_strdup_printf(" ");
-        break;
+    case KVP_TYPE_GDATE:
+        return g_strdup_printf("KVP_VALUE_GDATE(%04d-%02d-%02d)",
+                               g_date_get_year(&val->value.gdate),
+                               g_date_get_month(&val->value.gdate),
+                               g_date_get_day(&val->value.gdate));
     }
+    g_assert(FALSE); /* must not be reached */
+    return g_strdup("");
 }
 
 static void

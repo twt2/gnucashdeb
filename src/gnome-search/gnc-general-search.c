@@ -8,9 +8,9 @@
  * Derek Atkins <warlord@MIT.EDU>
  *
  * Gnucash is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public License
- * as published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
  *
  * Gnucash is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,9 +37,7 @@
 #include <stdio.h>
 
 #include "gnc-component-manager.h"
-#include "QueryCore.h"
-#include "QueryObject.h"
-#include "gncObject.h"
+#include "qof.h"
 #include "gnc-general-search.h"
 
 #define GNCGENERALSEARCH_CLASS	"gnc-general-search-widget"
@@ -67,8 +65,8 @@ typedef struct _GNCGeneralSearchPrivate GNCGeneralSearchPrivate;
 
 struct _GNCGeneralSearchPrivate
 {
-    GUID			guid;
-    GNCIdTypeConst		type;
+    GncGUID			guid;
+    QofIdTypeConst		type;
     GNCSearchCB		search_cb;
     gpointer		user_data;
     GNCSearchWindow *	sw;
@@ -191,7 +189,7 @@ reset_selection_text (GNCGeneralSearch *gsl)
     if (gsl->selected_item == NULL)
         text = "";
     else
-        text = gncObjectPrintable (priv->type, gsl->selected_item);
+        text = qof_object_printable (priv->type, gsl->selected_item);
 
     gtk_entry_set_text(GTK_ENTRY(gsl->entry), text);
 }
@@ -380,11 +378,11 @@ static void
 create_children (GNCGeneralSearch *gsl,
                  const char       *label,
                  gboolean          text_editable,
-                 GNCIdTypeConst    type,
+                 QofIdTypeConst    type,
                  QofBook          *book)
 {
     GtkListStore *	list_store;
-    QueryNew *	q;
+    QofQuery *	q;
     GtkTreeIter iter;
     GList * list, * it;
     GtkEntryCompletion *completion;
@@ -427,7 +425,7 @@ create_children (GNCGeneralSearch *gsl,
 
     }
 
-    gncQueryDestroy(q);
+    qof_query_destroy(q);
 
     /* Add the GtkEntryCompletion widget */
     completion = gtk_entry_completion_new();
@@ -459,7 +457,7 @@ create_children (GNCGeneralSearch *gsl,
  * an easy way to choose selections.
  *
  * @param type The type of object that this widget will be used for.
- * This parameter is a GNCIdTypeConst.
+ * This parameter is a QofIdTypeConst.
  * @param label The label for the GtkButton child widget.
  * @param text_editable switch to enable or disable direct text entry
  * @param search_cb The callback function to use when an object has been
@@ -474,7 +472,7 @@ create_children (GNCGeneralSearch *gsl,
  * @return a GNCGeneralSearch widget.
  */
 GtkWidget *
-gnc_general_search_new (GNCIdTypeConst type,
+gnc_general_search_new (QofIdTypeConst type,
                         const char    *label,
                         gboolean       text_editable,
                         GNCSearchCB    search_cb,
@@ -537,14 +535,14 @@ gnc_general_search_set_selected (GNCGeneralSearch *gsl, gpointer selection)
     if (selection)
     {
         const QofParam *get_guid = priv->get_guid;
-        priv->guid = * ((GUID *)(get_guid->param_getfcn
-                                 (gsl->selected_item, get_guid)));
+        priv->guid = * ((GncGUID *)(get_guid->param_getfcn
+                                    (gsl->selected_item, get_guid)));
         gnc_gui_component_watch_entity
         (priv->component_id, &(priv->guid),
          QOF_EVENT_MODIFY | QOF_EVENT_DESTROY);
     }
     else
-        priv->guid = *xaccGUIDNULL ();
+        priv->guid = *guid_null ();
 }
 
 /**

@@ -64,7 +64,7 @@ struct _job_select_window
 {
     QofBook *	book;
     GncOwner *	owner;
-    QueryNew *	q;
+    QofQuery *	q;
     GncOwner	owner_def;
 };
 
@@ -78,7 +78,7 @@ struct _job_window
     GtkWidget *	active_check;
 
     JobDialogType	dialog_type;
-    GUID		job_guid;
+    GncGUID		job_guid;
     gint		component_id;
     QofBook *	book;
     GncJob *	created_job;
@@ -181,7 +181,7 @@ gnc_job_window_ok_cb (GtkWidget *widget, gpointer data)
 
     /* Now save off the job so we can return it */
     jw->created_job = jw_get_job (jw);
-    jw->job_guid = *xaccGUIDNULL ();
+    jw->job_guid = *guid_null ();
 
     gnc_close_gui_component (jw->component_id);
 }
@@ -213,7 +213,7 @@ gnc_job_window_destroy_cb (GtkWidget *widget, gpointer data)
     {
         gncJobBeginEdit (job);
         gncJobDestroy (job);
-        jw->job_guid = *xaccGUIDNULL ();
+        jw->job_guid = *guid_null ();
     }
 
     gnc_unregister_gui_component (jw->component_id);
@@ -257,7 +257,8 @@ gnc_job_window_close_handler (gpointer user_data)
     JobWindow *jw = user_data;
 
     gtk_widget_destroy (jw->dialog);
-    jw->dialog = NULL;
+    /* jw is already freed at this point
+    jw->dialog = NULL; */
 }
 
 static void
@@ -289,7 +290,7 @@ gnc_job_window_refresh_handler (GHashTable *changes, gpointer user_data)
 static gboolean
 find_handler (gpointer find_data, gpointer user_data)
 {
-    const GUID *job_guid = find_data;
+    const GncGUID *job_guid = find_data;
     JobWindow *jw = user_data;
 
     return(jw && guid_equal(&jw->job_guid, job_guid));
@@ -308,7 +309,7 @@ gnc_job_new_window (QofBook *bookp, GncOwner *owner, GncJob *job)
      */
     if (job)
     {
-        GUID job_guid;
+        GncGUID job_guid;
 
         job_guid = *gncJobGetGUID (job);
         jw = gnc_find_first_gui_component (DIALOG_EDIT_JOB_CM_CLASS,
@@ -518,15 +519,15 @@ free_userdata_cb (gpointer user_data)
 
     g_return_if_fail (sw);
 
-    gncQueryDestroy (sw->q);
+    qof_query_destroy (sw->q);
     g_free (sw);
 }
 
 GNCSearchWindow *
 gnc_job_search (GncJob *start, GncOwner *owner, QofBook *book)
 {
-    QueryNew *q, *q2 = NULL;
-    GNCIdType type = GNC_JOB_MODULE_NAME;
+    QofQuery *q, *q2 = NULL;
+    QofIdType type = GNC_JOB_MODULE_NAME;
     struct _job_select_window *sw;
     static GList *params = NULL;
     static GList *columns = NULL;
@@ -569,8 +570,8 @@ gnc_job_search (GncJob *start, GncOwner *owner, QofBook *book)
     }
 
     /* Build the queries */
-    q = gncQueryCreateFor (type);
-    gncQuerySetBook (q, book);
+    q = qof_query_create_for (type);
+    qof_query_set_book (q, book);
 
     /* If we have a start job but, for some reason, not an owner -- grab
      * the owner from the starting job.
@@ -583,22 +584,22 @@ gnc_job_search (GncJob *start, GncOwner *owner, QofBook *book)
      */
     if (owner && gncOwnerGetGUID (owner))
     {
-        gncQueryAddGUIDMatch (q, g_slist_prepend
-                              (g_slist_prepend (NULL, QUERY_PARAM_GUID),
-                               JOB_OWNER),
-                              gncOwnerGetGUID (owner), QUERY_AND);
+        qof_query_add_guid_match (q, g_slist_prepend
+                                  (g_slist_prepend (NULL, QOF_PARAM_GUID),
+                                   JOB_OWNER),
+                                  gncOwnerGetGUID (owner), QOF_QUERY_AND);
 
-        q2 = gncQueryCopy (q);
+        q2 = qof_query_copy (q);
     }
 
 #if 0
     if (start)
     {
         if (q2 == NULL)
-            q2 = gncQueryCopy (q);
+            q2 = qof_query_copy (q);
 
-        gncQueryAddGUIDMatch (q2, g_slist_prepend (NULL, QUERY_PARAM_GUID),
-                              gncJobGetGUID (start), QUERY_AND);
+        qof_query_add_guid_match (q2, g_slist_prepend (NULL, QOF_PARAM_GUID),
+                                  gncJobGetGUID (start), QOF_QUERY_AND);
     }
 #endif
 

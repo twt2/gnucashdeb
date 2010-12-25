@@ -33,6 +33,7 @@
 #include "recncell.h"
 #include "split-register-model-save.h"
 #include "split-register-p.h"
+#include "app-utils/gnc-exp-parser.h"
 
 
 struct sr_save_data
@@ -56,7 +57,7 @@ gnc_split_register_save_date_cell (BasicCell * cell,
 {
     SRSaveData *sd = save_data;
     const char *value;
-    Timespec ts;
+    GDate gdate;
 
     g_return_if_fail (gnc_basic_cell_has_name (cell, DATE_CELL));
 
@@ -67,9 +68,9 @@ gnc_split_register_save_date_cell (BasicCell * cell,
 
     DEBUG ("DATE: %s", value ? value : "(null)");
 
-    gnc_date_cell_get_date ((DateCell *) cell, &ts);
+    gnc_date_cell_get_date_gdate ((DateCell *) cell, &gdate);
 
-    xaccTransSetDatePostedTS (sd->trans, &ts);
+    xaccTransSetDatePostedGDate (sd->trans, gdate);
 }
 
 static void
@@ -439,7 +440,7 @@ gnc_split_register_save_amount_values (SRSaveData *sd, SplitRegister *reg)
             {
                 value = gnc_numeric_div(new_amount, amtconv,
                                         gnc_commodity_get_fraction(curr),
-                                        GNC_RND_ROUND);
+                                        GNC_HOW_RND_ROUND_HALF_UP);
                 xaccSplitSetValue(sd->split, value);
             }
             else
@@ -470,7 +471,7 @@ gnc_split_register_save_amount_values (SRSaveData *sd, SplitRegister *reg)
         /* convert the amount to the Value ... */
         value = gnc_numeric_div (new_amount, amtconv,
                                  gnc_commodity_get_fraction (curr),
-                                 GNC_RND_ROUND);
+                                 GNC_HOW_RND_ROUND_HALF_UP);
         xaccSplitSetValue (sd->split, value);
     }
     else
@@ -487,7 +488,7 @@ gnc_split_register_save_amount_values (SRSaveData *sd, SplitRegister *reg)
         acc = xaccSplitGetAccount (sd->split);
         new_amount = gnc_numeric_mul (value, convrate,
                                       xaccAccountGetCommoditySCU (acc),
-                                      GNC_RND_ROUND);
+                                      GNC_HOW_RND_ROUND_HALF_UP);
         xaccSplitSetAmount (sd->split, new_amount);
     }
 }
@@ -560,7 +561,7 @@ gnc_split_register_save_cells (gpointer save_data,
         {
             gnc_numeric amount = xaccSplitGetAmount (sd->split);
             value = gnc_numeric_div(
-                        amount, rate, gnc_commodity_get_fraction(txn_cur), GNC_RND_ROUND);
+                        amount, rate, gnc_commodity_get_fraction(txn_cur), GNC_HOW_RND_ROUND_HALF_UP);
             xaccSplitSetValue (sd->split, value);
 
             /* XXX: do we need to set the amount on the other split? */
@@ -583,7 +584,7 @@ gnc_split_register_save_cells (gpointer save_data,
                                                    acc);
 
             amount = gnc_numeric_mul (value, rate, xaccAccountGetCommoditySCU (acc),
-                                      GNC_RND_ROUND);
+                                      GNC_HOW_RND_ROUND_HALF_UP);
             xaccSplitSetAmount (other_split, amount);
 
         }
@@ -611,7 +612,7 @@ gnc_split_register_save_cells (gpointer save_data,
 
             amount = xaccSplitGetAmount (sd->split);
             value = gnc_numeric_div (amount, rate, gnc_commodity_get_fraction (txn_cur),
-                                     GNC_RND_ROUND);
+                                     GNC_HOW_RND_ROUND_HALF_UP);
             xaccSplitSetValue (sd->split, value);
 #endif
         }
@@ -635,13 +636,13 @@ gnc_template_register_save_xfrm_cell (BasicCell * cell,
     SplitRegister *reg = user_data;
     SRInfo *info = gnc_split_register_get_info (reg);
     Account *template_acc;
-    const GUID *acctGUID;
+    const GncGUID *acctGUID;
     kvp_frame *kvpf;
     Account *acct;
 
     g_return_if_fail (gnc_basic_cell_has_name (cell, XFRM_CELL));
 
-    /* save the account GUID into the kvp_data. */
+    /* save the account GncGUID into the kvp_data. */
     acct = gnc_split_register_get_account (reg, XFRM_CELL);
     if (!acct)
     {
@@ -677,6 +678,9 @@ gnc_template_register_save_debcred_cell (BasicCell * cell,
     SplitRegister *reg = user_data;
     kvp_frame *kvpf;
     const char *value;
+    char *error_loc;
+    gnc_numeric new_amount;
+    gboolean parse_result;
 
     g_return_if_fail (gnc_basic_cell_has_name (cell, FDEBT_CELL) ||
                       gnc_basic_cell_has_name (cell, FCRED_CELL));
@@ -696,12 +700,38 @@ gnc_template_register_save_debcred_cell (BasicCell * cell,
                              GNC_SX_CREDIT_FORMULA,
                              NULL);
 
+    /* If the value can be parsed into a numeric result (without any
+     * further variable definitions), store that numeric value
+     * additionally in the kvp. Otherwise store a zero numeric
+     * there.*/
+    parse_result = gnc_exp_parser_parse_separate_vars(value, &new_amount, &error_loc, NULL);
+    if (!parse_result)
+    {
+        new_amount = gnc_numeric_zero();
+    }
+    kvp_frame_set_slot_path (kvpf, kvp_value_new_numeric (new_amount),
+                             GNC_SX_ID,
+                             GNC_SX_CREDIT_NUMERIC,
+                             NULL);
+
     value = gnc_table_layout_get_cell_value (reg->table->layout, FDEBT_CELL);
 
     kvp_frame_set_slot_path (kvpf,
                              kvp_value_new_string (value),
                              GNC_SX_ID,
                              GNC_SX_DEBIT_FORMULA,
+                             NULL);
+
+    /* If the value can be parsed into a numeric result, store that
+     * numeric value additionally. See above comment.*/
+    parse_result = gnc_exp_parser_parse_separate_vars(value, &new_amount, &error_loc, NULL);
+    if (!parse_result)
+    {
+        new_amount = gnc_numeric_zero();
+    }
+    kvp_frame_set_slot_path (kvpf, kvp_value_new_numeric (new_amount),
+                             GNC_SX_ID,
+                             GNC_SX_DEBIT_NUMERIC,
                              NULL);
 
     DEBUG ("kvp_frame  after: %s\n", kvp_frame_to_string (kvpf));

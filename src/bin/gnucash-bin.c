@@ -33,9 +33,10 @@
 #include "gnc-module.h"
 #include "gnc-path.h"
 #include "binreloc.h"
-#include "gnc-version.h"
+#include "core-utils/gnc-version.h"
 #include "gnc-engine.h"
 #include "gnc-filepath-utils.h"
+#include "gnc-ui-util.h"
 #include "gnc-file.h"
 #include "gnc-hooks.h"
 #include "top-level.h"
@@ -57,7 +58,9 @@
 #  include <locale.h>
 #endif
 
-#define APP_GNUCASH "/apps/gnucash"
+#ifdef MAC_INTEGRATION
+#  include <Foundation/Foundation.h>
+#endif
 
 /* GNUCASH_SVN is defined whenever we're building from an SVN tree */
 #ifdef GNUCASH_SVN
@@ -79,35 +82,125 @@ gnc_print_unstable_message(void)
 {
     if (!is_development_version) return;
 
-    g_print("\n\n%s%s%s%s%s\n%s%s\n\n",
+    g_print("\n\n%s%s%s%s%s%s\n%s%s%s\n\n",
             _("This is a development version. It may or may not work.\n"),
             _("Report bugs and other problems to gnucash-devel@gnucash.org.\n"),
             _("You can also lookup and file bug reports at http://bugzilla.gnome.org\n"),
-            _("The last stable version was "), "GnuCash 2.2.9",
-            _("The next stable version will be "), "GnuCash 2.4");
+            _("The last stable version was "), PACKAGE_NAME, " 2.4.0",
+            _("The next stable version will be "), PACKAGE_NAME, " 2.6");
 }
 
-/* Priority of paths: The default is set at build time.  It may be
-   overridden by environment variables, which may, in turn, be
-   overridden by command line options.  */
-static char *config_path = PKGSYSCONFDIR;
-static char *share_path = PKGDATADIR;
-static char *help_path = GNC_HELPDIR;
-static char *gconf_path = APP_GNUCASH;
+static gchar  *environment_expand(gchar *param)
+{
+    gchar *search_start;
+    gchar *opening_brace;
+    gchar *closing_brace;
+    gchar *result;
+    gchar *tmp;
+    gchar *expanded = NULL;
+
+    if (!param)
+        return NULL;
+
+    /* Set an initial return value, so we can always use g_strconcat below) */
+    result = g_strdup ("x");
+
+    /* Look for matching pairs of { and }. Anything in between should be expanded */
+    search_start = param;
+    opening_brace = g_strstr_len (search_start, -1, "{");
+    closing_brace = g_strstr_len (search_start, -1, "}");
+
+    /* Note: the test on valid braces is fairly simple:
+     *       * if no pair of opening/closing braces is found, no expansion occurs
+     *       * braces can't be nested, this will give unexpected results
+     *       * the string should contain no other braces than those used to mark
+     *         expandable variables, or unexpected results will be returned.
+     */
+    while ( opening_brace && closing_brace && (closing_brace > opening_brace) )
+    {
+        /* Found a first matching pair */
+        gchar *to_expand;
+        const gchar *env_val;
+
+        /* If the string had characters before the opening {, copy them first */
+        if (opening_brace > search_start)
+        {
+            gchar *prefix = g_strndup (search_start, opening_brace - search_start);
+
+            tmp = g_strconcat (result, prefix, NULL);
+            g_free (result);
+            result = tmp;
+            g_free (prefix);
+        }
+
+        /* Expand the variable  we found and append it to the result */
+        to_expand = g_strndup (opening_brace + 1, closing_brace - opening_brace - 1);
+        env_val = g_getenv (to_expand);
+        tmp = g_strconcat (result, env_val, NULL);
+        g_free (result);
+        result = tmp;
+        g_free (to_expand);
+
+        /* Look for matching pairs of { and }. Anything in between should be expanded */
+        search_start = closing_brace + 1;
+        opening_brace = g_strstr_len (search_start, -1, "{");
+        closing_brace = g_strstr_len (search_start, -1, "}");
+    }
+
+    /* No more braces found, append the remaining characters */
+    tmp = g_strconcat (result, search_start, NULL);
+    g_free (result);
+    result = tmp;
+
+    /* Remove the "x" from our result */
+    if (g_strcmp0 (result, "x"))
+        expanded = g_strdup (result + 1);
+    g_free (result);
+
+    return expanded;
+}
 
 static void
 environment_override()
 {
-    const char *path;
+    const gchar *path;
+    gchar *config_path;
+    gchar *env_file;
+    GKeyFile    *keyfile = g_key_file_new();
+    GError      *error;
+    gchar **env_vars;
+    gsize param_count;
+    gint i;
+    gboolean got_keyfile;
+    gchar *env_parm, *bin_parm;
 
-    if ((path = g_getenv("GNC_CONFIG_PATH")))
-        config_path = g_strdup(path);
-    if ((path = g_getenv("GNC_SHARE_PATH")))
-        share_path = g_strdup(path);
-    if ((path = g_getenv("GNC_DOC_PATH")))
-        help_path = g_strdup(path);
-    if ((path = g_getenv("GNC_GCONF_PATH")))
-        gconf_path = g_strdup(path);
+    /* Export default parameters to the environment */
+    env_parm = gnc_path_get_prefix();
+    if (!g_setenv("GNC_HOME", env_parm, FALSE))
+        g_warning ("Couldn't set/override environment variable GNC_HOME.");
+    bin_parm = g_build_filename(env_parm, "bin", NULL);
+    if (!g_setenv("GNC_BIN", bin_parm, FALSE))
+        g_warning ("Couldn't set/override environment variable GNC_BIN.");
+    g_free (env_parm);
+    g_free (bin_parm);
+    env_parm = gnc_path_get_pkglibdir();
+    if (!g_setenv("GNC_LIB", env_parm, FALSE))
+        g_warning ("Couldn't set/override environment variable GNC_LIB.");
+    g_free (env_parm);
+    env_parm = gnc_path_get_pkgdatadir();
+    if (!g_setenv("GNC_DATA", env_parm, FALSE))
+        g_warning ("Couldn't set/override environment variable GNC_DATA.");
+    g_free (env_parm);
+    env_parm = gnc_path_get_pkgsysconfdir();
+    if (!g_setenv("GNC_CONF", env_parm, FALSE))
+        g_warning ("Couldn't set/override environment variable GNC_CONF.");
+    g_free (env_parm);
+    env_parm = gnc_path_get_libdir();
+    if (!g_setenv("SYS_LIB", env_parm, FALSE))
+        g_warning ("Couldn't set/override environment variable SYS_LIB.");
+    g_free (env_parm);
+
+    config_path = gnc_path_get_pkgsysconfdir();
 #ifdef G_OS_WIN32
     {
         /* unhide files without extension */
@@ -117,7 +210,142 @@ environment_override()
         g_free(pathext);
     }
 #endif
+
+    env_file = g_build_filename (config_path, "environment", NULL);
+    got_keyfile = g_key_file_load_from_file (keyfile, env_file, G_KEY_FILE_NONE, &error);
+    g_free (config_path);
+    g_free (env_file);
+    if ( !got_keyfile )
+        return;
+
+    /* Read the environment overrides and apply them */
+    env_vars = g_key_file_get_keys(keyfile, "Variables", &param_count, &error);
+    for ( i = 0; i < param_count; i++ )
+    {
+        gchar **val_list;
+        gsize val_count;
+        gint j;
+        gchar *new_val = NULL, *tmp_val;
+
+        /* For each variable, read its new value, optionally expand it and set/unset it */
+        val_list = g_key_file_get_string_list (keyfile, "Variables",
+                                               env_vars[i], &val_count,
+                                               &error );
+        if ( val_count == 0 )
+            g_unsetenv (env_vars[i]);
+        else
+        {
+            /* Set an initial return value, so we can always use g_build_path below) */
+            tmp_val = g_strdup ("x");
+            for ( j = 0; j < val_count; j++ )
+            {
+                gchar *expanded = environment_expand (val_list[j]);
+                new_val = g_build_path (G_SEARCHPATH_SEPARATOR_S, tmp_val, expanded, NULL);
+                g_free (tmp_val);
+                tmp_val = new_val;
+            }
+            g_strfreev (val_list);
+
+            /* Remove the "x" from our result */
+            if (g_strcmp0 (tmp_val, "x"))
+                new_val = g_strdup (tmp_val + sizeof (G_SEARCHPATH_SEPARATOR_S));
+            g_free (tmp_val);
+
+            if (!g_setenv (env_vars[i], new_val, TRUE))
+                g_warning ("Couldn't properly override environment variable \"%s\". "
+                           "This may lead to unexpected results", env_vars[i]);
+        }
+    }
+
+    g_strfreev(env_vars);
+
 }
+
+#ifdef MAC_INTEGRATION
+static void
+set_mac_locale()
+{
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+    NSArray *languages = [defs objectForKey: @"AppleLanguages"];
+    const gchar *langs = NULL;
+    NSLocale *locale = [NSLocale currentLocale];
+    NSString *locale_str = [[[locale objectForKey: NSLocaleLanguageCode]
+			     stringByAppendingString: @"_"]
+			    stringByAppendingString:
+			    [locale objectForKey: NSLocaleCountryCode]];
+/* If we didn't get a valid current locale, the string will be just "_" */
+    if ([locale_str isEqualToString: @"_"])
+	setlocale(LC_ALL, "en_US");
+    else
+	setlocale(LC_ALL, [locale_str UTF8String]);
+/* If the currency doesn't match the base locale, we need to find a locale that does match, because setlocale won't know what to do with just a currency identifier. */
+    if (![[locale objectForKey: NSLocaleCurrencyCode] isEqualToString:
+	  [[[NSLocale alloc] initWithLocaleIdentifier: locale_str] objectForKey: NSLocaleCurrencyCode]]) {
+	NSArray *all_locales = [NSLocale availableLocaleIdentifiers];
+	NSEnumerator *locale_iter = [all_locales objectEnumerator];
+	NSString *this_locale;
+	NSString *currency = [locale objectForKey: NSLocaleCurrencyCode];
+	NSString *money_locale = nil;
+	while ((this_locale = (NSString*)[locale_iter nextObject]))
+	    if ([[[[NSLocale alloc] initWithLocaleIdentifier: this_locale]
+		   objectForKey: NSLocaleCurrencyCode]
+		 isEqualToString: currency]) {
+		money_locale = this_locale;
+		break;
+	    }
+	if (money_locale)
+	    setlocale(LC_MONETARY, [money_locale UTF8String]);
+    }
+/* Now call gnc_localeconv() to force creation of the app locale
+ * before another call to setlocale messes it up. */
+    gnc_localeconv ();
+/* Process the language list. Since all of the packages we depend on
+ * are written in US english, they depend on gettext falling through
+ * to the C locale. Unfortunately, if we set a language list in that
+ * case with en or en_US as the first element, gettext will try the
+ * second language in the list (there being no en or en_US mo
+ * file). We work around that by not creating a language list if en or
+ * en_US is the first item.
+ *
+ * Language subgroups (e.g., US English) are reported in the form
+ * "ll-SS" (e.g. again, "en-US"), not what gettext wants. We convert
+ * those to old-style locales, which is easy for most cases. There are
+ * two where it isn't, though: Simplified Chinese (zh-Hans) and
+ * traditional Chinese (zh-Hant), which are normally assigned the
+ * locales zh_CN and zh_TW, respectively. Those are handled
+ * specially.*/
+    if ([languages count] > 0 &&
+	!([[languages objectAtIndex: 0] isEqualToString: @"en"] ||
+	  [[languages objectAtIndex: 0] isEqualToString: @"\"en-US\""])) {
+	NSEnumerator *lang_iter = [languages objectEnumerator];
+	NSString *this_lang;
+	NSArray *elements;
+	NSArray *new_languages = [NSArray array];
+	while ((this_lang = [lang_iter nextObject])) {
+	    this_lang = [this_lang stringByTrimmingCharactersInSet:
+			 [NSCharacterSet characterSetWithCharactersInString:
+			  @"\""]];
+	    elements = [this_lang componentsSeparatedByString: @"-"];
+	    if ([elements count] > 1) {
+		if ([[elements objectAtIndex: 0] isEqualToString: @"zh"]) {
+		    if ([[elements objectAtIndex: 1] isEqualToString: @"Hans"])
+			this_lang = [NSString stringWithString: @"zh_CN"];
+		    else
+			this_lang = [NSString stringWithString: @"zh_TW"];
+		}
+	    }
+	    else
+		this_lang = [elements componentsJoinedByString: @"_"];
+	    new_languages = [new_languages arrayByAddingObject: this_lang];
+	}
+	langs = [[new_languages componentsJoinedByString:@":"] UTF8String];
+    }
+    if (langs && strlen(langs) > 0)
+	g_setenv("LANGUAGE", langs, TRUE);
+    [pool drain];
+}
+#endif /* MAC_INTEGRATION */
 
 static gboolean
 try_load_config_array(const gchar *fns[])
@@ -149,14 +377,16 @@ static void
 load_system_config(void)
 {
     static int is_system_config_loaded = FALSE;
+    gchar *system_config_dir;
     gchar *system_config;
 
     if (is_system_config_loaded) return;
 
     update_message("loading system configuration");
-    /* FIXME: use runtime paths from gnc-path.c here */
-    system_config = g_build_filename(config_path, "config", NULL);
+    system_config_dir = gnc_path_get_pkgsysconfdir();
+    system_config = g_build_filename(system_config_dir, "config", NULL);
     is_system_config_loaded = gfec_try_load(system_config);
+    g_free(system_config_dir);
     g_free(system_config);
 }
 
@@ -201,9 +431,9 @@ load_user_config(void)
 static void
 gnucash_command_line(int *argc, char **argv)
 {
-    char *p;
     int debugging = 0, extra = 0;
     char *namespace_regexp = NULL;
+    const gchar *gconf_path = NULL;
     GError *error = NULL;
     GOptionContext *context;
     GOptionEntry options[] =
@@ -239,29 +469,6 @@ gnucash_command_line(int *argc, char **argv)
             "nofile", '\0', 0, G_OPTION_ARG_NONE, &nofile,
             _("Do not load the last file opened"), NULL
         },
-
-        {
-            "config-path", '\0', 0, G_OPTION_ARG_STRING, &config_path,
-            _("Set configuration path"),
-            /* Translators: Argument description for autohelp; see
-               http://developer.gnome.org/doc/API/2.0/glib/glib-Commandline-option-parser.html */
-            _("CONFIGPATH")
-        },
-
-        {
-            "share-path", '\0', 0, G_OPTION_ARG_STRING, &share_path,
-            _("Set shared data file search path"),
-            /* Translators: Argument description for autohelp; see
-               http://developer.gnome.org/doc/API/2.0/glib/glib-Commandline-option-parser.html */
-            _("SHAREPATH")
-        },
-        {
-            "doc-path", '\0', 0, G_OPTION_ARG_STRING, &help_path,
-            _("Set the search path for documentation files"),
-            /* Translators: Argument description for autohelp; see
-               http://developer.gnome.org/doc/API/2.0/glib/glib-Commandline-option-parser.html */
-            _("DOCPATH")
-        },
         {
             "gconf-path", '\0', 0, G_OPTION_ARG_STRING, &gconf_path,
             _("Set the prefix path for gconf queries"),
@@ -285,9 +492,6 @@ gnucash_command_line(int *argc, char **argv)
         },
         { NULL }
     };
-
-    /* Pretend that argv[0] is "gnucash" */
-    if ((p = strstr(argv[0], "-bin"))) * p = '\0';
 
     context = g_option_context_new (" [datafile]");
     g_option_context_add_main_entries (context, options, GETTEXT_PACKAGE);
@@ -325,7 +529,17 @@ gnucash_command_line(int *argc, char **argv)
     }
 
     gnc_set_extra(extra);
-    gnc_set_gconf_path(gconf_path);
+
+    if (!gconf_path)
+    {
+        const char *path = g_getenv("GNC_GCONF_PATH");
+        if (path)
+            gconf_path = path;
+        else
+            gconf_path = GCONF_PATH;
+    }
+
+    gnc_set_gconf_path(g_strdup(gconf_path));
     gnc_set_debugging(debugging);
 
     if (namespace_regexp)
@@ -395,7 +609,11 @@ inner_main_add_price_quotes(void *closure, int argc, char **argv)
     mod = scm_c_resolve_module("gnucash price-quotes");
     scm_set_current_module(mod);
 
+    /* Don't load the modules since the stylesheet module crashes if the
+       GUI is not initialized */
+#ifdef PRICE_QUOTES_NEED_MODULES
     load_gnucash_modules();
+#endif
 
     qof_event_suspend();
     scm_c_eval_string("(gnc:price-quotes-install-sources)");
@@ -411,7 +629,7 @@ inner_main_add_price_quotes(void *closure, int argc, char **argv)
     session = gnc_get_current_session();
     if (!session) goto fail;
 
-    qof_session_begin(session, add_quotes_file, FALSE, FALSE);
+    qof_session_begin(session, add_quotes_file, FALSE, FALSE, FALSE);
     if (qof_session_get_error(session) != ERR_BACKEND_NO_ERR) goto fail;
 
     qof_session_load(session, NULL);
@@ -503,7 +721,6 @@ inner_main (void *closure, int argc, char **argv)
     }
 
     gnc_destroy_splash_screen();
-
     gnc_main_window_show_all_windows();
 
     gnc_hook_run(HOOK_UI_POST_STARTUP, NULL);
@@ -585,9 +802,9 @@ main(int argc, char ** argv)
 #ifdef ENABLE_BINRELOC
     {
         GError *binreloc_error = NULL;
-        if (!gbr_init(&binreloc_error))
+        if (!gnc_gbr_init(&binreloc_error))
         {
-            g_print("main: Error on gbr_init: %s\n", binreloc_error->message);
+            g_print("main: Error on gnc_gbr_init: %s\n", binreloc_error->message);
             g_error_free(binreloc_error);
         }
     }
@@ -595,11 +812,20 @@ main(int argc, char ** argv)
     g_message("main: binreloc relocation support was disabled at configure time.\n");
 #endif
 
+    /* This should be called before gettext is initialized
+     * The user may have configured a different language via
+     * the environment file.
+     */
+#ifdef MAC_INTEGRATION
+    set_mac_locale();
+#else
+    environment_override();
+#endif
 #ifdef HAVE_GETTEXT
     {
         gchar *localedir = gnc_path_get_localedir();
         /* setlocale(LC_ALL, ""); is already called by gtk_set_locale()
-           via gtk_init(). */
+           via gtk_init() -- except that it hasn't been called yet. */
         bindtextdomain(GETTEXT_PACKAGE, localedir);
         textdomain(GETTEXT_PACKAGE);
         bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
@@ -610,7 +836,6 @@ main(int argc, char ** argv)
     qof_log_init();
     qof_log_set_default(QOF_LOG_INFO);
 
-    environment_override();
     gnucash_command_line(&argc, argv);
     gnc_print_unstable_message();
     gnc_log_init();
@@ -626,7 +851,7 @@ main(int argc, char ** argv)
         /* This option needs to run without a display, so we can't
            initialize any GUI libraries.  */
         gnome_program_init(
-            "gnucash", VERSION, LIBGNOME_MODULE,
+            PACKAGE, VERSION, LIBGNOME_MODULE,
             argc, argv,
             GNOME_PARAM_APP_PREFIX, prefix,
             GNOME_PARAM_APP_SYSCONFDIR, pkgsysconfdir,

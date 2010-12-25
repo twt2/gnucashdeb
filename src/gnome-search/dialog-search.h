@@ -25,7 +25,7 @@
 #define _GNC_DIALOG_SEARCH_H
 
 #include "GNCId.h"
-#include "QueryNew.h"
+#include "qof.h"
 
 typedef struct _GNCSearchWindow GNCSearchWindow;
 
@@ -42,13 +42,13 @@ typedef struct _GNCSearchWindow GNCSearchWindow;
  * and the callback may change the value.
  */
 typedef void (*GNCSearchCallback) (gpointer *obj_p, gpointer user_data);
-typedef void (*GNCSearchResultCB) (QueryNew *query, gpointer user_data,
+typedef void (*GNCSearchResultCB) (QofQuery *query, gpointer user_data,
                                    gpointer *result);
 
 /*
  * This callback will create a new item and return a handle to the
  * newly created item (even if it is not completely finished).  It
- * will be added to the query, but not selected.  This means the GUID
+ * will be added to the query, but not selected.  This means the GncGUID
  * must be set.
  */
 typedef gpointer (*GNCSearchNewItemCB) (gpointer user_data);
@@ -90,10 +90,10 @@ typedef struct
  * the dialog will use the obj_type instead.
  */
 GNCSearchWindow *
-gnc_search_dialog_create (GNCIdTypeConst obj_type, const gchar *title,
+gnc_search_dialog_create (QofIdTypeConst obj_type, const gchar *title,
                           GList *param_list,
                           GList *display_list,
-                          QueryNew *start_query, QueryNew *show_start_query,
+                          QofQuery *start_query, QofQuery *show_start_query,
                           GNCSearchCallbackButton *callbacks,
                           GNCSearchResultCB result_callback,
                           GNCSearchNewItemCB new_item_cb,

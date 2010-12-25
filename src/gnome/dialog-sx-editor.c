@@ -3,7 +3,7 @@
  * Copyright (C) 2001,2002,2006 Joshua Sled <jsled@asynchronous.org>*
  *                                                                  *
  * This program is free software; you can redistribute it and/or    *
- * modify it under the terms of version 2 of the GNU General Public *
+ * modify it under the terms of version 2 and/or version 3 of the GNU General Public *
  * License as published by the Free Software Foundation.            *
  *
  * As a special exception, permission is granted to link the binary
@@ -214,8 +214,15 @@ sxed_confirmed_cancel(GncSxEditorDialog *sxed)
     if ( gnc_sxed_check_changed( sxed ) )
     {
         const char *sx_changed_msg =
+#if 1
             _( "This SX has changed; are you "
                "sure you want to cancel?" );
+#else
+            /* Translators: This message is currently not yet used; it
+             * will be used once the 2.4.0 string freeze is lifted. */
+            _( "This Scheduled Transaction has changed; are you "
+               "sure you want to cancel?" );
+#endif
         if (!gnc_verify_dialog(sxed->dialog, FALSE, "%s", sx_changed_msg))
         {
             return FALSE;
@@ -610,7 +617,7 @@ gnc_sxed_check_consistent( GncSxEditorDialog *sxed )
 
             for ( ; splitList; splitList = splitList->next )
             {
-                GUID *acct_guid;
+                GncGUID *acct_guid;
                 Account *acct;
                 gnc_commodity *split_cmdty;
                 txnCreditDebitSums *tcds;
@@ -669,7 +676,7 @@ gnc_sxed_check_consistent( GncSxEditorDialog *sxed )
                     }
                     tcds->creditSum =
                         gnc_numeric_add( tcds->creditSum, tmp, 100,
-                                         (GNC_DENOM_AUTO | GNC_DENOM_LCD) );
+                                         (GNC_DENOM_AUTO | GNC_HOW_DENOM_LCD) );
                     tmp = gnc_numeric_zero();
                 }
                 v = kvp_frame_get_slot_path( f,
@@ -696,7 +703,7 @@ gnc_sxed_check_consistent( GncSxEditorDialog *sxed )
                         return FALSE;
                     }
                     tcds->debitSum = gnc_numeric_add( tcds->debitSum, tmp, 100,
-                                                      (GNC_DENOM_AUTO | GNC_DENOM_LCD) );
+                                                      (GNC_DENOM_AUTO | GNC_HOW_DENOM_LCD) );
                     tmp = gnc_numeric_zero();
                 }
             }
@@ -1359,15 +1366,14 @@ schedXact_editor_create_ledger( GncSxEditorDialog *sxed )
     gnc_plugin_page_set_ui_description (sxed->plugin_page,
                                         "gnc-sxed-window-ui-full.xml");
     gnc_plugin_page_register_set_options (sxed->plugin_page,
-                                          NULL, NULL,
                                           NUM_LEDGER_LINES_DEFAULT, FALSE );
     gnc_embedded_window_open_page (sxed->embed_window, sxed->plugin_page);
 
     /* configure... */
-    /* don't use double-line */
+    /* use double-line, so scheduled transaction Notes can be edited */
     gnc_split_register_config(splitreg,
                               splitreg->type, splitreg->style,
-                              FALSE);
+                              TRUE);
     gnc_split_register_set_auto_complete(splitreg, FALSE);
 
     /* don't show present/future divider [by definition, not necessary] */
@@ -1382,7 +1388,7 @@ schedXact_editor_populate( GncSxEditorDialog *sxed )
     time_t tmpDate;
     SplitRegister *splitReg;
     struct tm *tmpTm;
-    GDate *gd;
+    const GDate *gd;
     gint daysInAdvance;
     gboolean enabledState, autoCreateState, notifyState;
 
@@ -1623,7 +1629,7 @@ gnc_sxed_update_cal(GncSxEditorDialog *sxed)
     /* Deal with the fact that this SX may have been run before [the
      * calendar should only show upcoming instances]... */
     {
-        GDate *last_sx_inst;
+        const GDate *last_sx_inst;
 
         last_sx_inst = xaccSchedXactionGetLastOccurDate(sxed->sx);
         if (g_date_valid(last_sx_inst)

@@ -63,7 +63,7 @@ typedef gnc_numeric (*query_numeric_getter) (gpointer, QofParam *);
 static const char * query_numeric_type = QOF_TYPE_NUMERIC;
 
 typedef GList * (*query_glist_getter) (gpointer, QofParam *);
-typedef const GUID * (*query_guid_getter) (gpointer, QofParam *);
+typedef const GncGUID * (*query_guid_getter) (gpointer, QofParam *);
 static const char * query_guid_type = QOF_TYPE_GUID;
 
 typedef gint32 (*query_int32_getter) (gpointer, QofParam *);
@@ -87,7 +87,7 @@ static const char * query_kvp_type = QOF_TYPE_KVP;
 typedef QofCollection * (*query_collect_getter) (gpointer, QofParam*);
 static const char * query_collect_type = QOF_TYPE_COLLECT;
 
-typedef const GUID * (*query_choice_getter) (gpointer, QofParam *);
+typedef const GncGUID * (*query_choice_getter) (gpointer, QofParam *);
 static const char * query_choice_type = QOF_TYPE_CHOICE;
 
 /* Tables for predicate storage and lookup */
@@ -475,7 +475,7 @@ numeric_match_predicate (gpointer object, QofParam *getter,
             (gnc_numeric_compare (gnc_numeric_abs
                                   (gnc_numeric_sub (gnc_numeric_abs (obj_val),
                                           gnc_numeric_abs (pdata->amount),
-                                          100000, GNC_HOW_RND_ROUND)),
+                                          100000, GNC_HOW_RND_ROUND_HALF_UP)),
                                   cmp_val) < 0);
     }
     else
@@ -580,7 +580,7 @@ guid_match_predicate (gpointer object, QofParam *getter,
 {
     query_guid_t pdata = (query_guid_t)pd;
     GList *node, *o_list;
-    const GUID *guid = NULL;
+    const GncGUID *guid = NULL;
 
     VERIFY_PREDICATE (query_guid_type);
 
@@ -595,7 +595,7 @@ guid_match_predicate (gpointer object, QofParam *getter,
 
         for (node = pdata->guids; node; node = node->next)
         {
-            /* See if this GUID matches the object's guid */
+            /* See if this GncGUID matches the object's guid */
             for (o_list = object; o_list; o_list = o_list->next)
             {
                 guid = ((query_guid_getter)getter->param_getfcn) (o_list->data, getter);
@@ -620,9 +620,9 @@ guid_match_predicate (gpointer object, QofParam *getter,
         break;
 
     case QOF_GUID_MATCH_LIST_ANY:
-        /* object is a single object, getter returns a GList* of GUID*
+        /* object is a single object, getter returns a GList* of GncGUID*
          *
-         * See if any GUID* in the returned list matches any guid in the
+         * See if any GncGUID* in the returned list matches any guid in the
          * predicate match list.
          */
 
@@ -653,7 +653,7 @@ guid_match_predicate (gpointer object, QofParam *getter,
         break;
 
     default:
-        /* object is a single object, getter returns a GUID*
+        /* object is a single object, getter returns a GncGUID*
          *
          * See if the guid is in the list
          */
@@ -730,7 +730,9 @@ qof_query_guid_predicate (QofGuidMatch options, GList *guid_list)
     query_guid_t pdata;
     GList *node;
 
-    if (NULL == guid_list) return NULL;
+    /* An empty list of guids is only valid when testing for a null GUID value */
+    if (!guid_list)
+        g_return_val_if_fail (options == QOF_GUID_MATCH_NULL, NULL);
 
     pdata = g_new0 (query_guid_def, 1);
     pdata->pd.how = QOF_COMPARE_EQUAL;
@@ -740,8 +742,8 @@ qof_query_guid_predicate (QofGuidMatch options, GList *guid_list)
     pdata->guids = g_list_copy (guid_list);
     for (node = pdata->guids; node; node = node->next)
     {
-        GUID *guid = guid_malloc ();
-        *guid = *((GUID *)node->data);
+        GncGUID *guid = guid_malloc ();
+        *guid = *((GncGUID *)node->data);
         node->data = guid;
     }
     return ((QofQueryPredData*)pdata);
@@ -1242,7 +1244,7 @@ static void
 kvp_free_pdata (QofQueryPredData *pd)
 {
     query_kvp_t pdata = (query_kvp_t)pd;
-    GSList *node;
+    QofQueryParamList *node;
 
     VERIFY_PDATA (query_kvp_type);
     kvp_value_delete (pdata->value);
@@ -1268,7 +1270,7 @@ kvp_predicate_equal (const QofQueryPredData *p1, const QofQueryPredData *p2)
 {
     const query_kvp_t pd1 = (const query_kvp_t) p1;
     const query_kvp_t pd2 = (const query_kvp_t) p2;
-    GSList *n1, *n2;
+    QofQueryParamList *n1, *n2;
 
     n1 = pd1->path;
     n2 = pd2->path;
@@ -1287,10 +1289,10 @@ kvp_predicate_equal (const QofQueryPredData *p1, const QofQueryPredData *p2)
 
 QofQueryPredData *
 qof_query_kvp_predicate (QofQueryCompare how,
-                         GSList *path, const KvpValue *value)
+                         QofQueryParamList *path, const KvpValue *value)
 {
     query_kvp_t pdata;
-    GSList *node;
+    QofQueryParamList *node;
 
     g_return_val_if_fail (path && value, NULL);
 
@@ -1310,7 +1312,7 @@ qof_query_kvp_predicate_path (QofQueryCompare how,
                               const char *path, const KvpValue *value)
 {
     QofQueryPredData *pd;
-    GSList *spath = NULL;
+    QofQueryParamList *spath = NULL;
     char *str, *p;
 
     if (!path) return NULL;
@@ -1346,7 +1348,7 @@ collect_match_predicate (gpointer object, QofParam *getter,
     query_coll_t pdata;
     QofCollection *coll;
     GList *node, *node2, *o_list;
-    const GUID *guid;
+    const GncGUID *guid;
 
     pdata = (query_coll_t)pd;
     VERIFY_PREDICATE (query_collect_type);
@@ -1492,9 +1494,9 @@ static void
 query_collect_cb(QofInstance* ent, gpointer user_data)
 {
     query_coll_t pdata;
-    GUID *guid;
+    GncGUID *guid;
 
-    guid = (GUID*)qof_entity_get_guid(ent);
+    guid = (GncGUID*)qof_entity_get_guid(ent);
     pdata = (query_coll_t)user_data;
     pdata->guids = g_list_append(pdata->guids, guid);
 }
@@ -1524,7 +1526,7 @@ choice_match_predicate (gpointer object, QofParam *getter,
 {
     query_choice_t pdata = (query_choice_t)pd;
     GList *node, *o_list;
-    const GUID *guid = NULL;
+    const GncGUID *guid = NULL;
 
     VERIFY_PREDICATE (query_choice_type);
 
@@ -1539,7 +1541,7 @@ choice_match_predicate (gpointer object, QofParam *getter,
 
         for (node = pdata->guids; node; node = node->next)
         {
-            /* See if this GUID matches the object's guid */
+            /* See if this GncGUID matches the object's guid */
             for (o_list = object; o_list; o_list = o_list->next)
             {
                 guid = ((query_choice_getter)getter->param_getfcn) (o_list->data, getter);
@@ -1586,7 +1588,7 @@ choice_match_predicate (gpointer object, QofParam *getter,
         break;
 
     default:
-        /* object is a single object, getter returns a GUID*
+        /* object is a single object, getter returns a GncGUID*
          *
          * See if the guid is in the list
          */
@@ -1673,8 +1675,8 @@ qof_query_choice_predicate (QofGuidMatch options, GList *guid_list)
     pdata->guids = g_list_copy (guid_list);
     for (node = pdata->guids; node; node = node->next)
     {
-        GUID *guid = guid_malloc ();
-        *guid = *((GUID *)node->data);
+        GncGUID *guid = guid_malloc ();
+        *guid = *((GncGUID *)node->data);
         node->data = guid;
     }
     return ((QofQueryPredData*)pdata);

@@ -29,7 +29,7 @@ bin_data* get_random_binary_data(void);
 
 kvp_frame* get_random_kvp_frame(void);
 gnc_numeric get_random_gnc_numeric(void);
-GUID* get_random_guid(void);
+GncGUID* get_random_guid(void);
 GList* get_random_glist(void);
 
 void random_glist_strings_only (gboolean strings_only);
@@ -64,8 +64,8 @@ typedef enum
     ALL_QT         = (1 << 8) - 1
 } TestQueryTypes;
 
-Query * get_random_query(void);
-Query * make_trans_query (Transaction *trans, TestQueryTypes query_types);
+QofQuery * get_random_query(void);
+QofQuery * make_trans_query (Transaction *trans, TestQueryTypes query_types);
 TestQueryTypes get_random_query_type (void);
 void trans_query_include_price (gboolean include_amounts);
 
@@ -89,8 +89,8 @@ void make_random_changes_to_level (QofBook *book, Account *parent);
 void make_random_changes_to_book (QofBook *book);
 void make_random_changes_to_session (QofSession *session);
 
-SchedXaction* add_daily_sx(gchar *name, GDate *start, GDate *end, GDate *last_occur);
-SchedXaction* add_once_sx(gchar *name, GDate *when);
+SchedXaction* add_daily_sx(gchar *name, const GDate *start, const GDate *end, const GDate *last_occur);
+SchedXaction* add_once_sx(gchar *name, const GDate *when);
 void remove_sx(SchedXaction *sx);
 
 #endif

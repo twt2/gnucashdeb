@@ -248,7 +248,7 @@ sxftd_add_template_trans(SXFromTransInfo *sxfti)
         gnc_ttsplitinfo_set_memo(ttsi, xaccSplitGetMemo(sp));
 
         runningBalance = gnc_numeric_add( runningBalance, split_value,
-                                          100, (GNC_DENOM_AUTO | GNC_DENOM_LCD) );
+                                          100, (GNC_DENOM_AUTO | GNC_HOW_DENOM_LCD) );
 
         if (gnc_numeric_positive_p(split_value))
         {
@@ -801,5 +801,5 @@ gnc_sx_create_from_trans( Transaction *trans )
         }
     }
 
-    gtk_widget_show(GTK_WIDGET(sxfti->dialog));
+    gtk_widget_show_all(GTK_WIDGET(sxfti->dialog));
 }

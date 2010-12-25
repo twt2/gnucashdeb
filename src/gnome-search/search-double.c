@@ -6,8 +6,9 @@
  * Copyright (c) 2006 David Hampton <hampton@employees.org>
  *
  * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,7 +29,7 @@
 #include <glib/gi18n.h>
 
 #include "gnc-amount-edit.h"
-#include "QueryCore.h"
+#include "qof.h"
 
 #include "search-double.h"
 #include "search-core-utils.h"
@@ -40,7 +41,7 @@ static void grab_focus (GNCSearchCoreType *fe);
 static GNCSearchCoreType *gncs_clone(GNCSearchCoreType *fe);
 static gboolean gncs_validate (GNCSearchCoreType *fe);
 static GtkWidget *gncs_get_widget(GNCSearchCoreType *fe);
-static QueryPredData_t gncs_get_predicate (GNCSearchCoreType *fe);
+static QofQueryPredData* gncs_get_predicate (GNCSearchCoreType *fe);
 
 static void gnc_search_double_class_init	(GNCSearchDoubleClass *class);
 static void gnc_search_double_init	(GNCSearchDouble *gspaper);
@@ -112,7 +113,7 @@ gnc_search_double_class_init (GNCSearchDoubleClass *class)
 static void
 gnc_search_double_init (GNCSearchDouble *o)
 {
-    o->how = COMPARE_EQUAL;
+    o->how = QOF_COMPARE_EQUAL;
 }
 
 static void
@@ -148,7 +149,7 @@ gnc_search_double_set_value (GNCSearchDouble *fi, double value)
 }
 
 void
-gnc_search_double_set_how (GNCSearchDouble *fi, query_compare_t how)
+gnc_search_double_set_how (GNCSearchDouble *fi, QofQueryCompare how)
 {
     g_return_if_fail (fi);
     g_return_if_fail (IS_GNCSEARCH_DOUBLE (fi));
@@ -183,14 +184,14 @@ make_menu (GNCSearchCoreType *fe)
 
     combo = GTK_COMBO_BOX(gnc_combo_box_new_search());
 
-    gnc_combo_box_search_add(combo, _("is less than"), COMPARE_LT);
-    gnc_combo_box_search_add(combo, _("is less than or equal to"), COMPARE_LTE);
-    gnc_combo_box_search_add(combo, _("equals"), COMPARE_EQUAL);
-    gnc_combo_box_search_add(combo, _("does not equal"), COMPARE_NEQ);
-    gnc_combo_box_search_add(combo, _("is greater than"), COMPARE_GT);
-    gnc_combo_box_search_add(combo, _("is greater than or equal to"), COMPARE_GTE);
+    gnc_combo_box_search_add(combo, _("is less than"), QOF_COMPARE_LT);
+    gnc_combo_box_search_add(combo, _("is less than or equal to"), QOF_COMPARE_LTE);
+    gnc_combo_box_search_add(combo, _("equals"), QOF_COMPARE_EQUAL);
+    gnc_combo_box_search_add(combo, _("does not equal"), QOF_COMPARE_NEQ);
+    gnc_combo_box_search_add(combo, _("is greater than"), QOF_COMPARE_GT);
+    gnc_combo_box_search_add(combo, _("is greater than or equal to"), QOF_COMPARE_GTE);
     gnc_combo_box_search_changed(combo, &fi->how);
-    gnc_combo_box_search_set_active(combo, fi->how ? fi->how : COMPARE_LT);
+    gnc_combo_box_search_set_active(combo, fi->how ? fi->how : QOF_COMPARE_LT);
 
     return GTK_WIDGET(combo);
 }
@@ -253,7 +254,7 @@ gncs_get_widget (GNCSearchCoreType *fe)
     return box;
 }
 
-static QueryPredData_t gncs_get_predicate (GNCSearchCoreType *fe)
+static QofQueryPredData* gncs_get_predicate (GNCSearchCoreType *fe)
 {
     GNCSearchDouble *fi = (GNCSearchDouble *)fe;
     GNCSearchDoublePrivate *priv ;
@@ -265,7 +266,7 @@ static QueryPredData_t gncs_get_predicate (GNCSearchCoreType *fe)
     priv = _PRIVATE(fi);
     entry_changed (priv->gae, fi);
 
-    return gncQueryDoublePredicate (fi->how, fi->value);
+    return qof_query_double_predicate (fi->how, fi->value);
 }
 
 static GNCSearchCoreType *gncs_clone(GNCSearchCoreType *fe)

@@ -47,6 +47,10 @@
 #include "import-utilities.h"
 #include "qof.h"
 
+#ifdef AQBANKING_VERSION_5_PLUS
+# include <aqbanking/abgui.h>
+#endif /* AQBANKING_VERSION_5_PLUS */
+
 /* This static indicates the debugging module that this .o belongs to.  */
 static QofLogModule log_module = G_LOG_DOMAIN;
 
@@ -75,6 +79,7 @@ struct _GncABImExContextImport
     GtkWidget *parent;
     AB_JOB_LIST2 *job_list;
     GNCImportMainMatcher *generic_importer;
+    GData *tmp_job_list;
 };
 
 void
@@ -114,6 +119,8 @@ gnc_GWEN_Fini(void)
     GWEN_Fini();
 }
 
+static GWEN_GUI *gnc_gwengui_extended_by_ABBanking;
+
 AB_BANKING *
 gnc_AB_BANKING_new(void)
 {
@@ -134,8 +141,56 @@ gnc_AB_BANKING_new(void)
         api = AB_Banking_new("gnucash", NULL, 0);
         g_return_val_if_fail(api, NULL);
 
+#ifdef AQBANKING_VERSION_4_PLUS
+        /* Check for config migration */
+        if (AB_Banking_HasConf4(api
+# ifndef AQBANKING_VERSION_5_PLUS
+                                , 0
+# endif
+                               ) != 0)
+        {
+            if (AB_Banking_HasConf3(api
+# ifndef AQBANKING_VERSION_5_PLUS
+                                    , 0
+# endif
+                                   ) == 0)
+            {
+                g_message("gnc_AB_BANKING_new: importing aqbanking3 configuration\n");
+                if (AB_Banking_ImportConf3(api
+# ifndef AQBANKING_VERSION_5_PLUS
+                                           , 0
+# endif
+                                          ) < 0)
+                {
+                    g_message("gnc_AB_BANKING_new: unable to import aqbanking3 configuration\n");
+                }
+            }
+            else if (AB_Banking_HasConf2(api
+# ifndef AQBANKING_VERSION_5_PLUS
+                                         , 0
+# endif
+                                        ) == 0)
+            {
+                g_message("gnc_AB_BANKING_new: importing aqbanking2 configuration\n");
+                if (AB_Banking_ImportConf2(api
+# ifndef AQBANKING_VERSION_5_PLUS
+                                           , 0
+# endif
+                                          ) < 0)
+                {
+                    g_message("gnc_AB_BANKING_new: unable to import aqbanking2 configuration\n");
+                }
+            }
+        }
+#endif /* AQBANKING_VERSION_4_PLUS */
+
         /* Init the API */
         g_return_val_if_fail(AB_Banking_Init(api) == 0, NULL);
+
+#ifdef AQBANKING_VERSION_5_PLUS
+        gnc_gwengui_extended_by_ABBanking = GWEN_Gui_GetGui();
+        AB_Gui_Extend(gnc_gwengui_extended_by_ABBanking, api);
+#endif /* AQBANKING_VERSION_5_PLUS */
 
         /* Cache it */
         gnc_AB_BANKING = api;
@@ -158,8 +213,7 @@ gnc_AB_BANKING_delete(AB_BANKING *api)
         if (api == gnc_AB_BANKING)
         {
             gnc_AB_BANKING = NULL;
-            if (gnc_AB_BANKING_refcount > 0)
-                AB_Banking_Fini(api);
+            gnc_AB_BANKING_fini(api);
         }
 
         AB_Banking_free(api);
@@ -173,10 +227,22 @@ gnc_AB_BANKING_fini(AB_BANKING *api)
     if (api == gnc_AB_BANKING)
     {
         if (--gnc_AB_BANKING_refcount == 0)
+        {
+#ifdef AQBANKING_VERSION_5_PLUS
+            if (gnc_gwengui_extended_by_ABBanking)
+                AB_Gui_Unextend(gnc_gwengui_extended_by_ABBanking);
+            gnc_gwengui_extended_by_ABBanking = NULL;
+#endif /* AQBANKING_VERSION_5_PLUS */
             return AB_Banking_Fini(api);
+        }
     }
     else
     {
+#ifdef AQBANKING_VERSION_5_PLUS
+        if (gnc_gwengui_extended_by_ABBanking)
+            AB_Gui_Unextend(gnc_gwengui_extended_by_ABBanking);
+        gnc_gwengui_extended_by_ABBanking = NULL;
+#endif /* AQBANKING_VERSION_5_PLUS */
         return AB_Banking_Fini(api);
     }
     return 0;
@@ -403,7 +469,7 @@ gnc_ab_trans_to_gnc(const AB_TRANSACTION *ab_trans, Account *gnc_acc)
             valuta_date = normal_date;
     }
     if (valuta_date)
-        xaccTransSetDateSecs(gnc_trans, GWEN_Time_toTime_t(valuta_date));
+        xaccTransSetDatePostedSecs(gnc_trans, GWEN_Time_toTime_t(valuta_date));
     else
         g_warning("transaction_cb: Oops, date 'valuta_date' was NULL");
 
@@ -455,7 +521,7 @@ gnc_ab_trans_to_gnc(const AB_TRANSACTION *ab_trans, Account *gnc_acc)
         gnc_amount = double_to_gnc_numeric(
                          d_value,
                          xaccAccountGetCommoditySCU(gnc_acc),
-                         GNC_RND_ROUND);
+                         GNC_HOW_RND_ROUND_HALF_UP);
         if (!ab_value)
             g_warning("transaction_cb: Oops, value was NULL.  Using 0");
         xaccSplitSetBaseValue(split, gnc_amount, xaccAccountGetCommodity(gnc_acc));
@@ -508,14 +574,12 @@ txn_transaction_cb(const AB_TRANSACTION *element, gpointer user_data)
 {
     GncABImExContextImport *data = user_data;
     Transaction *gnc_trans;
+    GncABTransType trans_type;
 
     g_return_val_if_fail(element && data, NULL);
 
     /* Create a GnuCash transaction from ab_trans */
     gnc_trans = gnc_ab_trans_to_gnc(element, data->gnc_acc);
-
-    /* Instead of xaccTransCommitEdit(gnc_trans)  */
-    gnc_gen_trans_list_add_trans(data->generic_importer, gnc_trans);
 
     if (data->execute_txns && data->ab_acc)
     {
@@ -530,10 +594,29 @@ txn_transaction_cb(const AB_TRANSACTION *element, gpointer user_data)
             ab_trans, AB_Account_GetAccountNumber(data->ab_acc));
         AB_Transaction_SetLocalCountry(ab_trans, "DE");
 
-        job = gnc_ab_get_trans_job(data->ab_acc, ab_trans, SINGLE_DEBITNOTE);
+
+        switch (AB_Transaction_GetType(ab_trans))
+        {
+        case AB_Transaction_TypeDebitNote:
+            trans_type = SINGLE_DEBITNOTE;
+            break;
+        case AB_Transaction_TypeTransaction:
+            /* trans_type = SINGLE_INTERNAL_TRANSFER;
+             * break; */
+        case AB_Transaction_TypeEuTransfer:
+        case AB_Transaction_TypeTransfer:
+        default:
+            trans_type = SINGLE_TRANSFER;
+        } /* switch */
+
+        job = gnc_ab_get_trans_job(data->ab_acc, ab_trans, trans_type);
 
         /* Check whether we really got a job */
-        if (!job)
+        if (!job || AB_Job_CheckAvailability(job
+#ifndef AQBANKING_VERSION_5_PLUS
+                                             , 0
+#endif
+                                            ))
         {
             /* Oops, no job, probably not supported by bank */
             if (gnc_verify_dialog(
@@ -548,17 +631,66 @@ txn_transaction_cb(const AB_TRANSACTION *element, gpointer user_data)
                           "\n"
                           "Do you want to enter the job again?")))
             {
-                gnc_error_dialog(NULL, "Sorry, not implemented yet.");
+                gnc_error_dialog(NULL, "Sorry, not implemented yet. Please check the console or trace file logs to see which job was rejected.");
             }
-            /* else */
         }
-        AB_Job_List2_PushBack(data->job_list, job);
+        else
+        {
+            gnc_gen_trans_list_add_trans_with_ref_id(data->generic_importer, gnc_trans, AB_Job_GetJobId(job));
 
+            /* AB_Job_List2_PushBack(data->job_list, job); -> delayed until trans is successfully imported */
+            g_datalist_set_data(&data->tmp_job_list, gnc_AB_JOB_to_readable_string(job), job);
+        }
         AB_Transaction_free(ab_trans);
+    }
+    else
+    {
+        /* Instead of xaccTransCommitEdit(gnc_trans)  */
+        gnc_gen_trans_list_add_trans(data->generic_importer, gnc_trans);
     }
 
     return NULL;
 }
+
+static void gnc_ab_trans_processed_cb(GNCImportTransInfo *trans_info,
+                                      gboolean imported,
+                                      gpointer user_data)
+{
+    GncABImExContextImport *data = user_data;
+    gchar *jobname = gnc_AB_JOB_ID_to_string(gnc_import_TransInfo_get_ref_id(trans_info));
+    AB_JOB *job = g_datalist_get_data(&data->tmp_job_list, jobname);
+
+    if (imported)
+    {
+        AB_Job_List2_PushBack(data->job_list, job);
+    }
+    else
+    {
+        AB_Job_free(job);
+    }
+
+    g_datalist_remove_data(&data->tmp_job_list, jobname);
+}
+
+gchar *
+gnc_AB_JOB_to_readable_string(const AB_JOB *job)
+{
+    if (job)
+    {
+        return gnc_AB_JOB_ID_to_string(AB_Job_GetJobId(job));
+    }
+    else
+    {
+        return gnc_AB_JOB_ID_to_string(0);
+    }
+}
+gchar *
+gnc_AB_JOB_ID_to_string(gulong job_id)
+{
+    return g_strdup_printf("job_%lu", job_id);
+}
+
+
 
 static AB_IMEXPORTER_ACCOUNTINFO *
 txn_accountinfo_cb(AB_IMEXPORTER_ACCOUNTINFO *element, gpointer user_data)
@@ -619,8 +751,15 @@ txn_accountinfo_cb(AB_IMEXPORTER_ACCOUNTINFO *element, gpointer user_data)
     }
 
     if (!data->generic_importer)
+    {
         data->generic_importer = gnc_gen_trans_list_new(data->parent, NULL,
                                  TRUE, 14);
+        if (data->execute_txns)
+        {
+            gnc_gen_trans_list_add_tp_cb(data->generic_importer,
+                                         gnc_ab_trans_processed_cb, data);
+        }
+    }
 
     /* Iterate through all transactions */
     AB_ImExporterAccountInfo_TransactionsForEach(element, txn_transaction_cb,
@@ -750,7 +889,7 @@ bal_accountinfo_cb(AB_IMEXPORTER_ACCOUNTINFO *element, gpointer user_data)
 
     value = double_to_gnc_numeric(booked_value,
                                   xaccAccountGetCommoditySCU(gnc_acc),
-                                  GNC_RND_ROUND);
+                                  GNC_HOW_RND_ROUND_HALF_UP);
     if (noted_value == 0.0 && booked_value == 0.0)
     {
         dialog = gtk_message_dialog_new(
@@ -853,8 +992,11 @@ gnc_ab_import_context(AB_IMEXPORTER_CONTEXT *context,
     data->execute_txns = execute_txns;
     data->api = api;
     data->parent = parent;
-    data->job_list = NULL;
+    data->job_list = AB_Job_List2_new();
+    data->tmp_job_list = NULL;
     data->generic_importer = NULL;
+
+    g_datalist_init(&data->tmp_job_list);
 
     /* Import transactions */
     if (!(awaiting & IGNORE_TRANSACTIONS))
@@ -902,7 +1044,11 @@ gnc_ab_get_permanent_certs(void)
 
     g_return_val_if_fail(banking, NULL);
 #ifdef AQBANKING_VERSION_4_PLUS
-    rv = AB_Banking_LoadSharedConfig(banking, "certs", &perm_certs, 0);
+    rv = AB_Banking_LoadSharedConfig(banking, "certs", &perm_certs
+# ifndef AQBANKING_VERSION_5_PLUS
+                                     , 0
+# endif
+                                    );
 #else
     /* FIXME: Add code for older AqBanking versions */
     /* See QBankmanager 0.9.50 in src/kbanking/libs/kbanking.cpp lines 323ff

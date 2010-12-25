@@ -6,8 +6,9 @@
  * Copyright (c) 2006 David Hampton <hampton@employees.org>
  *
  * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,7 +28,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-#include "QueryCore.h"
+#include "qof.h"
 
 #include "search-boolean.h"
 #include "search-core-utils.h"
@@ -37,7 +38,7 @@
 static GNCSearchCoreType *gncs_clone(GNCSearchCoreType *fe);
 static gboolean gncs_validate (GNCSearchCoreType *fe);
 static GtkWidget *gncs_get_widget(GNCSearchCoreType *fe);
-static QueryPredData_t gncs_get_predicate (GNCSearchCoreType *fe);
+static QofQueryPredData* gncs_get_predicate (GNCSearchCoreType *fe);
 
 static void gnc_search_boolean_class_init	(GNCSearchBooleanClass *class);
 static void gnc_search_boolean_init	(GNCSearchBoolean *gspaper);
@@ -106,7 +107,7 @@ gnc_search_boolean_class_init (GNCSearchBooleanClass *class)
 static void
 gnc_search_boolean_init (GNCSearchBoolean *o)
 {
-    o->how = COMPARE_EQUAL;
+    o->how = QOF_COMPARE_EQUAL;
     o->value = TRUE;
 }
 
@@ -143,7 +144,7 @@ gnc_search_boolean_set_value (GNCSearchBoolean *fi, gboolean value)
 }
 
 void
-gnc_search_boolean_set_how (GNCSearchBoolean *fi, query_compare_t how)
+gnc_search_boolean_set_how (GNCSearchBoolean *fi, QofQueryCompare how)
 {
     g_return_if_fail (fi);
     g_return_if_fail (IS_GNCSEARCH_BOOLEAN (fi));
@@ -177,10 +178,10 @@ make_menu (GNCSearchCoreType *fe)
     GtkComboBox *combo;
 
     combo = GTK_COMBO_BOX(gnc_combo_box_new_search());
-    gnc_combo_box_search_add(combo, _("is"), COMPARE_EQUAL);
-    gnc_combo_box_search_add(combo, _("is not"), COMPARE_NEQ);
+    gnc_combo_box_search_add(combo, _("is"), QOF_COMPARE_EQUAL);
+    gnc_combo_box_search_add(combo, _("is not"), QOF_COMPARE_NEQ);
     gnc_combo_box_search_changed(combo, &fi->how);
-    gnc_combo_box_search_set_active(combo, fi->how ? fi->how : COMPARE_EQUAL);
+    gnc_combo_box_search_set_active(combo, fi->how ? fi->how : QOF_COMPARE_EQUAL);
 
     return GTK_WIDGET(combo);
 }
@@ -210,14 +211,14 @@ gncs_get_widget (GNCSearchCoreType *fe)
     return box;
 }
 
-static QueryPredData_t gncs_get_predicate (GNCSearchCoreType *fe)
+static QofQueryPredData* gncs_get_predicate (GNCSearchCoreType *fe)
 {
     GNCSearchBoolean *fi = (GNCSearchBoolean *)fe;
 
     g_return_val_if_fail (fi, NULL);
     g_return_val_if_fail (IS_GNCSEARCH_BOOLEAN (fi), NULL);
 
-    return gncQueryBooleanPredicate (fi->how, fi->value);
+    return qof_query_boolean_predicate (fi->how, fi->value);
 }
 
 static GNCSearchCoreType *gncs_clone(GNCSearchCoreType *fe)

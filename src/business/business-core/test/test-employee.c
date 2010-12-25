@@ -33,6 +33,11 @@
 #include "gncInvoiceP.h"
 #include "test-stuff.h"
 
+#include "gnc-backend-xml.h"
+
+#define FILE_NAME "xml:///tmp/testbook.gnucash"
+#define GNC_LIB_NAME "gncmod-backend-xml"
+
 static int count = 0;
 
 static void
@@ -66,12 +71,13 @@ test_employee (void)
     GncEmployee *employee;
 
     session = qof_session_new();
-    qof_session_begin(session, QOF_STDOUT, FALSE, FALSE);
+    qof_session_begin(session, FILE_NAME, FALSE, FALSE, FALSE);
     book = qof_session_get_book(session);
+    be = qof_book_get_backend (book);
+
     /* The book *must* have a backend to pass the test of the 'dirty' flag */
     /* See the README file for details */
-
-    be = qof_book_get_backend (book);
+    do_test (be != NULL, "xml backend could not be set");
 
     /* Test creation/destruction */
     {
@@ -88,7 +94,7 @@ test_employee (void)
 
     /* Test setting/getting routines; does the active flag get set right? */
     {
-        GUID guid;
+        GncGUID guid;
 
         test_string_fcn (book, "Id", gncEmployeeSetID, gncEmployeeGetID);
         test_string_fcn (book, "Username", gncEmployeeSetUsername, gncEmployeeGetUsername);
@@ -108,7 +114,6 @@ test_employee (void)
         gncEmployeeSetGUID (employee, &guid);
         do_test (guid_equal (&guid, qof_instance_get_guid(QOF_INSTANCE(employee))), "guid compare");
     }
-#if 0
     {
         GList *list;
 
@@ -122,7 +127,6 @@ test_employee (void)
         do_test (g_list_length (list) == 1, "correct length: active");
         g_list_free (list);
     }
-#endif
     {
         const char *str = get_random_string();
         const char *res;
@@ -147,9 +151,11 @@ test_string_fcn (QofBook *book, const char *message,
     do_test (!gncEmployeeIsDirty (employee), "test if start dirty");
     gncEmployeeBeginEdit (employee);
     set (employee, str);
+    /* Employee record should be dirty */
     do_test (gncEmployeeIsDirty (employee), "test dirty later");
     gncEmployeeCommitEdit (employee);
-    do_test (gncEmployeeIsDirty (employee), "test dirty after commit");
+    /* Employee record should be not dirty */
+    do_test (!gncEmployeeIsDirty (employee), "test dirty after commit");
     do_test (safe_strcmp (get (employee), str) == 0, message);
     gncEmployeeSetActive (employee, FALSE);
     count++;
@@ -166,9 +172,11 @@ test_numeric_fcn (QofBook *book, const char *message,
     do_test (!gncEmployeeIsDirty (employee), "test if start dirty");
     gncEmployeeBeginEdit (employee);
     set (employee, num);
+    /* Employee record should be dirty */
     do_test (gncEmployeeIsDirty (employee), "test dirty later");
     gncEmployeeCommitEdit (employee);
-    do_test (gncEmployeeIsDirty (employee), "test dirty after commit");
+    /* Employee record should be not dirty */
+    do_test (!gncEmployeeIsDirty (employee), "test dirty after commit");
     do_test (gnc_numeric_equal (get (employee), num), message);
     gncEmployeeSetActive (employee, FALSE);
     count++;
@@ -187,9 +195,11 @@ test_bool_fcn (QofBook *book, const char *message,
     set (employee, FALSE);
     set (employee, TRUE);
     set (employee, num);
+    /* Employee record should be dirty */
     do_test (gncEmployeeIsDirty (employee), "test dirty later");
     gncEmployeeCommitEdit (employee);
-    do_test (gncEmployeeIsDirty (employee), "test dirty after commit");
+    /* Employee record should be not dirty */
+    do_test (!gncEmployeeIsDirty (employee), "test dirty after commit");
     do_test (get (employee) == num, message);
     gncEmployeeSetActive (employee, FALSE);
     count++;
@@ -207,8 +217,10 @@ test_gint_fcn (QofBook *book, const char *message,
     do_test (!gncEmployeeIsDirty (employee), "test if start dirty");
     gncEmployeeBeginEdit (employee);
     set (employee, num);
+    /* Employee record should be dirty */
     do_test (gncEmployeeIsDirty (employee), "test dirty later");
     gncEmployeeCommitEdit (employee);
+    /* Employee record should be not dirty */
     do_test (!gncEmployeeIsDirty (employee), "test dirty after commit");
     do_test (get (employee) == num, message);
     gncEmployeeSetActive (employee, FALSE);
@@ -220,6 +232,7 @@ int
 main (int argc, char **argv)
 {
     qof_init();
+    qof_load_backend_library ("../../../backend/xml/.libs/", GNC_LIB_NAME);
     do_test (gncInvoiceRegister(), "Cannot register GncInvoice");
     do_test (gncJobRegister (),  "Cannot register GncJob");
     do_test (gncCustomerRegister(), "Cannot register GncCustomer");

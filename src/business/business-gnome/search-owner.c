@@ -6,8 +6,9 @@
  * Copyright (c) 2006 David Hampton <hampton@employees.org>
  *
  * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,7 +28,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-#include "QueryCore.h"
+#include "qof.h"
 #include "gnc-ui-util.h"
 #include "gnc-gui-query.h"
 #include "gncOwner.h"
@@ -41,7 +42,7 @@
 static GNCSearchCoreType *gncs_clone(GNCSearchCoreType *fe);
 static gboolean gncs_validate (GNCSearchCoreType *fe);
 static GtkWidget *gncs_get_widget(GNCSearchCoreType *fe);
-static QueryPredData_t gncs_get_predicate (GNCSearchCoreType *fe);
+static QofQueryPredData* gncs_get_predicate (GNCSearchCoreType *fe);
 
 static void gnc_search_owner_class_init	(GNCSearchOwnerClass *class);
 static void gnc_search_owner_init	(GNCSearchOwner *gspaper);
@@ -260,10 +261,10 @@ make_how_menu (GNCSearchCoreType *fe)
     GtkComboBox *combo;
 
     combo = GTK_COMBO_BOX(gnc_combo_box_new_search());
-    gnc_combo_box_search_add(combo, _("is"), GUID_MATCH_ANY);
-    gnc_combo_box_search_add(combo, _("is not"), GUID_MATCH_NONE);
+    gnc_combo_box_search_add(combo, _("is"), QOF_GUID_MATCH_ANY);
+    gnc_combo_box_search_add(combo, _("is not"), QOF_GUID_MATCH_NONE);
     gnc_combo_box_search_changed(combo, &fi->how);
-    gnc_combo_box_search_set_active(combo, fi->how ? fi->how : GUID_MATCH_ANY);
+    gnc_combo_box_search_set_active(combo, fi->how ? fi->how : QOF_GUID_MATCH_ANY);
 
     return GTK_WIDGET(combo);
 }
@@ -302,11 +303,11 @@ gncs_get_widget (GNCSearchCoreType *fe)
     return box;
 }
 
-static QueryPredData_t gncs_get_predicate (GNCSearchCoreType *fe)
+static QofQueryPredData* gncs_get_predicate (GNCSearchCoreType *fe)
 {
     GNCSearchOwner *fi = (GNCSearchOwner *)fe;
     GNCSearchOwnerPrivate *priv;
-    const GUID *guid;
+    const GncGUID *guid;
     GList *l = NULL;
 
     g_return_val_if_fail (fi, NULL);
@@ -316,7 +317,7 @@ static QueryPredData_t gncs_get_predicate (GNCSearchCoreType *fe)
     guid = gncOwnerGetGUID (&(priv->owner));
     l = g_list_prepend (l, (gpointer)guid);
 
-    return gncQueryGUIDPredicate (fi->how, l);
+    return qof_query_guid_predicate (fi->how, l);
 }
 
 static GNCSearchCoreType *gncs_clone(GNCSearchCoreType *fe)

@@ -6,8 +6,9 @@
  * Copyright (c) 2006 David Hampton <hampton@employees.org>
  *
  * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,7 +30,7 @@
 
 #include "gnc-date.h"
 #include "gnc-date-edit.h"
-#include "QueryCore.h"
+#include "qof.h"
 
 #include "search-date.h"
 #include "search-core-utils.h"
@@ -41,7 +42,7 @@ static void grab_focus (GNCSearchCoreType *fe);
 static GNCSearchCoreType *gncs_clone(GNCSearchCoreType *fe);
 static gboolean gncs_validate (GNCSearchCoreType *fe);
 static GtkWidget *gncs_get_widget(GNCSearchCoreType *fe);
-static QueryPredData_t gncs_get_predicate (GNCSearchCoreType *fe);
+static QofQueryPredData* gncs_get_predicate (GNCSearchCoreType *fe);
 
 static void gnc_search_date_class_init	(GNCSearchDateClass *class);
 static void gnc_search_date_init	(GNCSearchDate *gspaper);
@@ -113,7 +114,7 @@ static void
 gnc_search_date_init (GNCSearchDate *o)
 {
     o->ts.tv_sec = time(NULL);
-    o->how = COMPARE_LT;
+    o->how = QOF_COMPARE_LT;
 }
 
 static void
@@ -156,7 +157,7 @@ gnc_search_date_set_date (GNCSearchDate *fi, Timespec ts)
 }
 
 void
-gnc_search_date_set_how (GNCSearchDate *fi, query_compare_t how)
+gnc_search_date_set_how (GNCSearchDate *fi, QofQueryCompare how)
 {
     g_return_if_fail (fi);
     g_return_if_fail (IS_GNCSEARCH_DATE (fi));
@@ -191,14 +192,14 @@ make_menu (GNCSearchCoreType *fe)
 
     combo = GTK_COMBO_BOX(gnc_combo_box_new_search());
 
-    gnc_combo_box_search_add(combo, _("is before"), COMPARE_LT);
-    gnc_combo_box_search_add(combo, _("is before or on"), COMPARE_LTE);
-    gnc_combo_box_search_add(combo, _("is on"), COMPARE_EQUAL);
-    gnc_combo_box_search_add(combo, _("is not on"), COMPARE_NEQ);
-    gnc_combo_box_search_add(combo, _("is after"), COMPARE_GT);
-    gnc_combo_box_search_add(combo, _("is on or after"), COMPARE_GTE);
+    gnc_combo_box_search_add(combo, _("is before"), QOF_COMPARE_LT);
+    gnc_combo_box_search_add(combo, _("is before or on"), QOF_COMPARE_LTE);
+    gnc_combo_box_search_add(combo, _("is on"), QOF_COMPARE_EQUAL);
+    gnc_combo_box_search_add(combo, _("is not on"), QOF_COMPARE_NEQ);
+    gnc_combo_box_search_add(combo, _("is after"), QOF_COMPARE_GT);
+    gnc_combo_box_search_add(combo, _("is on or after"), QOF_COMPARE_GTE);
     gnc_combo_box_search_changed(combo, &fi->how);
-    gnc_combo_box_search_set_active(combo, fi->how ? fi->how : COMPARE_LT);
+    gnc_combo_box_search_set_active(combo, fi->how ? fi->how : QOF_COMPARE_LT);
 
     return GTK_WIDGET(combo);
 }
@@ -259,7 +260,7 @@ gncs_get_widget (GNCSearchCoreType *fe)
     return box;
 }
 
-static QueryPredData_t gncs_get_predicate (GNCSearchCoreType *fe)
+static QofQueryPredData* gncs_get_predicate (GNCSearchCoreType *fe)
 {
     GNCSearchDate *fi = (GNCSearchDate *)fe;
     GNCSearchDatePrivate *priv;
@@ -272,7 +273,7 @@ static QueryPredData_t gncs_get_predicate (GNCSearchCoreType *fe)
     if (priv->entry)
         fi->ts = gnc_date_edit_get_date_ts (GNC_DATE_EDIT (priv->entry));
 
-    return gncQueryDatePredicate (fi->how, DATE_MATCH_NORMAL, fi->ts);
+    return qof_query_date_predicate (fi->how, QOF_DATE_MATCH_NORMAL, fi->ts);
 }
 
 static GNCSearchCoreType *gncs_clone(GNCSearchCoreType *fe)

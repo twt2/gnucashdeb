@@ -27,8 +27,18 @@
 
 gchar *gnc_path_get_prefix()
 {
-    //printf("Returning prefix %s\n", gbr_find_prefix (PREFIX));
-    return gbr_find_prefix (PREFIX);
+    //printf("Returning prefix %s\n", gnc_gbr_find_prefix (PREFIX));
+    return gnc_gbr_find_prefix (PREFIX);
+}
+
+/** Returns the bindir path, usually
+ * "$prefix/bin".
+ *
+ * @returns A newly allocated string. */
+gchar *gnc_path_get_bindir()
+{
+    //printf("Returning bindir %s\n", gnc_gbr_find_bin_dir (BINDIR));
+    return gnc_gbr_find_bin_dir (BINDIR);
 }
 
 /** Returns the libdir path, usually
@@ -37,8 +47,8 @@ gchar *gnc_path_get_prefix()
  * @returns A newly allocated string. */
 gchar *gnc_path_get_libdir()
 {
-    //printf("Returning libdir %s\n", gbr_find_lib_dir (LIBDIR));
-    return gbr_find_lib_dir (LIBDIR);
+    //printf("Returning libdir %s\n", gnc_gbr_find_lib_dir (LIBDIR));
+    return gnc_gbr_find_lib_dir (LIBDIR);
 }
 
 /** Returns the datadir path, usually
@@ -47,7 +57,7 @@ gchar *gnc_path_get_libdir()
  * @returns A newly allocated string. */
 gchar *gnc_path_get_pkgdatadir()
 {
-    gchar *datadir = gbr_find_data_dir (DATADIR);
+    gchar *datadir = gnc_gbr_find_data_dir (DATADIR);
     gchar *result = g_build_filename (datadir, "gnucash", (char*)NULL);
     g_free (datadir);
     //printf("Returning pkgdatadir %s\n", result);
@@ -60,7 +70,7 @@ gchar *gnc_path_get_pkgdatadir()
  * @returns A newly allocated string. */
 gchar *gnc_path_get_pkgsysconfdir()
 {
-    gchar *sysconfdir = gbr_find_etc_dir (SYSCONFDIR);
+    gchar *sysconfdir = gnc_gbr_find_etc_dir (SYSCONFDIR);
     gchar *result = g_build_filename (sysconfdir, "gnucash", (char*)NULL);
     g_free (sysconfdir);
     //printf("Returning pkgsysconfdir %s\n", result);
@@ -75,7 +85,12 @@ gchar *gnc_path_get_pkgsysconfdir()
 gchar *gnc_path_get_pkglibdir()
 {
     gchar *libdir = gnc_path_get_libdir ();
+#ifdef G_OS_WIN32
+    /* Workaround for Bug 618646, {pkglibdir} will be bin/ on Windows */
+    gchar *result = gnc_gbr_find_bin_dir(libdir);
+#else
     gchar *result = g_build_filename (libdir, "gnucash", (char*)NULL);
+#endif
     g_free (libdir);
     //printf("Returning pkglibdir %s\n", result);
     return result;
@@ -107,7 +122,7 @@ gchar *gnc_path_get_localedir()
     return result;
 }
 
-/** Returns the glade file path, usually
+/** Returns the accounts file path, usually
  * "$prefix/share/gnucash/accounts".
  *
  * @returns A newly allocated string. */
@@ -120,13 +135,41 @@ gchar *gnc_path_get_accountsdir()
     return result;
 }
 
+/** Returns the file path to the report directory, usually
+ * "$prefix/share/gnucash/guile-modules/gnucash/report".
+ *
+ * @returns A newly allocated string. */
+gchar *gnc_path_get_reportdir()
+{
+    gchar *pkgdatadir = gnc_path_get_pkgdatadir ();
+    gchar *result = g_build_filename (pkgdatadir, "guile-modules",
+                                      "gnucash", "report", (char*)NULL);
+    g_free (pkgdatadir);
+    //printf("Returning stdreportsdir %s\n", result);
+    return result;
+}
+
+/** Returns the file path to the standard
+ * reports, usually
+ * "$prefix/share/gnucash/guile-modules/gnucash/report/standard-reports".
+ *
+ * @returns A newly allocated string. */
+gchar *gnc_path_get_stdreportsdir()
+{
+    gchar *reportdir = gnc_path_get_reportdir ();
+    gchar *result = g_build_filename (reportdir, "standard-reports", (char*)NULL);
+    g_free (reportdir);
+    //printf("Returning stdreportsdir %s\n", result);
+    return result;
+}
+
 /** Returns the gconf schema config source path, usually
  * "$prefix/etc/gconf/gconf.xml.defaults".
  *
  * @returns A newly allocated string. */
 gchar *gnc_path_get_gconfdir(gboolean force_slashes)
 {
-    gchar *sysconfdir = gbr_find_etc_dir (SYSCONFDIR);
+    gchar *sysconfdir = gnc_gbr_find_etc_dir (SYSCONFDIR);
     gchar *separator = G_DIR_SEPARATOR_S;
     gchar *result;
 

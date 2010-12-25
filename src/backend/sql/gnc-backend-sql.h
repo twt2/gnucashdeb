@@ -36,8 +36,8 @@
  *  @author Copyright (c) 2006-2008 Phil Longstaff <plongstaff@rogers.com>
  */
 
-#ifndef GNC_BACKEND_SQL_H_
-#define GNC_BACKEND_SQL_H_
+#ifndef GNC_BACKEND_SQL_H
+#define GNC_BACKEND_SQL_H
 
 #include "qof.h"
 #include "qofbackend-p.h"
@@ -158,6 +158,7 @@ struct GncSqlConnection
     gboolean (*commitTransaction)( GncSqlConnection* ); /**< Returns TRUE if successful, FALSE if error */
     gboolean (*createTable)( GncSqlConnection*, const gchar*, GList* ); /**< Returns TRUE if successful, FALSE if error */
     gboolean (*createIndex)( GncSqlConnection*, const gchar*, const gchar*, const GncSqlColumnTableEntry* ); /**< Returns TRUE if successful, FALSE if error */
+    gboolean (*addColumnsToTable)( GncSqlConnection*, const gchar* table, GList* ); /**< Returns TRUE if successful, FALSE if error */
     gchar* (*quoteString)( const GncSqlConnection*, gchar* );
 };
 #define gnc_sql_connection_dispose(CONN) (CONN)->dispose(CONN)
@@ -179,6 +180,8 @@ struct GncSqlConnection
 		(CONN)->createTable(CONN,NAME,COLLIST)
 #define gnc_sql_connection_create_index(CONN,INDEXNAME,TABLENAME,COLTABLE) \
 		(CONN)->createIndex(CONN,INDEXNAME,TABLENAME,COLTABLE)
+#define gnc_sql_connection_add_columns_to_table(CONN,TABLENAME,COLLIST) \
+		(CONN)->addColumnsToTable(CONN,TABLENAME,COLLIST)
 #define gnc_sql_connection_quote_string(CONN,STR) \
 		(CONN)->quoteString(CONN,STR)
 
@@ -568,10 +571,10 @@ gboolean gnc_sql_create_index( const GncSqlBackend* be, const gchar* index_name,
  *
  * @param be SQL backend struct
  * @param row Database row
- * @return GUID
+ * @return GncGUID
  */
 /*@ dependent @*//*@ null @*/
-const GUID* gnc_sql_load_guid( const GncSqlBackend* be, GncSqlRow* row );
+const GncGUID* gnc_sql_load_guid( const GncSqlBackend* be, GncSqlRow* row );
 
 /**
  * Loads the transaction guid from a database row.  The table must have a column
@@ -579,10 +582,10 @@ const GUID* gnc_sql_load_guid( const GncSqlBackend* be, GncSqlRow* row );
  *
  * @param be SQL backend struct
  * @param row Database row
- * @return GUID
+ * @return GncGUID
  */
 /*@ dependent @*//*@ null @*/
-const GUID* gnc_sql_load_tx_guid( const GncSqlBackend* be, GncSqlRow* row );
+const GncGUID* gnc_sql_load_tx_guid( const GncSqlBackend* be, GncSqlRow* row );
 
 /**
  * Creates a basic SELECT statement for a table.
@@ -604,7 +607,7 @@ GncSqlStatement* gnc_sql_create_select_statement( GncSqlBackend* be,
 void gnc_sql_register_col_type_handler( const gchar* colType, const GncSqlColumnTypeHandler* handler );
 
 /**
- * Adds a GValue for an object reference GUID to the end of a GSList.
+ * Adds a GValue for an object reference GncGUID to the end of a GSList.
  *
  * @param be SQL backend struct
  * @param obj_name QOF object type name
@@ -617,7 +620,7 @@ void gnc_sql_add_gvalue_objectref_guid_to_slist( const GncSqlBackend* be,
         const GncSqlColumnTableEntry* table_row, GSList** pList );
 
 /**
- * Adds a column info structure for an object reference GUID to the end of a
+ * Adds a column info structure for an object reference GncGUID to the end of a
  * GList.
  *
  * @param be SQL backend struct
@@ -717,6 +720,17 @@ void gnc_sql_upgrade_table( GncSqlBackend* be, const gchar* table_name,
                             const GncSqlColumnTableEntry* col_table );
 
 /**
+ * Adds one or more columns to an existing table.
+ *
+ * @param be SQL backend
+ * @param table_name SQL table name
+ * @param new_col_table Column table for new columns
+ * @return TRUE if successful, FALSE if unsuccessful
+ */
+gboolean gnc_sql_add_columns_to_table( GncSqlBackend* be, const gchar* table_name,
+                                       const GncSqlColumnTableEntry* new_col_table );
+
+/**
  * Specifies the load order for a set of objects.  When loading from a database, the
  * objects will be loaded in this order, so that when later objects have references to
  * objects, those objects will already have been loaded.
@@ -738,7 +752,7 @@ typedef struct
     gboolean is_ok;
 } write_objects_t;
 
-#endif /* GNC_BACKEND_SQL_H_ */
+#endif /* GNC_BACKEND_SQL_H */
 
 /**
   @}  end of the SQL Backend Core doxygen group

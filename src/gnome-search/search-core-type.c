@@ -4,8 +4,9 @@
  *  Authors: Derek Atkins <warlord@MIT.EDU>
  *
  * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,8 +26,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 
-#include "QueryCore.h"
-#include "QueryNew.h"
+#include "qof.h"
 #include "Account.h"		/* for ACCOUNT_MATCH_ALL_TYPE */
 #include "Transaction.h"	/* for RECONCILED_MATCH_TYPE */
 
@@ -192,7 +192,7 @@ gnc_search_core_type_get_widget (GNCSearchCoreType *fe)
  *
  * Return value:
  **/
-QueryPredData_t
+QofQueryPredData*
 gnc_search_core_type_get_predicate (GNCSearchCoreType *fe)
 {
     return GNC_SEARCH_CORE_TYPE_GET_CLASS (fe)->get_predicate(fe);
@@ -259,20 +259,20 @@ gnc_search_core_register_type (const char *type_name, GNCSearchCoreNew fcn)
 static void
 init_table (void)
 {
-    gnc_search_core_register_type (QUERYCORE_STRING,
+    gnc_search_core_register_type (QOF_TYPE_STRING,
                                    (GNCSearchCoreNew) gnc_search_string_new);
-    gnc_search_core_register_type (QUERYCORE_DATE,
+    gnc_search_core_register_type (QOF_TYPE_DATE,
                                    (GNCSearchCoreNew) gnc_search_date_new);
-    gnc_search_core_register_type (QUERYCORE_INT64,
+    gnc_search_core_register_type (QOF_TYPE_INT64,
                                    (GNCSearchCoreNew) gnc_search_int64_new);
-    gnc_search_core_register_type (QUERYCORE_DOUBLE,
+    gnc_search_core_register_type (QOF_TYPE_DOUBLE,
                                    (GNCSearchCoreNew) gnc_search_double_new);
-    gnc_search_core_register_type (QUERYCORE_NUMERIC,
+    gnc_search_core_register_type (QOF_TYPE_NUMERIC,
                                    (GNCSearchCoreNew) gnc_search_numeric_new);
-    gnc_search_core_register_type (QUERYCORE_DEBCRED,
+    gnc_search_core_register_type (QOF_TYPE_DEBCRED,
                                    (GNCSearchCoreNew)
                                    gnc_search_numeric_debcred_new);
-    gnc_search_core_register_type (QUERYCORE_BOOLEAN,
+    gnc_search_core_register_type (QOF_TYPE_BOOLEAN,
                                    (GNCSearchCoreNew) gnc_search_boolean_new);
     gnc_search_core_register_type (GNC_ID_ACCOUNT,
                                    (GNCSearchCoreNew) gnc_search_account_new);

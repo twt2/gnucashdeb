@@ -70,7 +70,7 @@ struct _order_select_window
 {
     QofBook *	book;
     GncOwner *	owner;
-    QueryNew *	q;
+    QofQuery *	q;
     GncOwner	owner_def;
 };
 
@@ -95,7 +95,7 @@ struct _order_window
     GncEntryLedger *	ledger;
 
     OrderDialogType	dialog_type;
-    GUID		order_guid;
+    GncGUID		order_guid;
     gint		component_id;
     QofBook *	book;
     GncOrder *	created_order;
@@ -213,7 +213,7 @@ gnc_order_window_ok_cb (GtkWidget *widget, gpointer data)
         return;
 
     /* Ok, we don't need this anymore */
-    ow->order_guid = *xaccGUIDNULL ();
+    ow->order_guid = *guid_null ();
 
     gnc_close_gui_component (ow->component_id);
 }
@@ -334,7 +334,7 @@ gnc_order_window_destroy_cb (GtkWidget *widget, gpointer data)
     {
         gncOrderBeginEdit (order);
         gncOrderDestroy (order);
-        ow->order_guid = *xaccGUIDNULL ();
+        ow->order_guid = *guid_null ();
     }
 
     if (ow->ledger)
@@ -539,7 +539,7 @@ gnc_order_update_window (OrderWindow *ow)
 static gboolean
 find_handler (gpointer find_data, gpointer user_data)
 {
-    const GUID *order_guid = find_data;
+    const GncGUID *order_guid = find_data;
     OrderWindow *ow = user_data;
 
     return(ow && guid_equal(&ow->order_guid, order_guid));
@@ -572,7 +572,7 @@ gnc_order_new_window (QofBook *bookp, OrderDialogType type,
      */
     if (order)
     {
-        GUID order_guid;
+        GncGUID order_guid;
 
         order_guid = *gncOrderGetGUID(order);
         ow = gnc_find_first_gui_component (class_name, find_handler,
@@ -631,7 +631,6 @@ gnc_order_new_window (QofBook *bookp, OrderDialogType type,
     //  gnc_entry_ledger_load (entry_ledger, entries);
 
     /* Watch the order of operations, here... */
-    gnucash_register_set_initial_rows( 10 );
     regWidget = gnucash_register_new (gnc_entry_ledger_get_table (entry_ledger));
     gnc_table_init_gui( regWidget, entry_ledger );
     ow->reg = GNUCASH_REGISTER (regWidget);
@@ -815,16 +814,16 @@ free_order_cb (gpointer user_data)
 
     g_return_if_fail (sw);
 
-    gncQueryDestroy (sw->q);
+    qof_query_destroy (sw->q);
     g_free (sw);
 }
 
 GNCSearchWindow *
 gnc_order_search (GncOrder *start, GncOwner *owner, QofBook *book)
 {
-    GNCIdType type = GNC_ORDER_MODULE_NAME;
+    QofIdType type = GNC_ORDER_MODULE_NAME;
     struct _order_select_window *sw;
-    QueryNew *q, *q2 = NULL;
+    QofQuery *q, *q2 = NULL;
     static GList *params = NULL;
     static GList *columns = NULL;
     static GNCSearchCallbackButton buttons[] =
@@ -869,41 +868,41 @@ gnc_order_search (GncOrder *start, GncOwner *owner, QofBook *book)
     }
 
     /* Build the queries */
-    q = gncQueryCreateFor (type);
-    gncQuerySetBook (q, book);
+    q = qof_query_create_for (type);
+    qof_query_set_book (q, book);
 
     /* If owner is supplied, limit all searches to orders who's owner
      * (or parent) is the supplied owner!
      */
     if (owner && gncOwnerGetGUID (owner))
     {
-        QueryNew *tmp, *q3;
+        QofQuery *tmp, *q3;
 
-        q3 = gncQueryCreateFor (type);
-        gncQueryAddGUIDMatch (q3, g_slist_prepend
-                              (g_slist_prepend (NULL, QUERY_PARAM_GUID),
-                               ORDER_OWNER),
-                              gncOwnerGetGUID (owner), QUERY_OR);
-        gncQueryAddGUIDMatch (q3, g_slist_prepend
-                              (g_slist_prepend (NULL, OWNER_PARENTG),
-                               ORDER_OWNER),
-                              gncOwnerGetGUID (owner), QUERY_OR);
+        q3 = qof_query_create_for (type);
+        qof_query_add_guid_match (q3, g_slist_prepend
+                                  (g_slist_prepend (NULL, QOF_PARAM_GUID),
+                                   ORDER_OWNER),
+                                  gncOwnerGetGUID (owner), QOF_QUERY_OR);
+        qof_query_add_guid_match (q3, g_slist_prepend
+                                  (g_slist_prepend (NULL, OWNER_PARENTG),
+                                   ORDER_OWNER),
+                                  gncOwnerGetGUID (owner), QOF_QUERY_OR);
 
-        tmp = gncQueryMerge (q, q3, QUERY_AND);
-        gncQueryDestroy (q);
-        gncQueryDestroy (q3);
+        tmp = qof_query_merge (q, q3, QOF_QUERY_AND);
+        qof_query_destroy (q);
+        qof_query_destroy (q3);
         q = tmp;
-        q2 = gncQueryCopy (q);
+        q2 = qof_query_copy (q);
     }
 
 #if 0
     if (start)
     {
         if (q2 == NULL)
-            q2 = gncQueryCopy (q);
+            q2 = qof_query_copy (q);
 
-        gncQueryAddGUIDMatch (q2, g_slist_prepend (NULL, QUERY_PARAM_GUID),
-                              gncOrderGetGUID (start), QUERY_AND);
+        qof_query_add_guid_match (q2, g_slist_prepend (NULL, QOF_PARAM_GUID),
+                                  gncOrderGetGUID (start), QOF_QUERY_AND);
     }
 #endif
 

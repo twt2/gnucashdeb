@@ -33,7 +33,7 @@
 
 static QofLogModule log_module = GNC_MOD_IO;
 
-GUID*
+GncGUID*
 dom_tree_to_guid(xmlNodePtr node)
 {
     if (!node->properties)
@@ -57,7 +57,7 @@ dom_tree_to_guid(xmlNodePtr node)
         /* handle new and guid the same for the moment */
         if ((safe_strcmp("guid", type) == 0) || (safe_strcmp("new", type) == 0))
         {
-            GUID *gid = g_new(GUID, 1);
+            GncGUID *gid = g_new(GncGUID, 1);
             char *guid_str;
 
             guid_str = (char*)xmlNodeGetContent (node->xmlChildrenNode);
@@ -218,7 +218,7 @@ dom_tree_to_string_kvp_value(xmlNodePtr node)
 kvp_value*
 dom_tree_to_guid_kvp_value(xmlNodePtr node)
 {
-    GUID *daguid;
+    GncGUID *daguid;
     kvp_value *ret = NULL;
 
     daguid = dom_tree_to_guid(node);
@@ -243,6 +243,24 @@ dom_tree_to_timespec_kvp_value (xmlNodePtr node)
     {
         ret = kvp_value_new_timespec (ts);
     }
+    return ret;
+}
+
+kvp_value*
+dom_tree_to_gdate_kvp_value (xmlNodePtr node)
+{
+    GDate *date;
+    kvp_value *ret = NULL;
+
+    date = dom_tree_to_gdate(node);
+
+    if (date)
+    {
+        ret = kvp_value_new_gdate(*date);
+    }
+
+    g_free(date);
+
     return ret;
 }
 
@@ -368,6 +386,7 @@ struct kvp_val_converter val_converters[] =
     { "string", dom_tree_to_string_kvp_value },
     { "guid", dom_tree_to_guid_kvp_value },
     { "timespec", dom_tree_to_timespec_kvp_value },
+    { "gdate", dom_tree_to_gdate_kvp_value },
     { "binary", dom_tree_to_binary_kvp_value },
     { "list", dom_tree_to_list_kvp_value },
     { "frame", dom_tree_to_frame_kvp_value },

@@ -265,8 +265,7 @@ gnc_split_register_check_account (SplitRegister *reg,
     info = gnc_split_register_get_info (reg);
     new_acct = gnc_split_register_get_account_by_name (reg,
                (BasicCell *) cell,
-               cell->cell.value,
-               &info->full_refresh);
+               cell->cell.value);
     if (!new_acct)
         return FALSE;
 
@@ -303,7 +302,7 @@ gnc_split_register_check_account (SplitRegister *reg,
             gnc_numeric amt       = xaccSplitGetAmount(split);
             gnc_numeric val       = xaccSplitGetValue(split);
             gnc_numeric orig_rate = gnc_numeric_div(amt, val, GNC_DENOM_AUTO,
-                                                    GNC_DENOM_REDUCE);
+                                                    GNC_HOW_DENOM_REDUCE);
 
             if (!gnc_numeric_check(orig_rate))
             {
@@ -1142,7 +1141,6 @@ gnc_split_register_get_account_always (SplitRegister *reg,
 {
     BasicCell *cell;
     const char *name;
-    gboolean dummy;
 
     cell = gnc_table_layout_get_cell (reg->table->layout, cell_name);
     if (!cell)
@@ -1156,7 +1154,7 @@ gnc_split_register_get_account_always (SplitRegister *reg,
         return NULL;
     }
 
-    return gnc_split_register_get_account_by_name (reg, cell, name, &dummy);
+    return gnc_split_register_get_account_by_name (reg, cell, name);
 }
 
 static const char *
@@ -1426,7 +1424,7 @@ gnc_split_register_handle_exchange (SplitRegister *reg, gboolean force_dialog)
     {
         gnc_numeric amt = xaccSplitGetAmount (osplit);
         gnc_numeric val = xaccSplitGetValue (osplit);
-        exch_rate = gnc_numeric_div (amt, val, GNC_DENOM_AUTO, GNC_DENOM_REDUCE);
+        exch_rate = gnc_numeric_div (amt, val, GNC_DENOM_AUTO, GNC_HOW_DENOM_REDUCE);
     }
 
     /* Ok, we need to grab the exchange rate */

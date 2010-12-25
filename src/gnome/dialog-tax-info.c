@@ -279,6 +279,10 @@ load_txf_info (gint acct_category, TaxInfoDialog *ti_dialog)
         const gchar *str;
         const gchar *last_yr = _("Last Valid Year: ");
         const gchar *form_line = _("Form Line Data: ");
+        const gchar *code_line_word = _("Code");
+        const gchar *code_line_colon = ": ";
+        const gchar *num_code = NULL;
+        const gchar *prefix = "N";
         gchar *form_line_data = NULL;
         SCM scm;
         gint year;
@@ -304,6 +308,9 @@ load_txf_info (gint acct_category, TaxInfoDialog *ti_dialog)
 
         str = scm_is_symbol(code_scm) ? SCM_SYMBOL_CHARS(code_scm) : "";
         txf_info->code = g_strdup (str);
+        num_code = g_strdup (str);
+        if (g_str_has_prefix (num_code, prefix))
+            num_code++; /* to lose the leading N */
 
         scm = scm_call_3 (getters.form, category, code_scm, tax_entity_type);
         str = scm_is_string(scm) ? scm_to_locale_string(scm) : "";
@@ -323,8 +330,6 @@ load_txf_info (gint acct_category, TaxInfoDialog *ti_dialog)
         {
             const gchar *until = _("now");
 
-            if (year != 0)
-                until = g_strdup_printf ("%d", year);
             form_line_data = g_strconcat ("\n", "\n", form_line, NULL);
             while (!scm_is_null (scm))
             {
@@ -355,17 +360,23 @@ load_txf_info (gint acct_category, TaxInfoDialog *ti_dialog)
         {
             if (form_line_data != NULL)
                 txf_info->help = g_strconcat (last_yr, g_strdup_printf ("%d", year),
-                                              "\n", "\n", str, form_line_data, NULL);
+                                              "\n", "\n", str, "\n", "\n",
+                                              code_line_word, code_line_colon, num_code,
+                                              form_line_data, NULL);
             else
                 txf_info->help = g_strconcat (last_yr, g_strdup_printf ("%d", year),
-                                              "\n", "\n", str, NULL);
+                                              "\n", "\n", str, "\n", "\n",
+                                              code_line_word, code_line_colon, num_code, NULL);
         }
         else
         {
             if (form_line_data != NULL)
-                txf_info->help = g_strconcat (str, form_line_data, NULL);
+                txf_info->help = g_strconcat (str, "\n", "\n",
+                                              code_line_word, code_line_colon, num_code,
+                                              form_line_data, NULL);
             else
-                txf_info->help = g_strdup (str);
+                txf_info->help = g_strconcat (str, "\n", "\n",
+                                              code_line_word, code_line_colon, num_code, NULL);
         }
 
         if (form_line_data != NULL)
@@ -1135,6 +1146,7 @@ identity_edit_clicked_cb (GtkButton *button,
     gtk_container_add (GTK_CONTAINER (alignment), type_combo);
     gtk_table_attach_defaults (GTK_TABLE (table), alignment, 1, 2, 1, 2);
     label = gtk_label_new (_("CAUTION: If you set TXF categories, and later change 'Type', you will need to manually reset those categories one at a time"));
+    gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
     gtk_misc_set_alignment (GTK_MISC (label), 0.50, 0.50);
     alignment = gtk_alignment_new(0.50, 0.50, 1.00, 0.00);
     gtk_alignment_set_padding (GTK_ALIGNMENT (alignment), 6, 6, 4, 4);

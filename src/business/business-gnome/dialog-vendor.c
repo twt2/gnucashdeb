@@ -68,7 +68,7 @@ typedef enum
 struct _vendor_select_window
 {
     QofBook *	book;
-    QueryNew *	q;
+    QofQuery *	q;
 };
 
 struct _vendor_window
@@ -99,7 +99,7 @@ struct _vendor_window
     GncTaxIncluded taxincluded;
     GncBillTerm *	terms;
     VendorDialogType	dialog_type;
-    GUID		vendor_guid;
+    GncGUID		vendor_guid;
     gint		component_id;
     QofBook *	book;
     GncVendor *	created_vendor;
@@ -239,7 +239,7 @@ gnc_vendor_window_ok_cb (GtkWidget *widget, gpointer data)
             gnc_ui_to_vendor (vw, vendor);
         }
         vw->created_vendor = vendor;
-        vw->vendor_guid = *xaccGUIDNULL ();
+        vw->vendor_guid = *guid_null ();
     }
 
     gnc_close_gui_component (vw->component_id);
@@ -271,7 +271,7 @@ gnc_vendor_window_destroy_cb (GtkWidget *widget, gpointer data)
     {
         gncVendorBeginEdit (vendor);
         gncVendorDestroy (vendor);
-        vw->vendor_guid = *xaccGUIDNULL ();
+        vw->vendor_guid = *guid_null ();
     }
 
     gnc_unregister_gui_component (vw->component_id);
@@ -347,7 +347,7 @@ gnc_vendor_window_refresh_handler (GHashTable *changes, gpointer user_data)
 static gboolean
 find_handler (gpointer find_data, gpointer user_data)
 {
-    const GUID *vendor_guid = find_data;
+    const GncGUID *vendor_guid = find_data;
     VendorWindow *vw = user_data;
 
     return(vw && guid_equal(&vw->vendor_guid, vendor_guid));
@@ -367,7 +367,7 @@ gnc_vendor_new_window (QofBook *bookp, GncVendor *vendor)
      */
     if (vendor)
     {
-        GUID vendor_guid;
+        GncGUID vendor_guid;
 
         vendor_guid = *gncVendorGetGUID (vendor);
         vw = gnc_find_first_gui_component (DIALOG_EDIT_VENDOR_CM_CLASS,
@@ -645,16 +645,16 @@ free_vendor_cb (gpointer user_data)
     struct _vendor_select_window *sw = user_data;
     g_return_if_fail (sw);
 
-    gncQueryDestroy (sw->q);
+    qof_query_destroy (sw->q);
     g_free (sw);
 }
 
 GNCSearchWindow *
 gnc_vendor_search (GncVendor *start, QofBook *book)
 {
-    GNCIdType type = GNC_VENDOR_MODULE_NAME;
+    QofIdType type = GNC_VENDOR_MODULE_NAME;
     struct _vendor_select_window *sw;
-    QueryNew *q, *q2 = NULL;
+    QofQuery *q, *q2 = NULL;
     static GList *params = NULL;
     static GList *columns = NULL;
     static GNCSearchCallbackButton buttons[] =
@@ -693,15 +693,15 @@ gnc_vendor_search (GncVendor *start, QofBook *book)
     }
 
     /* Build the queries */
-    q = gncQueryCreateFor (type);
-    gncQuerySetBook (q, book);
+    q = qof_query_create_for (type);
+    qof_query_set_book (q, book);
 
 #if 0
     if (start)
     {
-        q2 = gncQueryCopy (q);
-        gncQueryAddGUIDMatch (q2, g_slist_prepend (NULL, QUERY_PARAM_GUID),
-                              gncVendorGetGUID (start), QUERY_AND);
+        q2 = qof_query_copy (q);
+        qof_query_add_guid_match (q2, g_slist_prepend (NULL, QOF_PARAM_GUID),
+                                  gncVendorGetGUID (start), QOF_QUERY_AND);
     }
 #endif
 

@@ -33,6 +33,8 @@
 ;; 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(use-modules (gnucash printf))
+
 (define <html-table>
   (make-record-type "<html-table>"
                     '(col-headers
@@ -567,7 +569,8 @@
   ;; returns a pair, the car of which is the prepending of newcol
   ;; and existing-data, and the cdr is the remaining elements of newcol
   (define (prepend-to-element newcol existing-data length-to-append)
-    (if (= length-to-append 0) ('() . newcol)
+    (if (= length-to-append 0)
+        (cons '() newcol)
         (let* 
             ((current-new (car newcol))
              (current-existing (car existing-data))

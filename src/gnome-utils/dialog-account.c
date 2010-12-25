@@ -78,7 +78,7 @@ typedef struct _AccountWindow
 
     AccountDialogType dialog_type;
 
-    GUID    account;
+    GncGUID    account;
     Account *created_account;
 
     gchar **subaccount_names;
@@ -289,7 +289,7 @@ gnc_account_create_transfer_balance (QofBook *book,
     xaccTransBeginEdit (trans);
 
     xaccTransSetCurrency (trans, xaccAccountGetCommodity (account));
-    xaccTransSetDateSecs (trans, date);
+    xaccTransSetDatePostedSecs (trans, date);
     xaccTransSetDescription (trans, _("Opening Balance"));
 
     split = xaccMallocSplit (book);
@@ -366,7 +366,15 @@ gnc_ui_to_account(AccountWindow *aw)
         xaccAccountSetDescription (account, string);
 
     gtk_color_button_get_color(GTK_COLOR_BUTTON(aw->color_entry_button), &color );
+#ifdef HAVE_GTK_2_12
     string = gdk_color_to_string(&color);
+#else
+    /* gdk_color_to_string requires gtk >= 2.12 */
+    string = g_strdup_printf("#%04X%04X%04X", color.red, color.green, color.blue);
+#endif
+    if (safe_strcmp (string, DEFAULT_COLOR) == 0)
+        string = "Not Set";
+
     old_string = xaccAccountGetColor (account);
     if (safe_strcmp (string, old_string) != 0)
         xaccAccountSetColor (account, string);
@@ -565,7 +573,7 @@ gnc_finish_ok (AccountWindow *aw)
     aw->created_account = aw_get_account (aw);
 
     /* so it doesn't get freed on close */
-    aw->account = *xaccGUIDNULL ();
+    aw->account = *guid_null ();
 
     gnc_close_gui_component (aw->component_id);
     LEAVE("2");
@@ -970,7 +978,7 @@ gnc_account_window_destroy_cb (GtkObject *object, gpointer data)
         {
             xaccAccountBeginEdit (account);
             xaccAccountDestroy (account);
-            aw->account = *xaccGUIDNULL ();
+            aw->account = *guid_null ();
         }
 
         DEBUG ("account add window destroyed\n");

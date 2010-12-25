@@ -45,8 +45,57 @@
 #include "md5.h"
 #include "qof.h"
 
+#if GWENHYWFAR_VERSION_INT >= 39921
+/* For sufficiently new gwenhywfar (>=3.99.21) the gtk2 gui object is
+ * working fine and it is enabled here here. */
+# define USING_GWENHYWFAR_GTK2_GUI
+# define GNC_GWENHYWFAR_CB GWENHYWFAR_CB
+#else
+# define GNC_GWENHYWFAR_CB
+#endif
+
+#ifdef USING_GWENHYWFAR_GTK2_GUI
+# include <gwen-gui-gtk2/gtk2_gui.h>
+#endif
+
 /* This static indicates the debugging module that this .o belongs to.  */
 static QofLogModule log_module = G_LOG_DOMAIN;
+
+/* The following block can be enabled, but the gwen-gtk2 widgets might
+ * still need some work. */
+#if 0 /*#ifdef USING_GWENHYWFAR_GTK2_GUI*/
+
+/* A GWEN_GUI implementation using gtk2 widgets  */
+static GWEN_GUI *gwen_gui = NULL;
+
+void gnc_GWEN_Gui_log_init(void)
+{
+    if (!gwen_gui)
+    {
+        gwen_gui = Gtk2_Gui_new();
+        GWEN_Gui_SetGui(gwen_gui);
+    }
+}
+GncGWENGui *gnc_GWEN_Gui_get(GtkWidget *parent)
+{
+    if (!gwen_gui)
+        gnc_GWEN_Gui_log_init();
+    return (GncGWENGui*) gwen_gui;
+}
+void gnc_GWEN_Gui_release(GncGWENGui *gui)
+{
+}
+void gnc_GWEN_Gui_shutdown(void)
+{
+    if (gwen_gui)
+    {
+        GWEN_Gui_free(gwen_gui);
+        gwen_gui = NULL;
+        GWEN_Gui_SetGui(NULL);
+    }
+}
+
+#else
 
 /* A unique full-blown GUI, featuring  */
 static GncGWENGui *full_gui = NULL;
@@ -124,16 +173,19 @@ static gint progress_advance_cb(GWEN_GUI *gwen_gui, uint32_t id,
 static gint progress_log_cb(GWEN_GUI *gwen_gui, guint32 id,
                             GWEN_LOGGER_LEVEL level, const gchar *text);
 static gint progress_end_cb(GWEN_GUI *gwen_gui, guint32 id);
-static gint getpassword_cb(GWEN_GUI *gwen_gui, guint32 flags, const gchar *token,
-                           const gchar *title, const gchar *text, gchar *buffer,
-                           gint min_len, gint max_len, guint32 guiid);
-static gint setpasswordstatus_cb(GWEN_GUI *gwen_gui, const gchar *token,
-                                 const gchar *pin,
-                                 GWEN_GUI_PASSWORD_STATUS status, guint32 guiid);
-static gint loghook_cb(GWEN_GUI *gwen_gui, const gchar *log_domain,
-                       GWEN_LOGGER_LEVEL priority, const gchar *text);
-static gint checkcert_cb(GWEN_GUI *gwen_gui, const GWEN_SSLCERTDESCR *cert,
-                         GWEN_IO_LAYER *io, guint32 guiid);
+static gint GNC_GWENHYWFAR_CB getpassword_cb(GWEN_GUI *gwen_gui, guint32 flags, const gchar *token,
+        const gchar *title, const gchar *text, gchar *buffer,
+        gint min_len, gint max_len, guint32 guiid);
+static gint GNC_GWENHYWFAR_CB setpasswordstatus_cb(GWEN_GUI *gwen_gui, const gchar *token,
+        const gchar *pin,
+        GWEN_GUI_PASSWORD_STATUS status, guint32 guiid);
+static gint GNC_GWENHYWFAR_CB loghook_cb(GWEN_GUI *gwen_gui, const gchar *log_domain,
+        GWEN_LOGGER_LEVEL priority, const gchar *text);
+#ifdef AQBANKING_VERSION_5_PLUS
+typedef GWEN_SYNCIO GWEN_IO_LAYER;
+#endif
+static gint GNC_GWENHYWFAR_CB checkcert_cb(GWEN_GUI *gwen_gui, const GWEN_SSLCERTDESCR *cert,
+        GWEN_IO_LAYER *io, guint32 guiid);
 
 gboolean ggg_delete_event_cb(GtkWidget *widget, GdkEvent *event,
                              gpointer user_data);
@@ -215,7 +267,13 @@ gnc_GWEN_Gui_log_init(void)
 {
     if (!log_gwen_gui)
     {
-        log_gwen_gui = GWEN_Gui_new();
+        log_gwen_gui =
+#ifdef USING_GWENHYWFAR_GTK2_GUI
+        Gtk2_Gui_new()
+#else
+        GWEN_Gui_new()
+#endif
+            ;
 
         /* Always use our own logging */
         GWEN_Gui_SetLogHookFn(log_gwen_gui, loghook_cb);
@@ -315,7 +373,14 @@ register_callbacks(GncGWENGui *gui)
 
     ENTER("gui=%p", gui);
 
-    gui->gwen_gui = gwen_gui = GWEN_Gui_new();
+    gwen_gui =
+#ifdef USING_GWENHYWFAR_GTK2_GUI
+        Gtk2_Gui_new()
+#else
+        GWEN_Gui_new()
+#endif
+        ;
+    gui->gwen_gui = gwen_gui;
 
     GWEN_Gui_SetMessageBoxFn(gwen_gui, messagebox_cb);
     GWEN_Gui_SetInputBoxFn(gwen_gui, inputbox_cb);
@@ -1231,7 +1296,7 @@ progress_end_cb(GWEN_GUI *gwen_gui, guint32 id)
     return 0;
 }
 
-static gint
+static gint GNC_GWENHYWFAR_CB
 getpassword_cb(GWEN_GUI *gwen_gui, guint32 flags, const gchar *token,
                const gchar *title, const gchar *text, gchar *buffer,
                gint min_len, gint max_len, guint32 guiid)
@@ -1298,7 +1363,7 @@ getpassword_cb(GWEN_GUI *gwen_gui, guint32 flags, const gchar *token,
     return password ? 0 : -1;
 }
 
-static gint
+static gint GNC_GWENHYWFAR_CB
 setpasswordstatus_cb(GWEN_GUI *gwen_gui, const gchar *token, const gchar *pin,
                      GWEN_GUI_PASSWORD_STATUS status, guint32 guiid)
 {
@@ -1318,7 +1383,7 @@ setpasswordstatus_cb(GWEN_GUI *gwen_gui, const gchar *token, const gchar *pin,
     return 0;
 }
 
-static gint
+static gint GNC_GWENHYWFAR_CB
 loghook_cb(GWEN_GUI *gwen_gui, const gchar *log_domain,
            GWEN_LOGGER_LEVEL priority, const gchar *text)
 {
@@ -1328,7 +1393,7 @@ loghook_cb(GWEN_GUI *gwen_gui, const gchar *log_domain,
     return 1;
 }
 
-static gint
+static gint GNC_GWENHYWFAR_CB
 checkcert_cb(GWEN_GUI *gwen_gui, const GWEN_SSLCERTDESCR *cert,
              GWEN_IO_LAYER *io, guint32 guiid)
 {
@@ -1446,3 +1511,4 @@ ggg_close_clicked_cb(GtkButton *button, gpointer user_data)
 
     LEAVE(" ");
 }
+#endif

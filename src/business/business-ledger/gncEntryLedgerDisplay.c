@@ -41,7 +41,7 @@ static GList *
 gnc_entry_ledger_get_entries (GncEntryLedger *ledger)
 {
     if (ledger->query)
-        return gncQueryRun (ledger->query);
+        return qof_query_run (ledger->query);
 
     //  g_warning ("No query to run?");
     return NULL;
@@ -93,7 +93,7 @@ static void
 gnc_entry_ledger_set_watches (GncEntryLedger *ledger, GList *entries)
 {
     GList *node;
-    GNCIdType type = NULL;
+    QofIdType type = NULL;
 
     gnc_gui_component_clear_watches (ledger->component_id);
 

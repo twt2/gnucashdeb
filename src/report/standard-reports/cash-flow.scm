@@ -29,10 +29,9 @@
 
 (define-module (gnucash report standard-reports cash-flow))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
-(use-modules (ice-9 slib))
 (use-modules (gnucash gnc-module))
 
-(require 'printf)
+(use-modules (gnucash printf))
 
 (gnc:module-load "gnucash/report/report-system" 0)
 (gnc:module-load "gnucash/gnome-utils" 0) ;for gnc-build-url
@@ -41,8 +40,8 @@
 
 ;; define all option's names so that they are properly defined
 ;; in *one* place.
-(define optname-from-date (N_ "From"))
-(define optname-to-date (N_ "To"))
+(define optname-from-date (N_ "Start Date"))
+(define optname-to-date (N_ "End Date"))
 
 (define optname-display-depth (N_ "Account Display Depth"))
 (define optname-show-subaccounts (N_ "Always show sub-accounts"))

@@ -25,19 +25,44 @@
 #include <glib.h>
 #include "gnc-uri-utils.h"
 #include "gnc-filepath-utils.h"
+#include "qofsession.h"
 
 /* Checks if the given protocol is used to refer to a file
  * (as opposed to a network service)
  */
+gboolean gnc_uri_is_known_protocol (const gchar *protocol)
+{
+    gboolean is_known_proto = FALSE;
+    GList *node;
+    GList *known_proto_list = qof_backend_get_registered_access_method_list();
+
+    for ( node = known_proto_list; node != NULL; node = node->next )
+    {
+        gchar *known_proto = node->data;
+        if ( !g_ascii_strcasecmp (protocol, known_proto) )
+        {
+            is_known_proto = TRUE;
+            break;
+        }
+    }
+
+    g_list_free (known_proto_list);
+    return is_known_proto;
+}
+
+/* Checks if the given protocol is used to refer to a file
+ * (as opposed to a network service)
+ * For simplicity, handle all unknown protocols as if it were
+ * file based protocols. This will avoid password lookups and such.
+ */
 gboolean gnc_uri_is_file_protocol (const gchar *protocol)
 {
-    if ( !g_ascii_strcasecmp (protocol, "file") ||
-         !g_ascii_strcasecmp (protocol, "xml") ||
-         !g_ascii_strcasecmp (protocol, "sqlite3")
-         )
-        return TRUE;
-    else
+    if ( !g_ascii_strcasecmp (protocol, "mysql") ||
+            !g_ascii_strcasecmp (protocol, "postgres")
+       )
         return FALSE;
+    else
+        return TRUE;
 }
 
 /* Checks if the given uri defines a file
@@ -73,7 +98,7 @@ void gnc_uri_get_components (const gchar *uri,
     *password = NULL;
     *path     = NULL;
 
-    g_return_if_fail( uri != 0 );
+    g_return_if_fail( uri != NULL );
 
     splituri = g_strsplit ( uri, "://", 2 );
     if ( splituri[1] == NULL )
@@ -90,8 +115,18 @@ void gnc_uri_get_components (const gchar *uri,
 
     if ( gnc_uri_is_file_protocol ( *protocol ) )
     {
-        /* Protocol indicates file based uri */
-        *path     = gnc_resolve_file_path ( splituri[1] );
+        /* Protocol indicates file based uri.
+         * Note that unknown protocols are treated as if they are
+         * file-based protocols. This is done to prevent password
+         * lookups on unknown protocols.
+         * On the other hand, since we don't know the specifics of
+         * unknown protocols, we don't attempt to return an absolute
+         * pathname for them, just whatever was there.
+         */
+        if ( gnc_uri_is_known_protocol ( *protocol ) )
+            *path     = gnc_resolve_file_path ( splituri[1] );
+        else
+            *path     = g_strdup ( splituri[1] );
         g_strfreev ( splituri );
         return;
     }
@@ -121,7 +156,7 @@ void gnc_uri_get_components (const gchar *uri,
         {
             /* There is password in the url */
             delimiter[0] = '\0';
-            *password = g_strdup ( (const gchar*)(delimiter+1) );
+            *password = g_strdup ( (const gchar*)(delimiter + 1) );
         }
         *username = g_strdup ( (const gchar*)tmpusername );
     }
@@ -137,9 +172,9 @@ void gnc_uri_get_components (const gchar *uri,
     {
         delimiter[0] = '\0';
         if ( gnc_uri_is_file_protocol ( *protocol ) ) /* always return absolute file paths */
-             *path = gnc_resolve_file_path ( (const gchar*)(delimiter+1) );
+            *path = gnc_resolve_file_path ( (const gchar*)(delimiter + 1) );
         else /* path is no file path, so copy it as is */
-            *path = g_strdup ( (const gchar*)(delimiter+1) );
+            *path = g_strdup ( (const gchar*)(delimiter + 1) );
     }
 
     /* Check for a port specifier */
@@ -147,7 +182,7 @@ void gnc_uri_get_components (const gchar *uri,
     if ( delimiter != NULL )
     {
         delimiter[0] = '\0';
-        *port = g_ascii_strtoll ( delimiter+1, NULL, 0 );
+        *port = g_ascii_strtoll ( delimiter + 1, NULL, 0 );
     }
 
     *hostname = g_strdup ( (const gchar*)tmphostname );
@@ -206,7 +241,7 @@ gchar *gnc_uri_create_uri (const gchar *protocol,
                            const gchar *password,
                            const gchar *path)
 {
-    gchar *userpass=NULL, *portstr=NULL, *uri=NULL;
+    gchar *userpass = NULL, *portstr = NULL, *uri = NULL;
 
     g_return_val_if_fail( path != 0, NULL );
 
@@ -214,9 +249,15 @@ gchar *gnc_uri_create_uri (const gchar *protocol,
     {
         /* Compose a file based uri, which means ignore everything but
          * the protocol and the path
-         * We always return absolute pathnames
+         * We return an absolute pathname if the protocol is known or
+         * no protocol was given. For an unknown protocol, we return the
+         * path info as is.
          */
-        gchar *abs_path = gnc_resolve_file_path ( path );
+        gchar *abs_path;
+        if ( protocol && (!gnc_uri_is_known_protocol (protocol)) )
+            abs_path = g_strdup ( path );
+        else
+            abs_path = gnc_resolve_file_path ( path );
         if ( protocol == NULL )
             uri = g_strdup_printf ( "file://%s", abs_path );
         else
@@ -230,9 +271,9 @@ gchar *gnc_uri_create_uri (const gchar *protocol,
      */
     g_return_val_if_fail( hostname != 0, NULL );
 
-    if ( username != NULL )
+    if ( username != NULL && *username )
     {
-        if ( password != NULL )
+        if ( password != NULL && *password )
             userpass = g_strdup_printf ( "%s:%s@", username, password );
         else
             userpass = g_strdup_printf ( "%s@", username );
@@ -282,4 +323,22 @@ gchar *gnc_uri_normalize_uri (const gchar *uri, gboolean allow_password)
     g_free (path);
 
     return newuri;
+}
+
+gchar *gnc_uri_add_extension ( const gchar *uri, const gchar *extension )
+{
+    g_return_val_if_fail( uri != 0, NULL );
+
+    /* Only add extension if the user provided the extension and the uri is
+     * file based.
+     */
+    if ( !extension || !gnc_uri_is_file_uri( uri ) )
+        return g_strdup( uri );
+
+    /* Don't add extension if it's already there */
+    if ( g_str_has_suffix( uri, extension ) )
+        return g_strdup( uri );
+
+    /* Ok, all tests passed, let's add the extension */
+    return g_strconcat( uri, extension, NULL );
 }

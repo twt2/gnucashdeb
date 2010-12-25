@@ -144,6 +144,7 @@ typedef struct
     guint delete_surrounding_signal;
 
     guint shift_state;
+    guint keyval_state;
 
 } GnucashSheet;
 
@@ -226,8 +227,6 @@ void gnucash_register_goto_next_matching_row (GnucashRegister *reg,
 void gnucash_register_attach_popup(GnucashRegister *reg, GtkWidget *popup,
                                    gpointer data);
 
-void gnucash_register_set_initial_rows(guint num_rows);
-
 gboolean gnucash_register_has_selection (GnucashRegister *reg);
 void gnucash_register_cut_clipboard (GnucashRegister *reg);
 void gnucash_register_copy_clipboard (GnucashRegister *reg);
@@ -258,6 +257,6 @@ GdkColor *get_gtkrc_color (GnucashSheet *sheet, RegisterColor field_type);
 
 /*
   Local Variables:
-  c-basic-offset: 8
+  c-basic-offset: 4
   End:
 */

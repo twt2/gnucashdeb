@@ -31,7 +31,7 @@
     must identify the commodity that is being traded.
 
     @warning The system used here does not follow the object
-    handling and identification system (GUID's, Entities, etc.)
+    handling and identification system (GncGUID's, Entities, etc.)
     that the other parts of GnuCash use.  The API really should be
     ported over.  This would allow us to get rid of the
     commodity table routines defined below.
@@ -165,7 +165,7 @@ gint gnc_quote_source_num_entries(QuoteSourceType type);
  *
  *  @param name The internal name for this new quote source.
  *
- *  @param supported TRUE is this quote source is supported by F::Q.
+ *  @param supported TRUE if this quote source is supported by F::Q.
  *  Should only be set by the F::Q startup routine.
  *
  *  @return A pointer to the newly created quote source.
@@ -287,8 +287,8 @@ const char *gnc_quote_source_get_old_internal_name (const gnc_quote_source *sour
  *  to get automatic stock quote updates.  E.G. ACME, ACME.US, etc.
  *
  *  @param cusip A string containing the CUSIP code or similar
- *  UNIQUE code for this commodity. The stock ticker is NOT
- *  appropriate as that goes in the mnemonic field.
+ *  UNIQUE code for this commodity like the ISIN. The stock ticker is
+ *  NOT appropriate as that goes in the mnemonic field.
  *
  *  @param fraction The smallest division of this commodity
  *  allowed. I.E. If this is 1, then the commodity must be traded in
@@ -585,7 +585,7 @@ void  gnc_commodity_set_quote_source(gnc_commodity *cm, gnc_quote_source *src);
 /** Set the automatic price quote timezone for the specified
  *  commodity.  This should be a pointer to a null terminated string
  *  of the form "America/New_York", etc.  Legal values can be found in
- *  the known_timezones array in the file dialog-util.c.
+ *  the known_timezones array in the file src/gnome-utils/dialog-commodity.c.
  *
  *  @param cm A pointer to a commodity data structure.
  *
@@ -691,13 +691,10 @@ gboolean gnc_commodity_is_currency(const gnc_commodity *cm);
 @{
 */
 
-/** Returns the commodity table assoicated with a book.
+/** Returns the commodity table associated with a book.
  */
 /*@ dependent @*/
 gnc_commodity_table * gnc_commodity_table_get_table(QofBook *book);
-
-/* XXX backwards compat function; remove me someday */
-#define gnc_book_get_commodity_table gnc_commodity_table_get_table
 
 /** compare two tables for equality */
 gboolean gnc_commodity_table_equal(gnc_commodity_table *t_1,
@@ -723,8 +720,8 @@ gnc_commodity * gnc_commodity_table_find_full(const gnc_commodity_table * t,
         const char * fullname);
 
 /*@ dependent @*/
-gnc_commodity * gnc_commodity_find_commodity_by_guid(const GUID *guid, QofBook *book);
-gnc_commodity_namespace * gnc_commodity_find_namespace_by_guid(const GUID *guid, QofBook *book);
+gnc_commodity * gnc_commodity_find_commodity_by_guid(const GncGUID *guid, QofBook *book);
+gnc_commodity_namespace * gnc_commodity_find_namespace_by_guid(const GncGUID *guid, QofBook *book);
 
 /** @} */
 /* ---------------------------------------------------------- */
@@ -944,12 +941,12 @@ gboolean gnc_commodity_table_foreach_commodity(const gnc_commodity_table * table
 gnc_commodity_table * gnc_commodity_table_new(void);
 void          gnc_commodity_table_destroy(gnc_commodity_table * table);
 
-/** Given the commodity 'from', this routine will find and return the
+/** Given the commodity 'findlike', this routine will find and return the
  *   equivalent commodity (commodity with the same 'unique name') in
  *   the indicated book.  This routine is primarily useful for setting
  *   up clones of things across multiple books.
  */
-gnc_commodity * gnc_commodity_obtain_twin (const gnc_commodity *from, QofBook *book);
+gnc_commodity * gnc_commodity_obtain_twin (const gnc_commodity *findlike, QofBook *book);
 
 /** You should probably not be using gnc_commodity_table_register()
  * It is an internal routine for registering the gncObject for the

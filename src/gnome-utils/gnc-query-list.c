@@ -30,9 +30,6 @@
 #include "gnc-component-manager.h"
 #include "gnc-query-list.h"
 #include "search-param.h"
-#include "QueryCore.h"
-#include "QueryNew.h"
-#include "QueryObject.h"
 
 /* Signal codes */
 enum
@@ -129,7 +126,7 @@ gnc_query_list_construct (GNCQueryList *list, GList *param_list, Query *query)
     g_return_if_fail(IS_GNC_QUERY_LIST(list));
 
     /* more configuration */
-    list->query = gncQueryCopy(query);
+    list->query = qof_query_copy(query);
     list->column_params = param_list;
 
     /* cache the function to get the guid of this query type */
@@ -170,8 +167,8 @@ void gnc_query_list_reset_query (GNCQueryList *list, Query *query)
     g_return_if_fail(query);
     g_return_if_fail (IS_GNC_QUERY_LIST(list));
 
-    gncQueryDestroy(list->query);
-    list->query = gncQueryCopy(query);
+    qof_query_destroy(list->query);
+    list->query = qof_query_copy(query);
     gnc_query_list_set_query_sort(list, TRUE);
 }
 
@@ -191,7 +188,7 @@ update_booleans (GNCQueryList *list, gint row)
         const char *type = gnc_search_param_get_param_type (param);
 
         /* if this is a boolean, ignore it now -- we'll use a checkmark later */
-        if (safe_strcmp (type, QUERYCORE_BOOLEAN))
+        if (safe_strcmp (type, QOF_TYPE_BOOLEAN))
             continue;
 
         result = (gboolean) GPOINTER_TO_INT(gnc_search_param_compute_value(param, entry));
@@ -472,7 +469,7 @@ gnc_query_list_destroy (GtkObject *object)
     }
     if (list->query)
     {
-        xaccFreeQuery(list->query);
+        qof_query_destroy(list->query);
         list->query = NULL;
     }
     if (list->column_params)
@@ -704,8 +701,8 @@ gnc_query_list_set_query_sort (GNCQueryList *list, gboolean new_column)
     if (list->numeric_inv_sort)
     {
         const char *type = gnc_search_param_get_param_type (param);
-        if (!safe_strcmp(type, QUERYCORE_NUMERIC) ||
-                !safe_strcmp(type, QUERYCORE_DEBCRED))
+        if (!safe_strcmp(type, QOF_TYPE_NUMERIC) ||
+                !safe_strcmp(type, QOF_TYPE_DEBCRED))
             sort_order = !sort_order;
     }
 
@@ -716,13 +713,13 @@ gnc_query_list_set_query_sort (GNCQueryList *list, gboolean new_column)
 
         p1 = gnc_search_param_get_param_path(param);
         p2 = g_slist_prepend(NULL, QUERY_DEFAULT_SORT);
-        gncQuerySetSortOrder (list->query, p1, p2, NULL);
+        qof_query_set_sort_order (list->query, p1, p2, NULL);
     }
 
-    xaccQuerySetSortIncreasing (list->query,
-                                sort_order,
-                                sort_order,
-                                sort_order);
+    qof_query_set_sort_increasing (list->query,
+                                   sort_order,
+                                   sort_order,
+                                   sort_order);
 
     /*
      * Recompute the list. Is this really necessary? Why not just sort
@@ -786,7 +783,7 @@ gnc_query_list_fill(GNCQueryList *list)
     GNCQueryListPriv *priv;
     gchar *strings[list->num_columns + 1];
     GList *entries, *item;
-    const GUID *guid;
+    const GncGUID *guid;
     gint i;
 
     /* Clear all watches */
@@ -794,7 +791,7 @@ gnc_query_list_fill(GNCQueryList *list)
     gnc_gui_component_clear_watches (priv->component_id);
 
     /* Reverse the list now because 'append()' takes too long */
-    entries = gncQueryRun(list->query);
+    entries = qof_query_run(list->query);
 
     for (item = entries; item; item = item->next)
     {
@@ -811,7 +808,7 @@ gnc_query_list_fill(GNCQueryList *list)
             gpointer res = item->data;
 
             /* if this is a boolean, ignore it now -- we'll use a checkmark later */
-            if (!safe_strcmp (type, QUERYCORE_BOOLEAN))
+            if (!safe_strcmp (type, QOF_TYPE_BOOLEAN))
             {
                 strings[i++] = g_strdup("");
                 continue;
@@ -828,8 +825,8 @@ gnc_query_list_fill(GNCQueryList *list)
             }
 
             /* Now convert this to a text value for the row */
-            if (!safe_strcmp(type, QUERYCORE_DEBCRED) ||
-                    !safe_strcmp(type, QUERYCORE_NUMERIC))
+            if (!safe_strcmp(type, QOF_TYPE_DEBCRED) ||
+                    !safe_strcmp(type, QOF_TYPE_NUMERIC))
             {
                 gnc_numeric (*nfcn)(gpointer, QofParam *) =
                     (gnc_numeric(*)(gpointer, QofParam *))(qp->param_getfcn);
@@ -839,7 +836,7 @@ gnc_query_list_fill(GNCQueryList *list)
                 strings[i++] = g_strdup(xaccPrintAmount(value, gnc_default_print_info(FALSE)));
             }
             else
-                strings[i++] = gncQueryCoreToString (type, res, qp);
+                strings[i++] = qof_query_core_to_string (type, res, qp);
         }
 
         row = gtk_clist_append (GTK_CLIST(list), (gchar **) strings);
@@ -857,7 +854,7 @@ gnc_query_list_fill(GNCQueryList *list)
 
         /* and set a watcher on this item */
         gup = priv->get_guid;
-        guid = (const GUID*)((gup->param_getfcn)(item->data, gup));
+        guid = (const GncGUID*)((gup->param_getfcn)(item->data, gup));
         gnc_gui_component_watch_entity (priv->component_id, guid,
                                         QOF_EVENT_MODIFY | QOF_EVENT_DESTROY);
 

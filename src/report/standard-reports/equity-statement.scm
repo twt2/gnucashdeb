@@ -47,10 +47,9 @@
 
 (define-module (gnucash report standard-reports equity-statement))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
-(use-modules (ice-9 slib))
 (use-modules (gnucash gnc-module))
 
-(require 'printf)
+(use-modules (gnucash printf))
 
 (gnc:module-load "gnucash/report/report-system" 0)
 
@@ -67,7 +66,7 @@
 (define optname-start-date (N_ "Start Date"))
 (define optname-end-date (N_ "End Date"))
 
-(define optname-accounts (N_ "Accounts to include"))
+(define optname-accounts (N_ "Accounts"))
 (define opthelp-accounts
   (N_ "Report only on these accounts"))
 
@@ -674,15 +673,10 @@
 	  ;; however, this still doesn't seem to get around the
 	  ;; colspan bug... cf. gnc:colspans-are-working-right
 	  (if filename
-	      (let* ((port (open-output-file filename))
-		     (gnc:display-report-list-item
-		      (list doc) port " equity-statement.scm ")
-		     (close-output-port port)
-		     )
-		)
-	      )
-	  )
-	)
+	      (let* ((port (open-output-file filename)))
+                (gnc:display-report-list-item
+                 (list doc) port " equity-statement.scm ")
+                (close-output-port port)))))
     
     (gnc:report-finished)
     

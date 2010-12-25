@@ -83,9 +83,9 @@ xmlNodePtr
 gnc_schedXaction_dom_tree_create(SchedXaction *sx)
 {
     xmlNodePtr	ret;
-    GDate	*date;
+    const GDate	*date;
     gint        instCount;
-    const GUID        *templ_acc_guid;
+    const GncGUID        *templ_acc_guid;
     gboolean allow_2_2_incompat = TRUE;
 
     templ_acc_guid = xaccAccountGetGUID(sx->template_acct);
@@ -149,7 +149,7 @@ gnc_schedXaction_dom_tree_create(SchedXaction *sx)
                                         xaccSchedXactionGetEndDate(sx) ) );
     }
 
-    /* output template account GUID */
+    /* output template account GncGUID */
     xmlAddChild( ret,
                  guid_to_dom_tree(SX_TEMPL_ACCT,
                                   templ_acc_guid));
@@ -169,12 +169,12 @@ gnc_schedXaction_dom_tree_create(SchedXaction *sx)
     /* Output deferred-instance list. */
     {
         xmlNodePtr instNode;
-        temporalStateData *tsd;
+        SXTmpStateData *tsd;
         GList *l;
 
         for ( l = gnc_sx_get_defer_instances( sx ); l; l = l->next )
         {
-            tsd = (temporalStateData*)l->data;
+            tsd = (SXTmpStateData*)l->data;
 
             instNode = xmlNewNode( NULL, BAD_CAST SX_DEFER_INSTANCE );
             if ( g_date_valid( &tsd->last_date ) )
@@ -218,7 +218,7 @@ sx_id_handler( xmlNodePtr node, gpointer sx_pdata )
 {
     struct sx_pdata *pdata = sx_pdata;
     SchedXaction *sx = pdata->sx;
-    GUID        *tmp = dom_tree_to_guid( node );
+    GncGUID        *tmp = dom_tree_to_guid( node );
 
     g_return_val_if_fail( tmp, FALSE );
     xaccSchedXactionSetGUID(sx, tmp);
@@ -312,7 +312,7 @@ sx_advRemind_handler( xmlNodePtr node, gpointer sx_pdata )
 static
 gboolean
 sx_set_date( xmlNodePtr node, SchedXaction *sx,
-             void (*settor)( SchedXaction *sx, GDate *d ) )
+             void (*settor)( SchedXaction *sx, const GDate *d ) )
 {
     GDate *date;
     date = dom_tree_to_gdate( node );
@@ -371,7 +371,7 @@ sx_end_handler( xmlNodePtr node, gpointer sx_pdata )
 }
 
 static void
-_fixup_recurrence_start_dates(GDate *sx_start_date, GList *schedule)
+_fixup_recurrence_start_dates(const GDate *sx_start_date, GList *schedule)
 {
     GList *iter;
     for (iter = schedule; iter != NULL; iter = iter->next)
@@ -485,7 +485,7 @@ gboolean
 sx_defer_last_handler( xmlNodePtr node, gpointer gpTSD )
 {
     GDate *gd;
-    temporalStateData *tsd = (temporalStateData*)gpTSD;
+    SXTmpStateData *tsd = (SXTmpStateData*)gpTSD;
 
     g_return_val_if_fail( node, FALSE );
     gd = dom_tree_to_gdate( node );
@@ -500,7 +500,7 @@ gboolean
 sx_defer_rem_occur_handler( xmlNodePtr node, gpointer gpTSD )
 {
     gint64 remOccur;
-    temporalStateData *tsd = (temporalStateData*)gpTSD;
+    SXTmpStateData *tsd = (SXTmpStateData*)gpTSD;
     g_return_val_if_fail( node, FALSE );
 
     if ( ! dom_tree_to_integer( node, &remOccur ) )
@@ -516,7 +516,7 @@ gboolean
 sx_defer_inst_count_handler( xmlNodePtr node, gpointer gpTSD )
 {
     gint64 instCount;
-    temporalStateData *tsd = (temporalStateData*)gpTSD;
+    SXTmpStateData *tsd = (SXTmpStateData*)gpTSD;
     g_return_val_if_fail( node, FALSE );
 
     if ( ! dom_tree_to_integer( node, &instCount ) )
@@ -542,11 +542,11 @@ sx_defer_inst_handler( xmlNodePtr node, gpointer sx_pdata )
 {
     struct sx_pdata *pdata = sx_pdata;
     SchedXaction *sx = pdata->sx;
-    temporalStateData *tsd;
+    SXTmpStateData *tsd;
 
     g_return_val_if_fail( node, FALSE );
 
-    tsd = g_new0( temporalStateData, 1 );
+    tsd = g_new0( SXTmpStateData, 1 );
     g_assert( sx_defer_dom_handlers != NULL );
     if ( !dom_tree_generic_parse( node,
                                   sx_defer_dom_handlers,
@@ -588,7 +588,7 @@ sx_templ_acct_handler( xmlNodePtr node, gpointer sx_pdata)
 {
     struct sx_pdata *pdata = sx_pdata;
     SchedXaction *sx = pdata->sx;
-    GUID *templ_acct_guid = dom_tree_to_guid(node);
+    GncGUID *templ_acct_guid = dom_tree_to_guid(node);
     Account *account;
 
     if (!templ_acct_guid)
@@ -749,7 +749,7 @@ gnc_schedXaction_end_handler(gpointer data_for_children,
 
         /* We're dealing with a pre-200107<near-end-of-month> rgmerk
            change re: storing template accounts. */
-        /* Fix: get account with name of our GUID from the template
+        /* Fix: get account with name of our GncGUID from the template
            accounts.  Make that our template_acct pointer. */
         /* THREAD-UNSAFE */
         id = guid_to_string( xaccSchedXactionGetGUID( sx ) );
@@ -767,7 +767,7 @@ gnc_schedXaction_end_handler(gpointer data_for_children,
             xmlFreeNode( tree );
             return FALSE;
         }
-        g_debug("template account name [%s] for SX with GUID [%s]",
+        g_debug("template account name [%s] for SX with GncGUID [%s]",
                 xaccAccountGetName( acct ), id );
 
         /* FIXME: free existing template account.

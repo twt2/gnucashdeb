@@ -296,7 +296,7 @@ xaccAccountGetDefaultGainAccount (const Account *acc, const gnc_commodity * curr
     Account *gain_acct = NULL;
     KvpFrame *cwd;
     KvpValue *vvv;
-    GUID * gain_acct_guid;
+    GncGUID * gain_acct_guid;
     const char * cur_name;
 
     if (!acc || !currency) return NULL;
@@ -326,7 +326,7 @@ GetOrMakeGainAcct (Account *acc, gnc_commodity * currency)
     Account *gain_acct = NULL;
     KvpFrame *cwd;
     KvpValue *vvv;
-    GUID * gain_acct_guid;
+    GncGUID * gain_acct_guid;
     const char * cur_name;
 
     cwd = xaccAccountGetSlots (acc);
@@ -494,7 +494,7 @@ xaccSplitAssignToLot (Split *split, GNCLot *lot)
                                 GNC_DENOM_AUTO, GNC_HOW_DENOM_REDUCE);
         val_a = gnc_numeric_mul (frac, val_tot,
                                  gnc_numeric_denom(val_tot),
-                                 GNC_HOW_RND_ROUND | GNC_HOW_DENOM_EXACT);
+                                 GNC_HOW_RND_ROUND_HALF_UP | GNC_HOW_DENOM_EXACT);
 
         val_b = gnc_numeric_sub_fixed (val_tot, val_a);
         if (gnc_numeric_check(val_a))
@@ -630,7 +630,7 @@ Split *
 xaccSplitGetCapGainsSplit (const Split *split)
 {
     KvpValue *val;
-    GUID *gains_guid;
+    GncGUID *gains_guid;
     Split *gains_split;
 
     if (!split) return NULL;
@@ -653,7 +653,7 @@ Split *
 xaccSplitGetGainsSourceSplit (const Split *split)
 {
     KvpValue *val;
-    GUID *source_guid;
+    GncGUID *source_guid;
     Split *source_split;
 
     if (!split) return NULL;
@@ -876,7 +876,7 @@ xaccSplitComputeCapGains(Split *split, Account *gain_acc)
     /* Basis for this split: */
     value = gnc_numeric_mul (frac, lot_value,
                              gnc_numeric_denom(opening_value),
-                             GNC_HOW_DENOM_EXACT | GNC_HOW_RND_ROUND);
+                             GNC_HOW_DENOM_EXACT | GNC_HOW_RND_ROUND_HALF_UP);
     /* Capital gain for this split: */
     value = gnc_numeric_sub (value, split->value,
                              GNC_DENOM_AUTO, GNC_HOW_DENOM_FIXED);
@@ -974,17 +974,24 @@ xaccSplitComputeCapGains(Split *split, Account *gain_acc)
         {
             trans = lot_split->parent;
             gain_split = xaccSplitGetOtherSplit (lot_split);
+
+            /* If the gains transaction has been edited so that it no longer has
+               just two splits, ignore it and assume it's still correct. */
+            if (!gain_split)
+            {
+                new_gain_split = FALSE;
+            }
             /* If the gain is already recorded corectly do nothing.  This is
              * more than just an optimization since this may be called during
              * gnc_book_partition_txn and depending on the order in which things
              * happen some splits may be in the wrong book at that time. */
-            if (split->gains_split == lot_split &&
-                    lot_split->gains_split == split &&
-                    gain_split->gains_split == split &&
-                    gnc_numeric_equal (xaccSplitGetValue (lot_split), value) &&
-                    gnc_numeric_zero_p (xaccSplitGetAmount (lot_split)) &&
-                    gnc_numeric_equal (xaccSplitGetValue (gain_split), negvalue) &&
-                    gnc_numeric_equal (xaccSplitGetAmount (gain_split), negvalue))
+            else if (split->gains_split == lot_split &&
+                     lot_split->gains_split == split &&
+                     gain_split->gains_split == split &&
+                     gnc_numeric_equal (xaccSplitGetValue (lot_split), value) &&
+                     gnc_numeric_zero_p (xaccSplitGetAmount (lot_split)) &&
+                     gnc_numeric_equal (xaccSplitGetValue (gain_split), negvalue) &&
+                     gnc_numeric_equal (xaccSplitGetAmount (gain_split), negvalue))
             {
                 new_gain_split = FALSE;
             }

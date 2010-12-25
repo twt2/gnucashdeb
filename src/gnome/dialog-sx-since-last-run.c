@@ -4,7 +4,7 @@
  * Copyright (C) 2006 Joshua Sled <jsled@asynchronous.org>          *
  *                                                                  *
  * This program is free software; you can redistribute it and/or    *
- * modify it under the terms of version 2 of the GNU General Public *
+ * modify it under the terms of version 2 and/or version 3 of the GNU General Public *
  * License as published by the Free Software Foundation.            *
  *
  * As a special exception, permission is granted to link the binary
@@ -43,7 +43,7 @@
 
 #include "gnc-ui-util.h"
 #include "Query.h"
-#include "QueryNew.h"
+#include "qof.h"
 #include "gnc-ledger-display.h"
 #include "gnc-plugin-page-register.h"
 #include "gnc-main-window.h"
@@ -445,7 +445,7 @@ gsslrtma_populate_tree_store(GncSxSlrTreeModelAdapter *model)
         char last_occur_date_buf[MAX_DATE_LENGTH+1];
 
         {
-            GDate *last_occur = xaccSchedXactionGetLastOccurDate(instances->sx);
+            const GDate *last_occur = xaccSchedXactionGetLastOccurDate(instances->sx);
             if (last_occur == NULL || !g_date_valid(last_occur))
             {
                 g_stpcpy(last_occur_date_buf, _("Never"));
@@ -1000,14 +1000,14 @@ _show_created_transactions(GncSxSinceLastRunDialog *app_dialog, GList *created_t
     Query *book_query, *guid_query, *query;
     GList *guid_iter;
 
-    book_query = xaccMallocQuery();
-    guid_query = xaccMallocQuery();
-    xaccQuerySetBook(book_query, gnc_get_current_book());
+    book_query = qof_query_create_for(GNC_ID_SPLIT);
+    guid_query = qof_query_create_for(GNC_ID_SPLIT);
+    qof_query_set_book(book_query, gnc_get_current_book());
     for (guid_iter = created_txn_guids; guid_iter != NULL; guid_iter = guid_iter->next)
     {
-        xaccQueryAddGUIDMatch(guid_query, (GUID*)guid_iter->data, GNC_ID_TRANS, QUERY_OR);
+        xaccQueryAddGUIDMatch(guid_query, (GncGUID*)guid_iter->data, GNC_ID_TRANS, QOF_QUERY_OR);
     }
-    query = xaccQueryMerge(book_query, guid_query, QUERY_AND);
+    query = qof_query_merge(book_query, guid_query, QOF_QUERY_AND);
 
     // inspired by dialog-find-transactions:do_find_cb:
     ledger = gnc_ledger_display_query(query, SEARCH_LEDGER, REG_STYLE_JOURNAL);
@@ -1016,9 +1016,9 @@ _show_created_transactions(GncSxSinceLastRunDialog *app_dialog, GList *created_t
     g_object_set(G_OBJECT(page), "page-name", _("Created Transactions"), NULL);
     gnc_main_window_open_page(NULL, page);
 
-    xaccFreeQuery(query);
-    xaccFreeQuery(book_query);
-    xaccFreeQuery(guid_query);
+    qof_query_destroy(query);
+    qof_query_destroy(book_query);
+    qof_query_destroy(guid_query);
 }
 
 static void

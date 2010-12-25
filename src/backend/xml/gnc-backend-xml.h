@@ -35,6 +35,14 @@
 #include <gmodule.h>
 
 #include "qofbackend-p.h"
+
+typedef enum
+{
+    XML_RETAIN_NONE,
+    XML_RETAIN_DAYS,
+    XML_RETAIN_ALL
+} XMLFileRetentionType;
+
 struct FileBackend_struct
 {
     QofBackend be;
@@ -47,6 +55,7 @@ struct FileBackend_struct
 
     QofBook *primary_book;  /* The primary, main open book */
 
+    XMLFileRetentionType file_retention_type;
     int file_retention_days;
     gboolean file_compression;
 };
@@ -60,9 +69,13 @@ typedef struct FileBackend_struct FileBackend;
  * statically linked into the application. */
 void gnc_module_init_backend_xml(void);
 
+#ifndef GNC_NO_LOADABLE_MODULES
 /** This is the standarized initialization function of a qof_backend
- * GModule. This one simply calls gnc_module_init_backend_file(). */
-G_MODULE_EXPORT void
-qof_backend_module_init(void);
+ * GModule, but compiling this can be disabled by defining
+ * GNC_NO_LOADABLE_MODULES. This one simply calls
+ * gnc_module_init_backend_file(). */
+G_MODULE_EXPORT
+void qof_backend_module_init(void);
+#endif
 
 #endif /* GNC_BACKEND_XML_H_ */

@@ -743,7 +743,7 @@ gxi_parse_file (GncXmlImportData *data)
     gxi_session_destroy (data);
     session = qof_session_new ();
     data->session = session;
-    qof_session_begin (session, data->filename, TRUE, FALSE);
+    qof_session_begin (session, data->filename, TRUE, FALSE, FALSE);
     io_err = qof_session_get_error (session);
     if (io_err != ERR_BACKEND_NO_ERR)
     {
@@ -751,8 +751,6 @@ gxi_parse_file (GncXmlImportData *data)
         goto cleanup_parse_file;
     }
 
-    logpath = gnc_uri_get_path (data->filename);
-    xaccLogSetBaseName (logpath);
     xaccLogDisable ();
     gxi_update_progress_bar (_("Reading file..."), 0.0);
     qof_session_load (session, gxi_update_progress_bar);

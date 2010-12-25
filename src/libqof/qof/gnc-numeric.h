@@ -263,7 +263,7 @@ gnc_numeric gnc_numeric_zero(void)
  *  but GNC_DENOM_AUTO is not recognized; a denominator
  *  must be specified either explicitctly or through sigfigs.
  */
-gnc_numeric double_to_gnc_numeric(double in, gint64 denom,
+gnc_numeric double_to_gnc_numeric(double n, gint64 denom,
                                   gint how);
 
 /** Read a gnc_numeric from str, skipping any leading whitespace.
@@ -294,7 +294,7 @@ gint64 gnc_numeric_denom(gnc_numeric a)
 }
 
 /** Convert numeric to floating-point value. */
-gdouble      gnc_numeric_to_double(gnc_numeric in);
+gdouble      gnc_numeric_to_double(gnc_numeric n);
 
 /** Convert to string. The returned buffer is to be g_free'd by the
  *  caller (it was allocated through g_strdup) */
@@ -447,19 +447,22 @@ gnc_numeric gnc_numeric_div_with_error(gnc_numeric a, gnc_numeric b,
  *  specified denominator under standard arguments
  *  'denom' and 'how'.
  */
-gnc_numeric gnc_numeric_convert(gnc_numeric in, gint64 denom,
+gnc_numeric gnc_numeric_convert(gnc_numeric n, gint64 denom,
                                 gint how);
 
-/** Same as gnc_numeric_convert, but return a remainder
+#if 0
+/* Implementation missing! */
+/* Same as gnc_numeric_convert, but return a remainder
  *  value for accumulating conversion error.
 */
-gnc_numeric gnc_numeric_convert_with_error(gnc_numeric in, gint64 denom,
+gnc_numeric gnc_numeric_convert_with_error(gnc_numeric n, gint64 denom,
         gint how,
         gnc_numeric * error);
+#endif
 
 /** Return input after reducing it by Greated Common Factor (GCF)
  *  elimination */
-gnc_numeric gnc_numeric_reduce(gnc_numeric in);
+gnc_numeric gnc_numeric_reduce(gnc_numeric n);
 
 /** Attempt to convert the denominator to an exact power of ten without
  *  rounding.
@@ -483,28 +486,6 @@ gboolean gnc_numeric_to_decimal(gnc_numeric * a,
 GType gnc_numeric_get_type( void );
 #define GNC_TYPE_NUMERIC (gnc_numeric_get_type ())
 
-/** @} */
-
-/** @name Deprecated, backwards-compatible definitions
-  @{
-*/
-#define GNC_RND_FLOOR	GNC_HOW_RND_FLOOR
-#define GNC_RND_CEIL 	GNC_HOW_RND_CEIL
-#define GNC_RND_TRUNC	GNC_HOW_RND_TRUNC
-#define GNC_RND_PROMOTE 	GNC_HOW_RND_PROMOTE
-#define GNC_RND_ROUND_HALF_DOWN	GNC_HOW_RND_ROUND_HALF_DOWN
-#define GNC_RND_ROUND_HALF_UP 	GNC_HOW_RND_ROUND_HALF_UP
-#define GNC_RND_ROUND	GNC_HOW_RND_ROUND
-#define GNC_RND_NEVER	GNC_HOW_RND_NEVER
-
-#define GNC_DENOM_EXACT  	GNC_HOW_DENOM_EXACT
-#define GNC_DENOM_REDUCE 	GNC_HOW_DENOM_REDUCE
-#define GNC_DENOM_LCD   	GNC_HOW_DENOM_LCD
-#define GNC_DENOM_FIXED 	GNC_HOW_DENOM_FIXED
-#define GNC_DENOM_SIGFIG 	GNC_HOW_DENOM_SIGFIG
-
-#define GNC_DENOM_SIGFIGS(X)  GNC_HOW_DENOM_SIGFIGS(X)
-#define GNC_NUMERIC_GET_SIGFIGS(X) GNC_HOW_GET_SIGFIGS(X)
 /** @} */
 /** @} */
 #endif

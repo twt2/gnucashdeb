@@ -33,6 +33,11 @@
 #include "gncOwner.h"
 #include "test-stuff.h"
 
+#include "gnc-backend-xml.h"
+
+#define FILE_NAME "xml:///tmp/testbook.gnucash"
+#define GNC_LIB_NAME "gncmod-backend-xml"
+
 static int count = 0;
 
 static void
@@ -69,13 +74,13 @@ test_job (void)
 
     session = qof_session_new();
     be = NULL;
-    qof_session_begin(session, QOF_STDOUT, FALSE, FALSE);
+    qof_session_begin(session, FILE_NAME, FALSE, FALSE, FALSE);
     book = qof_session_get_book (session);
     be = qof_book_get_backend(book);
 
     /* The book *must* have a backend to pass the test of the 'dirty' flag */
     /* See the README file for details */
-    do_test (be != NULL, "qsf backend could not be set");
+    do_test (be != NULL, "xml backend could not be set");
 
     /* Test creation/destruction */
     {
@@ -92,7 +97,7 @@ test_job (void)
 
     /* Test setting/getting routines; does the active flag get set right? */
     {
-        GUID guid;
+        GncGUID guid;
 
         test_string_fcn (book, "Id", gncJobSetID, gncJobGetID);
         test_string_fcn (book, "Name", gncJobSetName, gncJobGetName);
@@ -166,9 +171,11 @@ test_string_fcn (QofBook *book, const char *message,
     do_test (!qof_instance_is_dirty (QOF_INSTANCE(job)), "test if start dirty");
     gncJobBeginEdit (job);
     set (job, str);
+    /* Job record should be dirty */
     do_test (qof_instance_is_dirty (QOF_INSTANCE(job)), "test dirty later");
     gncJobCommitEdit (job);
-    do_test (qof_instance_is_dirty (QOF_INSTANCE(job)), "test dirty after commit");
+    /* Job record should be not dirty */
+    do_test (!qof_instance_is_dirty (QOF_INSTANCE(job)), "test dirty after commit");
     do_test (safe_strcmp (get (job), str) == 0, message);
     gncJobSetActive (job, FALSE);
     count++;
@@ -186,8 +193,10 @@ test_numeric_fcn (QofBook *book, const char *message,
     do_test (!qof_instance_is_dirty (QOF_INSTANCE(job)), "test if start dirty");
     gncJobBeginEdit (job);
     set (job, num);
+    /* Job record should be dirty */
     do_test (qof_instance_is_dirty (QOF_INSTANCE(job)), "test dirty later");
     gncJobCommitEdit (job);
+    /* Job record should be not dirty */
     do_test (!qof_instance_is_dirty (QOF_INSTANCE(job)), "test dirty after commit");
     do_test (gnc_numeric_equal (get (job), num), message);
     gncJobSetActive (job, FALSE);
@@ -208,9 +217,11 @@ test_bool_fcn (QofBook *book, const char *message,
     set (job, FALSE);
     set (job, TRUE);
     set (job, num);
+    /* Job record should be dirty */
     do_test (qof_instance_is_dirty (QOF_INSTANCE(job)), "test dirty later");
     gncJobCommitEdit (job);
-    do_test (qof_instance_is_dirty (QOF_INSTANCE(job)), "test dirty after commit");
+    /* Job record should be not dirty */
+    do_test (!qof_instance_is_dirty (QOF_INSTANCE(job)), "test dirty after commit");
     do_test (get (job) == num, message);
     gncJobSetActive (job, FALSE);
     count++;
@@ -228,8 +239,10 @@ test_gint_fcn (QofBook *book, const char *message,
     do_test (!qof_instance_is_dirty (QOF_INSTANCE(job)), "test if start dirty");
     gncJobBeginEdit (job);
     set (job, num);
+    /* Job record should be dirty */
     do_test (qof_instance_is_dirty (QOF_INSTANCE(job)), "test dirty later");
     gncJobCommitEdit (job);
+    /* Job record should be not dirty */
     do_test (!qof_instance_is_dirty (QOF_INSTANCE(job)), "test dirty after commit");
     do_test (get (job) == num, message);
     gncJobSetActive (job, FALSE);
@@ -241,6 +254,7 @@ int
 main (int argc, char **argv)
 {
     qof_init();
+    qof_load_backend_library ("../../../backend/xml/.libs/", GNC_LIB_NAME);
     do_test (gncInvoiceRegister(), "Cannot register GncInvoice");
     do_test (gncJobRegister (),  "Cannot register GncJob");
     do_test (gncCustomerRegister(), "Cannot register GncCustomer");

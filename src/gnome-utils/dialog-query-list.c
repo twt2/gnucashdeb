@@ -25,8 +25,9 @@
 
 #include "config.h"
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
-#include "QueryNew.h"
+#include "qof.h"
 
 #include "dialog-utils.h"
 #include "gnc-component-manager.h"
@@ -57,7 +58,7 @@ dql_clear_booklist (DialogQueryList *dql)
     g_return_if_fail (dql);
 
     for (node = dql->books; node; node = node->next)
-        xaccGUIDFree ((GUID*)node->data);
+        guid_free ((GncGUID*)node->data);
     g_list_free (dql->books);
     dql->books = NULL;
 }
@@ -69,10 +70,10 @@ dql_build_booklist (DialogQueryList *dql, Query *q)
 
     g_return_if_fail (dql);
 
-    for (node = gncQueryGetBooks(q); node; node = node->next)
+    for (node = qof_query_get_books(q); node; node = node->next)
     {
         QofBook *book = node->data;
-        GUID *guid = xaccGUIDMalloc();
+        GncGUID *guid = guid_malloc();
         *guid = *(qof_book_get_guid(book));
         dql->books = g_list_prepend(dql->books, guid);
     }
@@ -159,7 +160,7 @@ gnc_dialog_query_list_refresh_handler (GHashTable *changes, gpointer user_data)
     {
         for (node = dql->books; node; node = node->next)
         {
-            info = gnc_gui_get_entity_events (changes, (const GUID*)(node->data));
+            info = gnc_gui_get_entity_events (changes, (const GncGUID*)(node->data));
             if (info && (info->event_mask & QOF_EVENT_DESTROY))
             {
                 gnc_close_gui_component (dql->component_id);
@@ -229,7 +230,7 @@ gnc_dialog_query_list_new (GList *param_list, Query *q)
 
     /* and register the books */
     for (node = dql->books; node; node = node->next)
-        gnc_gui_component_watch_entity (dql->component_id, (GUID*)node->data,
+        gnc_gui_component_watch_entity (dql->component_id, (GncGUID*)node->data,
                                         QOF_EVENT_DESTROY);
 
     return dql;
@@ -263,7 +264,9 @@ void gnc_dialog_query_list_set_buttons (DialogQueryList *dql,
     /* build up the buttons */
     for (i = 0; buttons[i].label; i++)
     {
-        button = gtk_button_new_with_label (buttons[i].label);
+        /* Note: The "label" member of the GNCDisplayListButton still
+         * isn't translated. Hence, we must translate it here. */
+        button = gtk_button_new_with_label (_(buttons[i].label));
         g_object_set_data (G_OBJECT (button), "data", &(dql->buttons[i]));
         g_signal_connect (G_OBJECT (button), "clicked",
                           G_CALLBACK(gnc_dialog_query_list_button_clicked), dql);

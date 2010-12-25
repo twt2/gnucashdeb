@@ -39,6 +39,7 @@
 #include <limits.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <regex.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
@@ -59,6 +60,11 @@ typedef int ssize_t;
 # define read _read
 # define write _write
 #endif
+#include "platform.h"
+#if COMPILER(MSVC)
+# define g_fopen fopen
+# define g_open _open
+#endif
 
 #include "qof.h"
 #include "TransLog.h"
@@ -71,12 +77,25 @@ typedef int ssize_t;
 #include "gnc-backend-xml.h"
 #include "gnc-gconf-utils.h"
 
+#include "gnc-address-xml-v2.h"
+#include "gnc-bill-term-xml-v2.h"
+#include "gnc-customer-xml-v2.h"
+#include "gnc-employee-xml-v2.h"
+#include "gnc-entry-xml-v2.h"
+#include "gnc-invoice-xml-v2.h"
+#include "gnc-job-xml-v2.h"
+#include "gnc-order-xml-v2.h"
+#include "gnc-owner-xml-v2.h"
+#include "gnc-tax-table-xml-v2.h"
+#include "gnc-vendor-xml-v2.h"
+
 #ifndef HAVE_STRPTIME
 # include "strptime.h"
 #endif
 
-#define GNC_BE_DAYS "file_retention_days"
-#define GNC_BE_ZIP  "file_compression"
+#define KEY_FILE_COMPRESSION  "file_compression"
+#define KEY_RETAIN_TYPE "retain_type"
+#define KEY_RETAIN_DAYS "retain_days"
 
 static QofLogModule log_module = GNC_MOD_BACKEND;
 
@@ -87,10 +106,9 @@ typedef enum
     GNC_BOOK_XML1_FILE,
     GNC_BOOK_XML2_FILE,
     GNC_BOOK_XML2_FILE_NO_ENCODING,
-    QSF_GNC_OBJECT,
-    QSF_OBJECT,
-    QSF_MAP,
 } QofBookFileType;
+
+static gboolean save_may_clobber_data (QofBackend *bend);
 
 /* ================================================================= */
 
@@ -122,6 +140,8 @@ gnc_xml_be_get_file_lock (FileBackend *be)
         case EACCES:
         case EROFS:
         case ENOSPC:
+            PWARN( "Unable to create the lockfile %s; may not have write priv",
+                   be->lockfile );
             be_err = ERR_BACKEND_READONLY;
             break;
         default:
@@ -134,7 +154,7 @@ gnc_xml_be_get_file_lock (FileBackend *be)
 
     /* OK, now work around some NFS atomic lock race condition
      * mumbo-jumbo.  We do this by linking a unique file, and
-     * then examing the link count.  At least that's what the
+     * then examining the link count.  At least that's what the
      * NFS programmers guide suggests.
      * Note: the "unique filename" must be unique for the
      * triplet filename-host-process, otherwise accidental
@@ -164,9 +184,6 @@ gnc_xml_be_get_file_lock (FileBackend *be)
 # ifdef ENOTSUP
                 || errno == ENOTSUP
 # endif
-# ifdef ENOSYS
-                || errno == ENOSYS
-# endif
            )
         {
             be->linkfile = NULL;
@@ -186,6 +203,8 @@ gnc_xml_be_get_file_lock (FileBackend *be)
     {
         /* oops .. stat failed!  This can't happen! */
         qof_backend_set_error ((QofBackend*)be, ERR_BACKEND_LOCKED);
+        qof_backend_set_message ((QofBackend*)be, "Failed to stat lockfile %s",
+                                 be->lockfile );
         g_unlink (pathbuf);
         close (be->lockfd);
         g_unlink (be->lockfile);
@@ -219,8 +238,8 @@ gnc_xml_be_get_file_lock (FileBackend *be)
 
 static void
 xml_session_begin(QofBackend *be_start, QofSession *session,
-                  const char *book_id,
-                  gboolean ignore_lock, gboolean create_if_nonexistent)
+                  const char *book_id, gboolean ignore_lock,
+                  gboolean create, gboolean force)
 {
     FileBackend *be = (FileBackend*) be_start;
 
@@ -232,9 +251,17 @@ xml_session_begin(QofBackend *be_start, QofSession *session,
     if (NULL == be->fullpath)
     {
         qof_backend_set_error (be_start, ERR_FILEIO_FILE_NOT_FOUND);
+        qof_backend_set_message (be_start, "No path specified");
         LEAVE("");
         return;
     }
+    if (create && !force && save_may_clobber_data( be_start ) )
+    {
+        qof_backend_set_error (be_start, ERR_BACKEND_STORE_EXISTS);
+        LEAVE("Might clobber, no force");
+        return;
+    }
+
     be->be.fullpath = be->fullpath;
     be->dirname = g_path_get_dirname (be->fullpath);
 
@@ -245,7 +272,9 @@ xml_session_begin(QofBackend *be_start, QofSession *session,
         /* Again check whether the directory can be accessed */
         rc = g_stat (be->dirname, &statbuf);
         if (rc != 0
-#ifndef _MSC_VER
+#if COMPILER(MSVC)
+                || (statbuf.st_mode & _S_IFDIR) == 0
+#else
                 || !S_ISDIR(statbuf.st_mode)
 #endif
            )
@@ -253,6 +282,7 @@ xml_session_begin(QofBackend *be_start, QofSession *session,
             /* Error on stat or if it isn't a directory means we
                cannot find this filename */
             qof_backend_set_error (be_start, ERR_FILEIO_FILE_NOT_FOUND);
+            qof_backend_set_message (be_start, "Couldn't find directory for %s", be->fullpath);
             g_free (be->fullpath);
             be->fullpath = NULL;
             g_free (be->dirname);
@@ -263,10 +293,11 @@ xml_session_begin(QofBackend *be_start, QofSession *session,
 
         /* Now check whether we can g_stat the file itself */
         rc = g_stat (be->fullpath, &statbuf);
-        if ((rc != 0) && (!create_if_nonexistent))
+        if ((rc != 0) && (!create))
         {
             /* Error on stat means the file doesn't exist */
             qof_backend_set_error (be_start, ERR_FILEIO_FILE_NOT_FOUND);
+            qof_backend_set_message (be_start, "Couldn't find %s", be->fullpath);
             g_free (be->fullpath);
             be->fullpath = NULL;
             g_free (be->dirname);
@@ -275,16 +306,16 @@ xml_session_begin(QofBackend *be_start, QofSession *session,
             return;
         }
         if (rc == 0
-#ifndef _MSC_VER
+#if COMPILER(MSVC)
+                && (statbuf.st_mode & _S_IFDIR) != 0
+#else
                 && S_ISDIR(statbuf.st_mode)
 #endif
            )
         {
-            /* FIXME: What is actually checked here? Whether the
-               fullpath erroneously points to a directory or what?
-               Then the error message should be changed into something
-               much more clear! */
             qof_backend_set_error (be_start, ERR_FILEIO_UNKNOWN_FILE_TYPE);
+            qof_backend_set_message(be_start, "Path %s is a directory",
+                                    be->fullpath);
             g_free (be->fullpath);
             be->fullpath = NULL;
             g_free (be->dirname);
@@ -294,10 +325,14 @@ xml_session_begin(QofBackend *be_start, QofSession *session,
         }
     }
 
+
     /* ---------------------------------------------------- */
     /* We should now have a fully resolved path name.
-     * Lets see if we can get a lock on it. */
+     * Let's start logging */
+    xaccLogSetBaseName (be->fullpath);
+    PINFO ("logpath=%s", be->fullpath ? be->fullpath : "(null)");
 
+    /* And let's see if we can get a lock on it. */
     be->lockfile = g_strconcat(be->fullpath, ".LCK", NULL);
 
     if (!ignore_lock && !gnc_xml_be_get_file_lock (be))
@@ -359,6 +394,9 @@ xml_session_end(QofBackend *be_start)
 static void
 xml_destroy_backend(QofBackend *be)
 {
+    /* Stop transaction logging */
+    xaccLogSetBaseName (NULL);
+
     qof_backend_destroy(be);
     g_free(be);
 }
@@ -371,7 +409,7 @@ xml_destroy_backend(QofBackend *be)
 
    If make_backup is true, write out a time-stamped copy of the file
    into the same directory as the indicated file, with a filename of
-   "file.YYYYMMDDHHMMSS.xac" where YYYYMMDDHHMMSS is replaced with the
+   "file.YYYYMMDDHHMMSS.gnucash" where YYYYMMDDHHMMSS is replaced with the
    current year/month/day/hour/minute/second. */
 
 /* The variable buf_size must be a compile-time constant */
@@ -576,7 +614,7 @@ gnc_xml_be_backup_file(FileBackend *be)
 
     if (gnc_xml_be_determine_file_type(datafile) == GNC_BOOK_BIN_FILE)
     {
-        /* make a more permament safer backup */
+        /* make a more permanent safer backup */
         const char *back = "-binfmt.bkup";
         char *bin_bkup = g_new(char, strlen(datafile) + strlen(back) + 1);
         strcpy(bin_bkup, datafile);
@@ -590,11 +628,7 @@ gnc_xml_be_backup_file(FileBackend *be)
     }
 
     timestamp = xaccDateUtilGetStampNow ();
-    backup = g_new (char, strlen (datafile) + strlen (timestamp) + 6);
-    strcpy (backup, datafile);
-    strcat (backup, ".");
-    strcat (backup, timestamp);
-    strcat (backup, ".xac");
+    backup = g_strconcat( datafile, ".", timestamp, GNC_DATAFILE_EXT, NULL );
     g_free (timestamp);
 
     bkup_ret = gnc_int_link_or_make_backup(be, datafile, backup);
@@ -630,6 +664,7 @@ gnc_xml_be_write_to_file(FileBackend *fbe,
     if (!mktemp(tmp_name))
     {
         qof_backend_set_error(be, ERR_BACKEND_MISC);
+        qof_backend_set_message( be, "Failed to make temp file" );
         LEAVE("");
         return FALSE;
     }
@@ -653,6 +688,7 @@ gnc_xml_be_write_to_file(FileBackend *fbe,
             if (g_chmod(tmp_name, statbuf.st_mode) != 0)
             {
                 /* qof_backend_set_error(be, ERR_BACKEND_PERM); */
+                /* qof_backend_set_message( be, "Failed to chmod filename %s", tmp_name ); */
                 /* Even if the chmod did fail, the save
                    nevertheless completed successfully. It is
                    therefore wrong to signal the ERR_BACKEND_PERM
@@ -672,6 +708,7 @@ gnc_xml_be_write_to_file(FileBackend *fbe,
             if (chown(tmp_name, -1, statbuf.st_gid) != 0)
             {
                 /* qof_backend_set_error(be, ERR_BACKEND_PERM); */
+                /* qof_backend_set_message( be, "Failed to chown filename %s", tmp_name ); */
                 /* A failed chown doesn't mean that the saving itself
                 failed. So don't abort with an error here! */
                 PWARN("unable to chown filename %s: %s",
@@ -697,6 +734,8 @@ gnc_xml_be_write_to_file(FileBackend *fbe,
         if (!gnc_int_link_or_make_backup(fbe, tmp_name, datafile))
         {
             qof_backend_set_error(be, ERR_FILEIO_BACKUP_ERROR);
+            qof_backend_set_message( be, "Failed to make backup file %s",
+                                     datafile ? datafile : "NULL" );
             g_free(tmp_name);
             LEAVE("");
             return FALSE;
@@ -716,7 +755,7 @@ gnc_xml_be_write_to_file(FileBackend *fbe,
         /* Since we successfully saved the book,
          * we should mark it clean. */
         qof_book_mark_saved (book);
-        LEAVE (" sucessful save of book=%p to file=%s", book, datafile);
+        LEAVE (" successful save of book=%p to file=%s", book, datafile);
         return TRUE;
     }
     else
@@ -745,6 +784,8 @@ gnc_xml_be_write_to_file(FileBackend *fbe,
         {
             /* Use a generic write error code */
             qof_backend_set_error(be, ERR_FILEIO_WRITE_ERROR);
+            qof_backend_set_message( be, "Unable to write to temp file %s",
+                                     tmp_name ? tmp_name : "NULL" );
         }
         g_free(tmp_name);
         LEAVE("");
@@ -756,13 +797,10 @@ gnc_xml_be_write_to_file(FileBackend *fbe,
 
 /* ================================================================= */
 
-static int
-gnc_xml_be_select_files (const gchar *d)
-{
-    return (g_str_has_suffix(d, ".LNK") ||
-            g_str_has_suffix(d, ".xac") ||
-            g_str_has_suffix(d, ".log"));
-}
+/*
+ * Clean up any lock files from prior crashes, and clean up old
+ * backup and log files.
+ */
 
 static void
 gnc_xml_be_remove_old_files(FileBackend *be)
@@ -770,30 +808,10 @@ gnc_xml_be_remove_old_files(FileBackend *be)
     const gchar *dent;
     GDir *dir;
     struct stat lockstatbuf, statbuf;
-    int pathlen;
     time_t now;
 
     if (g_stat (be->lockfile, &lockstatbuf) != 0)
         return;
-    pathlen = strlen(be->fullpath);
-
-    /*
-     * Clean up any lockfiles from prior crashes, and clean up old
-     * data and log files.  Scandir will do a fist pass on the
-     * filenames and cull the directory down to just files with the
-     * appropriate extensions.  Pity you can't pass user data into
-     * scandir...
-     */
-
-    /*
-     * Unfortunately scandir() is not portable, so re-write this
-     * function without it.  Note that this version will be even a bit
-     * faster because it does not have to sort, malloc, or anything
-     * else that scandir did, and it only performs a single pass
-     * through the directory rather than one pass through the
-     * directory and then one pass over the 'matching' files. --
-     * warlord@MIT.EDU 2002-05-06
-     */
 
     dir = g_dir_open (be->dirname, 0, NULL);
     if (!dir)
@@ -802,54 +820,94 @@ gnc_xml_be_remove_old_files(FileBackend *be)
     now = time(NULL);
     while ((dent = g_dir_read_name(dir)) != NULL)
     {
-        char *name;
-        int len;
+        gchar *name;
 
-        if (gnc_xml_be_select_files (dent) == 0)
+        /* Ensure we only evaluate GnuCash related files. */
+        if ( !(g_str_has_suffix(dent, ".LNK") ||
+                g_str_has_suffix(dent, ".xac") /* old data file extension */ ||
+                g_str_has_suffix(dent, GNC_DATAFILE_EXT) ||
+                g_str_has_suffix(dent, GNC_LOGFILE_EXT)) )
             continue;
 
         name = g_build_filename(be->dirname, dent, (gchar*)NULL);
-        len = strlen(name) - 4;
 
-        /* Is this file associated with the current data file */
-        if (strncmp(name, be->fullpath, pathlen) == 0)
+        /* Only evaluate files associated with the current data file. */
+        if (!g_str_has_prefix(name, be->fullpath))
+            continue;
+
+        /* Never remove the current data file itself */
+        if (g_strcmp0(name, be->fullpath) == 0)
+            continue;
+
+        /* Test if the current file is a lock file */
+        if (g_str_has_suffix(name, ".LNK"))
         {
-            if ((safe_strcmp(name + len, ".LNK") == 0) &&
-                    /* Is a lock file. Skip the active lock file */
-                    (safe_strcmp(name, be->linkfile) != 0) &&
+            /* Is a lock file. Skip the active lock file */
+            if ((g_strcmp0(name, be->linkfile) != 0) &&
                     /* Only delete lock files older than the active one */
                     (g_stat(name, &statbuf) == 0) &&
                     (statbuf.st_mtime < lockstatbuf.st_mtime))
             {
-                PINFO ("unlink lock file: %s", name);
+                PINFO ("remove stale lock file: %s", name);
                 g_unlink(name);
             }
-            else if (be->file_retention_days > 0)
+
+            continue;
+        }
+
+        /* At this point we're sure the file's name is in one of these forms:
+         * <fullpath/to/datafile><anything>.gnucash
+         * <fullpath/to/datafile><anything>.xac
+         * <fullpath/to/datafile><anything>.log
+         *
+         * To be a file generated by GnuCash, the <anything> part should consist
+         * of 1 dot followed by 14 digits (0 to 9). Let's test this with a
+         * regular expression.
+         */
+        {
+            /* Find the start of the date stamp. This takes some pointer
+             * juggling, but considering the above tests, this should always
+             * be safe */
+            regex_t pattern;
+            gchar *stamp_start = name + strlen(be->fullpath);
+            gchar *expression = g_strdup_printf ("^\\.[[:digit:]]{14}(\\%s|\\%s|\\.xac)$",
+                                                 GNC_DATAFILE_EXT, GNC_LOGFILE_EXT);
+            gboolean got_date_stamp = FALSE;
+
+            if (regcomp(&pattern, expression, REG_EXTENDED | REG_ICASE) != 0)
+                PWARN("Cannot compile regex for date stamp");
+            else if (regexec(&pattern, stamp_start, 0, NULL, 0) == 0)
+                got_date_stamp = TRUE;
+
+            g_free(expression);
+
+            if (!got_date_stamp) /* Not a gnucash created file after all... */
+                continue;
+        }
+
+        /* The file is a backup or log file. Check the user's retention preference
+         * to determine if we should keep it or not
+         */
+        if (be->file_retention_type == XML_RETAIN_NONE)
+        {
+            PINFO ("remove stale file: %s  - reason: preference XML_RETAIN_NONE", name);
+            g_unlink(name);
+        }
+        else if ((be->file_retention_type == XML_RETAIN_DAYS) &&
+                 (be->file_retention_days > 0))
+        {
+            int days;
+
+            /* Is the backup file old enough to delete */
+            if (g_stat(name, &statbuf) != 0)
+                continue;
+            days = (int)(difftime(now, statbuf.st_mtime) / 86400);
+
+            PINFO ("file retention = %d days", be->file_retention_days);
+            if (days >= be->file_retention_days)
             {
-                time_t file_time;
-                struct tm file_tm;
-                int days;
-                const char* res;
-
-                PINFO ("file retention = %d days", be->file_retention_days);
-
-                /* Is the backup file old enough to delete */
-                memset(&file_tm, 0, sizeof(file_tm));
-                res = strptime(name + pathlen + 1, "%Y%m%d%H%M%S", &file_tm);
-                file_time = mktime(&file_tm);
-                days = (int)(difftime(now, file_time) / 86400);
-
-
-                if (res
-                        && res != name + pathlen + 1
-                        && (strcmp(res, ".xac") == 0
-                            || strcmp(res, ".log") == 0)
-                        && file_time > 0
-                        && days > be->file_retention_days)
-                {
-                    PINFO ("g_unlink stale (%d days old) file: %s", days, name);
-                    g_unlink(name);
-                }
+                PINFO ("remove stale file: %s  - reason: more than %d days old", name, days);
+                g_unlink(name);
             }
         }
         g_free(name);
@@ -932,7 +990,7 @@ xml_begin_edit (QofBackend *be, QofInstance *inst)
               "at least once before closing the books!\n");
     }
     /* XXX To be anal about it, we should really be checking to see
-     * if there already is a file with this book GUID, and disallowing
+     * if there already is a file with this book GncGUID, and disallowing
      * further progress.  This is because we are not allowed to
      * modify books that are closed (They should be treated as
      * 'read-only').
@@ -1003,15 +1061,24 @@ gnc_xml_be_load_from_file (QofBackend *bend, QofBook *book, QofBackendLoadType l
     {
     case GNC_BOOK_XML2_FILE:
         rc = qof_session_load_from_xml_file_v2 (be, book);
-        if (FALSE == rc) error = ERR_FILEIO_PARSE_ERROR;
+        if (FALSE == rc)
+        {
+            PWARN( "Syntax error in Xml File %s", be->fullpath );
+            error = ERR_FILEIO_PARSE_ERROR;
+        }
         break;
 
     case GNC_BOOK_XML2_FILE_NO_ENCODING:
         error = ERR_FILEIO_NO_ENCODING;
+        PWARN( "No character encoding in Xml File %s", be->fullpath );
         break;
     case GNC_BOOK_XML1_FILE:
         rc = qof_session_load_from_xml_file (book, be->fullpath);
-        if (FALSE == rc) error = ERR_FILEIO_PARSE_ERROR;
+        if (FALSE == rc)
+        {
+            PWARN( "Syntax error in Xml File %s", be->fullpath );
+            error = ERR_FILEIO_PARSE_ERROR;
+        }
         break;
     default:
         /* If file type wasn't known, check errno again to give the
@@ -1047,7 +1114,7 @@ gnc_xml_be_load_from_file (QofBackend *bend, QofBook *book, QofBackendLoadType l
 /* ---------------------------------------------------------------------- */
 
 static gboolean
-gnc_xml_be_save_may_clobber_data (QofBackend *bend)
+save_may_clobber_data (QofBackend *bend)
 {
     struct stat statbuf;
     if (!bend->fullpath) return FALSE;
@@ -1091,7 +1158,31 @@ retain_changed_cb(GConfEntry *entry, gpointer user_data)
 {
     FileBackend *be = (FileBackend*)user_data;
     g_return_if_fail(be != NULL);
-    be->file_retention_days = (int)gnc_gconf_get_float("general", "retain_days", NULL);
+    be->file_retention_days = (int)gnc_gconf_get_float(GCONF_GENERAL, KEY_RETAIN_DAYS, NULL);
+}
+
+static void
+retain_type_changed_cb(GConfEntry *entry, gpointer user_data)
+{
+    FileBackend *be = (FileBackend*)user_data;
+    gchar *choice = NULL;
+    g_return_if_fail(be != NULL);
+    choice = gnc_gconf_get_string(GCONF_GENERAL, KEY_RETAIN_TYPE, NULL);
+    if (!choice)
+        choice = g_strdup("days");
+
+    if (safe_strcmp (choice, "never") == 0)
+        be->file_retention_type = XML_RETAIN_NONE;
+    else if (safe_strcmp (choice, "forever") == 0)
+        be->file_retention_type = XML_RETAIN_ALL;
+    else
+    {
+        if (safe_strcmp (choice, "days") != 0)
+            PERR("bad value '%s'", choice ? choice : "(null)");
+        be->file_retention_type = XML_RETAIN_DAYS;
+    }
+
+    g_free (choice);
 }
 
 static void
@@ -1099,7 +1190,7 @@ compression_changed_cb(GConfEntry *entry, gpointer user_data)
 {
     FileBackend *be = (FileBackend*)user_data;
     g_return_if_fail(be != NULL);
-    be->file_compression = gnc_gconf_get_bool("general", "file_compression", NULL);
+    be->file_compression = gnc_gconf_get_bool(GCONF_GENERAL, KEY_FILE_COMPRESSION, NULL);
 }
 
 static QofBackend*
@@ -1117,7 +1208,6 @@ gnc_backend_new(void)
     be->destroy_backend = xml_destroy_backend;
 
     be->load = gnc_xml_be_load_from_file;
-    be->save_may_clobber_data = gnc_xml_be_save_may_clobber_data;
 
     /* The file backend treats accounting periods transactionally. */
     be->begin = xml_begin_edit;
@@ -1149,13 +1239,45 @@ gnc_backend_new(void)
 
     gnc_be->primary_book = NULL;
 
-    gnc_be->file_retention_days = (int)gnc_gconf_get_float("general", "retain_days", NULL);
-    gnc_be->file_compression = gnc_gconf_get_bool("general", "file_compression", NULL);
+    gnc_be->file_retention_days = (int)gnc_gconf_get_float(GCONF_GENERAL, KEY_RETAIN_DAYS, NULL);
+    gnc_be->file_compression = gnc_gconf_get_bool(GCONF_GENERAL, KEY_FILE_COMPRESSION, NULL);
+    retain_type_changed_cb(NULL, (gpointer)be); /* Get retain_type from gconf */
 
-    gnc_gconf_general_register_cb("retain_days", retain_changed_cb, be);
-    gnc_gconf_general_register_cb("file_compression", compression_changed_cb, be);
+    if ( (gnc_be->file_retention_type == XML_RETAIN_DAYS) &&
+            (gnc_be->file_retention_days == 0 ) )
+    {
+        /* Backwards compatibility code. Pre 2.3.15, 0 retain_days meant
+         * "keep forever". From 2.3.15 on this is controlled via a multiple
+         * choice ("retain_type"). So if we find a 0 retain_days value with
+         * a "days" retain_type, we should interpret it as if we got a
+         * "forever" retain_type.
+         */
+        gnc_be->file_retention_type = XML_RETAIN_ALL;
+        gnc_gconf_set_string (GCONF_GENERAL, KEY_RETAIN_TYPE, "forever", NULL);
+    }
+
+    gnc_gconf_general_register_cb(KEY_RETAIN_DAYS, retain_changed_cb, be);
+    gnc_gconf_general_register_cb(KEY_RETAIN_TYPE, retain_type_changed_cb, be);
+    gnc_gconf_general_register_cb(KEY_FILE_COMPRESSION, compression_changed_cb, be);
 
     return be;
+}
+
+static void
+business_core_xml_init(void)
+{
+    /* Initialize our pointers into the backend subsystem */
+    gnc_address_xml_initialize ();
+    gnc_billterm_xml_initialize ();
+    gnc_customer_xml_initialize ();
+    gnc_employee_xml_initialize ();
+    gnc_entry_xml_initialize ();
+    gnc_invoice_xml_initialize ();
+    gnc_job_xml_initialize ();
+    gnc_order_xml_initialize ();
+    gnc_owner_xml_initialize ();
+    gnc_taxtable_xml_initialize ();
+    gnc_vendor_xml_initialize ();
 }
 
 static void
@@ -1166,11 +1288,13 @@ gnc_provider_free (QofBackendProvider *prov)
     g_free (prov);
 }
 
+#ifndef GNC_NO_LOADABLE_MODULES
 G_MODULE_EXPORT void
 qof_backend_module_init(void)
 {
     gnc_module_init_backend_xml();
 }
+#endif
 
 void
 gnc_module_init_backend_xml(void)
@@ -1193,6 +1317,16 @@ gnc_module_init_backend_xml(void)
     prov->provider_free = gnc_provider_free;
     prov->check_data_type = gnc_determine_file_type;
     qof_backend_register_provider (prov);
+
+    /* And the business objects */
+    business_core_xml_init();
 }
 
 /* ========================== END OF FILE ===================== */
+
+/* For emacs we set some variables concerning indentation:
+ * Local Variables: *
+ * indent-tabs-mode:nil *
+ * c-basic-offset:4 *
+ * tab-width:8 *
+ * End: */

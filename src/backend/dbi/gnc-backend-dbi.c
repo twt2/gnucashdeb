@@ -36,9 +36,8 @@
 #include "gmtime_r.h"
 #endif
 
-#include <dbi/dbi.h>
 
-#include "gnc-backend-sql.h"
+#include "gnc-backend-dbi-priv.h"
 
 #include "qof.h"
 #include "qofquery-p.h"
@@ -58,9 +57,21 @@
 #include "splint-defs.h"
 #endif
 
+#ifdef G_OS_WIN32
+#include <Winsock2.h>
+#define GETPID() GetCurrentProcessId()
+#else
+#include <limits.h>
+#include <unistd.h>
+#define GETPID() getpid()
+#endif
+
+#define GNC_HOST_NAME_MAX 255
 #define TRANSACTION_NAME "trans"
 
 static QofLogModule log_module = G_LOG_DOMAIN;
+
+static gchar lock_table[] = "gnclock";
 
 #define FILE_URI_TYPE "file"
 #define FILE_URI_PREFIX (FILE_URI_TYPE "://")
@@ -68,34 +79,32 @@ static QofLogModule log_module = G_LOG_DOMAIN;
 #define SQLITE3_URI_PREFIX (SQLITE3_URI_TYPE "://")
 #define PGSQL_DEFAULT_PORT 5432
 
-typedef gchar* (*CREATE_TABLE_DDL_FN)( GncSqlConnection* conn,
-                                       const gchar* table_name,
-                                       const GList* col_info_list );
-typedef GSList* (*GET_TABLE_LIST_FN)( dbi_conn conn, const gchar* dbname );
-typedef struct
-{
-    CREATE_TABLE_DDL_FN		create_table_ddl;
-    GET_TABLE_LIST_FN		get_table_list;
-} provider_functions_t;
-
 static /*@ null @*/ gchar* conn_create_table_ddl_sqlite3( GncSqlConnection* conn,
         const gchar* table_name,
         const GList* col_info_list );
 static GSList* conn_get_table_list( dbi_conn conn, const gchar* dbname );
+static void append_sqlite3_col_def( GString* ddl, GncSqlColumnInfo* info );
+static GSList *conn_get_index_list_sqlite3( dbi_conn conn );
 static provider_functions_t provider_sqlite3 =
 {
     conn_create_table_ddl_sqlite3,
-    conn_get_table_list
+    conn_get_table_list,
+    append_sqlite3_col_def,
+    conn_get_index_list_sqlite3
 };
 #define SQLITE3_TIMESPEC_STR_FORMAT "%04d%02d%02d%02d%02d%02d"
 
 static /*@ null @*/ gchar* conn_create_table_ddl_mysql( GncSqlConnection* conn,
         const gchar* table_name,
         const GList* col_info_list );
+static void append_mysql_col_def( GString* ddl, GncSqlColumnInfo* info );
+static GSList *conn_get_index_list_mysql( dbi_conn conn );
 static provider_functions_t provider_mysql =
 {
     conn_create_table_ddl_mysql,
-    conn_get_table_list
+    conn_get_table_list,
+    append_mysql_col_def,
+    conn_get_index_list_mysql
 };
 #define MYSQL_TIMESPEC_STR_FORMAT "%04d%02d%02d%02d%02d%02d"
 
@@ -103,60 +112,35 @@ static /*@ null @*/ gchar* conn_create_table_ddl_pgsql( GncSqlConnection* conn,
         const gchar* table_name,
         const GList* col_info_list );
 static GSList* conn_get_table_list_pgsql( dbi_conn conn, const gchar* dbname );
+static void append_pgsql_col_def( GString* ddl, GncSqlColumnInfo* info );
+static GSList *conn_get_index_list_pgsql( dbi_conn conn );
+
 static provider_functions_t provider_pgsql =
 {
     conn_create_table_ddl_pgsql,
-    conn_get_table_list_pgsql
+    conn_get_table_list_pgsql,
+    append_pgsql_col_def,
+    conn_get_index_list_pgsql
 };
 #define PGSQL_TIMESPEC_STR_FORMAT "%04d%02d%02d %02d%02d%02d"
+
+static gboolean gnc_dbi_lock_database( QofBackend *qbe, gboolean ignore_lock );
+static void gnc_dbi_unlock( QofBackend *qbe );
+static gboolean save_may_clobber_data( QofBackend* qbe );
 
 static /*@ null @*/ gchar* create_index_ddl( GncSqlConnection* conn,
         const gchar* index_name,
         const gchar* table_name,
         const GncSqlColumnTableEntry* col_table );
+static /*@ null @*/ gchar* add_columns_ddl( GncSqlConnection* conn,
+        const gchar* table_name,
+        GList* col_info_list );
 static GncSqlConnection* create_dbi_connection( /*@ observer @*/ provider_functions_t* provider, /*@ observer @*/ QofBackend* qbe, /*@ observer @*/ dbi_conn conn );
 
 #define GNC_DBI_PROVIDER_SQLITE (&provider_sqlite3)
 #define GNC_DBI_PROVIDER_MYSQL (&provider_mysql)
 #define GNC_DBI_PROVIDER_PGSQL (&provider_pgsql)
 
-struct GncDbiBackend_struct
-{
-    GncSqlBackend sql_be;
-
-    dbi_conn conn;
-
-    /*@ dependent @*/
-    QofBook *primary_book;	/* The primary, main open book */
-    gboolean	loading;		/* We are performing an initial load */
-    gboolean  in_query;
-    gboolean  supports_transactions;
-    gboolean  is_pristine_db;	// Are we saving to a new pristine db?
-    gboolean  exists;         // Does the database exist?
-
-    gint obj_total;			// Total # of objects (for percentage calculation)
-    gint operations_done;		// Number of operations (save/load) done
-//  GHashTable* versions;		// Version number for each table
-};
-typedef struct GncDbiBackend_struct GncDbiBackend;
-
-typedef struct
-{
-    GncSqlConnection base;
-
-    /*@ observer @*/
-    QofBackend* qbe;
-    /*@ observer @*/
-    dbi_conn conn;
-    /*@ observer @*/
-    provider_functions_t* provider;
-    gint last_error;        // Code of the last error that occurred. This is set in the error callback function
-    gint error_repeat;      // Used in case of transient errors. After such error, another attempt at the
-                            // original call is allowed. error_repeat tracks the number of attempts and can
-                            // be used to prevent infinite loops.
-    gboolean retry;         // Signals the calling function that it should retry (the error handler detected
-                            // transient error and managed to resolve it, but it can't run the original query)
-} GncDbiSqlConnection;
 
 #define DBI_MAX_CONN_ATTEMPTS 5
 
@@ -180,6 +164,27 @@ static void
 gnc_dbi_init_error( GncDbiSqlConnection* dbi_conn )
 {
     gnc_dbi_set_error( dbi_conn, ERR_BACKEND_NO_ERR, 0, FALSE );
+}
+
+/* Check if the dbi connection is valid. If not attempt to re-establish it
+ * Returns TRUE is there is a valid connection in the end or FALSE otherwise
+ */
+static gboolean
+gnc_dbi_verify_conn( GncDbiSqlConnection* dbi_conn )
+{
+    if ( dbi_conn->conn_ok )
+        return TRUE;
+
+    /* We attempt to connect only once here. The error function will automatically
+     * re-attempt up until DBI_MAX_CONN_ATTEMPTS time to connect if this call fails.
+     * After all these attempts, conn_ok will indicate if there is a valid connection
+     * or not.
+     */
+    gnc_dbi_init_error( dbi_conn );
+    dbi_conn->conn_ok = TRUE;
+    (void)dbi_conn_connect( dbi_conn->conn );
+
+    return dbi_conn->conn_ok;
 }
 
 /* ================================================================= */
@@ -213,9 +218,8 @@ sqlite3_error_fn( dbi_conn conn, /*@ unused @*/ void* user_data )
 
 static void
 gnc_dbi_sqlite3_session_begin( QofBackend *qbe, QofSession *session,
-                               const gchar *book_id,
-                               /*@ unused @*/ gboolean ignore_lock,
-                               gboolean create_if_nonexistent )
+                               const gchar *book_id, gboolean ignore_lock,
+                               gboolean create, gboolean force )
 {
     GncDbiBackend *be = (GncDbiBackend*)qbe;
     gint result;
@@ -232,13 +236,23 @@ gnc_dbi_sqlite3_session_begin( QofBackend *qbe, QofSession *session,
     /* Remove uri type if present */
     filepath = gnc_uri_get_path ( book_id );
 
-    if ( !create_if_nonexistent
-            && !g_file_test( filepath, G_FILE_TEST_IS_REGULAR | G_FILE_TEST_EXISTS ) )
+    if ( !create &&
+            !g_file_test( filepath, G_FILE_TEST_IS_REGULAR | G_FILE_TEST_EXISTS ) )
     {
         qof_backend_set_error( qbe, ERR_FILEIO_FILE_NOT_FOUND );
+        qof_backend_set_message(qbe, "Sqlite3 file %s not found", filepath);
         LEAVE(" ");
         return;
     }
+
+    if ( create && !force &&
+            g_file_test( filepath, G_FILE_TEST_IS_REGULAR | G_FILE_TEST_EXISTS ) )
+    {
+        qof_backend_set_error (qbe, ERR_BACKEND_STORE_EXISTS);
+        LEAVE("Might clobber, no force");
+        return;
+    }
+
 
     if ( be->conn != NULL )
     {
@@ -257,6 +271,7 @@ gnc_dbi_sqlite3_session_begin( QofBackend *qbe, QofSession *session,
     basename = g_path_get_basename( filepath );
     g_free ( filepath );
     dbi_conn_error_handler( be->conn, sqlite3_error_fn, be );
+    /* dbi-sqlite3 documentation says that sqlite3 doesn't take a "host" option */
     result = dbi_conn_set_option( be->conn, "host", "localhost" );
     if ( result < 0 )
     {
@@ -284,11 +299,19 @@ gnc_dbi_sqlite3_session_begin( QofBackend *qbe, QofSession *session,
     result = dbi_conn_connect( be->conn );
     g_free( basename );
     g_free( dirname );
+    /* Need some better error handling here. In particular, need to emit a QOF_ERROR_LOCKED if the database is in use by another process. */
     if ( result < 0 )
     {
         PERR( "Unable to connect to %s: %d\n", book_id, result );
         qof_backend_set_error( qbe, ERR_BACKEND_BAD_URL );
         LEAVE( " " );
+        return;
+    }
+
+    if ( !gnc_dbi_lock_database( qbe, ignore_lock ) )
+    {
+        qof_backend_set_error( qbe, ERR_BACKEND_LOCKED );
+        LEAVE( "Locked" );
         return;
     }
 
@@ -302,6 +325,28 @@ gnc_dbi_sqlite3_session_begin( QofBackend *qbe, QofSession *session,
     LEAVE (" ");
 }
 
+static GSList*
+conn_get_index_list_sqlite3( dbi_conn conn )
+{
+    GSList *list = NULL;
+    const gchar *errmsg;
+    dbi_result result = dbi_conn_query( conn, "SELECT name FROM sqlite_master WHERE type = 'index' AND name NOT LIKE 'sqlite_autoindex%'" );
+    if ( dbi_conn_error( conn, &errmsg ) != DBI_ERROR_NONE )
+    {
+	g_print( "Index Table Retrieval Error: %s\n", errmsg );
+	return NULL;
+    }
+    while ( dbi_result_next_row( result ) != 0 )
+    {
+        const gchar* index_name;
+
+        index_name = dbi_result_get_string_idx( result, 1 );
+        list = g_slist_prepend( list, strdup( index_name ) );
+    }
+    dbi_result_free( result );
+    return list;
+}
+
 static void
 mysql_error_fn( dbi_conn conn, void* user_data )
 {
@@ -311,30 +356,64 @@ mysql_error_fn( dbi_conn conn, void* user_data )
     gint err_num;
 
     err_num = dbi_conn_error( conn, &msg );
+
+    /* Note: the sql connection may not have been initialized yet
+     *       so let's be careful with using it
+     */
+
+    /* Database doesn't exist. When this error is triggered the
+     * GncDbiSqlConnection may not exist yet either, so don't use it here
+     */
     if ( err_num == 1049 )          // Database doesn't exist
     {
         PINFO( "DBI error: %s\n", msg );
         be->exists = FALSE;
-        gnc_dbi_set_error( dbi_conn, ERR_BACKEND_NO_SUCH_DB, 0, FALSE );
+        return;
     }
-    else if ( err_num == 2006 )     // Server has gone away
+
+    /* All the other error handling code assumes the GncDbiSqlConnection
+     *  has been initialized. So let's assert it exits here, otherwise
+     * simply return.
+     */
+    if (!dbi_conn)
     {
-        if (dbi_conn->error_repeat > DBI_MAX_CONN_ATTEMPTS )
+        PINFO( "DBI error: %s\n", msg );
+        PINFO( "Note: GbcDbiSqlConnection not yet initialized. Skipping further error processing." );
+        return;
+    }
+
+    /* Test for other errors */
+    if ( err_num == 2006 )     // Server has gone away
+    {
+        PINFO( "DBI error: %s - Reconnecting...\n", msg );
+        if (dbi_conn)
+            gnc_dbi_set_error( dbi_conn, ERR_BACKEND_CONN_LOST, 1, TRUE );
+        dbi_conn->conn_ok = TRUE;
+        (void)dbi_conn_connect( conn );
+    }
+    else if ( err_num == 2003 )     // Unable to connect
+    {
+        if (dbi_conn->error_repeat >= DBI_MAX_CONN_ATTEMPTS )
         {
-            PERR( "DBI error: %s - Failed to reconnect after %d attempts.\n", msg, DBI_MAX_CONN_ATTEMPTS );
-            gnc_dbi_set_error( dbi_conn, ERR_BACKEND_CANT_CONNECT, 0, FALSE );
-        } else
+            PERR( "DBI error: %s - Giving up after %d consecutive attempts.\n", msg, DBI_MAX_CONN_ATTEMPTS );
+            if (dbi_conn)
+                gnc_dbi_set_error( dbi_conn, ERR_BACKEND_CANT_CONNECT, 0, FALSE );
+            dbi_conn->conn_ok = FALSE;
+        }
+        else
         {
             PINFO( "DBI error: %s - Reconnecting...\n", msg );
-            gnc_dbi_set_error( dbi_conn, ERR_BACKEND_CONN_LOST, 1, TRUE );
-
+            if (dbi_conn)
+                gnc_dbi_set_error( dbi_conn, ERR_BACKEND_CANT_CONNECT, 1, TRUE );
+            dbi_conn->conn_ok = TRUE;
             (void)dbi_conn_connect( conn );
         }
     }
     else                            // Any other error
     {
         PERR( "DBI error: %s\n", msg );
-        gnc_dbi_set_error( dbi_conn, ERR_BACKEND_MISC, 0, FALSE );
+        if (dbi_conn)
+            gnc_dbi_set_error( dbi_conn, ERR_BACKEND_MISC, 0, FALSE );
     }
 }
 
@@ -395,11 +474,220 @@ set_standard_connection_options( QofBackend* qbe, dbi_conn conn, const gchar* ho
     return TRUE;
 }
 
+
+static gboolean
+gnc_dbi_lock_database ( QofBackend* qbe, gboolean ignore_lock )
+{
+
+    GncDbiBackend *qe = (GncDbiBackend*)qbe;
+    dbi_conn dcon = qe->conn;
+    dbi_result result;
+    const gchar *dbname = dbi_conn_get_option( dcon, "dbname" );
+    /* Create the table if it doesn't exist */
+    result = dbi_conn_get_table_list( dcon, dbname, lock_table);
+    if (!( result && dbi_result_get_numrows( result ) ))
+    {
+        if ( result )
+        {
+            dbi_result_free( result );
+            result = NULL;
+        }
+        result = dbi_conn_queryf( dcon, "CREATE TABLE %s ( Hostname varchar(%d), PID int )", lock_table, GNC_HOST_NAME_MAX );
+        if ( dbi_conn_error( dcon, NULL ) )
+        {
+            const gchar *errstr;
+            dbi_conn_error( dcon, &errstr );
+            PERR( "Error %s creating lock table", errstr );
+            qof_backend_set_error( qbe, ERR_BACKEND_SERVER_ERR );
+            return FALSE;
+        }
+        if ( result )
+        {
+            dbi_result_free( result );
+            result = NULL;
+        }
+    }
+    if (result)
+    {
+        dbi_result_free( result );
+        result = NULL;
+    }
+
+    /* Protect everything with a single transaction to prevent races */
+    if ( (result = dbi_conn_query( dcon, "BEGIN" )) )
+    {
+        /* Check for an existing entry; delete it if ignore_lock is true, otherwise fail */
+        gchar hostname[ GNC_HOST_NAME_MAX + 1 ];
+        if (result)
+        {
+            dbi_result_free( result );
+            result = NULL;
+        }
+        result = dbi_conn_queryf( dcon, "SELECT * FROM %s", lock_table );
+        if ( result && dbi_result_get_numrows( result ) )
+        {
+            dbi_result_free( result );
+            result = NULL;
+            if ( !ignore_lock )
+            {
+                qof_backend_set_error( qbe, ERR_BACKEND_LOCKED );
+                /* FIXME: After enhancing the qof_backend_error mechanism, report in the dialog what is the hostname of the machine holding the lock. */
+                dbi_conn_query( dcon, "ROLLBACK" );
+                return FALSE;
+            }
+            result = dbi_conn_queryf( dcon, "DELETE FROM %s", lock_table );
+            if ( !result)
+            {
+                qof_backend_set_error( qbe, ERR_BACKEND_SERVER_ERR );
+                qof_backend_set_message( qbe, "Failed to delete lock record" );
+                result = dbi_conn_query( dcon, "ROLLBACK" );
+                if (result)
+                {
+                    dbi_result_free( result );
+                    result = NULL;
+                }
+                return FALSE;
+            }
+            if (result)
+            {
+                dbi_result_free( result );
+                result = NULL;
+            }
+        }
+        /* Add an entry and commit the transaction */
+        memset( hostname, 0, sizeof(hostname) );
+        gethostname( hostname, GNC_HOST_NAME_MAX );
+        result = dbi_conn_queryf( dcon,
+                                  "INSERT INTO %s VALUES ('%s', '%d')",
+                                  lock_table, hostname, (int)GETPID() );
+        if ( !result)
+        {
+            qof_backend_set_error( qbe, ERR_BACKEND_SERVER_ERR );
+            qof_backend_set_message( qbe, "Failed to create lock record" );
+            result = dbi_conn_query( dcon, "ROLLBACK" );
+            if (result)
+            {
+                dbi_result_free( result );
+                result = NULL;
+            }
+            return FALSE;
+        }
+        if (result)
+        {
+            dbi_result_free( result );
+            result = NULL;
+        }
+        result = dbi_conn_query( dcon, "COMMIT" );
+        if (result)
+        {
+            dbi_result_free( result );
+            result = NULL;
+        }
+        return TRUE;
+    }
+    /* Couldn't get a transaction (probably couldn't get a lock), so fail */
+    qof_backend_set_error( qbe, ERR_BACKEND_SERVER_ERR );
+    qof_backend_set_message( qbe, "SQL Backend failed to obtain a transaction" );
+    if (result)
+    {
+        dbi_result_free( result );
+        result = NULL;
+    }
+    return FALSE;
+}
+
+static void
+gnc_dbi_unlock( QofBackend *qbe )
+{
+    GncDbiBackend *qe = (GncDbiBackend*)qbe;
+    dbi_conn dcon = qe->conn;
+    dbi_result result;
+    const gchar *dbname = NULL;
+
+    g_return_if_fail( dcon != NULL );
+    g_return_if_fail( dbi_conn_error( dcon, NULL ) == 0 );
+
+    dbname = dbi_conn_get_option( dcon, "dbname" );
+    /* Check if the lock table exists */
+    result = dbi_conn_get_table_list( dcon, dbname, lock_table);
+    if (!( result && dbi_result_get_numrows( result ) ))
+    {
+        if (result)
+        {
+            dbi_result_free( result );
+            result = NULL;
+        }
+        PWARN("No lock table in database, so not unlocking it.");
+        return;
+    }
+
+    if ( ( result = dbi_conn_query( dcon, "BEGIN" )) )
+    {
+        /* Delete the entry if it's our hostname and PID */
+        gchar hostname[ GNC_HOST_NAME_MAX + 1 ];
+        if (result)
+        {
+            dbi_result_free( result );
+            result = NULL;
+        }
+        memset( hostname, 0, sizeof(hostname) );
+        gethostname( hostname, GNC_HOST_NAME_MAX );
+        result = dbi_conn_queryf( dcon, "SELECT * FROM %s WHERE Hostname = '%s' AND PID = '%d'", lock_table, hostname, (int)GETPID() );
+        if ( result && dbi_result_get_numrows( result ) )
+        {
+            if (result)
+            {
+                dbi_result_free( result );
+                result = NULL;
+            }
+            result = dbi_conn_queryf( dcon, "DELETE FROM %s", lock_table );
+            if ( !result)
+            {
+                PERR("Failed to delete the lock entry");
+                qof_backend_set_error( qbe, ERR_BACKEND_SERVER_ERR );
+                result = dbi_conn_query( dcon, "ROLLBACK" );
+                if (result)
+                {
+                    dbi_result_free( result );
+                    result = NULL;
+                }
+                return;
+            }
+            if (result)
+            {
+                dbi_result_free( result );
+                result = NULL;
+            }
+            result = dbi_conn_query( dcon, "COMMIT" );
+            if (result)
+            {
+                dbi_result_free( result );
+                result = NULL;
+            }
+            return;
+        }
+        result = dbi_conn_query( dcon, "ROLLBACK" );
+        if (result)
+        {
+            dbi_result_free( result );
+            result = NULL;
+        }
+        PWARN("There was no lock entry in the Lock table");
+        return;
+    }
+    if (result)
+    {
+        dbi_result_free( result );
+        result = NULL;
+    }
+    PWARN("Unable to get a lock on LOCK, so failed to clear the lock entry.");
+    qof_backend_set_error( qbe, ERR_BACKEND_SERVER_ERR );
+}
+
 static void
 gnc_dbi_mysql_session_begin( QofBackend* qbe, QofSession *session,
-                             const gchar *book_id,
-                             /*@ unused @*/gboolean ignore_lock,
-                             gboolean create_if_nonexistent )
+                             const gchar *book_id, gboolean ignore_lock,
+                             gboolean create, gboolean force )
 {
     GncDbiBackend *be = (GncDbiBackend*)qbe;
     gchar* protocol = NULL;
@@ -423,7 +711,7 @@ gnc_dbi_mysql_session_begin( QofBackend* qbe, QofSession *session,
     gnc_uri_get_components ( book_id, &protocol, &host, &portnum,
                              &username, &password, &dbname );
 
-    // Try to connect to the db.  If it doesn't exist and the create_if_nonexistent
+    // Try to connect to the db.  If it doesn't exist and the create
     // flag is TRUE, we'll need to connect to the 'mysql' db and execute the
     // CREATE DATABASE ddl statement there.
     if ( be->conn != NULL )
@@ -446,7 +734,14 @@ gnc_dbi_mysql_session_begin( QofBackend* qbe, QofSession *session,
     result = dbi_conn_connect( be->conn );
     if ( result == 0 )
     {
-        success = TRUE;
+        if (create && !force && save_may_clobber_data( qbe ) )
+        {
+            qof_backend_set_error ( qbe, ERR_BACKEND_STORE_EXISTS );
+            PWARN("Databse already exists, Might clobber it.");
+            goto exit;
+        }
+
+        success = gnc_dbi_lock_database ( qbe, ignore_lock );
     }
     else
     {
@@ -459,7 +754,7 @@ gnc_dbi_mysql_session_begin( QofBackend* qbe, QofSession *session,
         }
 
         // The db does not already exist.  Connect to the 'mysql' db and try to create it.
-        if ( create_if_nonexistent )
+        if ( create )
         {
             dbi_result dresult;
             result = dbi_conn_set_option( be->conn, "dbname", "mysql" );
@@ -505,16 +800,28 @@ gnc_dbi_mysql_session_begin( QofBackend* qbe, QofSession *session,
                 qof_backend_set_error( qbe, ERR_BACKEND_SERVER_ERR );
                 goto exit;
             }
-            success = TRUE;
+            success = gnc_dbi_lock_database ( qbe, ignore_lock );
         }
         else
         {
             qof_backend_set_error( qbe, ERR_BACKEND_NO_SUCH_DB );
+            qof_backend_set_message( qbe, "Database %s not found", dbname );
         }
     }
 
     if ( success )
     {
+        dbi_result dresult;
+
+        /* Set connection char set to utf8 */
+        dresult = dbi_conn_queryf( be->conn, "SET NAMES 'utf8'" );
+        if ( dresult == NULL )
+        {
+            PERR( "Unable to set connection char set" );
+            qof_backend_set_error( qbe, ERR_BACKEND_SERVER_ERR );
+            goto exit;
+        }
+
         if ( be->sql_be.conn != NULL )
         {
             gnc_sql_connection_dispose( be->sql_be.conn );
@@ -522,6 +829,7 @@ gnc_dbi_mysql_session_begin( QofBackend* qbe, QofSession *session,
         be->sql_be.conn = create_dbi_connection( GNC_DBI_PROVIDER_MYSQL, qbe, be->conn );
     }
     be->sql_be.timespec_format = MYSQL_TIMESPEC_STR_FORMAT;
+
 exit:
     g_free( protocol );
     g_free( host );
@@ -530,6 +838,44 @@ exit:
     g_free( dbname );
 
     LEAVE (" ");
+}
+
+static GSList*
+conn_get_index_list_mysql( dbi_conn conn )
+{
+    GSList *index_list = NULL;
+    dbi_result table_list;
+    const char *errmsg;
+    const gchar *dbname = dbi_conn_get_option( conn, "dbname" );
+    g_return_val_if_fail( conn != NULL, NULL );
+    table_list = dbi_conn_get_table_list( conn, dbname, NULL );
+    if ( dbi_conn_error( conn, &errmsg ) != DBI_ERROR_NONE )
+    {
+	g_print( "Table Retrieval Error: %s\n", errmsg );
+	return NULL;
+    }
+    while ( dbi_result_next_row( table_list ) != 0 )
+    {
+	dbi_result result;
+	const gchar *table_name = dbi_result_get_string_idx( table_list, 1 );
+	result = dbi_conn_queryf( conn,
+				  "SHOW INDEXES IN %s WHERE Key_name != 'PRIMARY'",
+				  table_name );
+	if ( dbi_conn_error( conn, &errmsg ) != DBI_ERROR_NONE )
+	{
+	    g_print( "Index Table Retrieval Error: %s\n", errmsg );
+	    continue;
+	}
+
+	while ( dbi_result_next_row( result ) != 0 )
+	{
+	    const gchar*  index_name = dbi_result_get_string_idx( result, 3 );
+	    index_list = g_slist_prepend( index_list, strdup( index_name ) );
+	}
+	dbi_result_free( result );
+    }
+
+    return index_list;
 }
 
 static void
@@ -547,6 +893,36 @@ pgsql_error_fn( dbi_conn conn, void* user_data )
         be->exists = FALSE;
         gnc_dbi_set_error( dbi_conn, ERR_BACKEND_NO_SUCH_DB, 0, FALSE );
     }
+    else if ( g_strrstr( msg, "server closed the connection unexpectedly" ) ) // Connection lost
+    {
+        if ( dbi_conn == NULL )
+        {
+            PWARN( "DBI Error: Connection lost, connection pointer invalid");
+            return;
+        }
+        PINFO( "DBI error: %s - Reconnecting...\n", msg );
+        gnc_dbi_set_error( dbi_conn, ERR_BACKEND_CONN_LOST, 1, TRUE );
+        dbi_conn->conn_ok = TRUE;
+        (void)dbi_conn_connect( conn );
+    }
+    else if ( dbi_conn &&
+              ( g_str_has_prefix( msg, "connection pointer is NULL" ) ||
+                g_str_has_prefix(msg, "could not connect to server" ) ) )     // No connection
+    {
+        if (dbi_conn->error_repeat >= DBI_MAX_CONN_ATTEMPTS )
+        {
+            PERR( "DBI error: %s - Giving up after %d consecutive attempts.\n", msg, DBI_MAX_CONN_ATTEMPTS );
+            gnc_dbi_set_error( dbi_conn, ERR_BACKEND_CANT_CONNECT, 0, FALSE );
+            dbi_conn->conn_ok = FALSE;
+        }
+        else
+        {
+            PINFO( "DBI error: %s - Reconnecting...\n", msg );
+            gnc_dbi_set_error( dbi_conn, ERR_BACKEND_CANT_CONNECT, 1, TRUE );
+            dbi_conn->conn_ok = TRUE;
+            (void)dbi_conn_connect( conn );
+        }
+    }
     else
     {
         PERR( "DBI error: %s\n", msg );
@@ -556,15 +932,14 @@ pgsql_error_fn( dbi_conn conn, void* user_data )
 
 static void
 gnc_dbi_postgres_session_begin( QofBackend *qbe, QofSession *session,
-                                const gchar *book_id,
-                                /*@ unused @*/ gboolean ignore_lock,
-                                gboolean create_if_nonexistent )
+                                const gchar *book_id, gboolean ignore_lock,
+                                gboolean create, gboolean force )
 {
     GncDbiBackend *be = (GncDbiBackend*)qbe;
     gint result = 0;
     gchar* protocol = NULL;
     gchar* host = NULL;
-    gchar* dbname = NULL;
+    gchar *dbname = NULL, *dbnamelc = NULL;
     gchar* username = NULL;
     gchar* password = NULL;
     gboolean success = FALSE;
@@ -583,8 +958,13 @@ gnc_dbi_postgres_session_begin( QofBackend *qbe, QofSession *session,
                              &username, &password, &dbname );
     if ( portnum == 0 )
         portnum = PGSQL_DEFAULT_PORT;
+    /* Postgres's SQL interface coerces identifiers to lower case, but the
+     * C interface is case-sensitive. This results in a mixed-case dbname
+     * being created (with a lower case name) but then dbi can't conect to
+     * it. To work around this, coerce the name to lowercase first. */
+    dbnamelc = g_utf8_strdown( dbname, -1 );
 
-    // Try to connect to the db.  If it doesn't exist and the create_if_nonexistent
+    // Try to connect to the db.  If it doesn't exist and the create
     // flag is TRUE, we'll need to connect to the 'postgres' db and execute the
     // CREATE DATABASE ddl statement there.
     if ( be->conn != NULL )
@@ -599,7 +979,7 @@ gnc_dbi_postgres_session_begin( QofBackend *qbe, QofSession *session,
         goto exit;
     }
     dbi_conn_error_handler( be->conn, pgsql_error_fn, be );
-    if ( !set_standard_connection_options( qbe, be->conn, host, portnum, dbname, username, password ) )
+    if ( !set_standard_connection_options( qbe, be->conn, host, portnum, dbnamelc, username, password ) )
     {
         goto exit;
     }
@@ -607,7 +987,14 @@ gnc_dbi_postgres_session_begin( QofBackend *qbe, QofSession *session,
     result = dbi_conn_connect( be->conn );
     if ( result == 0 )
     {
-        success = TRUE;
+        if (create && !force && save_may_clobber_data( qbe ) )
+        {
+            qof_backend_set_error ( qbe, ERR_BACKEND_STORE_EXISTS );
+            PWARN("Databse already exists, Might clobber it.");
+            goto exit;
+        }
+
+        success = gnc_dbi_lock_database ( qbe, ignore_lock );
     }
     else
     {
@@ -620,7 +1007,7 @@ gnc_dbi_postgres_session_begin( QofBackend *qbe, QofSession *session,
         }
 
         // The db does not already exist.  Connect to the 'postgres' db and try to create it.
-        if ( create_if_nonexistent )
+        if ( create )
         {
             dbi_result dresult;
             result = dbi_conn_set_option( be->conn, "dbname", "postgres" );
@@ -637,13 +1024,14 @@ gnc_dbi_postgres_session_begin( QofBackend *qbe, QofSession *session,
                 qof_backend_set_error( qbe, ERR_BACKEND_SERVER_ERR );
                 goto exit;
             }
-            dresult = dbi_conn_queryf( be->conn, "CREATE DATABASE %s WITH ENCODING 'UTF8'", dbname );
+            dresult = dbi_conn_queryf( be->conn, "CREATE DATABASE %s WITH TEMPLATE template0 ENCODING 'UTF8'", dbnamelc );
             if ( dresult == NULL )
             {
                 PERR( "Unable to create database '%s'\n", dbname );
                 qof_backend_set_error( qbe, ERR_BACKEND_SERVER_ERR );
                 goto exit;
             }
+            dbi_conn_queryf( be->conn, "ALTER DATABASE %s SET standard_conforming_strings TO on", dbnamelc );
             dbi_conn_close( be->conn );
 
             // Try again to connect to the db
@@ -655,7 +1043,7 @@ gnc_dbi_postgres_session_begin( QofBackend *qbe, QofSession *session,
                 goto exit;
             }
             dbi_conn_error_handler( be->conn, pgsql_error_fn, be );
-            if ( !set_standard_connection_options( qbe, be->conn, host, PGSQL_DEFAULT_PORT, dbname, username, password ) )
+            if ( !set_standard_connection_options( qbe, be->conn, host, PGSQL_DEFAULT_PORT, dbnamelc, username, password ) )
             {
                 goto exit;
             }
@@ -666,11 +1054,12 @@ gnc_dbi_postgres_session_begin( QofBackend *qbe, QofSession *session,
                 qof_backend_set_error( qbe, ERR_BACKEND_SERVER_ERR );
                 goto exit;
             }
-            success = TRUE;
+            success = gnc_dbi_lock_database ( qbe, ignore_lock );
         }
         else
         {
             qof_backend_set_error( qbe, ERR_BACKEND_NO_SUCH_DB );
+            qof_backend_set_message( qbe, "Database %s not found", dbname );
         }
     }
 
@@ -689,9 +1078,35 @@ exit:
     g_free( username );
     g_free( password );
     g_free( dbname );
+    g_free( dbnamelc );
 
     LEAVE (" ");
 }
+
+static GSList*
+conn_get_index_list_pgsql( dbi_conn conn )
+{
+    GSList *list = NULL;
+    const gchar *errmsg;
+    dbi_result result;
+    g_print( "Retrieving postgres index list\n");
+    result = dbi_conn_query( conn, "SELECT relname FROM pg_class AS a INNER JOIN pg_index AS b ON (b.indexrelid = a.oid) INNER JOIN pg_namespace AS c ON (a.relnamespace = c.oid) WHERE reltype = '0' AND indisprimary = 'f' AND nspname = 'public'" );
+    if ( dbi_conn_error( conn, &errmsg ) != DBI_ERROR_NONE )
+    {
+	g_print( "Index Table Retrieval Error: %s\n", errmsg );
+	return NULL;
+    }
+    while ( dbi_result_next_row( result ) != 0 )
+    {
+        const gchar* index_name;
+
+        index_name = dbi_result_get_string_idx( result, 1 );
+        list = g_slist_prepend( list, strdup( index_name ) );
+    }
+    dbi_result_free( result );
+    return list;
+}
+
 
 /* ================================================================= */
 
@@ -706,6 +1121,7 @@ gnc_dbi_session_end( QofBackend *be_start )
 
     if ( be->conn != NULL )
     {
+        gnc_dbi_unlock( be_start );
         dbi_conn_close( be->conn );
         be->conn = NULL;
     }
@@ -761,29 +1177,22 @@ gnc_dbi_load( QofBackend* qbe, /*@ dependent @*/ QofBook *book, QofBackendLoadTy
 /* ================================================================= */
 
 static gboolean
-gnc_dbi_save_may_clobber_data( QofBackend* qbe )
+save_may_clobber_data( QofBackend* qbe )
 {
     GncDbiBackend* be = (GncDbiBackend*)qbe;
     const gchar* dbname;
-    GSList* table_name_list;
-    gint numTables = 0;
-    gint status;
+    dbi_result result;
+    gboolean retval = FALSE;
 
     /* Data may be clobbered iff the number of tables != 0 */
     dbname = dbi_conn_get_option( be->conn, "dbname" );
-    table_name_list = ((GncDbiSqlConnection*)(be->sql_be.conn))->provider->get_table_list( be->conn, dbname );
-    if ( table_name_list != NULL )
+    result = dbi_conn_get_table_list( be->conn, dbname, NULL );
+    if ( result )
     {
-        GSList* node;
-        numTables = g_slist_length( table_name_list );
-        for ( node = table_name_list; node != NULL; node = node->next )
-        {
-            g_free( node->data );
-        }
-        g_slist_free( table_name_list );
+        retval =  dbi_result_get_numrows( result ) > 0;
+        dbi_result_free( result );
     }
-
-    return (numTables != 0);
+    return retval;
 }
 
 static void
@@ -810,11 +1219,17 @@ gnc_dbi_sync_all( QofBackend* qbe, /*@ dependent @*/ QofBook *book )
         {
             const gchar* table_name = (const gchar*)node->data;
             dbi_result result;
-
-            do {
+            /* Don't delete the lock table */
+            if ( g_strcmp0(table_name, lock_table) == 0)
+            {
+                continue;
+            }
+            do
+            {
                 gnc_dbi_init_error( ((GncDbiSqlConnection*)(be->sql_be.conn)) );
                 result = dbi_conn_queryf( be->conn, "DROP TABLE %s", table_name );
-            } while ( ((GncDbiSqlConnection*)(be->sql_be.conn))->retry );
+            }
+            while ( ((GncDbiSqlConnection*)(be->sql_be.conn))->retry );
             if ( result != NULL )
             {
                 status = dbi_result_free( result );
@@ -884,7 +1299,6 @@ init_sql_backend( GncDbiBackend* dbi_be )
     be->destroy_backend = gnc_dbi_destroy_backend;
 
     be->load = gnc_dbi_load;
-    be->save_may_clobber_data = gnc_dbi_save_may_clobber_data;
 
     /* The gda backend treats accounting periods transactionally. */
     be->begin = gnc_dbi_begin_edit;
@@ -908,11 +1322,16 @@ init_sql_backend( GncDbiBackend* dbi_be )
     be->export_fn = NULL;
 
     gnc_sql_init( &dbi_be->sql_be );
+
+    dbi_be->sql_be.conn = NULL;
+    dbi_be->sql_be.primary_book = NULL;
 }
 
 static QofBackend*
 new_backend( void (*session_begin)( QofBackend *, QofSession *, const gchar *,
-                                    /*@ unused @*/ gboolean, /*@ unused @*/ gboolean ) )
+                                    /*@ unused @*/ gboolean,
+                                    /*@ unused @*/ gboolean,
+                                    /*@ unused @*/ gboolean ) )
 {
     GncDbiBackend *dbi_be;
     QofBackend *be;
@@ -1000,17 +1419,10 @@ gnc_dbi_check_sqlite3_file( const gchar *uri )
     return FALSE;
 }
 
-G_MODULE_EXPORT void
-qof_backend_module_init( void )
-{
-    gnc_module_init_backend_dbi();
-}
-
 void
 gnc_module_init_backend_dbi(void)
 {
     QofBackendProvider *prov;
-#define DEFAULT_DBD_DIR "/usr/lib/dbd"
     const gchar* driver_dir;
     int num_drivers;
     gboolean have_sqlite3_driver = FALSE;
@@ -1022,12 +1434,12 @@ gnc_module_init_backend_dbi(void)
     driver_dir = g_getenv( "GNC_DBD_DIR" );
     if ( driver_dir == NULL )
     {
-        PWARN( "GNC_DBD_DIR not set: using %s\n", DEFAULT_DBD_DIR );
-        driver_dir = DEFAULT_DBD_DIR;
+        PINFO( "GNC_DBD_DIR not set: using libdbi built-in default\n");
     }
 
+    /* dbi_initialize returns -1 in case of errors */
     num_drivers = dbi_initialize( driver_dir );
-    if ( num_drivers == 0 )
+    if ( num_drivers <= 0 )
     {
         PWARN( "No DBD drivers found\n" );
     }
@@ -1114,9 +1526,16 @@ gnc_module_init_backend_dbi(void)
         qof_backend_register_provider( prov );
     }
 
-    /* For now, set log level to DEBUG so that SQl statements will be put into
+    /* If needed, set log level to DEBUG so that SQl statements will be put into
        the gnucash.trace file. */
-    qof_log_set_level( log_module, QOF_LOG_DEBUG );
+    /*    qof_log_set_level( log_module, QOF_LOG_DEBUG ); */
+}
+
+#ifndef GNC_NO_LOADABLE_MODULES
+G_MODULE_EXPORT void
+qof_backend_module_init( void )
+{
+    gnc_module_init_backend_dbi();
 }
 
 G_MODULE_EXPORT void
@@ -1124,6 +1543,7 @@ qof_backend_module_finalize( void )
 {
     gnc_module_finalize_backend_dbi();
 }
+#endif /* GNC_NO_LOADABLE_MODULES */
 
 void
 gnc_module_finalize_backend_dbi( void )
@@ -1151,7 +1571,10 @@ row_dispose( /*@ only @*/ GncSqlRow* row )
     {
         for ( node = dbi_row->gvalue_list; node != NULL; node = node->next )
         {
-            GValue* value = (GValue*)node->data;
+            GValue* value;
+            if ( !G_IS_VALUE(node->data) )
+                continue;
+            value = (GValue*)node->data;
             if ( G_VALUE_HOLDS_STRING(value) )
             {
                 g_free( (gpointer)g_value_get_string( value ) );
@@ -1443,10 +1866,12 @@ conn_execute_select_statement( GncSqlConnection* conn, GncSqlStatement* stmt )
     dbi_result result;
 
     DEBUG( "SQL: %s\n", dbi_stmt->sql->str );
-    do {
+    do
+    {
         gnc_dbi_init_error( dbi_conn );
         result = dbi_conn_query( dbi_conn->conn, dbi_stmt->sql->str );
-    } while ( dbi_conn->retry );
+    }
+    while ( dbi_conn->retry );
     if ( result == NULL )
     {
         PERR( "Error executing SQL %s\n", dbi_stmt->sql->str );
@@ -1465,10 +1890,12 @@ conn_execute_nonselect_statement( GncSqlConnection* conn, GncSqlStatement* stmt 
     gint status;
 
     DEBUG( "SQL: %s\n", dbi_stmt->sql->str );
-    do {
+    do
+    {
         gnc_dbi_init_error( dbi_conn );
         result = dbi_conn_query( dbi_conn->conn, dbi_stmt->sql->str );
-    } while( dbi_conn->retry );
+    }
+    while ( dbi_conn->retry );
     if ( result == NULL )
     {
         PERR( "Error executing SQL %s\n", dbi_stmt->sql->str );
@@ -1544,22 +1971,38 @@ conn_begin_transaction( /*@ unused @*/ GncSqlConnection* conn )
     GncDbiSqlConnection* dbi_conn = (GncDbiSqlConnection*)conn;
     dbi_result result;
     gint status;
+    gboolean success = FALSE;
 
     DEBUG( "BEGIN\n" );
 
-    do {
+    if ( !gnc_dbi_verify_conn (dbi_conn) )
+    {
+        PERR( "gnc_dbi_verify_conn() failed\n" );
+        qof_backend_set_error( dbi_conn->qbe, ERR_BACKEND_SERVER_ERR );
+        return FALSE;
+    }
+
+    do
+    {
         gnc_dbi_init_error( dbi_conn );
         result = dbi_conn_queryf( dbi_conn->conn, "BEGIN" );
-    } while( dbi_conn->retry );
+    }
+    while ( dbi_conn->retry );
 
+    success = ( result != NULL );
     status = dbi_result_free( result );
     if ( status < 0 )
     {
         PERR( "Error in dbi_result_free() result\n" );
         qof_backend_set_error( dbi_conn->qbe, ERR_BACKEND_SERVER_ERR );
     }
+    if ( !success )
+    {
+        PERR( "BEGIN transaction failed()\n" );
+        qof_backend_set_error( dbi_conn->qbe, ERR_BACKEND_SERVER_ERR );
+    }
 
-    return TRUE;
+    return success;
 }
 
 static gboolean
@@ -1568,17 +2011,25 @@ conn_rollback_transaction( /*@ unused @*/ GncSqlConnection* conn )
     GncDbiSqlConnection* dbi_conn = (GncDbiSqlConnection*)conn;
     dbi_result result;
     gint status;
+    gboolean success = FALSE;
 
     DEBUG( "ROLLBACK\n" );
     result = dbi_conn_queryf( dbi_conn->conn, "ROLLBACK" );
+    success = ( result != NULL );
+
     status = dbi_result_free( result );
     if ( status < 0 )
     {
         PERR( "Error in dbi_result_free() result\n" );
         qof_backend_set_error( dbi_conn->qbe, ERR_BACKEND_SERVER_ERR );
     }
+    if ( !success )
+    {
+        PERR( "Error in conn_rollback_transaction()\n" );
+        qof_backend_set_error( dbi_conn->qbe, ERR_BACKEND_SERVER_ERR );
+    }
 
-    return TRUE;
+    return success;
 }
 
 static gboolean
@@ -1587,17 +2038,25 @@ conn_commit_transaction( /*@ unused @*/ GncSqlConnection* conn )
     GncDbiSqlConnection* dbi_conn = (GncDbiSqlConnection*)conn;
     dbi_result result;
     gint status;
+    gboolean success = FALSE;
 
     DEBUG( "COMMIT\n" );
     result = dbi_conn_queryf( dbi_conn->conn, "COMMIT" );
+    success = ( result != NULL );
+
     status = dbi_result_free( result );
     if ( status < 0 )
     {
         PERR( "Error in dbi_result_free() result\n" );
         qof_backend_set_error( dbi_conn->qbe, ERR_BACKEND_SERVER_ERR );
     }
+    if ( !success )
+    {
+        PERR( "Error in conn_commit_transaction()\n" );
+        qof_backend_set_error( dbi_conn->qbe, ERR_BACKEND_SERVER_ERR );
+    }
 
-    return TRUE;
+    return success;
 }
 
 static /*@ null @*/ gchar*
@@ -1630,6 +2089,87 @@ create_index_ddl( GncSqlConnection* conn,
 }
 
 static /*@ null @*/ gchar*
+add_columns_ddl( GncSqlConnection* conn,
+                 const gchar* table_name,
+                 GList* col_info_list )
+{
+    GString* ddl;
+    const GList* list_node;
+    const GncSqlColumnTableEntry* table_row;
+    guint col_num;
+    GncDbiSqlConnection* dbi_conn = (GncDbiSqlConnection*)conn;
+
+    g_return_val_if_fail( conn != NULL, NULL );
+    g_return_val_if_fail( table_name != NULL, NULL );
+    g_return_val_if_fail( col_info_list != NULL, NULL );
+
+    ddl = g_string_new( "" );
+    g_string_printf( ddl, "ALTER TABLE %s ", table_name );
+    for ( list_node = col_info_list, col_num = 0; list_node != NULL;
+            list_node = list_node->next, col_num++ )
+    {
+        GncSqlColumnInfo* info = (GncSqlColumnInfo*)(list_node->data);
+
+        if ( col_num != 0 )
+        {
+            (void)g_string_append( ddl, ", " );
+        }
+        g_string_append( ddl, "ADD COLUMN " );
+        dbi_conn->provider->append_col_def( ddl, info );
+        g_free( info->name );
+        g_free( info );
+    }
+
+    return g_string_free( ddl, FALSE );
+}
+
+static void
+append_sqlite3_col_def( GString* ddl, GncSqlColumnInfo* info )
+{
+    gchar* type_name;
+
+    if ( info->type == BCT_INT )
+    {
+        type_name = "integer";
+    }
+    else if ( info->type == BCT_INT64 )
+    {
+        type_name = "bigint";
+    }
+    else if ( info->type == BCT_DOUBLE )
+    {
+        type_name = "float8";
+    }
+    else if ( info->type == BCT_STRING || info->type == BCT_DATE
+              || info->type == BCT_DATETIME )
+    {
+        type_name = "text";
+    }
+    else
+    {
+        PERR( "Unknown column type: %d\n", info->type );
+        type_name = "";
+    }
+    g_string_append_printf( ddl, "%s %s", info->name, type_name );
+    if ( info->size != 0 )
+    {
+        (void)g_string_append_printf( ddl, "(%d)", info->size );
+    }
+    if ( info->is_primary_key )
+    {
+        (void)g_string_append( ddl, " PRIMARY KEY" );
+    }
+    if ( info->is_autoinc )
+    {
+        (void)g_string_append( ddl, " AUTOINCREMENT" );
+    }
+    if ( !info->null_allowed )
+    {
+        (void)g_string_append( ddl, " NOT NULL" );
+    }
+}
+
+static /*@ null @*/ gchar*
 conn_create_table_ddl_sqlite3( GncSqlConnection* conn,
                                const gchar* table_name,
                                const GList* col_info_list )
@@ -1637,7 +2177,6 @@ conn_create_table_ddl_sqlite3( GncSqlConnection* conn,
     GString* ddl;
     const GList* list_node;
     guint col_num;
-    gchar* type_name;
 
     g_return_val_if_fail( conn != NULL, NULL );
     g_return_val_if_fail( table_name != NULL, NULL );
@@ -1654,51 +2193,72 @@ conn_create_table_ddl_sqlite3( GncSqlConnection* conn,
         {
             (void)g_string_append( ddl, ", " );
         }
-        if ( info->type == BCT_INT )
-        {
-            type_name = "integer";
-        }
-        else if ( info->type == BCT_INT64 )
-        {
-            type_name = "bigint";
-        }
-        else if ( info->type == BCT_DOUBLE )
-        {
-            type_name = "float8";
-        }
-        else if ( info->type == BCT_STRING || info->type == BCT_DATE
-                  || info->type == BCT_DATETIME )
-        {
-            type_name = "text";
-        }
-        else
-        {
-            PERR( "Unknown column type: %d\n", info->type );
-            type_name = "";
-        }
-        g_string_append_printf( ddl, "%s %s", info->name, type_name );
-        if ( info->size != 0 )
-        {
-            (void)g_string_append_printf( ddl, "(%d)", info->size );
-        }
-        if ( info->is_primary_key )
-        {
-            (void)g_string_append( ddl, " PRIMARY KEY" );
-        }
-        if ( info->is_autoinc )
-        {
-            (void)g_string_append( ddl, " AUTOINCREMENT" );
-        }
-        if ( !info->null_allowed )
-        {
-            (void)g_string_append( ddl, " NOT NULL" );
-        }
+        append_sqlite3_col_def( ddl, info );
         g_free( info->name );
         g_free( info );
     }
     (void)g_string_append( ddl, ")" );
 
     return g_string_free( ddl, FALSE );
+}
+
+static void
+append_mysql_col_def( GString* ddl, GncSqlColumnInfo* info )
+{
+    gchar* type_name;
+
+    if ( info->type == BCT_INT )
+    {
+        type_name = "integer";
+    }
+    else if ( info->type == BCT_INT64 )
+    {
+        type_name = "bigint";
+    }
+    else if ( info->type == BCT_DOUBLE )
+    {
+        type_name = "double";
+    }
+    else if ( info->type == BCT_STRING )
+    {
+        type_name = "varchar";
+    }
+    else if ( info->type == BCT_DATE )
+    {
+        info->size = 0;
+        type_name = "date";
+    }
+    else if ( info->type == BCT_DATETIME )
+    {
+        info->size = 0;
+        type_name = "TIMESTAMP NULL DEFAULT 0";
+    }
+    else
+    {
+        PERR( "Unknown column type: %d\n", info->type );
+        type_name = "";
+    }
+    g_string_append_printf( ddl, "%s %s", info->name, type_name );
+    if ( info->size != 0 )
+    {
+        g_string_append_printf( ddl, "(%d)", info->size );
+    }
+    if ( info->is_unicode )
+    {
+        (void)g_string_append( ddl, " CHARACTER SET utf8" );
+    }
+    if ( info->is_primary_key )
+    {
+        (void)g_string_append( ddl, " PRIMARY KEY" );
+    }
+    if ( info->is_autoinc )
+    {
+        (void)g_string_append( ddl, " AUTO_INCREMENT" );
+    }
+    if ( !info->null_allowed )
+    {
+        (void)g_string_append( ddl, " NOT NULL" );
+    }
 }
 
 static /*@ null @*/ gchar*
@@ -1708,7 +2268,6 @@ conn_create_table_ddl_mysql( GncSqlConnection* conn, const gchar* table_name,
     GString* ddl;
     const GList* list_node;
     guint col_num;
-    gchar* type_name;
 
     g_return_val_if_fail( conn != NULL, NULL );
     g_return_val_if_fail( table_name != NULL, NULL );
@@ -1725,64 +2284,71 @@ conn_create_table_ddl_mysql( GncSqlConnection* conn, const gchar* table_name,
         {
             (void)g_string_append( ddl, ", " );
         }
-        if ( info->type == BCT_INT )
-        {
-            type_name = "integer";
-        }
-        else if ( info->type == BCT_INT64 )
-        {
-            type_name = "bigint";
-        }
-        else if ( info->type == BCT_DOUBLE )
-        {
-            type_name = "double";
-        }
-        else if ( info->type == BCT_STRING )
-        {
-            type_name = "varchar";
-        }
-        else if ( info->type == BCT_DATE )
-        {
-            info->size = 0;
-            type_name = "date";
-        }
-        else if ( info->type == BCT_DATETIME )
-        {
-            info->size = 0;
-            type_name = "timestamp";
-        }
-        else
-        {
-            PERR( "Unknown column type: %d\n", info->type );
-            type_name = "";
-        }
-        g_string_append_printf( ddl, "%s %s", info->name, type_name );
-        if ( info->size != 0 )
-        {
-            g_string_append_printf( ddl, "(%d)", info->size );
-        }
-        if ( info->is_unicode )
-        {
-            (void)g_string_append( ddl, " CHARACTER SET utf8" );
-        }
-        if ( info->is_primary_key )
-        {
-            (void)g_string_append( ddl, " PRIMARY KEY" );
-        }
-        if ( info->is_autoinc )
-        {
-            (void)g_string_append( ddl, " AUTO_INCREMENT" );
-        }
-        if ( !info->null_allowed )
-        {
-            (void)g_string_append( ddl, " NOT NULL" );
-        }
+        append_mysql_col_def( ddl, info );
         g_free( info->name );
         g_free( info );
     }
     (void)g_string_append( ddl, ")" );
 
     return g_string_free( ddl, FALSE );
+}
+
+static void
+append_pgsql_col_def( GString* ddl, GncSqlColumnInfo* info )
+{
+    gchar* type_name;
+
+    if ( info->type == BCT_INT )
+    {
+        if ( info->is_autoinc )
+        {
+            type_name = "serial";
+        }
+        else
+        {
+            type_name = "integer";
+        }
+    }
+    else if ( info->type == BCT_INT64 )
+    {
+        type_name = "int8";
+    }
+    else if ( info->type == BCT_DOUBLE )
+    {
+        type_name = "double precision";
+    }
+    else if ( info->type == BCT_STRING )
+    {
+        type_name = "varchar";
+    }
+    else if ( info->type == BCT_DATE )
+    {
+        info->size = 0;
+        type_name = "date";
+    }
+    else if ( info->type == BCT_DATETIME )
+    {
+        info->size = 0;
+        type_name = "timestamp without time zone";
+    }
+    else
+    {
+        PERR( "Unknown column type: %d\n", info->type );
+        type_name = "";
+    }
+    g_string_append_printf( ddl, "%s %s", info->name, type_name );
+    if ( info->size != 0 )
+    {
+        g_string_append_printf( ddl, "(%d)", info->size );
+    }
+    if ( info->is_primary_key )
+    {
+        (void)g_string_append( ddl, " PRIMARY KEY" );
+    }
+    if ( !info->null_allowed )
+    {
+        (void)g_string_append( ddl, " NOT NULL" );
+    }
 }
 
 static /*@ null @*/ gchar*
@@ -1792,7 +2358,6 @@ conn_create_table_ddl_pgsql( GncSqlConnection* conn, const gchar* table_name,
     GString* ddl;
     const GList* list_node;
     guint col_num;
-    gchar* type_name;
     gboolean is_unicode = FALSE;
 
     g_return_val_if_fail( conn != NULL, NULL );
@@ -1810,57 +2375,7 @@ conn_create_table_ddl_pgsql( GncSqlConnection* conn, const gchar* table_name,
         {
             (void)g_string_append( ddl, ", " );
         }
-        if ( info->type == BCT_INT )
-        {
-            if ( info->is_autoinc )
-            {
-                type_name = "serial";
-            }
-            else
-            {
-                type_name = "integer";
-            }
-        }
-        else if ( info->type == BCT_INT64 )
-        {
-            type_name = "int8";
-        }
-        else if ( info->type == BCT_DOUBLE )
-        {
-            type_name = "double precision";
-        }
-        else if ( info->type == BCT_STRING )
-        {
-            type_name = "varchar";
-        }
-        else if ( info->type == BCT_DATE )
-        {
-            info->size = 0;
-            type_name = "date";
-        }
-        else if ( info->type == BCT_DATETIME )
-        {
-            info->size = 0;
-            type_name = "timestamp without time zone";
-        }
-        else
-        {
-            PERR( "Unknown column type: %d\n", info->type );
-            type_name = "";
-        }
-        g_string_append_printf( ddl, "%s %s", info->name, type_name );
-        if ( info->size != 0 )
-        {
-            g_string_append_printf( ddl, "(%d)", info->size );
-        }
-        if ( info->is_primary_key )
-        {
-            (void)g_string_append( ddl, " PRIMARY KEY" );
-        }
-        if ( !info->null_allowed )
-        {
-            (void)g_string_append( ddl, " NOT NULL" );
-        }
+        append_pgsql_col_def( ddl, info );
         is_unicode = is_unicode || info->is_unicode;
         g_free( info->name );
         g_free( info );
@@ -1926,6 +2441,42 @@ conn_create_index( /*@ unused @*/ GncSqlConnection* conn, /*@ unused @*/ const g
     g_return_val_if_fail( col_table != NULL, FALSE );
 
     ddl = create_index_ddl( conn, index_name, table_name, col_table );
+    if ( ddl != NULL )
+    {
+        gint status;
+
+        DEBUG( "SQL: %s\n", ddl );
+        result = dbi_conn_query( dbi_conn->conn, ddl );
+        g_free( ddl );
+        status = dbi_result_free( result );
+        if ( status < 0 )
+        {
+            PERR( "Error in dbi_result_free() result\n" );
+            qof_backend_set_error( dbi_conn->qbe, ERR_BACKEND_SERVER_ERR );
+        }
+    }
+    else
+    {
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+static gboolean
+conn_add_columns_to_table( /*@ unused @*/ GncSqlConnection* conn, /*@ unused @*/ const gchar* table_name,
+        GList* col_info_list )
+{
+    GncDbiSqlConnection* dbi_conn = (GncDbiSqlConnection*)conn;
+    gchar* ddl;
+    dbi_result result;
+    gint status;
+
+    g_return_val_if_fail( conn != NULL, FALSE );
+    g_return_val_if_fail( table_name != NULL, FALSE );
+    g_return_val_if_fail( col_info_list != NULL, FALSE );
+
+    ddl = add_columns_ddl( conn, table_name, col_info_list );
     if ( ddl != NULL )
     {
         gint status;
@@ -2041,10 +2592,12 @@ create_dbi_connection( /*@ observer @*/ provider_functions_t* provider,
     dbi_conn->base.commitTransaction = conn_commit_transaction;
     dbi_conn->base.createTable = conn_create_table;
     dbi_conn->base.createIndex = conn_create_index;
+    dbi_conn->base.addColumnsToTable = conn_add_columns_to_table;
     dbi_conn->base.quoteString = conn_quote_string;
     dbi_conn->qbe = qbe;
     dbi_conn->conn = conn;
     dbi_conn->provider = provider;
+    dbi_conn->conn_ok = TRUE;
 
     gnc_dbi_init_error(dbi_conn);
 

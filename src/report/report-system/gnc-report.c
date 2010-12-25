@@ -25,6 +25,7 @@
 #include "config.h"
 
 #include <glib.h>
+#include <gtk/gtk.h>
 #include <libguile.h>
 #include <stdio.h>
 #include <string.h>
@@ -195,3 +196,21 @@ gnc_report_name( SCM report )
     return g_strdup(scm_to_locale_string(value));
 }
 
+gchar*
+gnc_get_default_report_font_family(void)
+{
+    GList*          top_list;
+    GtkWidget*      top_widget;
+    GtkStyle*       top_widget_style;
+    const gchar*    default_font_family;
+
+    top_list = gtk_window_list_toplevels();
+    top_widget = GTK_WIDGET(top_list->data);
+    top_widget_style = gtk_rc_get_style(top_widget);
+    default_font_family = pango_font_description_get_family(top_widget_style->font_desc);
+
+    if (default_font_family == NULL)
+        return g_strdup("Arial");
+    else
+        return g_strdup(default_font_family);
+}

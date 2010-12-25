@@ -27,8 +27,7 @@
 
 #include "Account.h"
 #include "Query.h"
-#include "QueryCore.h"
-#include "QueryNew.h"
+#include "qof.h"
 #include "SX-book.h"
 #include "Transaction.h"
 #include "gnc-component-manager.h"
@@ -50,7 +49,7 @@
 
 struct gnc_ledger_display
 {
-    GUID leader;
+    GncGUID leader;
 
     Query *query;
 
@@ -413,9 +412,9 @@ gnc_ledger_display_gl (void)
 
     ENTER(" ");
 
-    query = xaccMallocQuery ();
+    query = qof_query_create_for(GNC_ID_SPLIT);
 
-    xaccQuerySetBook (query, gnc_get_current_book());
+    qof_query_set_book (query, gnc_get_current_book());
 
     /* In lieu of not "mis-using" some portion of the infrastructure by writing
      * a bunch of new code, we just filter out the accounts of the template
@@ -429,7 +428,7 @@ gnc_ledger_display_gl (void)
 
         tRoot = gnc_book_get_template_root( gnc_get_current_book() );
         al = gnc_account_get_descendants( tRoot );
-        xaccQueryAddAccountMatch( query, al, GUID_MATCH_NONE, QUERY_AND );
+        xaccQueryAddAccountMatch( query, al, QOF_GUID_MATCH_NONE, QOF_QUERY_AND );
         g_list_free (al);
         al = NULL;
         tRoot = NULL;
@@ -441,7 +440,7 @@ gnc_ledger_display_gl (void)
     xaccQueryAddDateMatchTT (query,
                              TRUE, start,
                              FALSE, 0,
-                             QUERY_AND);
+                             QOF_QUERY_AND);
 
     ld = gnc_ledger_display_internal (NULL, query, LD_GL, GENERAL_LEDGER,
                                       REG_STYLE_JOURNAL, FALSE, FALSE);
@@ -450,11 +449,11 @@ gnc_ledger_display_gl (void)
 }
 
 /**
- * @param id: The string version of the GUID of the context of template
+ * @param id: The string version of the GncGUID of the context of template
  * transaction being edited in this template GL.  As used by scheduled
- * transactions, this is the GUID of the SX itself which is magically the
+ * transactions, this is the GncGUID of the SX itself which is magically the
  * *name* of the (template) account which contains the transactions for this
- * scheduled transaction.  That's right.  The stringified GUID of the SX is
+ * scheduled transaction.  That's right.  The stringified GncGUID of the SX is
  * the name of the SX'es template account.
  **/
 GNCLedgerDisplay *
@@ -472,17 +471,17 @@ gnc_ledger_display_template_gl (char *id)
     acct = NULL;
     isTemplateModeTrue = TRUE;
 
-    q = xaccMallocQuery ();
+    q = qof_query_create_for(GNC_ID_SPLIT);
 
     book = gnc_get_current_book ();
-    xaccQuerySetBook (q, book);
+    qof_query_set_book (q, book);
 
     if ( id != NULL )
     {
         root = gnc_book_get_template_root (book);
         acct = gnc_account_lookup_by_name(root, id);
         g_assert( acct );
-        xaccQueryAddSingleAccountMatch (q, acct, QUERY_AND);
+        xaccQueryAddSingleAccountMatch (q, acct, QOF_QUERY_AND);
     }
 
     ld = gnc_ledger_display_internal (NULL, q, LD_GL,
@@ -612,7 +611,7 @@ close_handler (gpointer user_data)
     gnc_split_register_destroy (ld->reg);
     ld->reg = NULL;
 
-    xaccFreeQuery (ld->query);
+    qof_query_destroy (ld->query);
     ld->query = NULL;
 
     g_free (ld);
@@ -643,17 +642,17 @@ gnc_ledger_display_make_query (GNCLedgerDisplay *ld,
         return;
     }
 
-    xaccFreeQuery (ld->query);
-    ld->query = xaccMallocQuery ();
+    qof_query_destroy (ld->query);
+    ld->query = qof_query_create_for(GNC_ID_SPLIT);
 
     /* This is a bit of a hack. The number of splits should be
      * configurable, or maybe we should go back a time range instead
      * of picking a number, or maybe we should be able to exclude
      * based on reconciled status. Anyway, this works for now. */
     if ((limit != 0) && (type != SEARCH_LEDGER))
-        xaccQuerySetMaxSplits (ld->query, limit);
+        qof_query_set_max_results (ld->query, limit);
 
-    xaccQuerySetBook (ld->query, gnc_get_current_book());
+    qof_query_set_book (ld->query, gnc_get_current_book());
 
     leader = gnc_ledger_display_leader (ld);
 
@@ -665,7 +664,7 @@ gnc_ledger_display_make_query (GNCLedgerDisplay *ld,
     accounts = g_list_prepend (accounts, leader);
 
     xaccQueryAddAccountMatch (ld->query, accounts,
-                              GUID_MATCH_ANY, QUERY_AND);
+                              QOF_GUID_MATCH_ANY, QOF_QUERY_AND);
 
     g_list_free (accounts);
 }
@@ -778,7 +777,7 @@ gnc_ledger_display_internal (Account *lead_account, Query *q,
 
     /* set up the query filter */
     if (q)
-        ld->query = xaccQueryCopy (q);
+        ld->query = qof_query_copy (q);
     else
         gnc_ledger_display_make_query (ld, limit, reg_type);
 
@@ -813,8 +812,8 @@ gnc_ledger_display_set_query (GNCLedgerDisplay *ledger_display, Query *q)
 
     g_return_if_fail (ledger_display->ld_type == LD_GL);
 
-    xaccFreeQuery (ledger_display->query);
-    ledger_display->query = xaccQueryCopy (q);
+    qof_query_destroy (ledger_display->query);
+    ledger_display->query = qof_query_copy (q);
 }
 
 GNCLedgerDisplay *
@@ -864,7 +863,7 @@ gnc_ledger_display_refresh (GNCLedgerDisplay *ld)
         return;
     }
 
-    gnc_ledger_display_refresh_internal (ld, xaccQueryGetSplits (ld->query));
+    gnc_ledger_display_refresh_internal (ld, qof_query_run (ld->query));
     LEAVE(" ");
 }
 

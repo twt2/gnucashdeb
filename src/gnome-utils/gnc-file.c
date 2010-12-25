@@ -32,9 +32,11 @@
 #include "gnc-commodity.h"
 #include "gnc-component-manager.h"
 #include "gnc-engine.h"
+#include "Account.h"
 #include "gnc-file.h"
 #include "gnc-gui-query.h"
 #include "gnc-hooks.h"
+#include "gnc-keyring.h"
 #include "gnc-splash.h"
 #include "gnc-ui.h"
 #include "gnc-ui-util.h"
@@ -46,7 +48,6 @@
 #include "gnc-session.h"
 #include "gnc-autosave.h"
 
-#define GCONF_SECTION "dialogs/export_accounts"
 
 /** GLOBALS *********************************************************/
 /* This static indicates the debugging module that this .o belongs to.  */
@@ -193,12 +194,17 @@ show_session_error (QofBackendError io_error,
     GtkWidget *dialog;
     gboolean uh_oh = TRUE;
     const char *fmt, *label;
+    gchar *displayname;
     gint response;
 
     if (NULL == newfile)
     {
-        newfile = _("(null)");
+        displayname = g_strdup(_("(null)"));
     }
+    else if (! gnc_uri_is_file_uri (newfile)) /* Hide the db password in error messages */
+        displayname = gnc_uri_normalize_uri ( newfile, FALSE);
+    else
+        displayname = g_strdup (newfile);
 
     switch (io_error)
     {
@@ -208,29 +214,29 @@ show_session_error (QofBackendError io_error,
 
     case ERR_BACKEND_NO_HANDLER:
         fmt = _("No suitable backend was found for %s.");
-        gnc_error_dialog(parent, fmt, newfile);
+        gnc_error_dialog(parent, fmt, displayname);
         break;
 
     case ERR_BACKEND_NO_BACKEND:
         fmt = _("The URL %s is not supported by this version of GnuCash.");
-        gnc_error_dialog (parent, fmt, newfile);
+        gnc_error_dialog (parent, fmt, displayname);
         break;
 
     case ERR_BACKEND_BAD_URL:
         fmt = _("Can't parse the URL %s.");
-        gnc_error_dialog (parent, fmt, newfile);
+        gnc_error_dialog (parent, fmt, displayname);
         break;
 
     case ERR_BACKEND_CANT_CONNECT:
         fmt = _("Can't connect to %s. "
                 "The host, username or password were incorrect.");
-        gnc_error_dialog (parent, fmt, newfile);
+        gnc_error_dialog (parent, fmt, displayname);
         break;
 
     case ERR_BACKEND_CONN_LOST:
         fmt = _("Can't connect to %s. "
                 "Connection was lost, unable to send data.");
-        gnc_error_dialog (parent, fmt, newfile);
+        gnc_error_dialog (parent, fmt, displayname);
         break;
 
     case ERR_BACKEND_TOO_NEW:
@@ -243,7 +249,7 @@ show_session_error (QofBackendError io_error,
     case ERR_BACKEND_NO_SUCH_DB:
         fmt = _("The database %s doesn't seem to exist. "
                 "Do you want to create it?");
-        if (gnc_verify_dialog (parent, TRUE, fmt, newfile))
+        if (gnc_verify_dialog (parent, TRUE, fmt, displayname))
         {
             uh_oh = FALSE;
         }
@@ -291,7 +297,7 @@ show_session_error (QofBackendError io_error,
                                         GTK_MESSAGE_QUESTION,
                                         GTK_BUTTONS_NONE,
                                         fmt,
-                                        newfile);
+                                        displayname);
         gtk_dialog_add_buttons(GTK_DIALOG(dialog),
                                GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
                                label, GTK_RESPONSE_YES,
@@ -305,102 +311,29 @@ show_session_error (QofBackendError io_error,
         fmt = _("GnuCash could not write to %s. "
                 "That database may be on a read-only file system, "
                 "or you may not have write permission for the directory.");
-        gnc_error_dialog (parent, fmt, newfile);
+        gnc_error_dialog (parent, fmt, displayname);
         break;
 
     case ERR_BACKEND_DATA_CORRUPT:
         fmt = _("The file/URL %s "
                 "does not contain GnuCash data or the data is corrupt.");
-        gnc_error_dialog (parent, fmt, newfile);
+        gnc_error_dialog (parent, fmt, displayname);
         break;
 
     case ERR_BACKEND_SERVER_ERR:
         fmt = _("The server at URL %s "
                 "experienced an error or encountered bad or corrupt data.");
-        gnc_error_dialog (parent, fmt, newfile);
+        gnc_error_dialog (parent, fmt, displayname);
         break;
 
     case ERR_BACKEND_PERM:
         fmt = _("You do not have permission to access %s.");
-        gnc_error_dialog (parent, fmt, newfile);
+        gnc_error_dialog (parent, fmt, displayname);
         break;
 
     case ERR_BACKEND_MISC:
         fmt = _("An error occurred while processing %s.");
-        gnc_error_dialog (parent, fmt, newfile);
-        break;
-
-        /* QSF additions */
-    case ERR_QSF_INVALID_OBJ:
-        fmt = _("Invalid QSF Object file! The QSF object file %s failed to"
-                " validate against the QSF object schema. The XML structure of"
-                " the file is either not well-formed or contains illegal data.");
-        gnc_error_dialog(parent, fmt, newfile);
-        break;
-
-    case ERR_QSF_INVALID_MAP:
-        fmt = _("Invalid QSF Map file! The QSF map file %s failed to validate"
-                " against the QSF map schema. The XML structure of the file"
-                " is either not well-formed or contains illegal data.");
-        gnc_error_dialog(parent, fmt, newfile);
-        break;
-
-    case ERR_QSF_BAD_QOF_VERSION:
-        fmt = _("The QSF Map file %s was written for a different version of"
-                " QOF.  It may need to be modified to work with your current"
-                " QOF installation.");
-        gnc_error_dialog(parent, fmt, newfile);
-        break;
-
-    case ERR_QSF_BAD_MAP:
-        fmt = _("The selected QSF map %s contains unusable data. "
-                "This is usually because not all the required parameters for "
-                "the defined objects have calculations described in the map.");
-        gnc_error_dialog(parent, fmt, newfile);
-        break;
-
-    case ERR_QSF_BAD_OBJ_GUID:
-        fmt = _("The selected QSF object file %s contains one or more invalid "
-                "GUIDs. The file cannot be processed - please check the source "
-                "of the file and try again.");
-        gnc_error_dialog(parent, fmt, newfile);
-        break;
-
-    case ERR_QSF_NO_MAP:
-        fmt = _("The selected QSF Object file %s requires a map but it was "
-                "not provided.");
-        gnc_error_dialog(parent, fmt, newfile);
-        break;
-
-    case ERR_QSF_WRONG_MAP:
-        fmt = _("Wrong QSF map selected. The selected map %s validates but was "
-                "written for different QOF objects.  The list of objects defined "
-                "in this map does not include all the objects described in "
-                "the current QSF object file.");
-        gnc_error_dialog(parent, fmt, newfile);
-        break;
-
-    case ERR_QSF_MAP_NOT_OBJ:
-        fmt = _("The selected file %s is a QSF map and cannot be "
-                "opened as a QSF object.");
-        gnc_error_dialog(parent, fmt, newfile);
-        break;
-
-    case ERR_QSF_OVERFLOW:
-        fmt = _("When converting XML strings into numbers, an overflow "
-                "has been detected. The QSF object file %s contains invalid "
-                "data in a field that is meant to hold a number.");
-        gnc_error_dialog(parent, fmt, newfile);
-        break;
-
-    case ERR_QSF_OPEN_NOT_MERGE:
-        fmt = _("The QSF object file %s is valid and contains GnuCash "
-                "objects. However, GnuCash cannot open the file directly because "
-                "the data needs to be merged into an existing GnuCash data book. "
-                "Please open a GnuCash file or create a new one, then import "
-                "this QSF object file so that the data can be merged into the "
-                "main data book.");
-        gnc_error_dialog(parent, fmt, newfile);
+        gnc_error_dialog (parent, fmt, displayname);
         break;
 
     case ERR_FILEIO_FILE_BAD_READ:
@@ -414,12 +347,12 @@ show_session_error (QofBackendError io_error,
 
     case ERR_FILEIO_PARSE_ERROR:
         fmt = _("There was an error parsing the file %s.");
-        gnc_error_dialog (parent, fmt, newfile);
+        gnc_error_dialog (parent, fmt, displayname);
         break;
 
     case ERR_FILEIO_FILE_EMPTY:
         fmt = _("The file %s is empty.");
-        gnc_error_dialog (parent, fmt, newfile);
+        gnc_error_dialog (parent, fmt, displayname);
         break;
 
     case ERR_FILEIO_FILE_NOT_FOUND:
@@ -430,7 +363,7 @@ show_session_error (QofBackendError io_error,
         else
         {
             fmt = _("The file %s could not be found.");
-            gnc_error_dialog (parent, fmt, newfile);
+            gnc_error_dialog (parent, fmt, displayname);
         }
         break;
 
@@ -445,24 +378,24 @@ show_session_error (QofBackendError io_error,
 
     case ERR_FILEIO_UNKNOWN_FILE_TYPE:
         fmt = _("The file type of file %s is unknown.");
-        gnc_error_dialog(parent, fmt, newfile);
+        gnc_error_dialog(parent, fmt, displayname);
         break;
 
     case ERR_FILEIO_BACKUP_ERROR:
         fmt = _("Could not make a backup of the file %s");
-        gnc_error_dialog(parent, fmt, newfile);
+        gnc_error_dialog(parent, fmt, displayname);
         break;
 
     case ERR_FILEIO_WRITE_ERROR:
         fmt = _("Could not write to file %s.  Check that you have "
                 "permission to write to this file and that "
                 "there is sufficient space to create it.");
-        gnc_error_dialog(parent, fmt, newfile);
+        gnc_error_dialog(parent, fmt, displayname);
         break;
 
     case ERR_FILEIO_FILE_EACCES:
         fmt = _("No read permission to read from file %s.");
-        gnc_error_dialog (parent, fmt, newfile);
+        gnc_error_dialog (parent, fmt, displayname);
         break;
 
     case ERR_SQL_DB_TOO_OLD:
@@ -491,6 +424,7 @@ show_session_error (QofBackendError io_error,
         break;
     }
 
+    g_free (displayname);
     return uh_oh;
 }
 
@@ -509,7 +443,7 @@ gnc_add_history (QofSession * session)
     if ( gnc_uri_is_file_uri ( url ) )
         file = gnc_uri_get_path ( url );
     else
-        file = gnc_uri_normalize_uri ( url, TRUE ); /* FIXME this saves the password visibly in history ! */
+        file = gnc_uri_normalize_uri ( url, FALSE ); /* Note that the password is not saved in history ! */
 
     gnc_history_add_file (file);
 }
@@ -638,21 +572,63 @@ static gboolean
 gnc_post_file_open (const char * filename)
 {
     QofSession *current_session, *new_session;
+    QofBook *new_book;
+    GList *invalid_account_names;
     gboolean uh_oh = FALSE;
     char * newfile;
     QofBackendError io_err = ERR_BACKEND_NO_ERR;
 
+    gchar *protocol = NULL;
+    gchar *hostname = NULL;
+    gchar *username = NULL;
+    gchar *password = NULL;
+    gchar *path = NULL;
+    gint32 port = 0;
+
+
+    ENTER(" ");
+
     if (!filename) return FALSE;
 
-    /* FIXME Verify if it is ok that a password is stored
-     * in the uri here.
-     */
+    /* Convert user input into a normalized uri
+     * Note that the normalized uri for internal use can have a password */
     newfile = gnc_uri_normalize_uri ( filename, TRUE );
     if (!newfile)
     {
         show_session_error (ERR_FILEIO_FILE_NOT_FOUND, filename,
                             GNC_FILE_DIALOG_OPEN);
         return FALSE;
+    }
+
+    gnc_uri_get_components (newfile, &protocol, &hostname,
+                            &port, &username, &password, &path);
+
+    /* If the file to open is a database, and no password was given,
+     * attempt to look it up in a keyring. If that fails the keyring
+     * function will ask the user to enter a password. The user can
+     * cancel this dialog, in which case the open file action will be
+     * abandoned.
+     */
+    if ( !gnc_uri_is_file_protocol (protocol) && !password)
+    {
+        gboolean have_valid_pw = FALSE;
+        have_valid_pw = gnc_keyring_get_password ( NULL, protocol, hostname, port,
+                        path, &username, &password );
+        if (!have_valid_pw)
+            return FALSE;
+
+        /* Got password. Recreate the uri to use internally. */
+        g_free ( newfile );
+        newfile = gnc_uri_create_uri ( protocol, hostname, port,
+                                       username, password, path);
+    }
+
+    /* For file based uri's, remember the directory as the default. */
+    if (gnc_uri_is_file_protocol(protocol))
+    {
+        gchar *default_dir = g_path_get_dirname(path);
+        gnc_set_default_directory (GCONF_DIR_OPEN_SAVE, default_dir);
+        g_free(default_dir);
     }
 
     /* disable events while moving over to the new set of accounts;
@@ -675,7 +651,7 @@ gnc_post_file_open (const char * filename)
     /* but first, check to make sure we've got a session going. */
     new_session = qof_session_new ();
 
-    qof_session_begin (new_session, newfile, FALSE, FALSE);
+    qof_session_begin (new_session, newfile, FALSE, FALSE, FALSE);
     io_err = qof_session_get_error (new_session);
     /* if file appears to be locked, ask the user ... */
     if (ERR_BACKEND_LOCKED == io_err || ERR_BACKEND_READONLY == io_err)
@@ -728,8 +704,11 @@ gnc_post_file_open (const char * filename)
         }
         else if (rc == RESPONSE_OPEN)
         {
+            // re-enable the splash screen, file loading and display of
+            // reports may take some time
+            gnc_show_splash_screen();
             /* user told us to ignore locks. So ignore them. */
-            qof_session_begin (new_session, newfile, TRUE, FALSE);
+            qof_session_begin (new_session, newfile, TRUE, FALSE, FALSE);
         }
         else
         {
@@ -740,18 +719,16 @@ gnc_post_file_open (const char * filename)
             gnc_file_new ();
         }
     }
-    if (ERR_QSF_OPEN_NOT_MERGE == io_err)
-    {
-        uh_oh = TRUE;
-    }
     /* if the database doesn't exist, ask the user ... */
     else if ((ERR_BACKEND_NO_SUCH_DB == io_err) ||
              (ERR_SQL_DB_TOO_OLD == io_err))
     {
         if (FALSE == show_session_error (io_err, newfile, GNC_FILE_DIALOG_OPEN))
         {
-            /* user told us to create a new database. Do it. */
-            qof_session_begin (new_session, newfile, FALSE, TRUE);
+            /* user told us to create a new database. Do it. We
+            	     * shouldn't have to worry about locking or clobbering,
+            	     * it's supposed to be new. */
+            qof_session_begin (new_session, newfile, FALSE, TRUE, FALSE);
         }
     }
 
@@ -774,18 +751,13 @@ gnc_post_file_open (const char * filename)
     if (!uh_oh)
     {
         Account *new_root;
-        gchar *logpath = NULL;
 
-        /* XXX Would logging make sense for databases as well (mysql/postgres) ?
-         * Currently the logpath is relative to the data file path.
-         * Databases don't have a file path, so no logging will be
-         * done for them in the current setup.
+        /* If the new "file" is a database, attempt to store the password
+         * in a keyring. GnuCash itself will not save it.
          */
-        if ( gnc_uri_is_file_uri ( newfile ) )
-            logpath = gnc_uri_get_path(newfile);
-        PINFO ("logpath=%s", logpath ? logpath : "(null)");
-        xaccLogSetBaseName (logpath);
-        g_free ( logpath );
+        if ( !gnc_uri_is_file_protocol (protocol))
+            gnc_keyring_set_password ( protocol, hostname, port,
+                                       path, username, password );
 
         xaccLogDisable();
         gnc_window_show_progress(_("Loading user data..."), 0.0);
@@ -870,6 +842,19 @@ gnc_post_file_open (const char * filename)
     /* Call this after re-enabling events. */
     gnc_book_opened ();
 
+    /* Check for account names that may contain the current separator character
+     * and inform the user if there are any */
+    new_book = gnc_get_current_book();
+    invalid_account_names = gnc_account_list_name_violations ( new_book,
+                            gnc_get_account_separator_string() );
+    if ( invalid_account_names )
+    {
+        gchar *message = gnc_account_name_violations_errmsg ( gnc_get_account_separator_string(),
+                         invalid_account_names );
+        gnc_warning_dialog(NULL, "%s", message);
+        g_free ( message );
+    }
+
     return TRUE;
 }
 
@@ -882,23 +867,26 @@ gnc_post_file_open (const char * filename)
 gboolean
 gnc_file_open (void)
 {
-    const char * newfile;
-    gchar *lastpath = NULL;
-    gchar *lastfile = NULL;
-    gchar *last_file_dir = NULL;
+    const gchar * newfile;
+    gchar *last = NULL;
+    gchar *default_dir = NULL;
     gboolean result;
 
     if (!gnc_file_query_save (TRUE))
         return FALSE;
 
-    lastpath = gnc_history_get_last();
-    lastfile = gnc_uri_get_path ( lastpath );
-    if ( lastfile )
-        last_file_dir = g_path_get_dirname(lastfile);
-    newfile = gnc_file_dialog (_("Open"), NULL, last_file_dir, GNC_FILE_DIALOG_OPEN);
-    g_free ( lastpath );
-    g_free ( lastfile );
-    g_free ( last_file_dir );
+    if ( last && gnc_uri_is_file_uri ( last ) )
+    {
+        gchar *filepath = gnc_uri_get_path ( last );
+        default_dir = g_path_get_dirname( filepath );
+        g_free ( filepath );
+    }
+    else
+        default_dir = gnc_get_default_directory(GCONF_DIR_OPEN_SAVE);
+
+    newfile = gnc_file_dialog (_("Open"), NULL, default_dir, GNC_FILE_DIALOG_OPEN);
+    g_free ( last );
+    g_free ( default_dir );
 
     result = gnc_post_file_open ( newfile );
 
@@ -922,67 +910,152 @@ gnc_file_open_file (const char * newfile)
     return gnc_post_file_open (newfile);
 }
 
+/* Note: this dialog will only be used when dbi is not enabled
+ *       paths used in it always refer to files and are
+ *       never db uris
+ */
 void
-gnc_file_export_file(const char * newfile)
+gnc_file_export (void)
+{
+    QofSession *new_session;
+    QofSession *session;
+    const char *filename;
+    char *default_dir = NULL;        /* Default to last open */
+    char *last;
+    char *newfile;
+    const char *oldfile;
+    QofBackendError io_err = ERR_BACKEND_NO_ERR;
+
+    ENTER(" ");
+
+    last = gnc_history_get_last();
+    if ( last && gnc_uri_is_file_uri ( last ) )
+    {
+        gchar *filepath = gnc_uri_get_path ( last );
+        default_dir = g_path_get_dirname( filepath );
+        g_free ( filepath );
+    }
+    else
+        default_dir = gnc_get_default_directory(GCONF_DIR_EXPORT);
+
+    filename = gnc_file_dialog (_("Save"), NULL, default_dir,
+                                GNC_FILE_DIALOG_SAVE);
+    g_free ( last );
+    g_free ( default_dir );
+    if (!filename) return;
+
+    gnc_file_do_export( filename );
+
+    LEAVE (" ");
+}
+
+void
+gnc_file_do_export(const char * filename)
 {
     QofSession *current_session, *new_session;
     gboolean ok;
     QofBackendError io_err = ERR_BACKEND_NO_ERR;
-    gchar *default_dir;
+    gchar *norm_file;
+    gchar *newfile;
+    const gchar *oldfile;
 
-    if (!newfile)
+    gchar *protocol = NULL;
+    gchar *hostname = NULL;
+    gchar *username = NULL;
+    gchar *password = NULL;
+    gchar *path = NULL;
+    gint32 port = 0;
+
+    ENTER(" ");
+
+    /* Convert user input into a normalized uri
+     * Note that the normalized uri for internal use can have a password */
+    norm_file = gnc_uri_normalize_uri ( filename, TRUE );
+    if (!norm_file)
     {
-        default_dir = gnc_get_default_directory (GCONF_SECTION);
-        newfile =  gnc_file_dialog (_("Export"), NULL, default_dir, GNC_FILE_DIALOG_EXPORT);
-        g_free(default_dir);
-        if (!newfile)
-            return;
+        show_session_error (ERR_FILEIO_FILE_NOT_FOUND, filename,
+                            GNC_FILE_DIALOG_EXPORT);
+        return;
     }
 
-    /* Remember the directory as the default. */
-    default_dir = g_path_get_dirname(newfile);
-    gnc_set_default_directory (GCONF_SECTION, default_dir);
-    g_free(default_dir);
+    newfile = gnc_uri_add_extension (norm_file, GNC_DATAFILE_EXT);
+    g_free (norm_file);
+    gnc_uri_get_components (newfile, &protocol, &hostname,
+                            &port, &username, &password, &path);
+
+    /* Save As can't use the generic 'file' protocol. If the user didn't set
+     * a specific protocol, assume the default 'xml'.
+     */
+    if (g_strcmp0 (protocol, "file") == 0)
+    {
+        g_free (protocol);
+        protocol = g_strdup ("xml");
+        norm_file = gnc_uri_create_uri (protocol, hostname, port,
+                                        username, password, path);
+        g_free (newfile);
+        newfile = norm_file;
+    }
+
+    /* For file based uri's, remember the directory as the default. */
+    if (gnc_uri_is_file_protocol(protocol))
+    {
+        gchar *default_dir = g_path_get_dirname(path);
+        gnc_set_default_directory (GCONF_DIR_EXPORT, default_dir);
+        g_free(default_dir);
+    }
+
+    /* Check to see if the user specified the same file as the current
+     * file. If so, prevent the export from happening to avoid killing this file */
+    current_session = gnc_get_current_session ();
+    oldfile = qof_session_get_url(current_session);
+    if (oldfile && (strcmp(oldfile, newfile) == 0))
+    {
+        g_free (newfile);
+        show_session_error (ERR_FILEIO_WRITE_ERROR, filename,
+                            GNC_FILE_DIALOG_EXPORT);
+        return;
+    }
 
     qof_event_suspend();
 
     /* -- this session code is NOT identical in FileOpen and FileSaveAs -- */
 
     new_session = qof_session_new ();
-    qof_session_begin (new_session, newfile, FALSE, TRUE);
+    qof_session_begin (new_session, newfile, FALSE, TRUE, FALSE);
 
     io_err = qof_session_get_error (new_session);
+    /* If the file exists and would be clobbered, ask the user */
+    if (ERR_BACKEND_STORE_EXISTS == io_err)
+    {
+        const char *format = _("The file %s already exists. "
+                               "Are you sure you want to overwrite it?");
 
+        const char *name;
+        if ( gnc_uri_is_file_uri ( newfile ) )
+            name = gnc_uri_get_path ( newfile );
+        else
+            name = gnc_uri_normalize_uri ( newfile, FALSE );
+        /* if user says cancel, we should break out */
+        if (!gnc_verify_dialog (NULL, FALSE, format, name))
+        {
+            return;
+        }
+        qof_session_begin (new_session, newfile, FALSE, TRUE, TRUE);
+    }
     /* if file appears to be locked, ask the user ... */
     if (ERR_BACKEND_LOCKED == io_err || ERR_BACKEND_READONLY == io_err)
     {
         if (FALSE == show_session_error (io_err, newfile, GNC_FILE_DIALOG_EXPORT))
         {
             /* user told us to ignore locks. So ignore them. */
-            qof_session_begin (new_session, newfile, TRUE, FALSE);
+            qof_session_begin (new_session, newfile, TRUE, FALSE, FALSE);
         }
     }
 
     /* --------------- END CORE SESSION CODE -------------- */
 
-    /* oops ... file already exists ... ask user what to do... */
-    if (qof_session_save_may_clobber_data (new_session))
-    {
-        const char *format = _("The file %s already exists. "
-                               "Are you sure you want to overwrite it?");
-
-        /* if user says cancel, we should break out */
-        if (!gnc_verify_dialog (NULL, FALSE, format, newfile))
-        {
-            return;
-        }
-
-        /* Whoa-ok. Blow away the previous file. */
-    }
-
     /* use the current session to save to file */
     gnc_set_busy_cursor (NULL, TRUE);
-    current_session = gnc_get_current_session();
     gnc_window_show_progress(_("Exporting file..."), 0.0);
     ok = qof_session_export (new_session, current_session,
                              gnc_window_show_progress);
@@ -1056,19 +1129,14 @@ gnc_file_save (void)
 
 /* Note: this dialog will only be used when dbi is not enabled
  *       paths used in it always refer to files and are
- *       never db uris
+ *       never db uris. See gnc_file_do_save_as for that.
  */
 void
 gnc_file_save_as (void)
 {
-    QofSession *new_session;
-    QofSession *session;
-    const char *filename;
-    char *default_dir = NULL;        /* Default to last open */
-    char *last;
-    char *newfile;
-    const char *oldfile;
-    QofBackendError io_err = ERR_BACKEND_NO_ERR;
+    const gchar *filename;
+    gchar *default_dir = NULL;        /* Default to last open */
+    gchar *last;
 
     ENTER(" ");
 
@@ -1080,9 +1148,8 @@ gnc_file_save_as (void)
         g_free ( filepath );
     }
     else
-    {
-        default_dir = gnc_get_default_directory(GCONF_SECTION);
-    }
+        default_dir = gnc_get_default_directory(GCONF_DIR_OPEN_SAVE);
+
     filename = gnc_file_dialog (_("Save"), NULL, default_dir,
                                 GNC_FILE_DIALOG_SAVE);
     g_free ( last );
@@ -1099,27 +1166,60 @@ gnc_file_do_save_as (const char* filename)
 {
     QofSession *new_session;
     QofSession *session;
-    char *default_dir = NULL;        /* Default to last open */
-    char *last;
-    char *newfile;
-    const char *oldfile;
-    gchar *logpath = NULL;
+    gchar *norm_file;
+    gchar *newfile;
+    const gchar *oldfile;
+
+    gchar *protocol = NULL;
+    gchar *hostname = NULL;
+    gchar *username = NULL;
+    gchar *password = NULL;
+    gchar *path = NULL;
+    gint32 port = 0;
+
 
     QofBackendError io_err = ERR_BACKEND_NO_ERR;
 
     ENTER(" ");
 
-    /* Check to see if the user specified the same file as the current
-     * file. If so, then just do a simple save, instead of a full save as */
-    /* FIXME Check if it is ok to have a password in the uri here */
-    newfile = gnc_uri_normalize_uri ( filename, TRUE );
-    if (!newfile)
+    /* Convert user input into a normalized uri
+     * Note that the normalized uri for internal use can have a password */
+    norm_file = gnc_uri_normalize_uri ( filename, TRUE );
+    if (!norm_file)
     {
         show_session_error (ERR_FILEIO_FILE_NOT_FOUND, filename,
                             GNC_FILE_DIALOG_SAVE);
         return;
     }
 
+    newfile = gnc_uri_add_extension (norm_file, GNC_DATAFILE_EXT);
+    g_free (norm_file);
+    gnc_uri_get_components (newfile, &protocol, &hostname,
+                            &port, &username, &password, &path);
+
+    /* Save As can't use the generic 'file' protocol. If the user didn't set
+     * a specific protocol, assume the default 'xml'.
+     */
+    if (g_strcmp0 (protocol, "file") == 0)
+    {
+        g_free (protocol);
+        protocol = g_strdup ("xml");
+        norm_file = gnc_uri_create_uri (protocol, hostname, port,
+                                        username, password, path);
+        g_free (newfile);
+        newfile = norm_file;
+    }
+
+    /* For file based uri's, remember the directory as the default. */
+    if (gnc_uri_is_file_protocol(protocol))
+    {
+        gchar *default_dir = g_path_get_dirname(path);
+        gnc_set_default_directory (GCONF_DIR_OPEN_SAVE, default_dir);
+        g_free(default_dir);
+    }
+
+    /* Check to see if the user specified the same file as the current
+     * file. If so, then just do a simple save, instead of a full save as */
     session = gnc_get_current_session ();
     oldfile = qof_session_get_url(session);
     if (oldfile && (strcmp(oldfile, newfile) == 0))
@@ -1135,18 +1235,43 @@ gnc_file_do_save_as (const char* filename)
     /* -- this session code is NOT identical in FileOpen and FileSaveAs -- */
 
     save_in_progress++;
+
     new_session = qof_session_new ();
-    qof_session_begin (new_session, newfile, FALSE, FALSE);
+    qof_session_begin (new_session, newfile, FALSE, TRUE, FALSE);
 
     io_err = qof_session_get_error (new_session);
 
+    /* If the file exists and would be clobbered, ask the user */
+    if (ERR_BACKEND_STORE_EXISTS == io_err)
+    {
+        const char *format = _("The file %s already exists. "
+                               "Are you sure you want to overwrite it?");
+
+        const char *name;
+        if ( gnc_uri_is_file_uri ( newfile ) )
+            name = gnc_uri_get_path ( newfile );
+        else
+            name = gnc_uri_normalize_uri ( newfile, FALSE );
+
+        /* if user says cancel, we should break out */
+        if (!gnc_verify_dialog (NULL, FALSE, format, name ))
+        {
+            xaccLogDisable();
+            qof_session_destroy (new_session);
+            xaccLogEnable();
+            g_free (newfile);
+            save_in_progress--;
+            return;
+        }
+        qof_session_begin (new_session, newfile, FALSE, TRUE, TRUE);
+    }
     /* if file appears to be locked, ask the user ... */
-    if (ERR_BACKEND_LOCKED == io_err || ERR_BACKEND_READONLY == io_err)
+    else if (ERR_BACKEND_LOCKED == io_err || ERR_BACKEND_READONLY == io_err)
     {
         if (FALSE == show_session_error (io_err, newfile, GNC_FILE_DIALOG_SAVE))
         {
             /* user told us to ignore locks. So ignore them. */
-            qof_session_begin (new_session, newfile, TRUE, FALSE);
+            qof_session_begin (new_session, newfile, TRUE, FALSE, FALSE);
         }
     }
 
@@ -1158,7 +1283,7 @@ gnc_file_do_save_as (const char* filename)
         if (FALSE == show_session_error (io_err, newfile, GNC_FILE_DIALOG_SAVE))
         {
             /* user told us to create a new database. Do it. */
-            qof_session_begin (new_session, newfile, FALSE, TRUE);
+            qof_session_begin (new_session, newfile, FALSE, TRUE, FALSE);
         }
     }
 
@@ -1178,37 +1303,12 @@ gnc_file_do_save_as (const char* filename)
         return;
     }
 
-    /* oops ... file already exists ... ask user what to do... */
-    if (qof_session_save_may_clobber_data (new_session))
-    {
-        const char *format = _("The file %s already exists. "
-                               "Are you sure you want to overwrite it?");
-
-        /* if user says cancel, we should break out */
-        if (!gnc_verify_dialog (NULL, FALSE, format, newfile))
-        {
-            xaccLogDisable();
-            qof_session_destroy (new_session);
-            xaccLogEnable();
-            g_free (newfile);
-            save_in_progress--;
-            return;
-        }
-
-        /* Whoa-ok. Blow away the previous file. */
-    }
-
-    /* XXX Would logging make sense for databases as well (mysql/postgres) ?
-     * Currently the logpath is relative to the data file path.
-     * Databases don't have a file path, so no logging will be
-     * done for them in the current setup.
+    /* If the new "file" is a database, attempt to store the password
+     * in a keyring. GnuCash itself will not save it.
      */
-    if ( gnc_uri_is_file_uri ( newfile ) )
-        logpath = gnc_uri_get_path(newfile);
-    PINFO ("logpath=%s", logpath ? logpath : "(null)");
-    xaccLogSetBaseName (logpath);
-    g_free ( logpath );
-
+    if ( !gnc_uri_is_file_protocol (protocol))
+        gnc_keyring_set_password ( protocol, hostname, port,
+                                   path, username, password );
 
     /* Prevent race condition between swapping the contents of the two
      * sessions, and actually installing the new session as the current
@@ -1219,20 +1319,49 @@ gnc_file_do_save_as (const char* filename)
     /* if we got to here, then we've successfully gotten a new session */
     /* close up the old file session (if any) */
     qof_session_swap_data (session, new_session);
-    gnc_clear_current_session();
-    session = NULL;
 
     /* XXX At this point, we should really mark the data in the new session
      * as being 'dirty', since we haven't saved it at all under the new
      * session. But I'm lazy...
      */
-    gnc_set_current_session(new_session);
 
     qof_event_resume();
 
+
+    gnc_set_busy_cursor (NULL, TRUE);
+    gnc_window_show_progress(_("Writing file..."), 0.0);
+    qof_session_save (new_session, gnc_window_show_progress);
+    gnc_window_show_progress(NULL, -1.0);
+    gnc_unset_busy_cursor (NULL);
+
+    io_err = qof_session_get_error( new_session );
+    if ( ERR_BACKEND_NO_ERR != io_err )
+    {
+        /* Well, poop. The save failed, so the new session is invalid and we
+         * need to restore the old one.
+         */
+        show_session_error (io_err, newfile, GNC_FILE_DIALOG_SAVE);
+        qof_event_suspend();
+        qof_session_swap_data( new_session, session );
+        qof_session_destroy( new_session );
+        new_session = NULL;
+        qof_event_resume();
+    }
+    else
+    {
+        /* Yay! Save was successful, we can dump the old session */
+        qof_event_suspend();
+        gnc_clear_current_session();
+        gnc_set_current_session( new_session );
+        qof_event_resume();
+        session = NULL;
+
+        xaccReopenLog();
+        gnc_add_history (new_session);
+        gnc_hook_run(HOOK_BOOK_SAVED, new_session);
+    }
     /* --------------- END CORE SESSION CODE -------------- */
 
-    gnc_file_save ();
     save_in_progress--;
 
     g_free (newfile);

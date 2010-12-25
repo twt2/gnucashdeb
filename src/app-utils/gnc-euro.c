@@ -164,12 +164,11 @@ gnc_convert_to_euro(const gnc_commodity * currency, gnc_numeric value)
     {
         gnc_numeric rate;
 
-        rate = double_to_gnc_numeric (result->rate, 100000, GNC_RND_ROUND);
+        rate = double_to_gnc_numeric (result->rate, 100000, GNC_HOW_RND_ROUND_HALF_UP);
 
-        /* Which rounding should be used here? H. Thoma said
-           GNC_RND_FLOOR, but I (cstim) think he's wrong -- the official
-           rules say you *have* to use GNC_RND_ROUND! */
-        return gnc_numeric_div (value, rate, 100, GNC_RND_ROUND);
+        /* EC Regulation 1103/97 states we should use "Round half away from zero"
+         * See http://europa.eu/legislation_summaries/economic_and_monetary_affairs/institutional_and_economic_framework/l25025_en.htm */
+        return gnc_numeric_div (value, rate, 100, GNC_HOW_RND_ROUND_HALF_UP);
     }
 }
 
@@ -198,10 +197,12 @@ gnc_convert_from_euro(const gnc_commodity * currency, gnc_numeric value)
     {
         gnc_numeric rate;
 
-        rate = double_to_gnc_numeric (result->rate, 100000, GNC_RND_ROUND);
+        rate = double_to_gnc_numeric (result->rate, 100000, GNC_HOW_RND_ROUND_HALF_UP);
 
+        /* EC Regulation 1103/97 states we should use "Round half away from zero"
+         * See http://europa.eu/legislation_summaries/economic_and_monetary_affairs/institutional_and_economic_framework/l25025_en.htm */
         return gnc_numeric_mul (value, rate, gnc_commodity_get_fraction (currency),
-                                GNC_RND_ROUND);
+                                GNC_HOW_RND_ROUND_HALF_UP);
     }
 }
 
@@ -228,7 +229,7 @@ gnc_euro_currency_get_rate (const gnc_commodity *currency)
         return gnc_numeric_zero ();
 
     return double_to_gnc_numeric (result->rate, GNC_DENOM_AUTO,
-                                  GNC_DENOM_SIGFIGS(6) | GNC_RND_ROUND);
+                                  GNC_HOW_DENOM_SIGFIGS(6) | GNC_HOW_RND_ROUND_HALF_UP);
 }
 
 /* ------------------------------------------------------ */
@@ -238,7 +239,7 @@ gnc_get_euro (void)
 {
     gnc_commodity_table *table;
 
-    table = gnc_book_get_commodity_table (gnc_get_current_book ());
+    table = gnc_commodity_table_get_table (gnc_get_current_book ());
 
     return gnc_commodity_table_lookup (table, GNC_COMMODITY_NS_CURRENCY, "EUR");
 }

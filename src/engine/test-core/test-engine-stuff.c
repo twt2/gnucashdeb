@@ -207,7 +207,7 @@ get_random_glist(void)
 }
 
 /* ========================================================== */
-/* Time/Date, GUID, binary data stuff */
+/* Time/Date, GncGUID, binary data stuff */
 
 Timespec*
 get_random_timespec(void)
@@ -236,12 +236,12 @@ get_random_timespec(void)
     return ret;
 }
 
-GUID*
+GncGUID*
 get_random_guid(void)
 {
-    GUID *ret;
+    GncGUID *ret;
 
-    ret = g_new(GUID, 1);
+    ret = g_new(GncGUID, 1);
     guid_new(ret);
 
     return ret;
@@ -324,7 +324,7 @@ get_random_kvp_value_depth (int type, gint depth)
 
     case KVP_TYPE_GUID:
     {
-        GUID *tmp_guid;
+        GncGUID *tmp_guid;
         tmp_guid = get_random_guid();
         ret = kvp_value_new_guid(tmp_guid);
         g_free(tmp_guid);
@@ -972,7 +972,7 @@ add_random_splits(QofBook *book, Transaction *trn, GList *account_list)
 
 typedef struct
 {
-    GUID guid;
+    GncGUID guid;
 } TransInfo;
 
 void
@@ -1335,7 +1335,7 @@ get_random_split(QofBook *book, Account *acct, Transaction *trn)
             rate = gnc_numeric_abs(get_random_gnc_numeric());
             amt = gnc_numeric_mul(val, rate,
                                   GNC_DENOM_AUTO, GNC_HOW_DENOM_REDUCE);
-            amt = gnc_numeric_convert(amt, denom, GNC_HOW_RND_ROUND);
+            amt = gnc_numeric_convert(amt, denom, GNC_HOW_RND_ROUND_HALF_UP);
         }
         while (gnc_numeric_check(amt) != GNC_ERROR_OK);
     }
@@ -1657,7 +1657,7 @@ typedef enum
 } sort_type_t;
 
 static void
-set_query_sort (Query *q, sort_type_t sort_code)
+set_query_sort (QofQuery *q, sort_type_t sort_code)
 {
     GSList *p1 = NULL, *p2 = NULL, *p3 = NULL, *standard;
 
@@ -1712,16 +1712,16 @@ set_query_sort (Query *q, sort_type_t sort_code)
     qof_query_set_sort_order (q, p1, p2, p3);
 }
 
-Query *
+QofQuery *
 get_random_query(void)
 {
-    Query *q;
+    QofQuery *q;
     int num_terms;
 
     num_terms = get_random_int_in_range (1, 3);
     if (gnc_engine_debug_random) printf("num_terms = %d", num_terms);
 
-    q = xaccMallocQuery ();
+    q = qof_query_create_for(GNC_ID_SPLIT);
 
     while (num_terms-- > 0)
     {
@@ -1732,7 +1732,7 @@ get_random_query(void)
         GList *guids;
         GSList *path;
         char *string;
-        GUID *guid;
+        GncGUID *guid;
 
         pr_type = get_random_int_in_range (1, 20);
         if (gnc_engine_debug_random) printf("\n pr_type = %d ", pr_type);
@@ -1882,12 +1882,12 @@ get_random_query(void)
     if (gnc_engine_debug_random) printf ("\n");
     set_query_sort (q, get_random_int_in_range (1, BY_NONE));
 
-    xaccQuerySetSortIncreasing (q,
-                                get_random_boolean (),
-                                get_random_boolean (),
-                                get_random_boolean ());
+    qof_query_set_sort_increasing (q,
+                                   get_random_boolean (),
+                                   get_random_boolean (),
+                                   get_random_boolean ());
 
-    xaccQuerySetMaxSplits (q, get_random_int_in_range (-50000, 50000));
+    qof_query_set_max_results (q, get_random_int_in_range (-50000, 50000));
 
     return q;
 }
@@ -1972,7 +1972,7 @@ typedef struct
 {
     QofIdType where;
     GSList *path;
-    Query *q;
+    QofQuery *q;
 } KVPQueryData;
 
 static void
@@ -1997,7 +1997,7 @@ add_kvp_value_query (const char *key, KvpValue *value, gpointer data)
 }
 
 static void
-add_kvp_query (Query *q, KvpFrame *frame, QofIdType where)
+add_kvp_query (QofQuery *q, KvpFrame *frame, QofIdType where)
 {
     KVPQueryData kqd;
 
@@ -2036,18 +2036,18 @@ get_random_query_type (void)
     }
 }
 
-Query *
+QofQuery *
 make_trans_query (Transaction *trans, TestQueryTypes query_types)
 {
     Account *a;
     gnc_numeric n;
-    Query *q;
+    QofQuery *q;
     Split *s;
 
     if (query_types == RANDOM_QT)
         query_types = get_random_query_type ();
 
-    q = xaccMallocQuery ();
+    q = qof_query_create_for(GNC_ID_SPLIT);
 
     s = xaccTransGetSplit (trans, 0);
     a = xaccSplitGetAccount (s);
@@ -2121,7 +2121,7 @@ make_trans_query (Transaction *trans, TestQueryTypes query_types)
                 break;
             default:
                 failure ("bad reconcile flag");
-                xaccFreeQuery (q);
+                qof_query_destroy (q);
                 return NULL;
             }
 
@@ -2134,7 +2134,7 @@ make_trans_query (Transaction *trans, TestQueryTypes query_types)
         GList * list;
         GList * node;
 
-        /* GUID_MATCH_ALL */
+        /* QOF_GUID_MATCH_ALL */
         list = NULL;
         for (node = xaccTransGetSplitList (trans); node; node = node->next)
         {
@@ -2144,16 +2144,16 @@ make_trans_query (Transaction *trans, TestQueryTypes query_types)
         xaccQueryAddAccountMatch (q, list, QOF_GUID_MATCH_ALL, QOF_QUERY_AND);
         g_list_free (list);
 
-        /* GUID_MATCH_NONE */
+        /* QOF_GUID_MATCH_NONE */
         list = NULL;
         list = g_list_prepend (list, get_random_guid ());
         list = g_list_prepend (list, get_random_guid ());
         list = g_list_prepend (list, get_random_guid ());
         xaccQueryAddAccountGUIDMatch (q, list, QOF_GUID_MATCH_NONE, QOF_QUERY_AND);
 
-        /* GUID_MATCH_ANY */
+        /* QOF_GUID_MATCH_ANY */
         {
-            GUID * guid = get_random_guid ();
+            GncGUID * guid = get_random_guid ();
             *guid = *xaccAccountGetGUID (a);
             list = g_list_prepend (list, guid);
         }
@@ -2189,7 +2189,7 @@ make_trans_query (Transaction *trans, TestQueryTypes query_types)
 }
 
 static Recurrence*
-daily_freq(GDate* start, int multiplier)
+daily_freq(const GDate* start, int multiplier)
 {
     Recurrence *r = g_new0(Recurrence, 1);
     recurrenceSet(r, multiplier, PERIOD_DAY, start, WEEKEND_ADJ_NONE);
@@ -2197,7 +2197,7 @@ daily_freq(GDate* start, int multiplier)
 }
 
 static Recurrence*
-once_freq(GDate *when)
+once_freq(const GDate *when)
 {
     Recurrence *r = g_new0(Recurrence, 1);
     recurrenceSet(r, 1, PERIOD_ONCE, when, WEEKEND_ADJ_NONE);
@@ -2205,7 +2205,7 @@ once_freq(GDate *when)
 }
 
 static SchedXaction*
-add_sx(gchar *name, GDate *start, GDate *end, GDate *last_occur, Recurrence *r)
+add_sx(gchar *name, const GDate *start, const GDate *end, const GDate *last_occur, Recurrence *r)
 {
     QofBook *book = qof_session_get_book(gnc_get_current_session());
     SchedXaction *sx = xaccSchedXactionMalloc(book);
@@ -2227,13 +2227,13 @@ add_sx(gchar *name, GDate *start, GDate *end, GDate *last_occur, Recurrence *r)
 }
 
 SchedXaction*
-add_daily_sx(gchar *name, GDate *start, GDate *end, GDate *last_occur)
+add_daily_sx(gchar *name, const GDate *start, const GDate *end, const GDate *last_occur)
 {
     return add_sx(name, start, end, last_occur, daily_freq(start, 1));
 }
 
 SchedXaction*
-add_once_sx(gchar *name, GDate *when)
+add_once_sx(gchar *name, const GDate *when)
 {
     return add_sx(name, when, NULL, NULL, once_freq(when));
 }

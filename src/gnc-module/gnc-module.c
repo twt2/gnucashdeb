@@ -117,43 +117,6 @@ gnc_module_system_search_dirs(void)
 }
 
 /*************************************************************
- * gnc_module_system_setup_load_path
- * initialize the Guile load path
- *************************************************************/
-
-static void
-gnc_module_system_setup_load_path(void)
-{
-    GList * dirs = gnc_module_system_search_dirs();
-    GList * lp;
-
-    if (dirs)
-    {
-        char *envt = g_strdup(g_getenv("LD_LIBRARY_PATH"));
-
-        if (!envt)
-        {
-            envt = g_strdup("");
-        }
-
-        for (lp = dirs; lp; lp = lp->next)
-        {
-            char *tmp = g_strdup_printf("%s:%s", envt, (char *) lp->data);
-            g_free(envt);
-            envt = tmp;
-            g_free(lp->data);
-        }
-        g_list_free(dirs);
-
-        if (!g_setenv("LD_LIBRARY_PATH", envt, TRUE))
-        {
-            g_warning ("gnc-module failed to set LD_LIBRARY_PATH");
-        }
-        g_free(envt);
-    }
-}
-
-/*************************************************************
  * gnc_module_system_init
  * initialize the module system
  *************************************************************/
@@ -165,8 +128,6 @@ gnc_module_system_init(void)
         return;
 
     loaded_modules = g_hash_table_new(g_direct_hash, g_direct_equal);
-
-    gnc_module_system_setup_load_path();
 
     /* now crawl the GNC_MODULE_PATH to find likely libraries */
     gnc_module_system_refresh();
@@ -209,9 +170,14 @@ gnc_module_system_refresh(void)
 
             /* Gotcha: On MacOS, G_MODULE_SUFFIX is defined as "so", but if we do
              * not build clean libtool modules with "-module", we get dynamic
-             * libraries ending on .dylib */
-            if (g_str_has_suffix(dent, "." G_MODULE_SUFFIX) ||
-                    g_str_has_suffix(dent, ".dylib"))
+             * libraries ending on .dylib
+             * On Windows, all modules will move to bin/, so they will be mixed with
+             * other libraries, such as gtk+. Adding a prefix "libgncmod" filter will prevent
+             * module loader load other libraries. And the filter should works on other platform.
+             */
+            if ((g_str_has_suffix(dent, "." G_MODULE_SUFFIX)
+                    || g_str_has_suffix(dent, ".dylib"))
+                    && g_str_has_prefix(dent, GNC_MODULE_PREFIX))
             {
                 /* get the full path name, then dlopen the library and see
                  * if it has the appropriate symbols to be a gnc_module */

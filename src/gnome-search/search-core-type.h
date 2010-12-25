@@ -4,8 +4,9 @@
  *  Authors: Derek Atkins <warlord@MIT.EDU>
  *
  * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,8 +22,7 @@
 #ifndef _GNCSEARCH_CORE_TYPE_H
 #define _GNCSEARCH_CORE_TYPE_H
 
-#include "QueryCore.h"
-#include "QueryNew.h"
+#include "qof.h"
 #include "search-param.h"
 
 #define GNC_TYPE_SEARCH_CORE_TYPE		(gnc_search_core_type_get_type ())
@@ -48,7 +48,7 @@ typedef struct
     gboolean		(*validate) (GNCSearchCoreType *fe);
     GNCSearchCoreType *	(*clone) (GNCSearchCoreType *fe);
     GtkWidget *		(*get_widget) (GNCSearchCoreType *);
-    QueryPredData_t	(*get_predicate) (GNCSearchCoreType *);
+    QofQueryPredData*	(*get_predicate) (GNCSearchCoreType *);
 
     /* signals */
 } GNCSearchCoreTypeClass;
@@ -66,7 +66,7 @@ void			gnc_search_core_type_editable_enters (GNCSearchCoreType *fe);
 gboolean        	gnc_search_core_type_validate (GNCSearchCoreType *fe);
 GNCSearchCoreType *	gnc_search_core_type_clone (GNCSearchCoreType *fe);
 GtkWidget *		gnc_search_core_type_get_widget (GNCSearchCoreType *fe);
-QueryPredData_t		gnc_search_core_type_get_predicate (GNCSearchCoreType *fe);
+QofQueryPredData*		gnc_search_core_type_get_predicate (GNCSearchCoreType *fe);
 
 /* Register a new type in the Core Type Database */
 typedef GNCSearchCoreType * (*GNCSearchCoreNew) (void);

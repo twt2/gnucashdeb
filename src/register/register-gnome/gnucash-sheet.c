@@ -45,6 +45,8 @@
 
 #define DEFAULT_REGISTER_HEIGHT 400
 #define DEFAULT_REGISTER_WIDTH  400
+/* Used to calculate the minimum preferred height of the register window: */
+#define DEFAULT_REGISTER_INITIAL_ROWS 10
 
 
 /* Register signals */
@@ -61,7 +63,6 @@ enum
 
 /* This static indicates the debugging module that this .o belongs to. */
 static QofLogModule log_module = GNC_MOD_REGISTER;
-static guint gnucash_register_initial_rows = 15;
 static GnomeCanvasClass *sheet_parent_class;
 static GtkTableClass *register_parent_class;
 static guint register_signals[LAST_SIGNAL];
@@ -93,12 +94,6 @@ static gboolean gnucash_sheet_check_direct_update_cell(GnucashSheet *sheet,
         const VirtualLocation virt_loc);
 
 /** Implementation *****************************************************/
-
-void
-gnucash_register_set_initial_rows (guint num_rows)
-{
-    gnucash_register_initial_rows = num_rows;
-}
 
 G_INLINE_FUNC gboolean
 gnucash_sheet_virt_cell_out_of_bounds (GnucashSheet *sheet,
@@ -749,7 +744,7 @@ compute_optimal_width (GnucashSheet *sheet)
 }
 
 
-/* Compute the height needed to show DEFAULT_REGISTER_ROWS rows */
+/* Compute the height needed to show DEFAULT_REGISTER_INITIAL_ROWS rows */
 static gint
 compute_optimal_height (GnucashSheet *sheet)
 {
@@ -770,7 +765,7 @@ compute_optimal_height (GnucashSheet *sheet)
 
     row_height = cd->pixel_height;
 
-    return row_height * gnucash_register_initial_rows;
+    return row_height * DEFAULT_REGISTER_INITIAL_ROWS;
 }
 
 
@@ -1214,28 +1209,16 @@ static gboolean
 gnucash_sheet_check_direct_update_cell(GnucashSheet *sheet,
                                        const VirtualLocation virt_loc)
 {
-    const gchar *dupdate_list[] =
-    {
-        /* From src/register/ledger-core/split-register-layout.c */
-        /* DATE_CELL_TYPE_NAME */
-        DATE_CELL,
-        DDUE_CELL,
-        /* COMBO_CELL_TYPE_NAME */
-        XFRM_CELL,
-        MXFRM_CELL,
-        ACTN_CELL,
-        NULL,
-    };
-    const gchar *cell_name;
-    int i;
+    const gchar *type_name;
 
-    cell_name = gnc_table_get_cell_name (sheet->table, virt_loc);
-    for (i = 0; dupdate_list[i]; i++)
-    {
-        if (gnc_cell_name_equal (cell_name,
-                                 dupdate_list[i]))
-            return TRUE;
-    }
+    type_name = gnc_table_get_cell_type_name (sheet->table, virt_loc);
+
+    if ( (g_strcmp0 (type_name, DATE_CELL_TYPE_NAME) == 0)
+            || (g_strcmp0 (type_name, COMBO_CELL_TYPE_NAME) == 0)
+            || (g_strcmp0 (type_name, NUM_CELL_TYPE_NAME) == 0)
+            || (g_strcmp0 (type_name, PRICE_CELL_TYPE_NAME) == 0)
+            || (g_strcmp0 (type_name, FORMULA_CELL_TYPE_NAME) == 0)) return TRUE;
+
     return FALSE;
 }
 
@@ -1917,14 +1900,21 @@ gnucash_sheet_key_press_event (GtkWidget *widget, GdkEventKey *event)
 
     sheet = GNUCASH_SHEET (widget);
 
-    /* save shift state to enable <shift minus> and <shift equal>.
-       see bug#60582 comment#27 2)
+    /* bug#60582 comment#27 2
+           save shift state to enable <shift minus> and <shift equal>
+       bug#618434
+           save keyval to handle GDK_KP_Decimal event
      */
     if (sheet->preedit_length)
+    {
         sheet->shift_state = 0;
+        sheet->keyval_state = 0;
+    }
     else
+    {
         sheet->shift_state = event->state & GDK_SHIFT_MASK;
-
+        sheet->keyval_state = (event->keyval == GDK_KP_Decimal) ? GDK_KP_Decimal : 0;
+    }
     if (gtk_im_context_filter_keypress (sheet->im_context, event))
     {
         sheet->need_im_reset = TRUE;
@@ -2001,7 +1991,9 @@ gnucash_sheet_commit_cb (GtkIMContext *context, const gchar *str,
 
         event = gdk_event_new (GDK_KEY_PRESS);
         keyevent = (GdkEventKey *) event;
-        keyevent->keyval = gdk_unicode_to_keyval(str[0]);
+        keyevent->keyval =
+            sheet->keyval_state ? sheet->keyval_state
+            : gdk_unicode_to_keyval(str[0]);
         keyevent->state |= sheet->shift_state;
         result = gnucash_sheet_direct_event(sheet, event);
         gdk_event_free(event);
@@ -2820,6 +2812,7 @@ gnucash_sheet_init (GnucashSheet *sheet)
     sheet->retrieve_surrounding_signal = 0;
     sheet->delete_surrounding_signal = 0;
     sheet->shift_state = 0;
+    sheet->keyval_state = 0;
 }
 
 
@@ -3120,6 +3113,6 @@ void gnucash_register_set_moved_cb (GnucashRegister *reg,
 
 /*
   Local Variables:
-  c-basic-offset: 8
+  c-basic-offset: 4
   End:
 */

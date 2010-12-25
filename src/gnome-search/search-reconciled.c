@@ -6,8 +6,9 @@
  * Copyright (c) 2006 David Hampton <hampton@employees.org>
  *
  * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,7 +28,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-#include "QueryCore.h"
+#include "qof.h"
 #include "Transaction.h"	/* for ?REC */
 
 #include "search-reconciled.h"
@@ -38,7 +39,7 @@
 static GNCSearchCoreType *gncs_clone(GNCSearchCoreType *fe);
 static gboolean gncs_validate (GNCSearchCoreType *fe);
 static GtkWidget *gncs_get_widget(GNCSearchCoreType *fe);
-static QueryPredData_t gncs_get_predicate (GNCSearchCoreType *fe);
+static QofQueryPredData* gncs_get_predicate (GNCSearchCoreType *fe);
 
 static void gnc_search_reconciled_class_init	(GNCSearchReconciledClass *class);
 static void gnc_search_reconciled_init	(GNCSearchReconciled *gspaper);
@@ -107,7 +108,7 @@ gnc_search_reconciled_class_init (GNCSearchReconciledClass *class)
 static void
 gnc_search_reconciled_init (GNCSearchReconciled *o)
 {
-    o->how = COMPARE_EQUAL;
+    o->how = QOF_COMPARE_EQUAL;
     o->value = CLEARED_NO;
 }
 
@@ -144,7 +145,7 @@ gnc_search_reconciled_set_value (GNCSearchReconciled *fi, cleared_match_t value)
 }
 
 void
-gnc_search_reconciled_set_how (GNCSearchReconciled *fi, char_match_t how)
+gnc_search_reconciled_set_how (GNCSearchReconciled *fi, QofCharMatch how)
 {
     g_return_if_fail (fi);
     g_return_if_fail (IS_GNCSEARCH_RECONCILED (fi));
@@ -185,16 +186,16 @@ make_menu (GNCSearchCoreType *fe)
     GtkComboBox *combo;
 
     combo = GTK_COMBO_BOX(gnc_combo_box_new_search());
-    gnc_combo_box_search_add(combo, _("is"), CHAR_MATCH_ANY);
-    gnc_combo_box_search_add(combo, _("is not"), CHAR_MATCH_NONE);
+    gnc_combo_box_search_add(combo, _("is"), QOF_CHAR_MATCH_ANY);
+    gnc_combo_box_search_add(combo, _("is not"), QOF_CHAR_MATCH_NONE);
     gnc_combo_box_search_changed(combo, &fi->how);
-    gnc_combo_box_search_set_active(combo, fi->how ? fi->how : CHAR_MATCH_ANY);
+    gnc_combo_box_search_set_active(combo, fi->how ? fi->how : QOF_CHAR_MATCH_ANY);
 
     return GTK_WIDGET(combo);
 }
 
 static GtkWidget *
-make_toggle (GNCSearchReconciled *fi, char *label, char_match_t option)
+make_toggle (GNCSearchReconciled *fi, char *label, QofCharMatch option)
 {
     GtkWidget *toggle;
 
@@ -241,7 +242,7 @@ gncs_get_widget (GNCSearchCoreType *fe)
     return box;
 }
 
-static QueryPredData_t gncs_get_predicate (GNCSearchCoreType *fe)
+static QofQueryPredData* gncs_get_predicate (GNCSearchCoreType *fe)
 {
     GNCSearchReconciled *fi = (GNCSearchReconciled *)fe;
     char chars[6];
@@ -268,7 +269,7 @@ static QueryPredData_t gncs_get_predicate (GNCSearchCoreType *fe)
         chars[i++] = VREC;
     chars[i] = '\0';
 
-    return gncQueryCharPredicate (fi->how, chars);
+    return qof_query_char_predicate (fi->how, chars);
 }
 
 static GNCSearchCoreType *gncs_clone(GNCSearchCoreType *fe)

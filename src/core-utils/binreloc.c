@@ -19,7 +19,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #ifdef MAC_INTEGRATION
-#include <igemacintegration/ige-mac-bundle.h>
+#include <igemacintegration/gtkosxapplication.h>
 #endif
 #endif /* ENABLE_BINRELOC */
 #include <stdio.h>
@@ -30,21 +30,18 @@
 #include <glib.h>
 
 G_BEGIN_DECLS
-#if defined ENABLE_BINRELOC && defined MAC_INTEGRATION
-static IgeMacBundle *bundle = NULL;
-#endif
 
 /** @internal
  * Find the canonical filename of the executable. Returns the filename
  * (which must be freed) or NULL on error. If the parameter 'error' is
- * not NULL, the error code will be stored there, if an error occured.
+ * not NULL, the error code will be stored there, if an error occurred.
  */
 static char *
-_br_find_exe (GbrInitError *error)
+_br_find_exe (Gnc_GbrInitError *error)
 {
 #ifndef ENABLE_BINRELOC
     if (error)
-        *error = GBR_INIT_ERROR_DISABLED;
+        *error = GNC_GBR_INIT_ERROR_DISABLED;
     return NULL;
 #else
 #ifdef G_OS_WIN32
@@ -52,7 +49,7 @@ _br_find_exe (GbrInitError *error)
        relocation code for windows. Unfortunately this is not
        the case and we have to add this manually. This is only
        one possibility; other ways of looking up the full path
-       of gnucash-bin.exe probably exist.*/
+       of gnucash.exe probably exist.*/
     gchar *prefix;
     gchar *result;
 
@@ -61,32 +58,15 @@ _br_find_exe (GbrInitError *error)
        the current process */
     prefix = g_win32_get_package_installation_directory_of_module (NULL);
     result = g_build_filename (prefix,
-                               "bin", "gnucash-bin.exe",
+                               "bin", "gnucash.exe",
                                (char*)NULL);
     g_free (prefix);
     return result;
-#elif MAC_INTEGRATION
-    gchar *prefix = NULL, *result = NULL;
+#elif defined MAC_INTEGRATION
+    GtkOSXApplication *theApp;
     g_type_init();
-    bundle = ige_mac_bundle_new();
-    if (!bundle)
-    {
-        *error = GBR_INIT_ERROR_MAC_NOT_BUNDLE;
-        return NULL;
-    }
-    if (!ige_mac_bundle_get_is_app_bundle (bundle))
-    {
-        g_object_unref(bundle);
-        bundle = NULL;
-        *error = GBR_INIT_ERROR_MAC_NOT_APP_BUNDLE;
-        return NULL;
-    }
-    ige_mac_bundle_setup_environment(bundle);
-    prefix = g_strdup(ige_mac_bundle_get_path(bundle));
-    result = g_build_filename(prefix, "Contents/MacOS",
-                              "gnucash-bin", NULL);
-    g_free(prefix);
-    return result;
+    theApp  = g_object_new (GTK_TYPE_OSX_APPLICATION, NULL);
+    return gtk_osxapplication_get_executable_path(theApp);
 #else
     char *path, *path2, *line, *result;
     size_t buf_size;
@@ -104,7 +84,7 @@ _br_find_exe (GbrInitError *error)
     {
         /* Cannot allocate memory. */
         if (error)
-            *error = GBR_INIT_ERROR_NOMEM;
+            *error = GNC_GBR_INIT_ERROR_NOMEM;
         return NULL;
     }
     path2 = (char *) g_try_malloc (buf_size);
@@ -112,7 +92,7 @@ _br_find_exe (GbrInitError *error)
     {
         /* Cannot allocate memory. */
         if (error)
-            *error = GBR_INIT_ERROR_NOMEM;
+            *error = GNC_GBR_INIT_ERROR_NOMEM;
         g_free (path);
         return NULL;
     }
@@ -167,7 +147,7 @@ _br_find_exe (GbrInitError *error)
         /* Cannot allocate memory. */
         g_free (path);
         if (error)
-            *error = GBR_INIT_ERROR_NOMEM;
+            *error = GNC_GBR_INIT_ERROR_NOMEM;
         return NULL;
     }
 
@@ -176,7 +156,7 @@ _br_find_exe (GbrInitError *error)
     {
         g_free (line);
         if (error)
-            *error = GBR_INIT_ERROR_OPEN_MAPS;
+            *error = GNC_GBR_INIT_ERROR_OPEN_MAPS;
         return NULL;
     }
 
@@ -187,7 +167,7 @@ _br_find_exe (GbrInitError *error)
         fclose (f);
         g_free (line);
         if (error)
-            *error = GBR_INIT_ERROR_READ_MAPS;
+            *error = GNC_GBR_INIT_ERROR_READ_MAPS;
         return NULL;
     }
 
@@ -199,7 +179,7 @@ _br_find_exe (GbrInitError *error)
         fclose (f);
         g_free (line);
         if (error)
-            *error = GBR_INIT_ERROR_INVALID_MAPS;
+            *error = GNC_GBR_INIT_ERROR_INVALID_MAPS;
         return NULL;
     }
     if (line[buf_size - 1] == 10)
@@ -214,7 +194,7 @@ _br_find_exe (GbrInitError *error)
         fclose (f);
         g_free (line);
         if (error)
-            *error = GBR_INIT_ERROR_INVALID_MAPS;
+            *error = GNC_GBR_INIT_ERROR_INVALID_MAPS;
         return NULL;
     }
 
@@ -227,127 +207,21 @@ _br_find_exe (GbrInitError *error)
 }
 
 
-/** @internal
- * Find the canonical filename of the executable which owns symbol.
- * Returns a filename which must be freed, or NULL on error.
- */
-static char *
-_br_find_exe_for_symbol (const void *symbol, GbrInitError *error)
-{
-#ifndef ENABLE_BINRELOC
-    if (error)
-        *error = GBR_INIT_ERROR_DISABLED;
-    return (char *) NULL;
-#else
-#if defined G_OS_WIN32
-    g_warning ("_br_find_exe_for_symbol not implemented on win32.");
-    if (error)
-        *error = GBR_INIT_ERROR_DISABLED;
-    return (char *) NULL;
-#else
-#define SIZE PATH_MAX + 100
-    FILE *f;
-    size_t address_string_len;
-    char *address_string, line[SIZE], *found;
-
-    if (symbol == NULL)
-        return (char *) NULL;
-
-    f = fopen ("/proc/self/maps", "r");
-    if (f == NULL)
-        return (char *) NULL;
-
-    address_string_len = 4;
-    address_string = (char *) g_try_malloc (address_string_len);
-    found = (char *) NULL;
-
-    while (!feof (f))
-    {
-        char *start_addr, *end_addr, *end_addr_end, *file;
-        void *start_addr_p, *end_addr_p;
-        size_t len;
-
-        if (fgets (line, SIZE, f) == NULL)
-            break;
-
-        /* Sanity check. */
-        if (strstr (line, " r-xp ") == NULL || strchr (line, '/') == NULL)
-            continue;
-
-        /* Parse line. */
-        start_addr = line;
-        end_addr = strchr (line, '-');
-        file = strchr (line, '/');
-
-        /* More sanity check. */
-        if (!(file > end_addr && end_addr != NULL && end_addr[0] == '-'))
-            continue;
-
-        end_addr[0] = '\0';
-        end_addr++;
-        end_addr_end = strchr (end_addr, ' ');
-        if (end_addr_end == NULL)
-            continue;
-
-        end_addr_end[0] = '\0';
-        len = strlen (file);
-        if (len == 0)
-            continue;
-        if (file[len - 1] == '\n')
-            file[len - 1] = '\0';
-
-        /* Get rid of "(deleted)" from the filename. */
-        len = strlen (file);
-        if (len > 10 && strcmp (file + len - 10, " (deleted)") == 0)
-            file[len - 10] = '\0';
-
-        /* I don't know whether this can happen but better safe than sorry. */
-        len = strlen (start_addr);
-        if (len != strlen (end_addr))
-            continue;
-
-
-        /* Transform the addresses into a string in the form of 0xdeadbeef,
-         * then transform that into a pointer. */
-        if (address_string_len < len + 3)
-        {
-            address_string_len = len + 3;
-            address_string = (char *) g_try_realloc (address_string, address_string_len);
-        }
-
-        memcpy (address_string, "0x", 2);
-        memcpy (address_string + 2, start_addr, len);
-        address_string[2 + len] = '\0';
-        sscanf (address_string, "%p", &start_addr_p);
-
-        memcpy (address_string, "0x", 2);
-        memcpy (address_string + 2, end_addr, len);
-        address_string[2 + len] = '\0';
-        sscanf (address_string, "%p", &end_addr_p);
-
-
-        if (symbol >= start_addr_p && symbol < end_addr_p)
-        {
-            found = file;
-            break;
-        }
-    }
-
-    g_free (address_string);
-    fclose (f);
-
-    if (found == NULL)
-        return (char *) NULL;
-    else
-        return g_strdup (found);
-#endif /* G_OS_WIN32 */
-#endif /* ENABLE_BINRELOC */
-}
-
 
 static gchar *exe = NULL;
 
-static void set_gerror (GError **error, GbrInitError errcode);
+static void set_gerror (GError **error, Gnc_GbrInitError errcode);
+
+
+void gnc_gbr_set_exe (const gchar* default_exe)
+{
+    if (exe != NULL)
+        g_free(exe);
+    exe = NULL;
+
+    if (default_exe != NULL)
+        exe = g_strdup(default_exe);
+}
 
 
 /** Initialize the BinReloc library (for applications).
@@ -356,19 +230,19 @@ static void set_gerror (GError **error, GbrInitError errcode);
  * It attempts to locate the application's canonical filename.
  *
  * @note If you want to use BinReloc for a library, then you should call
- *       gbr_init_lib() instead.
+ *       gnc_gbr_init_lib() instead.
  *
  * @param error  If BinReloc failed to initialize, then the error report will
  *               be stored in this variable. Set to NULL if you don't want an
- *               error report. See the #GbrInitError for a list of error
+ *               error report. See the #Gnc_GbrInitError for a list of error
  *               codes.
  *
  * @returns TRUE on success, FALSE if BinReloc failed to initialize.
  */
 gboolean
-gbr_init (GError **error)
+gnc_gbr_init (GError **error)
 {
-    GbrInitError errcode = 0;
+    Gnc_GbrInitError errcode = 0;
 
     /* Locate the application's filename. */
     exe = _br_find_exe (&errcode);
@@ -384,36 +258,8 @@ gbr_init (GError **error)
 }
 
 
-/** Initialize the BinReloc library (for libraries).
- *
- * This function must be called before using any other BinReloc functions.
- * It attempts to locate the calling library's canonical filename.
- *
- * @note The BinReloc source code MUST be included in your library, or this
- *       function won't work correctly.
- *
- * @returns TRUE on success, FALSE if a filename cannot be found.
- */
-gboolean
-gbr_init_lib (GError **error)
-{
-    GbrInitError errcode = 0;
-
-    exe = _br_find_exe_for_symbol ((const void *) "", &errcode);
-    if (exe != NULL)
-        /* Success! */
-        return TRUE;
-    else
-    {
-        /* Failed :-( */
-        set_gerror (error, errcode);
-        return exe != NULL;
-    }
-}
-
-
 static void
-set_gerror (GError **error, GbrInitError errcode)
+set_gerror (GError **error, Gnc_GbrInitError errcode)
 {
     gchar *error_message;
 
@@ -422,25 +268,19 @@ set_gerror (GError **error, GbrInitError errcode)
 
     switch (errcode)
     {
-    case GBR_INIT_ERROR_NOMEM:
+    case GNC_GBR_INIT_ERROR_NOMEM:
         error_message = "Cannot allocate memory.";
         break;
-    case GBR_INIT_ERROR_OPEN_MAPS:
+    case GNC_GBR_INIT_ERROR_OPEN_MAPS:
         error_message = "Unable to open /proc/self/maps for reading.";
         break;
-    case GBR_INIT_ERROR_READ_MAPS:
+    case GNC_GBR_INIT_ERROR_READ_MAPS:
         error_message = "Unable to read from /proc/self/maps.";
         break;
-    case GBR_INIT_ERROR_INVALID_MAPS:
+    case GNC_GBR_INIT_ERROR_INVALID_MAPS:
         error_message = "The file format of /proc/self/maps is invalid.";
         break;
-    case GBR_INIT_ERROR_MAC_NOT_BUNDLE:
-        error_message = "Binreloc did not find a bundle";
-        break;
-    case GBR_INIT_ERROR_MAC_NOT_APP_BUNDLE:
-        error_message = "Binreloc found that the bundle is not an app bundle";
-        break;
-    case GBR_INIT_ERROR_DISABLED:
+    case GNC_GBR_INIT_ERROR_DISABLED:
         error_message = "Binary relocation support is disabled.";
         break;
     default:
@@ -462,7 +302,7 @@ set_gerror (GError **error, GbrInitError errcode)
  *          is NULL, then NULL will be returned.
  */
 gchar *
-gbr_find_exe (const gchar *default_exe)
+gnc_gbr_find_exe (const gchar *default_exe)
 {
     if (exe == NULL)
     {
@@ -491,7 +331,7 @@ gbr_find_exe (const gchar *default_exe)
  *         returned.
  */
 gchar *
-gbr_find_exe_dir (const gchar *default_dir)
+gnc_gbr_find_exe_dir (const gchar *default_dir)
 {
     if (exe == NULL)
     {
@@ -521,25 +361,22 @@ gbr_find_exe_dir (const gchar *default_dir)
  *         returned.
  */
 gchar *
-gbr_find_prefix (const gchar *default_prefix)
+gnc_gbr_find_prefix (const gchar *default_prefix)
 {
-    gchar *dir1, *dir2;
-
 #if defined ENABLE_BINRELOC && defined MAC_INTEGRATION
-    gchar *prefix = NULL, *result = NULL;
-    if (bundle == NULL)
+    gchar *id = quartz_application_get_bundle_id ();
+    gchar *path = quartz_application_get_resource_path ();
+    if (id == NULL)
     {
-        /* BinReloc not initialized. */
-        if (default_prefix != NULL)
-            return g_strdup (default_prefix);
-        else
-            return NULL;
+        gchar *dirname = g_path_get_dirname (path);
+        g_free (path);
+        g_free (id);
+        return dirname;
     }
-    prefix = g_strdup(ige_mac_bundle_get_path(bundle));
-    result = g_build_filename(prefix, "Contents/Resources", NULL);
-    g_free(prefix);
-    return result;
+    g_free (id);
+    return path;
 #else
+    gchar *dir1, *dir2;
 
     if (exe == NULL)
     {
@@ -553,7 +390,7 @@ gbr_find_prefix (const gchar *default_prefix)
     dir2 = g_path_get_dirname (dir1);
     g_free (dir1);
     return dir2;
-#endif //ENABLE_BINRELOC && MAC_INTEGRATION
+#endif //ENABLE_BINRELOC && defined MAC_INTEGRATION
 }
 
 
@@ -571,25 +408,10 @@ gbr_find_prefix (const gchar *default_prefix)
  *         be returned. If default_bin_dir is NULL, then NULL will be returned.
  */
 gchar *
-gbr_find_bin_dir (const gchar *default_bin_dir)
+gnc_gbr_find_bin_dir (const gchar *default_bin_dir)
 {
     gchar *prefix, *dir;
-#if defined ENABLE_BINRELOC && defined MAC_INTEGRATION
-    if (bundle == NULL)
-    {
-        /* BinReloc not initialized. */
-        if (default_bin_dir != NULL)
-            return g_strdup (default_bin_dir);
-        else
-            return NULL;
-    }
-    prefix = g_strdup(ige_mac_bundle_get_path(bundle));
-    dir = g_build_filename(prefix, "Contents/MacOS", NULL);
-    g_free(prefix);
-    return dir;
-#else
-
-    prefix = gbr_find_prefix (NULL);
+    prefix = gnc_gbr_find_prefix (NULL);
     if (prefix == NULL)
     {
         /* BinReloc not initialized. */
@@ -602,7 +424,6 @@ gbr_find_bin_dir (const gchar *default_bin_dir)
     dir = g_build_filename (prefix, "bin", NULL);
     g_free (prefix);
     return dir;
-#endif //ENABLE_BINRELOC && MAC_INTEGRATION
 }
 
 
@@ -620,11 +441,11 @@ gbr_find_bin_dir (const gchar *default_bin_dir)
  *         be returned. If default_bin_dir is NULL, then NULL will be returned.
  */
 gchar *
-gbr_find_sbin_dir (const gchar *default_sbin_dir)
+gnc_gbr_find_sbin_dir (const gchar *default_sbin_dir)
 {
     gchar *prefix, *dir;
 
-    prefix = gbr_find_prefix (NULL);
+    prefix = gnc_gbr_find_prefix (NULL);
     if (prefix == NULL)
     {
         /* BinReloc not initialized. */
@@ -655,11 +476,11 @@ gbr_find_sbin_dir (const gchar *default_sbin_dir)
  *         returned.
  */
 gchar *
-gbr_find_data_dir (const gchar *default_data_dir)
+gnc_gbr_find_data_dir (const gchar *default_data_dir)
 {
     gchar *prefix, *dir;
 
-    prefix = gbr_find_prefix (NULL);
+    prefix = gnc_gbr_find_prefix (NULL);
     if (prefix == NULL)
     {
         /* BinReloc not initialized. */
@@ -689,11 +510,11 @@ gbr_find_data_dir (const gchar *default_data_dir)
  *         If default_lib_dir is NULL, then NULL will be returned.
  */
 gchar *
-gbr_find_lib_dir (const gchar *default_lib_dir)
+gnc_gbr_find_lib_dir (const gchar *default_lib_dir)
 {
     gchar *prefix, *dir;
 
-    prefix = gbr_find_prefix (NULL);
+    prefix = gnc_gbr_find_prefix (NULL);
     if (prefix == NULL)
     {
         /* BinReloc not initialized. */
@@ -723,11 +544,11 @@ gbr_find_lib_dir (const gchar *default_lib_dir)
  *         If default_libexec_dir is NULL, then NULL will be returned.
  */
 gchar *
-gbr_find_libexec_dir (const gchar *default_libexec_dir)
+gnc_gbr_find_libexec_dir (const gchar *default_libexec_dir)
 {
     gchar *prefix, *dir;
 
-    prefix = gbr_find_prefix (NULL);
+    prefix = gnc_gbr_find_prefix (NULL);
     if (prefix == NULL)
     {
         /* BinReloc not initialized. */
@@ -757,11 +578,11 @@ gbr_find_libexec_dir (const gchar *default_libexec_dir)
  *         If default_etc_dir is NULL, then NULL will be returned.
  */
 gchar *
-gbr_find_etc_dir (const gchar *default_etc_dir)
+gnc_gbr_find_etc_dir (const gchar *default_etc_dir)
 {
     gchar *prefix, *dir;
 
-    prefix = gbr_find_prefix (NULL);
+    prefix = gnc_gbr_find_prefix (NULL);
     if (prefix == NULL)
     {
         /* BinReloc not initialized. */

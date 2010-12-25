@@ -174,12 +174,12 @@ Account * xaccMallocAccount (QofBook *book);
 Account * gnc_account_create_root (QofBook *book);
 
 /** The xaccCloneAccount() does the same as xaccCloneAccountSimple(),
- *    except that it also also places a pair of GUID-pointers
+ *    except that it also also places a pair of GncGUID-pointers
  *    of each account to the other, in the other's kvp slot.
  *    The guid pointers are stored under the under the kvp
  *    path "gemini".
  */
-Account * xaccCloneAccount (const Account *from, QofBook *book);
+Account * xaccCloneAccount (const Account *source, QofBook *book);
 
 /** The xaccCloneAccountSimple() routine makes a simple copy of the
  *  indicated account, placing it in the indicated book.  It copies
@@ -191,7 +191,7 @@ Account * xaccCloneAccount (const Account *from, QofBook *book);
  *  Note that this routines does *NOT* use the 'gemini' kvp value
  *  to indicate where it was copied from.
  */
-Account * xaccCloneAccountSimple (const Account *from, QofBook *book);
+Account * xaccCloneAccountSimple (const Account *source, QofBook *book);
 
 /** The xaccAccountBeginEdit() subroutine is the first phase of
  *    a two-phase-commit wrapper for account updates. */
@@ -224,7 +224,7 @@ int xaccAccountOrder (const Account *account_1, const Account *account_2);
 
 /* ------------------ */
 
-/** @name Account lookup and GUID routines
+/** @name Account lookup and GncGUID routines
  @{ */
 
 /** Returns the account separation character chosen by the user.
@@ -246,10 +246,36 @@ void gnc_book_set_root_account(QofBook *book, Account *root);
 /** The xaccAccountLookup() subroutine will return the
  *    account associated with the given id, or NULL
  *    if there is no such account. */
-/*@ dependent @*/ Account * xaccAccountLookup (const GUID *guid, QofBook *book);
+/*@ dependent @*/ Account * xaccAccountLookup (const GncGUID *guid, QofBook *book);
 #define xaccAccountLookupDirect(g,b) xaccAccountLookup(&(g),b)
 
 /** @} */
+
+/** Composes a translatable error message showing which account
+ *  names clash with the current account separator. Can be called
+ *  after gnc_account_list_name_violations to have a consistent
+ *  error message in different parts of GnuCash
+ *
+ *  @param separator The separator character that was verified against
+ *  @param invalid_account_names A GList of invalid account names.
+ *
+ *  @return An error message that can be displayed to the user or logged.
+ *          This message string should be freed with g_free when no longer
+ *          needed.
+ */
+gchar *gnc_account_name_violations_errmsg (const gchar *separator, GList* invalid_account_names);
+
+/** Runs through all the accounts and returns a list of account names
+ *  that contain the provided separator character. This can be used to
+ *  check if certain account names are invalid.
+ *
+ *  @param book Pointer to the book with accounts to verify
+ *  @param separator The separator character to verify against
+ *
+ *  @return A GList of invalid account names. Should be freed with g_list_free
+ *          if no longer needed.
+ */
+GList *gnc_account_list_name_violations (QofBook *book, const gchar *separator);
 
 /* ------------------ */
 
@@ -483,14 +509,8 @@ void xaccAccountSetAutoInterestXfer (Account *account, gboolean value);
 /** Set the account's commodity */
 void xaccAccountSetCommodity (Account *account, gnc_commodity *comm);
 
-/** @deprecated do not use */
-#define DxaccAccountSetSecurity xaccAccountSetCommodity
-
 /** Get the account's commodity  */
 /*@ dependent @*/ gnc_commodity * xaccAccountGetCommodity (const Account *account);
-
-/** @deprecated do not use */
-#define DxaccAccountGetSecurity xaccAccountGetCommodity
 
 /** Return the SCU for the account.  If a non-standard SCU has been
  *   set for the account, that is returned; else the default SCU for
@@ -507,9 +527,6 @@ int xaccAccountGetCommoditySCUi (const Account *account);
  *   commodity.
  */
 void xaccAccountSetCommoditySCU (Account *account, int frac);
-
-/** @deprecated -- do not use for future development */
-#define xaccAccountSetCommoditySCUandFlag xaccAccountSetCommoditySCU
 
 /** Set the flag indicating that this account uses a non-standard SCU. */
 void xaccAccountSetNonStdSCU (Account *account, gboolean flag);

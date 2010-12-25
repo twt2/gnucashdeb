@@ -85,7 +85,7 @@ test_load_file(const char *filename)
     remove_locks(filename);
 
     ignore_lock = (safe_strcmp(g_getenv("SRCDIR"), ".") != 0);
-    qof_session_begin(session, filename, ignore_lock, FALSE);
+    qof_session_begin(session, filename, ignore_lock, FALSE, TRUE);
 
     qof_session_load(session, NULL);
     book = qof_session_get_book (session);
@@ -98,7 +98,8 @@ test_load_file(const char *filename)
                  "session load xml2", __FILE__, __LINE__,
                  "qof error=%d for file [%s]",
                  qof_session_get_error(session), filename);
-
+    /* Uncomment the line below to generate corrected files */
+    qof_session_save( session, NULL );
     qof_session_end(session);
 }
 

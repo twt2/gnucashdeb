@@ -33,6 +33,11 @@
 #include "gncJobP.h"
 #include "test-stuff.h"
 
+#include "gnc-backend-xml.h"
+
+#define FILE_NAME "xml:///tmp/testbook.gnucash"
+#define GNC_LIB_NAME "gncmod-backend-xml"
+
 static int count = 0;
 
 static void
@@ -60,14 +65,14 @@ test_customer (void)
 
     session = qof_session_new();
     be = NULL;
-    qof_session_begin(session, QOF_STDOUT, FALSE, FALSE);
+    qof_session_begin(session, FILE_NAME, FALSE, FALSE, FALSE);
     book = qof_session_get_book(session);
     be = qof_book_get_backend(book);
 
     /* The book *must* have a backend to pass the test of the 'dirty' flag
-    so use a session to use the default QSF. However, until the SQL backend can be used,
+    so use a session to use the default XML. However, until the SQL backend can be used,
     entities remain dirty until the session is saved or closed. */
-    do_test (be != NULL, "qsf backend could not be set");
+    do_test (be != NULL, "xml backend could not be set");
 
     /* Test creation/destruction */
     {
@@ -83,7 +88,7 @@ test_customer (void)
 
     /* Test setting/getting routines; does the active flag get set right? */
     {
-        GUID guid;
+        GncGUID guid;
 
         test_string_fcn (book, "Id", gncCustomerSetID, gncCustomerGetID);
         test_string_fcn (book, "Name", gncCustomerSetName, gncCustomerGetName);
@@ -105,7 +110,6 @@ test_customer (void)
         gncCustomerSetGUID (customer, &guid);
         do_test (guid_equal (&guid, gncCustomerGetGUID (customer)), "guid compare");
     }
-#if 0
     {
         GList *list;
 
@@ -119,7 +123,6 @@ test_customer (void)
         do_test (g_list_length (list) == 1, "correct length: active");
         g_list_free (list);
     }
-#endif
     {
         const char *str = get_random_string();
         const char *res;
@@ -137,7 +140,7 @@ test_customer (void)
 
     /* Test the Entity Table */
     {
-        const GUID *guid;
+        const GncGUID *guid;
 
         guid = gncCustomerGetGUID (customer);
         do_test (gncCustomerLookup (book, guid) == customer, "Entity Table");
@@ -158,9 +161,11 @@ test_string_fcn (QofBook *book, const char *message,
     do_test (!gncCustomerIsDirty (customer), "test if start dirty");
     gncCustomerBeginEdit (customer);
     set (customer, str);
+    /* Customer record should be dirty */
     do_test (gncCustomerIsDirty (customer), "test dirty later");
     gncCustomerCommitEdit (customer);
-    do_test (gncCustomerIsDirty (customer), "test dirty after commit");
+    /* Customer record should be not dirty */
+    do_test (!gncCustomerIsDirty (customer), "test dirty after commit");
     do_test (safe_strcmp (get (customer), str) == 0, message);
     gncCustomerSetActive (customer, FALSE);
     count++;
@@ -177,9 +182,11 @@ test_numeric_fcn (QofBook *book, const char *message,
     do_test (!gncCustomerIsDirty (customer), "test if start dirty");
     gncCustomerBeginEdit (customer);
     set (customer, num);
+    /* Customer record should be dirty */
     do_test (gncCustomerIsDirty (customer), "test dirty later");
     gncCustomerCommitEdit (customer);
-    do_test (gncCustomerIsDirty (customer), "test dirty after commit");
+    /* Customer record should be not dirty */
+    do_test (!gncCustomerIsDirty (customer), "test dirty after commit");
     do_test (gnc_numeric_equal (get (customer), num), message);
     gncCustomerSetActive (customer, FALSE);
     count++;
@@ -198,9 +205,11 @@ test_bool_fcn (QofBook *book, const char *message,
     set (customer, FALSE);
     set (customer, TRUE);
     set (customer, num);
+    /* Customer record should be dirty */
     do_test (gncCustomerIsDirty (customer), "test dirty later");
     gncCustomerCommitEdit (customer);
-    do_test (gncCustomerIsDirty (customer), "test dirty after commit");
+    /* Customer record should be not dirty */
+    do_test (!gncCustomerIsDirty (customer), "test dirty after commit");
     do_test (get (customer) == num, message);
     gncCustomerSetActive (customer, FALSE);
     count++;
@@ -210,10 +219,15 @@ int
 main (int argc, char **argv)
 {
     qof_init();
+    qof_load_backend_library ("../../../backend/xml/.libs/", GNC_LIB_NAME);
     do_test (cashobjects_register(), "Cannot register cash objects");
+    /* These three registrations are done during cashobjects_register,
+       so trying to register them again naturally fails. */
+#if 0
     do_test (gncInvoiceRegister(), "Cannot register GncInvoice");
     do_test (gncJobRegister (),  "Cannot register GncJob");
     do_test (gncCustomerRegister(), "Cannot register GncCustomer");
+#endif
     test_customer();
     print_test_results();
     qof_close ();

@@ -4,8 +4,9 @@
  *  Authors: Derek Atkins <warlord@MIT.EDU>
  *
  * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,7 +23,7 @@
 #define _GNCSEARCH_OWNER_H
 
 #include "search-core-type.h"
-#include "QueryNew.h"
+#include "qof.h"
 
 #define GNC_TYPE_SEARCH_OWNER (gnc_search_owner_get_type ())
 #define GNCSEARCH_OWNER(obj)	GTK_CHECK_CAST (obj, gnc_search_owner_get_type (), GNCSearchOwner)
@@ -36,7 +37,7 @@ struct _GNCSearchOwner
 {
     GNCSearchCoreType parent;
 
-    guid_match_t	how;
+    QofGuidMatch	how;
 };
 
 struct _GNCSearchOwnerClass

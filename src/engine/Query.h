@@ -39,30 +39,6 @@
 
 typedef QofQuery Query;
 
-#define xaccMallocQuery()	qof_query_create_for(GNC_ID_SPLIT)
-#define xaccFreeQuery		qof_query_destroy
-#define xaccQueryCopy		qof_query_copy
-#define xaccQuerySetBook	qof_query_set_book
-
-#define xaccQueryInvert		qof_query_invert
-#define xaccQueryMerge		qof_query_merge
-#define xaccQueryClear		qof_query_clear
-
-/* The xaccQueryHasTerms() routine returns the number of 'OR' terms in the query.
- * The xaccQueryNumTerms() routine returns the total number of terms in the query.
- */
-
-#define xaccQueryHasTerms	qof_query_has_terms
-#define xaccQueryNumTerms	qof_query_num_terms
-
-
-#define xaccQuerySetSortIncreasing	qof_query_set_sort_increasing
-
-#define xaccQuerySetMaxSplits	qof_query_set_max_results
-#define xaccQueryGetMaxSplits	qof_query_get_max_results
-
-#define xaccQueryEqual		qof_query_equal
-
 typedef enum
 {
     QUERY_TXN_MATCH_ALL = 1, /* match all accounts */
@@ -77,20 +53,22 @@ typedef enum
  *    query.  Any given split will appear at most once in the result;
  *    however, several splits from one transaction may appear in the list.
  *    The caller MUST NOT change the GList.
- *
+ */
+
+/**
  * The xaccQueryGetSplitsUniqueTrans() routine returns splits matching
  *    the query, but only one matching split per transaction will be
  *    returned.  In other words, any given transaction will be
  *    represented at most once in the returned list.  The caller must
  *    free the GList.
- *
+ */
+SplitList   * xaccQueryGetSplitsUniqueTrans(QofQuery *q);
+
+/**
  * The xaccQueryGetTransactions() routine returns a list of
  *    transactions that match the query.  The GList must be freed by
  *    the caller. The query_run_t argument is used to provide account
  *    matching in the following way:
- *
- * The xaccQueryGetLots() routine is just like GetTransactions() except
- *    it returns a list of Lots.
  *
  *    query_txn_match_t describes how to match accounts when querying
  *    for transactions with xaccQueryGetTransactions().
@@ -107,52 +85,56 @@ typedef enum
  *    matching accounts, whereas 'AND' acts as a boolean-AND
  *    for matching accounts.  Whew. Got that?
  */
-#define xaccQueryGetSplits	qof_query_run
-SplitList   * xaccQueryGetSplitsUniqueTrans(Query *q);
-TransList   * xaccQueryGetTransactions(Query * q, query_txn_match_t type);
-LotList     * xaccQueryGetLots(Query * q, query_txn_match_t type);
+TransList   * xaccQueryGetTransactions(QofQuery * q, query_txn_match_t type);
+
+/**
+ * The xaccQueryGetLots() routine is just like GetTransactions() except
+ *    it returns a list of Lots.
+ *
+ */
+LotList     * xaccQueryGetLots(QofQuery * q, query_txn_match_t type);
 
 /*******************************************************************
  *  match-adding API
  *******************************************************************/
 
-void xaccQueryAddAccountMatch(Query *, AccountList *,
+void xaccQueryAddAccountMatch(QofQuery *, AccountList *,
                               QofGuidMatch how, QofQueryOp op);
 
-void xaccQueryAddAccountGUIDMatch(Query *, AccountGUIDList *,
+void xaccQueryAddAccountGUIDMatch(QofQuery *, AccountGUIDList *,
                                   QofGuidMatch, QofQueryOp);
 
-void xaccQueryAddSingleAccountMatch(Query *, Account *, QofQueryOp);
+void xaccQueryAddSingleAccountMatch(QofQuery *, Account *, QofQueryOp);
 
-void xaccQueryAddStringMatch (Query* q, const char *matchstring,
+void xaccQueryAddStringMatch (QofQuery* q, const char *matchstring,
                               gboolean case_sens, gboolean use_regexp,
                               QofQueryOp op,
                               const char * path, ...);
 void
-xaccQueryAddDescriptionMatch(Query *q, const char *m, gboolean c, gboolean r,
+xaccQueryAddDescriptionMatch(QofQuery *q, const char *m, gboolean c, gboolean r,
                              QofQueryOp o);
 void
-xaccQueryAddNumberMatch(Query *q, const char *m, gboolean c, gboolean r,
+xaccQueryAddNumberMatch(QofQuery *q, const char *m, gboolean c, gboolean r,
                         QofQueryOp o);
 void
-xaccQueryAddActionMatch(Query *q, const char *m, gboolean c, gboolean r,
+xaccQueryAddActionMatch(QofQuery *q, const char *m, gboolean c, gboolean r,
                         QofQueryOp o);
 void
-xaccQueryAddMemoMatch(Query *q, const char *m, gboolean c, gboolean r,
+xaccQueryAddMemoMatch(QofQuery *q, const char *m, gboolean c, gboolean r,
                       QofQueryOp o);
 void
-xaccQueryAddValueMatch(Query *q, gnc_numeric amt, QofNumericMatch sgn,
+xaccQueryAddValueMatch(QofQuery *q, gnc_numeric amt, QofNumericMatch sgn,
                        QofQueryCompare how, QofQueryOp op);
 void
-xaccQueryAddSharePriceMatch(Query *q, gnc_numeric amt, QofQueryCompare how,
+xaccQueryAddSharePriceMatch(QofQuery *q, gnc_numeric amt, QofQueryCompare how,
                             QofQueryOp op);
 void
-xaccQueryAddSharesMatch(Query *q, gnc_numeric amt, QofQueryCompare how,
+xaccQueryAddSharesMatch(QofQuery *q, gnc_numeric amt, QofQueryCompare how,
                         QofQueryOp op);
 void
-xaccQueryAddBalanceMatch(Query *q, QofQueryCompare bal, QofQueryOp op);
+xaccQueryAddBalanceMatch(QofQuery *q, QofQueryCompare bal, QofQueryOp op);
 
-void xaccQueryAddNumericMatch (Query *q, gnc_numeric amount,
+void xaccQueryAddNumericMatch (QofQuery *q, gnc_numeric amount,
                                QofNumericMatch sign, QofQueryCompare how,
                                QofQueryOp op, const char * path, ...);
 
@@ -165,22 +147,22 @@ void xaccQueryAddNumericMatch (Query *q, gnc_numeric amount,
  *    all transactions are matched.
  */
 
-void xaccQueryAddDateMatch(Query * q, gboolean use_start,
+void xaccQueryAddDateMatch(QofQuery * q, gboolean use_start,
                            int sday, int smonth, int syear,
                            gboolean use_end, int eday, int emonth, int eyear,
                            QofQueryOp op);
-void xaccQueryAddDateMatchTS(Query * q,
+void xaccQueryAddDateMatchTS(QofQuery * q,
                              gboolean use_start, Timespec sts,
                              gboolean use_end, Timespec ets,
                              QofQueryOp op);
-void xaccQueryAddDateMatchTT(Query * q,
+void xaccQueryAddDateMatchTT(QofQuery * q,
                              gboolean use_start, time_t stt,
                              gboolean use_end, time_t ett,
                              QofQueryOp op);
-void xaccQueryGetDateMatchTS (Query * q,
+void xaccQueryGetDateMatchTS (QofQuery * q,
                               Timespec * sts,
                               Timespec * ets);
-void xaccQueryGetDateMatchTT (Query * q,
+void xaccQueryGetDateMatchTT (QofQuery * q,
                               time_t * stt,
                               time_t * ett);
 
@@ -195,19 +177,19 @@ typedef enum
     CLEARED_ALL        = 0x001F
 } cleared_match_t;
 
-void xaccQueryAddClearedMatch(Query * q, cleared_match_t how, QofQueryOp op);
-void xaccQueryAddGUIDMatch(Query * q, const GUID *guid,
+void xaccQueryAddClearedMatch(QofQuery * q, cleared_match_t how, QofQueryOp op);
+void xaccQueryAddGUIDMatch(QofQuery * q, const GncGUID *guid,
                            QofIdType id_type, QofQueryOp op);
 
 /** given kvp value is on right side of comparison */
-void xaccQueryAddKVPMatch(Query *q, GSList *path, const KvpValue *value,
+void xaccQueryAddKVPMatch(QofQuery *q, GSList *path, const KvpValue *value,
                           QofQueryCompare how, QofIdType id_type,
                           QofQueryOp op);
 
 /*******************************************************************
- *  compatibility interface with old Query API
+ *  compatibility interface with old QofQuery API
  *******************************************************************/
-time_t xaccQueryGetEarliestDateFound(Query * q);
-time_t xaccQueryGetLatestDateFound(Query * q);
+time_t xaccQueryGetEarliestDateFound(QofQuery * q);
+time_t xaccQueryGetLatestDateFound(QofQuery * q);
 
 #endif

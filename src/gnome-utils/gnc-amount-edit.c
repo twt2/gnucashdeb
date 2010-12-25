@@ -158,8 +158,8 @@ gnc_amount_edit_key_press(GtkWidget *widget, GdkEventKey *event)
         if (gae->print_info.monetary)
         {
             struct lconv *lc = gnc_localeconv ();
-            event->keyval = lc->decimal_point[0];
-            event->string[0] = lc->decimal_point[0];
+            event->keyval = lc->mon_decimal_point[0];
+            event->string[0] = lc->mon_decimal_point[0];
         }
     }
 
@@ -251,7 +251,7 @@ gnc_amount_edit_evaluate (GNCAmountEdit *gae)
         gnc_numeric old_amount = gae->amount;
 
         if (gae->fraction > 0)
-            amount = gnc_numeric_convert (amount, gae->fraction, GNC_RND_ROUND);
+            amount = gnc_numeric_convert (amount, gae->fraction, GNC_HOW_RND_ROUND_HALF_UP);
 
         gnc_amount_edit_set_amount (gae, amount);
 
@@ -354,7 +354,7 @@ gnc_amount_edit_set_damount (GNCAmountEdit *gae, double damount)
     else
         fraction = 100000;
 
-    amount = double_to_gnc_numeric (damount, fraction, GNC_RND_ROUND);
+    amount = double_to_gnc_numeric (damount, fraction, GNC_HOW_RND_ROUND_HALF_UP);
 
     gnc_amount_edit_set_amount (gae, amount);
 }

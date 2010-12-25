@@ -1,7 +1,8 @@
 /***************************************************************************
  *            test-dbi.c
  *
- *  Tests saving and loading to a dbi/sqlite3 db
+ *  Tests saving and loading to a dbi/sqlite3 db.  The contents of an XML
+ *  file are read and saved to sqlite3, then the results read back and compared.
  *
  *  Copyright (C) 2009  Phil Longstaff <plongstaff@rogers.com>
  ****************************************************************************/
@@ -30,6 +31,7 @@
 #include "test-stuff.h"
 #include "test-dbi-stuff.h"
 
+#include "TransLog.h"
 #include "Account.h"
 #include "Split.h"
 #include "gnc-commodity.h"
@@ -45,11 +47,12 @@ int main (int argc, char ** argv)
 
     qof_init();
     cashobjects_register();
+    xaccLogDisable();
     qof_load_backend_library ("../.libs/", GNC_LIB_NAME);
 
     // Create a session with data
     session_1 = qof_session_new();
-    qof_session_begin( session_1, DBI_TEST_XML_FILENAME, FALSE, FALSE );
+    qof_session_begin( session_1, DBI_TEST_XML_FILENAME, FALSE, FALSE, FALSE );
     qof_session_load( session_1, NULL );
 
     filename = tempnam( "/tmp", "test-sqlite3-" );
@@ -60,7 +63,7 @@ int main (int argc, char ** argv)
     if ( strlen( TEST_MYSQL_URL ) > 0 )
     {
         session_1 = qof_session_new();
-        qof_session_begin( session_1, DBI_TEST_XML_FILENAME, FALSE, FALSE );
+        qof_session_begin( session_1, DBI_TEST_XML_FILENAME, FALSE, FALSE, FALSE );
         qof_session_load( session_1, NULL );
         test_dbi_store_and_reload( "mysql", session_1, TEST_MYSQL_URL );
     }
@@ -69,7 +72,7 @@ int main (int argc, char ** argv)
     if ( strlen( TEST_PGSQL_URL ) > 0 )
     {
         session_1 = qof_session_new();
-        qof_session_begin( session_1, DBI_TEST_XML_FILENAME, FALSE, FALSE );
+        qof_session_begin( session_1, DBI_TEST_XML_FILENAME, FALSE, FALSE, FALSE );
         qof_session_load( session_1, NULL );
         test_dbi_store_and_reload( "pgsql", session_1, TEST_PGSQL_URL );
     }

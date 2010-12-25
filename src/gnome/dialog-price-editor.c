@@ -151,7 +151,7 @@ price_to_gui (PriceEditDialog *pedit_dialog)
         namespace = gnc_commodity_get_namespace(commodity);
         fullname = gnc_commodity_get_printname(commodity);
         gnc_ui_update_namespace_picker(pedit_dialog->namespace_cbe,
-                                       namespace, DIAG_COMM_NON_CURRENCY);
+                                       namespace, DIAG_COMM_ALL);
         gnc_ui_update_commodity_picker(pedit_dialog->commodity_cbe,
                                        namespace, fullname);
 
@@ -562,7 +562,7 @@ gnc_price_edit_dialog (GtkWidget * parent,
  * Return: nothing                                                  *
 \********************************************************************/
 GNCPrice *
-gnc_price_edit_by_guid (GtkWidget * parent, const GUID * guid)
+gnc_price_edit_by_guid (GtkWidget * parent, const GncGUID * guid)
 {
     GNCPrice *price;
     QofSession *session;

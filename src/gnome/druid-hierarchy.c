@@ -33,8 +33,8 @@
 #include "gnc-account-merge.h"
 #include "dialog-new-user.h"
 #include "dialog-utils.h"
+#include "dialog-file-access.h"
 #include "druid-hierarchy.h"
-#include "druid-merge.h"
 #include "druid-utils.h"
 #include "gnc-amount-edit.h"
 #include "gnc-currency-edit.h"
@@ -779,7 +779,7 @@ balance_cell_edited (GtkCellRendererText *cell,
      */
     {
         int account_cmdty_fraction = xaccAccountGetCommoditySCU(account);
-        amount = gnc_numeric_convert(amount, account_cmdty_fraction, GNC_RND_ROUND);
+        amount = gnc_numeric_convert(amount, account_cmdty_fraction, GNC_HOW_RND_ROUND_HALF_UP);
     }
     set_final_balance (data->balance_hash, account, amount);
     qof_event_gen (QOF_INSTANCE(account), QOF_EVENT_MODIFY, NULL);
@@ -1038,6 +1038,7 @@ on_finish (GnomeDruidPage  *gnomedruidpage,
         (*when_completed)();
     }
 
+    gnc_ui_file_access_for_save_as();
     LEAVE (" ");
 }
 

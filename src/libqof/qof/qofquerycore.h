@@ -103,15 +103,15 @@ typedef enum
 typedef enum
 {
     /** These expect a single object and expect the
-     * QofAccessFunc returns GUID* */
+     * QofAccessFunc returns GncGUID* */
     QOF_GUID_MATCH_ANY = 1,
     QOF_GUID_MATCH_NONE,
     QOF_GUID_MATCH_NULL,
     /** These expect a GList* of objects and calls the QofAccessFunc routine
-     * on each item in the list to obtain a GUID* for each object */
+     * on each item in the list to obtain a GncGUID* for each object */
     QOF_GUID_MATCH_ALL,
     /** These expect a single object and expect the QofAccessFunc function
-     * to return a GList* of GUID* (the list is the property of the caller) */
+     * to return a GList* of GncGUID* (the list is the property of the caller) */
     QOF_GUID_MATCH_LIST_ANY,
 } QofGuidMatch;
 
@@ -140,6 +140,9 @@ struct _QofQueryPredData
     QofQueryCompare       how;
 };
 
+/** A list of parameters (::QofIdType) used to describe a parameter to
+ * use in a predicate or when sorting */
+typedef GSList QofQueryParamList;
 
 /** @name Core Data Type Predicates
     @{ */
@@ -172,7 +175,7 @@ QofQueryPredData *qof_query_choice_predicate  (QofGuidMatch options, GList *guid
  *  sense, the 'path' is handled as if it were a paramter.
  */
 QofQueryPredData *qof_query_kvp_predicate (QofQueryCompare how,
-        GSList *path,
+        QofQueryParamList *path,
         const KvpValue *value);
 
 /** Same predicate as above, except that 'path' is assumed to be

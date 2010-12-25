@@ -1,10 +1,14 @@
+/** @file 
+    @brief interface file for SWIG, used by python-bindings and scheme(?).
+    @addtogroup python-bindings
+*/
+
 /* Not sure why SWIG doesn't figure this out. */
 typedef int gint;
 typedef int time_t;
 typedef unsigned int guint;
 typedef double gdouble;
 typedef float gfloat;
-typedef char * URLType;
 typedef void * gpointer;
 
 %typemap(newfree) gchar * "g_free($1);"
@@ -27,10 +31,12 @@ typedef char gchar;
 %typemap(in) Timespec "$1 = gnc_timepair2timespec($input);"
 %typemap(out) Timespec "$result = gnc_timespec2timepair($1);"
 
-%typemap(in) GUID "$1 = gnc_scm2guid($input);"
-%typemap(out) GUID "$result = gnc_guid2scm($1);"
-%typemap(in) GUID * (GUID g) " g = gnc_scm2guid($input); $1 = &g; "
-%typemap(out) GUID * " $result = ($1) ? gnc_guid2scm(*($1)): SCM_BOOL_F; "
+%typemap(in) GDate "$1 = gnc_timepair_to_GDate($input);"
+
+%typemap(in) GncGUID "$1 = gnc_scm2guid($input);"
+%typemap(out) GncGUID "$result = gnc_guid2scm($1);"
+%typemap(in) GncGUID * (GncGUID g) " g = gnc_scm2guid($input); $1 = &g; "
+%typemap(out) GncGUID * " $result = ($1) ? gnc_guid2scm(*($1)): SCM_BOOL_F; "
 
 %typemap(in) gnc_numeric "$1 = gnc_scm_to_numeric($input);"
 %typemap(out) gnc_numeric "$result = gnc_numeric_to_scm($1);"
@@ -126,29 +132,36 @@ typedef char gchar;
             PyExc_ValueError,
             "function returning gboolean returned a value that wasn't "
             "TRUE or FALSE.");
-        return NULL;        
+        return NULL;
     }
 }
 
-%typemap(out) GList *, CommodityList *, SplitList *, AccountList *, LotList * {
+%typemap(out) GList *, CommodityList *, SplitList *, AccountList *, LotList *,
+    MonetaryList *, PriceList * {
     guint i;
     gpointer data;
     PyObject *list = PyList_New(0);
     for (i = 0; i < g_list_length($1); i++)
     {
-        data = g_list_nth_data($1, i);        
+        data = g_list_nth_data($1, i);
         if (GNC_IS_ACCOUNT(data))
-            PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_Account, 0)); 
+            PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_Account, 0));
         else if (GNC_IS_SPLIT(data))
-            PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_Split, 0)); 
+            PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_Split, 0));
         else if (GNC_IS_TRANSACTION(data))
-            PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_Transaction, 0)); 
+            PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_Transaction, 0));
         else if (GNC_IS_COMMODITY(data))
-            PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_gnc_commodity, 0)); 
+            PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_gnc_commodity, 0));
+        else if (GNC_IS_COMMODITY_NAMESPACE(data))
+            PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_gnc_commodity_namespace, 0));
         else if (GNC_IS_LOT(data))
-            PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0)); 
+            PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
+        else if (GNC_IS_PRICE(data))
+            PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+        else if ($1_descriptor == $descriptor(MonetaryList *))
+            PyList_Append(list, SWIG_NewPointerObj(data, $descriptor(gnc_monetary *), 0));
         else
-            PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_void, 0)); 
+            PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_void, 0));
     }
     $result = list;
 }

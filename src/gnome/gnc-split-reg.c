@@ -34,7 +34,7 @@
 #include "gnc-split-reg.h"
 
 #include "Account.h"
-#include "QueryNew.h"
+#include "qof.h"
 #include "SX-book.h"
 #include "dialog-account.h"
 #include "dialog-sx-editor.h"
@@ -344,8 +344,7 @@ gnc_split_reg_init( GNCSplitReg *gsr )
     gsr->sort_type = BY_STANDARD;
     gsr->width = -1;
     gsr->height = -1;
-    gsr->numRows = gnc_gconf_get_float(GCONF_GENERAL_REGISTER,
-                                       KEY_NUMBER_OF_ROWS, NULL);
+    gsr->numRows = 10;
     gsr->read_only = FALSE;
 
     g_signal_connect( gsr, "destroy",
@@ -398,7 +397,6 @@ gsr_create_table( GNCSplitReg *gsr )
 
     /* FIXME: We'd really rather pass this down... */
     sr = gnc_ledger_display_get_split_register( gsr->ledger );
-    gnucash_register_set_initial_rows( gsr->numRows );
     register_widget = gnucash_register_new( sr->table );
     gsr->reg = GNUCASH_REGISTER( register_widget );
     gnc_table_init_gui( GTK_WIDGET(gsr->reg), sr );
@@ -505,7 +503,7 @@ account_latest_price (Account *account)
     currency = gnc_default_currency ();
 
     book = gnc_account_get_book (account);
-    pdb = gnc_book_get_pricedb (book);
+    pdb = gnc_pricedb_get_db (book);
 
     return gnc_pricedb_lookup_latest (pdb, commodity, currency);
 }
@@ -523,7 +521,7 @@ account_latest_price_any_currency (Account *account)
     commodity = xaccAccountGetCommodity (account);
 
     book = gnc_account_get_book (account);
-    pdb = gnc_book_get_pricedb (book);
+    pdb = gnc_pricedb_get_db (book);
 
     price_list = gnc_pricedb_lookup_latest_any_currency (pdb, commodity);
     if (!price_list) return NULL;
@@ -670,7 +668,7 @@ gsr_redraw_all_cb (GnucashRegister *g_reg, gpointer data)
 
             amount = gnc_numeric_mul (amount, gnc_price_get_value (price),
                                       gnc_commodity_get_fraction (currency),
-                                      GNC_RND_ROUND);
+                                      GNC_HOW_RND_ROUND_HALF_UP);
 
             xaccSPrintAmount (string, amount, print_info);
 
@@ -1205,7 +1203,7 @@ gsr_default_schedule_handler( GNCSplitReg *gsr, gpointer data )
             kvp_val = kvp_frame_get_slot( txn_frame, "from-sched-xaction" );
             if ( kvp_val )
             {
-                GUID *fromSXId = kvp_value_get_guid( kvp_val );
+                GncGUID *fromSXId = kvp_value_get_guid( kvp_val );
                 SchedXaction *theSX = NULL;
                 GList *sxElts;
 
@@ -1428,7 +1426,7 @@ create_balancing_transaction(QofBook *book, Account *account,
 
     // fill Transaction
     xaccTransSetCurrency(trans, xaccAccountGetCommodity(account));
-    xaccTransSetDateSecs(trans, statement_date);
+    xaccTransSetDatePostedSecs(trans, statement_date);
     xaccTransSetDescription(trans, _("Balancing entry from reconcilation"));
 
     // 1. Split
@@ -1614,7 +1612,7 @@ gnc_split_reg_sort( GNCSplitReg *gsr, SortType sort_code )
         g_return_if_fail (FALSE);
     }
 
-    gncQuerySetSortOrder( query, p1, p2, p3 );
+    qof_query_set_sort_order( query, p1, p2, p3 );
     reg = gnc_ledger_display_get_split_register( gsr->ledger );
     gnc_split_register_show_present_divider( reg, show_present_divider );
     gsr->sort_type = sort_code;

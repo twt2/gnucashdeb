@@ -54,6 +54,11 @@
 # define fdopen _fdopen
 # define read _read
 #endif
+#include "platform.h"
+#if COMPILER(MSVC)
+# define g_fopen fopen
+# define g_open _open
+#endif
 
 /* Do not treat -Wstrict-aliasing warnings as errors because of problems of the
  * G_LOCK* macros as declared by glib.  See
@@ -188,7 +193,7 @@ add_account_local(sixtp_gdv2 *data, Account *act)
     Account *parent, *root;
     int type;
 
-    table = gnc_book_get_commodity_table (data->book);
+    table = gnc_commodity_table_get_table (data->book);
 
     clear_up_account_commodity(table, act,
                                DxaccAccountGetCurrency,
@@ -242,7 +247,7 @@ add_commodity_local(sixtp_gdv2 *data, gnc_commodity *com)
 {
     gnc_commodity_table *table;
 
-    table = gnc_book_get_commodity_table (data->book);
+    table = gnc_commodity_table_get_table (data->book);
 
     gnc_commodity_table_insert(table, com);
 
@@ -257,7 +262,7 @@ add_transaction_local(sixtp_gdv2 *data, Transaction *trn)
 {
     gnc_commodity_table *table;
 
-    table = gnc_book_get_commodity_table (data->book);
+    table = gnc_commodity_table_get_table (data->book);
 
     xaccTransBeginEdit (trn);
     clear_up_transaction_commodity(table, trn,
@@ -300,8 +305,19 @@ add_template_transaction_local( sixtp_gdv2 *data,
     {
         if ( gnc_account_get_parent( (Account*)n->data ) == NULL )
         {
-            /* replace the gnc_book_init-created root account */
-            gnc_book_set_template_root(book, (Account *)n->data);
+            if ( xaccAccountGetType( (Account*)n->data ) == ACCT_TYPE_ROOT )
+            {
+                /* replace the gnc_book_init-created root account */
+                gnc_book_set_template_root(book, (Account *)n->data);
+            }
+            else
+            {
+                /* This is an old data file that doesn't have a template root
+                   account and this is a top level account.  Make it a child
+                   of the template root account. */
+                acctRoot = gnc_book_get_template_root(book);
+                gnc_account_append_child( acctRoot, (Account*)n->data );
+            }
         }
 
     }
@@ -777,7 +793,7 @@ qof_session_load_from_xml_file_v2_full(
 
     /* fix price quote sources */
     root = gnc_book_get_root_account(book);
-    xaccAccountTreeScrubQuoteSources (root, gnc_book_get_commodity_table(book));
+    xaccAccountTreeScrubQuoteSources (root, gnc_commodity_table_get_table(book));
 
     /* Fix account and transaction commodities */
     xaccAccountTreeScrubCommodities (root);
@@ -963,7 +979,7 @@ write_book(FILE *out, QofBook *book, sixtp_gdv2 *gd)
     if (!write_counts(out,
                       "commodity",
                       gnc_commodity_table_get_size(
-                          gnc_book_get_commodity_table(book)),
+                          gnc_commodity_table_get_table(book)),
                       "account",
                       1 + gnc_account_n_descendants(gnc_book_get_root_account(book)),
                       "transaction",
@@ -1010,7 +1026,7 @@ write_commodities(FILE *out, QofBook *book, sixtp_gdv2 *gd)
     GList *lp;
     gboolean success = TRUE;
 
-    tbl = gnc_book_get_commodity_table(book);
+    tbl = gnc_commodity_table_get_table(book);
 
     namespaces = gnc_commodity_table_get_namespaces(tbl);
     if (namespaces)
@@ -1057,7 +1073,7 @@ write_pricedb(FILE *out, QofBook *book, sixtp_gdv2 *gd)
 {
     xmlNodePtr node;
 
-    node = gnc_pricedb_dom_tree_create(gnc_book_get_pricedb(book));
+    node = gnc_pricedb_dom_tree_create(gnc_pricedb_get_db(book));
 
     if (!node)
     {
@@ -1247,7 +1263,7 @@ gnc_book_write_to_xml_filehandle_v2(QofBook *book, FILE *out)
     be = qof_book_get_backend(book);
     gd = gnc_sixtp_gdv2_new(book, FALSE, file_rw_feedback, be->percentage);
     gd->counter.commodities_total =
-        gnc_commodity_table_get_size(gnc_book_get_commodity_table(book));
+        gnc_commodity_table_get_size(gnc_commodity_table_get_table(book));
     gd->counter.accounts_total = 1 +
                                  gnc_account_n_descendants(gnc_book_get_root_account(book));
     gd->counter.transactions_total = gnc_book_count_transactions(book);
@@ -1281,7 +1297,7 @@ gnc_book_write_accounts_to_xml_filehandle_v2(QofBackend *be, QofBook *book, FILE
     root = gnc_book_get_root_account(book);
     nacc = 1 + gnc_account_n_descendants(root);
 
-    table = gnc_book_get_commodity_table(book);
+    table = gnc_commodity_table_get_table(book);
     ncom = gnc_commodity_table_get_size(table);
 
     if (!write_v2_header(out)
@@ -1382,7 +1398,13 @@ gz_thread_func(gz_thread_params_t *params)
             gzval = gzread(file, buffer, BUFLEN);
             if (gzval > 0)
             {
-                if (write(params->fd, buffer, gzval) < 0)
+                if (
+#if COMPILER(MSVC)
+                    _write
+#else
+                    write
+#endif
+                    (params->fd, buffer, gzval) < 0)
                 {
                     g_warning("Could not write to pipe. The error is '%s' (%d)",
                               g_strerror(errno) ? g_strerror(errno) : "", errno);
@@ -2080,3 +2102,10 @@ gnc_xml2_parse_with_subst (FileBackend *fbe, QofBook *book, GHashTable *subst)
 
     return success;
 }
+
+/* For emacs we set some variables concerning indentation:
+ * Local Variables: *
+ * indent-tabs-mode:nil *
+ * c-basic-offset:4 *
+ * tab-width:8 *
+ * End: */

@@ -236,7 +236,7 @@ gnc_get_current_root_account (void)
 gnc_commodity_table *
 gnc_get_current_commodities (void)
 {
-    return gnc_book_get_commodity_table (gnc_get_current_book ());
+    return gnc_commodity_table_get_table (gnc_get_current_book ());
 }
 
 gchar *
@@ -478,11 +478,24 @@ gnc_ui_account_get_tax_info_string (const Account *account)
     {
         if (!tax_related)
             return NULL;
-        else /* tax_related && !code */
+        /* tax_related && !code */
+        else
+            /* Translators: This and the following strings appear on
+             * the account tab if the Tax Info column is displayed,
+             * i.e. if the user wants to record the tax form number
+             * and location on that tax form which corresponds to this
+             * gnucash account. For the US Income Tax support in
+             * gnucash, each tax code that can be assigned to an
+             * account generally corresponds to a specific line number
+             * on a paper form and each form has a unique
+             * identification (e.g., Form 1040, Schedule A). */
             return g_strdup (_("Tax-related but has no tax code"));
     }
     else  /* with tax code */
     {
+        const gchar *num_code = NULL;
+        const gchar *prefix = "N";
+
         tax_type = gnc_get_current_book_tax_type ();
         if (tax_type == NULL || (safe_strcmp (tax_type, "") == 0))
             return g_strdup (_("Tax entity type not specified"));
@@ -543,15 +556,19 @@ gnc_ui_account_get_tax_info_string (const Account *account)
                                           (atype == ACCT_TYPE_PAYABLE)) ?
                                          "txf-liab-eq-categories" : ""))));
 
+        num_code = g_strdup (code);
+        if (g_str_has_prefix (num_code, prefix))
+            num_code++; /* to lose the leading N */
+
         if (category == SCM_UNDEFINED)
         {
             if (tax_related)
                 return g_strdup_printf
-                       (_("Tax type %s: invalid code %s for account type"), tax_type, code);
+                       (_("Tax type %s: invalid code %s for account type"), tax_type, num_code);
             else
                 return g_strdup_printf
                        (_("Not tax-related; tax type %s: invalid code %s for account type"),
-                        tax_type, code);
+                        tax_type, num_code);
         }
 
         code_scm = scm_str2symbol (code);
@@ -560,10 +577,10 @@ gnc_ui_account_get_tax_info_string (const Account *account)
         {
             if (tax_related)
                 return g_strdup_printf
-                       (_("Invalid code %s for tax type %s"), code, tax_type);
+                       (_("Invalid code %s for tax type %s"), num_code, tax_type);
             else
                 return g_strdup_printf
-                       (_("Not tax-related; invalid code %s for tax type %s"), code, tax_type);
+                       (_("Not tax-related; invalid code %s for tax type %s"), num_code, tax_type);
         }
 
         form = scm_to_locale_string (scm);
@@ -571,10 +588,10 @@ gnc_ui_account_get_tax_info_string (const Account *account)
         {
             if (tax_related)
                 return g_strdup_printf
-                       (_("No form: code %s, tax type %s"), code, tax_type);
+                       (_("No form: code %s, tax type %s"), num_code, tax_type);
             else
                 return g_strdup_printf
-                       (_("Not tax-related; no form: code %s, tax type %s"), code, tax_type);
+                       (_("Not tax-related; no form: code %s, tax type %s"), num_code, tax_type);
         }
 
         scm = scm_call_3 (get_desc, category, code_scm, tax_entity_type);
@@ -583,11 +600,11 @@ gnc_ui_account_get_tax_info_string (const Account *account)
             if (tax_related)
                 return g_strdup_printf
                        (_("No description: form %s, code %s, tax type %s"),
-                        form, code, tax_type);
+                        form, num_code, tax_type);
             else
                 return g_strdup_printf
                        (_("Not tax-related; no description: form %s, code %s, tax type %s"),
-                        form, code, tax_type);
+                        form, num_code, tax_type);
         }
 
         desc = scm_to_locale_string (scm);
@@ -596,11 +613,11 @@ gnc_ui_account_get_tax_info_string (const Account *account)
             if (tax_related)
                 return g_strdup_printf
                        (_("No description: form %s, code %s, tax type %s"),
-                        form, code, tax_type);
+                        form, num_code, tax_type);
             else
                 return g_strdup_printf
                        (_("Not tax-related; no description: form %s, code %s, tax type %s"),
-                        form, code, tax_type);
+                        form, num_code, tax_type);
         }
 
         copy_number = xaccAccountGetTaxUSCopyNumber (account);
@@ -608,11 +625,16 @@ gnc_ui_account_get_tax_info_string (const Account *account)
                    (gint) copy_number);
 
         if (tax_related)
-            return g_strdup_printf ("%s%s %s", form, copy_txt, desc);
+        {
+            if (safe_strcmp (form, "") == 0)
+                return g_strdup_printf ("%s", desc);
+            else
+                return g_strdup_printf ("%s%s %s", form, copy_txt, desc);
+        }
         else
             return g_strdup_printf
                    (_("Not tax-related; %s%s %s (code %s, tax type %s)"),
-                    form, copy_txt, desc, code, tax_type);
+                    form, copy_txt, desc, num_code, tax_type);
     }
 }
 
@@ -643,22 +665,22 @@ gnc_get_reconcile_str (char reconciled_flag)
 {
     switch (reconciled_flag)
     {
+    case NREC:
         /* Translators: For the following strings, the single letters
            after the colon are abbreviations of the word before the
            colon. You should only translate the letter *after* the colon. */
-    case NREC:
         return string_after_colon(_("not cleared:n"));
-        /* Translators: Please only translate the letter *after* the colon. */
     case CREC:
+        /* Translators: Please only translate the letter *after* the colon. */
         return string_after_colon(_("cleared:c"));
-        /* Translators: Please only translate the letter *after* the colon. */
     case YREC:
+        /* Translators: Please only translate the letter *after* the colon. */
         return string_after_colon(_("reconciled:y"));
-        /* Translators: Please only translate the letter *after* the colon. */
     case FREC:
-        return string_after_colon(_("frozen:f"));
         /* Translators: Please only translate the letter *after* the colon. */
+        return string_after_colon(_("frozen:f"));
     case VREC:
+        /* Translators: Please only translate the letter *after* the colon. */
         return string_after_colon(_("void:v"));
     default:
         PERR("Bad reconciled flag\n");
@@ -829,7 +851,7 @@ gnc_account_create_opening_balance (Account *account,
     xaccTransBeginEdit (trans);
 
     xaccTransSetCurrency (trans, xaccAccountGetCommodity (account));
-    xaccTransSetDateSecs (trans, date);
+    xaccTransSetDatePostedSecs (trans, date);
     xaccTransSetDescription (trans, _("Opening Balance"));
 
     split = xaccMallocSplit (book);
@@ -992,21 +1014,22 @@ gnc_locale_default_currency (void)
 }
 
 
-gnc_commodity *
-gnc_default_currency (void)
+static gnc_commodity *
+gnc_default_currency_common (gchar *requested_currency,
+                             const gchar *gconf_section)
 {
     gnc_commodity *currency = NULL;
     gchar *choice, *mnemonic;
 
-    if (user_default_currency)
+    if (requested_currency)
         return gnc_commodity_table_lookup(gnc_get_current_commodities(),
                                           GNC_COMMODITY_NS_CURRENCY,
-                                          user_default_currency);
+                                          requested_currency);
 
-    choice = gnc_gconf_get_string(GCONF_GENERAL, KEY_CURRENCY_CHOICE, NULL);
-    if (choice && strcmp(choice, "other") == 0)
+    choice = gnc_gconf_get_string(gconf_section, KEY_CURRENCY_CHOICE, NULL);
+    if (g_strcmp0(choice, "other") == 0)
     {
-        mnemonic = gnc_gconf_get_string(GCONF_GENERAL, KEY_CURRENCY_OTHER, NULL);
+        mnemonic = gnc_gconf_get_string(gconf_section, KEY_CURRENCY_OTHER, NULL);
         currency = gnc_commodity_table_lookup(gnc_get_current_commodities(),
                                               GNC_COMMODITY_NS_CURRENCY, mnemonic);
         DEBUG("mnemonic %s, result %p", mnemonic ? mnemonic : "(null)", currency);
@@ -1018,47 +1041,24 @@ gnc_default_currency (void)
         currency = gnc_locale_default_currency ();
     if (currency)
     {
-        mnemonic = user_default_currency;
-        user_default_currency = g_strdup(gnc_commodity_get_mnemonic(currency));
+        mnemonic = requested_currency;
+        requested_currency = g_strdup(gnc_commodity_get_mnemonic(currency));
         g_free(mnemonic);
     }
     return currency;
+}
+
+gnc_commodity *
+gnc_default_currency (void)
+{
+    return gnc_default_currency_common (user_default_currency, GCONF_GENERAL);
 }
 
 gnc_commodity *
 gnc_default_report_currency (void)
 {
-    gnc_commodity *currency = NULL;
-    gchar *choice, *mnemonic;
-
-    if (user_report_currency)
-        return gnc_commodity_table_lookup(gnc_get_current_commodities(),
-                                          GNC_COMMODITY_NS_CURRENCY,
-                                          user_report_currency);
-    choice = gnc_gconf_get_string(GCONF_GENERAL_REPORT,
-                                  KEY_CURRENCY_CHOICE, NULL);
-    if (choice && strcmp(choice, "other") == 0)
-    {
-        mnemonic = gnc_gconf_get_string(GCONF_GENERAL_REPORT,
-                                        KEY_CURRENCY_OTHER, NULL);
-        currency = gnc_commodity_table_lookup(gnc_get_current_commodities(),
-                                              GNC_COMMODITY_NS_CURRENCY, mnemonic);
-        DEBUG("mnemonic %s, result %p", mnemonic ? mnemonic : "(null)", currency);
-        g_free(mnemonic);
-    }
-    g_free(choice);
-
-    if (!currency)
-        currency = gnc_locale_default_currency ();
-    if (currency)
-    {
-        mnemonic = user_report_currency;
-        user_report_currency = g_strdup(gnc_commodity_get_mnemonic(currency));
-        g_free(mnemonic);
-    }
-    return currency;
+    return gnc_default_currency_common (user_report_currency, GCONF_GENERAL_REPORT);
 }
-
 
 static void
 gnc_currency_changed_cb (GConfEntry *entry, gpointer user_data)
@@ -1397,7 +1397,7 @@ PrintAmountInternal(char *buf, gnc_numeric val, const GNCPrintAmountInfo *info)
     {
         rounding.num = 5; /* Limit the denom to 10^13 ~= 2^44, leaving max at ~524288 */
         rounding.denom = pow(10, max_dp + 1);
-        val = gnc_numeric_add(val, rounding, GNC_DENOM_AUTO, GNC_DENOM_LCD);
+        val = gnc_numeric_add(val, rounding, GNC_DENOM_AUTO, GNC_HOW_DENOM_LCD);
         /* Yes, rounding up can cause overflow.  Check for it. */
         if (gnc_numeric_check(val))
         {
@@ -1842,8 +1842,8 @@ integer_to_words(gint64 val)
 #ifdef _MSC_VER
 static double round(double x)
 {
-	// A simple round() implementation because MSVC doesn't seem to have that
-	return floor(x + 0.5);
+    // A simple round() implementation because MSVC doesn't seem to have that
+    return floor(x + 0.5);
 }
 #endif
 

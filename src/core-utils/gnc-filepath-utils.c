@@ -156,7 +156,7 @@ gnc_resolve_file_path (const gchar * filefrag)
     if (fullpath != NULL)
         return fullpath;
 
-    /* Look in the config dir (e.g. $PREFIX/etc/gnucash) */
+    /* Look in the config dir (e.g. $PREFIX/share/gnucash/accounts) */
     tmp_path = gnc_path_get_accountsdir();
     fullpath = g_build_filename(tmp_path, filefrag, (gchar *)NULL);
     g_free(tmp_path);
@@ -178,7 +178,7 @@ gnc_resolve_file_path (const gchar * filefrag)
 
 /* ====================================================================== */
 
-/** @brief Check that the supplied directory path exists, is a directory, and 
+/** @brief Check that the supplied directory path exists, is a directory, and
  * that the user has adequate permissions to use it.
  *
  * @param dirname The path to check
@@ -368,5 +368,36 @@ gnc_build_data_path (const gchar *filename)
     g_free(filename_dup);
     return result;
 }
+
+/** @fn gchar * gnc_build_report_path (const gchar *filename)
+ *  @brief Make a path to filename in the report directory.
+ *
+ * @param filename The name of the file
+ *
+ *  @return An absolute path.
+ */
+
+gchar *
+gnc_build_report_path (const gchar *filename)
+{
+    gchar *result = g_build_filename(gnc_path_get_reportdir(), filename, (gchar *)NULL);
+    return result;
+}
+
+/** @fn gchar * gnc_build_stdreports_path (const gchar *filename)
+ *  @brief Make a path to filename in the standard reports directory.
+ *
+ * @param filename The name of the file
+ *
+ *  @return An absolute path.
+ */
+
+gchar *
+gnc_build_stdreports_path (const gchar *filename)
+{
+    gchar *result = g_build_filename(gnc_path_get_stdreportsdir(), filename, (gchar *)NULL);
+    return result;
+}
+
 
 /* =============================== END OF FILE ========================== */

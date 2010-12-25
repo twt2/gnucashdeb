@@ -178,6 +178,7 @@
 (export gnc:date-to-week-fraction)
 (export gnc:date-to-week)
 (export gnc:date-to-day-fraction)
+(export gnc:date-get-fraction-func)
 (export moddatek)
 (export decdate)
 (export incdate)
@@ -242,6 +243,16 @@
 (export gnc:get-six-months-ago)
 (export gnc:get-one-year-ago)
 (export gnc:reldate-initialize)
+(export gnc:get-end-next-month)
+(export gnc:get-end-next-quarter)
+(export gnc:get-end-next-year)
+(export gnc:get-one-month-ahead)
+(export gnc:get-one-year-ahead)
+(export gnc:get-six-months-ahead)
+(export gnc:get-start-next-month)
+(export gnc:get-start-next-quarter)
+(export gnc:get-start-next-year)
+(export gnc:get-three-months-ahead)
 
 ;; hooks 
 (export gnc:hook-run-danglers)		;; from hooks.scm
@@ -257,7 +268,7 @@
 (export simple-obj-from-list)
 (export make-simple-obj)
 
-(define gnc:*kvp-option-path* (list BOOK-OPTIONS-NAME))
+(define gnc:*kvp-option-path* (list KVP-OPTION-PATH))
 (export gnc:*kvp-option-path*)
 
 (load-from-path "c-interface.scm")
