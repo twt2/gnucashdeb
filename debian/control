@@ -7,7 +7,7 @@ Standards-Version: 3.8.4
 Build-Depends: debhelper (>= 8), intltool, pkg-config,
   libglib2.0-dev (>= 2.6.0), guile-1.6-dev, guile-1.6-slib,
   libgconf2-dev, libxml2-dev (>= 2.5.10), zlib1g-dev, libofx-dev,
-  libaqbanking29-dev, libpopt-dev (>= 1.5), libgtk2.0-dev (>= 2.6),
+  libaqbanking33-dev, libpopt-dev (>= 1.5), libgtk2.0-dev (>= 2.6),
   libgnomeui-dev (>= 2.4), libglade2-dev (>= 2.4), libgoffice-0-8-dev,
   libgtkhtml3.14-dev, libltdl-dev
 Homepage: http://www.gnucash.org/
