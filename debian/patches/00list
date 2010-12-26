@@ -1,8 +1,0 @@
-03_goffice_0-7-5_support.dpatch
-03_goffice_0-8_support.dpatch
-04_renew-gui.dpatch
-05_missing_mnemonic_r18419_bug_548371
-10_fix_broken_SCIM_input_bug_587298
-11_migrate_AqBanking_configuration_bug_593544.dpatch
-12_do_not_accidentally_delete_main_account_file_bug_525549.dpatch
-13_fix_double_edit_segfault_bug_593856.dpatch
