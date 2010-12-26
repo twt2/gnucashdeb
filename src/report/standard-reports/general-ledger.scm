@@ -29,28 +29,29 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-module (gnucash report general-ledger))
+(define-module (gnucash report standard-reports general-ledger))
 (export gnc:make-general-ledger-report)
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
-(use-modules (ice-9 slib))
 (use-modules (gnucash gnc-module))
 
 (gnc:module-load "gnucash/report/report-system" 0)
 
 (define reportname (N_ "General Ledger"))
+(define xactrptguid "2fe3b9833af044abb929a88d5a59620f")
 (define xactrptname "Transaction Report")
+
 
 ;; report constructor
 
 (define (gnc:make-general-ledger-report)
-  (let* ((xactrpt (gnc:make-report xactrptname)))
+  (let* ((xactrpt (gnc:make-report xactrptguid)))
     xactrpt))
 
 ;; options generator
 
 (define (general-ledger-options-generator)
   
-  (let* ((options (gnc:report-template-new-options/name xactrptname))
+  (let* ((options (gnc:report-template-new-options/report-guid xactrptguid xactrptname))
 	 )
     
     (define pagename-sorting (N_ "Sorting"))
@@ -62,7 +63,7 @@
     (set-option!
      gnc:pagename-accounts (N_ "Filter Type") 'none)
     (set-option!
-     gnc:pagename-accounts (N_ "Void Transactions?") 'non-void-only)
+     gnc:pagename-accounts (N_ "Void Transactions") 'non-void-only)
     
     ;; set options in the display tab...
     (for-each
@@ -76,10 +77,10 @@
       (list (N_ "Description") #t)
       (list (N_ "Memo") #f)
       (list (N_ "Account Name") #f)
-      (list (N_ "Use Full Account Name?") #f)
+      (list (N_ "Use Full Account Name") #f)
       (list (N_ "Account Code") #f)
       (list (N_ "Other Account Name") #f)
-      (list (N_ "Use Full Other Account Name?") #f)
+      (list (N_ "Use Full Other Account Name") #f)
       (list (N_ "Other Account Code") #f)
       (list (N_ "Shares") #f)
       (list (N_ "Price") #f)
@@ -87,7 +88,7 @@
       (list (N_ "Amount") 'double)
       (list (N_ "Running Balance") #t)
       (list (N_ "Totals") #f)
-      (list (N_ "Sign Reverses?") 'credit-accounts)
+      (list (N_ "Sign Reverses") 'credit-accounts)
       )
      )
     
@@ -105,8 +106,8 @@
      ;; One list per option here with: option-name, default-value
      (list
       (list (N_ "Primary Key") 'account-code)
-      (list (N_ "Show Full Account Name?") #f)
-      (list (N_ "Show Account Code?") #t)
+      (list (N_ "Show Full Account Name") #f)
+      (list (N_ "Show Account Code") #t)
       (list (N_ "Primary Subtotal") #t)
       (list (N_ "Primary Subtotal for Date Key") 'none)
       (list (N_ "Primary Sort Order") 'ascend)
@@ -124,11 +125,12 @@
 
 (define (general-ledger-renderer report-obj)
   ;; just delegate rendering to the Transaction Report renderer...
-  ((gnc:report-template-renderer/name xactrptname) report-obj))
+  ((gnc:report-template-renderer/report-guid xactrptguid xactrptname) report-obj))
 
 (gnc:define-report 
  'version 1
  'name reportname
+ 'report-guid "2e22929e5c5b4b769f615a815ef0c20f"
  'menu-path (list gnc:menuname-asset-liability)
  'options-generator general-ledger-options-generator
  'renderer general-ledger-renderer

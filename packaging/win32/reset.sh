@@ -76,15 +76,27 @@ function eval_all() {
     eval_path $HH_DIR
     eval_path $OPENSP_DIR
     eval_path $LIBOFX_DIR
+    eval_path $GMP_DIR
+    eval_path $GNUTLS_DIR
     eval_path $GWENHYWFAR_DIR
     eval_path $AQBANKING_DIR
+    eval_path $LIBGDA_DIR
+    eval_path $SQLITE3_DIR
+    eval_path $LIBDBI_DIR
+    eval_path $LIBDBI_DRIVERS_DIR
     eval_path $BUILD_DIR
     eval_path $INSTALL_DIR
     eval_path $GNUCASH_DIR\\dist
+    eval_path $GNUCASH_DIR\\gnucash.iss
     eval_path $TMP_DIR
     eval_path $MSYS_DIR\\etc\\profile.d\\installer.sh force
     eval_path $DOCS_DIR
     eval_path $LIBXSLT_DIR
+    eval_path $LIBBONOBOUI_DIR
+    eval_path $MYSQL_LIB_DIR
+    eval_path $PGSQL_DIR
+    eval_path $WEBKIT_DIR
+    eval_path $ISOCODES_DIR
 }
 
 echo

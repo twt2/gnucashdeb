@@ -19,7 +19,7 @@ static GncDialog *pw;
 
 static gboolean apply_cb (GncDialog *pw, gpointer _n)
 {
-    const gchar *s;
+    gchar *s;
     gdouble d;
     gpointer p;
     gboolean b;
@@ -29,13 +29,14 @@ static gboolean apply_cb (GncDialog *pw, gpointer _n)
     printf("Entry: %s\n", s);
     s = gnc_dialog_get_string(pw, "SampleLabel");
     printf("Label: %s\n", s);
+    g_free(s);
 
     p = gnc_dialog_get_custom(pw, "SampleSpinButton");
     d = *(double *)p;
     printf("SpinButton: %f\n", d);
 
     b = gnc_dialog_get_boolean(pw, "SampleToggleButton");
-    printf("ToggleButton: %s\n", b?"true":"false");
+    printf("ToggleButton: %s\n", b ? "true" : "false");
 
     i = gnc_dialog_get_index(pw, "SampleComboBox");
     printf("ComboBox: %d\n", i);
@@ -102,7 +103,8 @@ static void init_widgets(GncDialog *pw)
     int i;
 
     ls = gtk_list_store_new(1, G_TYPE_STRING);
-    for (i = 0; i<5; i++) {
+    for (i = 0; i < 5; i++)
+    {
         gtk_list_store_append(ls, &iter);
         gtk_list_store_set(ls, &iter, 0, "item", -1);
     }
@@ -127,21 +129,21 @@ static void init_widgets(GncDialog *pw)
 
 int main (int argc, char ** argv)
 {
- // g_log_set_always_fatal( G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING );
+// g_log_set_always_fatal( G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING );
 
-  gtk_init(&argc, &argv);
+    gtk_init(&argc, &argv);
 
-  g_type_init();
-  pw = gnc_dialog_new("budget.glade", "SampleOptions");
-  gnc_dialog_set_cb(pw, apply_cb, close_cb, NULL, NULL);
+    g_type_init();
+    pw = gnc_dialog_new("budget.glade", "SampleOptions");
+    gnc_dialog_set_cb(pw, apply_cb, close_cb, NULL, NULL);
 
-  gnc_dialog_register_testing_types();
-  init_widgets(pw);
+    gnc_dialog_register_testing_types();
+    init_widgets(pw);
 
-  test_setters(pw);
-  gtk_widget_show_all(GTK_WIDGET(pw));
+    test_setters(pw);
+    gtk_widget_show_all(GTK_WIDGET(pw));
 
-  gtk_main();
-  return 0;
+    gtk_main();
+    return 0;
 
 }

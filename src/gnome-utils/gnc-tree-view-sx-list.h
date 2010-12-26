@@ -7,7 +7,7 @@
  **/
 /********************************************************************
  * This program is free software; you can redistribute it and/or    *
- * modify it under the terms of version 2 of the GNU General Public *
+ * modify it under the terms of version 2 and/or version 3 of the GNU General Public *
  * License as published by the Free Software Foundation.            *
  *                                                                  *
  * This program is distributed in the hope that it will be useful,  *
@@ -60,6 +60,8 @@ GType gnc_tree_view_sx_list_get_type(void);
 GtkTreeView* gnc_tree_view_sx_list_new(GncSxInstanceModel *sx_instances);
 
 SchedXaction* gnc_tree_view_sx_list_get_sx_from_path(GncTreeViewSxList *view, GtkTreePath *path);
+
+/** @} */
 
 G_END_DECLS
 

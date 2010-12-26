@@ -23,15 +23,14 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-module (gnucash report account-piecharts))
+(define-module (gnucash report standard-reports account-piecharts))
 
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (srfi srfi-1))
-(use-modules (ice-9 slib))
 (use-modules (ice-9 regex))
 (use-modules (gnucash gnc-module))
 
-(require 'printf)
+(use-modules (gnucash printf))
 
 (gnc:module-load "gnucash/report/report-system" 0)
 
@@ -60,8 +59,8 @@ balance at a given time"))
 (define reportname-assets (N_ "Assets"))
 (define reportname-liabilities (N_ "Liabilities"))
 
-(define optname-from-date (N_ "From"))
-(define optname-to-date (N_ "To"))
+(define optname-from-date (N_ "Start Date"))
+(define optname-to-date (N_ "End Date"))
 (define optname-report-currency (N_ "Report's currency"))
 (define optname-price-source (N_ "Price Source"))
 
@@ -74,6 +73,9 @@ balance at a given time"))
 (define optname-plot-width (N_ "Plot Width"))
 (define optname-plot-height (N_ "Plot Height"))
 (define optname-sort-method (N_ "Sort Method"))
+
+(define optname-averaging (N_ "Show Average"))
+(define opthelp-averaging (N_ "Select whether the amounts should be shown over the full time period or rather as the average e.g. per month"))
 
 ;; The option-generator. The only dependance on the type of piechart
 ;; is the list of account types that the account selection option
@@ -101,6 +103,33 @@ balance at a given time"))
     (gnc:options-add-price-source! 
      options gnc:pagename-general
      optname-price-source "c" 'average-cost)
+
+    (if #f
+;; Option deactivated before 2.4.0 is out in order not to have
+;; untranslated strings show up for the user (string freeze). Will be
+;; activated in 2.4.1 or so by un-commenting the line below and
+;; removing the line above, and changing line 217 accordingly.
+    ;;(if do-intervals?
+        (add-option
+         (gnc:make-multichoice-option
+          gnc:pagename-general optname-averaging
+          "f" opthelp-averaging
+          'None
+          (list (vector 'None
+                        (N_ "No Averaging")
+                        (N_ "Just show the amounts, without any averaging"))
+                (vector 'YearDelta
+                        (N_ "Yearly")
+                        (N_ "Show the average yearly amount during the reporting period"))
+                (vector 'MonthDelta
+                        (N_ "Monthly")
+                        (N_ "Show the average monthly amount during the reporting period"))
+                (vector 'WeekDelta
+                        (N_ "Weekly")
+                        (N_ "Show the average weekly amount during the reporting period"))
+                )
+          ))
+        )
 
     (add-option
      (gnc:make-account-list-option
@@ -156,7 +185,7 @@ balance at a given time"))
 ;; account settings, you have to give the reportname, the
 ;; account-types to work on and whether this report works on
 ;; intervals as arguments.
-(define (piechart-renderer report-obj reportname
+(define (piechart-renderer report-obj reportname report-guid
                            account-types do-intervals?)
   
   ;; This is a helper function for looking up option values.
@@ -185,6 +214,10 @@ balance at a given time"))
                                   optname-price-source))
         (report-title (get-option gnc:pagename-general 
 				  gnc:optname-reportname))
+        (averaging-selection (if #f ;;do-intervals?
+                                 (get-option gnc:pagename-general
+                                             optname-averaging)
+                                 'None))
 
         (show-fullname? (get-option gnc:pagename-display optname-fullname))
         (show-total? (get-option gnc:pagename-display optname-show-total))
@@ -226,25 +259,54 @@ balance at a given time"))
            (tree-depth (if (equal? account-levels 'all)
                            (gnc:get-current-account-tree-depth)
                            account-levels))
+           (averaging-fraction-func (gnc:date-get-fraction-func averaging-selection))
+           (averaging-multiplier
+            (if averaging-fraction-func
+                ;; Calculate the divisor of the amounts so that an
+                ;; average is shown
+                (let* ((start-frac (averaging-fraction-func (gnc:timepair->secs from-date-tp)))
+                       (end-frac (averaging-fraction-func (+ 1 (gnc:timepair->secs to-date-tp))))
+                       (diff (- end-frac start-frac))
+                       )
+                  ;; Extra sanity check to ensure a positive number
+                  (if (> diff 0)
+                      (/ 1 diff)
+                      1))
+                ;; No interval-report, or no averaging interval chosen,
+                ;; so just use the multiplier one
+                1))
+           ;; If there is averaging, the report-title is extended
+           ;; accordingly.
+           (report-title
+            (case averaging-selection
+              ((YearDelta) (string-append report-title " " (_ "Yearly Average")))
+              ((MonthDelta) (string-append report-title " " (_ "Monthly Average")))
+              ((WeekDelta) (string-append report-title " " (_ "Weekly Average")))
+              (else report-title)))
            (combined '())
            (other-anchor "")
            (print-info (gnc-commodity-print-info report-currency #t)))
 
       ;; Converts a commodity-collector into one single double
-      ;; number, depending on the report currency and the
+      ;; number, depending on the report's currency and the
       ;; exchange-fn calculated above. Returns the absolute value
-      ;; as double.
+      ;; as double, multiplied by the averaging-multiplies (smaller
+      ;; than one; multiplication instead of division to avoid
+      ;; division-by-zero issues) in case the user wants to see the
+      ;; amounts averaged over some value.
       (define (collector->double c)
         ;; Future improvement: Let the user choose which kind of
         ;; currency combining she want to be done. Right now
         ;; everything foreign gets converted
         ;; (gnc:sum-collector-commodity) based on the average
         ;; cost of all holdings.
-        (gnc-numeric-to-double
-         (gnc:gnc-monetary-amount
-          (gnc:sum-collector-commodity 
-           c report-currency 
-           exchange-fn))))
+        (*
+         (gnc-numeric-to-double
+          (gnc:gnc-monetary-amount
+           (gnc:sum-collector-commodity 
+            c report-currency 
+            exchange-fn)))
+         averaging-multiplier))
 
       (define (count-accounts current-depth accts)
 	(if (< current-depth tree-depth)
@@ -335,7 +397,7 @@ balance at a given time"))
                   (set! combined
                         (append start
                                 (list (list sum (_ "Other")))))
-                  (let ((options (gnc:make-report-options reportname))
+                  (let ((options (gnc:make-report-options report-guid))
                         (id #f))
                     ;; now copy all the options
                     (gnc:options-copy-values (gnc:report-options report-obj)
@@ -345,7 +407,7 @@ balance at a given time"))
                      (gnc:lookup-option options gnc:pagename-accounts 
                                         optname-accounts)
                      (map cadr finish))
-                    (set! id (gnc:make-report reportname options))
+                    (set! id (gnc:make-report report-guid options))
                     ;; set the URL.
                     (set! other-anchor (gnc:report-anchor-text id)))))
             
@@ -367,7 +429,7 @@ balance at a given time"))
                                ;; immediate subaccounts of this account
                                ;; (and including this account).
                                (gnc:make-report-anchor
-                                reportname
+                                report-guid
                                 report-obj
                                 (list
                                  (list gnc:pagename-accounts optname-accounts
@@ -463,6 +525,7 @@ balance at a given time"))
      (gnc:define-report
       'version 1
       'name (car l)
+      'report-guid (car (reverse l))
       'menu-path (if (caddr l)
 		     (list gnc:menuname-income-expense)
 		     (list gnc:menuname-asset-liability)) 
@@ -474,20 +537,21 @@ balance at a given time"))
       'renderer (lambda (report-obj)
 		  (piechart-renderer report-obj 
 				     (car l) 
+				     (car (reverse l))
 				     (cadr l)
 				     (caddr l))))))
  (list 
   ;; reportname, account-types, do-intervals?, 
   ;; menu-reportname, menu-tip
-  (list reportname-income (list ACCT-TYPE-INCOME) #t menuname-income menutip-income (lambda (x) #t))
-  (list reportname-expense (list ACCT-TYPE-EXPENSE) #t menuname-expense menutip-expense (lambda (x) #f))
+  (list reportname-income (list ACCT-TYPE-INCOME) #t menuname-income menutip-income (lambda (x) #t) "e1bd09b8a1dd49dd85760db9d82b045c")
+  (list reportname-expense (list ACCT-TYPE-EXPENSE) #t menuname-expense menutip-expense (lambda (x) #f) "9bf1892805cb4336be6320fe48ce5446")
   (list reportname-assets
         (list ACCT-TYPE-ASSET ACCT-TYPE-BANK ACCT-TYPE-CASH ACCT-TYPE-CHECKING
               ACCT-TYPE-SAVINGS ACCT-TYPE-MONEYMRKT
               ACCT-TYPE-RECEIVABLE ACCT-TYPE-STOCK ACCT-TYPE-MUTUAL
               ACCT-TYPE-CURRENCY)
-        #f menuname-assets menutip-assets (lambda (x) #f))
+        #f menuname-assets menutip-assets (lambda (x) #f) "5c7fd8a1fe9a4cd38884ff54214aa88a")
   (list reportname-liabilities 
         (list ACCT-TYPE-LIABILITY ACCT-TYPE-PAYABLE ACCT-TYPE-CREDIT
               ACCT-TYPE-CREDITLINE)
-        #f menuname-liabilities menutip-liabilities (lambda (x) #t))))
+        #f menuname-liabilities menutip-liabilities (lambda (x) #t) "3fe6dce77da24c66bdc8f8efdea7f9ac")))

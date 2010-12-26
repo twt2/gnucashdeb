@@ -22,7 +22,7 @@
  *                                                                  *
 \********************************************************************/
 
-/** @addtogroup budget 
+/** @addtogroup budget
  @{
 */
 /** @file gnc-budget.h
@@ -67,7 +67,7 @@
 #include <glib.h>
 
 /** The budget data.*/
-typedef struct gnc_budget_private GncBudget;
+typedef struct budget_s GncBudget;
 typedef struct _GncBudgetClass GncBudgetClass;
 
 #include "qof.h"
@@ -95,6 +95,7 @@ gboolean gnc_budget_register(void);
 /**
  * Creates and initializes a Budget.
  **/
+/*@ dependent @*/
 GncBudget *gnc_budget_new(QofBook *book);
 
 /** Deletes the given budget object.*/
@@ -103,16 +104,19 @@ void gnc_budget_destroy(GncBudget* budget);
 void gnc_budget_begin_edit(GncBudget *bgt);
 void gnc_budget_commit_edit(GncBudget *bgt);
 
-const GUID* gnc_budget_get_guid(GncBudget* budget);
+/*@ dependent @*/
+const GncGUID* gnc_budget_get_guid(GncBudget* budget);
 #define gnc_budget_return_guid(X) \
   (X ? *(qof_entity_get_guid(QOF_INSTANCE(X))) : *(guid_null()))
 
 /** Set/Get the name of the Budget */
 void gnc_budget_set_name(GncBudget* budget, const gchar* name);
+/*@ dependent @*/
 const gchar* gnc_budget_get_name(GncBudget* budget);
 
 /** Set/Get the description of the Budget */
 void gnc_budget_set_description(GncBudget* budget, const gchar* description);
+/*@ dependent @*/
 const gchar* gnc_budget_get_description(GncBudget* budget);
 
 /** Set/Get the number of periods in the Budget */
@@ -120,10 +124,14 @@ void gnc_budget_set_num_periods(GncBudget* budget, guint num_periods);
 guint gnc_budget_get_num_periods(GncBudget* budget);
 
 void gnc_budget_set_recurrence(GncBudget *budget, const Recurrence *r);
+/*@ dependent @*/
 const Recurrence * gnc_budget_get_recurrence(GncBudget *budget);
 
-/** Set/Get the starting date of the Budget */
+/** Get the starting date of the Budget period*/
 Timespec gnc_budget_get_period_start_date(GncBudget* budget, guint period_num);
+
+/** Get the ending date of the Budget period*/
+Timespec gnc_budget_get_period_end_date(GncBudget* budget, guint period_num);
 
 /* Period indices are zero-based. */
 void gnc_budget_set_account_period_value(
@@ -145,8 +153,9 @@ QofBook* gnc_budget_get_book(GncBudget* budget);
 /* Returns some budget in the book, or NULL. */
 GncBudget* gnc_budget_get_default(QofBook *book);
 
-/* Get the budget associated with the given GUID from the given book. */
-GncBudget* gnc_budget_lookup (const GUID *guid, QofBook *book);
+/* Get the budget associated with the given GncGUID from the given book. */
+/*@ dependent @*/
+GncBudget* gnc_budget_lookup (const GncGUID *guid, QofBook *book);
 #define  gnc_budget_lookup_direct(g,b) gnc_budget_lookup(&(g),(b))
 
 #endif // __BUDGET_H__

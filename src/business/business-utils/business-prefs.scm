@@ -81,6 +81,21 @@
     gnc:*business-label* (N_ "Fancy Date Format")
     "g" (N_ "The default date format used for fancy printed dates")
     #f))
+    
+  (reg-option 
+   (gnc:make-simple-boolean-option
+    gnc:*option-section-accounts* gnc:*option-name-trading-accounts*
+    "a" (N_ "Check to have trading accounts used for transactions involving more than one currency or commodity")
+    #f))
+
+  ;; Budgeting Tab
+
+  (reg-option
+   (gnc:make-budget-option
+    gnc:*option-section-budgeting* gnc:*option-name-default-budget*
+    "a" (N_ "Budget to be used when none has been otherwise specified")))
+
 )
+
 
 (gnc-register-kvp-option-generator QOF-ID-BOOK-SCM book-options-generator)

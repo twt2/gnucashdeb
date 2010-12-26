@@ -31,7 +31,7 @@
  *        See src/doc/books.txt for design overview.
  * @author Copyright (c) 2003 Linas Vepstas <linas@linas.org>
  * @author Copyright (c) 2006 Joshua Sled <jsled@asynchronous.org>
- * 
+ *
  * XXX currently, this is crufty, it should be modified to use
  * entities a bit more whole-heartedly than it does.
  **/
@@ -46,15 +46,16 @@ typedef struct _SchedXactionsClass SchedXactionsClass;
 #include "SchedXaction.h"
 #include "qof.h"
 
-struct xaccSchedXactionsDef {
-  QofInstance inst;
-  GList* sx_list;
-  gboolean sx_notsaved;
+struct xaccSchedXactionsDef
+{
+    QofInstance inst;
+    GList* sx_list;
+    gboolean sx_notsaved;
 };
 
 struct _SchedXactionsClass
 {
-  QofInstanceClass parent_class;
+    QofInstanceClass parent_class;
 };
 
 /* --- type macros --- */
@@ -74,13 +75,14 @@ GType gnc_schedxactions_get_type(void);
 #define GNC_IS_SXES(obj)  GNC_IS_SCHEDXACTIONS(obj)
 #define GNC_SXES(obj)     GNC_SCHEDXACTIONS(obj)
 
-SchedXactions* gnc_book_get_schedxactions(QofBook* book);
+/*@ dependent @*/ SchedXactions* gnc_book_get_schedxactions(QofBook* book);
 
 void gnc_sxes_add_sx(SchedXactions* sxes, SchedXaction* sx);
 void gnc_sxes_del_sx(SchedXactions* sxes, SchedXaction* sx);
 
 /** Returns the template group from the book. **/
-Account *gnc_book_get_template_root(QofBook *book);
+/*@ dependent @*/
+Account *gnc_book_get_template_root(const QofBook *book);
 
 /** @return The list of SXes which reference the given Account. Caller should free this list. **/
 GList* gnc_sx_get_sxes_referencing_account(QofBook *book, Account *acct);

@@ -45,12 +45,11 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-module (gnucash report equity-statement))
+(define-module (gnucash report standard-reports equity-statement))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
-(use-modules (ice-9 slib))
 (use-modules (gnucash gnc-module))
 
-(require 'printf)
+(use-modules (gnucash printf))
 
 (gnc:module-load "gnucash/report/report-system" 0)
 
@@ -67,7 +66,7 @@
 (define optname-start-date (N_ "Start Date"))
 (define optname-end-date (N_ "End Date"))
 
-(define optname-accounts (N_ "Accounts to include"))
+(define optname-accounts (N_ "Accounts"))
 (define opthelp-accounts
   (N_ "Report only on these accounts"))
 
@@ -133,7 +132,8 @@
                ACCT-TYPE-ASSET ACCT-TYPE-LIABILITY
                ACCT-TYPE-STOCK ACCT-TYPE-MUTUAL ACCT-TYPE-CURRENCY
                ACCT-TYPE-PAYABLE ACCT-TYPE-RECEIVABLE
-               ACCT-TYPE-EQUITY ACCT-TYPE-INCOME ACCT-TYPE-EXPENSE)
+               ACCT-TYPE-EQUITY ACCT-TYPE-INCOME ACCT-TYPE-EXPENSE
+               ACCT-TYPE-TRADING)
          (gnc-account-get-descendants-sorted (gnc-get-current-root-account))))
       #f #t))
     
@@ -245,7 +245,8 @@
           (assoc-ref split-up-accounts ACCT-TYPE-LIABILITY))
          (income-expense-accounts
           (append (assoc-ref split-up-accounts ACCT-TYPE-INCOME)
-                  (assoc-ref split-up-accounts ACCT-TYPE-EXPENSE)))
+                  (assoc-ref split-up-accounts ACCT-TYPE-EXPENSE)
+                  (assoc-ref split-up-accounts ACCT-TYPE-TRADING)))
          (equity-accounts
           (assoc-ref split-up-accounts ACCT-TYPE-EQUITY))
 
@@ -672,15 +673,10 @@
 	  ;; however, this still doesn't seem to get around the
 	  ;; colspan bug... cf. gnc:colspans-are-working-right
 	  (if filename
-	      (let* ((port (open-output-file filename))
-		     (gnc:display-report-list-item
-		      (list doc) port " equity-statement.scm ")
-		     (close-output-port port)
-		     )
-		)
-	      )
-	  )
-	)
+	      (let* ((port (open-output-file filename)))
+                (gnc:display-report-list-item
+                 (list doc) port " equity-statement.scm ")
+                (close-output-port port)))))
     
     (gnc:report-finished)
     
@@ -691,6 +687,7 @@
 (gnc:define-report 
  'version 1
  'name reportname
+ 'report-guid "c2a996c8970f43448654ca84f17dda24"
  'menu-path (list gnc:menuname-income-expense)
  'options-generator equity-statement-options-generator
  'renderer (lambda (report-obj)

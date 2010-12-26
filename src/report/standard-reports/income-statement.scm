@@ -41,14 +41,12 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-module (gnucash report income-statement))
+(define-module (gnucash report standard-reports income-statement))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
-(use-modules (ice-9 slib))
+(use-modules (gnucash printf))
 (use-modules (gnucash gnc-module))
 
 (gnc:module-load "gnucash/report/report-system" 0)
-
-(define reportname (N_ "Income Statement"))
 
 ;; define all option's names and help text so that they are properly
 ;; defined in *one* place.
@@ -62,7 +60,7 @@
 (define optname-end-date (N_ "End Date"))
 ;; FIXME this could use an indent option
 
-(define optname-accounts (N_ "Accounts to include"))
+(define optname-accounts (N_ "Accounts"))
 (define opthelp-accounts
   (N_ "Report on these accounts, if display depth allows."))
 (define optname-depth-limit (N_ "Levels of Subaccounts"))
@@ -133,7 +131,7 @@
   (N_ "Causes the report to display in the standard order, placing income before expenses"))
 
 ;; options generator
-(define (income-statement-options-generator)
+(define (income-statement-options-generator-internal reportname)
   (let* ((options (gnc:new-options))
          (add-option 
           (lambda (new-option)
@@ -275,7 +273,7 @@
 ;; set up the document and add the table
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (income-statement-renderer report-obj)
+(define (income-statement-renderer-internal report-obj reportname)
   (define (get-option pagename optname)
     (gnc:option-value
      (gnc:lookup-option 
@@ -669,12 +667,38 @@
     )
   )
 
+(define is-reportname (N_ "Income Statement"))
+(define pnl-reportname (N_ "Profit & Loss"))
+
+(define (income-statement-options-generator)
+  (income-statement-options-generator-internal is-reportname))
+(define (income-statement-renderer report-obj)
+  (income-statement-renderer-internal report-obj is-reportname))
+
+(define (profit-and-loss-options-generator)
+  (income-statement-options-generator-internal pnl-reportname))
+(define (profit-and-loss-renderer report-obj)
+  (income-statement-renderer-internal report-obj pnl-reportname))
+
+
 (gnc:define-report 
  'version 1
- 'name reportname
+ 'name is-reportname
+ 'report-guid "0b81a3bdfd504aff849ec2e8630524bc"
  'menu-path (list gnc:menuname-income-expense)
  'options-generator income-statement-options-generator
  'renderer income-statement-renderer
+ )
+
+;; Also make a "Profit & Loss" report, even if it's the exact same one,
+;; just relabeled.
+(gnc:define-report 
+ 'version 1
+ 'name pnl-reportname
+ 'report-guid "8758ba23984c40dea5527f5f0ca2779e"
+ 'menu-path (list gnc:menuname-income-expense)
+ 'options-generator profit-and-loss-options-generator
+ 'renderer profit-and-loss-renderer
  )
 
 ;; END

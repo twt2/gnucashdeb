@@ -1,3 +1,3 @@
 
-SUBDIRS = file ${SQL_DIR}
-DIST_SUBDIRS = file postgres
+SUBDIRS = xml sql ${DBI_DIR}
+DIST_SUBDIRS = xml sql dbi

@@ -26,15 +26,14 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-module (gnucash report daily-reports))
+(define-module (gnucash report standard-reports daily-reports))
 
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (srfi srfi-1))
-(use-modules (ice-9 slib))
 (use-modules (ice-9 regex))
 (use-modules (gnucash gnc-module))
 
-(require 'printf)
+(use-modules (gnucash printf))
 
 (gnc:module-load "gnucash/report/report-system" 0)
 
@@ -53,8 +52,8 @@
 (define reportname-income (N_ "Income vs. Day of Week"))
 (define reportname-expense (N_ "Expenses vs. Day of Week"))
 
-(define optname-from-date (N_ "From"))
-(define optname-to-date (N_ "To"))
+(define optname-from-date (N_ "Start Date"))
+(define optname-to-date (N_ "End Date"))
 (define optname-report-currency (N_ "Report's currency"))
 (define optname-price-source (N_ "Price Source"))
 
@@ -520,6 +519,7 @@
    (gnc:define-report
     'version 1
     'name (car l)
+    'report-guid (car (reverse l))
     'menu-path (list gnc:menuname-income-expense)
     'menu-name (caddr l) 
     'menu-tip (car (cdddr l)) 
@@ -531,5 +531,5 @@
 
  (list 
   ;; reportname, account-types, menu-reportname, menu-tip
-  (list reportname-income (list ACCT-TYPE-INCOME) menuname-income menutip-income)
-  (list reportname-expense (list ACCT-TYPE-EXPENSE) menuname-expense menutip-expense)))
+  (list reportname-income (list ACCT-TYPE-INCOME) menuname-income menutip-income "5e2d129f28d14df881c3e47e3053f604")
+  (list reportname-expense (list ACCT-TYPE-EXPENSE) menuname-expense menutip-expense "dde49fed4ca940959ae7d01b72742530")))

@@ -7,22 +7,21 @@
 ;;  or indirect losses incurred as a result of using this software.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define-module (gnucash report average-balance))
+(define-module (gnucash report standard-reports average-balance))
 (use-modules (srfi srfi-1))
-(use-modules (ice-9 slib))
-
 (use-modules (gnucash main))
 (use-modules (gnucash gnc-module))
 (gnc:module-load "gnucash/report/report-system" 0)
 
 (define reportname (N_ "Average Balance"))
 
-(define optname-from-date (N_ "From"))
-(define optname-to-date (N_ "To"))
+(define optname-from-date (N_ "Start Date"))
+(define optname-to-date (N_ "End Date"))
 (define optname-stepsize (N_ "Step Size"))
 (define optname-report-currency (N_ "Report's currency"))
 (define optname-price-source (N_ "Price Source"))
 (define optname-subacct (N_ "Include Sub-Accounts"))
+(define optname-internal (N_ "Exclude transactions between selected accounts"))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Options
@@ -42,7 +41,7 @@
     (gnc:options-add-interval-choice! 
      options gnc:pagename-general optname-stepsize "b" 'MonthDelta)
 
-    ;; Report currency
+    ;; Report's currency
     (gnc:options-add-currency! 
      options gnc:pagename-general optname-report-currency "c")
     
@@ -56,11 +55,18 @@
       gnc:pagename-accounts optname-subacct
       "a" (N_ "Include sub-accounts of all selected accounts") #t))
 
+    (register-option
+     (gnc:make-simple-boolean-option
+      gnc:pagename-accounts optname-internal
+      "b"
+      (N_ "Exclude transactions that only involve two accounts, both of which are selected below.  This only affects the profit and loss columns of the table.")
+      #f))
+
     ;; account(s) to do report on
     (register-option
      (gnc:make-account-list-option
       gnc:pagename-accounts (N_ "Accounts")
-      "b" (N_ "Do transaction report on this account")
+      "c" (N_ "Do transaction report on this account")
       (lambda ()
         ;; FIXME : gnc:get-current-accounts disappeared
         (let ((current-accounts '()))
@@ -128,7 +134,8 @@
 ;; the report-currency by means of the monetary->double
 ;; function. 
 (define (analyze-splits splits start-bal-double 
-                        start-date end-date interval monetary->double)
+                        start-date end-date interval monetary->double
+			internal)
   (let ((interval-list 
          (gnc:make-date-interval-list start-date end-date interval))
         (data-rows '()))
@@ -205,23 +212,41 @@
                                 (xaccSplitGetParent split)))
                    ;; FIXME: Which date should we use here? The 'to'
                    ;; date? the 'split-time'?
-                   (split-amt (get-split-value split split-time)))
-                
-                
-                (gnc:debug "split " split)
-                (gnc:debug "split-time " split-time)
-                (gnc:debug "split-amt " split-amt)
-                ;; gnc:debug converts its input to a string before
-                ;; deciding whether to print it, and converting
-                ;; |splits| to a string is O(N) in its length.  Since
-                ;; this code runs for every split, leaving that
-                ;; gnc:debug in makes the whole thing O(N^2) in number
-                ;; of splits.  If someone really needs this output,
-                ;; they should uncomment the gnc:debug call.
-                ; (gnc:debug "splits " splits)
-                (update-stats split-amt split-time)
-                (set! splits (cdr splits))
-		(split-recurse))))
+		   (split-amt (get-split-value split split-time))
+		   (next (cdr splits)))
+		
+		(if 
+		 ;; Check whether this split and next one are a pair
+		 ;; from the same transaction, and the only ones in
+		 ;; this transaction.
+		 ;; If they are and the flag is set appropriately,
+		 ;; then skip both.
+		 (or internal
+		     (null? next)
+		     (let* ((next-split (car next))
+			    (trans (xaccSplitGetParent split))
+			    (next-trans (xaccSplitGetParent next-split))
+			    (count (xaccTransCountSplits trans)))
+		       (not (and (eqv? count 2)
+				 (equal? trans next-trans)))))                
+		 (begin
+		  (gnc:debug "split " split)
+		  (gnc:debug "split-time " split-time)
+		  (gnc:debug "split-amt " split-amt)
+		  ;; gnc:debug converts its input to a string before
+		  ;; deciding whether to print it, and converting
+		  ;; |splits| to a string is O(N) in its length.  Since
+		  ;; this code runs for every split, leaving that
+		  ;; gnc:debug in makes the whole thing O(N^2) in number
+		  ;; of splits.  If someone really needs this output,
+		  ;; they should uncomment the gnc:debug call.
+					; (gnc:debug "splits " splits)
+		  (update-stats split-amt split-time)
+		  (set! splits next)
+		  (split-recurse))
+		 (begin
+		  (set! splits (cdr next))
+		  (split-recurse))))))
 
                                         ;  the minmax accumulator
 
@@ -288,6 +313,7 @@
          (price-source (get-option gnc:pagename-general
                                    optname-price-source))
 
+         (internal-included (not (get-option gnc:pagename-accounts optname-internal)))
          (accounts   (get-option gnc:pagename-accounts (N_ "Accounts")))
          (dosubs?    (get-option gnc:pagename-accounts optname-subacct))
 
@@ -408,7 +434,8 @@
           ;; and analyze the data 
           (set! data (analyze-splits splits startbal
                                      begindate enddate 
-                                     stepsize monetary->double))
+                                     stepsize monetary->double
+				     internal-included))
 	  (gnc:report-percent-done 70)
           
           ;; make a plot (optionally)... if both plot and table, 
@@ -535,6 +562,7 @@
 (gnc:define-report
  'version 1
  'name reportname
+ 'report-guid "d5adcc61c62e4b8684dd8907448d7900"
  'menu-path (list gnc:menuname-asset-liability)
  'options-generator options-generator
  'renderer renderer)

@@ -10,8 +10,7 @@
 (use-modules (gnucash gnc-module))
 (use-modules (gnucash gnome-utils))
 
-(use-modules (ice-9 slib))
-(require 'printf)
+(use-modules (gnucash printf))
 
 (use-modules (sw_report_gnome))
 
@@ -26,7 +25,7 @@
 ;; returns a function that takes a list: (options, report),
 ;; and returns a widget
 (define (gnc:report-options-editor report) 
-  (if (equal? (gnc:report-type report) "Multicolumn View")
+  (if (equal? (gnc:report-type report) "d8ba4a2e89e8479ca9f6eccdeb164588")
       gnc-column-view-edit-options
       gnc-report-window-default-params-editor))
 
@@ -73,16 +72,18 @@
           (set! item
                 (gnc:make-menu-item
                  name
+                 (gnc:report-template-report-guid template)
                  menu-tip
                  menu-path
                  (lambda (window)
                    (let ((report (gnc:make-report
-                                  (gnc:report-template-name template))))
+                                  (gnc:report-template-report-guid template))))
                      (gnc-main-window-open-report report window)))))
           (gnc-add-scm-extension item))))
 
-  (define (add-template name template)
-    (let ((menu-name (gnc:report-template-menu-name template)))
+  (define (add-template report-guid template)
+    (let ((name (gnc:report-template-name template))
+	  (menu-name (gnc:report-template-menu-name template)))
       (if menu-name (set! name menu-name))
       (set! *template-items* (cons (cons name template) *template-items*))))
 
@@ -95,23 +96,33 @@
      (add-template-menu-item (car item) (cdr item)))
    (sort *template-items* sort-templates)))
 
+
 (define (gnc:report-menu-setup)
   (define asset-liability-menu
     (gnc:make-menu gnc:menuname-asset-liability (list gnc:menuname-reports)))
   (define income-expense-menu
     (gnc:make-menu gnc:menuname-income-expense (list gnc:menuname-reports)))
+  (define budget-menu
+    (gnc:make-menu gnc:menuname-budget (list gnc:menuname-reports)))
   (define utility-menu
     (gnc:make-menu gnc:menuname-utility (list gnc:menuname-reports)))
-  (define custom-menu
-    (gnc:make-menu gnc:menuname-custom (list gnc:menuname-reports)))
   (define tax-menu 
     (gnc:make-menu gnc:menuname-taxes (list gnc:menuname-reports)))
+
+  (gnc-add-scm-extension 
+   (gnc:make-menu-item
+   (N_ "Custom Reports")
+   "4d3dcdc8890b11df99dd94cddfd72085"
+   (N_ "Manage and run custom reports")
+   (list gnc:menuname-reports)
+   (lambda (window)
+     (gnc:spawn-custom-report-dialog window))))
 
   ;; (gnc-add-scm-extension tax-menu)
   (gnc-add-scm-extension income-expense-menu)
   (gnc-add-scm-extension asset-liability-menu)
+  (gnc-add-scm-extension budget-menu)
   (gnc-add-scm-extension utility-menu)
-  (gnc-add-scm-extension custom-menu)
 
   ;; run report-hook danglers
   (gnc:hook-run-danglers HOOK-REPORT)
@@ -123,8 +134,14 @@
   (gnc-add-scm-extension
    (gnc:make-menu-item 
     (N_ "Welcome Sample Report")
+    "ad80271c890b11dfa79f2dcedfd72085"
     (N_ "Welcome-to-GnuCash report screen")
     (list gnc:menuname-reports gnc:menuname-utility "")
     (lambda (window)
       (gnc-main-window-open-report (gnc:make-welcome-report) window))))
+  
 )
+
+(define (gnc:spawn-custom-report-dialog window)
+  (gnc:debug "called into custom report dialog, window is " window)
+  (gnc-ui-custom-report window))

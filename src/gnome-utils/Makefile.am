@@ -4,23 +4,26 @@ pkglib_LTLIBRARIES = libgncmod-gnome-utils.la
 
 # Note that src/gnome-utils CANNOT depend on src/gnome!
 
-AM_CFLAGS = \
+AM_CPPFLAGS = \
   -I${top_srcdir}/src/core-utils \
   -I${top_srcdir}/src/gnc-module \
   -I${top_srcdir}/src/engine \
-  -I${top_srcdir}/src/backend/file \
+  -I${top_srcdir}/src/backend/xml \
   -I${top_srcdir}/src/app-utils \
   -I${top_srcdir}/src \
   -I${top_builddir}/src \
   -I${top_srcdir}/lib/libc \
+  -I${top_srcdir}/src/libqof/qof \
   ${GLIB_CFLAGS} \
   ${GLADE_CFLAGS} \
   ${GTK_CFLAGS} \
   ${GNOME_CFLAGS} \
-  ${GTKHTML_CFLAGS} \
+  ${GNOME_KEYRING_CFLAGS} \
   ${GUILE_INCS} \
   ${QOF_CFLAGS} \
-  ${GOFFICE_CFLAGS}
+  ${GOFFICE_CFLAGS} \
+  ${LIBGDA_CFLAGS} \
+  ${IGE_MAC_CFLAGS}
 
 libgncmod_gnome_utils_la_SOURCES = \
   QuickFill.c \
@@ -29,12 +32,15 @@ libgncmod_gnome_utils_la_SOURCES = \
   dialog-account.c \
   dialog-book-close.c \
   dialog-commodity.c \
+  dialog-file-access.c \
+  dialog-object-references.c \
   dialog-options.c \
   dialog-preferences.c \
   dialog-query-list.c \
   dialog-reset-warnings.c \
   dialog-totd.c \
   dialog-transfer.c \
+  dialog-userpass.c \
   dialog-utils.c \
   druid-utils.c \
   druid-gconf-setup.c \
@@ -50,21 +56,23 @@ libgncmod_gnome_utils_la_SOURCES = \
   gnc-dense-cal.c \
   gnc-dense-cal-model.c \
   gnc-dense-cal-store.c \
+  gnc-dialog.c \
   gnc-druid-gnome.c \
   gnc-druid-provider-edge-gnome.c \
   gnc-druid-provider-file-gnome.c \
   gnc-druid-provider-multifile-gnome.c \
   gnc-embedded-window.c \
+  gnc-entry-quickfill.c \
   gnc-file.c \
   gnc-frequency.c \
   gnc-recurrence.c \
   gnc-general-select.c \
   gnc-gnome-utils.c \
+  gnc-gobject-utils.c \
+  gnc-gtk-utils.c \
   gnc-gui-query.c \
-  gnc-html-graph-gog.c \
-  gnc-html-history.c \
-  gnc-html.c \
   gnc-icons.c \
+  gnc-keyring.c \
   gnc-main-window.c \
   gnc-menu-extensions.c \
   gnc-plugin-file-history.c \
@@ -92,7 +100,7 @@ libgncmod_gnome_utils_la_SOURCES = \
   gncmod-gnome-utils.c \
   misc-gnome-utils.c \
   search-param.c \
-  gnc-dialog.c \
+  print-session.c \
   swig-gnome-utils.c \
   window-main-summarybar.c
 
@@ -103,7 +111,9 @@ gncinclude_HEADERS = \
   dialog-account.h \
   dialog-book-close.h \
   dialog-commodity.h \
+  dialog-file-access.h \
   dialog-preferences.h \
+  dialog-object-references.h \
   dialog-options.h \
   dialog-query-list.h \
   dialog-reset-warnings.h \
@@ -125,16 +135,15 @@ gncinclude_HEADERS = \
   gnc-dense-cal-store.h \
   gnc-druid-gnome-ui.h \
   gnc-embedded-window.h \
+  gnc-entry-quickfill.h \
   gnc-file.h \
   gnc-frequency.h \
   gnc-recurrence.h \
   gnc-general-select.h \
   gnc-gnome-utils.h \
   gnc-gui-query.h \
-  gnc-html-graph-gog.h \
-  gnc-html-history.h \
-  gnc-html.h \
   gnc-icons.h \
+  gnc-keyring.h \
   gnc-main-window.h \
   gnc-menu-extensions.h \
   gnc-plugin-file-history.h \
@@ -170,6 +179,8 @@ noinst_HEADERS = \
   gnc-druid-provider-edge-gnome.h \
   gnc-druid-provider-file-gnome.h \
   gnc-druid-provider-multifile-gnome.h \
+  gnc-gobject-utils.h \
+  gnc-gtk-utils.h \
   search-param.h
 
 libgncmod_gnome_utils_la_LDFLAGS = -avoid-version
@@ -178,29 +189,26 @@ libgncmod_gnome_utils_la_LIBADD = \
   ${top_builddir}/src/core-utils/libgnc-core-utils.la \
   ${top_builddir}/src/gnc-module/libgnc-module.la \
   ${top_builddir}/src/engine/libgncmod-engine.la \
-  ${top_builddir}/src/backend/file/libgnc-backend-file-utils.la \
-  ${top_builddir}/src/calculation/libgncmod-calculation.la \
+  ${top_builddir}/src/backend/xml/libgnc-backend-xml-utils.la \
   ${top_builddir}/src/app-utils/libgncmod-app-utils.la \
   $(top_builddir)/lib/libc/libc-missing.la \
+  ${top_builddir}/src/libqof/qof/libgnc-qof.la \
   ${GNOME_LIBS} \
-  ${GTKHTML_LIBS} \
-  ${GUILE_LIBS} \
-  ${GDK_PIXBUF_LIBS} \
+  ${GNOME_KEYRING_LIBS} \
   ${GLADE_LIBS} \
   ${GUILE_LIBS} \
   ${GLIB_LIBS} \
   ${DB_LIBS} \
-  ${QOF_LIBS} \
-  ${GOFFICE_LIBS} \
   ${REGEX_LIBS} \
-  ${LIBXML2_LIBS}
+  ${LIBXML2_LIBS} \
+  ${IGE_MAC_LIBS}
 
 if HAVE_X11_XLIB_H
   libgncmod_gnome_utils_la_LIBADD += -lX11
 endif
 
 if BUILDING_FROM_SVN
-swig-gnome-utils.c: gnome-utils.i gnc-html.h \
+swig-gnome-utils.c: gnome-utils.i \
                     ${top_srcdir}/src/base-typemaps.i
 	$(SWIG) -guile $(SWIG_ARGS) -Linkage module \
 	-I${top_srcdir}/src -o $@ $<
@@ -213,67 +221,10 @@ gncscmdir = ${GNC_SHAREDIR}/scm
 gncscm_DATA = gnc-menu-extensions.scm
 
 EXTRA_DIST = \
-  gnc-svninfo.h \
   gnome-utils.i \
   ${gncmod_DATA} \
   ${gncscm_DATA}
 
-if GTKHTML_USES_GTKPRINT
-  EXTRA_DIST += print-session.c
-else
-  AM_CFLAGS += ${GNOME_PRINT_CFLAGS}
-  libgncmod_gnome_utils_la_LIBADD += ${GNOME_PRINT_LIBS}
-  libgncmod_gnome_utils_la_SOURCES += print-session.c
-endif
-
-## We borrow guile's convention and use @-...-@ as the substitution
-## brackets here, instead of the usual @...@.  This prevents autoconf
-## from substituting the values directly into the left-hand sides of
-## the sed substitutions.
-gnc-version.h: _gnc-version.h
-	-if [ ! -f gnc-version.h ]; then cp _gnc-version.h gnc-version.h; fi
-	-cmp -s _gnc-version.h gnc-version.h || cp _gnc-version.h gnc-version.h
-	-rm -f _gnc-version.h
-
-_gnc-version.h: gnc-svninfo.h Makefile
-	@echo "/* Autogenerated. Do not change. */"	 > _gnc-version.h
-	@echo "#ifndef GNC_VERSION_H"			>> _gnc-version.h
-	@echo "#define GNC_VERSION_H"			>> _gnc-version.h
-	@echo ""					>> _gnc-version.h
-	@svninfo=`${top_srcdir}/util/gnc-svnversion ${top_srcdir}` ; \
-	if [ $$? = 0 ] ; then \
-		echo "#define GNUCASH_SVN 1"		>> _gnc-version.h ; \
-	fi
-	@echo "#define GNUCASH_BUILD_DATE \"`date +%Y-%m-%d`\"" >> _gnc-version.h
-	@echo "#include \"gnc-svninfo.h\""		>> _gnc-version.h
-	@echo "#endif"					>> _gnc-version.h
-
-gnc-svninfo.h: _gnc-svninfo.h
-	-if [ ! -f gnc-svninfo.h ]; then cp _gnc-svninfo.h gnc-svninfo.h; fi
-	-cmp -s _gnc-svninfo.h gnc-svninfo.h || cp _gnc-svninfo.h gnc-svninfo.h
-	-rm -f _gnc-svninfo.h
-
-_gnc-svninfo.h: Makefile
-	@svninfo=`${top_srcdir}/util/gnc-svnversion ${top_srcdir}` ; \
-	if [ $$? = 0 ] ; then \
-		if [ -z "$$svninfo" ] ; then \
-			echo "gnc-svnversion failed.  figure out why." ; \
-			echo "can't determine svn revision from ${top_srcdir}." ; \
-			exit 1 ; \
-		fi ; \
-		echo "/* Autogenerated. Do not change. */" > _gnc-svninfo.h ; \
-		echo "#define GNUCASH_SVN_REV \"$$svninfo\"" >> _gnc-svninfo.h ; \
-	else \
-		if [ -r $(srcdir)/gnc-svninfo.h ] ; then \
-			cp $(srcdir)/gnc-svninfo.h _gnc-svninfo.h ; \
-		else \
-			echo "You're building from SVN...  But your build system is broken" ; \
-			echo "Don't do that.   Complain to your build-system creator." ; \
-			exit 1 ; \
-		fi ; \
-	fi
-
-BUILT_SOURCES = gnc-version.h
 
 if GNUCASH_SEPARATE_BUILDDIR
 #For executing test cases

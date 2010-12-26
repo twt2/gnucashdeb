@@ -1,9 +1,11 @@
 NONGUI_SUBDIRS = \
+  libqof \
+  debug \
   doc \
   pixmaps \
+  test-core \
   core-utils \
   gnc-module \
-  test-core \
   engine \
   backend \
   scm \
@@ -14,6 +16,7 @@ GUI_SUBDIRS_1 = \
   tax \
   app-utils \
   gnome-utils \
+  html \
   gnome-search
 
 GUI_SUBDIRS_2 = \
@@ -49,6 +52,5 @@ EXTRA_DIST = \
   base-typemaps.i \
   README.modules \
   gnc-test-env \
-  valgrind-gnucash.supp \
   guile-mappings.h \
-  glib-compat.h
+  platform.h
