@@ -1,32 +1,66 @@
-This is the Debian GNU/Linux prepackaged version of gnucash, an application
-to track finances in multiple accounts, keeping running and reconciled
-balances.
+This work was initially packaged for Debian by:
 
-Gnucash was downloaded from http://www.gnucash.org/pub/gnucash/sources/stable/
-The gnucash website is http://www.gnucash.org/
+    Tyson Dowd <trd@cs.mu.oz.au> on Wed, 10 Mar 1999 13:00:52 +1100 
+
+The packaging was completely revamped for gnucash 2.4.0-1 by:
+
+    Micha Lenk <micha@debian.org> on Sun, 26 Dec 2010 15:23:56 +0100
+
+It was downloaded from:
+
+    http://sourceforge.net/projects/gnucash/files/gnucash%20(stable)/
+
+Upstream Authors:
+
+    Robin Clark <rclark@hmc.edu>
+    Linas Vepstas <linas@linas.org>
+    Jeremy Collins <jcollins@gnucash.org>
+    Rob Browning <rlb@cs.utexas.edu>
+    Dave Peticolas <dave@krondo.com>
+    Bill Gribble <grib@billgribble.com>
+    Robert Graham Merkel <rgmerk@mira.net>
+    James LewisMoss <dres@debian.org>
+    Christian Stimming <stimming@tuhh.de>
+    Joshua Sled <jsled@asynchronous.org>
+    Derek Atkins <derek@ihtfp.com>
+    David Hampton <hampton@employees.org>
+    Chris Lyttle <chris@wilddev.net>
+    Benoit Grégoire <bock@step.polymtl.ca>
+    Neil Williams <linux@codehelp.co.uk>
+    Chris Shoemaker <c.shoemaker@cox.net>
+    Andreas Köhler <andi5.py@gmx.net>
+    Charles Day <cedayiv@gmail.com>
+    and others (for a complete listing see /usr/share/doc/gnucash/AUTHORS)
 
 Copyright:
 
-	Gnucash is under the GNU GPL.
+    Copyright (C) 1997 Robin D. Clark
+    Copyright (C) 1997 Linas Vepstas
 
-	Copyright (C) 1997 Robin D. Clark
-	Copyright (C) 1997 Linas Vepstas
+License:
 
-	This program is free software; you can redistribute it and/or 
-	modify it under the terms of the GNU General Public License as
-	published by the Free Software Foundation; either version 2 of
-	the License, or (at your option) any later version.
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of 
-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This package is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License 
-	along with this program; if not, write to the Free Software
-        Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-        02110-1301, USA.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+On Debian systems, the complete text of the GNU General
+Public License version 3 can be found in `/usr/share/common-licenses/GPL-3'.
 
-On Debian GNU/Linux systems, the complete text of the GNU General
-Public License can be found in `/usr/share/common-licenses/GPL'.
+The Debian packaging is:
+
+    Copyright (C) 2009-2010 Micha Lenk <micha@debian.org>
+    Copyright (C) 2004-2009 Thomas Bushnell, BSG <tb@debian.org>
+    Copyright (C) 2002-2004 James A. Treacy <treacy@debian.org>
+    Copyright (C) 2000-2001 John Goerzen <jgoerzen@complete.org>
+    Copyright (C) 1999-2000 Tyson Dowd <trd@cs.mu.oz.au>
+
+and is licensed under the GPL version 3, see above.
