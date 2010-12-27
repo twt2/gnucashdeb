@@ -9,6 +9,9 @@ export DH_OPTIONS=
 # Avoid some error messages when running "make install"
 export GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL=1
 
+# Hack for Gnucash build system
+export BUILDING_FROM_SVN=false
+
 %:
 	dh  $@
 

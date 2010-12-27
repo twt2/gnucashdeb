@@ -1,0 +1,26 @@
+Description: Add facility to force BUILDING_FROM_SVN=no from outside the Gnucash build system
+ Needed by packagers that maintain the packaging code in svn, svk or git too
+Author: Micha Lenk <micha@debian.org>
+Forwarded: http://svn.gnucash.org/trac/changeset/19990
+Last-Update: 2010-12-29
+
+--- gnucash-2.4.0.orig/util/gnc-svnversion
++++ gnucash-2.4.0/util/gnc-svnversion
+@@ -17,6 +17,17 @@ my_die()
+   exit 1
+ }
+ 
++if [ "$BUILDING_FROM_SVN" = "0" -o \
++     "$BUILDING_FROM_SVN" = "no" -o \
++     "$BUILDING_FROM_SVN" = "false" ]; then
++  # Something outside of the Gnucash build system knows that we
++  # are NOT building from svn, svk or git checkout.
++  # We should believe it (needed by packagers that maintain the
++  # packaging code in svn, svk or git too)
++  echo "Environment variable BUILDING_FROM_SVN=$BUILDING_FROM_SVN" >&2
++  exit 1
++fi
++
+ # Make sure we have a srcdir
+ [ -n "$1" ] || my_die "Usage: $0 <srcdir>"
+ [ -d "$1" ] || my_die "$0: $1: not a directory"
