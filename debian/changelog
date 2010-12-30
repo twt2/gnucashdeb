@@ -1,3 +1,26 @@
+gnucash (2.4.0-1) unstable; urgency=low
+
+  * New upstream version (closes: #607887).
+  * Removed obsolete files in debian/*.
+  * Removed all current patches (applied upstream).
+  * Switched to debhelper 8 and dh based debian/rules.
+  * Switched to dpkg-source 3.0 (quilt) format.
+  * Registered gnucash-design.info properly (closes: #476895).
+  * Remove build-time generated symlinks in clean target.
+  * debian/control: Updated (build) dependencies.
+  * Updated debian/copyright.
+  * Updated debian/watch file.
+  * Install archived upstream ChangeLogs too.
+  * Install upstream examples by debhelper.
+  * Switch to AqBanking 5.x.
+  * Convince the upstream build system that we are NOT building from
+    git (adds 001_disable_BUILDING_FROM_SVN_debian.patch).
+  * debian/gnucash-common.manpages: adapt path for gnucash manpage and
+    drop manpage for obsolete gnc-prices.
+  * Install binary gnucash only.
+
+ -- Micha Lenk <micha@debian.org>  Thu, 30 Dec 2010 19:44:10 +0100
+
 gnucash (2.2.9-10) unstable; urgency=low
 
   * Don't ship gnc-test-env, only needed at build time (closes: #603329,
