@@ -1,3 +1,10 @@
+gnucash (1:2.2.9-11) unstable; urgency=low
+
+  * Re-upload gnucash 2.2.9-10 with increased epoch to fix accidental upload of
+    new upstream version 2.2.4-1 to unstable (closes: #608630).
+
+ -- Micha Lenk <micha@debian.org>  Sun, 02 Jan 2011 11:40:31 +0100
+
 gnucash (2.2.9-10) unstable; urgency=low
 
   * Don't ship gnc-test-env, only needed at build time (closes: #603329,
