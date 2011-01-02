@@ -1,3 +1,12 @@
+gnucash (1:2.4.0-2) experimental; urgency=low
+
+  * Increased epoch to cater for accidental upload of gnucash 2.4.0-1 to
+    unstable (closes: #608630).
+  * Let binary package gnucash depend on packages slib and guile-1.6-slib
+    (closes: #608602).
+
+ -- Micha Lenk <micha@debian.org>  Sun, 02 Jan 2011 12:53:48 +0100
+
 gnucash (2.4.0-1) unstable; urgency=low
 
   * New upstream version (closes: #607887).
