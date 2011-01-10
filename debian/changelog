@@ -1,3 +1,9 @@
+gnucash (1:2.4.0-3) experimental; urgency=low
+
+  * Enable SQL support (closes: #232334)
+
+ -- Micha Lenk <micha@debian.org>  Mon, 10 Jan 2011 22:21:51 +0100
+
 gnucash (1:2.4.0-2) experimental; urgency=low
 
   * Increased epoch to cater for accidental upload of gnucash 2.4.0-1 to
