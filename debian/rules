@@ -30,6 +30,7 @@ override_dh_auto_configure:
 		--with-gconf-schema-file-dir=/usr/share/gconf/schemas \
 		--disable-static \
 		--enable-debug \
+		--enable-dbi \
 		--enable-ofx \
 		--enable-aqbanking \
 		--enable-locale-specific-tax
