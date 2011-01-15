@@ -18,6 +18,7 @@ Package: gnucash
 Architecture: any
 Depends: gnucash-common (>= ${source:Version}), ${shlibs:Depends},
   ${misc:Depends}, ${perl:Depends}, slib, guile-1.6-slib
+Suggests: libdbd-mysql, libdbd-pgsql, libdbd-sqlite3
 Recommends: gnucash-docs
 Replaces: gnucash-common (<< 1.9.8-1)
 Description: A personal finance and money tracking program
