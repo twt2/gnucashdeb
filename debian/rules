@@ -28,6 +28,7 @@ override_dh_auto_configure:
 		--mandir=/noinst \
 		--docdir=/noinst \
 		--with-gconf-schema-file-dir=/usr/share/gconf/schemas \
+		--with-html-engine=webkit \
 		--disable-static \
 		--enable-debug \
 		--enable-dbi \
