@@ -1,3 +1,5 @@
 /usr/lib/
 /usr/bin/gnucash
+/usr/bin/gnc-fq-check
+/usr/bin/gnc-fq-helper
 /etc
