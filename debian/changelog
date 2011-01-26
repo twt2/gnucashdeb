@@ -1,3 +1,14 @@
+gnucash (1:2.4.0-4) experimental; urgency=low
+
+  * Add Suggests: for all known SQL driver backends of libdbd
+  * Added news entry explaining the need for installing a SQL backend
+    package for using the SQL datastore.
+  * Switch HTML engine from gtkhtml to webkit
+  * Add missing binaries and perl dependencies needed for online update
+    of securities (closes: #610317, LP: #707760)
+
+ -- Micha Lenk <micha@debian.org>  Wed, 26 Jan 2011 21:56:39 +0100
+
 gnucash (1:2.4.0-3) experimental; urgency=low
 
   * Enable SQL support (closes: #232334)
