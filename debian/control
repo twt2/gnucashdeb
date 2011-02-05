@@ -23,35 +23,42 @@ Depends: gnucash-common (>= ${source:Version}), ${shlibs:Depends},
 Suggests: libdbd-mysql, libdbd-pgsql, libdbd-sqlite3
 Recommends: gnucash-docs
 Replaces: gnucash-common (<< 1.9.8-1)
-Description: A personal finance and money tracking program
- Gnucash can track finances in multiple accounts, keeping running
- and reconciled balances. It has an X based graphical user interface,
- double entry, a hierarchy of accounts, expense accounts (categories),
- and can import Quicken QIF files and OFX files.
+Description: personal and small-business financial-accounting software
+ Gnucash provides accounting functions suitable for use by small businesses and
+ individuals. It can track finances in multiple accounts, keeping running and
+ reconciled balances. There is support for customer, vendor and employee
+ processing. It has an X based graphical user interface, double entry, a
+ hierarchy of accounts, expense accounts (categories), and can import Quicken
+ QIF files and OFX files.
 
 Package: gnucash-dbg
 Section: debug
 Priority: extra
 Architecture: any
 Depends: gnucash (= ${binary:Version}), ${misc:Depends}
-Description: Debugging symbols for Gnucash
- Gnucash can track finances in multiple accounts, keeping running
- and reconciled balances. It has an X based graphical user interface,
- double entry, a hierarchy of accounts, expense accounts (categories),
- and can import Quicken QIF files and OFX files.
+Description: debugging symbols for the accounting software Gnucash
+ Gnucash provides accounting functions suitable for use by small businesses and
+ individuals. It can track finances in multiple accounts, keeping running and
+ reconciled balances. There is support for customer, vendor and employee
+ processing. It has an X based graphical user interface, double entry, a
+ hierarchy of accounts, expense accounts (categories), and can import Quicken
+ QIF files and OFX files.
  .
- This package contains debugging symbols needed for debugging gnucash.
+ This package contains debugging symbols needed for debugging Gnucash.
 
 Package: gnucash-common
 Architecture: all
 Depends: ${misc:Depends}
 Conflicts: gnucash (<< ${source:Version})
 Recommends: gnucash (>= ${source:Version})
-Description: A personal finance and money tracking program
- Gnucash can track finances in multiple accounts, keeping running
- and reconciled balances. It has an X based graphical user interface,
- double entry, a hierarchy of accounts, expense accounts (categories),
- and can import Quicken QIF files and OFX files, and interact with HBCI
- banks.
+Description: personal and small-business financial-accounting software
+ Gnucash provides accounting functions suitable for use by small businesses and
+ individuals. It can track finances in multiple accounts, keeping running and
+ reconciled balances. There is support for customer, vendor and employee
+ processing. It has an X based graphical user interface, double entry, a
+ hierarchy of accounts, expense accounts (categories), and can import Quicken
+ QIF files and OFX files.
  .
- This package contains the architecture independent portions of gnucash.
+ This package contains the architecture independent parts of Gnucash. It should
+ not be installed directly, but is pulled in automatically by the dependencies
+ of the Gnucash package.
