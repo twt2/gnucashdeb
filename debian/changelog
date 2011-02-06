@@ -1,3 +1,10 @@
+gnucash (1:2.4.0-5) unstable; urgency=low
+
+  * First upload of Gnucash 2.4.0 to Debian unstable.
+  * Re-worded and improved the package description (LP: #458400)
+
+ -- Micha Lenk <micha@debian.org>  Sun, 06 Feb 2011 21:18:15 +0100
+
 gnucash (1:2.4.0-4) experimental; urgency=low
 
   * Add Suggests: for all known SQL driver backends of libdbd
