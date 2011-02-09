@@ -150,7 +150,7 @@ initialize_scm_functions()
  *                                                                  *
  * Args: func - the guile function to call                          *
  *       arg  - the single function argument                        *
- * Returns: malloc'ed char * or NULL                                *
+ * Returns: g_malloc'ed char * or NULL                              *
 \********************************************************************/
 char *
 gnc_guile_call1_to_string(SCM func, SCM arg)
@@ -162,7 +162,9 @@ gnc_guile_call1_to_string(SCM func, SCM arg)
         value = scm_call_1(func, arg);
 
         if (scm_is_string(value))
-            return g_strdup(scm_to_locale_string(value));
+        {
+            return gnc_scm_to_locale_string(value);
+        }
         else
         {
             PERR("bad value\n");
@@ -660,7 +662,7 @@ gnc_split_scm_get_memo(SCM split_scm)
     if (!scm_is_string(result))
         return NULL;
 
-    return g_strdup(scm_to_locale_string(result));
+    return gnc_scm_to_locale_string(result);
 }
 
 
@@ -685,7 +687,7 @@ gnc_split_scm_get_action(SCM split_scm)
     if (!scm_is_string(result))
         return NULL;
 
-    return g_strdup(scm_to_locale_string(result));
+    return gnc_scm_to_locale_string(result);
 }
 
 
@@ -1115,10 +1117,7 @@ gnc_get_debit_string(GNCAccountType account_type)
     if (!scm_is_string(result))
         return NULL;
 
-    string = scm_to_locale_string(result);
-    if (string)
-        return g_strdup(string);
-    return NULL;
+    return gnc_scm_to_locale_string(result);
 }
 
 
@@ -1150,10 +1149,7 @@ gnc_get_credit_string(GNCAccountType account_type)
     if (!scm_is_string(result))
         return NULL;
 
-    string = scm_to_locale_string(result);
-    if (string)
-        return g_strdup(string);
-    return NULL;
+    return gnc_scm_to_locale_string(result);
 }
 
 
@@ -1321,4 +1317,16 @@ gnc_parse_time_to_timet(const gchar *s, const gchar *format)
         return -1;
 
     return mktime(&tm);
+}
+
+gchar *gnc_scm_to_locale_string(SCM scm_string)
+{
+    gchar* s;
+    char* x = scm_to_locale_string(scm_string);
+
+    /* scm_to_locale_string() returns a malloc'ed string in guile-1.8
+       (but not in guile-1.6).  Copy to a g_malloc'ed one. */
+    s = g_strdup(x);
+    gnc_free_scm_locale_string(x);
+    return s;
 }

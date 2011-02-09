@@ -30,13 +30,20 @@
 #
 # Syntax:
 # gnucash-env python simple_invoice_insert.py \
-#          sqlite3:///home/blah/blah.gnucash
-#          dda2ec8e3e63c7715097f852851d6b22 1001 'The Goods' 201.43 
+#          /home/blah/blah.gnucash
+#          dda2ec8e3e63c7715097f852851d6b22 1001 'The Goods' 201.43
+#
+# argv[1] should be the path to an existing gnucash file/database
+# for a file, simply pass the pathname, for a database you can use
+# these forms:
+# mysql://user:password@host/dbname
+# postgres://user:password@host[:port]/dbname (the port is optional)
+#
 
 ##  @file
 #   @brief Add an invoice to a set of books
 #   @author Mark Jenkins, ParIT Worker Co-operative <mark@parit.ca>
-#   @ingroup python-bindings-examples
+#   @ingroup python_bindings_examples
 
 from gnucash import Session, GUID, GncNumeric
 from gnucash.gnucash_business import Customer, Invoice, Entry

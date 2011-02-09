@@ -2,11 +2,12 @@
 
 ##  @file
 #   @brief Simple example for a book 
-#   @ingroup python-bindings-examples
+#   @ingroup python_bindings_examples
 
 import sys
 from gnucash import Session
 
+# We need to tell GnuCash the data format to create the new file as (xml://)
 uri = "xml:///tmp/simple_book.gnucash"
 
 print "uri:", uri

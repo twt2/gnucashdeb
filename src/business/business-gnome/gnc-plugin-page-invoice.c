@@ -67,6 +67,7 @@ static void gnc_plugin_page_invoice_cmd_cut (GtkAction *action, GncPluginPageInv
 static void gnc_plugin_page_invoice_cmd_copy (GtkAction *action, GncPluginPageInvoice *plugin_page);
 static void gnc_plugin_page_invoice_cmd_paste (GtkAction *action, GncPluginPageInvoice *plugin_page);
 static void gnc_plugin_page_invoice_cmd_edit (GtkAction *action, GncPluginPageInvoice *plugin_page);
+static void gnc_plugin_page_invoice_cmd_duplicateInvoice (GtkAction *action, GncPluginPageInvoice *plugin_page);
 static void gnc_plugin_page_invoice_cmd_post (GtkAction *action, GncPluginPageInvoice *plugin_page);
 static void gnc_plugin_page_invoice_cmd_unpost (GtkAction *action, GncPluginPageInvoice *plugin_page);
 
@@ -78,7 +79,7 @@ static void gnc_plugin_page_invoice_cmd_enter (GtkAction *action, GncPluginPageI
 static void gnc_plugin_page_invoice_cmd_cancel (GtkAction *action, GncPluginPageInvoice *plugin_page);
 static void gnc_plugin_page_invoice_cmd_delete (GtkAction *action, GncPluginPageInvoice *plugin_page);
 static void gnc_plugin_page_invoice_cmd_blank (GtkAction *action, GncPluginPageInvoice *plugin_page);
-static void gnc_plugin_page_invoice_cmd_duplicate (GtkAction *action, GncPluginPageInvoice *plugin_page);
+static void gnc_plugin_page_invoice_cmd_duplicateEntry (GtkAction *action, GncPluginPageInvoice *plugin_page);
 static void gnc_plugin_page_invoice_cmd_pay_invoice (GtkAction *action, GncPluginPageInvoice *plugin_page);
 static void gnc_plugin_page_invoice_cmd_company_report (GtkAction *action, GncPluginPageInvoice *plugin_page);
 
@@ -96,11 +97,6 @@ static GtkActionEntry gnc_plugin_page_invoice_actions [] =
     { "SortOrderAction", NULL, N_("Sort _Order"), NULL, NULL, NULL },
 
     /* File menu */
-    {
-        "FileNewInvoiceAction", GTK_STOCK_NEW, N_("New _Invoice"), "",
-        N_("Create a new invoice"),
-        G_CALLBACK (gnc_plugin_page_invoice_cmd_new_invoice)
-    },
     {
         "FileNewAccountAction", GNC_STOCK_NEW_ACCOUNT, N_("New _Account..."), NULL,
         N_("Create a new account"),
@@ -132,6 +128,11 @@ static GtkActionEntry gnc_plugin_page_invoice_actions [] =
         "EditEditInvoiceAction", GNC_STOCK_INVOICE_EDIT, N_("_Edit Invoice"), NULL,
         N_("Edit this invoice"),
         G_CALLBACK (gnc_plugin_page_invoice_cmd_edit)
+    },
+    {
+        "EditDuplicateInvoiceAction", GNC_STOCK_INVOICE_DUPLICATE, N_("_Duplicate Invoice"),
+        NULL, N_("Create a new invoice as a duplicate of the current one"),
+        G_CALLBACK (gnc_plugin_page_invoice_cmd_duplicateInvoice)
     },
     {
         "EditPostInvoiceAction", GNC_STOCK_INVOICE_POST, N_("_Post Invoice"), NULL,
@@ -168,10 +169,15 @@ static GtkActionEntry gnc_plugin_page_invoice_actions [] =
     {
         "DuplicateEntryAction", GTK_STOCK_COPY, N_("Dup_licate Entry"), NULL,
         N_("Make a copy of the current entry"),
-        G_CALLBACK (gnc_plugin_page_invoice_cmd_duplicate)
+        G_CALLBACK (gnc_plugin_page_invoice_cmd_duplicateEntry)
     },
 
     /* Business menu */
+    {
+        "BusinessNewInvoiceAction", GNC_STOCK_INVOICE_NEW, N_("New _Invoice"), "",
+        N_("Create a new invoice for the same owner as the current one"),
+        G_CALLBACK (gnc_plugin_page_invoice_cmd_new_invoice)
+    },
     {
         "ToolsProcessPaymentAction", GNC_STOCK_INVOICE_PAY, N_("_Pay Invoice"), NULL,
         N_("Enter a payment for the owner of this Invoice"),
@@ -698,6 +704,20 @@ gnc_plugin_page_invoice_cmd_edit (GtkAction *action,
 }
 
 static void
+gnc_plugin_page_invoice_cmd_duplicateInvoice (GtkAction *action,
+        GncPluginPageInvoice *plugin_page)
+{
+    GncPluginPageInvoicePrivate *priv;
+
+    g_return_if_fail(GNC_IS_PLUGIN_PAGE_INVOICE(plugin_page));
+
+    ENTER("(action %p, plugin_page %p)", action, plugin_page);
+    priv = GNC_PLUGIN_PAGE_INVOICE_GET_PRIVATE(plugin_page);
+    gnc_invoice_window_duplicateInvoiceCB(NULL, priv->iw);
+    LEAVE(" ");
+}
+
+static void
 gnc_plugin_page_invoice_cmd_post (GtkAction *action,
                                   GncPluginPageInvoice *plugin_page)
 {
@@ -807,8 +827,8 @@ gnc_plugin_page_invoice_cmd_blank (GtkAction *action,
 }
 
 static void
-gnc_plugin_page_invoice_cmd_duplicate (GtkAction *action,
-                                       GncPluginPageInvoice *plugin_page)
+gnc_plugin_page_invoice_cmd_duplicateEntry (GtkAction *action,
+        GncPluginPageInvoice *plugin_page)
 {
     GncPluginPageInvoicePrivate *priv;
 

@@ -885,13 +885,18 @@
 		  ;; oli-custom - moved invoice number here
 		  (gnc:html-table-append-row!
 		   date-table (list (sprintf #f (_ "%s&nbsp;#") title) (gncInvoiceGetID invoice)))
-		  (make-date-row! date-table (string-append title "&nbsp;" (_ "Date")) post-date)
+                  ;; Translators: The first %s below is "Invoice" or
+                  ;; "Bill" or even the custom title from the
+                  ;; options. This string sucks for i18n, but I don't
+                  ;; have a better solution right now without breaking
+                  ;; other people's invoices.
+		  (make-date-row! date-table (sprintf #f (_ "%s&nbsp;Date") title) post-date)
 		  (make-date-row! date-table (_ "Due Date") due-date)
 		  date-table)
 		(gnc:make-html-text
 		  ;; oli-custom - FIXME: I have a feeling I broke a
 		 ;; translation by not using string-expand for &nbsp;
-		  (string-append title "<br>" (N_ "Invoice in progress..."))))))
+		  (string-append title "<br>" (_ "Invoice in progress..."))))))
 
 	  (gnc:html-table-append-row!
 	  	helper-table

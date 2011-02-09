@@ -31,8 +31,6 @@
 #include "gnc-commodity.h"
 #include "qof.h"
 #include "GNCId.h"
-#include "gnc-ui-common.h"
-
 
 typedef struct gnc_option GNCOption;
 typedef struct gnc_option_section GNCOptionSection;
@@ -52,8 +50,15 @@ typedef void (*GNCOptionChangeCallback) (gpointer user_data);
 gboolean gnc_option_get_changed (GNCOption *option);
 void gnc_option_set_changed (GNCOption *option, gboolean changed);
 
-gncUIWidget gnc_option_get_widget (GNCOption *option);
-void gnc_option_set_widget (GNCOption *option, gncUIWidget widget);
+/** Returns an opaque pointer to the widget of this option. The actual
+ * GUI implementation in dialog-options.c will store a GtkWidget* in
+ * here. */
+gpointer gnc_option_get_widget (GNCOption *option);
+
+/** Store an opaque pointer to the widget of this option. The actual
+ * GUI implementation in dialog-options.c will store a GtkWidget* in
+ * here. */
+void gnc_option_set_widget (GNCOption *option, gpointer widget);
 
 SCM  gnc_option_get_ui_value(GNCOption *option);
 void gnc_option_set_ui_value(GNCOption *option, gboolean use_default);

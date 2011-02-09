@@ -183,7 +183,9 @@ static gchar *
 get_key_from_path( GString *path )
 {
     gchar *str = NULL, *key = NULL, *ret = NULL;
+
     g_return_val_if_fail( path != NULL, strdup("") );
+
     if ( path->str == NULL ) return strdup("");
     str = g_strdup( path->str );
     key = strrchr( str, '/');
@@ -208,7 +210,9 @@ static gchar *
 get_path_from_path( GString *path )
 {
     gchar *str = NULL, *key = NULL, *ret = NULL;
+
     g_return_val_if_fail( path != NULL, NULL );
+
     if ( path->str == NULL ) return NULL;
     str = g_strdup( path->str );
     key = strrchr( str, '/');
@@ -240,6 +244,7 @@ set_slot_from_value( slot_info_t *pInfo, KvpValue *pValue)
 {
     g_return_if_fail( pInfo != NULL );
     g_return_if_fail( pValue != NULL );
+
     switch ( pInfo->context)
     {
     case FRAME:
@@ -495,6 +500,7 @@ set_guid_val( gpointer pObject, /*@ null @*/ gpointer pValue )
         slots_load_info( newInfo );
         pValue = kvp_value_new_glist_nc( newInfo->pList );
         kvp_frame_set_slot_nc(pInfo->pKvpFrame, key, pValue);
+        g_string_free( newInfo->path, TRUE );
         g_slice_free( slot_info_t, newInfo );
         g_free( key );
         break;
@@ -528,6 +534,7 @@ set_guid_val( gpointer pObject, /*@ null @*/ gpointer pValue )
 
         newInfo->context = FRAME;
         slots_load_info ( newInfo );
+        g_string_free( newInfo->path, TRUE );
         g_slice_free( slot_info_t, newInfo );
         break;
     }
@@ -613,8 +620,7 @@ slot_info_copy( slot_info_t *pInfo, GncGUID *guid )
     newSlot->pList = pInfo->pList;
     newSlot->context = pInfo->context;
     newSlot->pKvpValue = pInfo->pKvpValue;
-    newSlot->path = g_string_new('\0');
-    g_string_assign( newSlot->path, pInfo->path->str);
+    newSlot->path = g_string_new(pInfo->path->str);
     return newSlot;
 }
 
@@ -660,6 +666,7 @@ save_slot( const gchar* key, KvpValue* value, gpointer data )
         kvp_frame_for_each_slot( pKvpFrame, save_slot, pNewInfo );
         kvp_value_delete( pSlot_info->pKvpValue );
         pSlot_info->pKvpValue = oldValue;
+        g_string_free( pNewInfo->path, TRUE );
         g_slice_free( slot_info_t, pNewInfo );
     }
     break;
@@ -682,6 +689,7 @@ save_slot( const gchar* key, KvpValue* value, gpointer data )
         }
         kvp_value_delete( pSlot_info->pKvpValue );
         pSlot_info->pKvpValue = oldValue;
+        g_string_free( pNewInfo->path, TRUE );
         g_slice_free( slot_info_t, pNewInfo );
     }
     break;
@@ -776,13 +784,15 @@ gnc_sql_slots_delete( GncSqlBackend* be, const GncGUID* guid )
 static void
 load_slot( slot_info_t *pInfo, GncSqlRow* row )
 {
-    slot_info_t *slot_info = slot_info_copy( pInfo, NULL );
+    slot_info_t *slot_info;
 
     g_return_if_fail( pInfo != NULL );
     g_return_if_fail( pInfo->be != NULL );
     g_return_if_fail( row != NULL );
     g_return_if_fail( pInfo->pKvpFrame != NULL );
 
+    slot_info = slot_info_copy( pInfo, NULL );
+    g_string_free( slot_info->path, TRUE );
     slot_info->path = NULL;
 
     gnc_sql_load_object( pInfo->be, row, TABLE_NAME, slot_info, col_table );
@@ -873,7 +883,7 @@ load_obj_guid( const GncSqlBackend* be, GncSqlRow* row )
 static void
 load_slot_for_list_item( GncSqlBackend* be, GncSqlRow* row, QofCollection* coll )
 {
-    slot_info_t slot_info = { NULL, NULL, TRUE, NULL, 0, NULL, FRAME, NULL, g_string_new('\0') };
+    slot_info_t slot_info = { NULL, NULL, TRUE, NULL, 0, NULL, FRAME, NULL, NULL };
     const GncGUID* guid;
     QofInstance* inst;
 
@@ -887,7 +897,6 @@ load_slot_for_list_item( GncSqlBackend* be, GncSqlRow* row, QofCollection* coll 
 
     slot_info.be = be;
     slot_info.pKvpFrame = qof_instance_get_slots( inst );
-    slot_info.path = NULL;
     slot_info.context = NONE;
 
     gnc_sql_load_object( be, row, TABLE_NAME, &slot_info, col_table );
@@ -960,7 +969,7 @@ gnc_sql_slots_load_for_list( GncSqlBackend* be, GList* list )
 static void
 load_slot_for_book_object( GncSqlBackend* be, GncSqlRow* row, BookLookupFn lookup_fn )
 {
-    slot_info_t slot_info = { NULL, NULL, TRUE, NULL, 0, NULL, FRAME, NULL, g_string_new('\0') };
+    slot_info_t slot_info = { NULL, NULL, TRUE, NULL, 0, NULL, FRAME, NULL, NULL };
     const GncGUID* guid;
     QofInstance* inst;
 

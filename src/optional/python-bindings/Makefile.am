@@ -95,8 +95,13 @@ EXTRA_DIST = \
   example_scripts/change_tax_code.py \
   example_scripts/account_analysis.py \
   example_scripts/new_book_with_opening_balances.py \
-  example_scripts/test_imbalance_transaction.py \
-  glib.i
+  example_scripts/test_imbalance_transaction.py
 
 MAINTAINERCLEANFILES = gnucash_core.c
+
+
+check_PROGRAMS = sqlite3test
+sqlite3test_SOURCES = sqlite3test.c
+sqlite3test_LDADD = ${_gnucash_core_c_la_LIBADD}
+sqlite3test_CPPFLAGS = ${_gnucash_core_c_la_CPPFLAGS}
 

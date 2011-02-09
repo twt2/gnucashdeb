@@ -152,7 +152,7 @@ struct GncSqlConnection
     GncSqlResult* (*executeSelectStatement)( GncSqlConnection*, GncSqlStatement* ); /**< Returns NULL if error */
     gint (*executeNonSelectStatement)( GncSqlConnection*, GncSqlStatement* ); /**< Returns -1 if error */
     GncSqlStatement* (*createStatementFromSql)( /*@ observer @*/ GncSqlConnection*, const gchar* );
-    gboolean (*doesTableExist)( GncSqlConnection*, const gchar* );
+    gboolean (*doesTableExist)( GncSqlConnection*, const gchar* );  /**< Returns true if successful */
     gboolean (*beginTransaction)( GncSqlConnection* ); /**< Returns TRUE if successful, FALSE if error */
     gboolean (*rollbackTransaction)( GncSqlConnection* ); /**< Returns TRUE if successful, FALSE if error */
     gboolean (*commitTransaction)( GncSqlConnection* ); /**< Returns TRUE if successful, FALSE if error */

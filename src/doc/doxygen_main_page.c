@@ -21,9 +21,9 @@ GnuCash Manual and the Concepts Guide in various formats.
 
 \subsection texihtml Documentation elsewhere in the source tree.
 
-See also <a href="http://code.neil.williamsleesmill.me.uk/texi/gnucash-design.html">
-GnuCash Design Overview</a> which can be generated from the source using texi2html
-from the texinfo files in src/doc/design.
+There is also the "GnuCash Design Overview" which can be generated
+from the source using texi2html from the texinfo files in
+src/doc/design, but this is even more outdated.
 
 \section doxylist Doxygen overviews.
 
@@ -50,13 +50,13 @@ in relation to existing code.
 - \ref plugindesign
 - \ref pricedocs
 - \ref gnucashextension
+- \ref python_bindings_page
 - \ref qif
 - \ref backendapi
 - \ref budgetplan
 - \ref taxnotes
 - \ref todo
 - \ref userprefs
-- \ref python-bindings-page
 
 Each overview in this section is generated directly from the
 source files using Doxygen but some topics need updating.

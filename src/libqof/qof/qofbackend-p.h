@@ -156,9 +156,6 @@
  *    data. Database backends should implement a more intelligent
  *    solution.
  *
- * The counter() routine increments the named counter and returns the
- *    post-incremented value.  Returns -1 if there is a problem.
- *
  * The events_pending() routines should return true if there are
  *    external events which need to be processed to bring the
  *    engine up to date with the backend.
@@ -314,10 +311,10 @@ struct QofBackend_s
     void (*run_query) (QofBackend *, gpointer);
 
     void (*sync) (QofBackend *, /*@ dependent @*/ QofBook *);
+    void (*safe_sync) (QofBackend *, /*@ dependent @*/ QofBook *);
     void (*load_config) (QofBackend *, KvpFrame *);
     /*@ observer @*/
     KvpFrame* (*get_config) (QofBackend *);
-    gint64 (*counter) (QofBackend *, const char *counter_name);
 
     gboolean (*events_pending) (QofBackend *);
     gboolean (*process_events) (QofBackend *);

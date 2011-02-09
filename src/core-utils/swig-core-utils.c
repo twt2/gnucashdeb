@@ -1239,6 +1239,7 @@ static swig_module_info swig_module = {swig_types, 6, 0, 0, 0, 0};
 #include <gnc-main.h>
 #include <gnc-path.h>
 #include <gnc-filepath-utils.h>
+#include <gnc-locale-utils.h>
 #include <glib.h>
 
 SCM scm_init_sw_core_utils_module (void);
@@ -1282,6 +1283,7 @@ _wrap_gnc_path_get_bindir ()
       gswig_result = scm_makstr(0, 0);
     }
   }
+  g_free(result);
   
   return gswig_result;
 #undef FUNC_NAME
@@ -1303,6 +1305,7 @@ _wrap_gnc_path_get_stdreportsdir ()
       gswig_result = scm_makstr(0, 0);
     }
   }
+  g_free(result);
   
   return gswig_result;
 #undef FUNC_NAME
@@ -1562,6 +1565,27 @@ _wrap_gnc_locale_to_utf8 (SCM s_0)
   }
   if (must_free1 && arg1) SWIG_free(arg1);
   g_free(result);
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_locale_default_iso_currency_code ()
+{
+#define FUNC_NAME "gnc-locale-default-iso-currency-code"
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  char *result = 0 ;
+  
+  result = (char *)gnc_locale_default_iso_currency_code();
+  {
+    gswig_result = scm_makfrom0str((const char *)result);
+    if (!scm_is_true(gswig_result)) {
+      gswig_result = scm_makstr(0, 0);
+    }
+  }
   
   return gswig_result;
 #undef FUNC_NAME
@@ -1889,6 +1913,7 @@ SWIG_init(void)
   scm_c_define_gsubr("gnc-utf8-strip-invalid-strdup", 1, 0, 0, (swig_guile_proc) _wrap_gnc_utf8_strip_invalid_strdup);
   scm_c_define_gsubr("gnc-locale-from-utf8", 1, 0, 0, (swig_guile_proc) _wrap_gnc_locale_from_utf8);
   scm_c_define_gsubr("gnc-locale-to-utf8", 1, 0, 0, (swig_guile_proc) _wrap_gnc_locale_to_utf8);
+  scm_c_define_gsubr("gnc-locale-default-iso-currency-code", 0, 0, 0, (swig_guile_proc) _wrap_gnc_locale_default_iso_currency_code);
   scm_c_define_gsubr("gnc-utf8?", 1, 0, 0, (swig_guile_proc) _wrap_gncsutf8q___);
 }
 
@@ -1900,7 +1925,7 @@ SWIG_init(void)
 static void SWIG_init_helper(void *data)
 {
 SWIG_init();
-scm_c_export("gnc-is-debugging", "gnc-path-get-bindir", "gnc-path-get-stdreportsdir", "gnc-build-dotgnucash-path", "gnc-build-report-path", "gnc-build-stdreports-path", "gnc-scm-log-warn", "gnc-scm-log-error", "gnc-scm-log-msg", "gnc-scm-log-debug", "gnc-utf8-strip-invalid-strdup", "gnc-locale-from-utf8", "gnc-locale-to-utf8", "gnc-utf8?", NULL);
+scm_c_export("gnc-is-debugging", "gnc-path-get-bindir", "gnc-path-get-stdreportsdir", "gnc-build-dotgnucash-path", "gnc-build-report-path", "gnc-build-stdreports-path", "gnc-scm-log-warn", "gnc-scm-log-error", "gnc-scm-log-msg", "gnc-scm-log-debug", "gnc-utf8-strip-invalid-strdup", "gnc-locale-from-utf8", "gnc-locale-to-utf8", "gnc-locale-default-iso-currency-code", "gnc-utf8?", NULL);
 }
 
 SCM

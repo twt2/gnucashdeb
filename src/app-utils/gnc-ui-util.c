@@ -51,6 +51,7 @@
 #include "app-utils/gnc-euro.h"
 #include "engine/gnc-hooks.h"
 #include "engine/gnc-session.h"
+#include "gnc-locale-utils.h"
 
 #define KEY_CURRENCY_CHOICE "currency_choice"
 #define KEY_CURRENCY_OTHER  "currency_other"
@@ -183,7 +184,11 @@ gnc_get_default_directory (const gchar *gconf_section)
 
     dir = gnc_gconf_get_string (gconf_section, KEY_LAST_PATH, NULL);
     if (!dir)
+#ifdef G_OS_WIN32
+        dir = g_strdup (g_get_user_data_dir ()); /* equivalent of "My Documents" */
+#else
         dir = g_strdup (g_get_home_dir ());
+#endif
 
     return dir;
 }
@@ -480,15 +485,15 @@ gnc_ui_account_get_tax_info_string (const Account *account)
             return NULL;
         /* tax_related && !code */
         else
-            /* Translators: This and the following strings appear on
-             * the account tab if the Tax Info column is displayed,
-             * i.e. if the user wants to record the tax form number
-             * and location on that tax form which corresponds to this
-             * gnucash account. For the US Income Tax support in
-             * gnucash, each tax code that can be assigned to an
-             * account generally corresponds to a specific line number
-             * on a paper form and each form has a unique
-             * identification (e.g., Form 1040, Schedule A). */
+        /* Translators: This and the following strings appear on
+         * the account tab if the Tax Info column is displayed,
+         * i.e. if the user wants to record the tax form number
+         * and location on that tax form which corresponds to this
+         * gnucash account. For the US Income Tax support in
+         * gnucash, each tax code that can be assigned to an
+         * account generally corresponds to a specific line number
+         * on a paper form and each form has a unique
+         * identification (e.g., Form 1040, Schedule A). */
             return g_strdup (_("Tax-related but has no tax code"));
     }
     else  /* with tax code */
@@ -564,7 +569,8 @@ gnc_ui_account_get_tax_info_string (const Account *account)
         {
             if (tax_related)
                 return g_strdup_printf
-                       (_("Tax type %s: invalid code %s for account type"), tax_type, num_code);
+                       (_("Tax type %s: invalid code %s for account type"),
+                        tax_type, num_code);
             else
                 return g_strdup_printf
                        (_("Not tax-related; tax type %s: invalid code %s for account type"),
@@ -577,10 +583,12 @@ gnc_ui_account_get_tax_info_string (const Account *account)
         {
             if (tax_related)
                 return g_strdup_printf
-                       (_("Invalid code %s for tax type %s"), num_code, tax_type);
+                       (_("Invalid code %s for tax type %s"),
+                        num_code, tax_type);
             else
                 return g_strdup_printf
-                       (_("Not tax-related; invalid code %s for tax type %s"), num_code, tax_type);
+                       (_("Not tax-related; invalid code %s for tax type %s"),
+                        num_code, tax_type);
         }
 
         form = scm_to_locale_string (scm);
@@ -591,7 +599,8 @@ gnc_ui_account_get_tax_info_string (const Account *account)
                        (_("No form: code %s, tax type %s"), num_code, tax_type);
             else
                 return g_strdup_printf
-                       (_("Not tax-related; no form: code %s, tax type %s"), num_code, tax_type);
+                       (_("Not tax-related; no form: code %s, tax type %s"),
+                        num_code, tax_type);
         }
 
         scm = scm_call_3 (get_desc, category, code_scm, tax_entity_type);
@@ -629,15 +638,50 @@ gnc_ui_account_get_tax_info_string (const Account *account)
             if (safe_strcmp (form, "") == 0)
                 return g_strdup_printf ("%s", desc);
             else
-                return g_strdup_printf ("%s%s %s", form, copy_txt, desc);
+                return g_strdup_printf ("%s%s: %s", form, copy_txt, desc);
         }
         else
             return g_strdup_printf
-                   (_("Not tax-related; %s%s %s (code %s, tax type %s)"),
+                   (_("Not tax-related; %s%s: %s (code %s, tax type %s)"),
                     form, copy_txt, desc, num_code, tax_type);
     }
 }
 
+/* Caller is responsible for g_free'ing returned memory */
+char *
+gnc_ui_account_get_tax_info_sub_acct_string (const Account *account)
+{
+    GList *descendant, *account_descendants;
+
+    if (!account)
+        return NULL;
+
+    account_descendants = gnc_account_get_descendants (account);
+    if (account_descendants)
+    {
+        gint sub_acct_tax_number = 0;
+        for (descendant = account_descendants; descendant;
+                descendant = g_list_next(descendant))
+        {
+            if (xaccAccountGetTaxRelated (descendant->data))
+                sub_acct_tax_number++;
+        }
+        /* Translators: This and the following strings appear on
+         * the account tab if the Tax Info column is displayed,
+         * i.e. if the user wants to record the tax form number
+         * and location on that tax form which corresponds to this
+         * gnucash account. For the US Income Tax support in
+         * gnucash, each tax code that can be assigned to an
+         * account generally corresponds to a specific line number
+         * on a paper form and each form has a unique
+         * identification (e.g., Form 1040, Schedule A). */
+        return (sub_acct_tax_number == 0) ? g_strdup ("") :
+                g_strdup_printf (_("(Tax-related subaccounts: %d)"),
+                                 sub_acct_tax_number);
+    }
+    else
+        return g_strdup ("");
+}
 
 static const char *
 string_after_colon (const char *msgstr)
@@ -923,63 +967,6 @@ gnc_lconv_set_char (char *p_value, char default_value)
         *p_value = default_value;
 }
 
-struct lconv *
-gnc_localeconv (void)
-{
-    static struct lconv lc;
-    static gboolean lc_set = FALSE;
-
-    if (lc_set)
-        return &lc;
-
-    lc = *localeconv();
-
-    gnc_lconv_set_utf8(&lc.decimal_point, ".");
-    gnc_lconv_set_utf8(&lc.thousands_sep, ",");
-    gnc_lconv_set_utf8(&lc.grouping, "\003");
-    gnc_lconv_set_utf8(&lc.int_curr_symbol, "USD ");
-    gnc_lconv_set_utf8(&lc.currency_symbol, "$");
-    gnc_lconv_set_utf8(&lc.mon_decimal_point, ".");
-    gnc_lconv_set_utf8(&lc.mon_thousands_sep, ",");
-    gnc_lconv_set_utf8(&lc.mon_grouping, "\003");
-    gnc_lconv_set_utf8(&lc.negative_sign, "-");
-    gnc_lconv_set_utf8(&lc.positive_sign, "");
-
-    gnc_lconv_set_char(&lc.frac_digits, 2);
-    gnc_lconv_set_char(&lc.int_frac_digits, 2);
-    gnc_lconv_set_char(&lc.p_cs_precedes, 1);
-    gnc_lconv_set_char(&lc.p_sep_by_space, 0);
-    gnc_lconv_set_char(&lc.n_cs_precedes, 1);
-    gnc_lconv_set_char(&lc.n_sep_by_space, 0);
-    gnc_lconv_set_char(&lc.p_sign_posn, 1);
-    gnc_lconv_set_char(&lc.n_sign_posn, 1);
-
-    lc_set = TRUE;
-
-    return &lc;
-}
-
-const char *
-gnc_locale_default_iso_currency_code (void)
-{
-    static char *code = NULL;
-    struct lconv *lc;
-
-    if (code)
-        return code;
-
-    lc = gnc_localeconv ();
-
-    code = g_strdup (lc->int_curr_symbol);
-
-    /* The int_curr_symbol includes a space at the end! Note: you
-     * can't just change "USD " to "USD" in gnc_localeconv, because
-     * that is only used if int_curr_symbol was not defined in the
-     * current locale. If it was, it will have the space! */
-    g_strstrip (code);
-
-    return code;
-}
 
 gnc_commodity *
 gnc_locale_default_currency_nodefault (void)
@@ -1042,7 +1029,8 @@ gnc_default_currency_common (gchar *requested_currency,
     if (currency)
     {
         mnemonic = requested_currency;
-        requested_currency = g_strdup(gnc_commodity_get_mnemonic(currency));
+// ??? Does anyone know what this is supposed to be doing?
+//        requested_currency = g_strdup(gnc_commodity_get_mnemonic(currency));
         g_free(mnemonic);
     }
     return currency;
@@ -1068,60 +1056,6 @@ gnc_currency_changed_cb (GConfEntry *entry, gpointer user_data)
     gnc_hook_run(HOOK_CURRENCY_CHANGED, NULL);
 }
 
-
-/* Return the number of decimal places for this locale. */
-int
-gnc_locale_decimal_places (void)
-{
-    static gboolean got_it = FALSE;
-    static int places;
-    struct lconv *lc;
-
-    if (got_it)
-        return places;
-
-    lc = gnc_localeconv();
-    places = lc->frac_digits;
-
-    /* frac_digits is already initialized by gnc_localeconv, hopefully
-     * to a reasonable default. */
-    got_it = TRUE;
-
-    return places;
-}
-
-
-static GList *locale_stack = NULL;
-
-void
-gnc_push_locale (const char *locale)
-{
-    char *saved_locale;
-
-    g_return_if_fail (locale != NULL);
-
-    saved_locale = g_strdup (setlocale (LC_ALL, NULL));
-    locale_stack = g_list_prepend (locale_stack, saved_locale);
-    setlocale (LC_ALL, locale);
-}
-
-void
-gnc_pop_locale (void)
-{
-    char *saved_locale;
-    GList *node;
-
-    g_return_if_fail (locale_stack != NULL);
-
-    node = locale_stack;
-    saved_locale = node->data;
-
-    setlocale (LC_ALL, saved_locale);
-
-    locale_stack = g_list_remove_link (locale_stack, node);
-    g_list_free_1 (node);
-    g_free (saved_locale);
-}
 
 GNCPrintAmountInfo
 gnc_default_print_info (gboolean use_symbol)

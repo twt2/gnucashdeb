@@ -57,6 +57,12 @@
 /* GnuCash Minor version number */
 #undef GNUCASH_MINOR_VERSION
 
+/* GnuCash Nano version number */
+#undef GNUCASH_NANO_VERSION
+
+/* GnuCash earliest compatible databaseversion number */
+#undef GNUCASH_RESAVE_VERSION
+
 /* Don't use deprecated gtk functions */
 #undef GTK_DISABLE_DEPRECATED
 

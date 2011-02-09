@@ -33,6 +33,7 @@
 #include "gnc-module.h"
 #include "gnc-path.h"
 #include "binreloc.h"
+#include "gnc-locale-utils.h"
 #include "core-utils/gnc-version.h"
 #include "gnc-engine.h"
 #include "gnc-filepath-utils.h"
@@ -216,7 +217,10 @@ environment_override()
     g_free (config_path);
     g_free (env_file);
     if ( !got_keyfile )
+    {
+        g_key_file_free(keyfile);
         return;
+    }
 
     /* Read the environment overrides and apply them */
     env_vars = g_key_file_get_keys(keyfile, "Variables", &param_count, &error);
@@ -242,6 +246,7 @@ environment_override()
                 gchar *expanded = environment_expand (val_list[j]);
                 new_val = g_build_path (G_SEARCHPATH_SEPARATOR_S, tmp_val, expanded, NULL);
                 g_free (tmp_val);
+                g_free(expanded);
                 tmp_val = new_val;
             }
             g_strfreev (val_list);
@@ -254,11 +259,12 @@ environment_override()
             if (!g_setenv (env_vars[i], new_val, TRUE))
                 g_warning ("Couldn't properly override environment variable \"%s\". "
                            "This may lead to unexpected results", env_vars[i]);
+            g_free(new_val);
         }
     }
 
     g_strfreev(env_vars);
-
+    g_key_file_free(keyfile);
 }
 
 #ifdef MAC_INTEGRATION
@@ -300,13 +306,7 @@ set_mac_locale()
 /* Now call gnc_localeconv() to force creation of the app locale
  * before another call to setlocale messes it up. */
     gnc_localeconv ();
-/* Process the language list. Since all of the packages we depend on
- * are written in US english, they depend on gettext falling through
- * to the C locale. Unfortunately, if we set a language list in that
- * case with en or en_US as the first element, gettext will try the
- * second language in the list (there being no en or en_US mo
- * file). We work around that by not creating a language list if en or
- * en_US is the first item.
+/* Process the language list.
  *
  * Language subgroups (e.g., US English) are reported in the form
  * "ll-SS" (e.g. again, "en-US"), not what gettext wants. We convert
@@ -315,9 +315,7 @@ set_mac_locale()
  * traditional Chinese (zh-Hant), which are normally assigned the
  * locales zh_CN and zh_TW, respectively. Those are handled
  * specially.*/
-    if ([languages count] > 0 &&
-	!([[languages objectAtIndex: 0] isEqualToString: @"en"] ||
-	  [[languages objectAtIndex: 0] isEqualToString: @"\"en-US\""])) {
+    if ([languages count] > 0) {
 	NSEnumerator *lang_iter = [languages objectEnumerator];
 	NSString *this_lang;
 	NSArray *elements;
@@ -334,10 +332,15 @@ set_mac_locale()
 		    else
 			this_lang = [NSString stringWithString: @"zh_TW"];
 		}
+		else
+		  this_lang = [elements componentsJoinedByString: @"_"];
 	    }
-	    else
-		this_lang = [elements componentsJoinedByString: @"_"];
 	    new_languages = [new_languages arrayByAddingObject: this_lang];
+/* If it's an english language, add the "C" locale after it so that
+ * any messages can default to it */
+	    if ( [[elements objectAtIndex: 0] isEqualToString: @"en"])
+		new_languages = [new_languages arrayByAddingObject: @"C"];
+
 	}
 	langs = [[new_languages componentsJoinedByString:@":"] UTF8String];
     }
@@ -567,7 +570,6 @@ load_gnucash_modules()
         { "gnucash/import-export/csv", 0, TRUE },
         { "gnucash/import-export/log-replay", 0, TRUE },
         { "gnucash/import-export/aqbanking", 0, TRUE },
-        { "gnucash/import-export/hbci", 0, TRUE },
         { "gnucash/report/report-system", 0, FALSE },
         { "gnucash/report/stylesheets", 0, FALSE },
         { "gnucash/report/standard-reports", 0, FALSE },

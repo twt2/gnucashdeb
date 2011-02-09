@@ -24,7 +24,7 @@
 ##  @file
 #   @brief Output all the credits and debits on an account
 #   @author Mark Jenkins, ParIT Worker Co-operative <mark@parit.ca>
-#   @ingroup python-bindings-examples
+#   @ingroup python_bindings_examples
 
 # python imports
 from sys import argv, stdout
@@ -160,7 +160,7 @@ def main():
 
     account_path = argv[8:]
 
-    gnucash_session = Session("sqlite3://%s" % gnucash_file, is_new=False)
+    gnucash_session = Session(gnucash_file, is_new=False)
     root_account = gnucash_session.book.get_root_account()
     account_of_interest = account_from_path(root_account, account_path)
 

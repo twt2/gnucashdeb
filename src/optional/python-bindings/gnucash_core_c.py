@@ -1519,12 +1519,15 @@ ERR_FILEIO_WRITE_ERROR = _gnucash_core_c.ERR_FILEIO_WRITE_ERROR
 ERR_FILEIO_READ_ERROR = _gnucash_core_c.ERR_FILEIO_READ_ERROR
 ERR_FILEIO_NO_ENCODING = _gnucash_core_c.ERR_FILEIO_NO_ENCODING
 ERR_FILEIO_FILE_EACCES = _gnucash_core_c.ERR_FILEIO_FILE_EACCES
+ERR_FILEIO_RESERVED_WRITE = _gnucash_core_c.ERR_FILEIO_RESERVED_WRITE
 ERR_NETIO_SHORT_READ = _gnucash_core_c.ERR_NETIO_SHORT_READ
 ERR_NETIO_WRONG_CONTENT_TYPE = _gnucash_core_c.ERR_NETIO_WRONG_CONTENT_TYPE
 ERR_NETIO_NOT_GNCXML = _gnucash_core_c.ERR_NETIO_NOT_GNCXML
 ERR_SQL_MISSING_DATA = _gnucash_core_c.ERR_SQL_MISSING_DATA
 ERR_SQL_DB_TOO_OLD = _gnucash_core_c.ERR_SQL_DB_TOO_OLD
+ERR_SQL_DB_TOO_NEW = _gnucash_core_c.ERR_SQL_DB_TOO_NEW
 ERR_SQL_DB_BUSY = _gnucash_core_c.ERR_SQL_DB_BUSY
+ERR_SQL_BAD_DBI = _gnucash_core_c.ERR_SQL_BAD_DBI
 ERR_RPC_HOST_UNK = _gnucash_core_c.ERR_RPC_HOST_UNK
 ERR_RPC_CANT_BIND = _gnucash_core_c.ERR_RPC_CANT_BIND
 ERR_RPC_CANT_ACCEPT = _gnucash_core_c.ERR_RPC_CANT_ACCEPT
@@ -1688,6 +1691,10 @@ def qof_session_save_in_progress(*args):
 def qof_session_save(*args):
   """qof_session_save(QofSession session, QofPercentageFunc percentage_func)"""
   return _gnucash_core_c.qof_session_save(*args)
+
+def qof_session_safe_save(*args):
+  """qof_session_safe_save(QofSession session, QofPercentageFunc percentage_func)"""
+  return _gnucash_core_c.qof_session_safe_save(*args)
 
 def qof_session_end(*args):
   """qof_session_end(QofSession session)"""
@@ -3344,6 +3351,10 @@ def gncInvoiceCreate(*args):
 def gncInvoiceDestroy(*args):
   """gncInvoiceDestroy(GncInvoice invoice)"""
   return _gnucash_core_c.gncInvoiceDestroy(*args)
+
+def gncInvoiceCopy(*args):
+  """gncInvoiceCopy(GncInvoice other_invoice) -> GncInvoice"""
+  return _gnucash_core_c.gncInvoiceCopy(*args)
 
 def gncInvoiceSetID(*args):
   """gncInvoiceSetID(GncInvoice invoice, char id)"""

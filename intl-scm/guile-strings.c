@@ -185,6 +185,72 @@ _("Increase")
 /* src/app-utils/prefs.scm */
 _("Increase")
 /* src/business/business-utils/business-prefs.scm */
+_("Counters")
+/* src/business/business-utils/business-prefs.scm */
+_("Customer number format")
+/* src/business/business-utils/business-prefs.scm */
+_("Customer number")
+/* src/business/business-utils/business-prefs.scm */
+_("The format string to use for generating customer numbers. This is a printf-style format string.")
+/* src/business/business-utils/business-prefs.scm */
+_("The previous customer number generated. This number will be incremented to generate the next customer number.")
+/* src/business/business-utils/business-prefs.scm */
+_("Employee number format")
+/* src/business/business-utils/business-prefs.scm */
+_("Employee number")
+/* src/business/business-utils/business-prefs.scm */
+_("The format string to use for generating employee numbers. This is a printf-style format string.")
+/* src/business/business-utils/business-prefs.scm */
+_("The previous employee number generated. This number will be incremented to generate the next employee number.")
+/* src/business/business-utils/business-prefs.scm */
+_("Invoice number format")
+/* src/business/business-utils/business-prefs.scm */
+_("Invoice number")
+/* src/business/business-utils/business-prefs.scm */
+_("The format string to use for generating invoice numbers. This is a printf-style format string.")
+/* src/business/business-utils/business-prefs.scm */
+_("The previous invoice number generated. This number will be incremented to generate the next invoice number.")
+/* src/business/business-utils/business-prefs.scm */
+_("Bill number format")
+/* src/business/business-utils/business-prefs.scm */
+_("Bill number")
+/* src/business/business-utils/business-prefs.scm */
+_("The format string to use for generating bill numbers. This is a printf-style format string.")
+/* src/business/business-utils/business-prefs.scm */
+_("The previous bill number generated. This number will be incremented to generate the next bill number.")
+/* src/business/business-utils/business-prefs.scm */
+_("Expense voucher number format")
+/* src/business/business-utils/business-prefs.scm */
+_("Expense voucher number")
+/* src/business/business-utils/business-prefs.scm */
+_("The format string to use for generating expense voucher numbers. This is a printf-style format string.")
+/* src/business/business-utils/business-prefs.scm */
+_("The previous expense voucher number generated. This number will be incremented to generate the next voucher number.")
+/* src/business/business-utils/business-prefs.scm */
+_("Job number format")
+/* src/business/business-utils/business-prefs.scm */
+_("Job number")
+/* src/business/business-utils/business-prefs.scm */
+_("The format string to use for generating job numbers. This is a printf-style format string.")
+/* src/business/business-utils/business-prefs.scm */
+_("The previous job number generated. This number will be incremented to generate the next job number.")
+/* src/business/business-utils/business-prefs.scm */
+_("Order number format")
+/* src/business/business-utils/business-prefs.scm */
+_("Order number")
+/* src/business/business-utils/business-prefs.scm */
+_("The format string to use for generating order numbers. This is a printf-style format string.")
+/* src/business/business-utils/business-prefs.scm */
+_("The previous order number generated. This number will be incremented to generate the next order number.")
+/* src/business/business-utils/business-prefs.scm */
+_("Vendor number format")
+/* src/business/business-utils/business-prefs.scm */
+_("Vendor number")
+/* src/business/business-utils/business-prefs.scm */
+_("The format string to use for generating vendor numbers. This is a printf-style format string.")
+/* src/business/business-utils/business-prefs.scm */
+_("The previous vendor number generated. This number will be incremented to generate the next vendor number.")
+/* src/business/business-utils/business-prefs.scm */
 _("The name of your business")
 /* src/business/business-utils/business-prefs.scm */
 _("The address of your business")
@@ -553,6 +619,8 @@ _("Show Multi-currency Totals")
 /* src/report/business-reports/aging.scm */
 _("Show zero balance items")
 /* src/report/business-reports/aging.scm */
+_("Due or Post Date")
+/* src/report/business-reports/aging.scm */
 _("Transactions relating to '%s' contain more than one currency.  This report is not designed to cope with this possibility.")
 /* src/report/business-reports/aging.scm */
 _("Sort companies by")
@@ -583,7 +651,19 @@ _("Show multi-currency totals.  If not selected, convert all totals to report cu
 /* src/report/business-reports/aging.scm */
 _("Show all vendors/customers even if they have a zero balance.")
 /* src/report/business-reports/aging.scm */
+_("Leading date")
+/* src/report/business-reports/aging.scm */
+_("Due Date")
+/* src/report/business-reports/aging.scm */
+_("Due date is leading")
+/* src/report/business-reports/aging.scm */
+_("Post Date")
+/* src/report/business-reports/aging.scm */
+_("Post date is leading")
+/* src/report/business-reports/aging.scm */
 _("Company")
+/* src/report/business-reports/aging.scm */
+_("Current")
 /* src/report/business-reports/aging.scm */
 _("0-30 days")
 /* src/report/business-reports/aging.scm */
@@ -600,6 +680,126 @@ _("Total")
 _("No valid account selected.  Click on the Options button and select the account to use.")
 /* src/report/business-reports/business-reports.scm */
 _("_Business")
+/* src/report/business-reports/customer-summary.scm */
+_("From")
+/* src/report/business-reports/customer-summary.scm */
+_("To")
+/* src/report/business-reports/customer-summary.scm */
+_("Income Accounts")
+/* src/report/business-reports/customer-summary.scm */
+_("Income Accounts")
+/* src/report/business-reports/customer-summary.scm */
+_("The income accounts where the sales and income was recorded.")
+/* src/report/business-reports/customer-summary.scm */
+_("Expense Accounts")
+/* src/report/business-reports/customer-summary.scm */
+_("Expense Accounts")
+/* src/report/business-reports/customer-summary.scm */
+_("The expense accounts where the expenses are recorded which are subtracted from the sales to give the profit.")
+/* src/report/business-reports/customer-summary.scm */
+_("Show Expense Column")
+/* src/report/business-reports/customer-summary.scm */
+_("Show the column with the expenses per customer")
+/* src/report/business-reports/customer-summary.scm */
+_("Show Company Address")
+/* src/report/business-reports/customer-summary.scm */
+_("Show your own company's address and the date of printing")
+/* src/report/business-reports/customer-summary.scm */
+_("Display Columns")
+/* src/report/business-reports/customer-summary.scm */
+_("Date")
+/* src/report/business-reports/customer-summary.scm */
+_("Reference")
+/* src/report/business-reports/customer-summary.scm */
+_("Type")
+/* src/report/business-reports/customer-summary.scm */
+_("Description")
+/* src/report/business-reports/customer-summary.scm */
+_("Amount")
+/* src/report/business-reports/customer-summary.scm */
+_("Show Lines with All Zeros")
+/* src/report/business-reports/customer-summary.scm */
+_("Show the table lines with customers which did not have any transactions in the reporting period, hence would show all zeros in the columns.")
+/* src/report/business-reports/customer-summary.scm */
+_("Sort Column")
+/* src/report/business-reports/customer-summary.scm */
+_("Choose the column by which the result table is sorted")
+/* src/report/business-reports/customer-summary.scm */
+_("Sort Order")
+/* src/report/business-reports/customer-summary.scm */
+_("Choose the ordering of the column sort: Either ascending or descending")
+/* src/report/business-reports/customer-summary.scm */
+_("Balance")
+/* src/report/business-reports/customer-summary.scm */
+_("Payment")
+/* src/report/business-reports/customer-summary.scm */
+_("Payment")
+/* src/report/business-reports/customer-summary.scm */
+_("Unknown")
+/* src/report/business-reports/customer-summary.scm */
+_("Total")
+/* src/report/business-reports/customer-summary.scm */
+_("Customer Name")
+/* src/report/business-reports/customer-summary.scm */
+_("Sort alphabetically by customer name")
+/* src/report/business-reports/customer-summary.scm */
+_("Profit")
+/* src/report/business-reports/customer-summary.scm */
+_("Sort by profit amount")
+/* src/report/business-reports/customer-summary.scm */
+_("Markup")
+/* src/report/business-reports/customer-summary.scm */
+_("Sort by markup (which is profit amount divided by sales)")
+/* src/report/business-reports/customer-summary.scm */
+_("Sales")
+/* src/report/business-reports/customer-summary.scm */
+_("Sort by sales amount")
+/* src/report/business-reports/customer-summary.scm */
+_("Expense")
+/* src/report/business-reports/customer-summary.scm */
+_("Sort by expense amount")
+/* src/report/business-reports/customer-summary.scm */
+_("Ascending")
+/* src/report/business-reports/customer-summary.scm */
+_("A to Z, smallest to largest")
+/* src/report/business-reports/customer-summary.scm */
+_("Descending")
+/* src/report/business-reports/customer-summary.scm */
+_("Z to A, largest to smallest")
+/* src/report/business-reports/customer-summary.scm */
+_("Invoice")
+/* src/report/business-reports/customer-summary.scm */
+_("Bill")
+/* src/report/business-reports/customer-summary.scm */
+_("Expense Report")
+/* src/report/business-reports/customer-summary.scm */
+_("Customer")
+/* src/report/business-reports/customer-summary.scm */
+_("Vendor")
+/* src/report/business-reports/customer-summary.scm */
+_("Employee")
+/* src/report/business-reports/customer-summary.scm */
+_("Report")
+/* src/report/business-reports/customer-summary.scm */
+_("Customer")
+/* src/report/business-reports/customer-summary.scm */
+_("Profit")
+/* src/report/business-reports/customer-summary.scm */
+_("Markup")
+/* src/report/business-reports/customer-summary.scm */
+_("Sales")
+/* src/report/business-reports/customer-summary.scm */
+_("Expense")
+/* src/report/business-reports/customer-summary.scm */
+_("No Customer")
+/* src/report/business-reports/customer-summary.scm */
+_("Total")
+/* src/report/business-reports/customer-summary.scm */
+_("%s %s - %s")
+/* src/report/business-reports/customer-summary.scm */
+_("No valid %s selected.  Click on the Options button to select a company.")
+/* src/report/business-reports/customer-summary.scm */
+_("Customer Summary")
 /* src/report/business-reports/easy-invoice.scm */
 _("Invoice Number")
 /* src/report/business-reports/easy-invoice.scm */
@@ -995,7 +1195,7 @@ _("Expense Voucher")
 /* src/report/business-reports/fancy-invoice.scm */
 _("%s&nbsp;#")
 /* src/report/business-reports/fancy-invoice.scm */
-_("Date")
+_("%s&nbsp;Date")
 /* src/report/business-reports/fancy-invoice.scm */
 _("Due Date")
 /* src/report/business-reports/fancy-invoice.scm */
@@ -1023,6 +1223,8 @@ _("Show Multi-currency Totals")
 /* src/report/business-reports/gnucash/report/aging.scm */
 _("Show zero balance items")
 /* src/report/business-reports/gnucash/report/aging.scm */
+_("Due or Post Date")
+/* src/report/business-reports/gnucash/report/aging.scm */
 _("Transactions relating to '%s' contain more than one currency.  This report is not designed to cope with this possibility.")
 /* src/report/business-reports/gnucash/report/aging.scm */
 _("Sort companies by")
@@ -1053,7 +1255,19 @@ _("Show multi-currency totals.  If not selected, convert all totals to report cu
 /* src/report/business-reports/gnucash/report/aging.scm */
 _("Show all vendors/customers even if they have a zero balance.")
 /* src/report/business-reports/gnucash/report/aging.scm */
+_("Leading date")
+/* src/report/business-reports/gnucash/report/aging.scm */
+_("Due Date")
+/* src/report/business-reports/gnucash/report/aging.scm */
+_("Due date is leading")
+/* src/report/business-reports/gnucash/report/aging.scm */
+_("Post Date")
+/* src/report/business-reports/gnucash/report/aging.scm */
+_("Post date is leading")
+/* src/report/business-reports/gnucash/report/aging.scm */
 _("Company")
+/* src/report/business-reports/gnucash/report/aging.scm */
+_("Current")
 /* src/report/business-reports/gnucash/report/aging.scm */
 _("0-30 days")
 /* src/report/business-reports/gnucash/report/aging.scm */
@@ -1070,6 +1284,126 @@ _("Total")
 _("No valid account selected.  Click on the Options button and select the account to use.")
 /* src/report/business-reports/gnucash/report/business-reports.scm */
 _("_Business")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("From")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("To")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Income Accounts")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Income Accounts")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("The income accounts where the sales and income was recorded.")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Expense Accounts")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Expense Accounts")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("The expense accounts where the expenses are recorded which are subtracted from the sales to give the profit.")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Show Expense Column")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Show the column with the expenses per customer")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Show Company Address")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Show your own company's address and the date of printing")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Display Columns")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Date")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Reference")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Type")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Description")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Amount")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Show Lines with All Zeros")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Show the table lines with customers which did not have any transactions in the reporting period, hence would show all zeros in the columns.")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Sort Column")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Choose the column by which the result table is sorted")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Sort Order")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Choose the ordering of the column sort: Either ascending or descending")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Balance")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Payment")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Payment")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Unknown")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Total")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Customer Name")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Sort alphabetically by customer name")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Profit")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Sort by profit amount")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Markup")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Sort by markup (which is profit amount divided by sales)")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Sales")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Sort by sales amount")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Expense")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Sort by expense amount")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Ascending")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("A to Z, smallest to largest")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Descending")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Z to A, largest to smallest")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Invoice")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Bill")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Expense Report")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Customer")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Vendor")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Employee")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Report")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Customer")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Profit")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Markup")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Sales")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Expense")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("No Customer")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Total")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("%s %s - %s")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("No valid %s selected.  Click on the Options button to select a company.")
+/* src/report/business-reports/gnucash/report/customer-summary.scm */
+_("Customer Summary")
 /* src/report/business-reports/gnucash/report/easy-invoice.scm */
 _("Invoice Number")
 /* src/report/business-reports/gnucash/report/easy-invoice.scm */
@@ -1465,7 +1799,7 @@ _("Expense Voucher")
 /* src/report/business-reports/gnucash/report/fancy-invoice.scm */
 _("%s&nbsp;#")
 /* src/report/business-reports/gnucash/report/fancy-invoice.scm */
-_("Date")
+_("%s&nbsp;Date")
 /* src/report/business-reports/gnucash/report/fancy-invoice.scm */
 _("Due Date")
 /* src/report/business-reports/gnucash/report/fancy-invoice.scm */
@@ -1763,8 +2097,6 @@ _("To")
 /* src/report/business-reports/gnucash/report/owner-report.scm */
 _("Account")
 /* src/report/business-reports/gnucash/report/owner-report.scm */
-_("Company")
-/* src/report/business-reports/gnucash/report/owner-report.scm */
 _("Date")
 /* src/report/business-reports/gnucash/report/owner-report.scm */
 _("Due Date")
@@ -1776,6 +2108,24 @@ _("Type")
 _("Description")
 /* src/report/business-reports/gnucash/report/owner-report.scm */
 _("Amount")
+/* src/report/business-reports/gnucash/report/owner-report.scm */
+_("Customer")
+/* src/report/business-reports/gnucash/report/owner-report.scm */
+_("Employee")
+/* src/report/business-reports/gnucash/report/owner-report.scm */
+_("Company")
+/* src/report/business-reports/gnucash/report/owner-report.scm */
+_("No valid customer selected. Click on the Options button to select a customer.")
+/* src/report/business-reports/gnucash/report/owner-report.scm */
+_("No valid employee selected. Click on the Options button to select an employee.")
+/* src/report/business-reports/gnucash/report/owner-report.scm */
+_("No valid company selected. Click on the Options button to select a company.")
+/* src/report/business-reports/gnucash/report/owner-report.scm */
+_("Customer")
+/* src/report/business-reports/gnucash/report/owner-report.scm */
+_("Employee")
+/* src/report/business-reports/gnucash/report/owner-report.scm */
+_("Vendor")
 /* src/report/business-reports/gnucash/report/owner-report.scm */
 _("0-30 days")
 /* src/report/business-reports/gnucash/report/owner-report.scm */
@@ -1833,12 +2183,6 @@ _("Bill")
 /* src/report/business-reports/gnucash/report/owner-report.scm */
 _("Expense Report")
 /* src/report/business-reports/gnucash/report/owner-report.scm */
-_("Customer")
-/* src/report/business-reports/gnucash/report/owner-report.scm */
-_("Vendor")
-/* src/report/business-reports/gnucash/report/owner-report.scm */
-_("Employee")
-/* src/report/business-reports/gnucash/report/owner-report.scm */
 _("Report")
 /* src/report/business-reports/gnucash/report/owner-report.scm */
 _("Report:")
@@ -1850,8 +2194,6 @@ _("No valid account selected.  Click on the Options button and select the accoun
 _("Today Date Format")
 /* src/report/business-reports/gnucash/report/owner-report.scm */
 _("Date Range")
-/* src/report/business-reports/gnucash/report/owner-report.scm */
-_("No valid %s selected.  Click on the Options button to select a company.")
 /* src/report/business-reports/gnucash/report/owner-report.scm */
 _("Customer Report")
 /* src/report/business-reports/gnucash/report/owner-report.scm */
@@ -2285,8 +2627,6 @@ _("To")
 /* src/report/business-reports/owner-report.scm */
 _("Account")
 /* src/report/business-reports/owner-report.scm */
-_("Company")
-/* src/report/business-reports/owner-report.scm */
 _("Date")
 /* src/report/business-reports/owner-report.scm */
 _("Due Date")
@@ -2298,6 +2638,24 @@ _("Type")
 _("Description")
 /* src/report/business-reports/owner-report.scm */
 _("Amount")
+/* src/report/business-reports/owner-report.scm */
+_("Customer")
+/* src/report/business-reports/owner-report.scm */
+_("Employee")
+/* src/report/business-reports/owner-report.scm */
+_("Company")
+/* src/report/business-reports/owner-report.scm */
+_("No valid customer selected. Click on the Options button to select a customer.")
+/* src/report/business-reports/owner-report.scm */
+_("No valid employee selected. Click on the Options button to select an employee.")
+/* src/report/business-reports/owner-report.scm */
+_("No valid company selected. Click on the Options button to select a company.")
+/* src/report/business-reports/owner-report.scm */
+_("Customer")
+/* src/report/business-reports/owner-report.scm */
+_("Employee")
+/* src/report/business-reports/owner-report.scm */
+_("Vendor")
 /* src/report/business-reports/owner-report.scm */
 _("0-30 days")
 /* src/report/business-reports/owner-report.scm */
@@ -2355,12 +2713,6 @@ _("Bill")
 /* src/report/business-reports/owner-report.scm */
 _("Expense Report")
 /* src/report/business-reports/owner-report.scm */
-_("Customer")
-/* src/report/business-reports/owner-report.scm */
-_("Vendor")
-/* src/report/business-reports/owner-report.scm */
-_("Employee")
-/* src/report/business-reports/owner-report.scm */
 _("Report")
 /* src/report/business-reports/owner-report.scm */
 _("Report:")
@@ -2372,8 +2724,6 @@ _("No valid account selected.  Click on the Options button and select the accoun
 _("Today Date Format")
 /* src/report/business-reports/owner-report.scm */
 _("Date Range")
-/* src/report/business-reports/owner-report.scm */
-_("No valid %s selected.  Click on the Options button to select a company.")
 /* src/report/business-reports/owner-report.scm */
 _("Customer Report")
 /* src/report/business-reports/owner-report.scm */
@@ -3321,6 +3671,8 @@ _("Show long account names")
 /* src/report/standard-reports/account-piecharts.scm */
 _("Show Totals")
 /* src/report/standard-reports/account-piecharts.scm */
+_("Show Percents")
+/* src/report/standard-reports/account-piecharts.scm */
 _("Maximum Slices")
 /* src/report/standard-reports/account-piecharts.scm */
 _("Plot Width")
@@ -3356,6 +3708,8 @@ _("Show accounts to this depth and not further")
 _("Show the full account name in legend?")
 /* src/report/standard-reports/account-piecharts.scm */
 _("Show the total balance in legend?")
+/* src/report/standard-reports/account-piecharts.scm */
+_("Show the percentage in legend?")
 /* src/report/standard-reports/account-piecharts.scm */
 _("Maximum number of slices in pie")
 /* src/report/standard-reports/account-piecharts.scm */
@@ -3835,7 +4189,7 @@ _("Font definition in CSS font-family format")
 /* src/report/standard-reports/balsheet-eg.scm */
 _("Font size")
 /* src/report/standard-reports/balsheet-eg.scm */
-_("Font size in CSS font-size format (e.g. \"medium\" or \"10pt\"")
+_("Font size in CSS font-size format (e.g. \"medium\" or \"10pt\")")
 /* src/report/standard-reports/balsheet-eg.scm */
 _("Template file")
 /* src/report/standard-reports/balsheet-eg.scm */
@@ -4341,6 +4695,26 @@ _("Plot Height")
 /* src/report/standard-reports/category-barchart.scm */
 _("Sort Method")
 /* src/report/standard-reports/category-barchart.scm */
+_("Show Average")
+/* src/report/standard-reports/category-barchart.scm */
+_("Select whether the amounts should be shown over the full time period or rather as the average e.g. per month")
+/* src/report/standard-reports/category-barchart.scm */
+_("No Averaging")
+/* src/report/standard-reports/category-barchart.scm */
+_("Just show the amounts, without any averaging")
+/* src/report/standard-reports/category-barchart.scm */
+_("Monthly")
+/* src/report/standard-reports/category-barchart.scm */
+_("Show the average monthly amount during the reporting period")
+/* src/report/standard-reports/category-barchart.scm */
+_("Weekly")
+/* src/report/standard-reports/category-barchart.scm */
+_("Show the average weekly amount during the reporting period")
+/* src/report/standard-reports/category-barchart.scm */
+_("Daily")
+/* src/report/standard-reports/category-barchart.scm */
+_("Show the average daily amount during the reporting period")
+/* src/report/standard-reports/category-barchart.scm */
 _("Report on these accounts, if chosen account level allows.")
 /* src/report/standard-reports/category-barchart.scm */
 _("Show accounts to this depth and not further")
@@ -4356,6 +4730,12 @@ _("Show table")
 _("Display a table of the selected data.")
 /* src/report/standard-reports/category-barchart.scm */
 _("Show table")
+/* src/report/standard-reports/category-barchart.scm */
+_("Monthly Average")
+/* src/report/standard-reports/category-barchart.scm */
+_("Weekly Average")
+/* src/report/standard-reports/category-barchart.scm */
+_("Daily Average")
 /* src/report/standard-reports/category-barchart.scm */
 _("%s to %s")
 /* src/report/standard-reports/category-barchart.scm */
@@ -4667,6 +5047,8 @@ _("Show long account names")
 /* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
 _("Show Totals")
 /* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Show Percents")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
 _("Maximum Slices")
 /* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
 _("Plot Width")
@@ -4702,6 +5084,8 @@ _("Show accounts to this depth and not further")
 _("Show the full account name in legend?")
 /* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
 _("Show the total balance in legend?")
+/* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
+_("Show the percentage in legend?")
 /* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
 _("Maximum number of slices in pie")
 /* src/report/standard-reports/gnucash/report/standard-reports/account-piecharts.scm */
@@ -5161,7 +5545,7 @@ _("Font definition in CSS font-family format")
 /* src/report/standard-reports/gnucash/report/standard-reports/balsheet-eg.scm */
 _("Font size")
 /* src/report/standard-reports/gnucash/report/standard-reports/balsheet-eg.scm */
-_("Font size in CSS font-size format (e.g. \"medium\" or \"10pt\"")
+_("Font size in CSS font-size format (e.g. \"medium\" or \"10pt\")")
 /* src/report/standard-reports/gnucash/report/standard-reports/balsheet-eg.scm */
 _("Template file")
 /* src/report/standard-reports/gnucash/report/standard-reports/balsheet-eg.scm */
@@ -5667,6 +6051,26 @@ _("Plot Height")
 /* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
 _("Sort Method")
 /* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Show Average")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Select whether the amounts should be shown over the full time period or rather as the average e.g. per month")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("No Averaging")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Just show the amounts, without any averaging")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Monthly")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Show the average monthly amount during the reporting period")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Weekly")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Show the average weekly amount during the reporting period")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Daily")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Show the average daily amount during the reporting period")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
 _("Report on these accounts, if chosen account level allows.")
 /* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
 _("Show accounts to this depth and not further")
@@ -5682,6 +6086,12 @@ _("Show table")
 _("Display a table of the selected data.")
 /* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
 _("Show table")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Monthly Average")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Weekly Average")
+/* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
+_("Daily Average")
 /* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
 _("%s to %s")
 /* src/report/standard-reports/gnucash/report/standard-reports/category-barchart.scm */
@@ -5985,6 +6395,14 @@ _("Include revenue total")
 /* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
 _("Whether or not to include a line indicating total revenue")
 /* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Label the trading accounts section")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Whether or not to include a label for the trading accounts section")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Include trading accounts total")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Whether or not to include a line indicating total trading accounts balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
 _("Label the expense section")
 /* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
 _("Whether or not to include a label for the expense section")
@@ -6044,6 +6462,10 @@ _("Total Revenue")
 _("Expenses")
 /* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
 _("Total Expenses")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Trading")
+/* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
+_("Total Trading")
 /* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
 _("Net income")
 /* src/report/standard-reports/gnucash/report/standard-reports/income-statement.scm */
@@ -6400,6 +6822,112 @@ _("Charge")
 _("Amount")
 /* src/report/standard-reports/gnucash/report/standard-reports/register.scm */
 _("Register")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Future Scheduled Transactions Summary")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Report Title")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Title for this report")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Company name")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Name of company/individual")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Start Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("End Date")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Report on these accounts, if display depth allows.")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Levels of Subaccounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Maximum number of levels in the account tree displayed")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Depth limit behavior")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("How to treat accounts which exceed the specified depth limit (if any)")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Parent account balances")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Parent account subtotals")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Include accounts with zero total balances")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Include accounts with zero total (recursive) balances in this report")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Omit zero balance figures")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Show blank space in place of any zero balances which would be shown")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Show accounting-style rules")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Use rules beneath columns of added numbers like accountants do")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Display accounts as hyperlinks")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Shows each account in the table as a hyperlink to its register window")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Account Balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Show an account's balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Account Code")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Show an account's account code")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Account Type")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Show an account's account type")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Account Description")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Show an account's description")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Account Notes")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Show an account's notes")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Commodities")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Report's currency")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Price Source")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Show Foreign Currencies")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Display any foreign currency amount in an account")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Show Exchange Rates")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Show the exchange rates used")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Recursive Balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Show the total balance, including balances in subaccounts, of any account at the depth limit")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Raise Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Shows accounts deeper than the depth limit at the depth limit")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Omit Accounts")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Disregard completely any accounts deeper than the depth limit")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("For Period Covering %s to %s")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Code")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Type")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Description")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Account title")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Balance")
+/* src/report/standard-reports/gnucash/report/standard-reports/sx-summary.scm */
+_("Notes")
 /* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
 _("Transaction Report")
 /* src/report/standard-reports/gnucash/report/standard-reports/transaction.scm */
@@ -7017,6 +7545,14 @@ _("Include revenue total")
 /* src/report/standard-reports/income-statement.scm */
 _("Whether or not to include a line indicating total revenue")
 /* src/report/standard-reports/income-statement.scm */
+_("Label the trading accounts section")
+/* src/report/standard-reports/income-statement.scm */
+_("Whether or not to include a label for the trading accounts section")
+/* src/report/standard-reports/income-statement.scm */
+_("Include trading accounts total")
+/* src/report/standard-reports/income-statement.scm */
+_("Whether or not to include a line indicating total trading accounts balance")
+/* src/report/standard-reports/income-statement.scm */
 _("Label the expense section")
 /* src/report/standard-reports/income-statement.scm */
 _("Whether or not to include a label for the expense section")
@@ -7076,6 +7612,10 @@ _("Total Revenue")
 _("Expenses")
 /* src/report/standard-reports/income-statement.scm */
 _("Total Expenses")
+/* src/report/standard-reports/income-statement.scm */
+_("Trading")
+/* src/report/standard-reports/income-statement.scm */
+_("Total Trading")
 /* src/report/standard-reports/income-statement.scm */
 _("Net income")
 /* src/report/standard-reports/income-statement.scm */
@@ -7432,6 +7972,112 @@ _("Charge")
 _("Amount")
 /* src/report/standard-reports/register.scm */
 _("Register")
+/* src/report/standard-reports/sx-summary.scm */
+_("Future Scheduled Transactions Summary")
+/* src/report/standard-reports/sx-summary.scm */
+_("Report Title")
+/* src/report/standard-reports/sx-summary.scm */
+_("Title for this report")
+/* src/report/standard-reports/sx-summary.scm */
+_("Company name")
+/* src/report/standard-reports/sx-summary.scm */
+_("Name of company/individual")
+/* src/report/standard-reports/sx-summary.scm */
+_("Start Date")
+/* src/report/standard-reports/sx-summary.scm */
+_("End Date")
+/* src/report/standard-reports/sx-summary.scm */
+_("Accounts")
+/* src/report/standard-reports/sx-summary.scm */
+_("Report on these accounts, if display depth allows.")
+/* src/report/standard-reports/sx-summary.scm */
+_("Levels of Subaccounts")
+/* src/report/standard-reports/sx-summary.scm */
+_("Maximum number of levels in the account tree displayed")
+/* src/report/standard-reports/sx-summary.scm */
+_("Depth limit behavior")
+/* src/report/standard-reports/sx-summary.scm */
+_("How to treat accounts which exceed the specified depth limit (if any)")
+/* src/report/standard-reports/sx-summary.scm */
+_("Parent account balances")
+/* src/report/standard-reports/sx-summary.scm */
+_("Parent account subtotals")
+/* src/report/standard-reports/sx-summary.scm */
+_("Include accounts with zero total balances")
+/* src/report/standard-reports/sx-summary.scm */
+_("Include accounts with zero total (recursive) balances in this report")
+/* src/report/standard-reports/sx-summary.scm */
+_("Omit zero balance figures")
+/* src/report/standard-reports/sx-summary.scm */
+_("Show blank space in place of any zero balances which would be shown")
+/* src/report/standard-reports/sx-summary.scm */
+_("Show accounting-style rules")
+/* src/report/standard-reports/sx-summary.scm */
+_("Use rules beneath columns of added numbers like accountants do")
+/* src/report/standard-reports/sx-summary.scm */
+_("Display accounts as hyperlinks")
+/* src/report/standard-reports/sx-summary.scm */
+_("Shows each account in the table as a hyperlink to its register window")
+/* src/report/standard-reports/sx-summary.scm */
+_("Account Balance")
+/* src/report/standard-reports/sx-summary.scm */
+_("Show an account's balance")
+/* src/report/standard-reports/sx-summary.scm */
+_("Account Code")
+/* src/report/standard-reports/sx-summary.scm */
+_("Show an account's account code")
+/* src/report/standard-reports/sx-summary.scm */
+_("Account Type")
+/* src/report/standard-reports/sx-summary.scm */
+_("Show an account's account type")
+/* src/report/standard-reports/sx-summary.scm */
+_("Account Description")
+/* src/report/standard-reports/sx-summary.scm */
+_("Show an account's description")
+/* src/report/standard-reports/sx-summary.scm */
+_("Account Notes")
+/* src/report/standard-reports/sx-summary.scm */
+_("Show an account's notes")
+/* src/report/standard-reports/sx-summary.scm */
+_("Commodities")
+/* src/report/standard-reports/sx-summary.scm */
+_("Report's currency")
+/* src/report/standard-reports/sx-summary.scm */
+_("Price Source")
+/* src/report/standard-reports/sx-summary.scm */
+_("Show Foreign Currencies")
+/* src/report/standard-reports/sx-summary.scm */
+_("Display any foreign currency amount in an account")
+/* src/report/standard-reports/sx-summary.scm */
+_("Show Exchange Rates")
+/* src/report/standard-reports/sx-summary.scm */
+_("Show the exchange rates used")
+/* src/report/standard-reports/sx-summary.scm */
+_("Recursive Balance")
+/* src/report/standard-reports/sx-summary.scm */
+_("Show the total balance, including balances in subaccounts, of any account at the depth limit")
+/* src/report/standard-reports/sx-summary.scm */
+_("Raise Accounts")
+/* src/report/standard-reports/sx-summary.scm */
+_("Shows accounts deeper than the depth limit at the depth limit")
+/* src/report/standard-reports/sx-summary.scm */
+_("Omit Accounts")
+/* src/report/standard-reports/sx-summary.scm */
+_("Disregard completely any accounts deeper than the depth limit")
+/* src/report/standard-reports/sx-summary.scm */
+_("For Period Covering %s to %s")
+/* src/report/standard-reports/sx-summary.scm */
+_("Code")
+/* src/report/standard-reports/sx-summary.scm */
+_("Type")
+/* src/report/standard-reports/sx-summary.scm */
+_("Description")
+/* src/report/standard-reports/sx-summary.scm */
+_("Account title")
+/* src/report/standard-reports/sx-summary.scm */
+_("Balance")
+/* src/report/standard-reports/sx-summary.scm */
+_("Notes")
 /* src/report/standard-reports/transaction.scm */
 _("Transaction Report")
 /* src/report/standard-reports/transaction.scm */
@@ -8449,7 +9095,7 @@ _("General")
 /* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
 _("Footer")
 /* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
-_("String to placed as a footer")
+_("String to be placed as a footer")
 /* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
 _("Images")
 /* src/report/stylesheets/gnucash/report/stylesheet-footer.scm */
@@ -9141,7 +9787,7 @@ _("General")
 /* src/report/stylesheets/stylesheet-footer.scm */
 _("Footer")
 /* src/report/stylesheets/stylesheet-footer.scm */
-_("String to placed as a footer")
+_("String to be placed as a footer")
 /* src/report/stylesheets/stylesheet-footer.scm */
 _("Images")
 /* src/report/stylesheets/stylesheet-footer.scm */
@@ -9563,9 +10209,9 @@ _("Custom Multicolumn Report")
 /* src/report/utility-reports/gnucash/report/welcome-to-gnucash.scm */
 _("Welcome to GnuCash")
 /* src/report/utility-reports/gnucash/report/welcome-to-gnucash.scm */
-_("Welcome to GnuCash 2.0!")
+_("Welcome to GnuCash 2.4!")
 /* src/report/utility-reports/gnucash/report/welcome-to-gnucash.scm */
-_("GnuCash 2.0 has lots of nice features. Here are a few.")
+_("GnuCash 2.4 has lots of nice features. Here are a few.")
 /* src/report/utility-reports/gnucash/report/welcome-to-gnucash.scm */
 _("Welcome to GnuCash")
 /* src/report/utility-reports/hello-world.scm */
@@ -9751,9 +10397,9 @@ _("Custom Multicolumn Report")
 /* src/report/utility-reports/welcome-to-gnucash.scm */
 _("Welcome to GnuCash")
 /* src/report/utility-reports/welcome-to-gnucash.scm */
-_("Welcome to GnuCash 2.0!")
+_("Welcome to GnuCash 2.4!")
 /* src/report/utility-reports/welcome-to-gnucash.scm */
-_("GnuCash 2.0 has lots of nice features. Here are a few.")
+_("GnuCash 2.4 has lots of nice features. Here are a few.")
 /* src/report/utility-reports/welcome-to-gnucash.scm */
 _("Welcome to GnuCash")
 /* src/scm/command-line.scm */

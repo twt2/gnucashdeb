@@ -12,7 +12,21 @@
         <short>Show documentation</short>
         <long>
           Show some documentation-only pages in QIF Import assistant.
-	</long>
+        </long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gnucash/dialogs/import/qif/default_status</key>
+      <applyto>/apps/gnucash/dialogs/import/qif/default_status</applyto>
+      <owner>gnucash</owner>
+      <type>string</type>
+      <default>not_cleared</default>
+      <locale name="C">
+        <short>Default QIF transaction status</short>
+        <long>
+          Default status for QIF transaction when not specified in QIF file.
+        </long>
       </locale>
     </schema>
 
