@@ -114,28 +114,28 @@ libgncmod_app_utils_la_DEPENDENCIES =  \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_2)
-am__libgncmod_app_utils_la_SOURCES_DIST = swig-app-utils.c \
+am__libgncmod_app_utils_la_SOURCES_DIST = swig-app-utils.c QuickFill.c \
 	file-utils.c gfec.c gnc-account-merge.c \
 	gnc-accounting-period.c gnc-component-manager.c gnc-druid.c \
 	gnc-druid-cb.c gnc-druid-provider.c gnc-druid-provider-desc.c \
 	gnc-druid-provider-desc-edge.c gnc-druid-provider-desc-file.c \
 	gnc-druid-provider-desc-multifile.c \
-	gnc-druid-provider-file-cb.c gnc-euro.c gnc-exp-parser.c \
-	gnc-gettext-util.c gnc-helpers.c gnc-sx-instance-model.c \
-	gncmod-app-utils.c gnc-ui-util.c guile-util.c option-util.c \
-	gnc-help-utils.c
+	gnc-druid-provider-file-cb.c gnc-entry-quickfill.c gnc-euro.c \
+	gnc-exp-parser.c gnc-gettext-util.c gnc-helpers.c \
+	gnc-sx-instance-model.c gncmod-app-utils.c gnc-ui-util.c \
+	guile-util.c option-util.c gnc-help-utils.c
 @OS_WIN32_TRUE@am__objects_1 = gnc-help-utils.lo
-am_libgncmod_app_utils_la_OBJECTS = swig-app-utils.lo file-utils.lo \
-	gfec.lo gnc-account-merge.lo gnc-accounting-period.lo \
-	gnc-component-manager.lo gnc-druid.lo gnc-druid-cb.lo \
-	gnc-druid-provider.lo gnc-druid-provider-desc.lo \
-	gnc-druid-provider-desc-edge.lo \
+am_libgncmod_app_utils_la_OBJECTS = swig-app-utils.lo QuickFill.lo \
+	file-utils.lo gfec.lo gnc-account-merge.lo \
+	gnc-accounting-period.lo gnc-component-manager.lo gnc-druid.lo \
+	gnc-druid-cb.lo gnc-druid-provider.lo \
+	gnc-druid-provider-desc.lo gnc-druid-provider-desc-edge.lo \
 	gnc-druid-provider-desc-file.lo \
 	gnc-druid-provider-desc-multifile.lo \
-	gnc-druid-provider-file-cb.lo gnc-euro.lo gnc-exp-parser.lo \
-	gnc-gettext-util.lo gnc-helpers.lo gnc-sx-instance-model.lo \
-	gncmod-app-utils.lo gnc-ui-util.lo guile-util.lo \
-	option-util.lo $(am__objects_1)
+	gnc-druid-provider-file-cb.lo gnc-entry-quickfill.lo \
+	gnc-euro.lo gnc-exp-parser.lo gnc-gettext-util.lo \
+	gnc-helpers.lo gnc-sx-instance-model.lo gncmod-app-utils.lo \
+	gnc-ui-util.lo guile-util.lo option-util.lo $(am__objects_1)
 libgncmod_app_utils_la_OBJECTS = $(am_libgncmod_app_utils_la_OBJECTS)
 libgncmod_app_utils_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -278,6 +278,7 @@ GNUCASH_LATEST_STABLE_SERIES = @GNUCASH_LATEST_STABLE_SERIES@
 GNUCASH_MAJOR_VERSION = @GNUCASH_MAJOR_VERSION@
 GNUCASH_MICRO_VERSION = @GNUCASH_MICRO_VERSION@
 GNUCASH_MINOR_VERSION = @GNUCASH_MINOR_VERSION@
+GNUCASH_NANO_VERSION = @GNUCASH_NANO_VERSION@
 GOBJECT_QUERY = @GOBJECT_QUERY@
 GOFFICE_CFLAGS = @GOFFICE_CFLAGS@
 GOFFICE_LIBS = @GOFFICE_LIBS@
@@ -464,18 +465,19 @@ AM_CPPFLAGS = \
   ${GCONF_CFLAGS} \
   ${GTK_CFLAGS}
 
-libgncmod_app_utils_la_SOURCES = swig-app-utils.c file-utils.c gfec.c \
-	gnc-account-merge.c gnc-accounting-period.c \
-	gnc-component-manager.c gnc-druid.c gnc-druid-cb.c \
-	gnc-druid-provider.c gnc-druid-provider-desc.c \
+libgncmod_app_utils_la_SOURCES = swig-app-utils.c QuickFill.c \
+	file-utils.c gfec.c gnc-account-merge.c \
+	gnc-accounting-period.c gnc-component-manager.c gnc-druid.c \
+	gnc-druid-cb.c gnc-druid-provider.c gnc-druid-provider-desc.c \
 	gnc-druid-provider-desc-edge.c gnc-druid-provider-desc-file.c \
 	gnc-druid-provider-desc-multifile.c \
-	gnc-druid-provider-file-cb.c gnc-euro.c gnc-exp-parser.c \
-	gnc-gettext-util.c gnc-helpers.c gnc-sx-instance-model.c \
-	gncmod-app-utils.c gnc-ui-util.c guile-util.c option-util.c \
-	$(am__append_1)
+	gnc-druid-provider-file-cb.c gnc-entry-quickfill.c gnc-euro.c \
+	gnc-exp-parser.c gnc-gettext-util.c gnc-helpers.c \
+	gnc-sx-instance-model.c gncmod-app-utils.c gnc-ui-util.c \
+	guile-util.c option-util.c $(am__append_1)
 gncincludedir = ${GNC_INCLUDE_DIR}
 gncinclude_HEADERS = \
+  QuickFill.h \
   file-utils.h \
   gfec.h \
   gnc-basic-gobject.h \
@@ -490,13 +492,13 @@ gncinclude_HEADERS = \
   gnc-druid-provider-desc-file.h \
   gnc-druid-provider-desc-multifile.h \
   gnc-druid-provider-file-cb.h \
+  gnc-entry-quickfill.h \
   gnc-euro.h \
   gnc-exp-parser.h \
   gnc-gettext-util.h \
   gnc-help-utils.h \
   gnc-helpers.h \
   gnc-sx-instance-model.h \
-  gnc-ui-common.h \
   gnc-ui-util.h \
   guile-util.h \
   option-util.h
@@ -606,6 +608,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/QuickFill.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/file-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gfec.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-account-merge.Plo@am__quote@
@@ -619,6 +622,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-druid-provider-file-cb.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-druid-provider.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-druid.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-entry-quickfill.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-euro.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-exp-parser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-gettext-util.Plo@am__quote@

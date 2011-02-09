@@ -16,9 +16,13 @@
 #include <app-utils/gnc-sx-instance-model.h>
 
 #include "engine-helpers.h"
+%}
 
+#if defined(SWIGGUILE)
+%{
 SCM scm_init_sw_app_utils_module (void);
 %}
+#endif
 
 %import "base-typemaps.i"
 
@@ -39,6 +43,7 @@ void gnc_option_db_destroy(GNCOptionDB *odb);
 void gnc_option_db_set_option_selectable_by_name(SCM guile_option,
       const char *section, const char *name, gboolean selectable);
 
+#if defined(SWIGGUILE)
 %typemap(out) GncCommodityList * {
   SCM list = SCM_EOL;
   GList *node;
@@ -62,8 +67,6 @@ gnc_commodity * gnc_default_report_currency (void);
 void gncp_option_invoke_callback(GNCOptionChangeCallback callback, void *data);
 void gnc_option_db_register_option(GNCOptionDBHandle handle,
         SCM guile_option);
-
-const char * gnc_locale_default_iso_currency_code (void);
 
 GNCPrintAmountInfo gnc_default_print_info (gboolean use_symbol);
 GNCPrintAmountInfo gnc_account_print_info (const Account *account,
@@ -97,10 +100,13 @@ void gnc_register_kvp_option_generator(QofIdType id_type, SCM generator);
   {
     SCM key_scm = SCM_CAR (path_scm);
     char *key;
+    gchar* gkey;
     if (!scm_is_string (key_scm))
       break;
-    key = g_strdup (scm_to_locale_string (key_scm));
-    path = g_list_prepend (path, key);
+    key = scm_to_locale_string (key_scm);
+    gkey = g_strdup (key);
+    gnc_free_scm_locale_string(key);
+    path = g_list_prepend (path, gkey);
     path_scm = SCM_CDR (path_scm);
   }
   $1 = g_list_reverse (path);
@@ -132,3 +138,4 @@ time_t gnc_parse_time_to_timet(const gchar *s, const gchar *format);
 }
 GHashTable* gnc_sx_all_instantiate_cashflow_all(GDate range_start, GDate range_end);
 %clear GHashTable *;
+#endif

@@ -354,8 +354,8 @@ add_kvp_value_node(xmlNodePtr node, gchar *tag, kvp_value* val)
         if (!frame || !kvp_frame_get_hash (frame))
             break;
 
-        g_hash_table_foreach(kvp_frame_get_hash(frame),
-                             add_kvp_slot, val_node);
+        g_hash_table_foreach_sorted(kvp_frame_get_hash(frame),
+                                    add_kvp_slot, val_node, (GCompareFunc)strcmp);
     }
     break;
 
@@ -397,7 +397,8 @@ kvp_frame_to_dom_tree(const char *tag, const kvp_frame *frame)
 
     ret = xmlNewNode(NULL, BAD_CAST tag);
 
-    g_hash_table_foreach(kvp_frame_get_hash(frame), add_kvp_slot, ret);
+    g_hash_table_foreach_sorted(kvp_frame_get_hash(frame),
+                                add_kvp_slot, ret, (GCompareFunc)strcmp);
 
     return ret;
 }

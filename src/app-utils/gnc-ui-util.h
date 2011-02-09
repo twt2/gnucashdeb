@@ -177,6 +177,8 @@ gnc_ui_account_get_print_report_balance (xaccGetBalanceInCurrencyFn fn,
 
 char *gnc_ui_account_get_tax_info_string (const Account *account);
 
+char *gnc_ui_account_get_tax_info_sub_acct_string (const Account *account);
+
 gnc_numeric gnc_ui_account_get_balance_as_of_date (Account *account,
         time_t date,
         gboolean include_children);
@@ -202,10 +204,6 @@ gboolean gnc_account_create_opening_balance (Account *account,
 
 /* Locale functions *************************************************/
 
-/* The gnc_localeconv() subroutine returns an lconv structure
- * containing locale information. If no locale is set, the structure
- * is given default (en_US) values.  */
-struct lconv * gnc_localeconv (void);
 
 /* Returns the default currency of the current locale, or NULL if no
  * sensible currency could be identified from the locale. */
@@ -236,16 +234,6 @@ gnc_commodity * gnc_default_currency (void);
  *  @return A pointer to a currency.
  */
 gnc_commodity * gnc_default_report_currency (void);
-
-
-/* Returns the number of decimal place to print in the current locale */
-int gnc_locale_decimal_places (void);
-
-/* Push and pop locales. Currently, this has no effect on gnc_localeconv.
- * i.e., after the first call to gnc_localeconv, subsequent calls will
- * return the same information. */
-void gnc_push_locale (const char *locale);
-void gnc_pop_locale (void);
 
 /* Amount printing and parsing **************************************/
 

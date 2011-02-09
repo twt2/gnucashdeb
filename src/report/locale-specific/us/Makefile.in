@@ -84,6 +84,8 @@ LTLIBRARIES = $(pkglib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libgncmod_locale_reports_us_la_DEPENDENCIES =  \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
+	$(top_builddir)/src/app-utils/libgncmod-app-utils.la \
+	$(top_builddir)/src/gnome-utils/libgncmod-gnome-utils.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_libgncmod_locale_reports_us_la_OBJECTS =  \
 	gncmod-locale-reports-us.lo
@@ -230,6 +232,7 @@ GNUCASH_LATEST_STABLE_SERIES = @GNUCASH_LATEST_STABLE_SERIES@
 GNUCASH_MAJOR_VERSION = @GNUCASH_MAJOR_VERSION@
 GNUCASH_MICRO_VERSION = @GNUCASH_MICRO_VERSION@
 GNUCASH_MINOR_VERSION = @GNUCASH_MINOR_VERSION@
+GNUCASH_NANO_VERSION = @GNUCASH_NANO_VERSION@
 GOBJECT_QUERY = @GOBJECT_QUERY@
 GOFFICE_CFLAGS = @GOFFICE_CFLAGS@
 GOFFICE_LIBS = @GOFFICE_LIBS@
@@ -408,6 +411,8 @@ libgncmod_locale_reports_us_la_SOURCES = \
 libgncmod_locale_reports_us_la_LDFLAGS = -avoid-version
 libgncmod_locale_reports_us_la_LIBADD = \
   ${top_builddir}/src/gnc-module/libgnc-module.la \
+  $(top_builddir)/src/app-utils/libgncmod-app-utils.la \
+  $(top_builddir)/src/gnome-utils/libgncmod-gnome-utils.la \
   ${GUILE_LIBS} \
   ${GLIB_LIBS} 
 

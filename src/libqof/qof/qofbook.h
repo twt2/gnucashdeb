@@ -96,6 +96,12 @@ struct _QofBook
     /* Hash table of destroy callbacks for the data table. */
     GHashTable *data_table_finalizers;
 
+    /* Boolean indicates whether book is safe to write to (true means
+     * that it isn't. The usual reason will be a database version
+     * mismatch with the running instance of Gnucash.
+     */
+    gboolean read_only;
+
     /* state flag: 'y' means 'open for editing',
      * 'n' means 'book is closed'
      * xxxxx shouldn't this be replaced by the instance editlevel ???
@@ -221,6 +227,12 @@ void qof_book_set_data_fin (QofBook *book, const gchar *key, gpointer data,
 /** Retrieves arbitrary pointers to structs stored by qof_book_set_data. */
 gpointer qof_book_get_data (const QofBook *book, const gchar *key);
 
+/** Return whether the book is read only. */
+gboolean qof_book_is_readonly(const QofBook *book);
+
+/** Mark the book as read only. */
+void qof_book_mark_readonly(QofBook *book);
+
 #endif /* SWIG */
 
 /** Returns flag indicating whether this book uses trading accounts */
@@ -278,10 +290,28 @@ void qof_book_kvp_changed (QofBook *book);
  */
 gboolean qof_book_equal (const QofBook *book_1, const QofBook *book_2);
 
-/** This will 'get and increment' the named counter for this book.
- * The return value is -1 on error or the incremented counter.
+/** This will get the named counter for this book. The return value is
+ *    -1 on error or the current value of the counter.
  */
 gint64 qof_book_get_counter (QofBook *book, const char *counter_name);
+
+/** This will increment the named counter for this book and format it.
+ *    The return value is NULL on error or the formatted (new) value of
+ *    the counter. The caller should free the result with g_gree.
+ */
+gchar *qof_book_increment_and_format_counter (QofBook *book, const char *counter_name);
+
+/** Validate a counter format string. Returns an error message if the
+ *    format string was invalid, or NULL if it is ok. The caller should
+ *    free the error message with g_free.
+ */
+gchar * qof_book_validate_counter_format(const gchar *format);
+
+/** Get the format string to use for the named counter.
+ *    The return value is NULL on error or the format string of the
+ *    counter. The string should not be freed.
+ */
+gchar *qof_book_get_counter_format (const QofBook *book, const char *counter_name);
 
 const char* qof_book_get_string_option(const QofBook* book, const char* opt_name);
 void qof_book_set_string_option(QofBook* book, const char* opt_name, const char* opt_val);

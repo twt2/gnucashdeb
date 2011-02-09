@@ -76,6 +76,7 @@ qof_book_init (QofBook *book)
     book->data_table_finalizers = g_hash_table_new (g_str_hash, g_str_equal);
 
     book->book_open = 'y';
+    book->read_only = FALSE;
     book->version = 0;
 }
 
@@ -302,6 +303,20 @@ qof_book_get_data (const QofBook *book, const char *key)
 }
 
 /* ====================================================================== */
+gboolean
+qof_book_is_readonly(const QofBook *book)
+{
+    g_return_val_if_fail( book != NULL, TRUE );
+    return book->read_only;
+}
+
+void
+qof_book_mark_readonly(QofBook *book)
+{
+    g_return_if_fail( book != NULL );
+    book->read_only = TRUE;
+}
+/* ====================================================================== */
 
 QofCollection *
 qof_book_get_collection (const QofBook *book, QofIdType entity_type)
@@ -392,10 +407,8 @@ void qof_book_set_version (QofBook *book, gint32 version)
 gint64
 qof_book_get_counter (QofBook *book, const char *counter_name)
 {
-    QofBackend *be;
     KvpFrame *kvp;
     KvpValue *value;
-    gint64 counter;
 
     if (!book)
     {
@@ -409,12 +422,7 @@ qof_book_get_counter (QofBook *book, const char *counter_name)
         return -1;
     }
 
-    /* If we've got a backend with a counter method, call it */
-    be = book->backend;
-    if (be && be->counter)
-        return ((be->counter)(be, counter_name));
-
-    /* If not, then use the KVP in the book */
+    /* Use the KVP in the book */
     kvp = qof_book_get_slots (book);
 
     if (!kvp)
@@ -427,16 +435,54 @@ qof_book_get_counter (QofBook *book, const char *counter_name)
     if (value)
     {
         /* found it */
-        counter = kvp_value_get_gint64 (value);
+        return kvp_value_get_gint64 (value);
     }
     else
     {
         /* New counter */
-        counter = 0;
+        return 0;
+    }
+}
+
+gchar *
+qof_book_increment_and_format_counter (QofBook *book, const char *counter_name)
+{
+    QofBackend *be;
+    KvpFrame *kvp;
+    KvpValue *value;
+    gint64 counter;
+    gchar* format;
+
+    if (!book)
+    {
+        PWARN ("No book!!!");
+        return NULL;
     }
 
-    /* Counter is now valid; increment it */
+    if (!counter_name || *counter_name == '\0')
+    {
+        PWARN ("Invalid counter name.");
+        return NULL;
+    }
+
+    /* Get the current counter value from the KVP in the book. */
+    counter = qof_book_get_counter(book, counter_name);
+
+    /* Check if an error occured */
+    if (counter < 0)
+        return NULL;
+
+    /* Increment the counter */
     counter++;
+
+    /* Get the KVP from the current book */
+    kvp = qof_book_get_slots (book);
+
+    if (!kvp)
+    {
+        PWARN ("Book has no KVP_Frame");
+        return NULL;
+    }
 
     /* Save off the new counter */
     qof_book_begin_edit(book);
@@ -446,8 +492,165 @@ qof_book_get_counter (QofBook *book, const char *counter_name)
     qof_book_mark_dirty(book);
     qof_book_commit_edit(book);
 
-    /* and return the value */
-    return counter;
+    format = qof_book_get_counter_format(book, counter_name);
+
+    if (!format)
+    {
+        PWARN("Cannot get format for counter");
+        return NULL;
+    }
+
+    /* Generate a string version of the counter */
+    return g_strdup_printf(format, counter);
+}
+
+gchar *
+qof_book_get_counter_format(const QofBook *book, const char *counter_name)
+{
+    KvpFrame *kvp;
+    gchar *format;
+    KvpValue *value;
+    gchar *error;
+
+    if (!book)
+    {
+        PWARN ("No book!!!");
+        return NULL;
+    }
+
+    if (!counter_name || *counter_name == '\0')
+    {
+        PWARN ("Invalid counter name.");
+        return NULL;
+    }
+
+    /* Get the KVP from the current book */
+    kvp = qof_book_get_slots (book);
+
+    if (!kvp)
+    {
+        PWARN ("Book has no KVP_Frame");
+        return NULL;
+    }
+
+    format = NULL;
+
+    /* Get the format string */
+    value = kvp_frame_get_slot_path (kvp, "counter_formats", counter_name, NULL);
+    if (value)
+    {
+        format = kvp_value_get_string (value);
+        error = qof_book_validate_counter_format(format);
+        if (error != NULL)
+        {
+            PWARN("Invalid counter format string. Format string: '%s' Counter: '%s' Error: '%s')", format, counter_name, error);
+            /* Invalid format string */
+            format = NULL;
+            g_free(error);
+        }
+    }
+
+    /* If no (valid) format string was found, use the default format
+     * string */
+    if (!format)
+    {
+        /* Use the default format */
+        format = "%.6" G_GINT64_FORMAT;
+    }
+    return format;
+}
+
+gchar *
+qof_book_validate_counter_format(const gchar *p)
+{
+    const gchar *conv_start, *tmp;
+
+    /* Validate a counter format. This is a very simple "parser" that
+     * simply checks for a single gint64 conversion specification,
+     * allowing all modifiers and flags that printf(3) specifies (except
+     * for the * width and precision, which need an extra argument). */
+
+    /* Skip a prefix of any character except % */
+    while (*p)
+    {
+        /* Skip two adjacent percent marks, which are literal percent
+         * marks */
+        if (p[0] == '%' && p[1] == '%')
+        {
+            p += 2;
+            continue;
+        }
+        /* Break on a single percent mark, which is the start of the
+         * conversion specification */
+        if (*p == '%')
+            break;
+        /* Skip all other characters */
+        p++;
+    }
+
+    if (!*p)
+        return g_strdup("Format string ended without any conversion specification");
+
+    /* Store the start of the conversion for error messages */
+    conv_start = p;
+
+    /* Skip the % */
+    p++;
+
+    /* Skip any number of flag characters */
+    while (*p && strchr("#0- +'I", *p)) p++;
+
+    /* Skip any number of field width digits */
+    while (*p && strchr("0123456789", *p)) p++;
+
+    /* A precision specifier always starts with a dot */
+    if (*p && *p == '.')
+    {
+        /* Skip the . */
+        p++;
+        /* Skip any number of precision digits */
+        while (*p && strchr("0123456789", *p)) p++;
+    }
+
+    if (!*p)
+        return g_strdup_printf("Format string ended during the conversion specification. Conversion seen so far: %s", conv_start);
+
+    /* See if the format string starts with the correct format
+     * specification. */
+    tmp = strstr(p, G_GINT64_FORMAT);
+    if (tmp == NULL)
+    {
+        return g_strdup_printf("Invalid length modifier and/or conversion specifier ('%.2s'), it should be: " G_GINT64_FORMAT, p);
+    }
+    else if (tmp != p)
+    {
+        return g_strdup_printf("Garbage before length modifier and/or conversion specifier: '%*s'", (int)(tmp - p), p);
+    }
+
+    /* Skip length modifier / conversion specifier */
+    p += strlen(G_GINT64_FORMAT);
+
+    /* Skip a suffix of any character except % */
+    while (*p)
+    {
+        /* Skip two adjacent percent marks, which are literal percent
+         * marks */
+        if (p[0] == '%' && p[1] == '%')
+        {
+            p += 2;
+            continue;
+        }
+        /* Break on a single percent mark, which is the start of the
+         * conversion specification */
+        if (*p == '%')
+            return g_strdup_printf("Format string contains unescaped %% signs (or multiple conversion specifications) at '%s'", p);
+        /* Skip all other characters */
+        p++;
+    }
+
+    /* If we end up here, the string was valid, so return no error
+     * message */
+    return NULL;
 }
 
 /* Determine whether this book uses trading accounts */

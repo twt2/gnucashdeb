@@ -96,6 +96,8 @@ typedef enum
     ERR_FILEIO_READ_ERROR,     /**< Could not open the file for reading. */
     ERR_FILEIO_NO_ENCODING,    /**< file does not specify encoding */
     ERR_FILEIO_FILE_EACCES,    /**< No read access permission for the given file */
+    ERR_FILEIO_RESERVED_WRITE, /**< User attempt to write to a directory reserved
+                                    for internal use by GnuCash */
 
     /* network errors */
     ERR_NETIO_SHORT_READ = 2000,  /**< not enough bytes received */
@@ -105,7 +107,9 @@ typedef enum
     /* database errors */
     ERR_SQL_MISSING_DATA = 3000,  /**< database doesn't contain expected data */
     ERR_SQL_DB_TOO_OLD,           /**< database is old and needs upgrading */
+    ERR_SQL_DB_TOO_NEW,		  /**< database is newer, we can't write to it */
     ERR_SQL_DB_BUSY,              /**< database is busy, cannot upgrade version */
+    ERR_SQL_BAD_DBI,		  /**< LibDBI has numeric errors */
 
     /* RPC errors */
     ERR_RPC_HOST_UNK = 4000,      /**< Host unknown */

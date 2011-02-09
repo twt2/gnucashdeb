@@ -86,6 +86,7 @@ libgncmod_backend_dbi_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) \
 	${top_builddir}/src/backend/sql/libgnc-backend-sql.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
+	${top_builddir}/src/core-utils/libgnc-core-utils.la \
 	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1)
 am_libgncmod_backend_dbi_la_OBJECTS = gnc-backend-dbi.lo
@@ -231,6 +232,7 @@ GNUCASH_LATEST_STABLE_SERIES = @GNUCASH_LATEST_STABLE_SERIES@
 GNUCASH_MAJOR_VERSION = @GNUCASH_MAJOR_VERSION@
 GNUCASH_MICRO_VERSION = @GNUCASH_MICRO_VERSION@
 GNUCASH_MINOR_VERSION = @GNUCASH_MINOR_VERSION@
+GNUCASH_NANO_VERSION = @GNUCASH_NANO_VERSION@
 GOBJECT_QUERY = @GOBJECT_QUERY@
 GOFFICE_CFLAGS = @GOFFICE_CFLAGS@
 GOFFICE_LIBS = @GOFFICE_LIBS@
@@ -434,6 +436,7 @@ libgncmod_backend_dbi_la_LIBADD = \
    ${GCONF_LIBS} \
    ${top_builddir}/src/backend/sql/libgnc-backend-sql.la \
    ${top_builddir}/src/engine/libgncmod-engine.la \
+   ${top_builddir}/src/core-utils/libgnc-core-utils.la \
    ${top_builddir}/src/libqof/qof/libgnc-qof.la \
    ${LIBDBI_LIBS}
 

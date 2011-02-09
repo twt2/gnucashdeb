@@ -20,10 +20,18 @@ dnl Process this file with autoconf to produce a configure script.
 
 # Autoconf initialization
 AC_PREREQ(2.59)
-AC_INIT([GnuCash], [2.4.0], [gnucash-devel@gnucash.org])
+AC_INIT([GnuCash], [2.4.2], [gnucash-devel@gnucash.org])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_SRCDIR(src/engine/Transaction.h)
 
+#Change this in development versions when changing anything that
+#affects stored data structures. Reset to zero when bumping version.
+GNUCASH_NANO_VERSION=0
+#This should be the earliest version in the form XXMMUUNN (XX=MAJOR,
+#MM=MINOR, UU=MICRO, NN=NANO) or SVN revision if before 2.4.1 which is
+#storage-compatible with the current version. See the comments in
+#src/backend/dbi/gnc-backend-dbi.c:gnc_dbi_load.
+GNUCASH_RESAVE_VERSION=19920
 # Initialize automake -- make sure we have at least version 1.9
 AM_INIT_AUTOMAKE([1.9 dist-bzip2])
 
@@ -67,6 +75,7 @@ AC_SUBST(GCONF_SCHEMA_CONFIG_SOURCE_DIRONLY)
 AC_SUBST(GNUCASH_MAJOR_VERSION)
 AC_SUBST(GNUCASH_MINOR_VERSION)
 AC_SUBST(GNUCASH_MICRO_VERSION)
+AC_SUBST(GNUCASH_NANO_VERSION)
 AC_SUBST(GNUCASH_LATEST_STABLE_SERIES)
 
 AC_DEFINE_UNQUOTED(GNUCASH_MAJOR_VERSION, $GNUCASH_MAJOR_VERSION,
@@ -75,6 +84,10 @@ AC_DEFINE_UNQUOTED(GNUCASH_MINOR_VERSION, $GNUCASH_MINOR_VERSION,
     [GnuCash Minor version number])
 AC_DEFINE_UNQUOTED(GNUCASH_MICRO_VERSION, $GNUCASH_MICRO_VERSION,
     [GnuCash Micro version number])
+AC_DEFINE_UNQUOTED(GNUCASH_NANO_VERSION, $GNUCASH_NANO_VERSION,
+    [GnuCash Nano version number])
+AC_DEFINE_UNQUOTED(GNUCASH_RESAVE_VERSION, $GNUCASH_RESAVE_VERSION,
+    [GnuCash earliest compatible databaseversion number])
 AC_DEFINE_UNQUOTED(GNUCASH_LATEST_STABLE_SERIES, "$GNUCASH_LATEST_STABLE_SERIES",
     [Most recent stable GnuCash series])
 
@@ -200,6 +213,17 @@ else
   AC_MSG_RESULT(no)
 fi
 
+AC_MSG_CHECKING([for GLib testing (glib >= 2.16.0)])
+if $PKG_CONFIG 'glib-2.0 >= 2.16.0'
+then
+  AC_MSG_RESULT(yes)
+  _have_glib_testing=yes
+else
+  AC_MSG_RESULT(no)
+  _have_glib_testing=no
+fi
+AM_CONDITIONAL(HAVE_GLIB_TESTING, test "x$_have_glib_testing" = "xyes")
+
 AC_CHECK_HEADERS(dirent.h dlfcn.h dl.h utmp.h locale.h mcheck.h unistd.h wctype.h)
 
 # Gnucash replaced dlopen/dlsym by the g_module functions; dlsym
@@ -240,7 +264,7 @@ update to latest  darwin])
     AC_MSG_CHECKING(For GDK-Quartz)
     platform=osx
     _gdk_tgt=`$PKG_CONFIG --variable=target gdk-2.0`
-    if test "x$_gdk_tgt" = xquartz; then 
+    if test "x$_gdk_tgt" = xquartz; then
       platform=darwin/quartz
       AC_MSG_RESULT(yes)
       AC_DEFINE(GDK_QUARTZ,,[Using GDK Quartz (not X11)])
@@ -311,8 +335,8 @@ AM_CONDITIONAL(OS_WIN32, test "x$native_win32" = "xyes")
 
 # These are unavailable on windows/mingw32 and X11 isn't desired or
 # required for MacOSX Quartz
-if test "x$_gdk_tgt" = xquartz; 
-then 
+if test "x$_gdk_tgt" = xquartz;
+then
     AC_CHECK_HEADERS(glob.h)
 else
     AC_CHECK_HEADERS(X11/Xlib.h glob.h)
@@ -321,7 +345,7 @@ AM_CONDITIONAL(HAVE_X11_XLIB_H, test "x$ac_cv_header_X11_Xlib_h" = "xyes")
 AC_CHECK_FUNCS(chown gethostname getppid getuid gettimeofday gmtime_r)
 AC_CHECK_FUNCS(gethostid link)
 ##################################################
-  
+
 
 
 ### --------------------------------------------------------------------------
@@ -663,7 +687,7 @@ case "${want_ofx}" in
 esac
 if test x${want_ofx} != xno ;
 then
-  AC_ARG_WITH( ofx-prefix, 
+  AC_ARG_WITH( ofx-prefix,
     [AS_HELP_STRING([--with-ofx-prefix=DIR],[specify where to look for libOFX])],
     OFXPREFIX="$with_ofx_prefix" )
 
@@ -698,7 +722,7 @@ then
           ] )
     fi
 
-    if test "x${want_ofx}" != xno ; then 
+    if test "x${want_ofx}" != xno ; then
       LIBOFX_LIBS="${LIBOFX_LIBS} -lofx"
       AC_MSG_CHECKING(for libofx)
       save_LIBS="${LIBS}"
@@ -744,19 +768,18 @@ AC_ARG_ENABLE( aqbanking,
     want_aqbanking=yes
   fi)
 AC_ARG_ENABLE( hbci,
-  [AS_HELP_STRING([--enable-hbci],[an alias for --enable-aqbanking])],
+  [AS_HELP_STRING([--enable-hbci],[obsolete, replaced by --enable-aqbanking])],
   if test "x$enableval" != "xno" ; then
-    want_aqbanking=yes
+    AC_MSG_ERROR([--enable-hbci is obsolete -- the option has been renamed into --enable-aqbanking])
   fi)
 if test x${want_aqbanking} = xyes ;
 then
   # Check for Aqbanking library
-  # aqbanking-1.6.1 was released on 2005-11-04; aqbanking ships with
-  # a pkg-config file since 1.6.1.
-  PKG_CHECK_MODULES(AQBANKING, aqbanking >= 3.0.0 gwenhywfar, [AQBANKING_DIR=aqbanking], [
-    PKG_CHECK_MODULES(AQBANKING, aqbanking >= 1.6.1 aqbanking < 2.9.0 gwenhywfar, [AQBANKING_DIR=hbci], [
-      AC_MSG_ERROR([Could not find aqbanking > 1.6.0. If you use --enable-aqbanking or --enable-hbci, you *have* to have aqbanking installed!])
-    ])
+  # We require aqbanking-4.0.0 because our implementation doesn't run
+  # with earlier version anymore. (libaqbanking ships with a pkgconfig
+  # file since its version 1.6.1.)
+  PKG_CHECK_MODULES(AQBANKING, aqbanking >= 4.0.0 gwenhywfar, [AQBANKING_DIR=aqbanking], [
+    AC_MSG_ERROR([Could not find aqbanking >= 4.0.0. If you use --enable-aqbanking, you *have* to have aqbanking installed!])
   ])
   # For libgwenhywfar > 3.99.20, look for its library gwengui-gtk2.
   PKG_CHECK_MODULES([GWENGUI_GTK2], [gwengui-gtk2 gwenhywfar], [has_gwengui_gtk2=1], [has_gwengui_gtk2=0])
@@ -896,11 +919,11 @@ AC_DEFUN([BB_ENABLE_DOXYGEN],
   [
     AC_ARG_ENABLE(doxygen, [AS_HELP_STRING([--enable-doxygen],[enable documentation generation with doxygen (auto)])])
     AC_ARG_ENABLE(dot, [AS_HELP_STRING([--enable-dot],[use 'dot' to generate graphs in doxygen (auto)])])
-    AC_ARG_ENABLE(html-docs, [AS_HELP_STRING([--enable-html-docs],[enable HTML generation with doxygen (yes)])], [], [ enable_html_docs=yes])              
-    AC_ARG_ENABLE(latex-docs, [AS_HELP_STRING([--enable-latex-docs],[enable LaTeX documentation generation with doxygen (no)])], [], [ enable_latex_docs=no])              
+    AC_ARG_ENABLE(html-docs, [AS_HELP_STRING([--enable-html-docs],[enable HTML generation with doxygen (yes)])], [], [ enable_html_docs=yes])
+    AC_ARG_ENABLE(latex-docs, [AS_HELP_STRING([--enable-latex-docs],[enable LaTeX documentation generation with doxygen (no)])], [], [ enable_latex_docs=no])
     if test "x$enable_doxygen" = xno; then
       enable_doc=no
-    else 
+    else
       AC_PATH_PROG(DOXYGEN, doxygen, , $PATH)
       if test x$DOXYGEN = x; then
         if test "x$enable_doxygen" = xyes; then
@@ -942,7 +965,7 @@ LIBS="$LIBS -lm"
 ### When disabled, we don't even need to check for them!
 ### --------------------------------------------------------------------------
 
-AC_ARG_ENABLE(gui, 
+AC_ARG_ENABLE(gui,
   [AS_HELP_STRING([--disable-gui],[build without the GNOME GUI components of Gnucash])],
   [case "${enableval}" in
      yes) gnc_build_gui=true ;;
@@ -955,7 +978,7 @@ AM_CONDITIONAL(GNUCASH_ENABLE_GUI, test x${gnc_build_gui} = xtrue)
 
 ### --------------------------------------------------------------------------
 ### GNOME gui components -- built by default, but not if --enable-gui=no
-### or --disable-gui is passed to autogen 
+### or --disable-gui is passed to autogen
 ### --------------------------------------------------------------------------
 
 if test x${gnc_build_gui} = xtrue ;
@@ -1118,7 +1141,7 @@ then
   esac
 
   ### ----------------------------------------------------------------------
-    
+
   AC_ARG_ENABLE( efence,
     [AS_HELP_STRING([--enable-efence],[link using efence])],
     if test x$enableval = xyes; then
@@ -1134,7 +1157,7 @@ then
   ## For now, we just presume you're using the GNOME version.  The other
   ## UI's haven't been carried over during the automake transition.  At
   ## some point, if it's deemed worthwhile, they can be resurrected...
-    
+
   GNOME=1
   AC_DEFINE(GNOME,,using GNOME)
 
@@ -1293,7 +1316,7 @@ then
        *) AC_MSG_ERROR(bad value ${enableval} for --enable-error-on-warning) ;;
      esac],
     [ if test "${error_on_warning_as_default}" = "yes"; then
-        warnFLAGS="${warnFLAGS} -Werror"; 
+        warnFLAGS="${warnFLAGS} -Werror";
         gnc_error_on_warning=auto
       else
         gnc_error_on_warning=no
@@ -1401,10 +1424,10 @@ AC_CONFIG_FILES(
   src/bin/test/Makefile
   src/core-utils/Makefile
   src/core-utils/test/Makefile
-  src/calculation/Makefile 
+  src/calculation/Makefile
   src/calculation/test/Makefile
   src/debug/Makefile
-  src/debug/valgrind/Makefile 
+  src/debug/valgrind/Makefile
   src/doc/Makefile
   src/doc/design/Makefile
   src/doc/xml/Makefile
@@ -1445,12 +1468,9 @@ AC_CONFIG_FILES(
   src/import-export/log-replay/Makefile
   src/import-export/aqbanking/Makefile
   src/import-export/aqbanking/schemas/Makefile
-  src/import-export/hbci/Makefile
-  src/import-export/hbci/glade/Makefile
-  src/import-export/hbci/schemas/Makefile
-  src/import-export/hbci/test/Makefile
   src/libqof/Makefile
   src/libqof/qof/Makefile
+  src/libqof/qof/test/Makefile
   src/optional/Makefile
   src/optional/python-bindings/Makefile
   src/optional/python-bindings/tests/Makefile
@@ -1495,6 +1515,11 @@ AC_CONFIG_FILES(
   src/business/business-gnome/ui/Makefile
   src/business/business-ledger/Makefile
 
+  dnl # Stuff for bill/invoice import plugin
+  src/plugins/Makefile
+  src/plugins/bi_import/Makefile
+  src/plugins/bi_import/glade/Makefile
+  src/plugins/bi_import/ui/Makefile
   dnl # non-makefiles
   dnl # Please read doc/build-system before adding *anything* here
 

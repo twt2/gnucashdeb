@@ -34,6 +34,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+check_PROGRAMS = sqlite3test$(EXEEXT)
 subdir = src/optional/python-bindings
 DIST_COMMON = $(pkgpython_PYTHON) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
@@ -92,6 +93,14 @@ _gnucash_core_c_la_OBJECTS = $(am__gnucash_core_c_la_OBJECTS)
 _gnucash_core_c_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(_gnucash_core_c_la_LDFLAGS) $(LDFLAGS) -o $@
+am_sqlite3test_OBJECTS = sqlite3test-sqlite3test.$(OBJEXT)
+sqlite3test_OBJECTS = $(am_sqlite3test_OBJECTS)
+am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
+	${top_builddir}/src/gnc-module/libgnc-module.la \
+	${top_builddir}/src/engine/libgncmod-engine.la
+sqlite3test_DEPENDENCIES = $(am__DEPENDENCIES_2)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -105,8 +114,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(_gnucash_core_c_la_SOURCES)
-DIST_SOURCES = $(_gnucash_core_c_la_SOURCES)
+SOURCES = $(_gnucash_core_c_la_SOURCES) $(sqlite3test_SOURCES)
+DIST_SOURCES = $(_gnucash_core_c_la_SOURCES) $(sqlite3test_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-dvi-recursive install-exec-recursive \
@@ -229,6 +238,7 @@ GNUCASH_LATEST_STABLE_SERIES = @GNUCASH_LATEST_STABLE_SERIES@
 GNUCASH_MAJOR_VERSION = @GNUCASH_MAJOR_VERSION@
 GNUCASH_MICRO_VERSION = @GNUCASH_MICRO_VERSION@
 GNUCASH_MINOR_VERSION = @GNUCASH_MINOR_VERSION@
+GNUCASH_NANO_VERSION = @GNUCASH_NANO_VERSION@
 GOBJECT_QUERY = @GOBJECT_QUERY@
 GOFFICE_CFLAGS = @GOFFICE_CFLAGS@
 GOFFICE_LIBS = @GOFFICE_LIBS@
@@ -481,10 +491,12 @@ EXTRA_DIST = \
   example_scripts/change_tax_code.py \
   example_scripts/account_analysis.py \
   example_scripts/new_book_with_opening_balances.py \
-  example_scripts/test_imbalance_transaction.py \
-  glib.i
+  example_scripts/test_imbalance_transaction.py
 
 MAINTAINERCLEANFILES = gnucash_core.c
+sqlite3test_SOURCES = sqlite3test.c
+sqlite3test_LDADD = ${_gnucash_core_c_la_LIBADD}
+sqlite3test_CPPFLAGS = ${_gnucash_core_c_la_CPPFLAGS}
 all: all-recursive
 
 .SUFFIXES:
@@ -553,6 +565,18 @@ clean-pkgpyexecLTLIBRARIES:
 _gnucash_core_c.la: $(_gnucash_core_c_la_OBJECTS) $(_gnucash_core_c_la_DEPENDENCIES) 
 	$(_gnucash_core_c_la_LINK) -rpath $(pkgpyexecdir) $(_gnucash_core_c_la_OBJECTS) $(_gnucash_core_c_la_LIBADD) $(LIBS)
 
+clean-checkPROGRAMS:
+	@list='$(check_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
+sqlite3test$(EXEEXT): $(sqlite3test_OBJECTS) $(sqlite3test_DEPENDENCIES) 
+	@rm -f sqlite3test$(EXEEXT)
+	$(LINK) $(sqlite3test_OBJECTS) $(sqlite3test_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -560,6 +584,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_gnucash_core_c_la-gnucash_core.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sqlite3test-sqlite3test.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -588,6 +613,20 @@ _gnucash_core_c_la-gnucash_core.lo: gnucash_core.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnucash_core.c' object='_gnucash_core_c_la-gnucash_core.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(_gnucash_core_c_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o _gnucash_core_c_la-gnucash_core.lo `test -f 'gnucash_core.c' || echo '$(srcdir)/'`gnucash_core.c
+
+sqlite3test-sqlite3test.o: sqlite3test.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(sqlite3test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sqlite3test-sqlite3test.o -MD -MP -MF $(DEPDIR)/sqlite3test-sqlite3test.Tpo -c -o sqlite3test-sqlite3test.o `test -f 'sqlite3test.c' || echo '$(srcdir)/'`sqlite3test.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/sqlite3test-sqlite3test.Tpo $(DEPDIR)/sqlite3test-sqlite3test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sqlite3test.c' object='sqlite3test-sqlite3test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(sqlite3test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sqlite3test-sqlite3test.o `test -f 'sqlite3test.c' || echo '$(srcdir)/'`sqlite3test.c
+
+sqlite3test-sqlite3test.obj: sqlite3test.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(sqlite3test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sqlite3test-sqlite3test.obj -MD -MP -MF $(DEPDIR)/sqlite3test-sqlite3test.Tpo -c -o sqlite3test-sqlite3test.obj `if test -f 'sqlite3test.c'; then $(CYGPATH_W) 'sqlite3test.c'; else $(CYGPATH_W) '$(srcdir)/sqlite3test.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/sqlite3test-sqlite3test.Tpo $(DEPDIR)/sqlite3test-sqlite3test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='sqlite3test.c' object='sqlite3test-sqlite3test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(sqlite3test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sqlite3test-sqlite3test.obj `if test -f 'sqlite3test.c'; then $(CYGPATH_W) 'sqlite3test.c'; else $(CYGPATH_W) '$(srcdir)/sqlite3test.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -827,6 +866,7 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
 check: check-recursive
 all-am: Makefile $(LTLIBRARIES)
 installdirs: installdirs-recursive
@@ -862,8 +902,8 @@ maintainer-clean-generic:
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
 clean: clean-recursive
 
-clean-am: clean-generic clean-libtool clean-pkgpyexecLTLIBRARIES \
-	mostlyclean-am
+clean-am: clean-checkPROGRAMS clean-generic clean-libtool \
+	clean-pkgpyexecLTLIBRARIES mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -rf ./$(DEPDIR)
@@ -931,23 +971,24 @@ ps-am:
 
 uninstall-am: uninstall-pkgpyexecLTLIBRARIES uninstall-pkgpythonPYTHON
 
-.MAKE: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) ctags-recursive \
-	install-am install-strip tags-recursive
+.MAKE: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) check-am \
+	ctags-recursive install-am install-strip tags-recursive
 
 .PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
-	all all-am check check-am clean clean-generic clean-libtool \
-	clean-pkgpyexecLTLIBRARIES ctags ctags-recursive distclean \
-	distclean-compile distclean-generic distclean-libtool \
-	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-pkgpyexecLTLIBRARIES \
-	install-pkgpythonPYTHON install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs installdirs-am \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags tags-recursive uninstall uninstall-am \
+	all all-am check check-am clean clean-checkPROGRAMS \
+	clean-generic clean-libtool clean-pkgpyexecLTLIBRARIES ctags \
+	ctags-recursive distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-pkgpyexecLTLIBRARIES install-pkgpythonPYTHON \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs installdirs-am maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags tags-recursive uninstall uninstall-am \
 	uninstall-pkgpyexecLTLIBRARIES uninstall-pkgpythonPYTHON
 
 

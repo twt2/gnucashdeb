@@ -65,6 +65,8 @@ test_import_parse_DEPENDENCIES =  \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	../libgncmod-generic-import.la \
+	$(top_builddir)/src/core-utils/libgnc-core-utils.la \
+	$(top_builddir)/src/app-utils/libgncmod-app-utils.la \
 	${top_builddir}/src/gnome-utils/libgncmod-gnome-utils.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/libqof/qof/libgnc-qof.la \
@@ -76,6 +78,8 @@ test_link_DEPENDENCIES =  \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	../libgncmod-generic-import.la \
+	$(top_builddir)/src/core-utils/libgnc-core-utils.la \
+	$(top_builddir)/src/app-utils/libgncmod-app-utils.la \
 	${top_builddir}/src/gnome-utils/libgncmod-gnome-utils.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/libqof/qof/libgnc-qof.la \
@@ -180,6 +184,7 @@ GNUCASH_LATEST_STABLE_SERIES = @GNUCASH_LATEST_STABLE_SERIES@
 GNUCASH_MAJOR_VERSION = @GNUCASH_MAJOR_VERSION@
 GNUCASH_MICRO_VERSION = @GNUCASH_MICRO_VERSION@
 GNUCASH_MINOR_VERSION = @GNUCASH_MINOR_VERSION@
+GNUCASH_NANO_VERSION = @GNUCASH_NANO_VERSION@
 GOBJECT_QUERY = @GOBJECT_QUERY@
 GOFFICE_CFLAGS = @GOFFICE_CFLAGS@
 GOFFICE_LIBS = @GOFFICE_LIBS@
@@ -365,6 +370,8 @@ LDADD = \
   ${top_builddir}/src/gnc-module/libgnc-module.la \
   ${top_builddir}/src/test-core/libtest-core.la \
   ../libgncmod-generic-import.la \
+  $(top_builddir)/src/core-utils/libgnc-core-utils.la \
+  $(top_builddir)/src/app-utils/libgncmod-app-utils.la \
   ${top_builddir}/src/gnome-utils/libgncmod-gnome-utils.la \
   ${top_builddir}/src/engine/libgncmod-engine.la \
   ${top_builddir}/src/libqof/qof/libgnc-qof.la \

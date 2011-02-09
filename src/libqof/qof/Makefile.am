@@ -1,3 +1,9 @@
+if HAVE_GLIB_TESTING
+SUBDIRS = . test
+else
+SUBDIRS = .
+endif
+
 lib_LTLIBRARIES = libgnc-qof.la
 
 libgnc_qof_la_LDFLAGS= -version-info $(LIBQOF_LIBRARY_VERSION)

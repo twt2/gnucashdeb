@@ -4365,6 +4365,8 @@ SWIGINTERN PyObject *_wrap_xaccSplitListGetUniqueTransactions(PyObject *SWIGUNUS
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -4990,6 +4992,8 @@ SWIGINTERN PyObject *_wrap_gnc_account_get_children(PyObject *SWIGUNUSEDPARM(sel
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_AccountList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -5039,6 +5043,8 @@ SWIGINTERN PyObject *_wrap_gnc_account_get_children_sorted(PyObject *SWIGUNUSEDP
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_AccountList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -5088,6 +5094,8 @@ SWIGINTERN PyObject *_wrap_gnc_account_get_descendants(PyObject *SWIGUNUSEDPARM(
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_AccountList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -5137,6 +5145,8 @@ SWIGINTERN PyObject *_wrap_gnc_account_get_descendants_sorted(PyObject *SWIGUNUS
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_AccountList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -5726,6 +5736,8 @@ SWIGINTERN PyObject *_wrap_gnc_account_list_name_violations(PyObject *SWIGUNUSED
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -8736,6 +8748,8 @@ SWIGINTERN PyObject *_wrap_xaccAccountGetSplitList(PyObject *SWIGUNUSEDPARM(self
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_SplitList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -8987,6 +9001,8 @@ SWIGINTERN PyObject *_wrap_xaccAccountGetLotList(PyObject *SWIGUNUSEDPARM(self),
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_LotList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -9103,6 +9119,8 @@ SWIGINTERN PyObject *_wrap_xaccAccountFindOpenLots(PyObject *SWIGUNUSEDPARM(self
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_LotList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -11335,6 +11353,8 @@ SWIGINTERN PyObject *_wrap_xaccTransGetSplitList(PyObject *SWIGUNUSEDPARM(self),
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_SplitList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -11806,6 +11826,8 @@ SWIGINTERN PyObject *_wrap_xaccTransGetImbalance(PyObject *SWIGUNUSEDPARM(self),
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -13004,6 +13026,8 @@ SWIGINTERN PyObject *_wrap_gnc_lot_get_split_list(PyObject *SWIGUNUSEDPARM(self)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_SplitList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -14639,6 +14663,35 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_qof_session_safe_save(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  QofSession *arg1 = (QofSession *) 0 ;
+  QofPercentageFunc arg2 = (QofPercentageFunc) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:qof_session_safe_save",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofSession, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_session_safe_save" "', argument " "1"" of type '" "QofSession *""'"); 
+  }
+  arg1 = (QofSession *)(argp1);
+  {
+    int res = SWIG_ConvertFunctionPtr(obj1, (void**)(&arg2), SWIGTYPE_p_f_p_q_const__char_double__void);
+    if (!SWIG_IsOK(res)) {
+      SWIG_exception_fail(SWIG_ArgError(res), "in method '" "qof_session_safe_save" "', argument " "2"" of type '" "QofPercentageFunc""'"); 
+    }
+  }
+  qof_session_safe_save(arg1,arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_qof_session_end(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   QofSession *arg1 = (QofSession *) 0 ;
@@ -15132,6 +15185,8 @@ SWIGINTERN PyObject *_wrap_qof_backend_get_registered_access_method_list(PyObjec
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -19902,6 +19957,8 @@ SWIGINTERN PyObject *_wrap_gnc_commodity_namespace_get_commodity_list(PyObject *
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -20007,6 +20064,8 @@ SWIGINTERN PyObject *_wrap_gnc_commodity_table_get_namespaces(PyObject *SWIGUNUS
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -20056,6 +20115,8 @@ SWIGINTERN PyObject *_wrap_gnc_commodity_table_get_namespaces_list(PyObject *SWI
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -20247,6 +20308,8 @@ SWIGINTERN PyObject *_wrap_gnc_commodity_table_get_commodities(PyObject *SWIGUNU
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -20298,6 +20361,8 @@ SWIGINTERN PyObject *_wrap_gnc_commodity_table_get_quotable_commodities(PyObject
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -20795,6 +20860,8 @@ SWIGINTERN PyObject *_wrap_gnc_monetary_list_add_monetary(PyObject *SWIGUNUSEDPA
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -20868,6 +20935,8 @@ SWIGINTERN PyObject *_wrap_gnc_monetary_list_add_value(PyObject *SWIGUNUSEDPARM(
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -20917,6 +20986,8 @@ SWIGINTERN PyObject *_wrap_gnc_monetary_list_delete_zeros(PyObject *SWIGUNUSEDPA
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -22777,6 +22848,8 @@ SWIGINTERN PyObject *_wrap_gncCustomerGetJoblist(PyObject *SWIGUNUSEDPARM(self),
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -24516,6 +24589,8 @@ SWIGINTERN PyObject *_wrap_gncVendorGetJoblist(PyObject *SWIGUNUSEDPARM(self), P
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -25856,6 +25931,8 @@ SWIGINTERN PyObject *_wrap_gncBillTermGetTerms(PyObject *SWIGUNUSEDPARM(self), P
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -26349,6 +26426,28 @@ SWIGINTERN PyObject *_wrap_gncInvoiceDestroy(PyObject *SWIGUNUSEDPARM(self), PyO
   arg1 = (GncInvoice *)(argp1);
   gncInvoiceDestroy(arg1);
   resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gncInvoiceCopy(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GncInvoice *arg1 = (GncInvoice *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  GncInvoice *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:gncInvoiceCopy",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__gncInvoice, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncInvoiceCopy" "', argument " "1"" of type '" "GncInvoice const *""'"); 
+  }
+  arg1 = (GncInvoice *)(argp1);
+  result = (GncInvoice *)gncInvoiceCopy((struct _gncInvoice const *)arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__gncInvoice, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -27651,6 +27750,8 @@ SWIGINTERN PyObject *_wrap_gncInvoiceGetEntries(PyObject *SWIGUNUSEDPARM(self), 
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -27700,6 +27801,8 @@ SWIGINTERN PyObject *_wrap_gncInvoiceGetPrices(PyObject *SWIGUNUSEDPARM(self), P
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -30781,6 +30884,8 @@ SWIGINTERN PyObject *_wrap_gncEntryReturnTaxValues(PyObject *SWIGUNUSEDPARM(self
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -31949,6 +32054,8 @@ SWIGINTERN PyObject *_wrap_gncTaxTableGetTables(PyObject *SWIGUNUSEDPARM(self), 
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -32080,6 +32187,8 @@ SWIGINTERN PyObject *_wrap_gncTaxTableGetEntries(PyObject *SWIGUNUSEDPARM(self),
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -32527,6 +32636,8 @@ SWIGINTERN PyObject *_wrap_gncAccountValueAdd(PyObject *SWIGUNUSEDPARM(self), Py
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -32585,6 +32696,8 @@ SWIGINTERN PyObject *_wrap_gncAccountValueAddList(PyObject *SWIGUNUSEDPARM(self)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -33957,6 +34070,8 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_latest_any_currency(PyObject *SWIG
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -34083,6 +34198,8 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_get_prices(PyObject *SWIGUNUSEDPARM(self)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -34158,6 +34275,8 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_at_time(PyObject *SWIGUNUSEDPARM(s
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -34224,6 +34343,8 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_at_time_any_currency(PyObject *SWI
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -34299,6 +34420,8 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_day(PyObject *SWIGUNUSEDPARM(self)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -34365,6 +34488,8 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_day_any_currency(PyObject *SWIGUNU
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -34479,6 +34604,8 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_nearest_in_time_any_currency(PyObj
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -34593,6 +34720,8 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_latest_before_any_currency(PyObjec
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
       else if (GNC_IS_PRICE(data))
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
       else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
       PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
       else
@@ -35361,6 +35490,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"qof_session_get_url", _wrap_qof_session_get_url, METH_VARARGS, (char *)"qof_session_get_url(QofSession session) -> char"},
 	 { (char *)"qof_session_save_in_progress", _wrap_qof_session_save_in_progress, METH_VARARGS, (char *)"qof_session_save_in_progress(QofSession session) -> gboolean"},
 	 { (char *)"qof_session_save", _wrap_qof_session_save, METH_VARARGS, (char *)"qof_session_save(QofSession session, QofPercentageFunc percentage_func)"},
+	 { (char *)"qof_session_safe_save", _wrap_qof_session_safe_save, METH_VARARGS, (char *)"qof_session_safe_save(QofSession session, QofPercentageFunc percentage_func)"},
 	 { (char *)"qof_session_end", _wrap_qof_session_end, METH_VARARGS, (char *)"qof_session_end(QofSession session)"},
 	 { (char *)"qof_instance_copy_to_session", _wrap_qof_instance_copy_to_session, METH_VARARGS, (char *)"qof_instance_copy_to_session(QofSession new_session, QofInstance original) -> gboolean"},
 	 { (char *)"qof_instance_copy_list", _wrap_qof_instance_copy_list, METH_VARARGS, (char *)"qof_instance_copy_list(QofSession new_session, GList entity_list) -> gboolean"},
@@ -35768,6 +35898,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gnc_invoice_get_type", _wrap_gnc_invoice_get_type, METH_VARARGS, (char *)"gnc_invoice_get_type() -> GType"},
 	 { (char *)"gncInvoiceCreate", _wrap_gncInvoiceCreate, METH_VARARGS, (char *)"gncInvoiceCreate(QofBook book) -> GncInvoice"},
 	 { (char *)"gncInvoiceDestroy", _wrap_gncInvoiceDestroy, METH_VARARGS, (char *)"gncInvoiceDestroy(GncInvoice invoice)"},
+	 { (char *)"gncInvoiceCopy", _wrap_gncInvoiceCopy, METH_VARARGS, (char *)"gncInvoiceCopy(GncInvoice other_invoice) -> GncInvoice"},
 	 { (char *)"gncInvoiceSetID", _wrap_gncInvoiceSetID, METH_VARARGS, (char *)"gncInvoiceSetID(GncInvoice invoice, char id)"},
 	 { (char *)"gncInvoiceSetOwner", _wrap_gncInvoiceSetOwner, METH_VARARGS, (char *)"gncInvoiceSetOwner(GncInvoice invoice, GncOwner owner)"},
 	 { (char *)"gncInvoiceSetDateOpened", _wrap_gncInvoiceSetDateOpened, METH_VARARGS, (char *)"gncInvoiceSetDateOpened(GncInvoice invoice, Timespec date)"},
@@ -37200,12 +37331,15 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, "ERR_FILEIO_READ_ERROR",SWIG_From_int((int)(ERR_FILEIO_READ_ERROR)));
   SWIG_Python_SetConstant(d, "ERR_FILEIO_NO_ENCODING",SWIG_From_int((int)(ERR_FILEIO_NO_ENCODING)));
   SWIG_Python_SetConstant(d, "ERR_FILEIO_FILE_EACCES",SWIG_From_int((int)(ERR_FILEIO_FILE_EACCES)));
+  SWIG_Python_SetConstant(d, "ERR_FILEIO_RESERVED_WRITE",SWIG_From_int((int)(ERR_FILEIO_RESERVED_WRITE)));
   SWIG_Python_SetConstant(d, "ERR_NETIO_SHORT_READ",SWIG_From_int((int)(ERR_NETIO_SHORT_READ)));
   SWIG_Python_SetConstant(d, "ERR_NETIO_WRONG_CONTENT_TYPE",SWIG_From_int((int)(ERR_NETIO_WRONG_CONTENT_TYPE)));
   SWIG_Python_SetConstant(d, "ERR_NETIO_NOT_GNCXML",SWIG_From_int((int)(ERR_NETIO_NOT_GNCXML)));
   SWIG_Python_SetConstant(d, "ERR_SQL_MISSING_DATA",SWIG_From_int((int)(ERR_SQL_MISSING_DATA)));
   SWIG_Python_SetConstant(d, "ERR_SQL_DB_TOO_OLD",SWIG_From_int((int)(ERR_SQL_DB_TOO_OLD)));
+  SWIG_Python_SetConstant(d, "ERR_SQL_DB_TOO_NEW",SWIG_From_int((int)(ERR_SQL_DB_TOO_NEW)));
   SWIG_Python_SetConstant(d, "ERR_SQL_DB_BUSY",SWIG_From_int((int)(ERR_SQL_DB_BUSY)));
+  SWIG_Python_SetConstant(d, "ERR_SQL_BAD_DBI",SWIG_From_int((int)(ERR_SQL_BAD_DBI)));
   SWIG_Python_SetConstant(d, "ERR_RPC_HOST_UNK",SWIG_From_int((int)(ERR_RPC_HOST_UNK)));
   SWIG_Python_SetConstant(d, "ERR_RPC_CANT_BIND",SWIG_From_int((int)(ERR_RPC_CANT_BIND)));
   SWIG_Python_SetConstant(d, "ERR_RPC_CANT_ACCEPT",SWIG_From_int((int)(ERR_RPC_CANT_ACCEPT)));

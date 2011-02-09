@@ -89,8 +89,8 @@ libgnc_core_utils_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 am_libgnc_core_utils_la_OBJECTS = binreloc.lo gnc-filepath-utils.lo \
 	gnc-gconf-utils.lo gnc-gdate-utils.lo gnc-gkeyfile-utils.lo \
-	gnc-glib-utils.lo gnc-jalali.lo gnc-main.lo gnc-path.lo \
-	gnc-uri-utils.lo swig-core-utils.lo
+	gnc-glib-utils.lo gnc-jalali.lo gnc-locale-utils.lo \
+	gnc-main.lo gnc-path.lo gnc-uri-utils.lo swig-core-utils.lo
 libgnc_core_utils_la_OBJECTS = $(am_libgnc_core_utils_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -230,6 +230,7 @@ GNUCASH_LATEST_STABLE_SERIES = @GNUCASH_LATEST_STABLE_SERIES@
 GNUCASH_MAJOR_VERSION = @GNUCASH_MAJOR_VERSION@
 GNUCASH_MICRO_VERSION = @GNUCASH_MICRO_VERSION@
 GNUCASH_MINOR_VERSION = @GNUCASH_MINOR_VERSION@
+GNUCASH_NANO_VERSION = @GNUCASH_NANO_VERSION@
 GOBJECT_QUERY = @GOBJECT_QUERY@
 GOFFICE_CFLAGS = @GOFFICE_CFLAGS@
 GOFFICE_LIBS = @GOFFICE_LIBS@
@@ -410,6 +411,7 @@ libgnc_core_utils_la_SOURCES = \
   gnc-gkeyfile-utils.c \
   gnc-glib-utils.c \
   gnc-jalali.c \
+  gnc-locale-utils.c \
   gnc-main.c \
   gnc-path.c \
   gnc-uri-utils.c \
@@ -432,6 +434,7 @@ noinst_HEADERS = \
   gnc-gkeyfile-utils.h \
   gnc-glib-utils.h \
   gnc-jalali.h \
+  gnc-locale-utils.h \
   gnc-path.h \
   gnc-uri-utils.h
 
@@ -539,6 +542,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-gkeyfile-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-glib-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-jalali.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-locale-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-main.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-path.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-uri-utils.Plo@am__quote@

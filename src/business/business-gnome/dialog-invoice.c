@@ -364,8 +364,7 @@ gnc_invoice_window_verify_ok (InvoiceWindow *iw)
            Therefore we pass the GncOwer to gncInvoiceNextID
            so it knows whether we are creating a bill
            or an invoice. */
-        string = g_strdup_printf ("%.6" G_GINT64_FORMAT,
-                                  gncInvoiceNextID(iw->book, &(iw->owner)));
+        string = gncInvoiceNextID(iw->book, &(iw->owner));
         gtk_entry_set_text (GTK_ENTRY (iw->id_entry), string);
         g_free(string);
     }
@@ -463,6 +462,16 @@ gnc_invoice_window_editCB (GtkWidget *widget, gpointer data)
 
     if (invoice)
         gnc_ui_invoice_modify (invoice);
+}
+
+void
+gnc_invoice_window_duplicateInvoiceCB (GtkWidget *widget, gpointer data)
+{
+    InvoiceWindow *iw = data;
+    GncInvoice *invoice = iw_get_invoice (iw);
+
+    if (invoice)
+        gnc_ui_invoice_duplicate (invoice);
 }
 
 void
@@ -2286,6 +2295,72 @@ gnc_ui_invoice_modify (GncInvoice *invoice)
     return iw;
 }
 
+static void
+set_gncEntry_date(gpointer data, gpointer user_data)
+{
+    GncEntry *entry = data;
+    const Timespec* new_date = user_data;
+    //g_warning("Modifying date for entry with desc=\"%s\"", gncEntryGetDescription(entry));
+
+    gncEntrySetDate(entry, *new_date);
+    /*gncEntrySetDateEntered(entry, *new_date); - don't modify this
+     * because apparently it implies the ordering of the entries,
+     * which we don't want to change. */
+}
+
+
+InvoiceWindow * gnc_ui_invoice_duplicate (GncInvoice *old_invoice)
+{
+    InvoiceWindow *iw;
+    GncInvoice *new_invoice = NULL;
+    Timespec new_date;
+    gchar *new_id;
+    GList *node;
+
+    g_assert(old_invoice);
+
+    // Create a deep copy of the old invoice
+    new_invoice = gncInvoiceCopy(old_invoice);
+
+    // The new invoice is for sure active
+    gncInvoiceSetActive(new_invoice, TRUE);
+
+    // and unposted
+    if (gncInvoiceIsPosted (new_invoice))
+    {
+        gboolean result = gncInvoiceUnpost(new_invoice, TRUE);
+        if (!result)
+        {
+            g_warning("Oops, error when unposting the copied invoice; ignoring.");
+        }
+    }
+
+    // Set a new id from the respective counter
+    new_id = gncInvoiceNextID(gnc_get_current_book(),
+                              gncInvoiceGetOwner(new_invoice));
+    gncInvoiceSetID(new_invoice, new_id);
+    g_free(new_id);
+
+    // Modify the date to today
+    timespecFromTime_t(&new_date, gnc_timet_get_today_start());
+    gncInvoiceSetDateOpened(new_invoice, new_date);
+
+    // Also modify the date of all entries to today
+    //g_warning("We have %d entries", g_list_length(gncInvoiceGetEntries(new_invoice)));
+    g_list_foreach(gncInvoiceGetEntries(new_invoice),
+                   &set_gncEntry_date, &new_date);
+
+    // Now open that newly created invoice in the "edit" window
+    iw = gnc_ui_invoice_edit (new_invoice);
+
+    // And also open the "properties" pop-up... however, changing the
+    // invoice ID won't be copied over to the tab title even though
+    // it's correctly copied into the invoice.
+    iw = gnc_invoice_window_new_invoice (NULL, NULL, new_invoice);
+
+    return iw;
+}
+
 InvoiceWindow *
 gnc_ui_invoice_new (GncOwner *ownerp, QofBook *bookp)
 {
@@ -2344,6 +2419,22 @@ pay_invoice_cb (gpointer *invoice_p, gpointer user_data)
     pay_invoice_direct (*invoice_p, user_data);
 }
 
+static void
+duplicate_invoice_direct (gpointer invoice, gpointer user_data)
+{
+    g_return_if_fail (invoice);
+    gnc_ui_invoice_duplicate (invoice);
+}
+
+static void
+duplicate_invoice_cb (gpointer *invoice_p, gpointer user_data)
+{
+    g_return_if_fail (invoice_p && user_data);
+    if (! *invoice_p)
+        return;
+    duplicate_invoice_direct (*invoice_p, user_data);
+}
+
 static gpointer
 new_invoice_cb (gpointer user_data)
 {
@@ -2382,12 +2473,14 @@ gnc_invoice_search (GncInvoice *start, GncOwner *owner, QofBook *book)
     {
         { N_("View/Edit Invoice"), edit_invoice_cb},
         { N_("Process Payment"), pay_invoice_cb},
+        { N_("Duplicate"), duplicate_invoice_cb},
         { NULL },
     };
     static GNCSearchCallbackButton bill_buttons[] =
     {
         { N_("View/Edit Bill"), edit_invoice_cb},
         { N_("Process Payment"), pay_invoice_cb},
+        { N_("Duplicate"), duplicate_invoice_cb},
         { NULL },
     };
     static GNCSearchCallbackButton emp_buttons[] =
@@ -2396,6 +2489,7 @@ gnc_invoice_search (GncInvoice *start, GncOwner *owner, QofBook *book)
            interchangeably in gnucash and mean the same thing. */
         { N_("View/Edit Voucher"), edit_invoice_cb},
         { N_("Process Payment"), pay_invoice_cb},
+        { N_("Duplicate"), duplicate_invoice_cb},
         { NULL },
     };
 
@@ -2699,7 +2793,7 @@ gnc_invoice_show_bills_due (QofBook *book, double days_in_advance)
     /* we want to find all invoices where:
      *      invoice -> is_posted == TRUE
      * AND  invoice -> lot -> is_closed? == FALSE
-     * AND  invoice -> type != "Invoice"
+     * AND  invoice -> type != _("Invoice") // note: currently the translated form
      * AND  invoice -> due >= (today - days_in_advance)
      */
 
@@ -2709,10 +2803,12 @@ gnc_invoice_show_bills_due (QofBook *book, double days_in_advance)
     qof_query_add_boolean_match (q, g_slist_prepend(g_slist_prepend(NULL, LOT_IS_CLOSED),
                                  INVOICE_POST_LOT), FALSE, QOF_QUERY_AND);
 
-    /* Watch out: Do *not* translate the string "Invoice" here because
-       it must match the QofObject.type_label string exactly, which
-       implies it is used in untranslated form! */
-    pred_data = qof_query_string_predicate (QOF_COMPARE_NEQ, "Invoice",
+    /* Bug#602091, #639365: The INVOICE_TYPE string unfortunately is
+     * stored in translated form due to the usage of gncInvoiceGetType
+     * for user-visible strings as well. Hence, as an exception we
+     * must also search for the translated here even though it's an
+     * internal flag. */
+    pred_data = qof_query_string_predicate (QOF_COMPARE_NEQ, _("Invoice"),
                                             QOF_STRING_MATCH_NORMAL, FALSE);
     qof_query_add_term (q, g_slist_prepend(NULL, INVOICE_TYPE), pred_data, QOF_QUERY_AND);
 
@@ -2729,12 +2825,15 @@ gnc_invoice_show_bills_due (QofBook *book, double days_in_advance)
     res = qof_query_run(q);
     len = g_list_length (res);
     if (!res || len <= 0)
+    {
+        qof_query_destroy(q);
         return NULL;
+    }
 
     {
         gchar *message = g_strdup_printf
                          (/* Translators: %d is the number of bills due. This is a
-	  ngettext(3) message. */
+	                         ngettext(3) message. */
                              ngettext("The following %d bill is due:",
                                       "The following %d bills are due:",
                                       len),
@@ -2746,6 +2845,7 @@ gnc_invoice_show_bills_due (QofBook *book, double days_in_advance)
                                          TRUE, FALSE,
                                          buttons, NULL);
         g_free(message);
+        qof_query_destroy(q);
         return dialog;
     }
 }

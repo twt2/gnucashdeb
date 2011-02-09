@@ -54,6 +54,7 @@ typedef enum
 /* Create and edit an invoice */
 InvoiceWindow * gnc_ui_invoice_edit (GncInvoice *invoice);
 InvoiceWindow * gnc_ui_invoice_new (GncOwner *owner, QofBook *book);
+InvoiceWindow * gnc_ui_invoice_duplicate (GncInvoice *invoice);
 
 /* Search for invoices */
 GNCSearchWindow * gnc_invoice_search (GncInvoice *start, GncOwner *owner, QofBook *book);
@@ -100,6 +101,7 @@ void gnc_invoice_window_cut_cb (GtkWidget *widget, gpointer data);
 void gnc_invoice_window_copy_cb (GtkWidget *widget, gpointer data);
 void gnc_invoice_window_paste_cb (GtkWidget *widget, gpointer data);
 void gnc_invoice_window_editCB (GtkWidget *widget, gpointer data);
+void gnc_invoice_window_duplicateInvoiceCB (GtkWidget *widget, gpointer data);
 void gnc_invoice_window_postCB (GtkWidget *widget, gpointer data);
 void gnc_invoice_window_unpostCB (GtkWidget *widget, gpointer data);
 void gnc_invoice_window_recordCB (GtkWidget *widget, gpointer data);

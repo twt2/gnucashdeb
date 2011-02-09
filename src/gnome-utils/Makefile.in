@@ -98,11 +98,10 @@ libgncmod_gnome_utils_la_DEPENDENCIES =  \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
-am_libgncmod_gnome_utils_la_OBJECTS = QuickFill.lo \
-	account-quickfill.lo cursors.lo dialog-account.lo \
-	dialog-book-close.lo dialog-commodity.lo dialog-file-access.lo \
-	dialog-object-references.lo dialog-options.lo \
-	dialog-preferences.lo dialog-query-list.lo \
+am_libgncmod_gnome_utils_la_OBJECTS = account-quickfill.lo cursors.lo \
+	dialog-account.lo dialog-book-close.lo dialog-commodity.lo \
+	dialog-file-access.lo dialog-object-references.lo \
+	dialog-options.lo dialog-preferences.lo dialog-query-list.lo \
 	dialog-reset-warnings.lo dialog-totd.lo dialog-transfer.lo \
 	dialog-userpass.lo dialog-utils.lo druid-utils.lo \
 	druid-gconf-setup.lo druid-gnc-xml-import.lo \
@@ -113,14 +112,13 @@ am_libgncmod_gnome_utils_la_OBJECTS = QuickFill.lo \
 	gnc-druid-gnome.lo gnc-druid-provider-edge-gnome.lo \
 	gnc-druid-provider-file-gnome.lo \
 	gnc-druid-provider-multifile-gnome.lo gnc-embedded-window.lo \
-	gnc-entry-quickfill.lo gnc-file.lo gnc-frequency.lo \
-	gnc-recurrence.lo gnc-general-select.lo gnc-gnome-utils.lo \
-	gnc-gobject-utils.lo gnc-gtk-utils.lo gnc-gui-query.lo \
-	gnc-icons.lo gnc-keyring.lo gnc-main-window.lo \
-	gnc-menu-extensions.lo gnc-plugin-file-history.lo \
-	gnc-plugin-manager.lo gnc-plugin-menu-additions.lo \
-	gnc-plugin-page.lo gnc-plugin.lo gnc-period-select.lo \
-	gnc-query-list.lo gnc-splash.lo \
+	gnc-file.lo gnc-frequency.lo gnc-recurrence.lo \
+	gnc-general-select.lo gnc-gnome-utils.lo gnc-gobject-utils.lo \
+	gnc-gtk-utils.lo gnc-gui-query.lo gnc-icons.lo gnc-keyring.lo \
+	gnc-main-window.lo gnc-menu-extensions.lo \
+	gnc-plugin-file-history.lo gnc-plugin-manager.lo \
+	gnc-plugin-menu-additions.lo gnc-plugin-page.lo gnc-plugin.lo \
+	gnc-period-select.lo gnc-query-list.lo gnc-splash.lo \
 	gnc-sx-instance-dense-cal-adapter.lo \
 	gnc-sx-list-tree-model-adapter.lo gnc-tree-model.lo \
 	gnc-tree-model-account-types.lo gnc-tree-model-account.lo \
@@ -273,6 +271,7 @@ GNUCASH_LATEST_STABLE_SERIES = @GNUCASH_LATEST_STABLE_SERIES@
 GNUCASH_MAJOR_VERSION = @GNUCASH_MAJOR_VERSION@
 GNUCASH_MICRO_VERSION = @GNUCASH_MICRO_VERSION@
 GNUCASH_MINOR_VERSION = @GNUCASH_MINOR_VERSION@
+GNUCASH_NANO_VERSION = @GNUCASH_NANO_VERSION@
 GOBJECT_QUERY = @GOBJECT_QUERY@
 GOFFICE_CFLAGS = @GOFFICE_CFLAGS@
 GOFFICE_LIBS = @GOFFICE_LIBS@
@@ -469,7 +468,6 @@ AM_CPPFLAGS = \
   ${IGE_MAC_CFLAGS}
 
 libgncmod_gnome_utils_la_SOURCES = \
-  QuickFill.c \
   account-quickfill.c \
   cursors.c \
   dialog-account.c \
@@ -505,7 +503,6 @@ libgncmod_gnome_utils_la_SOURCES = \
   gnc-druid-provider-file-gnome.c \
   gnc-druid-provider-multifile-gnome.c \
   gnc-embedded-window.c \
-  gnc-entry-quickfill.c \
   gnc-file.c \
   gnc-frequency.c \
   gnc-recurrence.c \
@@ -549,7 +546,6 @@ libgncmod_gnome_utils_la_SOURCES = \
 
 gncincludedir = ${GNC_INCLUDE_DIR}
 gncinclude_HEADERS = \
-  QuickFill.h \
   account-quickfill.h \
   dialog-account.h \
   dialog-book-close.h \
@@ -578,7 +574,6 @@ gncinclude_HEADERS = \
   gnc-dense-cal-store.h \
   gnc-druid-gnome-ui.h \
   gnc-embedded-window.h \
-  gnc-entry-quickfill.h \
   gnc-file.h \
   gnc-frequency.h \
   gnc-recurrence.h \
@@ -610,6 +605,7 @@ gncinclude_HEADERS = \
   gnc-tree-view-price.h \
   gnc-tree-view-sx-list.h \
   gnc-tree-view.h \
+  gnc-ui.h \
   gnc-window.h \
   misc-gnome-utils.h \
   print-session.h \
@@ -731,7 +727,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/QuickFill.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/account-quickfill.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cursors.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-account.Plo@am__quote@
@@ -767,7 +762,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-druid-provider-file-gnome.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-druid-provider-multifile-gnome.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-embedded-window.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-entry-quickfill.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-frequency.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-general-select.Plo@am__quote@

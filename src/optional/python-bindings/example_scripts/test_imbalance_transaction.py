@@ -25,15 +25,18 @@
 ##  @file
 #   @brief Test the transaction imbalace viewing mechanisms
 #   @author Mark Jenkins, ParIT Worker Co-operative <mark@parit.ca>
-#   @ingroup python-bindings-examples
+#   @ingroup python_bindings_examples
 
 from sys import argv
 
 from gnucash import Session, Transaction, Split, Account, GncNumeric, \
     GncCommodity
 
-# must be sqlite:///path_to_file or xml:///path_to_file
-# and must be an existing gnucash file
+# argv[1] should be the path to an existing gnucash file/database
+# for a file, simply pass the pathname, for a database you can use
+# these forms:
+# mysql://user:password@host/dbname
+# postgres://user:password@host[:port]/dbname (the port is optional)
 #
 # You should try it out with a gnucash file with tranding accounts enabled
 # and trading accounts disabled

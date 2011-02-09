@@ -1265,6 +1265,7 @@ static swig_module_info swig_module = {swig_types, 20, 0, 0, 0, 0};
 
 #include "engine-helpers.h"
 
+
 SCM scm_init_sw_app_utils_module (void);
 
 
@@ -1558,27 +1559,6 @@ _wrap_gnc_option_db_register_option (SCM s_0, SCM s_1)
   arg2=s_1;
   gnc_option_db_register_option(arg1,arg2);
   gswig_result = SCM_UNSPECIFIED;
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_gnc_locale_default_iso_currency_code ()
-{
-#define FUNC_NAME "gnc-locale-default-iso-currency-code"
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  char *result = 0 ;
-  
-  result = (char *)gnc_locale_default_iso_currency_code();
-  {
-    gswig_result = scm_makfrom0str((const char *)result);
-    if (!scm_is_true(gswig_result)) {
-      gswig_result = scm_makstr(0, 0);
-    }
-  }
   
   return gswig_result;
 #undef FUNC_NAME
@@ -1936,10 +1916,13 @@ _wrap_gnc_spawn_process_async (SCM s_0, SCM s_1)
     {
       SCM key_scm = SCM_CAR (path_scm);
       char *key;
+      gchar* gkey;
       if (!scm_is_string (key_scm))
       break;
-      key = g_strdup (scm_to_locale_string (key_scm));
-      path = g_list_prepend (path, key);
+      key = scm_to_locale_string (key_scm);
+      gkey = g_strdup (key);
+      gnc_free_scm_locale_string(key);
+      path = g_list_prepend (path, gkey);
       path_scm = SCM_CDR (path_scm);
     }
     arg1 = g_list_reverse (path);
@@ -2427,7 +2410,6 @@ SWIG_init(void)
   scm_c_define_gsubr("gnc-default-report-currency", 0, 0, 0, (swig_guile_proc) _wrap_gnc_default_report_currency);
   scm_c_define_gsubr("gncp-option-invoke-callback", 2, 0, 0, (swig_guile_proc) _wrap_gncp_option_invoke_callback);
   scm_c_define_gsubr("gnc-option-db-register-option", 2, 0, 0, (swig_guile_proc) _wrap_gnc_option_db_register_option);
-  scm_c_define_gsubr("gnc-locale-default-iso-currency-code", 0, 0, 0, (swig_guile_proc) _wrap_gnc_locale_default_iso_currency_code);
   scm_c_define_gsubr("gnc-default-print-info", 1, 0, 0, (swig_guile_proc) _wrap_gnc_default_print_info);
   scm_c_define_gsubr("gnc-account-print-info", 2, 0, 0, (swig_guile_proc) _wrap_gnc_account_print_info);
   scm_c_define_gsubr("gnc-commodity-print-info", 2, 0, 0, (swig_guile_proc) _wrap_gnc_commodity_print_info);
@@ -2458,7 +2440,7 @@ SWIG_init(void)
 static void SWIG_init_helper(void *data)
 {
 SWIG_init();
-scm_c_export("gnc-get-current-book", "gnc-get-current-book-tax-name", "gnc-get-current-book-tax-type", "gnc-get-current-root-account", "gnc-gettext-helper", "gnc-option-db-new", "gnc-option-db-destroy", "gnc-option-db-set-option-selectable-by-name", "gnc-commodity-table-get-quotable-commodities", "gnc-default-currency", "gnc-default-report-currency", "gncp-option-invoke-callback", "gnc-option-db-register-option", "gnc-locale-default-iso-currency-code", "gnc-default-print-info", "gnc-account-print-info", "gnc-commodity-print-info", "gnc-share-print-info-places", "xaccPrintAmount", "number-to-words", "printable-value", "gnc-reverse-balance", "gnc-is-euro-currency", "gnc-convert-to-euro", "gnc-convert-from-euro", "gnc-accounting-period-fiscal-start", "gnc-accounting-period-fiscal-end", "gnc-make-kvp-options", "gnc-register-kvp-option-generator", "gnc-spawn-process-async", "gnc-process-get-fd", "gnc-detach-process", "gnc-parse-time-to-timet", "gnc-sx-all-instantiate-cashflow-all", NULL);
+scm_c_export("gnc-get-current-book", "gnc-get-current-book-tax-name", "gnc-get-current-book-tax-type", "gnc-get-current-root-account", "gnc-gettext-helper", "gnc-option-db-new", "gnc-option-db-destroy", "gnc-option-db-set-option-selectable-by-name", "gnc-commodity-table-get-quotable-commodities", "gnc-default-currency", "gnc-default-report-currency", "gncp-option-invoke-callback", "gnc-option-db-register-option", "gnc-default-print-info", "gnc-account-print-info", "gnc-commodity-print-info", "gnc-share-print-info-places", "xaccPrintAmount", "number-to-words", "printable-value", "gnc-reverse-balance", "gnc-is-euro-currency", "gnc-convert-to-euro", "gnc-convert-from-euro", "gnc-accounting-period-fiscal-start", "gnc-accounting-period-fiscal-end", "gnc-make-kvp-options", "gnc-register-kvp-option-generator", "gnc-spawn-process-async", "gnc-process-get-fd", "gnc-detach-process", "gnc-parse-time-to-timet", "gnc-sx-all-instantiate-cashflow-all", NULL);
 }
 
 SCM
