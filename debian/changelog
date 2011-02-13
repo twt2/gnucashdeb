@@ -1,3 +1,11 @@
+gnucash (1:2.4.2-1) unstable; urgency=low
+
+  * New upstream version 2.4.2 (LP: #717104)
+  * Removed 001_disable_BUILDING_FROM_SVN_debian.patch (applied
+    upstream)
+
+ -- Micha Lenk <micha@debian.org>  Sun, 13 Feb 2011 21:55:23 +0100
+
 gnucash (1:2.4.0-5) unstable; urgency=low
 
   * First upload of Gnucash 2.4.0 to Debian unstable.
