@@ -1,3 +1,9 @@
+gnucash (1:2.4.4-1) unstable; urgency=low
+
+  * New upstream version 2.4.4 (closes: #618097)
+
+ -- Micha Lenk <micha@debian.org>  Tue, 15 Mar 2011 20:45:05 +0100
+
 gnucash (1:2.4.2-1) unstable; urgency=low
 
   * New upstream version 2.4.2 (LP: #717104)
