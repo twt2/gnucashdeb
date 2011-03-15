@@ -164,7 +164,7 @@ set_default READLINE_BIN_URL "$SF_MIRROR/gnuwin32/readline-5.0-1-bin.zip"
 set_default READLINE_LIB_URL "$SF_MIRROR/gnuwin32/readline-5.0-1-lib.zip"
 set_default READLINE_DIR $GLOBAL_DIR\\readline
 
-set_default ACTIVE_PERL_URL "http://downloads.activestate.com/ActivePerl/releases/5.10.1.1007/ActivePerl-5.10.1.1007-MSWin32-x86-291969.zip"
+set_default ACTIVE_PERL_URL "http://downloads.activestate.com/ActivePerl/releases/5.10.1.1008/ActivePerl-5.10.1.1008-MSWin32-x86-294165.zip"
 set_default ACTIVE_PERL_DIR $GLOBAL_DIR\\active-perl
 
 set_default AUTOCONF_URL "http://ftp.gnu.org/gnu/autoconf/autoconf-2.63.tar.bz2"
@@ -201,7 +201,7 @@ set_default LIBXSLT_LIBXML2_URL "${XMLSOFT_URL}/libxml2-2.7.6.win32.zip"
 set_default LIBXSLT_ICONV_URL "${XMLSOFT_URL}/iconv-1.9.2.win32.zip"
 set_default LIBXSLT_ZLIB_URL "${XMLSOFT_URL}/zlib-1.2.3.win32.zip"
 set_default LIBXSLT_DIR $GLOBAL_DIR\\libxslt
-#set_default LIBXSLT_SRC_URL "http://xmlsoft.org/sources/libxslt-1.1.26.tar.gz" # unused
+set_default LIBXSLT_SRC_URL "http://xmlsoft.org/sources/libxslt-1.1.26.tar.gz" # needed for webkit build
 
 set_default LIBXML2_URL "$GNOME_WIN32_DEPS_URL/libxml2_2.7.4-1_win32.zip"
 set_default LIBXML2_DEV_URL "$GNOME_WIN32_DEPS_URL/libxml2-dev_2.7.4-1_win32.zip"
@@ -298,11 +298,12 @@ set_default INNO_DIR $GLOBAL_DIR\\inno
 set_default HH_URL "http://download.microsoft.com/download/0/a/9/0a939ef6-e31c-430f-a3df-dfae7960d564/htmlhelp.exe"
 set_default HH_DIR $GLOBAL_DIR\\hh
 
-set_default WEBKIT_URL "$SF_MIRROR/gnucash/webkit-1.1.90-win32.zip"
-set_default WEBKIT_DIR $GLOBAL_DIR\\webkit-1.1.90
-set_default WEBKIT_SRC_URL "http://www.webkitgtk.org/webkit-1.1.90.tar.gz"
-set_default WEBKIT_PATCH `pwd`/webkit-1.2.0-time.diff
-set_default WEBKIT_PATCH2 `pwd`/webkit-1.2.0-vsaprintf.diff
+set_default WEBKIT_VERSION "1.1.90"
+set_default WEBKIT_URL "$SF_MIRROR/gnucash/webkit-${WEBKIT_VERSION}-win32.zip"
+set_default WEBKIT_DIR $GLOBAL_DIR\\webkit-${WEBKIT_VERSION}
+set_default WEBKIT_SRC_URL "http://www.webkitgtk.org/webkit-1.2.7.tar.gz"
+set_default WEBKIT_PATCH `pwd`/webkit-1.2.7-time.patch
+set_default WEBKIT_PATCH2 `pwd`/webkit-1.2.7-vasprintf.patch
 set_default ENCHANT_URL "$GNOME_WIN32_URL/dependencies/enchant_1.5.0-2_win32.zip"
 set_default ENCHANT_DEV_URL "$GNOME_WIN32_URL/dependencies/enchant-dev_1.5.0-2_win32.zip"
 #set_default LIBSOUP_URL "$GNOME_WIN32_URL/libsoup/2.4/libsoup-2.4.0.zip"
@@ -321,9 +322,9 @@ set_default OPENSP_URL "$SF_MIRROR/openjade/OpenSP-1.5.2.tar.gz"
 set_default OPENSP_DIR $GLOBAL_DIR\\opensp
 set_default OPENSP_PATCH `pwd`/opensp-1.5.2-patch.diff
 
-set_default LIBOFX_URL "$SF_MIRROR/libofx/libofx-0.8.3.tar.gz"
+set_default LIBOFX_URL "$SF_MIRROR/libofx/libofx-0.9.2.tar.gz"
 set_default LIBOFX_DIR $GLOBAL_DIR\\libofx
-set_default LIBOFX_PATCH `pwd`/libofx-0.8.3-patch.diff
+#set_default LIBOFX_PATCH `pwd`/libofx-0.8.3-patch.diff
 
 ## online banking: gwenhywfar+aqbanking
 set_default AQBANKING5 no
@@ -332,8 +333,8 @@ set_default AQBANKING5 no
 # needed.
 
 if [ "$AQBANKING5" = "yes" ]; then
-    GWENHYWFAR_VERSION="4.0.2"
-    set_default GWENHYWFAR_URL "http://www2.aquamaniac.de/sites/download/download.php?package=01&release=55&file=01&dummy=gwenhywfar-${GWENHYWFAR_VERSION}.tar.gz"
+    GWENHYWFAR_VERSION="4.0.7"
+    set_default GWENHYWFAR_URL "http://www2.aquamaniac.de/sites/download/download.php?package=01&release=59&file=01&dummy=gwenhywfar-${GWENHYWFAR_VERSION}.tar.gz"
 else
     GWENHYWFAR_VERSION="3.11.3"
     set_default GWENHYWFAR_URL "http://www2.aquamaniac.de/sites/download/download.php?package=01&release=31&file=01&dummy=gwenhywfar-${GWENHYWFAR_VERSION}.tar.gz"
@@ -341,13 +342,13 @@ else
 fi
 set_default GWENHYWFAR_DIR $GLOBAL_DIR\\gwenhywfar
 
-KTOBLZCHECK_VERSION="1.29"
+KTOBLZCHECK_VERSION="1.31"
 set_default KTOBLZCHECK_URL "$SF_MIRROR/ktoblzcheck/ktoblzcheck-${KTOBLZCHECK_VERSION}.tar.gz"
 # ktoblzcheck is being installed into GWENHYWFAR_DIR
 
 if [ "$AQBANKING5" = "yes" ]; then
-    AQBANKING_VERSION="5.0.1"
-    set_default AQBANKING_URL "http://www2.aquamaniac.de/sites/download/download.php?package=03&release=74&file=01&dummy=aqbanking-${AQBANKING_VERSION}.tar.gz"
+    AQBANKING_VERSION="5.0.4"
+    set_default AQBANKING_URL "http://www2.aquamaniac.de/sites/download/download.php?package=03&release=77&file=01&dummy=aqbanking-${AQBANKING_VERSION}.tar.gz"
     set_default AQBANKING_WITH_QT no
 else
     AQBANKING_VERSION="4.2.4"

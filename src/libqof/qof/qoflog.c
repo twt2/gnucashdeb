@@ -39,17 +39,6 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef HAVE_SYS_TIME_H
-# include <sys/time.h>
-#else
-/* We simply define the struct timeval on our own here. */
-struct timeval
-{
-    long    tv_sec;         /* seconds */
-    long    tv_usec;        /* and microseconds */
-};
-/* include <Winsock2.h> */
-#endif
 
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "qof.log"
@@ -117,7 +106,7 @@ log4glib_handler(const gchar     *log_domain,
         time_t now;
         struct tm now_tm;
         const char *format_24hour =
-#ifdef _MSC_VER
+#ifdef G_OS_WIN32
             "%H:%M:%S"
 #else
             "%T"
@@ -150,6 +139,7 @@ log4glib_handler(const gchar     *log_domain,
 void
 qof_log_init_filename(const gchar* log_filename)
 {
+    gboolean warn_about_missing_permission = FALSE;
     if (log_table == NULL)
         log_table = g_hash_table_new_full(g_str_hash, g_str_equal,
                                           g_free, NULL);
@@ -171,14 +161,20 @@ qof_log_init_filename(const gchar* log_filename)
              * still isn't open. So we open normally with the file name and that's it. */
             fout = fopen(fname, "wb");
 #else
+            /* We must not overwrite /dev/null */
+            g_assert(safe_strcmp(log_filename, "/dev/null") != 0);
+
             /* Windows prevents renaming of open files, so the next command silently fails there
              * No problem, the filename on Winows will simply have the random characters */
             g_rename(fname, log_filename);
             fout = fdopen(fd, "w");
 #endif
+            if (!fout)
+                warn_about_missing_permission = TRUE;
         }
         else
         {
+            warn_about_missing_permission = TRUE;
             fout = stderr;
         }
         g_free(fname);
@@ -190,6 +186,11 @@ qof_log_init_filename(const gchar* log_filename)
     // @@fixme really, the userdata is a struct { log_table, fout, previous_handler }
     if (previous_handler == NULL)
         previous_handler = g_log_set_default_handler(log4glib_handler, log_table);
+
+    if (warn_about_missing_permission)
+    {
+        g_critical("Cannot open log output file \"%s\", using stderr.", log_filename);
+    }
 }
 
 void
@@ -268,10 +269,12 @@ qof_log_init_filename_special(const char *log_to_filename)
 {
     if (g_ascii_strcasecmp("stderr", log_to_filename) == 0)
     {
+        qof_log_init();
         qof_log_set_file(stderr);
     }
     else if (g_ascii_strcasecmp("stdout", log_to_filename) == 0)
     {
+        qof_log_init();
         qof_log_set_file(stdout);
     }
     else
@@ -446,124 +449,4 @@ qof_log_level_from_string(const gchar *str)
     if (g_ascii_strncasecmp("info", str, 4) == 0) return QOF_LOG_INFO;
     if (g_ascii_strncasecmp("debug", str, 5) == 0) return QOF_LOG_DEBUG;
     return QOF_LOG_DEBUG;
-}
-
-static
-struct timeval qof_clock[NUM_CLOCKS] =
-{
-    {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0},
-    {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0},
-};
-
-static
-struct timeval qof_clock_total[NUM_CLOCKS] =
-{
-    {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0},
-    {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0},
-};
-
-void
-qof_start_clock (int clockno, QofLogModule log_module, QofLogLevel log_level,
-                 const gchar *function_name, const gchar *format, ...)
-{
-    va_list ap;
-
-    if ((0 > clockno) || (NUM_CLOCKS <= clockno)) return;
-#ifdef HAVE_GETTIMEOFDAY
-    gettimeofday (&qof_clock[clockno], NULL);
-#else
-    time (&(qof_clock[clockno].tv_sec));
-    qof_clock[clockno].tv_usec = 0;
-#endif
-
-    if (!fout) qof_log_init();
-
-    fprintf (fout, "Clock %d Start: %s: ",
-             clockno, qof_log_prettify (function_name));
-
-    va_start (ap, format);
-
-    vfprintf (fout, format, ap);
-
-    va_end (ap);
-
-    fprintf (fout, "\n");
-    fflush (fout);
-}
-
-void
-qof_report_clock (gint clockno, QofLogModule log_module, QofLogLevel log_level,
-                  const gchar *function_name, const gchar *format, ...)
-{
-    struct timeval now;
-    va_list ap;
-
-    if ((0 > clockno) || (NUM_CLOCKS <= clockno)) return;
-#ifdef HAVE_GETTIMEOFDAY
-    gettimeofday (&now, NULL);
-#else
-    time (&(now.tv_sec));
-    now.tv_usec = 0;
-#endif
-
-    /* need to borrow to make difference */
-    if (now.tv_usec < qof_clock[clockno].tv_usec)
-    {
-        now.tv_sec --;
-        now.tv_usec += 1000000;
-    }
-    now.tv_sec -= qof_clock[clockno].tv_sec;
-    now.tv_usec -= qof_clock[clockno].tv_usec;
-
-    qof_clock_total[clockno].tv_sec += now.tv_sec;
-    qof_clock_total[clockno].tv_usec += now.tv_usec;
-
-    if (!fout) qof_log_init();
-
-    fprintf (fout, "Clock %d Elapsed: %ld.%06lds %s: ",
-             clockno, (long int) now.tv_sec, (long int) now.tv_usec,
-             qof_log_prettify (function_name));
-
-    va_start (ap, format);
-
-    vfprintf (fout, format, ap);
-
-    va_end (ap);
-
-    fprintf (fout, "\n");
-    fflush (fout);
-}
-
-void
-qof_report_clock_total (gint clockno,
-                        QofLogModule log_module, QofLogLevel log_level,
-                        const gchar *function_name, const gchar *format, ...)
-{
-    va_list ap;
-
-    if ((0 > clockno) || (NUM_CLOCKS <= clockno)) return;
-
-    /* need to normalize usec */
-    while (qof_clock_total[clockno].tv_usec >= 1000000)
-    {
-        qof_clock_total[clockno].tv_sec ++;
-        qof_clock_total[clockno].tv_usec -= 1000000;
-    }
-
-    if (!fout) qof_log_init();
-
-    fprintf (fout, "Clock %d Total Elapsed: %ld.%06lds  %s: ",
-             clockno,
-             (long int) qof_clock_total[clockno].tv_sec,
-             (long int) qof_clock_total[clockno].tv_usec,
-             qof_log_prettify (function_name));
-
-    va_start (ap, format);
-
-    vfprintf (fout, format, ap);
-
-    va_end (ap);
-
-    fprintf (fout, "\n");
-    fflush (fout);
 }

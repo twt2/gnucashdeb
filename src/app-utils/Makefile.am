@@ -35,11 +35,13 @@ AM_CPPFLAGS = \
 
 libgncmod_app_utils_la_SOURCES = \
   swig-app-utils.c \
+  business-options.c \
   QuickFill.c \
   file-utils.c \
   gfec.c \
   gnc-account-merge.c \
   gnc-accounting-period.c \
+  gnc-addr-quickfill.c \
   gnc-component-manager.c \
   gnc-druid.c \
   gnc-druid-cb.c \
@@ -63,11 +65,13 @@ libgncmod_app_utils_la_SOURCES = \
 gncincludedir = ${GNC_INCLUDE_DIR}
 gncinclude_HEADERS = \
   QuickFill.h \
+  business-options.h \
   file-utils.h \
   gfec.h \
   gnc-basic-gobject.h \
   gnc-account-merge.h \
   gnc-accounting-period.h \
+  gnc-addr-quickfill.h \
   gnc-component-manager.h \
   gnc-druid.h \
   gnc-druid-cb.h \

@@ -159,9 +159,6 @@
 /* Define to 1 if you have the `pthread' library (-lpthread). */
 #undef HAVE_LIBPTHREAD
 
-/* We will use the internal QOF code */
-#undef HAVE_LIBQOF
-
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
@@ -297,9 +294,6 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
-
-/* Don't use deprecated qof functions */
-#undef QOF_DISABLE_DEPRECATED
 
 /* Name of package containing qt3-wizard. */
 #undef QT3_WIZARD_PACKAGE

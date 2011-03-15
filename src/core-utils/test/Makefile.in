@@ -62,16 +62,18 @@ test_gnc_uri_utils_SOURCES = test-gnc-uri-utils.c
 test_gnc_uri_utils_OBJECTS = test-gnc-uri-utils.$(OBJEXT)
 test_gnc_uri_utils_LDADD = $(LDADD)
 am__DEPENDENCIES_1 =
-test_gnc_uri_utils_DEPENDENCIES = ../libgnc-core-utils.la \
-	${top_builddir}/src/test-core/libtest-core.la \
+test_gnc_uri_utils_DEPENDENCIES =  \
 	${top_builddir}/src/libqof/qof/libgnc-qof.la \
+	../libgnc-core-utils.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	$(am__DEPENDENCIES_1)
 test_resolve_file_path_SOURCES = test-resolve-file-path.c
 test_resolve_file_path_OBJECTS = test-resolve-file-path.$(OBJEXT)
 test_resolve_file_path_LDADD = $(LDADD)
-test_resolve_file_path_DEPENDENCIES = ../libgnc-core-utils.la \
-	${top_builddir}/src/test-core/libtest-core.la \
+test_resolve_file_path_DEPENDENCIES =  \
 	${top_builddir}/src/libqof/qof/libgnc-qof.la \
+	../libgnc-core-utils.la \
+	${top_builddir}/src/test-core/libtest-core.la \
 	$(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -115,6 +117,10 @@ CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CXX = @CXX@
+CXXCPP = @CXXCPP@
+CXXDEPMODE = @CXXDEPMODE@
+CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
 DBI_DIR = @DBI_DIR@
@@ -180,6 +186,9 @@ GOFFICE_LIBS = @GOFFICE_LIBS@
 GREP = @GREP@
 GTKHTML_CFLAGS = @GTKHTML_CFLAGS@
 GTKHTML_LIBS = @GTKHTML_LIBS@
+GTKMM_CFLAGS = @GTKMM_CFLAGS@
+GTKMM_DIR = @GTKMM_DIR@
+GTKMM_LIBS = @GTKMM_LIBS@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
 GUILE = @GUILE@
@@ -260,8 +269,6 @@ PYTHON_SITE_PKG = @PYTHON_SITE_PKG@
 PYTHON_VERSION = @PYTHON_VERSION@
 QOF_CFLAGS = @QOF_CFLAGS@
 QOF_LIBS = @QOF_LIBS@
-QOF_LIB_DIR = @QOF_LIB_DIR@
-QOF_PREFIX = @QOF_PREFIX@
 QTTHREADS_LIB = @QTTHREADS_LIB@
 RANLIB = @RANLIB@
 RC = @RC@
@@ -277,7 +284,6 @@ SWIG_PYTHON_OPT = @SWIG_PYTHON_OPT@
 TERMCAP_LIB = @TERMCAP_LIB@
 TEST_MYSQL_URL = @TEST_MYSQL_URL@
 TEST_PGSQL_URL = @TEST_PGSQL_URL@
-USE_LIBQOF = @USE_LIBQOF@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 WEBKIT_CFLAGS = @WEBKIT_CFLAGS@
@@ -289,6 +295,7 @@ abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_ct_CC = @ac_ct_CC@
+ac_ct_CXX = @ac_ct_CXX@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
@@ -354,9 +361,9 @@ AM_CPPFLAGS = \
   ${GLIB_CFLAGS}
 
 LDADD = \
+  ${top_builddir}/src/libqof/qof/libgnc-qof.la \
   ../libgnc-core-utils.la \
   ${top_builddir}/src/test-core/libtest-core.la \
-  ${top_builddir}/src/libqof/qof/libgnc-qof.la \
   ${GLIB_LIBS}
 
 GNC_TEST_DEPS = \

@@ -82,197 +82,194 @@ test_account_object_OBJECTS = test-account-object.$(OBJEXT)
 test_account_object_LDADD = $(LDADD)
 am__DEPENDENCIES_1 =
 test_account_object_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	../libgncmod-engine.la ../test-core/libgncmod-test-engine.la \
 	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1)
 test_book_merge_SOURCES = test-book-merge.c
 test_book_merge_OBJECTS = test-book-merge.$(OBJEXT)
 test_book_merge_LDADD = $(LDADD)
 test_book_merge_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	../libgncmod-engine.la ../test-core/libgncmod-test-engine.la \
 	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1)
 test_commodities_SOURCES = test-commodities.c
 test_commodities_OBJECTS = test-commodities.$(OBJEXT)
 test_commodities_LDADD = $(LDADD)
 test_commodities_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	../libgncmod-engine.la ../test-core/libgncmod-test-engine.la \
 	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1)
 test_date_SOURCES = test-date.c
 test_date_OBJECTS = test-date.$(OBJEXT)
 test_date_LDADD = $(LDADD)
-test_date_DEPENDENCIES =  \
+test_date_DEPENDENCIES = ${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	../libgncmod-engine.la ../test-core/libgncmod-test-engine.la \
 	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1)
 test_group_vs_book_SOURCES = test-group-vs-book.c
 test_group_vs_book_OBJECTS = test-group-vs-book.$(OBJEXT)
 test_group_vs_book_LDADD = $(LDADD)
 test_group_vs_book_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	../libgncmod-engine.la ../test-core/libgncmod-test-engine.la \
 	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1)
 test_guid_SOURCES = test-guid.c
 test_guid_OBJECTS = test-guid.$(OBJEXT)
 test_guid_LDADD = $(LDADD)
-test_guid_DEPENDENCIES =  \
+test_guid_DEPENDENCIES = ${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	../libgncmod-engine.la ../test-core/libgncmod-test-engine.la \
 	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1)
 am_test_link_OBJECTS = test-link.$(OBJEXT)
 test_link_OBJECTS = $(am_test_link_OBJECTS)
 test_link_DEPENDENCIES = ../libgncmod-engine.la \
-	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
+	${top_builddir}/src/core-utils/libgnc-core-utils.la
 test_load_engine_SOURCES = test-load-engine.c
 test_load_engine_OBJECTS = test-load-engine.$(OBJEXT)
 test_load_engine_LDADD = $(LDADD)
 test_load_engine_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	../libgncmod-engine.la ../test-core/libgncmod-test-engine.la \
 	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1)
 test_lots_SOURCES = test-lots.c
 test_lots_OBJECTS = test-lots.$(OBJEXT)
 test_lots_LDADD = $(LDADD)
-test_lots_DEPENDENCIES =  \
+test_lots_DEPENDENCIES = ${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	../libgncmod-engine.la ../test-core/libgncmod-test-engine.la \
 	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1)
 test_numeric_SOURCES = test-numeric.c
 test_numeric_OBJECTS = test-numeric.$(OBJEXT)
 test_numeric_LDADD = $(LDADD)
 test_numeric_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	../libgncmod-engine.la ../test-core/libgncmod-test-engine.la \
 	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1)
 test_object_SOURCES = test-object.c
 test_object_OBJECTS = test-object.$(OBJEXT)
 test_object_LDADD = $(LDADD)
 test_object_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	../libgncmod-engine.la ../test-core/libgncmod-test-engine.la \
 	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1)
 test_period_SOURCES = test-period.c
 test_period_OBJECTS = test-period.$(OBJEXT)
 test_period_LDADD = $(LDADD)
 test_period_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	../libgncmod-engine.la ../test-core/libgncmod-test-engine.la \
 	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1)
 test_query_SOURCES = test-query.c
 test_query_OBJECTS = test-query.$(OBJEXT)
 test_query_LDADD = $(LDADD)
 test_query_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	../libgncmod-engine.la ../test-core/libgncmod-test-engine.la \
 	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1)
 test_querynew_SOURCES = test-querynew.c
 test_querynew_OBJECTS = test-querynew.$(OBJEXT)
 test_querynew_LDADD = $(LDADD)
 test_querynew_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	../libgncmod-engine.la ../test-core/libgncmod-test-engine.la \
 	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1)
 test_recurrence_SOURCES = test-recurrence.c
 test_recurrence_OBJECTS = test-recurrence.$(OBJEXT)
 test_recurrence_LDADD = $(LDADD)
 test_recurrence_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	../libgncmod-engine.la ../test-core/libgncmod-test-engine.la \
 	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1)
 test_recursive_SOURCES = test-recursive.c
 test_recursive_OBJECTS = test-recursive.$(OBJEXT)
 test_recursive_LDADD = $(LDADD)
 test_recursive_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	../libgncmod-engine.la ../test-core/libgncmod-test-engine.la \
 	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1)
 test_scm_query_SOURCES = test-scm-query.c
 test_scm_query_OBJECTS = test-scm-query.$(OBJEXT)
 test_scm_query_LDADD = $(LDADD)
 test_scm_query_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	../libgncmod-engine.la ../test-core/libgncmod-test-engine.la \
 	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1)
 test_split_vs_account_SOURCES = test-split-vs-account.c
 test_split_vs_account_OBJECTS = test-split-vs-account.$(OBJEXT)
 test_split_vs_account_LDADD = $(LDADD)
 test_split_vs_account_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	../libgncmod-engine.la ../test-core/libgncmod-test-engine.la \
 	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1)
 test_transaction_reversal_SOURCES = test-transaction-reversal.c
 test_transaction_reversal_OBJECTS =  \
 	test-transaction-reversal.$(OBJEXT)
 test_transaction_reversal_LDADD = $(LDADD)
 test_transaction_reversal_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	../libgncmod-engine.la ../test-core/libgncmod-test-engine.la \
 	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1)
 test_transaction_voiding_SOURCES = test-transaction-voiding.c
 test_transaction_voiding_OBJECTS = test-transaction-voiding.$(OBJEXT)
 test_transaction_voiding_LDADD = $(LDADD)
 test_transaction_voiding_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	../libgncmod-engine.la ../test-core/libgncmod-test-engine.la \
 	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -328,6 +325,10 @@ CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CXX = @CXX@
+CXXCPP = @CXXCPP@
+CXXDEPMODE = @CXXDEPMODE@
+CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
 DBI_DIR = @DBI_DIR@
@@ -393,6 +394,9 @@ GOFFICE_LIBS = @GOFFICE_LIBS@
 GREP = @GREP@
 GTKHTML_CFLAGS = @GTKHTML_CFLAGS@
 GTKHTML_LIBS = @GTKHTML_LIBS@
+GTKMM_CFLAGS = @GTKMM_CFLAGS@
+GTKMM_DIR = @GTKMM_DIR@
+GTKMM_LIBS = @GTKMM_LIBS@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
 GUILE = @GUILE@
@@ -473,8 +477,6 @@ PYTHON_SITE_PKG = @PYTHON_SITE_PKG@
 PYTHON_VERSION = @PYTHON_VERSION@
 QOF_CFLAGS = @QOF_CFLAGS@
 QOF_LIBS = @QOF_LIBS@
-QOF_LIB_DIR = @QOF_LIB_DIR@
-QOF_PREFIX = @QOF_PREFIX@
 QTTHREADS_LIB = @QTTHREADS_LIB@
 RANLIB = @RANLIB@
 RC = @RC@
@@ -490,7 +492,6 @@ SWIG_PYTHON_OPT = @SWIG_PYTHON_OPT@
 TERMCAP_LIB = @TERMCAP_LIB@
 TEST_MYSQL_URL = @TEST_MYSQL_URL@
 TEST_PGSQL_URL = @TEST_PGSQL_URL@
-USE_LIBQOF = @USE_LIBQOF@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 WEBKIT_CFLAGS = @WEBKIT_CFLAGS@
@@ -502,6 +503,7 @@ abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_ct_CC = @ac_ct_CC@
+ac_ct_CXX = @ac_ct_CXX@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
@@ -570,12 +572,12 @@ AM_CPPFLAGS = \
   ${GLIB_CFLAGS}
 
 LDADD = \
+  ${top_builddir}/src/libqof/qof/libgnc-qof.la \
   ${top_builddir}/src/gnc-module/libgnc-module.la \
   ${top_builddir}/src/test-core/libtest-core.la \
   ../libgncmod-engine.la \
   ../test-core/libgncmod-test-engine.la \
   ${top_builddir}/src/core-utils/libgnc-core-utils.la \
-  ${top_builddir}/src/libqof/qof/libgnc-qof.la \
   ${GLIB_LIBS}
 
 GNC_TEST_DEPS = \
@@ -593,8 +595,8 @@ TESTS_ENVIRONMENT = \
 
 test_link_SOURCES = test-link.c
 test_link_LDADD = ../libgncmod-engine.la \
-  ${top_builddir}/src/core-utils/libgnc-core-utils.la \
-  ${top_builddir}/src/libqof/qof/libgnc-qof.la
+  ${top_builddir}/src/libqof/qof/libgnc-qof.la \
+  ${top_builddir}/src/core-utils/libgnc-core-utils.la
 
 EXTRA_DIST = \
   test-create-account \

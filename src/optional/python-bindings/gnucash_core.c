@@ -16741,6 +16741,28 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_gnc_numeric_errorCode_to_string(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GNCNumericErrorCode arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  PyObject * obj0 = 0 ;
+  char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:gnc_numeric_errorCode_to_string",&obj0)) SWIG_fail;
+  ecode1 = SWIG_AsVal_int(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "gnc_numeric_errorCode_to_string" "', argument " "1"" of type '" "GNCNumericErrorCode""'");
+  } 
+  arg1 = (GNCNumericErrorCode)(val1);
+  result = (char *)gnc_numeric_errorCode_to_string(arg1);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_gnc_numeric_num(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   gnc_numeric arg1 ;
@@ -35562,6 +35584,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"double_to_gnc_numeric", _wrap_double_to_gnc_numeric, METH_VARARGS, (char *)"double_to_gnc_numeric(double n, gint64 denom, gint how) -> gnc_numeric"},
 	 { (char *)"string_to_gnc_numeric", _wrap_string_to_gnc_numeric, METH_VARARGS, (char *)"string_to_gnc_numeric(gchar str, gnc_numeric n) -> gboolean"},
 	 { (char *)"gnc_numeric_error", _wrap_gnc_numeric_error, METH_VARARGS, (char *)"gnc_numeric_error(GNCNumericErrorCode error_code) -> gnc_numeric"},
+	 { (char *)"gnc_numeric_errorCode_to_string", _wrap_gnc_numeric_errorCode_to_string, METH_VARARGS, (char *)"gnc_numeric_errorCode_to_string(GNCNumericErrorCode error_code) -> char"},
 	 { (char *)"gnc_numeric_num", _wrap_gnc_numeric_num, METH_VARARGS, (char *)"gnc_numeric_num(gnc_numeric a) -> gint64"},
 	 { (char *)"gnc_numeric_denom", _wrap_gnc_numeric_denom, METH_VARARGS, (char *)"gnc_numeric_denom(gnc_numeric a) -> gint64"},
 	 { (char *)"gnc_numeric_to_double", _wrap_gnc_numeric_to_double, METH_VARARGS, (char *)"gnc_numeric_to_double(gnc_numeric n) -> gdouble"},

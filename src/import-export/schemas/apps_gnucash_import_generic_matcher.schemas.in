@@ -42,7 +42,7 @@
       <locale name="C">
         <short>Enable SKIP transaction action</short>
         <long>
-          Enable the SKIP action in the transaction matcher.  If
+          Enable the SKIP action in the transaction matcher. If
           enabled, a transaction whose best match's score is in the
           yellow zone (above the Auto-ADD threshold but below the
           Auto-CLEAR threshold) will be skipped by default.
@@ -155,6 +155,21 @@
           maximum such fee in your area (in units of your local
           currency), so the transaction will be recognised as a match.
         </long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gnucash/dialogs/import/generic_matcher/auto_create_commodity</key>
+      <applyto>/apps/gnucash/dialogs/import/generic_matcher/auto_create_commodity</applyto>
+      <owner>gnucash</owner>
+      <type>bool</type>
+      <default>FALSE</default>
+      <locale name="C">
+        <short>Automatically create new commodities</short>
+        <long>Enables the automatic creation of new commodities if any
+        unknown commodity is encountered during import. Otherwise
+        the user will be asked what to do with each unknown
+        commodity.</long>
       </locale>
     </schema>
 

@@ -2943,10 +2943,6 @@ _("Total")
 /* src/report/locale-specific/us/gnucash/report/taxtxf-de_DE.scm */
 _("Period from %s to %s")
 /* src/report/locale-specific/us/gnucash/report/taxtxf-de_DE.scm */
-_("Blue items are exportable to a German Tax XML file. Press Export to actually export them.")
-/* src/report/locale-specific/us/gnucash/report/taxtxf-de_DE.scm */
-_("No Tax Related accounts were found.  Go to the Edit->Tax Options dialog to set up tax-related accounts.")
-/* src/report/locale-specific/us/gnucash/report/taxtxf-de_DE.scm */
 _("Tax Report & XML Export")
 /* src/report/locale-specific/us/gnucash/report/taxtxf-de_DE.scm */
 _("Taxable Income / Deductible Expenses / Export to .XML file")
@@ -3140,10 +3136,6 @@ _("Account Name")
 _("Total")
 /* src/report/locale-specific/us/taxtxf-de_DE.scm */
 _("Period from %s to %s")
-/* src/report/locale-specific/us/taxtxf-de_DE.scm */
-_("Blue items are exportable to a German Tax XML file. Press Export to actually export them.")
-/* src/report/locale-specific/us/taxtxf-de_DE.scm */
-_("No Tax Related accounts were found.  Go to the Edit->Tax Options dialog to set up tax-related accounts.")
 /* src/report/locale-specific/us/taxtxf-de_DE.scm */
 _("Tax Report & XML Export")
 /* src/report/locale-specific/us/taxtxf-de_DE.scm */
@@ -10504,8 +10496,6 @@ _("Tax Number")
 _("Tax")
 /* src/tax/us/gnucash/tax/de_DE.scm */
 _("Tax Number")
-/* src/tax/us/txf-de_DE.scm */
-_("No help available.")
 /* src/tax/us/txf-de_DE.scm */
 _("The electronic tax number of your business")
 /* src/tax/us/txf.scm */

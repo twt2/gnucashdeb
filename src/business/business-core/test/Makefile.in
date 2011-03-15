@@ -66,72 +66,64 @@ test_address_OBJECTS = test-address.$(OBJEXT)
 test_address_LDADD = $(LDADD)
 am__DEPENDENCIES_1 =
 test_address_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
-	../libgncmod-business-core.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
-	$(am__DEPENDENCIES_1)
+	../libgncmod-business-core.la $(am__DEPENDENCIES_1)
 test_business_SOURCES = test-business.c
 test_business_OBJECTS = test-business.$(OBJEXT)
 test_business_LDADD = $(LDADD)
 test_business_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
-	../libgncmod-business-core.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
-	$(am__DEPENDENCIES_1)
+	../libgncmod-business-core.la $(am__DEPENDENCIES_1)
 test_customer_SOURCES = test-customer.c
 test_customer_OBJECTS = test-customer.$(OBJEXT)
 test_customer_LDADD = $(LDADD)
 test_customer_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
-	../libgncmod-business-core.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
-	$(am__DEPENDENCIES_1)
+	../libgncmod-business-core.la $(am__DEPENDENCIES_1)
 test_employee_SOURCES = test-employee.c
 test_employee_OBJECTS = test-employee.$(OBJEXT)
 test_employee_LDADD = $(LDADD)
 test_employee_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
-	../libgncmod-business-core.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
-	$(am__DEPENDENCIES_1)
+	../libgncmod-business-core.la $(am__DEPENDENCIES_1)
 test_job_SOURCES = test-job.c
 test_job_OBJECTS = test-job.$(OBJEXT)
 test_job_LDADD = $(LDADD)
-test_job_DEPENDENCIES =  \
+test_job_DEPENDENCIES = ${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
-	../libgncmod-business-core.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
-	$(am__DEPENDENCIES_1)
+	../libgncmod-business-core.la $(am__DEPENDENCIES_1)
 test_load_module_SOURCES = test-load-module.c
 test_load_module_OBJECTS = test-load-module.$(OBJEXT)
 test_load_module_LDADD = $(LDADD)
 test_load_module_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
-	../libgncmod-business-core.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
-	$(am__DEPENDENCIES_1)
+	../libgncmod-business-core.la $(am__DEPENDENCIES_1)
 test_vendor_SOURCES = test-vendor.c
 test_vendor_OBJECTS = test-vendor.$(OBJEXT)
 test_vendor_LDADD = $(LDADD)
 test_vendor_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
-	../libgncmod-business-core.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
-	$(am__DEPENDENCIES_1)
+	../libgncmod-business-core.la $(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -176,6 +168,10 @@ CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CXX = @CXX@
+CXXCPP = @CXXCPP@
+CXXDEPMODE = @CXXDEPMODE@
+CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
 DBI_DIR = @DBI_DIR@
@@ -241,6 +237,9 @@ GOFFICE_LIBS = @GOFFICE_LIBS@
 GREP = @GREP@
 GTKHTML_CFLAGS = @GTKHTML_CFLAGS@
 GTKHTML_LIBS = @GTKHTML_LIBS@
+GTKMM_CFLAGS = @GTKMM_CFLAGS@
+GTKMM_DIR = @GTKMM_DIR@
+GTKMM_LIBS = @GTKMM_LIBS@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
 GUILE = @GUILE@
@@ -321,8 +320,6 @@ PYTHON_SITE_PKG = @PYTHON_SITE_PKG@
 PYTHON_VERSION = @PYTHON_VERSION@
 QOF_CFLAGS = @QOF_CFLAGS@
 QOF_LIBS = @QOF_LIBS@
-QOF_LIB_DIR = @QOF_LIB_DIR@
-QOF_PREFIX = @QOF_PREFIX@
 QTTHREADS_LIB = @QTTHREADS_LIB@
 RANLIB = @RANLIB@
 RC = @RC@
@@ -338,7 +335,6 @@ SWIG_PYTHON_OPT = @SWIG_PYTHON_OPT@
 TERMCAP_LIB = @TERMCAP_LIB@
 TEST_MYSQL_URL = @TEST_MYSQL_URL@
 TEST_PGSQL_URL = @TEST_PGSQL_URL@
-USE_LIBQOF = @USE_LIBQOF@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 WEBKIT_CFLAGS = @WEBKIT_CFLAGS@
@@ -350,6 +346,7 @@ abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_ct_CC = @ac_ct_CC@
+ac_ct_CXX = @ac_ct_CXX@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
@@ -417,11 +414,11 @@ AM_CPPFLAGS = \
   ${GLIB_CFLAGS}
 
 LDADD = \
+  ${top_builddir}/src/libqof/qof/libgnc-qof.la \
   ${top_builddir}/src/gnc-module/libgnc-module.la \
   ${top_builddir}/src/test-core/libtest-core.la \
   ${top_builddir}/src/engine/libgncmod-engine.la \
   ../libgncmod-business-core.la \
-  ${top_builddir}/src/libqof/qof/libgnc-qof.la \
   ${GLIB_LIBS}
 
 GNC_TEST_DEPS = \

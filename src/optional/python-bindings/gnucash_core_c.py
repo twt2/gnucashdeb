@@ -1998,6 +1998,10 @@ def gnc_numeric_error(*args):
   """gnc_numeric_error(GNCNumericErrorCode error_code) -> gnc_numeric"""
   return _gnucash_core_c.gnc_numeric_error(*args)
 
+def gnc_numeric_errorCode_to_string(*args):
+  """gnc_numeric_errorCode_to_string(GNCNumericErrorCode error_code) -> char"""
+  return _gnucash_core_c.gnc_numeric_errorCode_to_string(*args)
+
 def gnc_numeric_num(*args):
   """gnc_numeric_num(gnc_numeric a) -> gint64"""
   return _gnucash_core_c.gnc_numeric_num(*args)
