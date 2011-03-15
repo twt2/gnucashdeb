@@ -309,7 +309,7 @@ gnc_numeric_equal(gnc_numeric a, gnc_numeric b)
     {
         /* BUG: One of the numbers has a reciprocal denom, and the other
            does not. I just don't know to handle this case in any
-           reasonably overflow-proof yet simple way.  So, this funtion
+           reasonably overflow-proof yet simple way.  So, this function
            will simply get it wrong whenever the three multiplies
            overflow 64-bits.  -CAS */
         if (a.denom < 0)
@@ -1506,5 +1506,24 @@ main(int argc, char ** argv)
     return 0;
 }
 #endif
+
+const char* gnc_numeric_errorCode_to_string(GNCNumericErrorCode error_code)
+{
+    switch (error_code)
+    {
+    case GNC_ERROR_OK:
+        return "GNC_ERROR_OK";
+    case GNC_ERROR_ARG:
+        return "GNC_ERROR_ARG";
+    case GNC_ERROR_OVERFLOW:
+        return "GNC_ERROR_OVERFLOW";
+    case GNC_ERROR_DENOM_DIFF:
+        return "GNC_ERROR_DENOM_DIFF";
+    case GNC_ERROR_REMAINDER:
+        return "GNC_ERROR_REMAINDER";
+    default:
+        return "<unknown>";
+    }
+}
 
 /* ======================== END OF FILE =================== */

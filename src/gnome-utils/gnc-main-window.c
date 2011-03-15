@@ -1829,6 +1829,12 @@ main_window_find_tab_items (GncMainWindow *window,
     priv = GNC_MAIN_WINDOW_GET_PRIVATE(window);
     *label_p = *entry_p = NULL;
 
+    if (!page->notebook_page)
+    {
+        LEAVE("invalid notebook_page");
+        return FALSE;
+    }
+
     event_box = gtk_notebook_get_tab_label(GTK_NOTEBOOK(priv->notebook),
                                            page->notebook_page);
 
@@ -1863,9 +1869,15 @@ main_window_find_tab_event (GncMainWindow *window,
 
     ENTER("window %p, page %p, event %p",
           window, page, event_p);
-    priv = GNC_MAIN_WINDOW_GET_PRIVATE(window);
     *event_p = NULL;
 
+    if (!page->notebook_page)
+    {
+        LEAVE("invalid notebook_page");
+        return FALSE;
+    }
+
+    priv = GNC_MAIN_WINDOW_GET_PRIVATE(window);
     event_box = gtk_notebook_get_tab_label(GTK_NOTEBOOK(priv->notebook),
                                            page->notebook_page);
     if (GTK_IS_EVENT_BOX(event_box))
@@ -1909,18 +1921,22 @@ main_window_update_page_name (GncPluginPage *page,
     old_page_long_name = g_strdup( gnc_plugin_page_get_page_long_name(page));
 
     /* Update the plugin */
-    window = GNC_MAIN_WINDOW(page->window);
-    priv = GNC_MAIN_WINDOW_GET_PRIVATE(window);
     gnc_plugin_page_set_page_name(page, name);
 
     /* Update the notebook tab */
-    main_window_find_tab_items(window, page, &label, &entry);
-    gtk_label_set_text(GTK_LABEL(label), name);
+    window = GNC_MAIN_WINDOW(page->window);
+    if (!window)
+    {
+        LEAVE("no window widget available");
+        return;
+    }
+
+    if (main_window_find_tab_items(window, page, &label, &entry))
+        gtk_label_set_text(GTK_LABEL(label), name);
 
     /* Update Tooltip on notebook Tab */
-    main_window_find_tab_event(window, page, &event_box);
-
-    if (g_strrstr(old_page_long_name, old_page_name) != NULL)
+    if (old_page_long_name && old_page_name
+            && g_strrstr(old_page_long_name, old_page_name) != NULL)
     {
         gchar *new_page_long_name;
         gint string_position;
@@ -1929,15 +1945,21 @@ main_window_update_page_name (GncPluginPage *page,
         new_page_long_name = g_strconcat(g_strndup(old_page_long_name, string_position), name, NULL);
 
         gnc_plugin_page_set_page_long_name(page, new_page_long_name);
-        gtk_tooltips_set_tip(GTK_TOOLTIPS(tips), event_box, new_page_long_name, NULL);
+
+        if (main_window_find_tab_event(window, page, &event_box))
+            gtk_tooltips_set_tip(GTK_TOOLTIPS(tips), event_box, new_page_long_name, NULL);
 
         g_free(new_page_long_name);
     }
 
     /* Update the notebook menu */
-    label = gtk_notebook_get_menu_label (GTK_NOTEBOOK(priv->notebook),
-                                         page->notebook_page);
-    gtk_label_set_text(GTK_LABEL(label), name);
+    if (page->notebook_page)
+    {
+        priv = GNC_MAIN_WINDOW_GET_PRIVATE(window);
+        label = gtk_notebook_get_menu_label (GTK_NOTEBOOK(priv->notebook),
+                                             page->notebook_page);
+        gtk_label_set_text(GTK_LABEL(label), name);
+    }
 
     /* Force an update of the window title */
     gnc_main_window_update_title(window);
@@ -3832,12 +3854,23 @@ gnc_main_window_cmd_window_move_page (GtkAction *action, GncMainWindow *window)
     GtkNotebook *notebook;
     GtkWidget *tab_widget, *menu_widget;
 
+    ENTER("action %p,window %p", action, window);
+
     /* Setup */
     priv = GNC_MAIN_WINDOW_GET_PRIVATE(window);
-    if (priv->current_page == NULL)
-        return;
-    notebook = GTK_NOTEBOOK (priv->notebook);
     page = priv->current_page;
+    if (!page)
+    {
+        LEAVE("invalid page");
+        return;
+    }
+    if (!page->notebook_page)
+    {
+        LEAVE("invalid notebook_page");
+        return;
+    }
+
+    notebook = GTK_NOTEBOOK (priv->notebook);
     tab_widget = gtk_notebook_get_tab_label (notebook, page->notebook_page);
     menu_widget = gtk_notebook_get_menu_label (notebook, page->notebook_page);
 
@@ -3867,6 +3900,8 @@ gnc_main_window_cmd_window_move_page (GtkAction *action, GncMainWindow *window)
           page, window, new_window);
     DEBUG("Old window current is %p, new window current is %p",
           priv->current_page, priv->current_page);
+
+    LEAVE("page moved");
 }
 
 static void
@@ -4302,6 +4337,12 @@ gnc_main_window_all_action_set_sensitive (const gchar *action_name,
         action = gnc_main_window_find_action (tmp->data, action_name);
         gtk_action_set_sensitive (action, sensitive);
     }
+}
+
+GtkUIManager *gnc_main_window_get_uimanager (GncMainWindow *window)
+{
+    g_assert(window);
+    return window->ui_merge;
 }
 
 /** @} */

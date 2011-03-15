@@ -85,8 +85,9 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(gncmoddir)" \
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libgnc_module_la_DEPENDENCIES = ../core-utils/libgnc-core-utils.la \
-	${top_builddir}/lib/libc/libc-missing.la $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+	${top_builddir}/lib/libc/libc-missing.la \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_libgnc_module_la_OBJECTS = gnc-module.lo swig-gnc-module.lo
 libgnc_module_la_OBJECTS = $(am_libgnc_module_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -169,6 +170,10 @@ CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CXX = @CXX@
+CXXCPP = @CXXCPP@
+CXXDEPMODE = @CXXDEPMODE@
+CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
 DBI_DIR = @DBI_DIR@
@@ -234,6 +239,9 @@ GOFFICE_LIBS = @GOFFICE_LIBS@
 GREP = @GREP@
 GTKHTML_CFLAGS = @GTKHTML_CFLAGS@
 GTKHTML_LIBS = @GTKHTML_LIBS@
+GTKMM_CFLAGS = @GTKMM_CFLAGS@
+GTKMM_DIR = @GTKMM_DIR@
+GTKMM_LIBS = @GTKMM_LIBS@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
 GUILE = @GUILE@
@@ -314,8 +322,6 @@ PYTHON_SITE_PKG = @PYTHON_SITE_PKG@
 PYTHON_VERSION = @PYTHON_VERSION@
 QOF_CFLAGS = @QOF_CFLAGS@
 QOF_LIBS = @QOF_LIBS@
-QOF_LIB_DIR = @QOF_LIB_DIR@
-QOF_PREFIX = @QOF_PREFIX@
 QTTHREADS_LIB = @QTTHREADS_LIB@
 RANLIB = @RANLIB@
 RC = @RC@
@@ -331,7 +337,6 @@ SWIG_PYTHON_OPT = @SWIG_PYTHON_OPT@
 TERMCAP_LIB = @TERMCAP_LIB@
 TEST_MYSQL_URL = @TEST_MYSQL_URL@
 TEST_PGSQL_URL = @TEST_PGSQL_URL@
-USE_LIBQOF = @USE_LIBQOF@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 WEBKIT_CFLAGS = @WEBKIT_CFLAGS@
@@ -343,6 +348,7 @@ abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_ct_CC = @ac_ct_CC@
+ac_ct_CXX = @ac_ct_CXX@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
@@ -403,6 +409,7 @@ AM_CPPFLAGS = \
    -I${top_srcdir}/lib/libc \
    -I${top_srcdir}/src \
    -I${top_srcdir}/src/core-utils \
+  -I${top_srcdir}/src/libqof/qof \
    ${GLIB_CFLAGS} \
    ${GUILE_INCS}
 
@@ -411,6 +418,7 @@ libgnc_module_la_SOURCES = gnc-module.c swig-gnc-module.c
 libgnc_module_la_LIBADD = \
   ../core-utils/libgnc-core-utils.la \
   ${top_builddir}/lib/libc/libc-missing.la \
+  ${top_builddir}/src/libqof/qof/libgnc-qof.la \
   ${GLIB_LIBS} \
   ${GUILE_LIBS}
 

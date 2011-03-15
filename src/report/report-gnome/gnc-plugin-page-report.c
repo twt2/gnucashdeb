@@ -67,6 +67,7 @@
 #include "option-util.h"
 #include "window-report.h"
 #include "swig-runtime.h"
+#include "app-utils/business-options.h"
 
 #define WINDOW_REPORT_CM_CLASS "window-report"
 
@@ -77,6 +78,12 @@ with qof_log_set_level().*/
 static QofLogModule log_module = GNC_MOD_GUI;
 
 static GObjectClass *parent_class = NULL;
+
+// A static GHashTable to record the usage count for each printer
+// output name. FIXME: Currently this isn't cleaned up at program
+// shutdown because there isn't a place to easily insert a finalize()
+// function for this. Oh well.
+static GHashTable *static_report_printnames = NULL;
 
 // Property-id values.
 enum
@@ -91,7 +98,7 @@ typedef struct GncPluginPageReportPrivate
     int reportId;
     gint component_manager_id;
 
-    /// The report which this Page is satisifying
+    /// The report which this Page is satisfying
     SCM cur_report;
     /// The Option DB for this report.
     GNCOptionDB *cur_odb;
@@ -294,6 +301,11 @@ gnc_plugin_page_report_class_init (GncPluginPageReportClass *klass)
     			G_TYPE_NONE, 1,
     			G_TYPE_POINTER);
     */
+
+    // Also initialize the report name usage count table
+    if (!static_report_printnames)
+        static_report_printnames = g_hash_table_new_full(g_str_hash,
+                                   g_str_equal, g_free, NULL);
 }
 
 static void
@@ -557,7 +569,7 @@ gnc_plugin_page_report_load_cb(GncHtml * html, URLType type,
 }
 
 
-/** This function is called when one of the options for a register
+/** This function is called when one of the options for a report
  *  page has changed.  It is responsible for marking the report as
  *  dirty, and causing the report to reload using the new options.
  *
@@ -1570,9 +1582,111 @@ static void
 gnc_plugin_page_report_print_cb( GtkAction *action, GncPluginPageReport *report )
 {
     GncPluginPageReportPrivate *priv;
+    gchar *report_name = NULL;
+    gchar *job_name = NULL;
+    gchar *job_date = qof_print_date( time( NULL ) );
+    const gchar *default_jobname = N_("GnuCash-Report");
 
     priv = GNC_PLUGIN_PAGE_REPORT_GET_PRIVATE(report);
-    gnc_html_print(priv->html);
+
+    if (priv->cur_report == SCM_BOOL_F)
+        report_name = g_strdup (_(default_jobname));
+    else
+    {
+        /* Gather some information from the report to generate a
+         * decent print job name.
+         * FIXME: this is a bit of a hack. It would be better if each
+         *        report had a hidden job name option, because the
+         *        generic reporting code shouldn't know what makes
+         *        a decent job name for each report.
+         *
+         *        Also, the "Report name" for an invoice report is
+         *        "Printable Invoice", which is not what the user wants to see,
+         *        so I added yet another hack below for this. cstim.
+         */
+        GncInvoice *invoice;
+        report_name = gnc_option_db_lookup_string_option(priv->cur_odb, "General",
+                      "Report name", NULL);
+        if (!report_name)
+            report_name = g_strdup (_(default_jobname));
+        if (safe_strcmp(report_name, _("Printable Invoice")) == 0)
+        {
+            /* Again HACK alert: We modify this single known string here into
+             * something more appropriate. */
+            g_free(report_name);
+            report_name = g_strdup(_("Invoice"));
+        }
+
+        invoice = gnc_option_db_lookup_invoice_option(priv->cur_odb, "General",
+                  "Invoice Number", NULL);
+        if (invoice)
+        {
+            const gchar *invoice_number = gncInvoiceGetID(invoice);
+            if (invoice_number)
+            {
+                /* Report is for an invoice. Add the invoice number to
+                 * the job name. */
+                gchar *name_number = g_strjoin ( "_", report_name, invoice_number, NULL );
+                g_free (report_name);
+                report_name = name_number;
+            }
+        }
+    }
+
+    job_name = g_strjoin ( "_", report_name, job_date, NULL );
+    g_free (report_name);
+    report_name = NULL;
+    g_free (job_date);
+
+    {
+        char forbidden_char = '/';
+        // Now remove the characters that are not allowed in file
+        // names. FIXME: Check for all disallowed characters here!
+        while (strchr(job_name, forbidden_char))
+        {
+            *strchr(job_name, forbidden_char) = '_';
+        }
+    }
+
+    {
+        /* And one final checking issue: We want to avoid allocating
+         * the same name twice for a saved PDF.  Hence, we keep a
+         * GHashTable with the usage count of existing output
+         * names. (Because I'm lazy, I just use a static GHashTable
+         * for this.) */
+        gpointer value;
+        gboolean already_found;
+        g_assert(static_report_printnames);
+
+        // Lookup the existing usage count
+        value = g_hash_table_lookup(static_report_printnames, job_name);
+        already_found = (value != NULL);
+        if (!value)
+        {
+            value = GINT_TO_POINTER(0);
+        }
+
+        // Increment the stored usage count
+        value = GINT_TO_POINTER(1 + GPOINTER_TO_INT(value));
+        // and store it again
+        g_hash_table_insert(static_report_printnames, g_strdup(job_name), value);
+
+        // If the previous usage count was more than 0, append the current
+        // count (which is now 2 or higher) to the resulting name
+        if (already_found)
+        {
+            // The name was already in use, so modify the name again
+            gchar *tmp = g_strdup_printf("%s_%d", job_name, (int) GPOINTER_TO_INT(value));
+            g_free(job_name);
+            job_name = tmp;
+        }
+    }
+
+    //g_warning("Setting job name=%s", job_name);
+
+    gnc_html_print(priv->html, job_name);
+
+    g_free (job_name);
 }
 
 static void

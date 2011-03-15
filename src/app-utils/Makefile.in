@@ -114,9 +114,10 @@ libgncmod_app_utils_la_DEPENDENCIES =  \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_2)
-am__libgncmod_app_utils_la_SOURCES_DIST = swig-app-utils.c QuickFill.c \
-	file-utils.c gfec.c gnc-account-merge.c \
-	gnc-accounting-period.c gnc-component-manager.c gnc-druid.c \
+am__libgncmod_app_utils_la_SOURCES_DIST = swig-app-utils.c \
+	business-options.c QuickFill.c file-utils.c gfec.c \
+	gnc-account-merge.c gnc-accounting-period.c \
+	gnc-addr-quickfill.c gnc-component-manager.c gnc-druid.c \
 	gnc-druid-cb.c gnc-druid-provider.c gnc-druid-provider-desc.c \
 	gnc-druid-provider-desc-edge.c gnc-druid-provider-desc-file.c \
 	gnc-druid-provider-desc-multifile.c \
@@ -125,9 +126,10 @@ am__libgncmod_app_utils_la_SOURCES_DIST = swig-app-utils.c QuickFill.c \
 	gnc-sx-instance-model.c gncmod-app-utils.c gnc-ui-util.c \
 	guile-util.c option-util.c gnc-help-utils.c
 @OS_WIN32_TRUE@am__objects_1 = gnc-help-utils.lo
-am_libgncmod_app_utils_la_OBJECTS = swig-app-utils.lo QuickFill.lo \
-	file-utils.lo gfec.lo gnc-account-merge.lo \
-	gnc-accounting-period.lo gnc-component-manager.lo gnc-druid.lo \
+am_libgncmod_app_utils_la_OBJECTS = swig-app-utils.lo \
+	business-options.lo QuickFill.lo file-utils.lo gfec.lo \
+	gnc-account-merge.lo gnc-accounting-period.lo \
+	gnc-addr-quickfill.lo gnc-component-manager.lo gnc-druid.lo \
 	gnc-druid-cb.lo gnc-druid-provider.lo \
 	gnc-druid-provider-desc.lo gnc-druid-provider-desc-edge.lo \
 	gnc-druid-provider-desc-file.lo \
@@ -220,6 +222,10 @@ CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CXX = @CXX@
+CXXCPP = @CXXCPP@
+CXXDEPMODE = @CXXDEPMODE@
+CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
 DBI_DIR = @DBI_DIR@
@@ -285,6 +291,9 @@ GOFFICE_LIBS = @GOFFICE_LIBS@
 GREP = @GREP@
 GTKHTML_CFLAGS = @GTKHTML_CFLAGS@
 GTKHTML_LIBS = @GTKHTML_LIBS@
+GTKMM_CFLAGS = @GTKMM_CFLAGS@
+GTKMM_DIR = @GTKMM_DIR@
+GTKMM_LIBS = @GTKMM_LIBS@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
 GUILE = @GUILE@
@@ -365,8 +374,6 @@ PYTHON_SITE_PKG = @PYTHON_SITE_PKG@
 PYTHON_VERSION = @PYTHON_VERSION@
 QOF_CFLAGS = @QOF_CFLAGS@
 QOF_LIBS = @QOF_LIBS@
-QOF_LIB_DIR = @QOF_LIB_DIR@
-QOF_PREFIX = @QOF_PREFIX@
 QTTHREADS_LIB = @QTTHREADS_LIB@
 RANLIB = @RANLIB@
 RC = @RC@
@@ -382,7 +389,6 @@ SWIG_PYTHON_OPT = @SWIG_PYTHON_OPT@
 TERMCAP_LIB = @TERMCAP_LIB@
 TEST_MYSQL_URL = @TEST_MYSQL_URL@
 TEST_PGSQL_URL = @TEST_PGSQL_URL@
-USE_LIBQOF = @USE_LIBQOF@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 WEBKIT_CFLAGS = @WEBKIT_CFLAGS@
@@ -394,6 +400,7 @@ abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_ct_CC = @ac_ct_CC@
+ac_ct_CXX = @ac_ct_CXX@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
@@ -465,10 +472,11 @@ AM_CPPFLAGS = \
   ${GCONF_CFLAGS} \
   ${GTK_CFLAGS}
 
-libgncmod_app_utils_la_SOURCES = swig-app-utils.c QuickFill.c \
-	file-utils.c gfec.c gnc-account-merge.c \
-	gnc-accounting-period.c gnc-component-manager.c gnc-druid.c \
-	gnc-druid-cb.c gnc-druid-provider.c gnc-druid-provider-desc.c \
+libgncmod_app_utils_la_SOURCES = swig-app-utils.c business-options.c \
+	QuickFill.c file-utils.c gfec.c gnc-account-merge.c \
+	gnc-accounting-period.c gnc-addr-quickfill.c \
+	gnc-component-manager.c gnc-druid.c gnc-druid-cb.c \
+	gnc-druid-provider.c gnc-druid-provider-desc.c \
 	gnc-druid-provider-desc-edge.c gnc-druid-provider-desc-file.c \
 	gnc-druid-provider-desc-multifile.c \
 	gnc-druid-provider-file-cb.c gnc-entry-quickfill.c gnc-euro.c \
@@ -478,11 +486,13 @@ libgncmod_app_utils_la_SOURCES = swig-app-utils.c QuickFill.c \
 gncincludedir = ${GNC_INCLUDE_DIR}
 gncinclude_HEADERS = \
   QuickFill.h \
+  business-options.h \
   file-utils.h \
   gfec.h \
   gnc-basic-gobject.h \
   gnc-account-merge.h \
   gnc-accounting-period.h \
+  gnc-addr-quickfill.h \
   gnc-component-manager.h \
   gnc-druid.h \
   gnc-druid-cb.h \
@@ -609,10 +619,12 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/QuickFill.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/business-options.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/file-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gfec.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-account-merge.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-accounting-period.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-addr-quickfill.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-component-manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-druid-cb.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-druid-provider-desc-edge.Plo@am__quote@

@@ -141,8 +141,13 @@ init_from_stream(FILE *stream, size_t max_size)
     char buffer[BLOCKSIZE + 72];
     size_t sum, block_size, total;
 
+    ENTER("");
+
     if (max_size <= 0)
+    {
+        LEAVE("max_size is 0 or less, skipping stream");
         return 0;
+    }
 
     total = 0;
 
@@ -172,7 +177,10 @@ init_from_stream(FILE *stream, size_t max_size)
         max_size -= sum;
 
         if (n == 0 && ferror (stream))
+        {
+            LEAVE("error while reading stream");
             return total;
+        }
 
         /* If end of file or max_size is reached, end the loop. */
         if ((n == 0) || (max_size == 0))
@@ -192,6 +200,7 @@ init_from_stream(FILE *stream, size_t max_size)
         total += sum;
     }
 
+    LEAVE("");
     return total;
 }
 
@@ -203,19 +212,30 @@ init_from_file(const char *filename, size_t max_size)
     size_t file_bytes;
     FILE *fp;
 
+    ENTER("filename: %s", filename);
+
     memset(&stats, 0, sizeof(stats));
     if (g_stat(filename, &stats) != 0)
+    {
+        LEAVE("unable to read file stats on %s", filename);
         return 0;
+    }
 
     md5_process_bytes(&stats, sizeof(stats), &guid_context);
     total += sizeof(stats);
 
     if (max_size <= 0)
+    {
+        LEAVE("no bytes in file %s", filename);
         return total;
+    }
 
     fp = g_fopen (filename, "r");
     if (fp == NULL)
+    {
+        LEAVE("unable to open file %s", filename);
         return total;
+    }
 
     file_bytes = init_from_stream(fp, max_size);
 
@@ -231,6 +251,7 @@ init_from_file(const char *filename, size_t max_size)
 
     fclose(fp);
 
+    LEAVE("file %s processed successfully", filename);
     return total;
 }
 
@@ -244,12 +265,19 @@ init_from_dir(const char *dirname, unsigned int max_files)
     int result;
     GDir *dir;
 
+    ENTER("dirname: %s", dirname);
     if (max_files <= 0)
+    {
+        LEAVE("max_files is 0 or less, skipping directory %s", dirname);
         return 0;
+    }
 
     dir = g_dir_open(dirname, 0, NULL);
     if (dir == NULL)
+    {
+        LEAVE("unable to open directory %s", dirname);
         return 0;
+    }
 
     total = 0;
 
@@ -279,6 +307,7 @@ init_from_dir(const char *dirname, unsigned int max_files)
 
     g_dir_close(dir);
 
+    LEAVE("");
     return total;
 }
 
@@ -291,6 +320,8 @@ init_from_time(void)
     clock_t clocks;
     struct tms tms_buf;
 #endif
+
+    ENTER("");
 
     total = 0;
 
@@ -305,20 +336,25 @@ init_from_time(void)
     total += sizeof(clocks) + sizeof(tms_buf);
 #endif
 
+    LEAVE("");
     return total;
 }
 
 static size_t
 init_from_int(int val)
 {
+    ENTER("");
     md5_process_bytes(&val, sizeof(val), &guid_context);
+    LEAVE("");
     return sizeof(int);
 }
 
 static size_t
 init_from_buff(unsigned char * buf, size_t buflen)
 {
+    ENTER("");
     md5_process_bytes(buf, buflen, &guid_context);
+    LEAVE("");
     return buflen;
 }
 
@@ -327,15 +363,24 @@ guid_init(void)
 {
     size_t bytes = 0;
 
+    ENTER("");
+
     /* Not needed; taken care of on first malloc.
      * guid_memchunk_init(); */
 
     md5_init_ctx(&guid_context);
 
-    /* entropy pool */
+    /* entropy pool
+     * FIXME /dev/urandom doesn't exist on Windows. We should
+     *       use the Windows native CryptGenRandom or RtlGenRandom
+     *       functions. See
+     *       http://en.wikipedia.org/wiki/CryptGenRandom */
     bytes += init_from_file ("/dev/urandom", 512);
 
-    /* files */
+    /* files
+     * FIXME none of these directories make sense on
+     *       Windows. We should figure out some proper
+     *       alternatives there. */
     {
         const char * files[] =
         {
@@ -356,13 +401,23 @@ guid_init(void)
             bytes += init_from_file(files[i], BLOCKSIZE);
     }
 
-    /* directories */
+    /* directories
+     * Note: P_tmpdir is set to "\" by mingw (Windows) This seems to
+     * trigger unwanted network access attempts (see bug #521817).
+     * So on Windows we explicitly set the temporary directory.
+     * FIXME other than "c:/temp" none of these directories make sense on
+     *       Windows. We should figure out some proper
+     *       alternatives there. */
     {
         const char * dirname;
         const char * dirs[] =
         {
             "/proc",
+#ifndef G_OS_WIN32
             P_tmpdir,
+#else
+            "c:/temp",
+#endif
             "/var/lock",
             "/var/log",
             "/var/mail",
@@ -468,6 +523,7 @@ guid_init(void)
 #endif
 
     guid_initialized = TRUE;
+    LEAVE();
 }
 
 void

@@ -44,7 +44,9 @@
 
 #include "dialog-options.h"
 #include "dialog-utils.h"
+#include "gnc-gconf-utils.h"
 #include "gnc-gnome-utils.h"
+#include "gnc-gobject-utils.h"
 #include "gnc-icons.h"
 #include "gnc-plugin-page-budget.h"
 #include "gnc-plugin-budget.h"
@@ -196,6 +198,8 @@ typedef struct GncPluginPageBudgetPrivate
     GncBudget* budget;
     GncGUID key;
     GncDialog* d;
+    /* To distinguish between closing a tab and deleting a budget */
+    gboolean delete_budget;
 
     GList *period_col_list;
     AccountFilterDialog fd;
@@ -244,13 +248,29 @@ gnc_plugin_page_budget_new (GncBudget *budget)
     GncPluginPageBudget *plugin_page;
     GncPluginPageBudgetPrivate *priv;
     gchar* label;
+    const GList *item;
 
     g_return_val_if_fail(GNC_IS_BUDGET(budget), NULL);
     ENTER(" ");
+
+    /* Is there an existing page? */
+    item = gnc_gobject_tracking_get_list(GNC_PLUGIN_PAGE_BUDGET_NAME);
+    for ( ; item; item = g_list_next(item))
+    {
+        plugin_page = (GncPluginPageBudget *)item->data;
+        priv = GNC_PLUGIN_PAGE_BUDGET_GET_PRIVATE(plugin_page);
+        if (priv->budget == budget)
+        {
+            LEAVE("existing budget page %p", plugin_page);
+            return GNC_PLUGIN_PAGE(plugin_page);
+        }
+    }
+
     plugin_page = g_object_new(GNC_TYPE_PLUGIN_PAGE_BUDGET, NULL);
 
     priv = GNC_PLUGIN_PAGE_BUDGET_GET_PRIVATE(plugin_page);
     priv->budget = budget;
+    priv->delete_budget = FALSE;
     label = g_strdup_printf("%s: %s", _("Budget"), gnc_budget_get_name(budget));
     g_object_set(G_OBJECT(plugin_page), "page-name", label, NULL);
     g_free(label);
@@ -289,7 +309,7 @@ gnc_plugin_page_budget_init (GncPluginPageBudget *plugin_page)
     ENTER("page %p", plugin_page);
     priv = GNC_PLUGIN_PAGE_BUDGET_GET_PRIVATE(plugin_page);
 
-    /* Init parent declared variables */
+    /* Initialize parent declared variables */
     parent = GNC_PLUGIN_PAGE(plugin_page);
     g_object_set(G_OBJECT(plugin_page),
                  "page-name",      _("Budget"),
@@ -310,7 +330,7 @@ gnc_plugin_page_budget_init (GncPluginPageBudget *plugin_page)
                                   plugin_page);
     gnc_plugin_init_short_names (action_group, toolbar_labels);
 
-    /* Visisble types */
+    /* Visible types */
     priv->fd.visible_types = -1; /* Start with all types */
     priv->fd.show_hidden = FALSE;
     priv->fd.show_zero_total = TRUE;
@@ -378,7 +398,7 @@ gnc_plugin_page_budget_refresh_cb(GHashTable *changes, gpointer user_data)
 
 
 /*
- * GncPluginPage Fucntions
+ * GncPluginPage Functions
  */
 static GtkWidget *
 gnc_plugin_page_budget_create_widget (GncPluginPage *plugin_page)
@@ -388,6 +408,8 @@ gnc_plugin_page_budget_create_widget (GncPluginPage *plugin_page)
     GtkTreeSelection *selection;
     GtkTreeView *tree_view;
     GtkWidget *scrolled_window;
+    gchar *priv_gconf_section;
+    const gchar *budget_guid_str;
 
     ENTER("page %p", plugin_page);
     page = GNC_PLUGIN_PAGE_BUDGET (plugin_page);
@@ -410,7 +432,12 @@ gnc_plugin_page_budget_create_widget (GncPluginPage *plugin_page)
                         TRUE, TRUE, 0);
 
     tree_view = gnc_tree_view_account_new(FALSE);
-    g_object_set(G_OBJECT(tree_view), "gconf-section", GCONF_SECTION, NULL);
+
+    /* Have one gconf section per budget */
+    budget_guid_str = guid_to_string (&priv->key);
+    priv_gconf_section = g_strjoin ("/", GCONF_SECTION, budget_guid_str, NULL);
+    g_object_set(G_OBJECT(tree_view), "gconf-section", priv_gconf_section, NULL);
+    g_free (priv_gconf_section);
 
     gnc_tree_view_configure_columns(GNC_TREE_VIEW(tree_view));
     priv->tree_view = tree_view;
@@ -461,10 +488,22 @@ gnc_plugin_page_budget_destroy_widget (GncPluginPage *plugin_page)
 {
     GncPluginPageBudget *page;
     GncPluginPageBudgetPrivate *priv;
+    gchar *priv_gconf_section = NULL;
 
     ENTER("page %p", plugin_page);
     page = GNC_PLUGIN_PAGE_BUDGET (plugin_page);
     priv = GNC_PLUGIN_PAGE_BUDGET_GET_PRIVATE(plugin_page);
+
+    if (priv->delete_budget)
+    {
+        g_object_get (G_OBJECT(priv->tree_view), "gconf-section", &priv_gconf_section, NULL);
+        if (priv_gconf_section)
+        {
+            gnc_gconf_unset_dir (priv_gconf_section, NULL);
+            g_free (priv_gconf_section);
+        }
+    }
+
     if (priv->widget)
     {
         g_object_unref(G_OBJECT(priv->widget));
@@ -583,7 +622,7 @@ gnc_plugin_page_budget_recreate_page (GtkWidget *window, GKeyFile *key_file,
 
 /** This button press handler calls the common button press handler
  *  for all pages.  The GtkTreeView eats all button presses and
- *  doesn't pass them up the widget tree, even when doesn't do
+ *  doesn't pass them up the widget tree, even when it doesn't do
  *  anything with them.  The only way to get access to the button
  *  presses in an account tree page is here on the tree view widget.
  *  Button presses on all other pages are caught by the signal
@@ -745,6 +784,7 @@ gnc_plugin_page_budget_cmd_delete_budget (GtkAction *action,
     priv = GNC_PLUGIN_PAGE_BUDGET_GET_PRIVATE(page);
     budget = priv->budget;
     g_return_if_fail (GNC_IS_BUDGET(budget));
+    priv->delete_budget = TRUE;
     gnc_budget_gui_delete_budget(budget);
 
 }
@@ -777,7 +817,7 @@ gnc_plugin_page_budget_options_apply_cb (GncDialog * d,
 
         gnc_budget_set_name(priv->budget, name);
         label = g_strdup_printf("%s: %s", _("Budget"), name);
-        g_object_set(G_OBJECT(page), "page-name", label, NULL);
+        main_window_update_page_name(GNC_PLUGIN_PAGE(page), label);
         g_free(label);
         DEBUG("%s", name);
         g_free(name);

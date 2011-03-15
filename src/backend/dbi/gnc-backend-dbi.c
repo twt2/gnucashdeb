@@ -29,6 +29,7 @@
 #include "config.h"
 
 #include <errno.h>
+#include <glib.h>
 #include <glib/gstdio.h>
 #if !HAVE_GMTIME_R
 #include "gmtime_r.h"
@@ -47,6 +48,7 @@
 
 #include "gnc-gconf-utils.h"
 #include "gnc-uri-utils.h"
+#include "gnc-filepath-utils.h"
 #include "gnc-locale-utils.h"
 
 #include "gnc-backend-dbi.h"
@@ -339,6 +341,12 @@ gnc_dbi_sqlite3_session_begin( QofBackend *qbe, QofSession *session,
     }
     be->sql_be.conn = create_dbi_connection( GNC_DBI_PROVIDER_SQLITE, qbe, be->conn );
     be->sql_be.timespec_format = SQLITE3_TIMESPEC_STR_FORMAT;
+
+    /* We should now have a proper session set up.
+     * Let's start logging */
+    xaccLogSetBaseName (filepath);
+    PINFO ("logpath=%s", filepath ? filepath : "(null)");
+
 exit:
     if ( filepath != NULL ) g_free ( filepath );
     if ( basename != NULL ) g_free( basename );
@@ -620,9 +628,7 @@ gnc_dbi_lock_database ( QofBackend* qbe, gboolean ignore_lock )
         result = NULL;
     }
     return FALSE;
-}
-
-static void
+}static void
 gnc_dbi_unlock( QofBackend *qbe )
 {
     GncDbiBackend *qe = (GncDbiBackend*)qbe;
@@ -722,6 +728,8 @@ gnc_dbi_mysql_session_begin( QofBackend* qbe, QofSession *session,
     gchar* dbname = NULL;
     gchar* username = NULL;
     gchar* password = NULL;
+    gchar* basename = NULL;
+    gchar* translog_path = NULL;
     gint portnum = 0;
     gint result;
     gboolean success = FALSE;
@@ -872,11 +880,20 @@ gnc_dbi_mysql_session_begin( QofBackend* qbe, QofSession *session,
     }
     be->sql_be.timespec_format = MYSQL_TIMESPEC_STR_FORMAT;
 
+    /* We should now have a proper session set up.
+     * Let's start logging */
+    basename = g_strjoin("_", protocol, host, username, dbname, NULL);
+    translog_path = gnc_build_translog_path (basename);
+    xaccLogSetBaseName (translog_path);
+    PINFO ("logpath=%s", translog_path ? translog_path : "(null)");
+
 exit:
     g_free( protocol );
     g_free( host );
     g_free( username );
     g_free( password );
+    g_free( basename );
+    g_free( translog_path );
     g_free( dbname );
 
     LEAVE (" ");
@@ -984,6 +1001,8 @@ gnc_dbi_postgres_session_begin( QofBackend *qbe, QofSession *session,
     gchar *dbname = NULL, *dbnamelc = NULL;
     gchar* username = NULL;
     gchar* password = NULL;
+    gchar* basename = NULL;
+    gchar* translog_path = NULL;
     gboolean success = FALSE;
     gint portnum = 0;
 
@@ -1129,11 +1148,21 @@ gnc_dbi_postgres_session_begin( QofBackend *qbe, QofSession *session,
         be->sql_be.conn = create_dbi_connection( GNC_DBI_PROVIDER_PGSQL, qbe, be->conn );
     }
     be->sql_be.timespec_format = PGSQL_TIMESPEC_STR_FORMAT;
+
+    /* We should now have a proper session set up.
+     * Let's start logging */
+    basename = g_strjoin("_", protocol, host, username, dbname, NULL);
+    translog_path = gnc_build_translog_path (basename);
+    xaccLogSetBaseName (translog_path);
+    PINFO ("logpath=%s", translog_path ? translog_path : "(null)");
+
 exit:
     g_free( protocol );
     g_free( host );
     g_free( username );
     g_free( password );
+    g_free( basename );
+    g_free( translog_path );
     g_free( dbname );
     g_free( dbnamelc );
 
@@ -1196,6 +1225,9 @@ static void
 gnc_dbi_destroy_backend( /*@ only @*/ QofBackend *be )
 {
     g_return_if_fail( be != NULL );
+
+    /* Stop transaction logging */
+    xaccLogSetBaseName (NULL);
 
     qof_backend_destroy( be );
 
@@ -2875,8 +2907,9 @@ conn_test_dbi_library( dbi_conn conn )
     guint64 testulonglong = 9223372036854775807LLU, resultulonglong = 0;
     gdouble testdouble = 1.7976921348623157E+307, resultdouble = 0.0;
     dbi_result result;
-    gchar doublestr[G_ASCII_DTOSTR_BUF_SIZE];
+    gchar doublestr[G_ASCII_DTOSTR_BUF_SIZE], *querystr;
     gboolean retval = TRUE;
+    memset( doublestr, 0, sizeof(doublestr));
 
     result = dbi_conn_query( conn, "CREATE TEMPORARY TABLE numtest "
                              "( test_int BIGINT, test_unsigned BIGINT,"
@@ -2888,10 +2921,11 @@ conn_test_dbi_library( dbi_conn conn )
     }
     dbi_result_free( result );
     g_ascii_dtostr( doublestr, sizeof(doublestr), testdouble );
-    result = dbi_conn_queryf( conn,
-                              "INSERT INTO numtest VALUES (%" G_GINT64_FORMAT
-                              ", %" G_GUINT64_FORMAT ", %s)",
-                              testlonglong, testulonglong, doublestr );
+    querystr = g_strdup_printf( "INSERT INTO numtest VALUES (%" G_GINT64_FORMAT
+                                ", %" G_GUINT64_FORMAT ", %s)",
+                                testlonglong, testulonglong, doublestr );
+    result = dbi_conn_query( conn, querystr );
+    g_free( querystr );
     if ( result == NULL )
     {
         PWARN("Test_DBI_Library: Failed to insert test row into table" );

@@ -68,25 +68,25 @@ test_exp_parser_OBJECTS = $(am_test_exp_parser_OBJECTS)
 test_exp_parser_LDADD = $(LDADD)
 am__DEPENDENCIES_1 =
 test_exp_parser_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
+	${top_builddir}/src/core-utils/libgnc-core-utils.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/app-utils/libgncmod-app-utils.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
-	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 test_link_module_SOURCES = test-link-module.c
 test_link_module_OBJECTS = test-link-module.$(OBJEXT)
 test_link_module_LDADD = $(LDADD)
 test_link_module_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
+	${top_builddir}/src/core-utils/libgnc-core-utils.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/app-utils/libgncmod-app-utils.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
-	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_test_print_parse_amount_OBJECTS = gnc-gconf-utils.$(OBJEXT) \
 	test-print-parse-amount.$(OBJEXT)
@@ -94,48 +94,48 @@ test_print_parse_amount_OBJECTS =  \
 	$(am_test_print_parse_amount_OBJECTS)
 test_print_parse_amount_LDADD = $(LDADD)
 test_print_parse_amount_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
+	${top_builddir}/src/core-utils/libgnc-core-utils.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/app-utils/libgncmod-app-utils.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
-	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 test_print_queries_SOURCES = test-print-queries.c
 test_print_queries_OBJECTS = test-print-queries.$(OBJEXT)
 test_print_queries_LDADD = $(LDADD)
 test_print_queries_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
+	${top_builddir}/src/core-utils/libgnc-core-utils.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/app-utils/libgncmod-app-utils.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
-	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 test_scm_query_string_SOURCES = test-scm-query-string.c
 test_scm_query_string_OBJECTS = test-scm-query-string.$(OBJEXT)
 test_scm_query_string_LDADD = $(LDADD)
 test_scm_query_string_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
+	${top_builddir}/src/core-utils/libgnc-core-utils.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/app-utils/libgncmod-app-utils.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
-	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 test_sx_SOURCES = test-sx.c
 test_sx_OBJECTS = test-sx.$(OBJEXT)
 test_sx_LDADD = $(LDADD)
-test_sx_DEPENDENCIES = ${top_builddir}/src/engine/libgncmod-engine.la \
+test_sx_DEPENDENCIES = ${top_builddir}/src/libqof/qof/libgnc-qof.la \
+	${top_builddir}/src/core-utils/libgnc-core-utils.la \
+	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/app-utils/libgncmod-app-utils.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
-	${top_builddir}/src/core-utils/libgnc-core-utils.la \
-	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -183,6 +183,10 @@ CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CXX = @CXX@
+CXXCPP = @CXXCPP@
+CXXDEPMODE = @CXXDEPMODE@
+CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
 DBI_DIR = @DBI_DIR@
@@ -248,6 +252,9 @@ GOFFICE_LIBS = @GOFFICE_LIBS@
 GREP = @GREP@
 GTKHTML_CFLAGS = @GTKHTML_CFLAGS@
 GTKHTML_LIBS = @GTKHTML_LIBS@
+GTKMM_CFLAGS = @GTKMM_CFLAGS@
+GTKMM_DIR = @GTKMM_DIR@
+GTKMM_LIBS = @GTKMM_LIBS@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
 GUILE = @GUILE@
@@ -328,8 +335,6 @@ PYTHON_SITE_PKG = @PYTHON_SITE_PKG@
 PYTHON_VERSION = @PYTHON_VERSION@
 QOF_CFLAGS = @QOF_CFLAGS@
 QOF_LIBS = @QOF_LIBS@
-QOF_LIB_DIR = @QOF_LIB_DIR@
-QOF_PREFIX = @QOF_PREFIX@
 QTTHREADS_LIB = @QTTHREADS_LIB@
 RANLIB = @RANLIB@
 RC = @RC@
@@ -345,7 +350,6 @@ SWIG_PYTHON_OPT = @SWIG_PYTHON_OPT@
 TERMCAP_LIB = @TERMCAP_LIB@
 TEST_MYSQL_URL = @TEST_MYSQL_URL@
 TEST_PGSQL_URL = @TEST_PGSQL_URL@
-USE_LIBQOF = @USE_LIBQOF@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 WEBKIT_CFLAGS = @WEBKIT_CFLAGS@
@@ -357,6 +361,7 @@ abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_ct_CC = @ac_ct_CC@
+ac_ct_CXX = @ac_ct_CXX@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
@@ -439,13 +444,13 @@ TESTS_ENVIRONMENT = \
   $(shell ${top_srcdir}/src/gnc-test-env --no-exports ${GNC_TEST_DEPS})
 
 LDADD = \
+   ${top_builddir}/src/libqof/qof/libgnc-qof.la \
+   ${top_builddir}/src/core-utils/libgnc-core-utils.la \
    ${top_builddir}/src/engine/libgncmod-engine.la \
    ${top_builddir}/src/gnc-module/libgnc-module.la \
    ${top_builddir}/src/app-utils/libgncmod-app-utils.la \
    ${top_builddir}/src/test-core/libtest-core.la \
    ${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
-   ${top_builddir}/src/core-utils/libgnc-core-utils.la \
-   ${top_builddir}/src/libqof/qof/libgnc-qof.la \
    ${GUILE_LIBS} \
    ${GCONF_LIBS}
 
