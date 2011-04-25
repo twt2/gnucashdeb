@@ -1,8 +1,7 @@
 Source: gnucash
 Section: gnome
 Priority: optional
-Maintainer: Thomas Bushnell, BSG <tb@debian.org>
-Uploaders: Micha Lenk <micha@debian.org>
+Maintainer: Micha Lenk <micha@debian.org>
 Standards-Version: 3.8.4
 Build-Depends: debhelper (>= 8), intltool, pkg-config,
   libglib2.0-dev (>= 2.6.0), guile-1.6-dev, guile-1.6-slib,
