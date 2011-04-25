@@ -2607,9 +2607,21 @@ def gncOwnerCompare(*args):
   """gncOwnerCompare(GncOwner a, GncOwner b) -> int"""
   return _gnucash_core_c.gncOwnerCompare(*args)
 
+def gncOwnerGetID(*args):
+  """gncOwnerGetID(GncOwner owner) -> char"""
+  return _gnucash_core_c.gncOwnerGetID(*args)
+
 def gncOwnerGetName(*args):
   """gncOwnerGetName(GncOwner owner) -> char"""
   return _gnucash_core_c.gncOwnerGetName(*args)
+
+def gncOwnerGetAddr(*args):
+  """gncOwnerGetAddr(GncOwner owner) -> GncAddress"""
+  return _gnucash_core_c.gncOwnerGetAddr(*args)
+
+def gncOwnerGetActive(*args):
+  """gncOwnerGetActive(GncOwner owner) -> gboolean"""
+  return _gnucash_core_c.gncOwnerGetActive(*args)
 
 def gncOwnerGetCurrency(*args):
   """gncOwnerGetCurrency(GncOwner owner) -> gnc_commodity"""

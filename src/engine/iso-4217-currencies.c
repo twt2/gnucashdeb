@@ -816,7 +816,7 @@
                                          "ISO4217",
                                          "CLF",
                                          "990",
-                                         1);
+                                         10000);
 
     if(!c) {
       PWARN("failed to create commodity for currency %s", fullname);

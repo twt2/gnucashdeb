@@ -40,11 +40,11 @@
 #include "gncOwnerP.h"
 #include "gncVendorP.h"
 
-#define _GNC_MOD_NAME	GNC_ID_OWNER
+#define _GNC_MOD_NAME   GNC_ID_OWNER
 
-#define GNC_OWNER_ID	"gncOwner"
-#define GNC_OWNER_TYPE	"owner-type"
-#define GNC_OWNER_GUID	"owner-guid"
+#define GNC_OWNER_ID    "gncOwner"
+#define GNC_OWNER_TYPE  "owner-type"
+#define GNC_OWNER_GUID  "owner-guid"
 
 GncOwner * gncOwnerCreate (void)
 {
@@ -255,26 +255,6 @@ GncEmployee * gncOwnerGetEmployee (const GncOwner *owner)
     return owner->owner.employee;
 }
 
-gnc_commodity * gncOwnerGetCurrency (const GncOwner *owner)
-{
-    if (!owner) return NULL;
-    switch (owner->type)
-    {
-    case GNC_OWNER_NONE:
-    case GNC_OWNER_UNDEFINED:
-    default:
-        return NULL;
-    case GNC_OWNER_CUSTOMER:
-        return gncCustomerGetCurrency (owner->owner.customer);
-    case GNC_OWNER_VENDOR:
-        return gncVendorGetCurrency (owner->owner.vendor);
-    case GNC_OWNER_EMPLOYEE:
-        return gncEmployeeGetCurrency (owner->owner.employee);
-    case GNC_OWNER_JOB:
-        return gncOwnerGetCurrency (gncJobGetOwner (owner->owner.job));
-    }
-}
-
 void gncOwnerCopy (const GncOwner *src, GncOwner *dest)
 {
     if (!src || !dest) return;
@@ -319,6 +299,26 @@ gboolean gncOwnerEqual (const GncOwner *a, const GncOwner *b)
     return (a->owner.undefined == b->owner.undefined);
 }
 
+const char * gncOwnerGetID (const GncOwner *owner)
+{
+    if (!owner) return NULL;
+    switch (owner->type)
+    {
+    case GNC_OWNER_NONE:
+    case GNC_OWNER_UNDEFINED:
+    default:
+        return NULL;
+    case GNC_OWNER_CUSTOMER:
+        return gncCustomerGetID (owner->owner.customer);
+    case GNC_OWNER_JOB:
+        return gncJobGetID (owner->owner.job);
+    case GNC_OWNER_VENDOR:
+        return gncVendorGetID (owner->owner.vendor);
+    case GNC_OWNER_EMPLOYEE:
+        return gncEmployeeGetID (owner->owner.employee);
+    }
+}
+
 const char * gncOwnerGetName (const GncOwner *owner)
 {
     if (!owner) return NULL;
@@ -336,6 +336,66 @@ const char * gncOwnerGetName (const GncOwner *owner)
         return gncVendorGetName (owner->owner.vendor);
     case GNC_OWNER_EMPLOYEE:
         return gncAddressGetName(gncEmployeeGetAddr (owner->owner.employee));
+    }
+}
+
+GncAddress * gncOwnerGetAddr (const GncOwner *owner)
+{
+    if (!owner) return NULL;
+    switch (owner->type)
+    {
+    case GNC_OWNER_NONE:
+    case GNC_OWNER_UNDEFINED:
+    case GNC_OWNER_JOB:
+    default:
+        return NULL;
+    case GNC_OWNER_CUSTOMER:
+        return gncCustomerGetAddr (owner->owner.customer);
+    case GNC_OWNER_VENDOR:
+        return gncVendorGetAddr (owner->owner.vendor);
+    case GNC_OWNER_EMPLOYEE:
+        return gncEmployeeGetAddr (owner->owner.employee);
+    }
+}
+
+gnc_commodity * gncOwnerGetCurrency (const GncOwner *owner)
+{
+    if (!owner) return NULL;
+    switch (owner->type)
+    {
+    case GNC_OWNER_NONE:
+    case GNC_OWNER_UNDEFINED:
+    default:
+        return NULL;
+    case GNC_OWNER_CUSTOMER:
+        return gncCustomerGetCurrency (owner->owner.customer);
+    case GNC_OWNER_VENDOR:
+        return gncVendorGetCurrency (owner->owner.vendor);
+    case GNC_OWNER_EMPLOYEE:
+        return gncEmployeeGetCurrency (owner->owner.employee);
+    case GNC_OWNER_JOB:
+        return gncOwnerGetCurrency (gncJobGetOwner (owner->owner.job));
+    }
+}
+
+gboolean gncOwnerGetActive (const GncOwner *owner)
+{
+    if (!owner) return FALSE;
+    switch (owner->type)
+    {
+    case GNC_OWNER_NONE:
+    case GNC_OWNER_UNDEFINED:
+    default:
+        return FALSE;
+    case GNC_OWNER_CUSTOMER:
+        return gncCustomerGetActive (owner->owner.customer);
+    case GNC_OWNER_VENDOR:
+        return gncVendorGetActive (owner->owner.vendor);
+    case GNC_OWNER_EMPLOYEE:
+        return gncEmployeeGetActive (owner->owner.employee);
+    /* Jobs don't really have an active status, so we consider them always active */
+    case GNC_OWNER_JOB:
+        return TRUE;
     }
 }
 
