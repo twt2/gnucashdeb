@@ -21567,6 +21567,28 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_gncOwnerGetID(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GncOwner *arg1 = (GncOwner *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:gncOwnerGetID",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__gncOwner, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncOwnerGetID" "', argument " "1"" of type '" "GncOwner const *""'"); 
+  }
+  arg1 = (GncOwner *)(argp1);
+  result = (char *)gncOwnerGetID((struct _gncOwner const *)arg1);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_gncOwnerGetName(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GncOwner *arg1 = (GncOwner *) 0 ;
@@ -21583,6 +21605,69 @@ SWIGINTERN PyObject *_wrap_gncOwnerGetName(PyObject *SWIGUNUSEDPARM(self), PyObj
   arg1 = (GncOwner *)(argp1);
   result = (char *)gncOwnerGetName((struct _gncOwner const *)arg1);
   resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gncOwnerGetAddr(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GncOwner *arg1 = (GncOwner *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  GncAddress *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:gncOwnerGetAddr",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__gncOwner, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncOwnerGetAddr" "', argument " "1"" of type '" "GncOwner const *""'"); 
+  }
+  arg1 = (GncOwner *)(argp1);
+  result = (GncAddress *)gncOwnerGetAddr((struct _gncOwner const *)arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__gncAddress, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gncOwnerGetActive(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GncOwner *arg1 = (GncOwner *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  gboolean result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:gncOwnerGetActive",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__gncOwner, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncOwnerGetActive" "', argument " "1"" of type '" "GncOwner const *""'"); 
+  }
+  arg1 = (GncOwner *)(argp1);
+  result = gncOwnerGetActive((struct _gncOwner const *)arg1);
+  {
+    if (result == TRUE)
+    {
+      Py_INCREF(Py_True);
+      resultobj = Py_True;
+    }
+    else if (result == FALSE)
+    {
+      Py_INCREF(Py_False);
+      resultobj = Py_False;
+    }
+    else
+    {
+      PyErr_SetString(
+        PyExc_ValueError,
+        "function returning gboolean returned a value that wasn't "
+        "TRUE or FALSE.");
+      return NULL;
+    }
+  }
   return resultobj;
 fail:
   return NULL;
@@ -35750,7 +35835,10 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gncOwnerCopy", _wrap_gncOwnerCopy, METH_VARARGS, (char *)"gncOwnerCopy(GncOwner src, GncOwner dest)"},
 	 { (char *)"gncOwnerEqual", _wrap_gncOwnerEqual, METH_VARARGS, (char *)"gncOwnerEqual(GncOwner a, GncOwner b) -> gboolean"},
 	 { (char *)"gncOwnerCompare", _wrap_gncOwnerCompare, METH_VARARGS, (char *)"gncOwnerCompare(GncOwner a, GncOwner b) -> int"},
+	 { (char *)"gncOwnerGetID", _wrap_gncOwnerGetID, METH_VARARGS, (char *)"gncOwnerGetID(GncOwner owner) -> char"},
 	 { (char *)"gncOwnerGetName", _wrap_gncOwnerGetName, METH_VARARGS, (char *)"gncOwnerGetName(GncOwner owner) -> char"},
+	 { (char *)"gncOwnerGetAddr", _wrap_gncOwnerGetAddr, METH_VARARGS, (char *)"gncOwnerGetAddr(GncOwner owner) -> GncAddress"},
+	 { (char *)"gncOwnerGetActive", _wrap_gncOwnerGetActive, METH_VARARGS, (char *)"gncOwnerGetActive(GncOwner owner) -> gboolean"},
 	 { (char *)"gncOwnerGetCurrency", _wrap_gncOwnerGetCurrency, METH_VARARGS, (char *)"gncOwnerGetCurrency(GncOwner owner) -> gnc_commodity"},
 	 { (char *)"gncOwnerGetGUID", _wrap_gncOwnerGetGUID, METH_VARARGS, (char *)"gncOwnerGetGUID(GncOwner owner)"},
 	 { (char *)"gncOwnerRetGUID", _wrap_gncOwnerRetGUID, METH_VARARGS, (char *)"gncOwnerRetGUID(GncOwner owner)"},

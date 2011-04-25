@@ -20,7 +20,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 # Autoconf initialization
 AC_PREREQ(2.59)
-AC_INIT([GnuCash], [2.4.4], [gnucash-devel@gnucash.org])
+AC_INIT([GnuCash], [2.4.5], [gnucash-devel@gnucash.org])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_SRCDIR(src/engine/Transaction.h)
 
@@ -575,7 +575,14 @@ then
     LIBDBI_LIBS=-ldbi
     DBI_DIR=dbi
   else
-    AC_MSG_ERROR( Unable to find dbi/dbi.h )
+    AC_MSG_ERROR([
+
+ Unable to find <dbi/dbi.h>. Either install the libdbi development
+ package (such as libdbi0-dev), or switch off the database backend of
+ gnucash by --disable-dbi.
+ Note: If you install libdbi, you should also install its database
+ drivers (such as libdbd-sqlite3 libdbd-mysql libdbd-pgsql).
+])
   fi
 fi
 AC_SUBST(LIBDBI_LIBS)
@@ -998,7 +1005,7 @@ then
         *)
           # Unsure - check functions exist
           oLIBS="$LIBS"
-          LIBS="$LIBS -lwebkit-1.0"
+          LIBS="$LIBS ${WEBKIT_LIBS}"
           AC_CHECK_FUNCS(webkit_web_view_load_uri)
           LIBS="$oLIBS"
           AC_MSG_CHECKING(for webkit_web_frame_print_full)

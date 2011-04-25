@@ -1,3 +1,503 @@
+2011-04-04 09:25  cstim
+
+	* [r20526] src/libqof/qof/gnc-date.c, src/libqof/qof/gnc-date.h,
+	  src/libqof/qof/guid.c, src/libqof/qof/guid.h,
+	  src/libqof/qof/kvp_frame.c, src/libqof/qof/kvp_frame.h,
+	  src/libqof/qof/qofbackend.c, src/libqof/qof/qofbackend.h,
+	  src/libqof/qof/qofbook-p.h, src/libqof/qof/qofbook.h,
+	  src/libqof/qof/qofid.c, src/libqof/qof/qofid.h,
+	  src/libqof/qof/qofutil.c, src/libqof/qof/qofutil.h: Remove some
+	  more functions from libqof which are unused and look weird.
+
+2011-04-03 20:16  cstim
+
+	* [r20525] src/report/report-system/report-utilities.scm: Fix
+	  warning about NULL guid_list in xaccQueryAddAccountGUIDMatch,
+	  which caused some total amounts in reports to disappear.
+	  Apparently gnc:account-get-trans-type-splits-interval didn't
+	  watch out for empty lists of accounts, and the resulting split
+	  list somehow was bogus. Now that we check for empty account
+	  list, all is fine again. This was broken for some months by now,
+	  maybe since r20404? BP
+
+2011-04-02 20:18  cstim
+
+	* [r20518] src/libqof/CMakeLists.txt, src/libqof/qof/Makefile.am:
+	  Sort Makefile/CMakeLists alphabetically.
+
+2011-04-02 20:17  cstim
+
+	* [r20517] src/libqof/CMakeLists.txt, src/libqof/qof/Makefile.am,
+	  src/libqof/qof/qofgobj.c, src/libqof/qof/qofgobj.h: Remove
+	  another unused and un-compiled file from libqof. Now we got all
+	  of them.
+	* [r20516] src/libqof/qof/kvp_frame.c, src/libqof/qof/kvp_frame.h:
+	  Remove a set of kvp_frame functions which are unused throughout
+	  gnucash.
+
+2011-04-02 19:59  cstim
+
+	* [r20515] src/libqof/CMakeLists.txt, src/libqof/qof/Makefile.am,
+	  src/libqof/qof/qof.h, src/libqof/qof/qofreference-p.h,
+	  src/libqof/qof/qofreference.c, src/libqof/qof/qofreference.h,
+	  src/libqof/qof/qofsession.c: Revert r20509, "Rename header
+	  <qof/qofreference.h> into <qofreference-p.h> " Somehow I missed
+	  the reference from src/engine/test/test-recursive.c.
+	* [r20514] po/POTFILES.in, src/engine/test/Makefile.am,
+	  src/engine/test/test-book-merge.c, src/libqof/CMakeLists.txt,
+	  src/libqof/qof/Makefile.am, src/libqof/qof/qof.h,
+	  src/libqof/qof/qofbookmerge.c, src/libqof/qof/qofbookmerge.h:
+	  Remove the qof_book_merge code because it is unused in gnucash.
+	* [r20513] src/libqof/qof/gnc-date.c, src/libqof/qof/gnc-date.h,
+	  src/libqof/qof/qofreference-p.h, src/libqof/qof/qofsession.c:
+	  Make some functions static which are used only inside libqof.
+
+2011-04-02 19:58  cstim
+
+	* [r20512] src/libqof/qof/qofutil.c, src/libqof/qof/qofutil.h:
+	  Remove a few completely unused and weird functions from
+	  qofutils.[hc].
+	* [r20511] src/libqof/qof/Makefile.am,
+	  src/libqof/qof/gnc-numeric.c, src/libqof/qof/qofmath128-p.h,
+	  src/libqof/qof/qofmath128.c, src/libqof/qof/qofmath128.h: Rename
+	  qofmath128.h header to qofmath128-p.h because those functions
+	  are only private to libqof.
+
+2011-04-02 19:02  cstim
+
+	* [r20510] src/libqof/qof/qoflog.h: Minor code documentation
+	  update: Add explanatory comment w.r.t. MSVC.
+	* [r20509] src/libqof/CMakeLists.txt, src/libqof/qof/Makefile.am,
+	  src/libqof/qof/qof.h, src/libqof/qof/qofreference-p.h,
+	  src/libqof/qof/qofreference.c, src/libqof/qof/qofreference.h,
+	  src/libqof/qof/qofsession.c: Rename header <qof/qofreference.h>
+	  into <qofreference-p.h> because it is used only internally in
+	  the libqof module (in qofsession.c)
+	* [r20508] src/libqof/CMakeLists.txt, src/libqof/qof/Makefile.am,
+	  src/libqof/qof/qof.h, src/libqof/qof/qofquery-deserial.c,
+	  src/libqof/qof/qofquery-deserial.h,
+	  src/libqof/qof/qofquery-serialize.c,
+	  src/libqof/qof/qofquery-serialize.h, src/libqof/qof/qofsql.c,
+	  src/libqof/qof/qofsql.h: Remove completely unused and code from
+	  libqof which also doesn't get compiled for years by now.
+
+2011-04-01 18:08  gjanssens
+
+	* [r20507] src/engine/Account.c: Various spelling fixes in
+	  comments and translatable strings. BP
+
+2011-03-30 07:13  cstim
+
+	* [r20505] README, README.dependencies: Note webkit dependency in
+	  README.
+
+2011-03-29 01:17  plongstaff
+
+	* [r20501] packaging/win32/install-impl.sh: During win32 build, if
+	  a component is already installed, print the installation path
+
+2011-03-28 18:51  cstim
+
+	* [r20500] configure.ac: Slightly lower the requirements from
+	  r20489 again so that the windows build builds.
+
+2011-03-28 15:58  warlord
+
+	* [r20499] src/Makefile.am: Several people reporting that
+	  swig-runtime.h wasn't being created. That's because '.' wasn't
+	  in the front of the SUBDIRS, so the Makefile wasn't building the
+	  local targets.
+
+2011-03-27 19:18  cstim
+
+	* [r20496] src/app-utils/gnc-ui-util.c: Bug #645518: Partly revert
+	  r20378, "Correct memory leaks found with valgrind" The original
+	  author (Alex) asked to have this part reverted as it seems to
+	  cause the crash explained in the bugreport, but he doesn't have
+	  time to investigate this in detail right now. BP
+
+2011-03-26 12:58  cstim
+
+	* [r20491] src/import-export/generic-import.glade: Fix glade
+	  message with unintended whitespaces.
+	* [r20490] po/de.po: Update German translation.
+
+2011-03-26 12:50  cstim
+
+	* [r20489] CMakeLists.txt, configure.ac,
+	  src/gnome-utils/dialog-account.c, src/libqof/qof/Makefile.am:
+	  Bump required gtk version to 2.16 as discussed on gnucash-devel.
+	  This requirement will be increased to 2.18.1 once our win32
+	  build is upgraded. Following the gtk version, I increased also
+	  all the other related libraries according to what I found here:
+	  ftp://ftp.gnome.org/pub/gnome/platform/2.26/2.26.3/sources/
+
+2011-03-26 10:50  gjanssens
+
+	* [r20487] packaging/win32/build_package.sh: Windows nightly
+	  build: fix webserver directory creation hack BP
+
+2011-03-26 09:23  cstim
+
+	* [r20484] configure.ac: Bump gnucash version to 2.4.99 to
+	  distinguish this from stable ones.
+	* [r20483] configure.ac, po/POTFILES.in,
+	  src/gnome-utils/gnc-gnome-utils.c, src/html/Makefile.am,
+	  src/html/gnc-html-factory.c,
+	  src/html/gnc-html-graph-gog-gtkhtml.c,
+	  src/html/gnc-html-graph-gog-gtkhtml.h,
+	  src/html/gnc-html-gtkhtml-p.h, src/html/gnc-html-gtkhtml.c,
+	  src/html/gnc-html-gtkhtml.h, src/html/gnc-html-p.h,
+	  src/html/gnc-html-webkit.c, src/html/gnc-html.h: Remove
+	  gtkhtml-related sources completely.
+
+2011-03-26 08:59  cstim
+
+	* [r20482] configure.ac: Disable gtkhtml choice from gnucash as we
+	  now require the CSS/javascript features of webkit.
+
+2011-03-25 21:19  cstim
+
+	* [r20481] src/gnome-utils/dialog-transfer.c,
+	  src/gnome-utils/dialog-transfer.h,
+	  src/import-export/aqbanking/gnc-ab-transfer.c: Bug #645640:
+	  Online transfer must not allow to change amount in second window
+	  BP
+
+2011-03-25 19:57  cstim
+
+	* [r20480] src/report/business-reports/owner-report.scm: Bug
+	  #645352: Customer and Vendor Reports should have separate income
+	  and expense subtotals per period; error if 'Amount' is not
+	  selected Patch by Chris Curtis: Add 'Credit' and 'Debit' columns
+	  and options; fix error if 'Amount' is not selected. For tax
+	  purposes it would be helpful if the customer and vendor reports
+	  included the totals for the amounts earned, received, or billed
+	  for a given time period. The reports currently give a total,
+	  which is (if you're lucky) zero because the credits cancel out
+	  the debits. But for verifying or providing the amounts of a
+	  1099-MISC, for instance, the report should show just the amounts
+	  credited or debited depending on your business' accounting
+	  method. Secondarily, if the 'Amount' column is deselected the
+	  report fails with an error. The attached patch both corrects
+	  this problem and adds the requested features. The new columns
+	  are labeled simply 'Credit' and 'Debit' and do not attempt
+	  context-aware naming ("Paid", "Billed", etc.) for simplicity and
+	  applicability (cash versus accrual accounting). The columns
+	  contain a running total, and the final totals appear in a line
+	  above the Amount (running) total. If the beginning period splits
+	  an invoice/payment pair an opening balance appears and is
+	  accounted for in the Amount total as before, but is not included
+	  in the Credit/Debit totals as it is outside the reporting
+	  period. If the Amount column is not selected for display then
+	  neither is the opening balance, even if it otherwise would have
+	  been.
+	* [r20479] src/optional/python-bindings/function_class.py: Bug
+	  #644762: Deprecated __new__() call in function_class.py Patch by
+	  Sara Arenson: Patch to fix the deprecated __new__() call in
+	  function_class.py When you create an object of type
+	  ClassFromFunctions (a subclass of object), you get the following
+	  warning:
+	  /opt/gnucash-2.4.0/lib/python2.6/site-packages/gnucash/function_class.py:55:
+	  DeprecationWarning: object.__new__() takes no parameters return
+	  super(ClassFromFunctions, cls).__new__(cls, *args, **kargs) As
+	  per Python docs
+	  (http://docs.python.org/reference/datamodel.html), __new__()
+	  accepts class name and a list of arguments for the object's
+	  constructor. Since ClassFromFunctions's superclass's constructor
+	  has no arguments, we should not be passing *args and **kargs.
+
+2011-03-25 19:56  cstim
+
+	* [r20478] src/import-export/import-backend.c: Bug #645406: Make
+	  transaction matching on memo and description case-insensitive
+	  Patch by gnemas: The function split_find_match() in
+	  import-backend.c scores transactions according to comparisons of
+	  amount, date, description, etc. I noticed that the comparison of
+	  the description and memo fields is case-sensitive. This means
+	  that my supermarket entries that have descriptions "Giant Food"
+	  do not match the downloaded descriptions "GIANT FOOD". This
+	  applies to both the exact and the 50% match cases, and for both
+	  the memo and the description fields. The attached patch should
+	  fix this.
+
+2011-03-25 07:57  cstim
+
+	* [r20477] configure.ac: Correctly disable python unless
+	  --enable-python was given
+
+2011-03-24 21:50  gjanssens
+
+	* [r20475] packaging/win32/build_package.sh,
+	  packaging/win32/daily_build.bat: Windows build: fix weekly 2.4
+	  build and move log files into separate directory BP
+
+2011-03-24 21:30  cstim
+
+	* [r20474] src/report/report-system/Makefile.am,
+	  src/report/report-system/html-jqplot.scm: Shared code between
+	  the various jqplot charts From: Andy Clayton <q3aiml@gmail.com>
+	* [r20473] configure.ac, src/report/Makefile.am,
+	  src/report/jqplot, src/report/jqplot/Makefile.am,
+	  src/report/jqplot/gpl-2.0.txt,
+	  src/report/jqplot/jquery-1.4.2.min.js,
+	  src/report/jqplot/jquery.jqplot.css,
+	  src/report/jqplot/jquery.jqplot.js, src/report/jqplot/plugins,
+	  src/report/jqplot/plugins/jqplot.BezierCurveRenderer.js,
+	  src/report/jqplot/plugins/jqplot.barRenderer.js,
+	  src/report/jqplot/plugins/jqplot.blockRenderer.js,
+	  src/report/jqplot/plugins/jqplot.bubbleRenderer.js,
+	  src/report/jqplot/plugins/jqplot.canvasAxisLabelRenderer.js,
+	  src/report/jqplot/plugins/jqplot.canvasAxisTickRenderer.js,
+	  src/report/jqplot/plugins/jqplot.canvasTextRenderer.js,
+	  src/report/jqplot/plugins/jqplot.categoryAxisRenderer.js,
+	  src/report/jqplot/plugins/jqplot.ciParser.js,
+	  src/report/jqplot/plugins/jqplot.cursor.js,
+	  src/report/jqplot/plugins/jqplot.dateAxisRenderer.js,
+	  src/report/jqplot/plugins/jqplot.donutRenderer.js,
+	  src/report/jqplot/plugins/jqplot.dragable.js,
+	  src/report/jqplot/plugins/jqplot.enhancedLegendRenderer.js,
+	  src/report/jqplot/plugins/jqplot.funnelRenderer.js,
+	  src/report/jqplot/plugins/jqplot.highlighter.js,
+	  src/report/jqplot/plugins/jqplot.json2.js,
+	  src/report/jqplot/plugins/jqplot.logAxisRenderer.js,
+	  src/report/jqplot/plugins/jqplot.mekkoAxisRenderer.js,
+	  src/report/jqplot/plugins/jqplot.mekkoRenderer.js,
+	  src/report/jqplot/plugins/jqplot.meterGaugeRenderer.js,
+	  src/report/jqplot/plugins/jqplot.ohlcRenderer.js,
+	  src/report/jqplot/plugins/jqplot.pieRenderer.js,
+	  src/report/jqplot/plugins/jqplot.pointLabels.js,
+	  src/report/jqplot/plugins/jqplot.trendline.js: Add javascript
+	  jqplot 0.9.7r635 module so that it can be used in reports. From:
+	  Andy Clayton <q3aiml@gmail.com>
+
+2011-03-24 20:10  cstim
+
+	* [r20472] src/app-utils/Makefile.am: Add needed python linker
+	  flags to app-utils-python.
+	* [r20471] configure.ac, src/python/Makefile.am,
+	  src/python/init.py, src/python/pycons,
+	  src/python/pycons/Makefile.am, src/python/pycons/__init__.py,
+	  src/python/pycons/console.py, src/python/pycons/ishell.py,
+	  src/python/pycons/pycons, src/python/pycons/setup.py,
+	  src/python/pycons/shell.py, src/python/pycons/simple_plot.py:
+	  Add code to start up a Python console during Py module init, but
+	  disabled by default. If a python console is wanted, change the
+	  last section of src/python/init.py to "if True:". From: Andy
+	  Clayton <q3aiml@gmail.com>
+
+2011-03-24 19:47  cstim
+
+	* [r20470] configure.ac, po/POTFILES.in, src/Makefile.am,
+	  src/bin/gnucash-bin.c, src/optional/Makefile.am, src/python,
+	  src/python/Makefile.am, src/python/gncmod-python.c,
+	  src/python/init.py: A somewhat rough start to a gnucash python
+	  module This also renames the configure option to
+	  --enable-python. From: Andy Clayton <q3aiml@gmail.com> (with
+	  minor modifications by myself)
+	* [r20469] configure.ac, src/app-utils/Makefile.am: Enclose
+	  building of app-utils-python in AM_CONDITIONAL so that it isn't
+	  build on a non-python build.
+
+2011-03-24 19:25  gjanssens
+
+	* [r20461] packaging/win32/reset.sh: Windows build: allow reset.sh
+	  to remove mingw BP
+
+2011-03-23 21:38  gjanssens
+
+	* [r20460] packaging/win32/build_package.sh: Windows build: fix
+	  upload code
+
+2011-03-23 21:37  cstim
+
+	* [r20459] src/app-utils/Makefile.am, src/app-utils/app-utils.i:
+	  Build Python swig wrappers for app-utils From Andy Clayton
+	  <q3aiml@gmail.com> (modified by me a little bit)
+
+2011-03-23 17:48  gjanssens
+
+	* [r20458] packaging/win32/defaults.sh,
+	  packaging/win32/guile-1.8.8.patch,
+	  packaging/win32/install-impl.sh: Fix windows build: - Add
+	  missing patch for guile 1.8.8 - Add missing mingwrt dev package
+
+2011-03-23 17:28  gjanssens
+
+	* [r20457] packaging/win32/functions.sh: Improve message printed
+	  on screen
+
+2011-03-22 21:46  gjanssens
+
+	* [r20456] packaging/win32/build_package.sh,
+	  packaging/win32/functions.sh, packaging/win32/weekly_build.sh:
+	  Some additional Windows nightly build fixes: - restore the
+	  original mingw/msys link, even when the build script abort (due
+	  to a die command) - only restore the mingw/msys link if it was
+	  saved before - weekly builds should be on Monday, not Tuesday -
+	  upload tag rebuilds to a directory named 'releases' instead of
+	  'tags' BP
+
+2011-03-22 21:03  gjanssens
+
+	* [r20455] packaging/win32/build_package.sh: Build server:
+	  automatically create directories on webserver for new branches
+
+2011-03-22 20:24  gjanssens
+
+	* [r20454] packaging/win32/daily_build.bat,
+	  packaging/win32/weekly_build.bat,
+	  packaging/win32/weekly_build.sh: Rework the Windows weekly 2.4
+	  build to avoid parallel builds (which would fail BP (note that
+	  r20452 should be backported first, though I forgot to add the BP
+	  marker)
+
+2011-03-22 19:43  gjanssens
+
+	* [r20452] packaging/win32/dist-impl.sh, packaging/win32/dist.sh,
+	  packaging/win32/functions.sh, packaging/win32/install-impl.sh,
+	  packaging/win32/install.sh, packaging/win32/weekly_build.bat:
+	  Adapt the windows build system to deal with swapping mingw
+	  installations on one build machine
+
+2011-03-21 21:37  jralls
+
+	* [r20447] src/import-export/aqbanking/gnc-ab-utils.c: Allow
+	  AQBanking & Gwenhywfar log-level environment variables to
+	  override the gnucash preferences settings
+
+2011-03-21 15:11  gjanssens
+
+	* [r20446] packaging/win32/dist-impl.sh: Windows build: update
+	  dist script for guile 1.8
+	* [r20445] packaging/win32/install-impl.sh: Windows build: fix
+	  libstdc++-6 DLL error This may be a hack, but I have no clue how
+	  to fix it otherwise...
+	* [r20444] packaging/win32/defaults.sh,
+	  packaging/win32/install-impl.sh, packaging/win32/install.sh:
+	  Windows build: update guile to 1.8.8 and remove slib Note: The
+	  Windows GnuCash build will still fail as GnuCash still depends
+	  on slib...
+
+2011-03-21 15:10  gjanssens
+
+	* [r20443] packaging/win32/libofx-0.8.3-patch.diff: Windows build:
+	  patch libofx to build with mingw gcc 4.5.2 Note: the complete
+	  gnucash build is still broken and will be fixed with following
+	  patches.
+	* [r20442] packaging/win32/defaults.sh,
+	  packaging/win32/install-impl.sh: Windows build: update gcc to
+	  4.5.2 Note this breaks the build as some other parts still need
+	  tweaking before this works.
+	* [r20441] configure.ac, src/app-utils/app-utils.i,
+	  src/app-utils/guile-util.c, src/engine/engine-helpers.c,
+	  src/engine/engine.i, src/gnome-utils/gnc-menu-extensions.c,
+	  src/guile-mappings.h: Require guile 1.8.5 and remove all 1.6.x
+	  specific conditions
+	* [r20440] src/app-utils/app-utils.scm,
+	  src/app-utils/c-interface.scm: Bug #615168: N_ in the root
+	  module Fix variable not found crasher.
+	* [r20439] src/app-utils/gnc-exp-parser.c: Windows: avoid
+	  GROUP_NAME redefined error with mingw gcc 4.5.2
+	* [r20438] src/app-utils/app-utils.scm,
+	  src/app-utils/c-interface.scm: [PATCH 4/4] Bug #615168: N_ in
+	  the root module * src/app-utils/app-utils.scm: *
+	  src/app-utils/c-interface.scm: Make N_ available to all of
+	  Gnucash. A hack, but a correct hack that permits the Scheme code
+	  to be compiled. Patch by Andy Wingo.
+	* [r20437] configure.ac: [PATCH 3/4] Bug #615168: Remove
+	  configure.in check for slib Gnucash no longer requires slib.
+	  Patch by Andy Wingo.
+
+2011-03-21 15:09  gjanssens
+
+	* [r20436] src/app-utils/c-interface.scm,
+	  src/report/business-reports/aging.scm,
+	  src/report/business-reports/easy-invoice.scm,
+	  src/report/business-reports/fancy-invoice.scm,
+	  src/report/business-reports/invoice.scm,
+	  src/report/report-system/report-system.scm,
+	  src/report/standard-reports/standard-reports.scm: [PATCH 2/4]
+	  Bug #615168: Remove instances of (use-modules (ice-9 slib))
+	  There are no more instances of (require ...), so Guile's slib
+	  support is no longer needed. Patch by Andy Wingo.
+	* [r20435] src/app-utils/c-interface.scm, src/app-utils/prefs.scm,
+	  src/report/business-reports/aging.scm,
+	  src/report/business-reports/easy-invoice.scm,
+	  src/report/business-reports/fancy-invoice.scm,
+	  src/report/business-reports/invoice.scm,
+	  src/report/report-system/report-system.scm,
+	  src/report/standard-reports/standard-reports.scm: [PATCH 1/4]
+	  Bug #615168: Remove spurious (require 'hash-table) instances
+	  Patch by Andy Wingo. There is nothing that the slib hash-table
+	  module provides that was used in any of these files; they all
+	  used Guile's stock hash tables.
+
+2011-03-20 19:33  gjanssens
+
+	* [r20433] src/engine/gncOwner.c, src/engine/gncOwner.h: Add some
+	  convenience getter functions to gncOwner.
+
+2011-03-20 19:17  gjanssens
+
+	* [r20432] src/engine/gnc-lot.h, src/engine/gncCustomer.h,
+	  src/engine/gncEmployee.h, src/engine/gncInvoice.h,
+	  src/engine/gncJob.h, src/engine/gncOwner.c,
+	  src/engine/gncVendor.h,
+	  src/gnome-utils/gnc-tree-model-account.c,
+	  src/gnome-utils/gnc-tree-model-account.h: Whitespace and
+	  spelling corrections
+
+2011-03-19 04:41  fell
+
+	* [r20431] src/engine/iso-4217-currencies.scm: Bug #642176: Add
+	  four decimals to CLF (Chilean Unidades de fomento) Oops, I
+	  forgot 1 digit
+
+2011-03-19 04:09  fell
+
+	* [r20430] src/engine/iso-4217-currencies.scm: Bug #642176: Add
+	  four decimals to CLF (Chilean Unidades de fomento) While we
+	  could not find a document, which defines the decimals, they are
+	  indispensable for the conversion of payments in "real" CLP.
+
+2011-03-18 19:40  gjanssens
+
+	* [r20429] configure.ac: Bug #645173 - [PATCH] Configure check
+	  uses hardcoded webkit library name Patch by Andy Clayton.
+
+2011-03-17 04:57  cmarchi
+
+	* [r20427] po/nl.po: Updated Dutch translation, copied from the
+	  translation project.
+
+2011-03-15 17:17  gjanssens
+
+	* [r20426] packaging/win32/install-fq-mods.cmd: Bug #641645 -
+	  Support ActivePerl 5.12 for Finance:Quote on Windows
+
+2011-03-15 14:24  jralls
+
+	* [r20425] src/engine/Account.c, src/gnome-utils/dialog-account.c,
+	  src/gnome-utils/gnc-tree-view-account.c: Bug #644688: Account
+	  edit fails to detect that no changes have been made and marks
+	  the account 'dirty'.
+
+2011-03-15 10:08  cstim
+
+	* [r20424] src/bin/gnucash-bin.c: Note last stable version number
+
+2011-03-14 05:39  cstim
+
+	* [r20420] configure.ac: Make error message on missing <dbi/dbi.h>
+	  more verbose. Also mention the infamous dbi database drivers
+	  here,
+	  https://lists.gnucash.org/pipermail/gnucash-devel/2011-February/031171.html
+
+2011-03-13 17:47  cmarchi
+
+	* [r20419] po/it.po: Updated Italian translation.
+
 2011-03-13 16:47  plongstaff
 
 	* [r20417] configure.ac: Update rev to 2.4.4

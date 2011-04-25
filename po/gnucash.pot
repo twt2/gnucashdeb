@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-03-13 15:06-0400\n"
+"POT-Creation-Date: 2011-04-10 16:01-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -62,7 +62,7 @@ msgstr ""
 #. * account generally corresponds to a specific line number
 #. * on a paper form and each form has a unique
 #. * identification (e.g., Form 1040, Schedule A).
-#: ../src/app-utils/gnc-ui-util.c:496
+#: ../src/app-utils/gnc-ui-util.c:497
 msgid "Tax-related but has no tax code"
 msgstr ""
 
@@ -70,52 +70,52 @@ msgstr ""
 msgid "Tax entity type not specified"
 msgstr ""
 
-#: ../src/app-utils/gnc-ui-util.c:583
+#: ../src/app-utils/gnc-ui-util.c:572
 #, c-format
 msgid "Tax type %s: invalid code %s for account type"
 msgstr ""
 
-#: ../src/app-utils/gnc-ui-util.c:587
+#: ../src/app-utils/gnc-ui-util.c:576
 #, c-format
 msgid "Not tax-related; tax type %s: invalid code %s for account type"
 msgstr ""
 
-#: ../src/app-utils/gnc-ui-util.c:599
+#: ../src/app-utils/gnc-ui-util.c:586
 #, c-format
 msgid "Invalid code %s for tax type %s"
 msgstr ""
 
-#: ../src/app-utils/gnc-ui-util.c:603
+#: ../src/app-utils/gnc-ui-util.c:590
 #, c-format
 msgid "Not tax-related; invalid code %s for tax type %s"
 msgstr ""
 
-#: ../src/app-utils/gnc-ui-util.c:615
+#: ../src/app-utils/gnc-ui-util.c:599
 #, c-format
 msgid "No form: code %s, tax type %s"
 msgstr ""
 
-#: ../src/app-utils/gnc-ui-util.c:619
+#: ../src/app-utils/gnc-ui-util.c:602
 #, c-format
 msgid "Not tax-related; no form: code %s, tax type %s"
 msgstr ""
 
-#: ../src/app-utils/gnc-ui-util.c:630 ../src/app-utils/gnc-ui-util.c:646
+#: ../src/app-utils/gnc-ui-util.c:611 ../src/app-utils/gnc-ui-util.c:624
 #, c-format
 msgid "No description: form %s, code %s, tax type %s"
 msgstr ""
 
-#: ../src/app-utils/gnc-ui-util.c:634 ../src/app-utils/gnc-ui-util.c:650
+#: ../src/app-utils/gnc-ui-util.c:615 ../src/app-utils/gnc-ui-util.c:628
 #, c-format
 msgid "Not tax-related; no description: form %s, code %s, tax type %s"
 msgstr ""
 
-#: ../src/app-utils/gnc-ui-util.c:675
+#: ../src/app-utils/gnc-ui-util.c:645
 #, c-format
 msgid "Not tax-related; %s%s: %s (code %s, tax type %s)"
 msgstr ""
 
-#: ../src/app-utils/gnc-ui-util.c:722
+#: ../src/app-utils/gnc-ui-util.c:681
 #, c-format
 msgid "(Tax-related subaccounts: %d)"
 msgstr ""
@@ -123,31 +123,31 @@ msgstr ""
 #. Translators: For the following strings, the single letters
 #. after the colon are abbreviations of the word before the
 #. colon. You should only translate the letter *after* the colon.
-#: ../src/app-utils/gnc-ui-util.c:759
+#: ../src/app-utils/gnc-ui-util.c:718
 msgid "not cleared:n"
 msgstr ""
 
 #. Translators: Please only translate the letter *after* the colon.
-#: ../src/app-utils/gnc-ui-util.c:762
+#: ../src/app-utils/gnc-ui-util.c:721
 msgid "cleared:c"
 msgstr ""
 
 #. Translators: Please only translate the letter *after* the colon.
-#: ../src/app-utils/gnc-ui-util.c:765
+#: ../src/app-utils/gnc-ui-util.c:724
 msgid "reconciled:y"
 msgstr ""
 
 #. Translators: Please only translate the letter *after* the colon.
-#: ../src/app-utils/gnc-ui-util.c:768
+#: ../src/app-utils/gnc-ui-util.c:727
 msgid "frozen:f"
 msgstr ""
 
 #. Translators: Please only translate the letter *after* the colon.
-#: ../src/app-utils/gnc-ui-util.c:771
+#: ../src/app-utils/gnc-ui-util.c:730
 msgid "void:v"
 msgstr ""
 
-#: ../src/app-utils/gnc-ui-util.c:812
+#: ../src/app-utils/gnc-ui-util.c:771
 msgid "Opening Balances"
 msgstr ""
 
@@ -158,7 +158,7 @@ msgstr ""
 #. src/report/standard-reports/balsheet-eg.eguile.scm
 #. src/report/standard-reports/gnucash/report/balsheet-eg.eguile.scm
 #. src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm
-#: ../src/app-utils/gnc-ui-util.c:815 ../intl-scm/guile-strings.c:348
+#: ../src/app-utils/gnc-ui-util.c:774 ../intl-scm/guile-strings.c:348
 #: ../intl-scm/guile-strings.c:352 ../intl-scm/guile-strings.c:458
 #: ../intl-scm/guile-strings.c:462 ../intl-scm/guile-strings.c:598
 #: ../intl-scm/guile-strings.c:600 ../intl-scm/guile-strings.c:4110
@@ -173,7 +173,7 @@ msgstr ""
 #. src/report/standard-reports/budget-balance-sheet.scm
 #. src/report/standard-reports/gnucash/report/standard-reports/balance-sheet.scm
 #. src/report/standard-reports/gnucash/report/standard-reports/budget-balance-sheet.scm
-#: ../src/app-utils/gnc-ui-util.c:887 ../src/engine/Account.c:3975
+#: ../src/app-utils/gnc-ui-util.c:846 ../src/engine/Account.c:3975
 #: ../src/register/ledger-core/split-register.c:2308
 #: ../intl-scm/guile-strings.c:346 ../intl-scm/guile-strings.c:350
 #: ../intl-scm/guile-strings.c:456 ../intl-scm/guile-strings.c:460
@@ -182,7 +182,7 @@ msgstr ""
 msgid "Equity"
 msgstr ""
 
-#: ../src/app-utils/gnc-ui-util.c:942 ../src/gnome/druid-hierarchy.c:944
+#: ../src/app-utils/gnc-ui-util.c:901 ../src/gnome/druid-hierarchy.c:944
 #: ../src/gnome/glade/account.glade.h:43
 #: ../src/gnome-utils/dialog-account.c:293
 msgid "Opening Balance"
@@ -600,7 +600,7 @@ msgstr ""
 #: ../src/business/business-gnome/dialog-employee.c:310
 #: ../src/business/business-gnome/dialog-job.c:236
 #: ../src/business/business-gnome/dialog-vendor.c:293
-#: ../src/gnome-utils/dialog-account.c:1421
+#: ../src/gnome-utils/dialog-account.c:1424
 msgid "<No name>"
 msgstr ""
 
@@ -1559,7 +1559,7 @@ msgstr ""
 
 #: ../src/business/business-gnome/glade/businessprefs.glade.h:8
 #: ../src/gnome/glade/sched-xact.glade.h:132
-#: ../src/import-export/generic-import.glade.h:47
+#: ../src/import-export/generic-import.glade.h:43
 #: ../src/import-export/qif-import/qif.glade.h:53
 msgid "Preferences"
 msgstr ""
@@ -1873,7 +1873,7 @@ msgid "Billing"
 msgstr ""
 
 #: ../src/business/business-gnome/glade/employee.glade.h:6
-#: ../src/gnome-utils/dialog-transfer.c:1759
+#: ../src/gnome-utils/dialog-transfer.c:1765
 msgid "Credit Account"
 msgstr ""
 
@@ -2824,7 +2824,7 @@ msgid "is not"
 msgstr ""
 
 #: ../src/business/business-ledger/gncEntryLedger.c:82
-#: ../src/gnome-utils/dialog-transfer.c:1328
+#: ../src/gnome-utils/dialog-transfer.c:1334
 #: ../src/register/ledger-core/split-register.c:1704
 #, c-format
 msgid "The account %s does not allow transactions."
@@ -3852,7 +3852,7 @@ msgid "You must select a currency."
 msgstr ""
 
 #: ../src/gnome/dialog-price-editor.c:222
-#: ../src/gnome-utils/dialog-transfer.c:1354
+#: ../src/gnome-utils/dialog-transfer.c:1360
 msgid "You must enter a valid amount."
 msgstr ""
 
@@ -4566,7 +4566,7 @@ msgid "M_ove to:"
 msgstr ""
 
 #: ../src/gnome/glade/account.glade.h:37
-#: ../src/gnome-utils/dialog-account.c:1468
+#: ../src/gnome-utils/dialog-account.c:1471
 msgid "New Account"
 msgstr ""
 
@@ -4632,7 +4632,7 @@ msgid "Renumber sub-accounts"
 msgstr ""
 
 #: ../src/gnome/glade/account.glade.h:54
-#: ../src/import-export/generic-import.glade.h:52
+#: ../src/import-export/generic-import.glade.h:48
 #: ../src/import-export/qif-import/qif.glade.h:59
 msgid "Select Account"
 msgstr ""
@@ -8909,17 +8909,17 @@ msgid ""
 "  %s"
 msgstr ""
 
-#: ../src/gnome-utils/dialog-account.c:458
+#: ../src/gnome-utils/dialog-account.c:461
 msgid "Could not create opening balance."
 msgstr ""
 
 #. primary label
-#: ../src/gnome-utils/dialog-account.c:652
+#: ../src/gnome-utils/dialog-account.c:655
 msgid "Give the children the same type?"
 msgstr ""
 
 #. secondary label
-#: ../src/gnome-utils/dialog-account.c:670
+#: ../src/gnome-utils/dialog-account.c:673
 #, c-format
 msgid ""
 "The children of the edited account have to be changed to type \"%s\" to make "
@@ -8927,56 +8927,56 @@ msgid ""
 msgstr ""
 
 #. children
-#: ../src/gnome-utils/dialog-account.c:681
+#: ../src/gnome-utils/dialog-account.c:684
 msgid "_Show children accounts"
 msgstr ""
 
-#: ../src/gnome-utils/dialog-account.c:754
+#: ../src/gnome-utils/dialog-account.c:757
 msgid "The account must be given a name."
 msgstr ""
 
-#: ../src/gnome-utils/dialog-account.c:780
+#: ../src/gnome-utils/dialog-account.c:783
 msgid "There is already an account with that name."
 msgstr ""
 
-#: ../src/gnome-utils/dialog-account.c:789
+#: ../src/gnome-utils/dialog-account.c:792
 msgid "You must choose a valid parent account."
 msgstr ""
 
-#: ../src/gnome-utils/dialog-account.c:798
+#: ../src/gnome-utils/dialog-account.c:801
 msgid "You must select an account type."
 msgstr ""
 
-#: ../src/gnome-utils/dialog-account.c:807
+#: ../src/gnome-utils/dialog-account.c:810
 msgid ""
 "The selected account type is incompatible with the one of the selected "
 "parent."
 msgstr ""
 
-#: ../src/gnome-utils/dialog-account.c:819
+#: ../src/gnome-utils/dialog-account.c:822
 msgid "You must choose a commodity."
 msgstr ""
 
-#: ../src/gnome-utils/dialog-account.c:875
+#: ../src/gnome-utils/dialog-account.c:878
 msgid "You must enter a valid opening balance or leave it blank."
 msgstr ""
 
-#: ../src/gnome-utils/dialog-account.c:899
+#: ../src/gnome-utils/dialog-account.c:902
 msgid ""
 "You must select a transfer account or choose the opening balances equity "
 "account."
 msgstr ""
 
-#: ../src/gnome-utils/dialog-account.c:1455
+#: ../src/gnome-utils/dialog-account.c:1458
 msgid "Edit Account"
 msgstr ""
 
-#: ../src/gnome-utils/dialog-account.c:1458
+#: ../src/gnome-utils/dialog-account.c:1461
 #, c-format
 msgid "(%d) New Accounts"
 msgstr ""
 
-#: ../src/gnome-utils/dialog-account.c:1985
+#: ../src/gnome-utils/dialog-account.c:1988
 #, c-format
 msgid ""
 "Renumber the immediate sub-accounts of %s?  This will replace the account "
@@ -9182,51 +9182,51 @@ msgstr ""
 msgid "Show the income and expense accounts"
 msgstr ""
 
-#: ../src/gnome-utils/dialog-transfer.c:1307
+#: ../src/gnome-utils/dialog-transfer.c:1313
 msgid ""
 "You must specify an account to transfer from, or to, or both, for this "
 "transaction. Otherwise, it will not be recorded."
 msgstr ""
 
-#: ../src/gnome-utils/dialog-transfer.c:1317
+#: ../src/gnome-utils/dialog-transfer.c:1323
 msgid "You can't transfer from and to the same account!"
 msgstr ""
 
-#: ../src/gnome-utils/dialog-transfer.c:1343
+#: ../src/gnome-utils/dialog-transfer.c:1349
 msgid ""
 "You can't transfer from a non-currency account.  Try reversing the \"from\" "
 "and \"to\" accounts and making the \"amount\" negative."
 msgstr ""
 
-#: ../src/gnome-utils/dialog-transfer.c:1368
+#: ../src/gnome-utils/dialog-transfer.c:1374
 msgid "You must enter an amount to transfer."
 msgstr ""
 
-#: ../src/gnome-utils/dialog-transfer.c:1383
+#: ../src/gnome-utils/dialog-transfer.c:1389
 msgid "You must enter a valid price."
 msgstr ""
 
-#: ../src/gnome-utils/dialog-transfer.c:1395
+#: ../src/gnome-utils/dialog-transfer.c:1401
 msgid "You must enter a valid `to' amount."
 msgstr ""
 
-#: ../src/gnome-utils/dialog-transfer.c:1763
+#: ../src/gnome-utils/dialog-transfer.c:1769
 msgid "Debit Account"
 msgstr ""
 
-#: ../src/gnome-utils/dialog-transfer.c:1781
+#: ../src/gnome-utils/dialog-transfer.c:1787
 msgid "Transfer From"
 msgstr ""
 
-#: ../src/gnome-utils/dialog-transfer.c:1785
+#: ../src/gnome-utils/dialog-transfer.c:1791
 msgid "Transfer To"
 msgstr ""
 
-#: ../src/gnome-utils/dialog-transfer.c:1846
+#: ../src/gnome-utils/dialog-transfer.c:1852
 msgid "Debit Amount:"
 msgstr ""
 
-#: ../src/gnome-utils/dialog-transfer.c:1851
+#: ../src/gnome-utils/dialog-transfer.c:1857
 #: ../src/gnome-utils/glade/transfer.glade.h:13
 msgid "To Amount:"
 msgstr ""
@@ -9906,7 +9906,7 @@ msgid "December 31, 2000"
 msgstr ""
 
 #: ../src/gnome-utils/glade/gnc-date-format.glade.h:6
-#: ../src/import-export/generic-import.glade.h:35
+#: ../src/import-export/generic-import.glade.h:31
 msgid "Format:"
 msgstr ""
 
@@ -12533,7 +12533,7 @@ msgid "GnuCash Account Name"
 msgstr ""
 
 #: ../src/import-export/aqbanking/druid-ab-initial.c:869
-#: ../src/import-export/generic-import.glade.h:42
+#: ../src/import-export/generic-import.glade.h:38
 #: ../src/import-export/qif-import/dialog-account-picker.c:367
 #: ../src/import-export/qif-import/druid-qif-import.c:1527
 msgid "New?"
@@ -12599,7 +12599,7 @@ msgstr ""
 msgid "Online Banking Transaction"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-transfer.c:282
+#: ../src/import-export/aqbanking/gnc-ab-transfer.c:283
 msgid ""
 "An error occurred while executing the job.  Please check the log window for "
 "the exact error message.\n"
@@ -13156,15 +13156,14 @@ msgid "Enable update match action"
 msgstr ""
 
 #: ../src/import-export/generic-import.glade.h:24
+#: ../src/import-export/schemas/apps_gnucash_import_generic_matcher.schemas.in.h:9
 msgid ""
-"Enables the\n"
-"            automatic creation of new commodities if any\n"
-"        unknown commodity is encountered during import. Otherwise\n"
-"        the user will be asked what to do with each unknown\n"
-"        commodity."
+"Enables the automatic creation of new commodities if any unknown commodity "
+"is encountered during import. Otherwise the user will be asked what to do "
+"with each unknown commodity."
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:29
+#: ../src/import-export/generic-import.glade.h:25
 msgid ""
 "For a new transaction, click on the \"Other Account\" entry to choose the "
 "other (destination) account of this transaction.\n"
@@ -13178,19 +13177,19 @@ msgid ""
 "click \"OK\"."
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:36
+#: ../src/import-export/generic-import.glade.h:32
 msgid "Generic import transaction matcher"
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:37
+#: ../src/import-export/generic-import.glade.h:33
 msgid "Green"
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:38
+#: ../src/import-export/generic-import.glade.h:34
 msgid "Imported transaction's first split:"
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:39
+#: ../src/import-export/generic-import.glade.h:35
 msgid ""
 "In some places commercial ATMs (not belonging to a financial institution) "
 "are installed in places like convenience stores.  These ATMs add their fee "
@@ -13202,90 +13201,90 @@ msgid ""
 "be recognised as a match."
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:40
+#: ../src/import-export/generic-import.glade.h:36
 msgid "List of downloaded transactions (source split shown):"
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:41
+#: ../src/import-export/generic-import.glade.h:37
 msgid "Match _display threshold"
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:43
+#: ../src/import-export/generic-import.glade.h:39
 msgid "Online account ID here..."
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:44
+#: ../src/import-export/generic-import.glade.h:40
 msgid "Other Account"
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:45
+#: ../src/import-export/generic-import.glade.h:41
 msgid "Please select or create an appropriate GnuCash account for:"
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:46
+#: ../src/import-export/generic-import.glade.h:42
 msgid "Potential splits matching the selected transaction: "
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:48
+#: ../src/import-export/generic-import.glade.h:44
 msgid "Red"
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:49
+#: ../src/import-export/generic-import.glade.h:45
 msgid "Select \"A\" to add the transaction as new."
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:50
+#: ../src/import-export/generic-import.glade.h:46
 msgid "Select \"R\" to reconcile a matching transaction."
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:51
+#: ../src/import-export/generic-import.glade.h:47
 msgid "Select \"U+R\" to update and reconcile a matching transaction."
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:53
+#: ../src/import-export/generic-import.glade.h:49
 msgid "Select matching existing transaction"
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:54
+#: ../src/import-export/generic-import.glade.h:50
 msgid "Select neither to skip the transaction (it won't be imported at all)."
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:55
+#: ../src/import-export/generic-import.glade.h:51
 msgid ""
 "The minimum score a potential match must have to be displayed in the match "
 "list."
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:56
+#: ../src/import-export/generic-import.glade.h:52
 msgid ""
 "This transaction probably requires your intervention or it will be imported "
 "unbalanced."
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:57
+#: ../src/import-export/generic-import.glade.h:53
 msgid "This transaction requires your intervention or it will NOT be imported."
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:58
+#: ../src/import-export/generic-import.glade.h:54
 msgid ""
 "This transaction will be imported balanced (you may still want to double "
 "check the match or destination account)."
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:59
+#: ../src/import-export/generic-import.glade.h:55
 msgid "Transaction List Help"
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:60
+#: ../src/import-export/generic-import.glade.h:56
 msgid "Use _bayesian matching"
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:61
+#: ../src/import-export/generic-import.glade.h:57
 msgid ""
 "Use bayesian algorithms to match new transactions with existing accounts."
 msgstr ""
 
-#: ../src/import-export/generic-import.glade.h:62
+#: ../src/import-export/generic-import.glade.h:58
 msgid "Yellow"
 msgstr ""
 
@@ -14065,13 +14064,6 @@ msgid ""
 "Enables bayesian matching when matching imported transaction against "
 "existing transactions. Otherwise a less sophisticated rule-based matching "
 "mechanism will be used."
-msgstr ""
-
-#: ../src/import-export/schemas/apps_gnucash_import_generic_matcher.schemas.in.h:9
-msgid ""
-"Enables the automatic creation of new commodities if any unknown commodity "
-"is encountered during import. Otherwise the user will be asked what to do "
-"with each unknown commodity."
 msgstr ""
 
 #: ../src/import-export/schemas/apps_gnucash_import_generic_matcher.schemas.in.h:10
