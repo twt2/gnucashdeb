@@ -1,3 +1,13 @@
+gnucash (1:2.4.5-1) UNRELEASED; urgency=low
+
+  * New upstream version 2.4.5 (LP: #769747)
+    - adds $(GLIB_LIBS) to test_qof_LDADD (closes: #613376).
+  * Switch (build) deps on Guile from 1.6 to 1.8 (closes: #623833).
+  * Change Maintainer from Thomas Bushnell to me. Thanks for his
+    contributions to the Gnucash package in the past.
+
+ -- Micha Lenk <micha@debian.org>  Mon, 25 Apr 2011 19:37:26 +0200
+
 gnucash (1:2.4.4-1) unstable; urgency=low
 
   * New upstream version 2.4.4 (closes: #618097)
