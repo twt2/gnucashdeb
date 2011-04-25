@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Micha Lenk <micha@debian.org>
 Standards-Version: 3.8.4
 Build-Depends: debhelper (>= 8), intltool, pkg-config,
-  libglib2.0-dev (>= 2.6.0), guile-1.6-dev, guile-1.6-slib,
+  libglib2.0-dev (>= 2.6.0), guile-1.8-dev, guile-1.8-slib,
   libgconf2-dev, libxml2-dev (>= 2.5.10), zlib1g-dev, libofx-dev,
   libaqbanking33-dev, libpopt-dev (>= 1.5), libgtk2.0-dev (>= 2.6),
   libgnomeui-dev (>= 2.4), libglade2-dev (>= 2.4), libgoffice-0.8-dev,
@@ -16,7 +16,7 @@ Vcs-Git: git://git.debian.org/pkg-gnucash/gnucash.git
 Package: gnucash
 Architecture: any
 Depends: gnucash-common (>= ${source:Version}), ${shlibs:Depends},
-  ${misc:Depends}, ${perl:Depends}, slib, guile-1.6-slib,
+  ${misc:Depends}, ${perl:Depends}, slib, guile-1.8-slib,
   libfinance-quote-perl, libwww-perl, libhtml-tree-perl,
   libhtml-tableextract-perl, libcrypt-ssleay-perl, libdate-manip-perl
 Suggests: libdbd-mysql, libdbd-pgsql, libdbd-sqlite3
