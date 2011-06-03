@@ -2,5 +2,6 @@
 /usr/bin/gnucash
 /usr/bin/gnc-fq-check
 /usr/bin/gnc-fq-helper
+/usr/bin/gnc-fq-dump
 /etc
 debian/gnucash-icon-32x32.xpm usr/share/pixmaps/gnucash-icon-32x32.xpm
