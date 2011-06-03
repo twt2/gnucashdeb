@@ -16,7 +16,7 @@ export BUILDING_FROM_SVN=false
 	dh  $@
 
 clean:
-	[ ! -e Makefile ] || $(MAKE) clean
+	[ ! -e Makefile ] || $(MAKE) distclean
 	find . -type l -exec rm -v \{\} \;
 	rm -fv debian/gnucash-icon-32x32.xpm
 	dh_clean
