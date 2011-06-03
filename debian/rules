@@ -39,6 +39,7 @@ override_dh_auto_configure:
 	convert src/pixmaps/gnucash-icon-32x32.png debian/gnucash-icon-32x32.xpm
 
 install:	build
+	find debian/tmp/usr/lib -name \*.la -exec rm -v \{\} \;
 	dh install
 	dh_testdir debian/gnucash-common/usr/share/applications/gnucash.desktop
 	sed -i '/^Exec=/s/=/=\/usr\/bin\//' debian/gnucash-common/usr/share/applications/gnucash.desktop
