@@ -17,8 +17,9 @@ export BUILDING_FROM_SVN=false
 
 clean:
 	[ ! -e Makefile ] || $(MAKE) clean
-	dh_clean
 	find . -type l -exec rm -v \{\} \;
+	rm -fv debian/gnucash-icon-32x32.xpm
+	dh_clean
 
 override_dh_auto_configure:
 	dh_auto_configure -- \
@@ -35,6 +36,7 @@ override_dh_auto_configure:
 		--enable-ofx \
 		--enable-aqbanking \
 		--enable-locale-specific-tax
+	convert src/pixmaps/gnucash-icon-32x32.png debian/gnucash-icon-32x32.xpm
 
 install:	build
 	dh install

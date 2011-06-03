@@ -2,4 +2,4 @@
         title="GnuCash"                                          \
         longtitle="GnuCash personal finance tracking program"    \
         command="gnucash"                                        \
-        icon="/usr/share/gnucash/pixmaps/gnucash-icon-16x16.png"
+        icon="/usr/share/pixmaps/gnucash-icon-32x32.xpm"
