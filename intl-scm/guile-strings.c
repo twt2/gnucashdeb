@@ -2095,6 +2095,8 @@ _("From")
 /* src/report/business-reports/gnucash/report/owner-report.scm */
 _("To")
 /* src/report/business-reports/gnucash/report/owner-report.scm */
+_("Due or Post Date")
+/* src/report/business-reports/gnucash/report/owner-report.scm */
 _("Account")
 /* src/report/business-reports/gnucash/report/owner-report.scm */
 _("Date")
@@ -2126,6 +2128,8 @@ _("Customer")
 _("Employee")
 /* src/report/business-reports/gnucash/report/owner-report.scm */
 _("Vendor")
+/* src/report/business-reports/gnucash/report/owner-report.scm */
+_("Current")
 /* src/report/business-reports/gnucash/report/owner-report.scm */
 _("0-30 days")
 /* src/report/business-reports/gnucash/report/owner-report.scm */
@@ -2176,6 +2180,16 @@ _("Display the transaction amount?")
 _("Today Date Format")
 /* src/report/business-reports/gnucash/report/owner-report.scm */
 _("The format for the date->string conversion for today's date.")
+/* src/report/business-reports/gnucash/report/owner-report.scm */
+_("Leading date")
+/* src/report/business-reports/gnucash/report/owner-report.scm */
+_("Due Date")
+/* src/report/business-reports/gnucash/report/owner-report.scm */
+_("Due date is leading")
+/* src/report/business-reports/gnucash/report/owner-report.scm */
+_("Post Date")
+/* src/report/business-reports/gnucash/report/owner-report.scm */
+_("Post date is leading")
 /* src/report/business-reports/gnucash/report/owner-report.scm */
 _("Invoice")
 /* src/report/business-reports/gnucash/report/owner-report.scm */
@@ -2625,6 +2639,8 @@ _("From")
 /* src/report/business-reports/owner-report.scm */
 _("To")
 /* src/report/business-reports/owner-report.scm */
+_("Due or Post Date")
+/* src/report/business-reports/owner-report.scm */
 _("Account")
 /* src/report/business-reports/owner-report.scm */
 _("Date")
@@ -2656,6 +2672,8 @@ _("Customer")
 _("Employee")
 /* src/report/business-reports/owner-report.scm */
 _("Vendor")
+/* src/report/business-reports/owner-report.scm */
+_("Current")
 /* src/report/business-reports/owner-report.scm */
 _("0-30 days")
 /* src/report/business-reports/owner-report.scm */
@@ -2706,6 +2724,16 @@ _("Display the transaction amount?")
 _("Today Date Format")
 /* src/report/business-reports/owner-report.scm */
 _("The format for the date->string conversion for today's date.")
+/* src/report/business-reports/owner-report.scm */
+_("Leading date")
+/* src/report/business-reports/owner-report.scm */
+_("Due Date")
+/* src/report/business-reports/owner-report.scm */
+_("Due date is leading")
+/* src/report/business-reports/owner-report.scm */
+_("Post Date")
+/* src/report/business-reports/owner-report.scm */
+_("Post date is leading")
 /* src/report/business-reports/owner-report.scm */
 _("Invoice")
 /* src/report/business-reports/owner-report.scm */
