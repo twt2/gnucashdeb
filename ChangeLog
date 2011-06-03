@@ -1,3 +1,1021 @@
+2011-05-27 07:37  cstim
+
+	* [r20699] src/report/business-reports/owner-report.scm: I18n:
+	  Minor string improvement so that the capitalization is unified
+	  in all similar translated strings. BP
+
+2011-05-27 06:54  cstim
+
+	* [r20696] packaging/win32/defaults.sh: Win32: Update aqbanking
+	  version
+
+2011-05-27 06:39  cstim
+
+	* [r20695]
+	  src/optional/python-bindings/example_scripts/str_methods.py,
+	  src/optional/python-bindings/function_class.py,
+	  src/optional/python-bindings/gnucash_business.py: Improve python
+	  bindings: str_methods.py improved. Patch by Christoph
+	  Holtermann: str_methods.py - added a flagging system to change
+	  the output of the __str__ methods - added unicode and
+	  str-methods to invoice and entry function_class.py - added
+	  modified add_method and add_classmethods to implement the
+	  previous gnucash_business.py - add methods_return_instance_lists
+	  for method Invoice.GetEntries
+
+2011-05-26 23:20  jralls
+
+	* [r20694] src/gnome-utils/ui/gnc-windows-menu-ui-quartz.xml,
+	  src/gnome-utils/ui/gnc-windows-menu-ui.xml: Add the menu ui
+	  files for r20690.
+
+2011-05-26 23:14  jralls
+
+	* [r20693] src/gnome-utils/gnc-main-window.c: Fix up the Mac
+	  shutdown process to give Gnucash a chance to clean up without
+	  spewing critical errors about the main loop already running
+	  (because of calling gnc_shutdown in an event handler). BP
+	* [r20692] src/gnome-utils/gnc-main-window.c: Add a
+	  gnc_quartz_set_menu call to main_window_new() so that newly
+	  created windows get their menus on the mac menu. BP
+
+2011-05-26 23:13  jralls
+
+	* [r20691] src/gnome-utils/gnc-main-window.c: Disable updates of
+	  (no longer extant) window menu items when using MAC_INTEGRATION
+	* [r20690] src/gnome-utils/gnc-main-window.c,
+	  src/gnome-utils/ui/Makefile.am,
+	  src/gnome-utils/ui/gnc-main-window-ui.xml: Separate window menu
+	  to separate ui file, separate function load function called only
+	  when not using MAC_INTEGRATION. Quartz takes care of this on its
+	  own, and having Gnucash do it too creates two lists. The old
+	  approach, of just ifdeffing away the actions, worked but caused
+	  the trace log to fill up with "action missing" errors.
+
+2011-05-24 20:35  cstim
+
+	* [r20689] src/register/register-gnome/gnucash-sheet.c: Preserve
+	  selection around the call to gtk_editable_set_position. Patch by
+	  Jim Paris: This lets us drop the racy
+	  gnucash_sheet_select_data_cb, which fixes problems with lost
+	  input. BP
+
+2011-05-24 11:01  cstim
+
+	* [r20688] src/engine/CMakeLists.txt: CMake: Add correct
+	  dependencies of generated swig.c files on all headers
+
+2011-05-23 22:26  alex.aycinena
+
+	* [r20687] src/engine/engine-helpers.c: Correct memory leak found
+	  with Valgrind.
+
+2011-05-23 19:44  jralls
+
+	* [r20686] "src, Makefile.am, configure.ac, src/engine/Account.c,
+	  src/engine/Account.h, src/engine/AccountP.h,
+	  src/engine/Makefile.am, src/engine/Split.h,
+	  src/gnome-utils/gnc-main-window.c, src/libqof/qof/Makefile.am,
+	  src/libqof/qof/qofutil.h: Reverting screwups r20683, 20684, and
+	  20685
+
+2011-05-23 19:36  jralls
+
+	* [r20685] Makefile.am, configure.ac, src/engine/Account.c,
+	  src/engine/Account.h, src/engine/AccountP.h,
+	  src/engine/Makefile.am, src/engine/Split.h,
+	  src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae src,
+	  src/libqof/qof/Makefile.am, src/libqof/qof/qofutil.h: revert
+	  bogus directory added in r20682
+
+2011-05-23 19:28  jralls
+
+	* [r20684] src/gnome-utils/gnc-main-window.c: Remove
+	  account.glade, deleted in r20669, from
+	  src/gnome/glade/Makefile.am
+
+2011-05-23 19:27  jralls
+
+	* [r20683] "src, "src/gnome-utils,
+	  "src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae\tsrc,
+	  "src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae\tsrc/gnome-utils,
+	  "src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae\tsrc/gnome-utils/ui,
+	  "src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae\tsrc/gnome-utils/ui/Makefile.am100644
+	  94c76a9e4c6a8f6ceaacfff0c1ed4c9e3d4128e1\tsrc,
+	  "src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae\tsrc/gnome-utils/ui/Makefile.am100644
+	  94c76a9e4c6a8f6ceaacfff0c1ed4c9e3d4128e1\tsrc/gnome-utils,
+	  "src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae\tsrc/gnome-utils/ui/Makefile.am100644
+	  94c76a9e4c6a8f6ceaacfff0c1ed4c9e3d4128e1\tsrc/gnome-utils/ui,
+	  "src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae\tsrc/gnome-utils/ui/Makefile.am100644
+	  94c76a9e4c6a8f6ceaacfff0c1ed4c9e3d4128e1\tsrc/gnome-utils/ui/gnc-main-window-ui.xml0
+	  0000000000000000000000000000000000000000\tsrc,
+	  "src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae\tsrc/gnome-utils/ui/Makefile.am100644
+	  94c76a9e4c6a8f6ceaacfff0c1ed4c9e3d4128e1\tsrc/gnome-utils/ui/gnc-main-window-ui.xml0
+	  0000000000000000000000000000000000000000\tsrc/gnome-utils,
+	  "src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae\tsrc/gnome-utils/ui/Makefile.am100644
+	  94c76a9e4c6a8f6ceaacfff0c1ed4c9e3d4128e1\tsrc/gnome-utils/ui/gnc-main-window-ui.xml0
+	  0000000000000000000000000000000000000000\tsrc/gnome-utils/ui,
+	  "src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae\tsrc/gnome-utils/ui/Makefile.am100644
+	  94c76a9e4c6a8f6ceaacfff0c1ed4c9e3d4128e1\tsrc/gnome-utils/ui/gnc-main-window-ui.xml0
+	  0000000000000000000000000000000000000000\tsrc/gnome-utils/ui/gnc-windows-menu-ui-quartz.xml0
+	  0000000000000000000000000000000000000000\tsrc,
+	  "src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae\tsrc/gnome-utils/ui/Makefile.am100644
+	  94c76a9e4c6a8f6ceaacfff0c1ed4c9e3d4128e1\tsrc/gnome-utils/ui/gnc-main-window-ui.xml0
+	  0000000000000000000000000000000000000000\tsrc/gnome-utils/ui/gnc-windows-menu-ui-quartz.xml0
+	  0000000000000000000000000000000000000000\tsrc/gnome-utils,
+	  "src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae\tsrc/gnome-utils/ui/Makefile.am100644
+	  94c76a9e4c6a8f6ceaacfff0c1ed4c9e3d4128e1\tsrc/gnome-utils/ui/gnc-main-window-ui.xml0
+	  0000000000000000000000000000000000000000\tsrc/gnome-utils/ui/gnc-windows-menu-ui-quartz.xml0
+	  0000000000000000000000000000000000000000\tsrc/gnome-utils/ui,
+	  "src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae\tsrc/gnome-utils/ui/Makefile.am100644
+	  94c76a9e4c6a8f6ceaacfff0c1ed4c9e3d4128e1\tsrc/gnome-utils/ui/gnc-main-window-ui.xml0
+	  0000000000000000000000000000000000000000\tsrc/gnome-utils/ui/gnc-windows-menu-ui-quartz.xml0
+	  0000000000000000000000000000000000000000\tsrc/gnome-utils/ui/gnc-windows-menu-ui.xml":
+	  Provide a quartz-only Window menu instead of hacking up the X11
+	  one; eliminates a lot of spew in the log every time the menu was
+	  redrawn.
+	* [r20682] src/gnome-utils/gnc-main-window.c,
+	  src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae src,
+	  src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae src/gnome-utils,
+	  src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae src/gnome-utils/ui,
+	  src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae
+	  src/gnome-utils/ui/Makefile.am100644
+	  94c76a9e4c6a8f6ceaacfff0c1ed4c9e3d4128e1 src,
+	  src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae
+	  src/gnome-utils/ui/Makefile.am100644
+	  94c76a9e4c6a8f6ceaacfff0c1ed4c9e3d4128e1 src/gnome-utils,
+	  src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae
+	  src/gnome-utils/ui/Makefile.am100644
+	  94c76a9e4c6a8f6ceaacfff0c1ed4c9e3d4128e1 src/gnome-utils/ui,
+	  src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae
+	  src/gnome-utils/ui/Makefile.am100644
+	  94c76a9e4c6a8f6ceaacfff0c1ed4c9e3d4128e1
+	  src/gnome-utils/ui/gnc-main-window-ui.xml0
+	  0000000000000000000000000000000000000000 src,
+	  src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae
+	  src/gnome-utils/ui/Makefile.am100644
+	  94c76a9e4c6a8f6ceaacfff0c1ed4c9e3d4128e1
+	  src/gnome-utils/ui/gnc-main-window-ui.xml0
+	  0000000000000000000000000000000000000000 src/gnome-utils,
+	  src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae
+	  src/gnome-utils/ui/Makefile.am100644
+	  94c76a9e4c6a8f6ceaacfff0c1ed4c9e3d4128e1
+	  src/gnome-utils/ui/gnc-main-window-ui.xml0
+	  0000000000000000000000000000000000000000 src/gnome-utils/ui,
+	  src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae
+	  src/gnome-utils/ui/Makefile.am100644
+	  94c76a9e4c6a8f6ceaacfff0c1ed4c9e3d4128e1
+	  src/gnome-utils/ui/gnc-main-window-ui.xml0
+	  0000000000000000000000000000000000000000
+	  src/gnome-utils/ui/gnc-windows-menu-ui-quartz.xml0
+	  0000000000000000000000000000000000000000 src,
+	  src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae
+	  src/gnome-utils/ui/Makefile.am100644
+	  94c76a9e4c6a8f6ceaacfff0c1ed4c9e3d4128e1
+	  src/gnome-utils/ui/gnc-main-window-ui.xml0
+	  0000000000000000000000000000000000000000
+	  src/gnome-utils/ui/gnc-windows-menu-ui-quartz.xml0
+	  0000000000000000000000000000000000000000 src/gnome-utils,
+	  src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae
+	  src/gnome-utils/ui/Makefile.am100644
+	  94c76a9e4c6a8f6ceaacfff0c1ed4c9e3d4128e1
+	  src/gnome-utils/ui/gnc-main-window-ui.xml0
+	  0000000000000000000000000000000000000000
+	  src/gnome-utils/ui/gnc-windows-menu-ui-quartz.xml0
+	  0000000000000000000000000000000000000000 src/gnome-utils/ui,
+	  src/gnome-utils/gnc-main-window.c100644
+	  01901c6c8752987f426cff1e6534ba0b27867fae
+	  src/gnome-utils/ui/Makefile.am100644
+	  94c76a9e4c6a8f6ceaacfff0c1ed4c9e3d4128e1
+	  src/gnome-utils/ui/gnc-main-window-ui.xml0
+	  0000000000000000000000000000000000000000
+	  src/gnome-utils/ui/gnc-windows-menu-ui-quartz.xml0
+	  0000000000000000000000000000000000000000
+	  src/gnome-utils/ui/gnc-windows-menu-ui.xml: Rename
+	  gtk_quartz_shutdown, gtk_quartz_should_quit, and
+	  gtk_quartz_set_menu to gnc_quartz... for better naming
+	  consistency.
+
+2011-05-23 19:15  cstim
+
+	* [r20676] src/gnome/glade/Makefile.am: Fix makefile after file
+	  removal in r20669
+
+2011-05-23 19:14  cstim
+
+	* [r20675] src/report/stylesheets/stylesheet-easy.scm,
+	  src/report/stylesheets/stylesheet-footer.scm: Bug #650757: Fix
+	  Easy & footer styles output wrong tags </btd> iso </b></td>
+	  preventing HTML 4.01 Transitional validation Patch by Bert: This
+	  patch removes the wrong </btd> tags and closes the center tag in
+	  the footer and easy stylesheets. Just like Bug #650163 (and
+	  related to bug #616611) the easy & footer stylesheets: *output
+	  </btd> tags instead of <b></td> *are missing a </center> tag
+	  preventing html validation. This patch removes the intended </b>
+	  and makes a clean </td> out of the necessary tags. The styles
+	  are set through css anyhow. Furthmore it adds the closing
+	  </center> tag. BP
+	* [r20674] src/report/stylesheets/stylesheet-easy.scm,
+	  src/report/stylesheets/stylesheet-fancy.scm,
+	  src/report/stylesheets/stylesheet-footer.scm: Bug #645221: Patch
+	  to show the headline as an h3 across all stylesheets Patch by
+	  Bert: The attached patch makes sure that the title fonts set
+	  through the options menu behaves consistently across all style
+	  sheets. More specifically, it patches the following style
+	  sheets: *stylesheet-fancy *stylesheet-footer *stylesheet-easy
+	  Since I don't know how to change the default values, this will
+	  change the visual appearance until people alter the settings
+	  (e.g. move everything to Sans, 10, bold). BP
+	* [r20673] src/report/standard-reports/trial-balance.scm: Bug
+	  #620123: Patch to make account name a header cell, iso td in
+	  trial-balance Patch by Bert. BP
+
+2011-05-23 19:13  cstim
+
+	* [r20672] src/engine/Recurrence.c,
+	  src/gnome-utils/gnc-frequency.c,
+	  src/gnome/glade/sched-xact.glade,
+	  src/gnome/gtkbuilder/sched-xact.glade: Bug #650598: Patches to
+	  allow scheduling of Nth Day of Month Transactions. Patch by
+	  "Rich": I have transactions that should be scheduled on the
+	  second Wednesday of every month. There is presently no way to do
+	  it. I made changes and have tested them. This patch enhances the
+	  scheduled transaction feature to allow nth day of week monthly
+	  entries. The weekend adjust spinner is ignored when an nth day
+	  of week entry is scheduled.
+
+2011-05-21 20:16  cstim
+
+	* [r20671] packaging/win32/defaults.sh: Win32: Update aqbanking5
+	  version.
+
+2011-05-21 19:37  gjanssens
+
+	* [r20670] src/gnome-utils/gnc-tree-view-account.c: Remove unused
+	  variable
+	* [r20669] src/gnome-utils/dialog-account.c,
+	  src/gnome/glade/account.glade,
+	  src/gnome/gtkbuilder/account.glade: Convert "Renumber
+	  Subaccounts" dialog to gtkbuilder format
+	* [r20668] src/gnome-utils/gnc-tree-view-account.c,
+	  src/gnome/glade/account.glade,
+	  src/gnome/gtkbuilder/account.glade: Convert Account Filter By
+	  dialog to gtkbuilder format
+
+2011-05-20 16:36  gjanssens
+
+	* [r20666] src/business/business-gnome/dialog-vendor.c,
+	  src/gnome-utils/gnc-amount-edit.c,
+	  src/gnome-utils/gnc-tree-view-account.c,
+	  src/gnome-utils/gnc-tree-view-owner.c,
+	  src/gnome/gnc-plugin-page-account-tree.c: Spelling and other
+	  fixes in comments
+
+2011-05-20 16:31  gjanssens
+
+	* [r20665] src/gnome-utils/assistant-utils.c: Replace obsolete
+	  gnome include with gtk include
+
+2011-05-20 14:04  gjanssens
+
+	* [r20664] src/gnome-utils/gnc-amount-edit.c,
+	  src/gnome-utils/gnc-amount-edit.h,
+	  src/gnome/assistant-stock-split.c,
+	  src/gnome/gtkbuilder/stocks.glade: Stock Split Assistant -
+	  improve validation steps This is a follow up on bug #650584
+	  (r20662)
+
+2011-05-19 23:20  alex.aycinena
+
+	* [r20663] src/gnome/dialog-tax-info.c: Correct memory leak found
+	  with Valgrind.
+
+2011-05-19 17:22  gjanssens
+
+	* [r20662] src/gnome/Makefile.am,
+	  src/gnome/assistant-stock-split.c,
+	  src/gnome/assistant-stock-split.h,
+	  src/gnome/druid-stock-split.c, src/gnome/druid-stock-split.h,
+	  src/gnome/glade/Makefile.am, src/gnome/glade/stocks.glade,
+	  src/gnome/gnc-plugin-page-register.c,
+	  src/gnome/gtkbuilder/stocks.glade: Bug #650584 - Change Stock
+	  Split Druid to an Assistant Patch by Bob
+	* [r20661] src/gnome/glade/account.glade,
+	  src/gnome/gnc-plugin-page-account-tree.c,
+	  src/gnome/gtkbuilder/account.glade: Convert "Delete Account"
+	  dialog to gtkbuilder.
+	* [r20660] src/gnome/glade/account.glade,
+	  src/gnome/gtkbuilder/account.glade: Delete unused dialog
+
+2011-05-18 23:06  alex.aycinena
+
+	* [r20659] src/html/gnc-html-webkit.c: Correct memory leaks found
+	  with Valgrind.
+
+2011-05-18 20:15  gjanssens
+
+	* [r20658] src/business/business-gnome/dialog-customer.c,
+	  src/business/business-gnome/dialog-employee.c,
+	  src/business/business-gnome/dialog-vendor.c: Fix crash when
+	  editing existing owners from the new owner tree overview pages
+
+2011-05-18 18:52  cstim
+
+	* [r20657] src/backend/xml/io-gncxml-v2.c, src/engine/gncEntry.c:
+	  Win32: Fix compiler warnings about potentially uninitialized
+	  functions.
+
+2011-05-18 14:56  gjanssens
+
+	* [r20656] packaging/win32/gnucash.iss.in: Windows build: fix
+	  additional obsolete references to guile 1.6 Pointed out by
+	  Robert Fewell
+
+2011-05-17 18:24  jralls
+
+	* [r20655] src/engine/gncEntry.c: Bug #648554: SQL backend doesn't
+	  correctly save taxable flag on bills. Nicely illustrates why
+	  copying and pasting code leads to errors. BP
+	* [r20654] util/gnc-svnversion: Force /bin/echo in git section
+	  Apple's version of bash version 3, when called as /bin/sh, uses
+	  an internal echo command which doesn't handle the "-n" argument
+	  and contaminates the git version string. /bin/echo correctly
+	  handles the -n argument.
+
+2011-05-16 09:13  cstim
+
+	* [r20652] src/engine/Split.h, src/engine/Transaction.h: Minor
+	  doxygen improvements: The important types Split, Transaction
+	  must be mentioned in the group heading.
+
+2011-05-16 06:09  mta
+
+	* [r20651]
+	  src/business/business-gnome/gnc-plugin-page-owner-tree.c: Fix an
+	  unintialized variable warning.
+
+2011-05-15 19:28  cstim
+
+	* [r20649] src/gnome-search/search-string.c: Bug #602052: Fix text
+	  search options with small revisions for usability Patch by Leigh
+	  Honeywell: Revised patch to change the search case insensitive
+	  to a checkbox This should work better - it now defaults to off,
+	  and is captioned "Match case" instead of "Case Insensitive?"
+	  which I think is clearer.
+	* [r20648] src/report/business-reports/owner-report.scm: Bug
+	  #650241: Fix style for aging table in owner reports that has
+	  changed (after defining doctype) Patch by Bert: Prevent
+	  inheriting the parent tablestyle for aging table in owner-report
+	  Bug #650139 & its patch in r20639 have some side-effects:
+	  positive is that borders are shown for empty cell (#642222).
+	  However, the aging table in the owner report now inherits the
+	  style from its parent table, which means that all cells of the
+	  aging table are showing as "centered-label-cell". This means:
+	  *In the regular stylesheet: all text in the cells is bold *In
+	  technicolor stylesheet: all cells have a yellow background This
+	  patch removes the "centered-label-cell" class from the parent
+	  table cell and shows the layout of the aging table to how it was
+	  before.
+	* [r20647] src/report/stylesheets/stylesheet-fancy.scm: Bug
+	  #650163: Fix Technicolor style that outputs wrong tags <btd>
+	  instead of <b><td> Patch by Bert: The technicolor stylesheet
+	  outputs </btd> tags where what they actually meant to do was
+	  </b></td>. This may render report outputs wrongly in different
+	  browsers and prevents HTML validation. The proposed patch
+	  removes the bold tags as well (for example for the total rows)
+	  since the font and its weight are set in the options (and thus
+	  reflected in the CSS style). There is no need for the report to
+	  set the bold face with the <b> tag. In addition, the attached
+	  patch also closed the <center> tag at the beginning of the body
+	  (also preventing validation). Note that that this tag is
+	  deprecated for newer version of html (but will pass HTML 4.01
+	  Transitional).
+
+2011-05-15 19:21  cstim
+
+	* [r20646] src/gnome/druid-loan.c,
+	  src/gnome/glade/sched-xact.glade: Bug #647532: Enter APR as
+	  interest rate in Loan Druid Patch by Nick: This patch allows the
+	  user to enter the APR for a loan rather than the simple interest
+	  rate and then the druid will calculate the correct interest rate
+	  for the scheduled transaction that it produces. It includes a
+	  small change to the shed-xact.glade file which provides a
+	  dropdown box to select the rate that has been entered and
+	  changes to druid-loan.c which calculate the simple interest rate
+	  as the scheduled transaction strings are generated.
+
+2011-05-15 00:37  alex.aycinena
+
+	* [r20645] src/report/report-system/gnc-report.c: Correct memory
+	  leaks found with Valgrind.
+
+2011-05-14 16:17  alex.aycinena
+
+	* [r20644] src/gnome/dialog-tax-info.c: Correct memory leaks found
+	  with Valgrind.
+
+2011-05-13 20:17  cstim
+
+	* [r20639] src/report/report-system/html-document.scm: Bug
+	  #650139: Fix missing doctype preventing HTML 4.01 transitional
+	  validation Patch by "Bert": This patch fixes part of the missing
+	  doctype for most reports through html-document.scm Exported
+	  reports lack a document type, preventing HTML validation. When
+	  exporting this may lead browsers to incorrectly read the reports
+	  generated by GnuCash. The attached patch aims for HTML 4.01
+	  transitional validation of reports in the long term and thus
+	  adds this doctype on top of the reports. While it is far from
+	  perfect, 4.01 Trans looks like a good first target and can be
+	  read by most (including older) browsers. BP
+	* [r20638] src/report/stylesheets/stylesheet-plain.scm: Bug
+	  #650138: Style plain: Fix incorrect <p> tag around <h3>
+	  preventing HTML 4.01 transitional validation Patch by "Bert":
+	  The stylesheet_plain.scm file renders the headline as a <h3> tag
+	  within a <p> tag. This prevents several files (including and
+	  tested on owner.scm) to pass W3C validation on HTML 4.01
+	  Transitional. BP
+	* [r20637] src/report/business-reports/owner-report.scm: Bug
+	  #649992: Let owner-report aging table include due date / post
+	  date options in aging. Patch by "Bert": Follow up on bug:
+	  https://bugzilla.gnome.org/show_bug.cgi?id=502066 #502066 called
+	  "The aging in business reports should use the due date instead
+	  of the post date". In that bug the aging reports were extended
+	  to use the due date when reporting overdue in buckets such as
+	  Current - 0-30 etc. This created an inconsistency since the
+	  owner reports (such as Customer Report) did not report the
+	  Current bucket and did not include the option to select Date
+	  Posted or Date due. The attached patch patches the owner report
+	  to: *Allow a choice between the use of Due Date and Date Posted
+	  *Report with the current bucket BP
+
+2011-05-12 18:18  cstim
+
+	* [r20636] src/engine/Makefile.am: Minor makefile code cleanup
+
+2011-05-12 18:15  cstim
+
+	* [r20635] src/app-utils/gnc-sx-instance-model.c: Revert r20633:
+	  Accidental double-commit
+	* [r20634] src/engine/Makefile.am: Add dependency of SWIG
+	  generated file on all headers
+
+2011-05-12 18:13  cstim
+
+	* [r20633] src/app-utils/gnc-sx-instance-model.c: Bug #649608:
+	  Skip non-enabled Scheduled Transactions for Future Txn report
+
+2011-05-12 16:11  gjanssens
+
+	* [r20632] src/gnome-utils/gnc-tree-view-owner.c,
+	  src/gnome/gtkbuilder/Makefile.am,
+	  src/gnome/gtkbuilder/owner.glade, src/gnome/gtkbuilder/owner.ui:
+	  Rename owner.ui to owner.glade I read that .ui should be the
+	  devault extension for gtkbuilder files, but it turns out that
+	  would conflict with qt designer files. On Fedora (at least) only
+	  .glade is recognized as a file editable by glade-3.
+
+2011-05-11 22:17  alex.aycinena
+
+	* [r20631] src/app-utils/gnc-ui-util.c: Correct memory leaks found
+	  with Valgrind.
+
+2011-05-11 21:52  gjanssens
+
+	* [r20630]
+	  src/business/business-gnome/gnc-plugin-page-owner-tree.c:
+	  Disable delete owner feature for now, it causes a crash
+	* [r20629]
+	  src/business/business-gnome/gnc-plugin-page-owner-tree.c: Fix
+	  improper qof instance conversion in owner plugin page
+	* [r20628] src/gnome-utils/gnc-tree-model-owner.c: Properly handle
+	  owner add events in the owner tree view
+	* [r20627] src/engine/gncOwner.c: Always explicitly define an
+	  owner when converting from a qof entity This can be ownertype
+	  (none) if the entity to be converted is not a valid owner.
+	* [r20626] src/business/business-gnome/dialog-customer.c,
+	  src/business/business-gnome/dialog-employee.c,
+	  src/business/business-gnome/dialog-job.c,
+	  src/business/business-gnome/dialog-vendor.c: Emit qof add events
+	  when a new owner is added
+
+2011-05-11 21:51  gjanssens
+
+	* [r20625] src/engine/gncOwner.h: Fix doxygen comments
+	* [r20624] src/engine/gncOwner.c, src/engine/gncOwner.h,
+	  src/gnome-utils/gnc-tree-model-owner.c: Owner tree: fix crash
+	  when modifying owner name
+	* [r20623] src/business/business-gnome/Makefile.am,
+	  src/business/business-gnome/gnc-plugin-business.c,
+	  src/business/business-gnome/gnc-plugin-page-owner-tree.c,
+	  src/business/business-gnome/gnc-plugin-page-owner-tree.h,
+	  src/business/business-gnome/ui/Makefile.am,
+	  src/business/business-gnome/ui/gnc-plugin-business-ui.xml,
+	  src/business/business-gnome/ui/gnc-plugin-page-owner-tree-ui.xml:
+	  Add a page/tab to display an owner tree with some basic toolbar
+	  buttons and menus The page will list vendors, customers or
+	  employees, can be sorted and filtered so far. But attempts to
+	  edit any owner will cause a crash for now.
+	* [r20622] src/engine/gncOwner.c, src/engine/gncOwner.h: Add
+	  gncOnwer* convenience wrappers for BeginEdit, CommitEdit and
+	  Destroy. This allows to begin edit, commit edit or destroy an
+	  owner without knowing its type.
+	* [r20621] src/business/business-core/business-core.scm,
+	  src/business/business-gnome/gnc-plugin-business.c,
+	  src/business/business-utils/business-options.scm,
+	  src/engine/gncBusiness.c, src/engine/gncOwner.c,
+	  src/engine/gncOwner.h, src/gnome-utils/gnc-tree-view-owner.c,
+	  src/optional/python-bindings/gnucash_core.i,
+	  src/plugins/bi_import/bi_import.c,
+	  src/report/business-reports/aging.scm,
+	  src/report/business-reports/owner-report.scm: Refactor
+	  gncOwnerCreate/Destroy into gncOwnerNew/Free to avoid confusion
+	  with similar gnc<ownertype>Create/Destroy functions, like
+	  gncVendorCreate, gncCustomerDestroy and so on. The type specific
+	  functions add or delete the owner from the book, while the
+	  generic one only allocated memory or freed memory to hold a
+	  generic owner. Changing the name makes it clear the generic and
+	  specific functions are not related. Note: this change may
+	  require a clean rebuild. I'm not sure if swig picks this up
+	  automatically.
+	* [r20620] src/gnome-utils/Makefile.am,
+	  src/gnome-utils/gnc-tree-view-owner.c,
+	  src/gnome-utils/gnc-tree-view-owner.h,
+	  src/gnome/gtkbuilder/Makefile.am, src/gnome/gtkbuilder/owner.ui:
+	  Add Tree view widget for owner objects, not used yet
+
+2011-05-11 21:50  gjanssens
+
+	* [r20619] src/engine/gncOwner.c, src/engine/gncOwner.h: Add
+	  convenience function to set name of an owner regardless of its
+	  type
+	* [r20618] src/engine/gncOwner.c, src/engine/gncOwner.h: Add
+	  generic owner setter function for the active property
+	* [r20617] src/gnome-utils/Makefile.am,
+	  src/gnome-utils/gnc-tree-model-owner.c,
+	  src/gnome-utils/gnc-tree-model-owner.h: Add owner tree model
+	  similar to accounts tree model. This is not used yet.
+	* [r20616] src/engine/gncJob.h, src/engine/gncOwner.c: gncOwner
+	  convenience functions: jobs do have an active state, fix the
+	  getter function. At the same time, move the Job Active getter
+	  with the other getters. This is why I missed it the first time.
+
+2011-05-10 11:05  cstim
+
+	* [r20615] packaging/win32/defaults.sh,
+	  packaging/win32/install-impl.sh: Win32 build: Revert r20614
+	  libxml2 version update because the win build seems to stop due
+	  to bad linker flags in libxml-2.0.pc. Also, fix the pkgconfig
+	  files unconditionally.
+
+2011-05-08 20:05  cstim
+
+	* [r20614] packaging/win32/defaults.sh,
+	  packaging/win32/install-impl.sh: Win32 build: Update libxml2 to
+	  slightly more recent version. Add version check.
+	* [r20613] packaging/win32/defaults.sh,
+	  packaging/win32/install-impl.sh: Win32 build: Fix pixman URL
+	  (old version has disappeared from URL)
+
+2011-05-07 16:26  cstim
+
+	* [r20612] src/app-utils/gnc-sx-instance-model.c: Bug #649608:
+	  Skip non-enabled Scheduled Transactions for Future Txn report BP
+
+2011-05-06 00:02  alex.aycinena
+
+	* [r20611] src/app-utils/gnc-ui-util.c,
+	  src/gnome/dialog-tax-info.c,
+	  src/report/locale-specific/us/taxtxf.scm,
+	  src/tax/us/txf-de_DE.scm, src/tax/us/txf.scm: Improve txf scheme
+	  routines to handle invalid tax-entity-types more gracefully.
+
+2011-05-03 20:08  cstim
+
+	* [r20610] CMakeLists.txt, src/CMakeLists.txt,
+	  src/gnc/CMakeLists.txt, src/import-export/CMakeLists.txt,
+	  src/import-export/aqbanking/CMakeLists.txt: Cutecash: Add cmake
+	  files for import module and for aqbanking module. However, this
+	  couldn't really re-use all non-GUI code because most code still
+	  contains minor gtk bits here and there. But in the long run much
+	  more code might be available.
+
+2011-05-03 19:24  cstim
+
+	* [r20609] CMakeLists.txt: Cutecash: Fix guile check.
+
+2011-05-03 00:06  alex.aycinena
+
+	* [r20608] src/app-utils/gnc-ui-util.c,
+	  src/gnome/dialog-tax-info.c: Add validation of tax-entity-type
+	  in book relative to locale-based tsx.scm
+
+2011-05-01 21:03  cstim
+
+	* [r20606] packaging/win32/install-impl.sh: Win32 build: Add
+	  missing include flags when building aqbanking5.
+
+2011-05-01 20:56  cstim
+
+	* [r20605] CMakeLists.txt, src/cmake_modules/FindGuile.cmake,
+	  src/gnc/CMakeLists.txt: Cutecash: Use pkg-config lookup of guile
+	  instead of custom macro.
+	* [r20604] src/libqof/CMakeLists.txt: Win32 cutecash: Add missing
+	  precompiler flag
+
+2011-04-29 20:09  cstim
+
+	* [r20603] packaging/win32/install-impl.sh,
+	  packaging/win32/install.sh: Win32 build: libxslt requires gnutls
+	  includes.
+
+2011-04-29 16:35  gjanssens
+
+	* [r20600] src/gnome-utils/gnc-main-window.c: Revert "Bug #436479
+	  - Gnucash doesn't display the data file name in the title" This
+	  commit will cause a segfault when selecting File->New. This
+	  reverts commit f27c9a8ca95391acafed58d3933f6e9661755d24.
+
+2011-04-29 14:31  gjanssens
+
+	* [r20599] src/gnome-utils/gnc-main-window.c: Bug #436479 -
+	  Gnucash doesn't display the data file name in the title bar.
+
+2011-04-29 09:44  gjanssens
+
+	* [r20598] src/gnome/assistant-hierarchy.c: Restore save after new
+	  account hierarchy as submitted by Robert Fewell in r19377. This
+	  was accidentally removed during the conversion from GnomeDruid
+	  to GtkAssistant
+
+2011-04-29 07:48  gjanssens
+
+	* [r20597] packaging/win32/gnucash.iss.in: Fix guile load path for
+	  guile 1.8
+
+2011-04-26 18:42  gjanssens
+
+	* [r20596] src/gnome-utils/dialog-account.c,
+	  src/gnome/assistant-hierarchy.c: Remove unwanted use of
+	  G_MODULE_EXPORT again from the new gtkbuilder based widget
+	  callback routines.
+
+2011-04-23 20:33  cstim
+
+	* [r20595] packaging/win32/defaults.sh,
+	  packaging/win32/install-impl.sh: Win32 build: Additional tweaks
+	  for easier cross-compiling.
+
+2011-04-23 20:32  cstim
+
+	* [r20594] packaging/win32/defaults.sh,
+	  packaging/win32/install-impl.sh: Win32 build: Add version checks
+	  for guile and libxslt.
+
+2011-04-23 18:58  cstim
+
+	* [r20593] src/gnome-utils/dialog-account.c,
+	  src/gnome/assistant-hierarchy.c: Win32: Undefine G_MODULE_EXPORT
+	  in our internal libraries. Please do not use it. The rest of
+	  gnucash relies on *everything* being exported. This is done by
+	  mingw's linker, but only if no symbol at all was marked as being
+	  exported. As soon as at least one symbol is manually marked as
+	  export, nothing except those marked symbols are exported, which
+	  will immediately lead to "unresolved symbols" in the win32 build.
+
+2011-04-23 14:52  gjanssens
+
+	* [r20592] src/gnome-utils/dialog-account.c,
+	  src/gnome/glade/account.glade,
+	  src/gnome/gtkbuilder/account.glade: Convert Account dialog from
+	  libglade to gtkbuilder
+	* [r20591] src/gnome-utils/dialog-utils.c,
+	  src/gnome-utils/dialog-utils.h, src/gnome/assistant-hierarchy.c:
+	  Refactor utility function to allow merging multiple (glade)
+	  objects together in one gtkbuilder object
+
+2011-04-23 08:42  cstim
+
+	* [r20590] packaging/win32/install-impl.sh: Win32 build: Tweak
+	  webkit.pc prefix path to match the installation.
+
+2011-04-22 19:59  cstim
+
+	* [r20589] src/backend/dbi/gnc-backend-dbi.c: Win32: Change
+	  filename case sensitivity because this will match on
+	  cross-compile Linux as well.
+	* [r20588] packaging/win32/install-impl.sh: Win32 build: Remove
+	  manually setting guile variables because pkg-config finds them
+	  correctly now even in cross-compile.
+
+2011-04-22 19:44  cstim
+
+	* [r20587] packaging/win32/dist-impl.sh: Win32 build: Fix
+	  aqbanking version lookup
+
+2011-04-22 19:43  cstim
+
+	* [r20586] packaging/win32/install-impl.sh: Win32 build: GUILE
+	  must be in PKG_CONFIG_PATH
+	* [r20585] Makefile.am, configure.ac,
+	  macros/gnome-guile-checks.m4: Replace guile configure check by
+	  PKG_CHECK_MODULE so that it also works in cross-compiling.
+
+2011-04-22 19:20  cstim
+
+	* [r20584] packaging/win32/install-impl.sh: Win32 build: Add
+	  linker directories for xslt and pthread.
+
+2011-04-22 12:56  cstim
+
+	* [r20583] packaging/win32/install-impl.sh: Win32: another try to
+	  have gnucash pick up the correct libdirs.
+
+2011-04-22 12:52  cstim
+
+	* [r20582] packaging/win32/install-impl.sh: Win32 build: Fixes for
+	  cross-compiling.
+
+2011-04-22 12:27  cstim
+
+	* [r20581] packaging/win32/install-impl.sh: Win32 build:
+	  Potentially fix another typo?
+	* [r20580] packaging/win32/defaults.sh,
+	  packaging/win32/gnucash.iss.in: Win32 build: Enable aqbanking5
+	  instead of aqbanking4, which is possible because of updated gtk.
+
+2011-04-22 12:11  cstim
+
+	* [r20579] packaging/win32/install-impl.sh: Win32 build: Fix typo
+
+2011-04-22 10:07  cstim
+
+	* [r20578] packaging/win32/install-impl.sh: Win32 build: Add
+	  missing LDFLAGS for correct usage of new webkit.
+
+2011-04-21 10:54  cstim
+
+	* [r20576] src/backend/xml/gnc-backend-xml.c: Bug #646729: Create
+	  the lockfile with at least read write user permissions Patch by
+	  Jim Radford: My backups fail when they attempt to read a GnuCash
+	  LCK or LNK file because they are created without read
+	  permissions. As best I can tell it can't hurt to create them
+	  with user read permissions.
+
+2011-04-21 10:53  cstim
+
+	* [r20575] packaging/win32/install-impl.sh: Win32 build: Add
+	  version check for webkit
+
+2011-04-19 20:15  cstim
+
+	* [r20570] src/engine/engine-helpers.c: Bug #647945: Add sanity
+	  check to hopefully fix crash when running custom reports BP
+
+2011-04-19 19:12  jralls
+
+	* [r20569] src/import-export/aqbanking/gnc-file-aqb-import.c: Bug
+	  #646268: Fix minor error on r20565
+
+2011-04-19 12:15  cstim
+
+	* [r20568] src/gnome-utils/window-main-summarybar.c,
+	  src/gnome/assistant-hierarchy.c: Bug #613502: Summary bar total
+	  display uses wrong currency Patch by Ajay Thomas: I have
+	  attached a proposed patch for this bug. It would work in all
+	  cases wherein the user enters the currency of the book to be
+	  different from the default report currency. For Example: Suppose
+	  the user set the default report and account default currency
+	  (through GnuCash preferences dialog) to be USD. If user creates
+	  a new account hierarchy (new book) with the currency as INR, The
+	  summary bar would be displayed as: -Grand Total in INR
+	  -TOTAL_SINGLE_MODE in INR ( any accounts within the book which
+	  has amount in INR) -OTHER CURRENCIES (if accounts within the
+	  book belong to other currencies) The new account hierarchy
+	  dialog creates a new book or adds accounts to an already
+	  existing account tree. This summary bar will display the book
+	  default currency for all books created after applying the patch.
+	  My change sets the currency of the new book as the commodity of
+	  the root account of the book. Earlier, the user entered currency
+	  for the newly created book was not saved as an attribute in the
+	  book or root account. I have tested the patch with 3 test cases
+	  by: 1. creating a new book with currency different from the
+	  default currency ( both account default and report default
+	  currency within the report) . 2. using an existing book to setup
+	  an account hierarchy which sets a new default currency for the
+	  book ( it merges the existing account tree with the newly
+	  created book) 3. Already existing books summary bars work the
+	  same way as before. BP
+
+2011-04-19 11:32  cstim
+
+	* [r20567] packaging/win32/defaults.sh,
+	  packaging/win32/install-impl.sh: Win32 build: Update libofx
+	  version.
+
+2011-04-19 09:22  cstim
+
+	* [r20566] src/bin/Makefile.am: Bug #644897: Correctly link in
+	  libgncmod-report-gnome.la to avoid linking against an installed
+	  version. Also, sort the linker libraries by dependencies. BP
+
+2011-04-19 08:05  cstim
+
+	* [r20565] src/import-export/aqbanking/gnc-file-aqb-import.c: Bug
+	  #646268: Fix missing GWEN_SYNCIO initialization.
+
+2011-04-17 16:42  plongstaff
+
+	* [r20561] packaging/win32/defaults.sh: Modify win32 component
+	  directories - remove remaining version numbers from directory
+	  names. I'd like to add them back, eventually, but this matches
+	  the naming used when I built the webkit 1.2.7 zip.
+
+2011-04-12 23:52  plongstaff
+
+	* [r20560] packaging/win32/defaults.sh,
+	  packaging/win32/dist-impl.sh, packaging/win32/install-impl.sh,
+	  packaging/win32/install.sh,
+	  packaging/win32/libxslt-1.1.22.Makefile.in.patch,
+	  packaging/win32/webkit-1.2.7-configure.patch,
+	  packaging/win32/webkit-1.2.7-datadir.patch,
+	  packaging/win32/webkit-1.2.7-gccpath.patch,
+	  packaging/win32/webkit-1.2.7-makefile.patch,
+	  packaging/win32/webkit-1.2.7-mingw32.patch,
+	  packaging/win32/webkit-1.2.7-nosvg.patch,
+	  packaging/win32/webkitenumtypes.cpp,
+	  packaging/win32/webkitenumtypes.h: Update win32 components: Gtk
+	  to 2.24 Webkit to 1.2.7 Others to latest version install-impl.sh
+	  now has option to build webkit if BUILD_WEBKIT_FROM_SOURCE is
+	  defined as "yes".
+
+2011-04-10 20:18  cstim
+
+	* [r20554] src/engine/gncInvoice.c: Bug #647360: Invoice entries
+	  in expense voucher are created in old voucher, not in new one.
+	  It worked fine for customer invoices, and vendor bills, but not
+	  expense vouchers, where the feature was broken all along. BP
+
+2011-04-10 18:52  plongstaff
+
+	* [r20553] src/backend/xml/sixtp-dom-parsers.c: Replace use of
+	  deprecated g_strcasecmp() by g_ascii_strncasecmp()
+
+2011-04-10 00:08  plongstaff
+
+	* [r20552] src/gnome-utils/cursors.c: Spell the function name
+	  correctly. Sigh.
+
+2011-04-09 23:34  plongstaff
+
+	* [r20551] src/gnome-utils/cursors.c: Remove direct access to
+	  window inside GtkWidget - use accessor instead
+
+2011-04-09 21:34  cstim
+
+	* [r20549] src/report/report-system/report.scm: Bug #647316: Fix
+	  crash when deleting custom report if no backup file existed.
+	  Before deleting the backup file by (delete-file), it must be
+	  checked whether the to-be-deleted file exists, otherwise the
+	  guile procedure will crash. BP
+
+2011-04-09 18:44  cstim
+
+	* [r20547] src/app-utils/date-utilities.scm: Bug #647242: Fix
+	  broken averaging for quarter or half-year step size Patch by
+	  "joshua": I think the problem is in the file date-utilities.scm
+	  in the define statement starting on line 191. There were no
+	  options for TwoWeekDelta, QuarterDelta, or HalfYearDelta. BP
+
+2011-04-09 13:28  gjanssens
+
+	* [r20546] src/bin/gnucash-bin.c: Bug #626408 - Gnucash File Open
+	  Error when double-clicking the File (on Windows XP) From the
+	  GOptions documentation I suspect this bug is the result of
+	  setlocale being called too late in our startup process.
+	  (http://developer.gnome.org/glib/unstable/glib-Commandline-option-parser.html)
+	  If this fix actually works, it could be a candidate for BP
+
+2011-04-06 21:05  gjanssens
+
+	* [r20540] src/gnome-utils/gnc-plugin-file-history.c: Bug #628342
+	  - Quick open on File menu deleted if failed BP
+	* [r20539] src/gnome-utils/gnc-plugin-file-history.c: Bug #629156
+	  Recently Used Filenames incorrectly displayed BP
+
+2011-04-06 16:02  gjanssens
+
+	* [r20538] packaging/win32/build_tags.sh: Windows build: fix
+	  logfile naming for tag builds
+
+2011-04-06 10:20  cstim
+
+	* [r20537] src/gnome-utils/dialog-utils.c,
+	  src/gnome-utils/druid-gconf-setup.c,
+	  src/gnome-utils/gnc-gnome-utils.c: Add useful error message when
+	  running gnucash from an incomplete installation (such as from
+	  the build directory).
+
+2011-04-05 20:18  gjanssens
+
+	* [r20536] src/business/business-gnome/dialog-choose-owner.c,
+	  src/engine/engine.i, src/engine/gnc-event.h,
+	  src/engine/kvp-scm.c, src/engine/kvp-scm.h,
+	  src/libqof/qof/test/test-qof.c,
+	  src/libqof/qof/test/test-qofbook.c,
+	  src/libqof/qof/test/test-qofinstance.c,
+	  src/libqof/qof/test/test-qofsession.c: Use quotes instead of <>
+	  to include project local header files
+
+2011-04-05 19:56  gjanssens
+
+	* [r20535] src/gnome/gtkbuilder/account.glade: Fix currency entry
+	  alignment in hierarchy assistant
+
+2011-04-05 19:55  gjanssens
+
+	* [r20534] src/gnome/assistant-hierarchy.c: Remove gnome dependency
+	* [r20533] src/gnome/Makefile.am, src/gnome/assistant-hierarchy.c,
+	  src/gnome/assistant-hierarchy.h, src/gnome/dialog-new-user.c,
+	  src/gnome/druid-hierarchy.c, src/gnome/druid-hierarchy.h,
+	  src/gnome/glade/account.glade,
+	  src/gnome/gnc-plugin-page-account-tree.c, src/gnome/top-level.c:
+	  Replace Account Hierarchy setup druid with gtkbuilder compatible
+	  gtkassistant
+	* [r20532] src/gnome-utils/dialog-utils.c,
+	  src/gnome-utils/dialog-utils.h: Provide gtkbuilder equivalents
+	  for some libglade based support functions
+	* [r20531] configure.ac, src/core-utils/gnc-path.c,
+	  src/core-utils/gnc-path.h, src/gnome/Makefile.am,
+	  src/gnome/gtkbuilder, src/gnome/gtkbuilder/Makefile.am,
+	  src/gnome/gtkbuilder/account.glade,
+	  src/gnome/gtkbuilder/acctperiod.glade,
+	  src/gnome/gtkbuilder/autoclear.glade,
+	  src/gnome/gtkbuilder/budget.glade,
+	  src/gnome/gtkbuilder/commodities.glade,
+	  src/gnome/gtkbuilder/fincalc.glade,
+	  src/gnome/gtkbuilder/lots.glade,
+	  src/gnome/gtkbuilder/newuser.glade,
+	  src/gnome/gtkbuilder/price.glade,
+	  src/gnome/gtkbuilder/print.glade,
+	  src/gnome/gtkbuilder/progress.glade,
+	  src/gnome/gtkbuilder/reconcile.glade,
+	  src/gnome/gtkbuilder/register.glade,
+	  src/gnome/gtkbuilder/sched-xact.glade,
+	  src/gnome/gtkbuilder/stocks.glade,
+	  src/gnome/gtkbuilder/tax.glade,
+	  src/gnome/gtkbuilder/userpass.glade: Introduce a new directory
+	  to store all gtkbuilder compatible ui files It already holds a
+	  first set of files that were converted from libglade to
+	  gtkbuilder. CAUTION: not all the GUI objects in these files work
+	  properly already ! Glade (the tool) simply deletes all widgets
+	  that are not supported by gtkbuilder during the conversion.
+	  These will all be fixed gradually while the corresponding calls
+	  in the C code are converted. The idea is that with each GUI
+	  element that gets fixed in the gtkbuilder file, and subsequently
+	  called from C, the old GUI element is removed from the
+	  corresponding libglade file until all the libglade files are
+	  empty and can be removed. This way the conversion can be done
+	  gradually and both methods can coexist until all widgets and
+	  code are converted. This first commit for example contains a
+	  converted account hierarchy setup assistant, but not yet the
+	  code to use it, so the old druid is still in the libglade file.
+	  Once the code can succesfully use the new assistant from the
+	  gtkbuilder file, the old druid will be removed from the libglade
+	  file.
+	* [r20530] src/gnome/glade/account.glade: Add New Account
+	  Hierarchy assistant to replace the druid
+	* [r20529] src/gnome-utils/Makefile.am,
+	  src/gnome-utils/assistant-utils.c,
+	  src/gnome-utils/assistant-utils.h: Add assistant-utils,
+	  equivalent of druid-utils to be used with GtkAssistant based
+	  dialogs.
+
 2011-04-04 09:25  cstim
 
 	* [r20526] src/libqof/qof/gnc-date.c, src/libqof/qof/gnc-date.h,
