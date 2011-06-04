@@ -47,6 +47,3 @@ override_dh_auto_test:
 
 override_dh_strip:
 	dh_strip --dbg-package=gnucash-dbg
-
-override_dh_shlibdeps:
-	dh_shlibdeps -ldebian/gnucash/usr/lib/gnucash:debian/gnucash/usr/lib/gnucash/gnucash
