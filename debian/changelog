@@ -1,3 +1,36 @@
+gnucash (1:2.4.6-1) unstable; urgency=low
+
+  * New upstream version 2.4.6
+  * Ship ChangeLog.2010 in the Gnucash package (closes: #628976) by using a
+    wildcard for all ChangeLog files. Thanks to Daniel Kahn Gillmor for the
+    suggestion.
+  * Switch (build) dependencies on Guile again from 1.6 to 1.8 (closes:
+    #623833). Also build-depend directly on slib because a guile-1.8-slib
+    package doesn't exist anymore.
+  * Use imagemagick to convert menu icon to XPM and use that for menues to fix
+    lintian error menu-icon-not-in-xpm-format.
+  * Run distclean instead of clean target to make package build twice in a row
+    again (closes: #598416).
+  * Ship the binary gnc-fq-dump again in the gnucash package (closes: #621733,
+    LP: #780102).
+  * Remove all *.la files to comply with Policy 10.2 (closes: #621344).
+  * Remove out-dated debian/gnucash.desktop in favour of the desktop file
+    provided upstream, which is also desktop-file-validate compliant
+    (closes: #493542).
+  * Move desktop file from package gnucash-common to package gnucash to get rid
+    of Lintian warning desktop-command-not-in-package.
+  * Set debian/source/options to ignore build-time changes on auto-generated
+    file src/scm/build-config.scm.
+  * debian/rules:
+    - Dropped 'override_dh_shlibdeps' target that called dh_shlibdeps with an
+      obsolete '-l' flag.
+    - Added 'override_dh_makeshlibs' target that calls dh_makeshlibs with
+      -X/usr/lib/gnucash/ to get rid of a bunch of
+      unused-shlib-entry-in-control-file Lintian warnings.
+    - Fix clean target by making it an override for dh_auto_clean
+
+ -- Micha Lenk <micha@debian.org>  Sat, 04 Jun 2011 18:40:28 +0200
+
 gnucash (1:2.4.5-2) unstable; urgency=low
 
   * Revert (build) dependencies on Guile back from 1.8 to 1.6 (re-opens:
