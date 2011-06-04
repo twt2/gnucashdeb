@@ -36,12 +36,11 @@ override_dh_auto_configure:
 		--enable-ofx \
 		--enable-aqbanking \
 		--enable-locale-specific-tax
-	convert src/pixmaps/gnucash-icon-32x32.png debian/gnucash-icon-32x32.xpm
 
-install:	build
+override_dh_install:
+	convert src/pixmaps/gnucash-icon-32x32.png debian/gnucash-icon-32x32.xpm
 	find debian/tmp/usr/lib -name \*.la -exec rm -v \{\} \;
-	dh install
-	dh_gconf
+	dh_install
 
 override_dh_auto_test:
 
