@@ -1,3 +1,11 @@
+gnucash (1:2.4.6-2) unstable; urgency=low
+
+  * Add correct Breaks/Replaces for gnucash.desktop file moved from
+    package gnucash-common to package gnucash.
+  * Package is compliant to Debian Policy 3.9.2.0 (no changes needed).
+
+ -- Micha Lenk <micha@debian.org>  Sat, 04 Jun 2011 23:15:31 +0200
+
 gnucash (1:2.4.6-1) unstable; urgency=low
 
   * New upstream version 2.4.6
