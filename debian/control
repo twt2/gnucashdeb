@@ -2,7 +2,7 @@ Source: gnucash
 Section: gnome
 Priority: optional
 Maintainer: Micha Lenk <micha@debian.org>
-Standards-Version: 3.8.4
+Standards-Version: 3.9.2.0
 Build-Depends: debhelper (>= 8), intltool, pkg-config,
   libglib2.0-dev (>= 2.6.0), guile-1.8-dev, slib,
   libgconf2-dev, libxml2-dev (>= 2.5.10), zlib1g-dev, libofx-dev,
