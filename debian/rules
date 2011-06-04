@@ -47,3 +47,6 @@ override_dh_auto_test:
 
 override_dh_strip:
 	dh_strip --dbg-package=gnucash-dbg
+
+override_dh_makeshlibs:
+	dh_makeshlibs -a -X/usr/lib/gnucash/
