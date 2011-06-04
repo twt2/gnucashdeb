@@ -41,8 +41,6 @@ override_dh_auto_configure:
 install:	build
 	find debian/tmp/usr/lib -name \*.la -exec rm -v \{\} \;
 	dh install
-	dh_testdir debian/gnucash-common/usr/share/applications/gnucash.desktop
-	mv debian/gnucash-common/usr/share/applications/gnucash.desktop debian/gnucash/usr/share/applications/gnucash.desktop
 	dh_gconf
 
 override_dh_auto_test:

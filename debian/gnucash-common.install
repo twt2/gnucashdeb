@@ -1,2 +1,5 @@
-/usr/share
-/usr/include/
+usr/share/gconf
+usr/share/gnucash
+usr/share/icons
+usr/share/locale
+usr/include
