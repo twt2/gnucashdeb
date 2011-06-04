@@ -13,13 +13,12 @@ export GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL=1
 export BUILDING_FROM_SVN=false
 
 %:
-	dh  $@
+	dh $@
 
-clean:
-	[ ! -e Makefile ] || $(MAKE) distclean
+override_dh_auto_clean:
 	find . -type l -exec rm -v \{\} \;
 	rm -fv debian/gnucash-icon-32x32.xpm
-	dh_clean
+	dh_auto_clean
 
 override_dh_auto_configure:
 	dh_auto_configure -- \
