@@ -1,3 +1,11 @@
+gnucash (1:2.4.6-3) unstable; urgency=low
+
+  * Ship directory /usr/share/gnome also in package gnucash-common to avoid
+    dangling symlink in /usr/share/gnucash/ (closes: #387981).
+  * (Build-)depend on guile-1.8 at least version 1.8.8+1-4~ (closes: #630096).
+
+ -- Micha Lenk <micha@debian.org>  Tue, 14 Jun 2011 18:44:40 +0200
+
 gnucash (1:2.4.6-2) unstable; urgency=low
 
   * Add correct Breaks/Replaces for gnucash.desktop file moved from
