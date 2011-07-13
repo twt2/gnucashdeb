@@ -160,6 +160,8 @@ static void gnc_transfer_dialog_set_selected_account (XferDialog *dialog,
         XferDirection direction);
 void gnc_xfer_dialog_response_cb (GtkDialog *dialog, gint response, gpointer data);
 void gnc_xfer_dialog_close_cb(GtkDialog *dialog, gpointer data);
+static gboolean gnc_xfer_dialog_show_inc_exp_visible_cb (Account *account,
+        gpointer data);
 
 /** Implementations **********************************************/
 
@@ -229,7 +231,15 @@ gnc_xfer_dialog_update_price (XferDialog *xferData)
 static void
 gnc_xfer_dialog_toggle_cb(GtkToggleButton *button, gpointer data)
 {
-    gnc_tree_view_account_refilter (GNC_TREE_VIEW_ACCOUNT (data));
+    AccountTreeFilterInfo info;
+
+    info.show_inc_exp = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button));
+    info.show_hidden = FALSE;
+
+    gnc_tree_view_account_set_filter (GNC_TREE_VIEW_ACCOUNT (data),
+                                      gnc_xfer_dialog_show_inc_exp_visible_cb,
+                                      &info,  /* user data */
+                                      NULL    /* destroy callback */);
 }
 
 static gboolean
@@ -2210,7 +2220,8 @@ void gnc_xfer_dialog_set_txn_cb(XferDialog *xferData,
 
 gboolean gnc_xfer_dialog_run_exchange_dialog(
     XferDialog *xfer, gnc_numeric *exch_rate, gnc_numeric amount,
-    Account *reg_acc, Transaction *txn, gnc_commodity *xfer_com)
+    Account *reg_acc, Transaction *txn, gnc_commodity *xfer_com,
+    gboolean expanded)
 {
     gboolean swap_amounts = FALSE;
     gnc_commodity *txn_cur = xaccTransGetCurrency(txn);
@@ -2231,7 +2242,7 @@ gboolean gnc_xfer_dialog_run_exchange_dialog(
             *exch_rate = gnc_numeric_create(1, 1);
             return FALSE;
         }
-        swap_amounts = TRUE;
+        swap_amounts = expanded;
 
         /* We know that "amount" is always in the reg_com currency.
          * Unfortunately it is possible that neither xfer_com or txn_cur are
@@ -2284,6 +2295,9 @@ gboolean gnc_xfer_dialog_run_exchange_dialog(
     {
         gnc_xfer_dialog_select_to_currency(xfer, xfer_com);
         gnc_xfer_dialog_select_from_currency(xfer, txn_cur);
+
+        if (xaccTransUseTradingAccounts ( txn ))
+            amount = gnc_numeric_neg(amount);
     }
     gnc_xfer_dialog_hide_to_account_tree(xfer);
     gnc_xfer_dialog_hide_from_account_tree(xfer);

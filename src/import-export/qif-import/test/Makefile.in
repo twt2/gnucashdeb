@@ -44,6 +44,7 @@ am__aclocal_m4_deps = $(top_srcdir)/macros/ac_pkg_swig.m4 \
 	$(top_srcdir)/macros/binreloc.m4 \
 	$(top_srcdir)/macros/compiler-flags.m4 \
 	$(top_srcdir)/macros/gnome-guile-checks.m4 \
+	$(top_srcdir)/macros/intltool.m4 \
 	$(top_srcdir)/macros/legacy_macros.m4 \
 	$(top_srcdir)/macros/libtool.m4 \
 	$(top_srcdir)/macros/ltoptions.m4 \
@@ -246,6 +247,8 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PERL = @PERL@
 PKG_CONFIG = @PKG_CONFIG@
+PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
+PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 POFILES = @POFILES@
 POSUB = @POSUB@
 PO_IN_DATADIR_FALSE = @PO_IN_DATADIR_FALSE@
