@@ -1,0 +1,19 @@
+Description: Fix french translation error
+ The text "Case Insensitive" has been translated into "Respecter la casse",
+ which means the opposite. The translation should have been "Ignorer la casse".
+Author: Vincent Lefevre <vincent@vinc17.org>
+Origin: upstream, http://svn.gnucash.org/trac/changeset/20926
+Bug-Debian: http://bugs.debian.org/549479
+Last-Update: 2011-07-14
+
+--- gnucash-2.4.6.orig/po/fr.po
++++ gnucash-2.4.6/po/fr.po
+@@ -10171,7 +10171,7 @@ msgstr "ne correspond pas à l'expressio
+ #. Build and connect the toggle button
+ #: ../src/gnome-search/search-string.c:329
+ msgid "Case Insensitive?"
+-msgstr "Respecter la casse ?"
++msgstr "Ignorer la casse?"
+ 
+ #: ../src/gnome/top-level.c:96
+ #, c-format
