@@ -1,3 +1,14 @@
+gnucash (1:2.4.7-1) unstable; urgency=low
+
+  * New upstream version.
+  * Switch build-dep from libdbi0-dev to 'more standard' libdbi-dev.
+  * Add 0001_french_translation_fix.patch to fix case insensitivity bug in
+    French locale (closes: #549479).
+  * Update build dependencies to reflect transition of libwebkit-dev to
+    libwebkitgtk-dev (closes: #635412).
+
+ -- Micha Lenk <micha@debian.org>  Mon, 01 Aug 2011 22:22:19 +0200
+
 gnucash (1:2.4.6-3) unstable; urgency=low
 
   * Ship directory /usr/share/gnome also in package gnucash-common to avoid
