@@ -10,7 +10,8 @@ Build-Depends: debhelper (>= 8), intltool, pkg-config,
   libgconf2-dev, libxml2-dev (>= 2.5.10), zlib1g-dev, libofx-dev,
   libaqbanking33-dev, libpopt-dev (>= 1.5), libgtk2.0-dev (>= 2.6),
   libgnomeui-dev (>= 2.4), libglade2-dev (>= 2.4), libgoffice-0.8-dev,
-  libwebkitgtk-dev, libltdl-dev, libdbi-dev, imagemagick
+  libwebkitgtk-dev, libltdl-dev, libdbi-dev, imagemagick,
+  python (>= 2.6.6-3~), python-dev
 Homepage: http://www.gnucash.org/
 Vcs-Browser: http://git.debian.org/?p=pkg-gnucash/gnucash.git
 Vcs-Git: git://git.debian.org/pkg-gnucash/gnucash.git
@@ -63,3 +64,18 @@ Description: personal and small-business financial-accounting software
  This package contains the architecture independent parts of Gnucash. It should
  not be installed directly, but is pulled in automatically by the dependencies
  of the Gnucash package.
+
+Package: python-gnucash
+Section: python
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}
+Description: Gnucash interface for Python
+ Gnucash provides accounting functions suitable for use by small businesses and
+ individuals. It can track finances in multiple accounts, keeping running and
+ reconciled balances. There is support for customer, vendor and employee
+ processing. It has an X based graphical user interface, double entry, a
+ hierarchy of accounts, expense accounts (categories), and can import Quicken
+ QIF files and OFX files.
+ .
+ This package contains the Python bindings for Gnucash which allow you to read
+ and manipulate Gnucash data files.

@@ -13,7 +13,7 @@ export GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL=1
 export BUILDING_FROM_SVN=false
 
 %:
-	dh $@
+	dh $@ --with python2
 
 override_dh_auto_clean:
 	find . -type l -exec rm -v \{\} \;
@@ -34,7 +34,8 @@ override_dh_auto_configure:
 		--enable-dbi \
 		--enable-ofx \
 		--enable-aqbanking \
-		--enable-locale-specific-tax
+		--enable-locale-specific-tax \
+		--enable-python-bindings
 
 override_dh_install:
 	convert src/pixmaps/gnucash-icon-32x32.png debian/gnucash-icon-32x32.xpm
@@ -46,5 +47,13 @@ override_dh_auto_test:
 override_dh_strip:
 	dh_strip --dbg-package=gnucash-dbg
 
+override_dh_shlibdeps:
+	dh_shlibdeps -a -X/usr/lib/gnucash/
+
+override_dh_python2:
+	dh_python2 --no-guessing-versions -V $(shell pyversions -dv)
+
+BINARY_VERSION := $(shell dpkg-parsechangelog | sed -n -e 's/^Version: //p')
+
 override_dh_makeshlibs:
-	dh_makeshlibs -a -X/usr/lib/gnucash/
+	dh_makeshlibs --version-info="gnucash (= ${BINARY_VERSION})"
