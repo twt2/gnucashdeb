@@ -1,3 +1,13 @@
+gnucash (1:2.4.7-2) unstable; urgency=low
+
+  * Added Sébastien Villemot to Uploaders and enabled Debian Maintainer
+    uploads. Welcome on board the Gnucash maintenance team, Sébastien.
+  * Added Python bindings by providing a separate package python-gnucash
+    (closes: #617728). Thanks to Andrew Ruthven for the initial patch and to
+    Philipp Kern (pkern) for hammering out the final patch.
+
+ -- Micha Lenk <micha@debian.org>  Sat, 17 Sep 2011 13:47:42 +0200
+
 gnucash (1:2.4.7-1) unstable; urgency=low
 
   * New upstream version.
