@@ -1,3 +1,9 @@
+gnucash (1:2.4.7-3) unstable; urgency=low
+
+  * debian/rules: remove override for dh_shlibdeps (Closes: #642049)
+
+ -- Sébastien Villemot <sebastien.villemot@ens.fr>  Fri, 23 Sep 2011 21:15:32 +0200
+
 gnucash (1:2.4.7-2) unstable; urgency=low
 
   * Added Sébastien Villemot to Uploaders and enabled Debian Maintainer
