@@ -5,7 +5,7 @@
 # Christian Rose <menthos@menthos.com>, 2001, 2002.
 # Jonas Norling <norling@lysator.liu.se>, 2004, 2006.
 #
-# $Id$
+# $Id: sv.po 20284 2011-02-12 16:30:48Z cstim $
 #
 msgid ""
 msgstr ""

@@ -644,7 +644,7 @@ gnc_invoice_window_postCB (GtkWidget *widget, gpointer data)
     KvpFrame *kvpf;
     KvpValue *kvp_val;
     const char *text;
-    EntryList *entries;
+    EntryList *entries, *entries_iter;
     GncEntry* entry;
     gboolean reverse;
     gboolean show_dialog = TRUE;
@@ -698,8 +698,31 @@ gnc_invoice_window_postCB (GtkWidget *widget, gpointer data)
     /* Determine which commodity we're working with */
     acct_commodities = gnc_business_commodities(&(iw->owner));
 
+    /* Get the invoice entries */
+    entries = gncInvoiceGetEntries (invoice);
+
+    /* Find the most suitable post date.
+     * For Customer Invoices that would be today.
+     * For Vendor Bills and Employee Vouchers
+     * that would be the date of the most recent invoice entry.
+     * Failing that, today is used as a fallback */
+    postdate = timespec_now();
+
+    if (entries && ((gncInvoiceGetOwnerType (invoice) == GNC_OWNER_VENDOR) ||
+                    (gncInvoiceGetOwnerType (invoice) == GNC_OWNER_EMPLOYEE)))
+    {
+        postdate = gncEntryGetDate ((GncEntry*)entries->data);
+        for (entries_iter = entries; entries_iter != NULL; entries_iter = g_list_next(entries_iter))
+        {
+            Timespec entrydate;
+
+            entrydate = gncEntryGetDate ((GncEntry*)entries_iter->data);
+            if (timespec_cmp(&entrydate, &postdate) > 0)
+                postdate = entrydate;
+        }
+    }
+
     /* Get the due date and posted account */
-    postdate = gncInvoiceGetDateOpened (invoice);
     ddue = postdate;
     memo = NULL;
 
@@ -728,11 +751,11 @@ gnc_invoice_window_postCB (GtkWidget *widget, gpointer data)
     /* Fill in the conversion prices with feedback from the user */
     text = _("One or more of the entries are for accounts different from the invoice/bill currency.  You will be asked a conversion rate for each.");
 
-    for (entries = gncInvoiceGetEntries(invoice); entries != NULL; entries = g_list_next(entries))
+    for (entries_iter = entries; entries_iter != NULL; entries_iter = g_list_next(entries_iter))
     {
         Account *this_acc;
 
-        entry = (GncEntry*)entries->data;
+        entry = (GncEntry*)entries_iter->data;
         this_acc = (reverse ? gncEntryGetInvAccount (entry) :
                     gncEntryGetBillAccount (entry));
 
@@ -1223,7 +1246,7 @@ gnc_invoice_update_proj_job (InvoiceWindow *iw)
     case VIEW_INVOICE:
     case EDIT_INVOICE:
         iw->proj_job_choice =
-            gnc_owner_edit_create (NULL, iw->proj_job_box, iw->book, &(iw->job));
+            gnc_owner_edit_create (NULL, iw->proj_job_box, iw->book, &(iw->proj_job));
         break;
     case NEW_INVOICE:
     case MOD_INVOICE:
@@ -1368,7 +1391,7 @@ gnc_invoice_reset_total_label (GtkLabel *label, gnc_numeric amt, gnc_commodity *
     char string[256];
 
     amt = gnc_numeric_convert (amt, gnc_commodity_get_fraction(com), GNC_HOW_RND_ROUND_HALF_UP);
-    xaccSPrintAmount (string, amt, gnc_default_print_info (TRUE));
+    xaccSPrintAmount (string, amt, gnc_commodity_print_info (com, TRUE));
     gtk_label_set_text (label, string);
 }
 

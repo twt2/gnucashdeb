@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 #######################################################################
-# $Id$
+# $Id: gnc-value-portfolio 13303 2006-02-19 22:16:49Z hampton $
 # Looks up investment prices on the web, and builds a report
 # to summarize the results
 #######################################################################
