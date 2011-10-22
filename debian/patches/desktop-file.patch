@@ -1,0 +1,20 @@
+Description: Make desktop file compliant with FreeDesktop spec and GNOME goal
+ See http://live.gnome.org/GnomeGoals/CorrectDesktopFiles for details.
+Author: Sébastien Villemot <sebastien.villemot@ens.fr>
+Bug: https://bugzilla.gnome.org/show_bug.cgi?id=662477
+Bug-Debian: http://bugs.debian.org/641022
+Last-Update: 2011-10-22
+Applied-Upstream: 2.4.9, http://svn.gnucash.org/trac/changeset/21489
+--- a/src/gnome/gnucash.desktop.in.in
++++ b/src/gnome/gnucash.desktop.in.in
+@@ -2,7 +2,9 @@
+ Type=Application
+ MimeType=application/x-gnucash;
+ Version=0.9.4
+-_Name=GnuCash Finance Management
++_Name=GnuCash
++_GenericName=Finance Management
++_X-GNOME-FullName=GnuCash Finance Management
+ _Comment=Manage your finances, accounts, and investments
+ Exec=gnucash %f
+ Icon=gnucash-icon
