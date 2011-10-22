@@ -53,5 +53,13 @@ override_dh_python2:
 
 BINARY_VERSION := $(shell dpkg-parsechangelog | sed -n -e 's/^Version: //p')
 
+# Generate an shlibs files because otherwise dpkg-shlibdeps will fail on
+# python-gnucash. But do not distribute the shlibs file in the package, since
+# this creates a lot of lintian warning (many dynamic libraries do not have a
+# correct SOVERSION).
 override_dh_makeshlibs:
 	dh_makeshlibs -n --version-info="gnucash (= ${BINARY_VERSION})"
+
+override_dh_shlibdeps:
+	dh_shlibdeps
+	rm -f debian/gnucash/DEBIAN/shlibs
