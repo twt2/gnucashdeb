@@ -58,7 +58,6 @@ am__aclocal_m4_deps = $(top_srcdir)/macros/ac_pkg_swig.m4 \
 	$(top_srcdir)/macros/binreloc.m4 \
 	$(top_srcdir)/macros/compiler-flags.m4 \
 	$(top_srcdir)/macros/gnome-guile-checks.m4 \
-	$(top_srcdir)/macros/intltool.m4 \
 	$(top_srcdir)/macros/legacy_macros.m4 \
 	$(top_srcdir)/macros/libtool.m4 \
 	$(top_srcdir)/macros/ltoptions.m4 \
@@ -476,6 +475,8 @@ GTKMM_DIR = @GTKMM_DIR@
 GTKMM_LIBS = @GTKMM_LIBS@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
+GTK_MAC_CFLAGS = @GTK_MAC_CFLAGS@
+GTK_MAC_LIBS = @GTK_MAC_LIBS@
 GUILE = @GUILE@
 GUILE_CONFIG = @GUILE_CONFIG@
 GUILE_INCS = @GUILE_INCS@
@@ -484,8 +485,6 @@ GUILE_TOOLS = @GUILE_TOOLS@
 GWENGUI_GTK2_CFLAGS = @GWENGUI_GTK2_CFLAGS@
 GWENGUI_GTK2_LIBS = @GWENGUI_GTK2_LIBS@
 HTMLHELP_LIBS = @HTMLHELP_LIBS@
-IGE_MAC_CFLAGS = @IGE_MAC_CFLAGS@
-IGE_MAC_LIBS = @IGE_MAC_LIBS@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -618,7 +617,6 @@ libdir = @libdir@
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
-lt_ECHO = @lt_ECHO@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@

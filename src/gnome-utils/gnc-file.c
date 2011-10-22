@@ -447,6 +447,17 @@ show_session_error (QofBackendError io_error,
         gnc_error_dialog (parent, "%s", fmt);
         break;
 
+    case ERR_SQL_DBI_UNTESTABLE:
+
+        fmt = _("GnuCash could not complete a critical test for the presence of "
+                "a bug in the \"libdbi\" library. This may be caused by a "
+                "permissions misconfiguration of your SQL database. Please see "
+                "https://bugzilla.gnome.org/show_bug.cgi?id=645216 for more "
+                "information.");
+
+        gnc_error_dialog (parent, "%s", fmt);
+        break;
+
     default:
         PERR("FIXME: Unhandled error %d", io_error);
         fmt = _("An unknown I/O error (%d) occurred.");
@@ -617,7 +628,7 @@ gnc_post_file_open (const char * filename)
 
 
     ENTER(" ");
-
+RESTART:
     if (!filename) return FALSE;
 
     /* Convert user input into a normalized uri
@@ -683,10 +694,30 @@ gnc_post_file_open (const char * filename)
 
     qof_session_begin (new_session, newfile, FALSE, FALSE, FALSE);
     io_err = qof_session_get_error (new_session);
+
+    if (ERR_BACKEND_BAD_URL == io_err)
+    {
+	gchar *directory;
+	show_session_error (io_err, newfile, GNC_FILE_DIALOG_OPEN);
+	io_err = ERR_BACKEND_NO_ERR;
+	if (g_file_test (filename, G_FILE_TEST_IS_DIR))
+	    directory = g_strdup (filename);
+	else
+	    directory = gnc_get_default_directory (GCONF_DIR_OPEN_SAVE);
+
+	filename = gnc_file_dialog (NULL, NULL, directory,
+				    GNC_FILE_DIALOG_OPEN);
+	qof_session_destroy (new_session);
+	new_session = NULL;
+	g_free (directory);
+	goto RESTART;
+    }
     /* if file appears to be locked, ask the user ... */
-    if (ERR_BACKEND_LOCKED == io_err || ERR_BACKEND_READONLY == io_err)
+    else if (ERR_BACKEND_LOCKED == io_err || ERR_BACKEND_READONLY == io_err)
     {
         GtkWidget *dialog;
+        gchar *displayname = NULL;
+
         char *fmt1 = _("GnuCash could not obtain the lock for %s.");
         char *fmt2 = ((ERR_BACKEND_LOCKED == io_err) ?
                       _("That database may be in use by another user, "
@@ -699,6 +730,11 @@ gnc_post_file_open (const char * filename)
                      );
         int rc;
 
+        if (! gnc_uri_is_file_uri (newfile)) /* Hide the db password in error messages */
+            displayname = gnc_uri_normalize_uri ( newfile, FALSE);
+        else
+            displayname = g_strdup (newfile);
+
         // Bug#467521: on Mac (and maybe Win?), the dialog will appear below the
         // splash, but is modal, so we can't get rid of the splash...  So, get
         // rid of it now.
@@ -708,7 +744,7 @@ gnc_post_file_open (const char * filename)
                                         0,
                                         GTK_MESSAGE_WARNING,
                                         GTK_BUTTONS_NONE,
-                                        fmt1, newfile);
+                                        fmt1, displayname);
         gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog),
                 "%s", fmt2);
 
@@ -721,6 +757,7 @@ gnc_post_file_open (const char * filename)
                                   GTK_STOCK_QUIT, RESPONSE_QUIT);
         rc = gtk_dialog_run(GTK_DIALOG(dialog));
         gtk_widget_destroy(dialog);
+        g_free (displayname);
 
         if (rc == GTK_RESPONSE_DELETE_EVENT)
         {

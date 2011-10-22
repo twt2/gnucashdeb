@@ -3,7 +3,7 @@
 # Christian Rose <menthos@menthos.com>, 2001, 2002, 2003.
 # Jonas Norling <norling@lysator.liu.se>, 2006.
 #
-# $Id$
+# $Id: sv.po 19874 2010-11-24 02:52:06Z fell $
 #
 msgid ""
 msgstr ""

@@ -19,7 +19,7 @@ AM_CPPFLAGS = -I${top_builddir} ${GLIB_CFLAGS} ${GNOME_CFLAGS} ${GTK_CFLAGS} \
   -I${top_srcdir}/src/gnc-module \
   -I${top_srcdir}/src/libqof/qof \
   ${GUILE_INCS} \
-  ${IGE_MAC_CFLAGS}
+  ${GTK_MAC_CFLAGS}
 
 SUFFIXES = .rc .res
 
@@ -177,6 +177,7 @@ EXTRA_DIST = \
 	gnucash-launcher.in \
 	gnucash-valgrind.in \
 	gnucash-gdb.in \
-	environment.in
+	environment.in \
+	gnucash-setup-env-osx.in
 
 INCLUDES = -DG_LOG_DOMAIN=\"gnc.bin\"
