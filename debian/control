@@ -24,8 +24,8 @@ Depends: gnucash-common (>= ${source:Version}), ${shlibs:Depends},
   libhtml-tableextract-perl, libcrypt-ssleay-perl, libdate-manip-perl
 Suggests: libdbd-mysql, libdbd-pgsql, libdbd-sqlite3
 Recommends: gnucash-docs, yelp
-Breaks: gnucash-common (<< 1:2.4.6)
-Replaces: gnucash-common (<< 1:2.4.6)
+Breaks: gnucash-common (<< 1:2.4.8-1~)
+Replaces: gnucash-common (<< 1:2.4.8-1~)
 Description: personal and small-business financial-accounting software
  Gnucash provides accounting functions suitable for use by small businesses and
  individuals. It can track finances in multiple accounts, keeping running and
