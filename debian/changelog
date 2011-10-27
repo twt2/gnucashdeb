@@ -1,3 +1,29 @@
+gnucash (1:2.4.8-1) unstable; urgency=low
+
+  * Imported Upstream version 2.4.8
+  * debian/patches/0001_french_translation_fix.patch: remove, applied upstream
+  * Add yelp to Recommends (Closes: #645773)
+  * debian/python-gnucash.lintian-overrides: use a wildcard for Python version
+  * No longer install files under /usr/share/gnucash/doc.
+    Worarkound for a bug in the configure script (it does not honor --docdir).
+    This change suppresses the `extra-license-file' warning from Lintian
+  * Add -n option to dh_makeshlibs.
+    We don't need to run ldconfig in maintainer scripts, nothing is installed in
+    the dynamic library loader path. This change suppresses the
+    `{postinst,postrm}-has-useless-call-to-ldconfig' warnings in Lintian
+  * Do not ship an shlibs file with gnucash.
+    The generated shlibs files creates a lot of
+    `unused-shlib-entry-in-control-file' Lintian warnings, because many dynamic
+    libraries do not have a correct SOVERSION
+  * debian/patches/desktop-file.patch: new patch.
+    Makes desktop file compliant with FreeDesktop specification and GNOME goal
+    (Closes: #641022)
+  * Add a few more READMEs to /usr/share/doc/gnucash/
+  * Move gnucash manpage from gnucash-common to gnucash.
+    This suppresses a `binary-without-manpage' warning from Lintian
+
+ -- Sébastien Villemot <sebastien.villemot@ens.fr>  Thu, 27 Oct 2011 20:18:04 +0200
+
 gnucash (1:2.4.7-3) unstable; urgency=low
 
   * debian/rules: remove override for dh_shlibdeps (Closes: #642049)
