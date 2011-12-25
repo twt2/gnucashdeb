@@ -13,7 +13,7 @@ export GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL=1
 export BUILDING_FROM_SVN=false
 
 %:
-	dh $@ --with python2
+	dh $@ --parallel --with python2
 
 override_dh_auto_clean:
 	find . -type l -exec rm -v \{\} \;
