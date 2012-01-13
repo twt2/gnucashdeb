@@ -1,3 +1,4 @@
+# These directories do not contain any gtk dependencies
 NONGUI_SUBDIRS = \
   libqof \
   debug \
@@ -28,10 +29,9 @@ GUI_SUBDIRS_2 = \
   plugins \
   bin
 
-DIST_SUBDIRS = $(NONGUI_SUBDIRS) $(GUI_SUBDIRS_1) report $(GUI_SUBDIRS_2)
 
 if GNUCASH_ENABLE_GUI
-SUBDIRS = . $(DIST_SUBDIRS)
+SUBDIRS = . $(NONGUI_SUBDIRS) $(GUI_SUBDIRS_1) report $(GUI_SUBDIRS_2)
 else
 SUBDIRS = . $(NONGUI_SUBDIRS) report
 endif
@@ -39,7 +39,7 @@ endif
 noinst_HEADERS = \
   swig-runtime.h
 
-bin_SCRIPTS = gnc-test-env
+noinst_DATA = gnc-test-env
 
 if BUILDING_FROM_SVN
 swig-runtime.h:

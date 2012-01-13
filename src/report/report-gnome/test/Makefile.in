@@ -60,11 +60,14 @@ CONFIG_CLEAN_VPATH_FILES =
 test_link_module_SOURCES = test-link-module.c
 test_link_module_OBJECTS = test-link-module.$(OBJEXT)
 test_link_module_LDADD = $(LDADD)
+am__DEPENDENCIES_1 =
 test_link_module_DEPENDENCIES =  \
-	$(top_builddir)/src/libqof/qof/libgnc-qof.la \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
+	${top_builddir}/src/gnc-module/libgnc-module.la \
 	${top_builddir}/src/report/report-gnome/libgncmod-report-gnome.la \
 	$(top_builddir)/src/app-utils/libgncmod-app-utils.la \
-	${top_builddir}/src/gnome-utils/libgncmod-gnome-utils.la
+	${top_builddir}/src/gnome-utils/libgncmod-gnome-utils.la \
+	$(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -89,7 +92,6 @@ ACLOCAL = @ACLOCAL@
 ALL_LINGUAS = @ALL_LINGUAS@
 AMTAR = @AMTAR@
 AQBANKING_CFLAGS = @AQBANKING_CFLAGS@
-AQBANKING_DIR = @AQBANKING_DIR@
 AQBANKING_LIBS = @AQBANKING_LIBS@
 AR = @AR@
 AS = @AS@
@@ -113,7 +115,6 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
-DBI_DIR = @DBI_DIR@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
@@ -177,7 +178,6 @@ GREP = @GREP@
 GTKHTML_CFLAGS = @GTKHTML_CFLAGS@
 GTKHTML_LIBS = @GTKHTML_LIBS@
 GTKMM_CFLAGS = @GTKMM_CFLAGS@
-GTKMM_DIR = @GTKMM_DIR@
 GTKMM_LIBS = @GTKMM_LIBS@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
@@ -230,7 +230,6 @@ NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
-OFX_DIR = @OFX_DIR@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -251,7 +250,6 @@ PO_IN_DATADIR_FALSE = @PO_IN_DATADIR_FALSE@
 PO_IN_DATADIR_TRUE = @PO_IN_DATADIR_TRUE@
 PYTHON = @PYTHON@
 PYTHON_CPPFLAGS = @PYTHON_CPPFLAGS@
-PYTHON_DIR = @PYTHON_DIR@
 PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
 PYTHON_EXTRA_LIBS = @PYTHON_EXTRA_LIBS@
 PYTHON_LDFLAGS = @PYTHON_LDFLAGS@
@@ -323,6 +321,7 @@ libdir = @libdir@
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
+lt_ECHO = @lt_ECHO@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
@@ -342,28 +341,57 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+AM_CPPFLAGS = \
+  -I${top_srcdir} \
+  -I${top_srcdir}/src \
+  -I${top_srcdir}/src/test-core \
+  -I${top_srcdir}/src/libqof/qof \
+  -I${top_srcdir}/src/gnc-module \
+  ${GUILE_INCS} \
+  ${GLIB_CFLAGS}
+
+LDADD = \
+  ${top_builddir}/src/libqof/qof/libgnc-qof.la \
+  ${top_builddir}/src/gnc-module/libgnc-module.la \
+  ${top_builddir}/src/report/report-gnome/libgncmod-report-gnome.la \
+  $(top_builddir)/src/app-utils/libgncmod-app-utils.la \
+  ${top_builddir}/src/gnome-utils/libgncmod-gnome-utils.la \
+  ${GLIB_LIBS}
+
 GNC_TEST_DEPS = --gnc-module-dir ${top_builddir}/src/engine \
+  --gnc-module-dir ${top_builddir}/src/calculation \
   --gnc-module-dir ${top_builddir}/src/app-utils \
+  --gnc-module-dir ${top_builddir}/src/gnome-utils \
+  --gnc-module-dir ${top_builddir}/src/html \
+  --gnc-module-dir ${top_builddir}/src/report/report-system \
+  --gnc-module-dir ${top_builddir}/src/report/utility-reports \
   --gnc-module-dir ${top_builddir}/src/report/report-gnome \
+\
   --guile-load-dir ${top_builddir}/src/gnc-module \
+  --guile-load-dir ${top_builddir}/src/scm \
   --guile-load-dir ${top_builddir}/src/engine \
+  --guile-load-dir ${top_builddir}/src/core-utils \
+  --guile-load-dir ${top_builddir}/src/app-utils \
+  --guile-load-dir ${top_builddir}/src/gnome-utils \
+  --guile-load-dir ${top_builddir}/src/report/report-system \
+  --guile-load-dir ${top_builddir}/src/report/utility-reports \
+  --guile-load-dir ${top_builddir}/src/report/report-gnome \
+\
   --library-dir    ${top_builddir}/src/libqof/qof \
   --library-dir    ${top_builddir}/src/core-utils \
+  --library-dir    ${top_builddir}/src/calculation \
+  --library-dir    ${top_builddir}/src/app-utils \
   --library-dir    ${top_builddir}/src/gnc-module \
   --library-dir    ${top_builddir}/src/engine \
   --library-dir    ${top_builddir}/src/backend/xml \
-  --library-dir    ${top_builddir}/src/app-utils \
+  --library-dir    ${top_builddir}/src/backend/sql \
   --library-dir    ${top_builddir}/src/gnome-utils \
+  --library-dir    ${top_builddir}/src/html \
   --library-dir    ${top_builddir}/src/report/report-system
 
 TESTS_ENVIRONMENT = \
+  GNC_BUILDDIR=`\cd ${top_builddir} && pwd` \
   $(shell ${top_srcdir}/src/gnc-test-env --no-exports ${GNC_TEST_DEPS})
-
-LDADD = \
-    $(top_builddir)/src/libqof/qof/libgnc-qof.la \
-    ${top_builddir}/src/report/report-gnome/libgncmod-report-gnome.la \
-    $(top_builddir)/src/app-utils/libgncmod-app-utils.la \
-    ${top_builddir}/src/gnome-utils/libgncmod-gnome-utils.la
 
 EXTRA_DIST = test-load-module
 all: all-am
