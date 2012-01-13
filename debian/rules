@@ -37,6 +37,11 @@ override_dh_auto_configure:
 		--enable-locale-specific-tax \
 		--enable-python-bindings
 
+# override this call, so we do not use parallelization
+# see https://bugzilla.gnome.org/show_bug.cgi?id=644896
+override_dh_auto_install:
+	dh_auto_install --max-parallel=1
+
 override_dh_install:
 	convert src/pixmaps/gnucash-icon-32x32.png debian/gnucash-icon-32x32.xpm
 	find debian/tmp/usr/lib -name \*.la -exec rm -v \{\} \;
