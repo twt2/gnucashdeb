@@ -53,7 +53,6 @@ Name: "{commondesktop}\GnuCash"; Filename: "{app}\bin\gnucash.exe"; WorkingDir: 
 
 [Run]
 Filename: "{app}\bin\gnucash.exe"; Description: "{cm:RunPrg}"; WorkingDir: "{app}\bin"; OnlyBelowVersion: 0,6; Flags: postinstall skipifsilent
-Filename: "{app}\bin\guile.cmd"; Parameters: "-c ""(use-modules (ice-9 slib)) (require 'printf)"""; Flags: runhidden
 ;; The Windows firewall exceptions, see http://www.vincenzo.net/isxkb/index.php?title=Adding_a_rule_to_the_Windows_firewall
 Filename: "{sys}\netsh.exe"; Parameters: "firewall add allowedprogram ""{app}\bin\gnucash.exe"" ""GnuCash Free Finance Manager"" ENABLE ALL"; StatusMsg: "{cm:StatusMsgFirewall}"; Flags: runhidden; MinVersion: 0,5.01.2600sp2;
 Filename: "{sys}\netsh.exe"; Parameters: "firewall add allowedprogram ""{app}\bin\gconfd-2.exe"" ""GConf Settings Manager"" ENABLE ALL"; StatusMsg: "{cm:StatusMsgFirewall}"; Flags: runhidden; MinVersion: 0,5.01.2600sp2;
@@ -76,19 +75,19 @@ Source: "@prefix@\..\dist\etc\@PACKAGE@\environment"; DestDir: "{app}\etc\@PACKA
 ; environment config file on-the-fly by the Pascal script below.
 Source: "@prefix@\..\dist\lib\*"; DestDir: "{app}\lib"; Flags: recursesubdirs; Components: main
 Source: "@prefix@\..\dist\libexec\*"; DestDir: "{app}\libexec"; Flags: recursesubdirs; Components: main
-Source: "@prefix@\..\dist\share\*"; DestDir: "{app}\share"; Flags: recursesubdirs; Components: main
+Source: "@prefix@\..\dist\share\*"; DestDir: "{app}\share"; Flags: recursesubdirs; Components: main;
 
 ;;; Not needed with AQBANKING5!
 ;; Additionally, we ship the Qt DLLs because the Online-Banking-Wizard
 ;; lib/aqbanking/plugins/@-aqbanking_so_effective-@/wizards/qt3-wizard.exe needs them.
-Source: "@-qtbindir-@\QtCore4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
-Source: "@-qtbindir-@\QtGui4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
-Source: "@-qtbindir-@\mingwm10.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+@-aqb_pfx-@Source: "@-qtbindir-@\QtCore4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+@-aqb_pfx-@Source: "@-qtbindir-@\QtGui4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+@-aqb_pfx-@Source: "@-qtbindir-@\mingwm10.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
 ;; The following are all needed by Qt3Support
-Source: "@-qtbindir-@\Qt3Support4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
-Source: "@-qtbindir-@\QtXml4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
-Source: "@-qtbindir-@\QtSql4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
-Source: "@-qtbindir-@\QtNetwork4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+@-aqb_pfx-@Source: "@-qtbindir-@\Qt3Support4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+@-aqb_pfx-@Source: "@-qtbindir-@\QtXml4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+@-aqb_pfx-@Source: "@-qtbindir-@\QtSql4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+@-aqb_pfx-@Source: "@-qtbindir-@\QtNetwork4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
 
 ;; The translations
 ;Source: "@prefix@\..\dist\share\locale\*"; DestDir: "{app}\share\locale"; Flags: recursesubdirs; Components: translations
@@ -162,9 +161,8 @@ Root: HKLM; Subkey: "Software\AqBanking\Paths"; ValueType: string; ValueName: "c
 ; Delete the created config script on uninstall
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 [UninstallDelete]
-Type: files; Name: "{app}\bin\guile.cmd"
 Type: files; Name: "{app}\etc\gnucash\environment"
-Type: files; Name: "{app}\share\guile\1.6\slibcat"
+Type: files; Name: "{app}\share\guile\1.8\slibcat"
 Type: filesandordirs; Name: "{app}\share\guile"
 Type: filesandordirs; Name: "{app}\etc\gconf"
 Type: dirifempty; Name: "{app}\etc\gnucash"
@@ -306,30 +304,6 @@ begin
   StringChange(Result, '\', '/');
 end;
 
-procedure MyAfterInstallConfig();
-var
-  FileName, FileString, appdir, libdir, pkglibdir, pkgdatadir: String;
-  Res: Boolean;
-begin
-
-  { Get the installation-specific paths }
-  appdir := ExpandConstant('{app}');
-  pkgdatadir := appdir + '\share\gnucash';
-
-  { Create the guile.cmd file; #10 is the linefeed character and #13 CR }
-
-  FileName := appdir + '\bin\guile.cmd' ;
-  FileString := 'set GUILE_LOAD_PATH=' + pkgdatadir + '\guile-modules;' + pkgdatadir + '\scm;' + appdir + '\share\guile\1.6;%GUILE_LOAD_PATH%'#13#10 ;
-  FileString := FileString + 'start guile.exe %*'#13#10 ;
-
-  { Save the final file }
-
-  Res := SaveStringToFile(FileName, FileString, False);
-  if Res = False then
-    MsgBox('Error on saving '+FileName+' for completing the installation', mbInformation, MB_OK);
-
-end;
-
 function BackslashPath(const S: String): String;
 begin
   { Convert c:\soft to c:/soft }
@@ -364,7 +338,9 @@ begin
       { Adapt GUILE_LOAD_PATH parameter and prevent cygwin interference in SCHEME_LIBRARY_PATH }
       if (Pos('GUILE_LOAD_PATH', EnvStrList[iLineCounter]) = 1) then
       begin
-        StringChangeEx(EnvStrList[iLineCounter], '{GUILE_LOAD_PATH}', '{GNC_HOME}/share/guile/1.6;{GUILE_LOAD_PATH}', True);
+        EnvStrList[iLineCounter - 1] := EnvStrList[iLineCounter - 1] + #13#10 + 'GUILE_HOME={GNC_HOME}/share/guile/1.8';
+        EnvStrList[iLineCounter - 1] := EnvStrList[iLineCounter - 1] + #13#10 + 'GUILE_IMPLEMENTATION_PATH={GUILE_HOME}';
+        StringChangeEx(EnvStrList[iLineCounter], '{GUILE_LOAD_PATH}', '{GUILE_HOME};{GUILE_LOAD_PATH}', True);
 
         EnvStrList[iLineCounter] := EnvStrList[iLineCounter] + #13#10 + '# Clear SCHEME_LIBRARY_PATH to prevent interference from other guile installations (like cygwin)' + #13#10;
         EnvStrList[iLineCounter] := EnvStrList[iLineCounter] + 'SCHEME_LIBRARY_PATH=' + #13#10;
@@ -433,7 +409,7 @@ IconFilename_README=README.win32-bin.txt
 IconName_FAQ=FAQ (Online)
 IconName_Bugzilla=Report a Bug (Online)
 IconName_InstallFQ=Install Online Price Retrieval
-IconComment_InstallFQ=Install the necessary perl module Finance-Quote for online retrieval of prices.  Requires ActivePerl 5.8 or 5.10
+IconComment_InstallFQ=Install the necessary perl module Finance-Quote for online retrieval of prices.  Requires ActivePerl 5.8 or later
 IconName_Theme=Select Theme
 IconName_Uninstall=Uninstall GnuCash
 IconComment_Uninstall=Uninstall the Finance Manager GnuCash
@@ -472,7 +448,7 @@ de.IconFilename_README=README-de.win32-bin.txt
 de.IconName_FAQ=Häufige Fragen (online, engl.)
 de.IconName_Bugzilla=Fehlerbericht einsenden (online, engl.)
 de.IconName_InstallFQ=Online Kursabruf installieren
-de.IconComment_InstallFQ=Das zusätzliche Modul Finance-Quote installieren, um online Aktien- und Devisenkurse abrufen zu können.  Dazu ist das Programm ActivePerl 5.8 oder 5.10 erforderlich.
+de.IconComment_InstallFQ=Das zusätzliche Modul Finance-Quote installieren, um online Aktien- und Devisenkurse abrufen zu können.  Dazu ist das Programm ActivePerl 5.8 oder neuer erforderlich.
 de.IconName_Uninstall=Deinstallieren von GnuCash
 de.IconComment_Uninstall=Die OpenSource-Finanzverwaltung GnuCash wieder deinstallieren und vom Computer löschen
 
@@ -503,7 +479,7 @@ el.IconFilename_README=README.win32-bin.txt
 el.IconName_FAQ=Συχνές ερωτήσεις (Online)
 el.IconName_Bugzilla=Αναφορά σφάλματος (Online)
 el.IconName_InstallFQ=Εγκατάσταση λήψης τιμών (online)
-el.IconComment_InstallFQ=Εγκατάσταση του perl module Finance-Quote για λήψη τιμών online.  Απαιτεί ActivePerl 5.8/5.10
+el.IconComment_InstallFQ=Εγκατάσταση του perl module Finance-Quote για λήψη τιμών online.  Απαιτεί ActivePerl 5.8+
 el.IconName_Uninstall=Απεγκατάσταση GnuCash
 el.IconComment_Uninstall=Απεγκατάσταση του διαχειριστή οικονομικών GnuCash
 
@@ -530,7 +506,7 @@ fr.IconFilename_README=README-fr.win32-bin.txt
 fr.IconName_FAQ=FAQ (En ligne, en anglais)
 fr.IconName_Bugzilla=Envoyer un rapport d'erreur (En ligne, en anglais)
 fr.IconName_InstallFQ=Installer les quotations en ligne
-fr.IconComment_InstallFQ=Installation du module Finance-Quote requis pour le téléchargement du cours des devises et actions. Le programme ActivePerl 5.8 ou 5.10 est aussi requis
+fr.IconComment_InstallFQ=Installation du module Finance-Quote requis pour le téléchargement du cours des devises et actions. Le programme ActivePerl 5.8 ou plus récent est aussi requis
 fr.IconName_Uninstall=Dé-installer GnuCash
 fr.IconComment_Uninstall=Désinstalle le gestionnaire financier GnuCash
 
@@ -563,7 +539,7 @@ it.IconFilename_README=README-it.win32-bin.txt
 it.IconName_FAQ=FAQ (online, in Inglese)
 it.IconName_Bugzilla=Segnalare un bug (online, in Inglese)
 it.IconName_InstallFQ=Installa la funzione di ricerca delle quotazioni online
-it.IconComment_InstallFQ=Installa il modulo di perl Finance-Quote necessario per ricevere le quotazioni online. Richiede ActivePerl 5.8 o 5.10
+it.IconComment_InstallFQ=Installa il modulo di perl Finance-Quote necessario per ricevere le quotazioni online. Richiede ActivePerl 5.8+
 it.IconName_Theme=Selezione del tema
 it.IconName_Uninstall=Disinstalla GnuCash
 it.IconComment_Uninstall=Disinstalla il programma di gestione delle finanze GnuCash
@@ -631,7 +607,7 @@ lv.IconFilename_README=README-lv.win32-bin.txt
 lv.IconName_FAQ=BUJ (tiešsaistē)
 lv.IconName_Bugzilla=Ziņot par kļūdu (tiešsaistē)
 lv.IconName_InstallFQ=Uzstādīt tiešsaistes kursu iegūšanu
-lv.IconComment_InstallFQ=Uzstādīt nepieciešamos Perl moduļus valūtas kursu iegūšanai. Nepieciešams ActivePerl 5.8 vai 5.10
+lv.IconComment_InstallFQ=Uzstādīt nepieciešamos Perl moduļus valūtas kursu iegūšanai. Nepieciešams ActivePerl 5.8+
 lv.IconName_Theme=Izvēlieties tēmu
 lv.IconName_Uninstall=Noņemt GnuCash
 lv.IconComment_Uninstall=Noņemt GnuCash grāmatvedības programmu
@@ -659,7 +635,7 @@ nl.IconFilename_README=README-nl.win32-bin.txt
 nl.IconName_FAQ=FAQ (Online)
 nl.IconName_Bugzilla=Een Bug Melden (Online)
 nl.IconName_InstallFQ=Online Koersen Opvragen installeren
-nl.IconComment_InstallFQ=De benodigde perl module Finance Quote om online koersen op te vragen installeren.  Hiervoor is ActivePerl 5.8 of 5.10 nodig.
+nl.IconComment_InstallFQ=De benodigde perl module Finance Quote om online koersen op te vragen installeren.  Hiervoor is ActivePerl 5.8 of recenter nodig.
 nl.IconName_Uninstall=GnuCash verwijderen
 nl.IconComment_Uninstall=Het financieel beheersprogramma GnuCash verwijderen
 
@@ -690,7 +666,7 @@ pt_BR.IconFilename_README=LEIA-ME.win32-bin.txt
 pt_BR.IconName_FAQ=Perguntas Freqüentes (online, inglês)
 pt_BR.IconName_Bugzilla=Relatar um erro (online, inglês)
 pt_BR.IconName_InstallFQ=Instalar a Consulta de Preços Online
-pt_BR.IconComment_InstallFQ=Instala o módulo perl Finance-Quote, necessário para a busca de preços online. Requer ActivePerl 5.8/5.10.
+pt_BR.IconComment_InstallFQ=Instala o módulo perl Finance-Quote, necessário para a busca de preços online. Requer ActivePerl 5.8+.
 pt_BR.IconName_Uninstall=Desinstalar o GnuCash
 pt_BR.IconComment_Uninstall=Desinstala o Gerenciador Financeiro GnuCash
 
