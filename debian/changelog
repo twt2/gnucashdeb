@@ -1,3 +1,11 @@
+gnucash (1:2.4.9-1) unstable; urgency=low
+
+  * Imported Upstream version 2.4.9
+  * debian/patches/desktop-file.patch: remove, applied upstream
+  * debian/rules: enable parallel build
+
+ -- Sébastien Villemot <sebastien.villemot@ens.fr>  Sat, 14 Jan 2012 21:00:08 +0100
+
 gnucash (1:2.4.8-1) unstable; urgency=low
 
   * Imported Upstream version 2.4.8
