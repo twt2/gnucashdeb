@@ -7,6 +7,7 @@ Bug:         https://bugzilla.gnome.org/show_bug.cgi?id=668926
 Bug-Debian:  http://bugs.debian.org/408583
 Author:      Sébastien Villemot <sebastien.villemot@ens.fr>
 Last-Update: 2012-01-28
+Applied-Upstream: commit: r21900
 --- a/src/backend/xml/gnc-backend-xml.c
 +++ b/src/backend/xml/gnc-backend-xml.c
 @@ -117,8 +117,8 @@
