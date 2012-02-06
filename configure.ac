@@ -20,7 +20,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 # Autoconf initialization
 AC_PREREQ(2.59)
-AC_INIT([GnuCash], [2.4.9], [gnucash-devel@gnucash.org])
+AC_INIT([GnuCash], [2.4.10], [gnucash-devel@gnucash.org])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_SRCDIR(src/engine/Transaction.h)
 
@@ -588,7 +588,7 @@ fi
 AC_SUBST(LIBDBI_LIBS)
 AC_SUBST(GNC_DBD_DIR)
 AM_CONDITIONAL(CUSTOM_GNC_DBD_DIR, [test x"$GNC_DBD_DIR" != "x"])
-AM_CONDITIONAL(WITH_DBI, [test "x$ac_cv_header_dbi_dbi_h" != xno])
+AM_CONDITIONAL(WITH_DBI, [test "x$ac_cv_header_dbi_dbi_h" == xyes])
 
 ### --------------------------------------------------------------------------
 ### Variables
