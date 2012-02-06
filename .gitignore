@@ -1,0 +1,13 @@
+.pc
+*~
+*.o
+*.lo
+*.so
+*.a
+*.la
+Makefile
+debian/files
+debian/gnucash-common/
+debian/gnucash-common.debhelper.log
+debian/gnucash-common.substvars
+debian/tmp
