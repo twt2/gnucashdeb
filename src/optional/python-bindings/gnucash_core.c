@@ -37443,6 +37443,7 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, "ERR_FILEIO_NO_ENCODING",SWIG_From_int((int)(ERR_FILEIO_NO_ENCODING)));
   SWIG_Python_SetConstant(d, "ERR_FILEIO_FILE_EACCES",SWIG_From_int((int)(ERR_FILEIO_FILE_EACCES)));
   SWIG_Python_SetConstant(d, "ERR_FILEIO_RESERVED_WRITE",SWIG_From_int((int)(ERR_FILEIO_RESERVED_WRITE)));
+  SWIG_Python_SetConstant(d, "ERR_FILEIO_FILE_UPGRADE",SWIG_From_int((int)(ERR_FILEIO_FILE_UPGRADE)));
   SWIG_Python_SetConstant(d, "ERR_NETIO_SHORT_READ",SWIG_From_int((int)(ERR_NETIO_SHORT_READ)));
   SWIG_Python_SetConstant(d, "ERR_NETIO_WRONG_CONTENT_TYPE",SWIG_From_int((int)(ERR_NETIO_WRONG_CONTENT_TYPE)));
   SWIG_Python_SetConstant(d, "ERR_NETIO_NOT_GNCXML",SWIG_From_int((int)(ERR_NETIO_NOT_GNCXML)));

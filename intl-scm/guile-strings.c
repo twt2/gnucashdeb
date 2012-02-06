@@ -2907,6 +2907,10 @@ _("Period")
 /* src/report/standard-reports/budget-flow.scm */
 _("Report on these accounts")
 /* src/report/standard-reports/budget-flow.scm */
+_("Total")
+/* src/report/standard-reports/budget-flow.scm */
+_("Total")
+/* src/report/standard-reports/budget-flow.scm */
 _("%s: %s - %s")
 /* src/report/standard-reports/budget-income-statement.scm */
 _("Report Title")

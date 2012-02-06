@@ -592,6 +592,11 @@ EXTRA_DIST = \
 @GNUCASH_SEPARATE_BUILDDIR_TRUE@	iso-4217-currencies.scm \
 @GNUCASH_SEPARATE_BUILDDIR_TRUE@	${gncmod_DATA} ${gncscm_DATA}
 noinst_DATA = .scm-links
+
+# The generated file depends on various libqof headers. Out of
+# laziness I only include one here - more might be needed
+# subsequently.
+@BUILDING_FROM_SVN_TRUE@QOFHEADERS = ${top_srcdir}/src/libqof/qof/qofbook.h
 BUILT_SOURCES = iso-4217-currencies.c
 CLEANFILES = $(BUILT_SOURCES) .scm-links \
 	${SCM_FILE_LINKS}
@@ -1147,6 +1152,7 @@ uninstall-am: uninstall-gncincludeHEADERS uninstall-gncmodDATA \
 @OS_WIN32_FALSE@	touch .scm-links
 
 @BUILDING_FROM_SVN_TRUE@swig-engine.c: engine.i ${top_srcdir}/src/base-typemaps.i \
+@BUILDING_FROM_SVN_TRUE@               ${QOFHEADERS} \
 @BUILDING_FROM_SVN_TRUE@               ${gncinclude_HEADERS} ${noinst_HEADERS}
 @BUILDING_FROM_SVN_TRUE@	$(SWIG) -guile $(SWIG_ARGS) -Linkage module \
 @BUILDING_FROM_SVN_TRUE@	-I${top_srcdir}/src/libqof/qof -I${top_srcdir}/src -o $@ $<

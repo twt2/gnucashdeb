@@ -260,12 +260,13 @@ set_default GLIB_URL                "$GNOME_WIN32_URL/glib/2.28/glib_2.28.1-1_wi
 set_default GLIB_DEV_URL            "$GNOME_WIN32_URL/glib/2.28/glib-dev_2.28.1-1_win32.zip"
 set_default GNOME_VFS_URL           "$GNOME_WIN32_URL/gnome-vfs/2.24/gnome-vfs_2.24.1-1_win32.zip"
 set_default GNOME_VFS_DEV_URL       "$GNOME_WIN32_URL/gnome-vfs/2.24/gnome-vfs-dev_2.24.1-1_win32.zip"
-GTK_VERSION="2.24.0"
+GTK_VERSION="2.24.8"
 set_default GTK_URL                 "$GNOME_WIN32_URL/gtk+/2.24/gtk+_${GTK_VERSION}-1_win32.zip"
 set_default GTK_DEV_URL             "$GNOME_WIN32_URL/gtk+/2.24/gtk+-dev_${GTK_VERSION}-1_win32.zip"
 set_default GTK_DOC_URL             "$GNOME_MIRROR/sources/gtk-doc/1.13/gtk-doc-1.13.tar.bz2"
 set_default GTK_PREFS_URL           "$SF_MIRROR/gtk-win/gtk2_prefs-0.4.1.bin-gtk2.10-win32.zip"
 set_default GTK_THEME_URL           "$SF_MIRROR/gtk-win/gtk2-themes-2009-09-07-win32_bin.zip"
+set_default HICOLOR_THEME_URL       "$GNOME_WIN32_DEPS_URL/hicolor-icon-theme_0.10-1_win32.zip"
 set_default INTLTOOL_URL            "$GNOME_WIN32_URL/intltool/0.40/intltool_0.40.4-1_win32.zip"
 set_default LIBART_LGPL_URL         "$GNOME_WIN32_URL/libart_lgpl/2.3/libart-lgpl_2.3.21-1_win32.zip"
 set_default LIBART_LGPL_DEV_URL     "$GNOME_WIN32_URL/libart_lgpl/2.3/libart-lgpl-dev_2.3.21-1_win32.zip"
@@ -363,7 +364,7 @@ set_default LIBOFX_DIR $GLOBAL_DIR\\libofx
 #set_default LIBOFX_PATCH `pwd`/libofx-0.8.3-patch.diff
 
 ## online banking: gwenhywfar+aqbanking
-set_default AQBANKING5 no
+set_default AQBANKING5 yes
 # If sticking to aqbanking4, make sure to enable the QtCore4.dll et al
 # in gnucash.iss.in again because in aqbanking4 those DLLs are still
 # needed.

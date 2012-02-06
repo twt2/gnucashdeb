@@ -38,6 +38,7 @@ build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = $(am__EXEEXT_1)
 @PLATFORM_WIN32_FALSE@am__append_1 = ${gnc_common_scripts} update-gnucash-gconf
+@PLATFORM_WIN32_TRUE@am__append_2 = guile-setup.cmd
 subdir = src/bin
 DIST_COMMON = $(am__dist_noinst_DATA_DIST) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
@@ -497,18 +498,13 @@ CLEANFILES = $(BUILT_SOURCES) ${config_DATA} ${PLATFORM_FILES} \
 @PLATFORM_WIN32_FALSE@	update-gnucash-gconf \
 @PLATFORM_WIN32_FALSE@	${PLATFORM_FILES}
 
+@PLATFORM_WIN32_TRUE@bin_SCRIPTS = guile-setup.cmd
 
 # if you change gncoverridedir, make sure you change ./overrides/Makefile.am too.
 @PLATFORM_WIN32_FALSE@gncoverridesdir = ${GNC_LIBEXECDIR}/overrides
-EXTRA_DIST = \
-    generate-gnc-script \
-	update-gnucash-gconf.in \
-	gnucash-launcher.in \
-	gnucash-valgrind.in \
-	gnucash-gdb.in \
-	environment.in \
-	gnucash-setup-env-osx.in
-
+EXTRA_DIST = generate-gnc-script update-gnucash-gconf.in \
+	gnucash-launcher.in gnucash-valgrind.in gnucash-gdb.in \
+	environment.in gnucash-setup-env-osx.in $(am__append_2)
 INCLUDES = -DG_LOG_DOMAIN=\"gnc.bin\"
 all: all-recursive
 
