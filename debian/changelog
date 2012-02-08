@@ -1,3 +1,21 @@
+gnucash (1:2.4.10-1) unstable; urgency=low
+
+  [ Sébastien Villemot ]
+  * Imported Upstream version 2.4.10
+  * Add Breaks/Replaces for gconf files moved from gnucash to gnucash-common
+    (Closes: #656845)
+  * debian/patches/hurd-ftbfs.patch: new patch, fixes FTBFS on hurd-i386
+    (Closes: #408583)
+
+  [ Dmitry Smirnov ]
+  * use dpkg-provided build flags and default hardening supporting the
+    Security Hardening Build Flags release goal
+  * remove build-deps already fulfilled by the dependencies of other build-deps
+    (libpopt-dev, libglade2-dev and libgconf2-dev). By that occasion order them
+    alphabetically.
+
+ -- Sébastien Villemot <sebastien.villemot@ens.fr>  Wed, 08 Feb 2012 20:56:25 +0100
+
 gnucash (1:2.4.9-1) unstable; urgency=low
 
   * Imported Upstream version 2.4.9
