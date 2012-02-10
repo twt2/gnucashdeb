@@ -3,9 +3,6 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
-# This has to be exported to make some magic below work.
-export DH_OPTIONS=
-
 # Avoid some error messages when running "make install"
 export GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL=1
 
