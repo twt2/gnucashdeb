@@ -10,17 +10,6 @@ Comment:
     Micha Lenk <micha@debian.org> on Sun, 26 Dec 2010 15:23:56 +0100
 
 
-Files: debian/*
-Copyright:  © 2009-2012 Micha Lenk <micha@debian.org>
-            © 2011-2012 Sébastien Villemot <sebastien.villemot@ens.fr>
-            © 2012      Dmitry Smirnov <onlyjob@member.fsf.org>
-            © 2004-2009 Thomas Bushnell, BSG <tb@debian.org>
-            © 2002-2004 James A. Treacy <treacy@debian.org>
-            © 2000-2001 John Goerzen <jgoerzen@complete.org>
-            © 1999-2000 Tyson Dowd <trd@cs.mu.oz.au>
-License: GPL-3+
-
-
 Files: *
 Copyright:
  © 2001                     Almer S. Tigelaar <almer@gnome.org>
@@ -92,6 +81,17 @@ Comment:
  Files are assumed to be under same license terms
  as the application as a whole
  unless otherwise explicitly stated in the file.
+
+
+Files: debian/*
+Copyright:  © 2009-2012 Micha Lenk <micha@debian.org>
+            © 2011-2012 Sébastien Villemot <sebastien.villemot@ens.fr>
+            © 2012      Dmitry Smirnov <onlyjob@member.fsf.org>
+            © 2004-2009 Thomas Bushnell, BSG <tb@debian.org>
+            © 2002-2004 James A. Treacy <treacy@debian.org>
+            © 2000-2001 John Goerzen <jgoerzen@complete.org>
+            © 1999-2000 Tyson Dowd <trd@cs.mu.oz.au>
+License: GPL-3+
 
 
 Files:
