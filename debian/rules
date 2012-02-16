@@ -9,6 +9,8 @@ export GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL=1
 # Hack for Gnucash build system
 export BUILDING_FROM_SVN=false
 
+# reduce overlinking
+LDFLAGS+= -Wl,--as-needed
 
 %:
 	dh $@ --parallel --with python2,autoreconf
@@ -17,6 +19,9 @@ override_dh_auto_clean:
 	find . -type l -exec rm -v \{\} \;
 	rm -fv debian/gnucash-icon-32x32.xpm
 	dh_auto_clean
+
+override_dh_autoreconf:
+	dh_autoreconf --as-needed
 
 override_dh_auto_configure:
 	dh_auto_configure -- \
