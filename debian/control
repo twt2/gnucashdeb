@@ -18,7 +18,7 @@ Vcs-Git: git://git.debian.org/pkg-gnucash/gnucash.git
 
 Package: gnucash
 Architecture: any
-Depends: gnucash-common (>= ${source:Version}), ${shlibs:Depends},
+Depends: gnucash-common (= ${source:Version}), ${shlibs:Depends},
   ${misc:Depends}, ${perl:Depends}, slib, guile-1.8 (>= 1.8.8+1-4~),
   libfinance-quote-perl, libwww-perl, libhtml-tree-perl,
   libhtml-tableextract-perl, libcrypt-ssleay-perl, libdate-manip-perl
