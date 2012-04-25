@@ -6,72 +6,72 @@ Comment:
     Tyson Dowd <trd@cs.mu.oz.au> on Wed, 10 Mar 1999 13:00:52 +1100
  The packaging was completely revamped for gnucash 2.4.0-1 by:
     Micha Lenk <micha@debian.org> on Sun, 26 Dec 2010 15:23:56 +0100
-Copyright: © 1994,1995,1996,1999,2000,2001,2002,2004,2005,2006,2007,2008,2009 Free Software Foundation, Inc.
+Copyright: 1994,1995,1996,1999,2000,2001,2002,2004,2005,2006,2007,2008,2009 Free Software Foundation, Inc.
 License: GPL-3+
 
 Files: *
-Copyright: © 2001                     Almer S. Tigelaar <almer@gnome.org>
-           © 2003                     Andreas J. Guelzow <aguelzow@taliesin.ca>
-           © 2006-2008                Andreas Koehler <andi5.py@gmx.net>
-           © 1991-1993,1996,1999-2001 Aubrey Jaffer and Radey Shouman
-           © 2003,2009                Andy Wingo <wingo@pobox.com>
-           © 2009                     Andrew Sackville-West <andrew@swclan.homelinux.org>
-           © 2001                     Ben Stanley <bds02@uow.edu.au>
-           © 2002-2003                Benoit Grégoire <bock@step.polymtl.ca>
-           © 2004                     Bernd Wagner
-           © 2007                     Benny Sperisen <lasindi@gmail.com>
-           © 2000-2001                Bill Gribble <grib@billgribble.com>
-           © 2000-2001                Bill Gribble <grib@gnumatic.com>
-           © 2008                     Charles Day <cedayiv@gmail.com>
-           © 2009                     Chris Dennis chris@starsoftanalysis.co.uk
-           © 2005-2006                Chris Shoemaker <c.shoemaker@cox.net>
-           © 2001-2005,2007,2011      Christian Stimming <stimming@tuhh.de>
-           © 2010-2011                Christian Stimming <christian@cstimming.de>
-           © 2001                     Christian Stimming <stimming@tu-harburg.de>
-           © 2010                     Cristian KLEIN
-           © 2003                     Darin Willits <darin@willits.ca>
-           © 1999-2001                Dave Peticolas <dave@krondo.com>
-           © 2000                     Dave Peticolas <peticola@cs.ucdavis.edu>
-           © 2003,2005-2007           David Hampton <hampton@employees.org>
-           © 2004                     David Montenegro <sunrise2000@comcast.net>
-           © 2000-2003,2006           Derek Atkins <warlord@MIT.EDU>
-           © 2002-2005,2007-2008      Derek Atkins <derek@ihtfp.com>
-           © 2006                     Eskil Bylund <eskil.bylund@gmail.com>
-           © 2006                     Florian Steinel
-           © 2010                     Geert Janssens <janssens-geert@telenet.be>
-           © 1998                     Gerald Combs
-           © 1999-2000                Heath Martin <martinh@pegasus.cc.ucf.edu>
-           © 2000,2009                Herbert Thoma <herbie@hthoma.de>
-           © 2003                     Jan Arne Petersen <jpetersen@uni-bonn.de>
-           © 2003                     Jan-Pascal van Best <janpascal@vanbest.org>
-           © 2001                     James LewisMoss <dres@debian.org>
-           © 2004                     James Strandboge <jstrand1@rochester.rr.com>
-           © 1998-1999,2001           Jeremy Collins
-           © 2011                     John Ralls <jralls@ceridwen.us>
-           © 2001-2002,2004-2007      Joshua Sled <jsled@asynchronous.org>
-           © 1997-2004                Linas Vepstas <linas@linas.org>
-           © 1991                     Marc Feeley
-           © 1997                     Martin Jones <mjones@kde.org>
-           © 2003                     Morten Welinder <terra@gnome.org>
-           © 2004-2006                Neil Williams <linux@codehelp.co.uk>
-           © 2006-2010                Phil Longstaff <plongstaff@rogers.com>
-           © 1998                     Radey Shouman
-           © 1998-2001                Rob Browning <rlb@cs.utexas.edu>
-           © 2000-2001                Robert Merkel <rgmerk@mira.net>
-           © 1997                     Robin D. Clark <rclark@cs.hmc.edu>
-           © 2009                     Sebastian Held <sebastian.held@gmx.de>
-           © 2008                     Sven Henkel <shenkel@gmail.com>
-           © 1990-2000                Terry D. Boldt
-           © 1997                     Torben Weis <weis@kde.org>
-           © 2001                   Free Software Foundation
-           © 1995-2001,2003-2008    Free Software Foundation, Inc
-           © 2000-2001              Gnumatic Incorporated
-           © 2005                   GnuCash team
-           © 1999                   Helix Code, Inc
-           © 2001                   Linux Developers Group
-           © 2001                   Linux Developers Group, Inc.
-           © 2008-2010              ParIT Worker Co-operative <paritinfo@parit.ca>
-           © 2010                   ParIT Worker Co-operative <transparency@parit.ca>
+Copyright: 2001                     Almer S. Tigelaar <almer@gnome.org>
+           2003                     Andreas J. Guelzow <aguelzow@taliesin.ca>
+           2006-2008                Andreas Koehler <andi5.py@gmx.net>
+           1991-1993,1996,1999-2001 Aubrey Jaffer and Radey Shouman
+           2003,2009                Andy Wingo <wingo@pobox.com>
+           2009                     Andrew Sackville-West <andrew@swclan.homelinux.org>
+           2001                     Ben Stanley <bds02@uow.edu.au>
+           2002-2003                Benoit Grégoire <bock@step.polymtl.ca>
+           2004                     Bernd Wagner
+           2007                     Benny Sperisen <lasindi@gmail.com>
+           2000-2001                Bill Gribble <grib@billgribble.com>
+           2000-2001                Bill Gribble <grib@gnumatic.com>
+           2008                     Charles Day <cedayiv@gmail.com>
+           2009                     Chris Dennis chris@starsoftanalysis.co.uk
+           2005-2006                Chris Shoemaker <c.shoemaker@cox.net>
+           2001-2005,2007,2011      Christian Stimming <stimming@tuhh.de>
+           2010-2011                Christian Stimming <christian@cstimming.de>
+           2001                     Christian Stimming <stimming@tu-harburg.de>
+           2010                     Cristian KLEIN
+           2003                     Darin Willits <darin@willits.ca>
+           1999-2001                Dave Peticolas <dave@krondo.com>
+           2000                     Dave Peticolas <peticola@cs.ucdavis.edu>
+           2003,2005-2007           David Hampton <hampton@employees.org>
+           2004                     David Montenegro <sunrise2000@comcast.net>
+           2000-2003,2006           Derek Atkins <warlord@MIT.EDU>
+           2002-2005,2007-2008      Derek Atkins <derek@ihtfp.com>
+           2006                     Eskil Bylund <eskil.bylund@gmail.com>
+           2006                     Florian Steinel
+           2010                     Geert Janssens <janssens-geert@telenet.be>
+           1998                     Gerald Combs
+           1999-2000                Heath Martin <martinh@pegasus.cc.ucf.edu>
+           2000,2009                Herbert Thoma <herbie@hthoma.de>
+           2003                     Jan Arne Petersen <jpetersen@uni-bonn.de>
+           2003                     Jan-Pascal van Best <janpascal@vanbest.org>
+           2001                     James LewisMoss <dres@debian.org>
+           2004                     James Strandboge <jstrand1@rochester.rr.com>
+           1998-1999,2001           Jeremy Collins
+           2011                     John Ralls <jralls@ceridwen.us>
+           2001-2002,2004-2007      Joshua Sled <jsled@asynchronous.org>
+           1997-2004                Linas Vepstas <linas@linas.org>
+           1991                     Marc Feeley
+           1997                     Martin Jones <mjones@kde.org>
+           2003                     Morten Welinder <terra@gnome.org>
+           2004-2006                Neil Williams <linux@codehelp.co.uk>
+           2006-2010                Phil Longstaff <plongstaff@rogers.com>
+           1998                     Radey Shouman
+           1998-2001                Rob Browning <rlb@cs.utexas.edu>
+           2000-2001                Robert Merkel <rgmerk@mira.net>
+           1997                     Robin D. Clark <rclark@cs.hmc.edu>
+           2009                     Sebastian Held <sebastian.held@gmx.de>
+           2008                     Sven Henkel <shenkel@gmail.com>
+           1990-2000                Terry D. Boldt
+           1997                     Torben Weis <weis@kde.org>
+           2001                   Free Software Foundation
+           1995-2001,2003-2008    Free Software Foundation, Inc
+           2000-2001              Gnumatic Incorporated
+           2005                   GnuCash team
+           1999                   Helix Code, Inc
+           2001                   Linux Developers Group
+           2001                   Linux Developers Group, Inc.
+           2008-2010              ParIT Worker Co-operative <paritinfo@parit.ca>
+           2010                   ParIT Worker Co-operative <transparency@parit.ca>
 License: GPL-3+
 Comment: 
  Other contributors are listed in file AUTHORS
@@ -81,25 +81,25 @@ Comment:
  unless otherwise explicitly stated in the file.
 
 Files: debian/*
-Copyright: © 2009-2012 Micha Lenk <micha@debian.org>
-           © 2011-2012 Sébastien Villemot <sebastien.villemot@ens.fr>
-           © 2012      Dmitry Smirnov <onlyjob@member.fsf.org>
-           © 2004-2009 Thomas Bushnell, BSG <tb@debian.org>
-           © 2002-2004 James A. Treacy <treacy@debian.org>
-           © 2000-2001 John Goerzen <jgoerzen@complete.org>
-           © 1999-2000 Tyson Dowd <trd@cs.mu.oz.au>
+Copyright: 2009-2012 Micha Lenk <micha@debian.org>
+           2011-2012 Sébastien Villemot <sebastien.villemot@ens.fr>
+           2012      Dmitry Smirnov <onlyjob@member.fsf.org>
+           2004-2009 Thomas Bushnell, BSG <tb@debian.org>
+           2002-2004 James A. Treacy <treacy@debian.org>
+           2000-2001 John Goerzen <jgoerzen@complete.org>
+           1999-2000 Tyson Dowd <trd@cs.mu.oz.au>
 License: GPL-3+
 
 Files: 
  src/doc/design/gnucash-design.info
  src/doc/design/gnucash-design.texinfo
-Copyright: © 2000 Gnumatic Incorporated
+Copyright: 2000 Gnumatic Incorporated
 License: GFDL-NIV-1.1
 Comment: 
  http://www.debian.org/vote/2006/vote_001#outcome
 
 Files: packaging/gnucash-2.1.x.ebuild
-Copyright: © 1999-2007 Gentoo Foundation
+Copyright: 1999-2007 Gentoo Foundation
 License: GPL-2
 
 Files: 
@@ -128,14 +128,14 @@ Files:
  src/gnome-utils/gnc-sx-instance-dense-cal-adapter.h
  src/gnome-utils/gnc-sx-list-tree-model-adapter.c
  src/gnome-utils/gnc-sx-list-tree-model-adapter.h
-Copyright: © 2001-2002,2006 Joshua Sled <jsled@asynchronous.org>
+Copyright: 2001-2002,2006 Joshua Sled <jsled@asynchronous.org>
 License: GPL-2 or GPL-3
 
 Files: 
  src/core-utils/core-utils.scm
  src/gnome-utils/test/test-gnc-dialog.c
  src/gnome-utils/test/test-gnc-recurrence.c
-Copyright: © 2005-2006 Chris Shoemaker <c.shoemaker@cox.net>
+Copyright: 2005-2006 Chris Shoemaker <c.shoemaker@cox.net>
 License: GPL-3+
 Comment: see COPYING for details
 
@@ -162,16 +162,16 @@ Files:
  src/gnome-utils/gnc-account-sel.h
  src/gnome-utils/gnc-date-format.c
  src/gnome-utils/gnc-date-format.h
-Copyright: © 2005-2006 David Hampton <hampton@employees.org>
-           © 2000      Dave Peticolas <dave@krondo.com>
-           © 2002      Joshua Sled <jsled@asynchronous.org>
-           © 2003      Derek Atkins <derek@ihtfp.com>
-           © 1996-2001 Free Software Foundation
+Copyright: 2005-2006 David Hampton <hampton@employees.org>
+           2000      Dave Peticolas <dave@krondo.com>
+           2002      Joshua Sled <jsled@asynchronous.org>
+           2003      Derek Atkins <derek@ihtfp.com>
+           1996-2001 Free Software Foundation
 License: LGPL-2+
 
 Files: src/core-utils/gnc-jalali.c
-Copyright: © 2001 Mohammad Toossi <mohammad@bamdad.org>
-           © 2001 Roozbeh Pournader <roozbeh@sharif.edu>
+Copyright: 2001 Mohammad Toossi <mohammad@bamdad.org>
+           2001 Roozbeh Pournader <roozbeh@sharif.edu>
 License: LGPL-2.1+
 
 Files: 
@@ -188,8 +188,8 @@ Comment:
  http://sourceforge.net/projects/mingw/files/Other/Unsupported/MSYS/msysDVLPR/msysDVLPR-1.0.0-alpha-1.tar.gz/download
 
 Files: po/Makefile.in.in
-Copyright: © 1995-1997 Ulrich Drepper <drepper@gnu.ai.mit.edu>
-           © 2004-2008 Rodney Dawes <dobey.pwns@gmail.com>
+Copyright: 1995-1997 Ulrich Drepper <drepper@gnu.ai.mit.edu>
+           2004-2008 Rodney Dawes <dobey.pwns@gmail.com>
 License: other
  This file may be copied and used freely without restrictions.  It may
  be used in projects which are not available under a GNU Public License,
