@@ -195,7 +195,14 @@ endif
 noinst_DATA = .scm-links
 
 if BUILDING_FROM_SVN
+
+# The generated file depends on various libqof headers. Out of
+# laziness I only include one here - more might be needed
+# subsequently.
+QOFHEADERS = ${top_srcdir}/src/libqof/qof/qofbook.h
+
 swig-engine.c: engine.i ${top_srcdir}/src/base-typemaps.i \
+               ${QOFHEADERS} \
                ${gncinclude_HEADERS} ${noinst_HEADERS}
 	$(SWIG) -guile $(SWIG_ARGS) -Linkage module \
 	-I${top_srcdir}/src/libqof/qof -I${top_srcdir}/src -o $@ $<
@@ -211,8 +218,11 @@ iso-4217-currencies.c: iso-4217-currencies.scm iso-currencies-to-c
 
 BUILT_SOURCES = iso-4217-currencies.c
 
-CLEANFILES = $(BUILT_SOURCES) gnucash .scm-links \
+CLEANFILES = $(BUILT_SOURCES) .scm-links \
 	${SCM_FILE_LINKS}
 MAINTAINERCLEANFILES = swig-engine.c swig-business-core.c
+
+clean-local:
+	rm -rf gnucash
 
 INCLUDES = -DG_LOG_DOMAIN=\"gnc.engine\"

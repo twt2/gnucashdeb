@@ -3,27 +3,29 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
-# This has to be exported to make some magic below work.
-export DH_OPTIONS=
-
 # Avoid some error messages when running "make install"
 export GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL=1
 
 # Hack for Gnucash build system
 export BUILDING_FROM_SVN=false
 
+# reduce overlinking
+LDFLAGS+= -Wl,--as-needed
+
 %:
-	dh $@ --with python2
+	dh $@ --parallel --with python2,autoreconf
 
 override_dh_auto_clean:
 	find . -type l -exec rm -v \{\} \;
 	rm -fv debian/gnucash-icon-32x32.xpm
 	dh_auto_clean
 
+override_dh_autoreconf:
+	dh_autoreconf --as-needed
+
 override_dh_auto_configure:
 	dh_auto_configure -- \
-		--libdir=/usr/lib/gnucash \
-		--libexecdir=/usr/lib \
+		--libdir=/usr/lib/$(DEB_HOST_MULTIARCH)/gnucash \
 		--infodir=/noinst \
 		--mandir=/noinst \
 		--docdir=/noinst \
@@ -37,8 +39,16 @@ override_dh_auto_configure:
 		--enable-locale-specific-tax \
 		--enable-python-bindings
 
+# override this call, so we do not use parallelization
+# see https://bugzilla.gnome.org/show_bug.cgi?id=644896
+override_dh_auto_install:
+	dh_auto_install --max-parallel=1
+
 override_dh_install:
 	convert src/pixmaps/gnucash-icon-32x32.png debian/gnucash-icon-32x32.xpm
+	# generate man pages
+	find debian/tmp/usr/bin/ -type f -executable -execdir \
+		sh -c 'pod2man -s1 --stderr --utf8 {} "../../{}.1"; [ -s "../../{}.1" ] || rm "../../{}.1"' \;
 	find debian/tmp/usr/lib -name \*.la -exec rm -v \{\} \;
 	rm -rf debian/tmp/usr/share/gnucash/doc # --docdir option of configure broken in 2.4 series; fixed in trunk in r20736
 	dh_install

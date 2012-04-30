@@ -421,7 +421,8 @@ show_session_error (QofBackendError io_error,
     case ERR_SQL_DB_TOO_NEW:
         fmt = _("This database is from a newer version of GnuCash. "
                 "This version can read it, but cannot safely save to it. "
-                "It will be marked read-only until you do File>Save As.");
+                "It will be marked read-only until you do File>Save As, "
+                "but data may be lost in writing to the old version.");
         gnc_warning_dialog (parent, "%s", fmt);
         uh_oh = TRUE;
         break;
@@ -456,6 +457,16 @@ show_session_error (QofBackendError io_error,
                 "information.");
 
         gnc_error_dialog (parent, "%s", fmt);
+        break;
+
+    case ERR_FILEIO_FILE_UPGRADE:
+        fmt = _("This file is from an older version of GnuCash and will be "
+                "upgraded when saved by this version. You will not be able "
+                "to read the saved file from the older version of Gnucash "
+                "(it will report an \"error parsing the file\"). If you wish "
+                "to preserve the old version, exit without saving.");
+        gnc_warning_dialog (parent, "%s", fmt);
+        uh_oh = FALSE;
         break;
 
     default:
@@ -551,7 +562,7 @@ gnc_file_query_save (gboolean can_cancel)
      * up the file-selection dialog, we don't blow him out of the water;
      * instead, give them another chance to say "no" to the verify box.
      */
-    while (qof_book_not_saved(current_book))
+    while (qof_book_session_not_saved(current_book))
     {
         GtkWidget *dialog;
         gint response;
@@ -567,7 +578,7 @@ gnc_file_query_save (gboolean can_cancel)
                                         GTK_MESSAGE_QUESTION,
                                         GTK_BUTTONS_NONE,
                                         "%s", title);
-        oldest_change = qof_book_get_dirty_time(current_book);
+        oldest_change = qof_book_get_session_dirty_time(current_book);
         minutes = (time(NULL) - oldest_change) / 60 + 1;
         gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog),
                 message, minutes);
@@ -602,6 +613,77 @@ gnc_file_query_save (gboolean can_cancel)
 
     return TRUE;
 }
+
+
+
+static void features_test(const gchar *key, KvpValue *value, gpointer data)
+{
+  GList** unknown_features = (GList**) data;
+  char* feature_desc;
+
+  g_assert(data);
+
+  /* XXX: test if 'key' is an unknown feature. */
+
+  /* Yes, it is unknown, so add the description to the list: */
+  feature_desc = kvp_value_get_string(value);
+  g_assert(feature_desc);
+
+  *unknown_features = g_list_prepend(*unknown_features, feature_desc);  
+}
+
+/*
+ * Right now this is done by a KVP check for a features table.
+ * Currently we don't know about any features, so the mere
+ * existence of this KVP frame means we have a problem and
+ * need to tell the user.
+ *
+ * returns true if we found unknown features, false if we're okay.
+ */
+static gboolean test_unknown_features(QofSession* new_session)
+{
+    KvpFrame *frame = qof_book_get_slots (qof_session_get_book (new_session));
+    KvpValue *value;
+
+    g_assert(frame);
+    value = kvp_frame_get_value(frame, "features");
+
+    if (value)
+    {
+        GList* features_list = NULL;
+	frame = kvp_value_get_frame(value);
+	g_assert(frame);
+
+	/* Iterate over the members of this frame for unknown features */
+	kvp_frame_for_each_slot(frame, &features_test, &features_list);
+	if (features_list)
+	{
+            GList *i;
+            char* msg = g_strdup(
+                _("This Dataset contains features not supported by this "
+                  "version of GnuCash.  You must use a newer version of "
+                  "GnuCash in order to support the following features:"
+		  ));
+
+	    for (i = features_list; i; i=i->next)
+            {
+                char *tmp = g_strconcat(msg, "\n* ", _(i->data), NULL);
+                g_free (msg);
+                msg = tmp;
+            }
+
+	    // XXX: should pull out the file name here */
+	    gnc_error_dialog(gnc_ui_get_toplevel(), msg, "");
+	    
+	    g_free(msg);
+	    g_list_free(features_list);
+            return TRUE;
+	}
+    }
+
+    return FALSE;
+}
+
 
 /* private utilities for file open; done in two stages */
 
@@ -879,6 +961,12 @@ RESTART:
         {
             uh_oh = show_session_error (ERR_BACKEND_MISC, newfile,
                                         GNC_FILE_DIALOG_OPEN);
+        }
+
+	/* test for unknown features. */
+	if (!uh_oh)
+	{
+            uh_oh = test_unknown_features(new_session);
         }
     }
 

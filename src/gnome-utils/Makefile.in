@@ -195,7 +195,6 @@ ACLOCAL = @ACLOCAL@
 ALL_LINGUAS = @ALL_LINGUAS@
 AMTAR = @AMTAR@
 AQBANKING_CFLAGS = @AQBANKING_CFLAGS@
-AQBANKING_DIR = @AQBANKING_DIR@
 AQBANKING_LIBS = @AQBANKING_LIBS@
 AR = @AR@
 AS = @AS@
@@ -219,7 +218,6 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
-DBI_DIR = @DBI_DIR@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
@@ -283,7 +281,6 @@ GREP = @GREP@
 GTKHTML_CFLAGS = @GTKHTML_CFLAGS@
 GTKHTML_LIBS = @GTKHTML_LIBS@
 GTKMM_CFLAGS = @GTKMM_CFLAGS@
-GTKMM_DIR = @GTKMM_DIR@
 GTKMM_LIBS = @GTKMM_LIBS@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
@@ -336,7 +333,6 @@ NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
-OFX_DIR = @OFX_DIR@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -357,7 +353,6 @@ PO_IN_DATADIR_FALSE = @PO_IN_DATADIR_FALSE@
 PO_IN_DATADIR_TRUE = @PO_IN_DATADIR_TRUE@
 PYTHON = @PYTHON@
 PYTHON_CPPFLAGS = @PYTHON_CPPFLAGS@
-PYTHON_DIR = @PYTHON_DIR@
 PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
 PYTHON_EXTRA_LIBS = @PYTHON_EXTRA_LIBS@
 PYTHON_LDFLAGS = @PYTHON_LDFLAGS@
@@ -429,6 +424,7 @@ libdir = @libdir@
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
+lt_ECHO = @lt_ECHO@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
@@ -656,7 +652,7 @@ EXTRA_DIST = \
 @GNUCASH_SEPARATE_BUILDDIR_TRUE@  ${gncscm_DATA}
 
 noinst_DATA = .scm-links
-CLEANFILES = $(BUILT_SOURCES) gnucash .scm-links ${SCM_FILE_LINKS}
+CLEANFILES = $(BUILT_SOURCES) .scm-links ${SCM_FILE_LINKS}
 MAINTAINERCLEANFILES = swig-gnome-utils.c
 INCLUDES = -DG_LOG_DOMAIN=\"gnc.gui\"
 all: all-recursive
@@ -1128,8 +1124,8 @@ maintainer-clean-generic:
 @PLATFORM_WIN32_TRUE@uninstall-hook:
 clean: clean-recursive
 
-clean-am: clean-generic clean-libtool clean-pkglibLTLIBRARIES \
-	mostlyclean-am
+clean-am: clean-generic clean-libtool clean-local \
+	clean-pkglibLTLIBRARIES mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -rf ./$(DEPDIR)
@@ -1207,21 +1203,22 @@ uninstall-am: uninstall-gncincludeHEADERS uninstall-gncmodDATA \
 
 .PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
 	all all-am check check-am clean clean-generic clean-libtool \
-	clean-pkglibLTLIBRARIES ctags ctags-recursive distclean \
-	distclean-compile distclean-generic distclean-libtool \
-	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am \
-	install-data-hook install-dvi install-dvi-am install-exec \
-	install-exec-am install-gncincludeHEADERS install-gncmodDATA \
-	install-gncscmDATA install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-pkglibLTLIBRARIES install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-recursive \
-	uninstall uninstall-am uninstall-gncincludeHEADERS \
-	uninstall-gncmodDATA uninstall-gncscmDATA uninstall-hook \
+	clean-local clean-pkglibLTLIBRARIES ctags ctags-recursive \
+	distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-data-hook install-dvi install-dvi-am \
+	install-exec install-exec-am install-gncincludeHEADERS \
+	install-gncmodDATA install-gncscmDATA install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-pkglibLTLIBRARIES \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs installdirs-am maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags tags-recursive uninstall uninstall-am \
+	uninstall-gncincludeHEADERS uninstall-gncmodDATA \
+	uninstall-gncscmDATA uninstall-hook \
 	uninstall-pkglibLTLIBRARIES
 
 
@@ -1239,6 +1236,8 @@ uninstall-am: uninstall-gncincludeHEADERS uninstall-gncmodDATA \
 	( cd gnucash; for A in $(gncmod_DATA) ; do $(LN_S) -f ../$$A . ; done )
 # Windows knows no "ln -s" but uses "cp": must copy every time (see bug #566567).
 @OS_WIN32_FALSE@	touch .scm-links
+clean-local:
+	rm -rf gnucash
 
 # FIXME: Symlinking directories only works on non-win32.
 #

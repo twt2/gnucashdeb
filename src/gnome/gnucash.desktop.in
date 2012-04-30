@@ -2,7 +2,8 @@
 Type=Application
 MimeType=application/x-gnucash;
 Version=0.9.4
-_Name=GnuCash Finance Management
+_Name=GnuCash
+_GenericName=Finance Management
 _Comment=Manage your finances, accounts, and investments
 Exec=gnucash %f
 Icon=gnucash-icon
@@ -12,5 +13,6 @@ Categories=Office;Finance;
 X-GNOME-Bugzilla-Bugzilla=GNOME
 X-GNOME-Bugzilla-Product=GnuCash
 X-GNOME-Bugzilla-Component=General
-X-GNOME-Bugzilla-Version=2.4.8
+X-GNOME-Bugzilla-Version=2.4.10
 X-GNOME-DocPath=gnucash/gnucash.xml
+X-GNOME-FullName=GnuCash Finance Management

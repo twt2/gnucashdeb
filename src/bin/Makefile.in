@@ -38,6 +38,7 @@ build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = $(am__EXEEXT_1)
 @PLATFORM_WIN32_FALSE@am__append_1 = ${gnc_common_scripts} update-gnucash-gconf
+@PLATFORM_WIN32_TRUE@am__append_2 = guile-setup.cmd
 subdir = src/bin
 DIST_COMMON = $(am__dist_noinst_DATA_DIST) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
@@ -164,7 +165,6 @@ ACLOCAL = @ACLOCAL@
 ALL_LINGUAS = @ALL_LINGUAS@
 AMTAR = @AMTAR@
 AQBANKING_CFLAGS = @AQBANKING_CFLAGS@
-AQBANKING_DIR = @AQBANKING_DIR@
 AQBANKING_LIBS = @AQBANKING_LIBS@
 AR = @AR@
 AS = @AS@
@@ -188,7 +188,6 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
-DBI_DIR = @DBI_DIR@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
@@ -252,7 +251,6 @@ GREP = @GREP@
 GTKHTML_CFLAGS = @GTKHTML_CFLAGS@
 GTKHTML_LIBS = @GTKHTML_LIBS@
 GTKMM_CFLAGS = @GTKMM_CFLAGS@
-GTKMM_DIR = @GTKMM_DIR@
 GTKMM_LIBS = @GTKMM_LIBS@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
@@ -305,7 +303,6 @@ NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
-OFX_DIR = @OFX_DIR@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -326,7 +323,6 @@ PO_IN_DATADIR_FALSE = @PO_IN_DATADIR_FALSE@
 PO_IN_DATADIR_TRUE = @PO_IN_DATADIR_TRUE@
 PYTHON = @PYTHON@
 PYTHON_CPPFLAGS = @PYTHON_CPPFLAGS@
-PYTHON_DIR = @PYTHON_DIR@
 PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
 PYTHON_EXTRA_LIBS = @PYTHON_EXTRA_LIBS@
 PYTHON_LDFLAGS = @PYTHON_LDFLAGS@
@@ -398,6 +394,7 @@ libdir = @libdir@
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
+lt_ECHO = @lt_ECHO@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
@@ -501,18 +498,13 @@ CLEANFILES = $(BUILT_SOURCES) ${config_DATA} ${PLATFORM_FILES} \
 @PLATFORM_WIN32_FALSE@	update-gnucash-gconf \
 @PLATFORM_WIN32_FALSE@	${PLATFORM_FILES}
 
+@PLATFORM_WIN32_TRUE@bin_SCRIPTS = guile-setup.cmd
 
 # if you change gncoverridedir, make sure you change ./overrides/Makefile.am too.
 @PLATFORM_WIN32_FALSE@gncoverridesdir = ${GNC_LIBEXECDIR}/overrides
-EXTRA_DIST = \
-    generate-gnc-script \
-	update-gnucash-gconf.in \
-	gnucash-launcher.in \
-	gnucash-valgrind.in \
-	gnucash-gdb.in \
-	environment.in \
-	gnucash-setup-env-osx.in
-
+EXTRA_DIST = generate-gnc-script update-gnucash-gconf.in \
+	gnucash-launcher.in gnucash-valgrind.in gnucash-gdb.in \
+	environment.in gnucash-setup-env-osx.in $(am__append_2)
 INCLUDES = -DG_LOG_DOMAIN=\"gnc.bin\"
 all: all-recursive
 

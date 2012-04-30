@@ -379,7 +379,7 @@ gnc_html_graph_gog_create_linechart( GncHtmlLineChartInfo* info )
     }
 
     g_object_set( G_OBJECT(plot),
-                  //"vary_style_by_element",   TRUE,
+                  "vary_style_by_element",   FALSE,
                   "type",                      line_type,
                   "default-style-has-markers", info->markers,
                   NULL);
@@ -413,8 +413,9 @@ gnc_html_graph_gog_create_linechart( GncHtmlLineChartInfo* info )
             style->fill.type = GO_STYLE_FILL_PATTERN;
             if ( gdk_color_parse( info->col_colors[i], &color ) )
             {
-                style->fill.auto_back = FALSE;
-                go_pattern_set_solid( &style->fill.pattern, GO_COLOR_FROM_GDK(color) );
+        style->line.width = info->line_width;
+		style->line.auto_color = FALSE;
+		style->line.color = GO_COLOR_FROM_GDK(color);
             }
             else
             {
@@ -431,15 +432,15 @@ gnc_html_graph_gog_create_linechart( GncHtmlLineChartInfo* info )
         go_style_set_text_angle( style, 90.0 );
     }
 
-    if ( info->major_grid ||  info->minor_grid )
+    if ( info->major_grid  ||  info->minor_grid )
     {
         GogObject *object;
-        gog_object_add_by_name( chart, "Grid", NULL );
+
         object = gog_object_get_child_by_role( chart,
-                                               gog_object_find_role_by_name( chart, "Y-Axis" ) );
+                            gog_object_find_role_by_name( chart, "Y-Axis" ) );
         if ( info->major_grid )
         {
-            gog_object_add_by_name( GOG_OBJECT(object), "MajorGrid", NULL );
+            gog_object_add_by_name( GOG_OBJECT(object), "MajorGrid",  NULL );
         }
         if ( info->minor_grid )
         {

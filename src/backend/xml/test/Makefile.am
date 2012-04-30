@@ -181,18 +181,22 @@ TESTS = \
   test-xml2-is-file
 
 GNC_TEST_DEPS = \
+  --gnc-module-dir ${top_builddir}/src/gnc-module \
   --gnc-module-dir ${top_builddir}/src/engine \
+  --guile-load-dir ${top_builddir}/src/gnc-module \
   --guile-load-dir ${top_builddir}/src/engine \
   --library-dir    ${top_builddir}/src/libqof/qof \
   --library-dir    ${top_builddir}/src/core-utils \
   --library-dir    ${top_builddir}/src/gnc-module \
   --library-dir    ${top_builddir}/src/engine \
+  --library-dir    ${top_builddir}/src/backend/sql  \
   --library-dir    ${top_builddir}/src/backend/xml
 
 TESTS_ENVIRONMENT = \
   GNC_ACCOUNT_PATH=${top_srcdir}/accounts/C \
   GNC_TEST_FILES=${srcdir}/test-files/xml2 \
   SRCDIR=${srcdir} \
+  GNC_BUILDDIR=`\cd ${top_builddir} && pwd` \
   $(shell ${top_srcdir}/src/gnc-test-env --no-exports ${GNC_TEST_DEPS})
 
 check_LTLIBRARIES = libgnc-test-file-stuff.la

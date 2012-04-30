@@ -307,7 +307,6 @@ ACLOCAL = @ACLOCAL@
 ALL_LINGUAS = @ALL_LINGUAS@
 AMTAR = @AMTAR@
 AQBANKING_CFLAGS = @AQBANKING_CFLAGS@
-AQBANKING_DIR = @AQBANKING_DIR@
 AQBANKING_LIBS = @AQBANKING_LIBS@
 AR = @AR@
 AS = @AS@
@@ -331,7 +330,6 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
-DBI_DIR = @DBI_DIR@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
@@ -395,7 +393,6 @@ GREP = @GREP@
 GTKHTML_CFLAGS = @GTKHTML_CFLAGS@
 GTKHTML_LIBS = @GTKHTML_LIBS@
 GTKMM_CFLAGS = @GTKMM_CFLAGS@
-GTKMM_DIR = @GTKMM_DIR@
 GTKMM_LIBS = @GTKMM_LIBS@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
@@ -448,7 +445,6 @@ NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
-OFX_DIR = @OFX_DIR@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -469,7 +465,6 @@ PO_IN_DATADIR_FALSE = @PO_IN_DATADIR_FALSE@
 PO_IN_DATADIR_TRUE = @PO_IN_DATADIR_TRUE@
 PYTHON = @PYTHON@
 PYTHON_CPPFLAGS = @PYTHON_CPPFLAGS@
-PYTHON_DIR = @PYTHON_DIR@
 PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
 PYTHON_EXTRA_LIBS = @PYTHON_EXTRA_LIBS@
 PYTHON_LDFLAGS = @PYTHON_LDFLAGS@
@@ -541,6 +536,7 @@ libdir = @libdir@
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
+lt_ECHO = @lt_ECHO@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
@@ -588,10 +584,13 @@ GNC_TEST_DEPS = \
   --library-dir    ${top_builddir}/src/libqof/qof \
   --library-dir    ${top_builddir}/src/core-utils \
   --library-dir    ${top_builddir}/src/gnc-module \
-  --library-dir    ${top_builddir}/src/engine
+  --library-dir    ${top_builddir}/src/engine \
+  --library-dir    ${top_builddir}/src/backend/xml \
+  --library-dir    ${top_builddir}/src/backend/sql
 
 TESTS_ENVIRONMENT = \
   SRCDIR=${srcdir} \
+  GNC_BUILDDIR=`\cd ${top_builddir} && pwd` \
   $(shell ${top_srcdir}/src/gnc-test-env --no-exports ${GNC_TEST_DEPS})
 
 test_link_SOURCES = test-link.c

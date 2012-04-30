@@ -1,8 +1,53 @@
-gnucash (1:2.4.8-1~bpo60+1) squeeze-backports; urgency=low
+gnucash (1:2.4.10-2~bpo60+1) squeeze-backports; urgency=low
 
-  * Rebuild for squeeze-backports (no source changes).
+  * Rebuild for squeeze-backports.
 
- -- Micha Lenk <micha@debian.org>  Wed, 07 Dec 2011 22:19:52 +0100
+ -- Micha Lenk <micha@debian.org>  Mon, 30 Apr 2012 13:30:41 +0200
+
+gnucash (1:2.4.10-2) unstable; urgency=low
+
+  [ Dmitry Smirnov ]
+  * Removing obsolete lintian override
+  * Removing remnants of dh_make template to clean-up debian/rules
+  * Removing useless debian/gnucash-common.dirs
+  * Build-time generation of missing man pages
+  * Use dh-autoreconf to update toolchain
+  * Update to recommended debhelper compat level 9
+  * Fix short description of gnucash-common
+  * Introducing --as-needed to reduce overlinking
+  * debian/copyright: rewrite from scratch using machine-readable format 1.0
+
+  [ Sébastien Villemot ]
+  * Bump to Standards-Version 3.9.3, no changes needed
+  * Set myself as Maintainer. Add Dmitry Smirnov to Uploaders. (Closes: #639584)
+
+ -- Sébastien Villemot <sebastien.villemot@ens.fr>  Mon, 05 Mar 2012 20:44:44 +0100
+
+gnucash (1:2.4.10-1) unstable; urgency=low
+
+  [ Sébastien Villemot ]
+  * Imported Upstream version 2.4.10
+  * Add Breaks/Replaces for gconf files moved from gnucash to gnucash-common
+    (Closes: #656845)
+  * debian/patches/hurd-ftbfs.patch: new patch, fixes FTBFS on hurd-i386
+    (Closes: #408583)
+
+  [ Dmitry Smirnov ]
+  * use dpkg-provided build flags and default hardening supporting the
+    Security Hardening Build Flags release goal
+  * remove build-deps already fulfilled by the dependencies of other build-deps
+    (libpopt-dev, libglade2-dev and libgconf2-dev). By that occasion order them
+    alphabetically.
+
+ -- Sébastien Villemot <sebastien.villemot@ens.fr>  Wed, 08 Feb 2012 20:56:25 +0100
+
+gnucash (1:2.4.9-1) unstable; urgency=low
+
+  * Imported Upstream version 2.4.9
+  * debian/patches/desktop-file.patch: remove, applied upstream
+  * debian/rules: enable parallel build
+
+ -- Sébastien Villemot <sebastien.villemot@ens.fr>  Sat, 14 Jan 2012 21:00:08 +0100
 
 gnucash (1:2.4.8-1) unstable; urgency=low
 

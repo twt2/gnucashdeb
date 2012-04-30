@@ -24,6 +24,9 @@
 
 #include "Account.h"
 
+#define GNC_V2_STRING "gnc-v2"
+const gchar *gnc_v2_xml_version_string = GNC_V2_STRING;
+
 static QofBook *book;
 
 static gchar*
@@ -232,6 +235,7 @@ test_real_commodity(const char *tag, gpointer globaldata, gpointer data)
 int
 main(int argc, char **argv)
 {
+    g_setenv ("GNC_UNINSTALLED", "1", TRUE);
     gnc_engine_init(argc, argv);
 
     book = qof_book_new ();

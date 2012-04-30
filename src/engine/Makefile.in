@@ -171,7 +171,6 @@ ACLOCAL = @ACLOCAL@
 ALL_LINGUAS = @ALL_LINGUAS@
 AMTAR = @AMTAR@
 AQBANKING_CFLAGS = @AQBANKING_CFLAGS@
-AQBANKING_DIR = @AQBANKING_DIR@
 AQBANKING_LIBS = @AQBANKING_LIBS@
 AR = @AR@
 AS = @AS@
@@ -195,7 +194,6 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
-DBI_DIR = @DBI_DIR@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
@@ -259,7 +257,6 @@ GREP = @GREP@
 GTKHTML_CFLAGS = @GTKHTML_CFLAGS@
 GTKHTML_LIBS = @GTKHTML_LIBS@
 GTKMM_CFLAGS = @GTKMM_CFLAGS@
-GTKMM_DIR = @GTKMM_DIR@
 GTKMM_LIBS = @GTKMM_LIBS@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
@@ -312,7 +309,6 @@ NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
-OFX_DIR = @OFX_DIR@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
@@ -333,7 +329,6 @@ PO_IN_DATADIR_FALSE = @PO_IN_DATADIR_FALSE@
 PO_IN_DATADIR_TRUE = @PO_IN_DATADIR_TRUE@
 PYTHON = @PYTHON@
 PYTHON_CPPFLAGS = @PYTHON_CPPFLAGS@
-PYTHON_DIR = @PYTHON_DIR@
 PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
 PYTHON_EXTRA_LIBS = @PYTHON_EXTRA_LIBS@
 PYTHON_LDFLAGS = @PYTHON_LDFLAGS@
@@ -405,6 +400,7 @@ libdir = @libdir@
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
+lt_ECHO = @lt_ECHO@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
@@ -596,8 +592,13 @@ EXTRA_DIST = \
 @GNUCASH_SEPARATE_BUILDDIR_TRUE@	iso-4217-currencies.scm \
 @GNUCASH_SEPARATE_BUILDDIR_TRUE@	${gncmod_DATA} ${gncscm_DATA}
 noinst_DATA = .scm-links
+
+# The generated file depends on various libqof headers. Out of
+# laziness I only include one here - more might be needed
+# subsequently.
+@BUILDING_FROM_SVN_TRUE@QOFHEADERS = ${top_srcdir}/src/libqof/qof/qofbook.h
 BUILT_SOURCES = iso-4217-currencies.c
-CLEANFILES = $(BUILT_SOURCES) gnucash .scm-links \
+CLEANFILES = $(BUILT_SOURCES) .scm-links \
 	${SCM_FILE_LINKS}
 
 MAINTAINERCLEANFILES = swig-engine.c swig-business-core.c
@@ -1045,8 +1046,8 @@ maintainer-clean-generic:
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
 clean: clean-recursive
 
-clean-am: clean-generic clean-libtool clean-pkglibLTLIBRARIES \
-	mostlyclean-am
+clean-am: clean-generic clean-libtool clean-local \
+	clean-pkglibLTLIBRARIES mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -rf ./$(DEPDIR)
@@ -1122,12 +1123,12 @@ uninstall-am: uninstall-gncincludeHEADERS uninstall-gncmodDATA \
 
 .PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
 	all all-am check check-am clean clean-generic clean-libtool \
-	clean-pkglibLTLIBRARIES ctags ctags-recursive distclean \
-	distclean-compile distclean-generic distclean-libtool \
-	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am \
-	install-gncincludeHEADERS install-gncmodDATA \
+	clean-local clean-pkglibLTLIBRARIES ctags ctags-recursive \
+	distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-gncincludeHEADERS install-gncmodDATA \
 	install-gncscmDATA install-html install-html-am install-info \
 	install-info-am install-man install-pdf install-pdf-am \
 	install-pkglibLTLIBRARIES install-ps install-ps-am \
@@ -1151,6 +1152,7 @@ uninstall-am: uninstall-gncincludeHEADERS uninstall-gncmodDATA \
 @OS_WIN32_FALSE@	touch .scm-links
 
 @BUILDING_FROM_SVN_TRUE@swig-engine.c: engine.i ${top_srcdir}/src/base-typemaps.i \
+@BUILDING_FROM_SVN_TRUE@               ${QOFHEADERS} \
 @BUILDING_FROM_SVN_TRUE@               ${gncinclude_HEADERS} ${noinst_HEADERS}
 @BUILDING_FROM_SVN_TRUE@	$(SWIG) -guile $(SWIG_ARGS) -Linkage module \
 @BUILDING_FROM_SVN_TRUE@	-I${top_srcdir}/src/libqof/qof -I${top_srcdir}/src -o $@ $<
@@ -1162,6 +1164,9 @@ uninstall-am: uninstall-gncincludeHEADERS uninstall-gncmodDATA \
 iso-4217-currencies.c: iso-4217-currencies.scm iso-currencies-to-c
 	-chmod u+x ${srcdir}/iso-currencies-to-c
 	${srcdir}/iso-currencies-to-c "${srcdir}"
+
+clean-local:
+	rm -rf gnucash
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
