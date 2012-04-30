@@ -7,10 +7,10 @@ Uploaders: Micha Lenk <micha@debian.org>,
 DM-Upload-Allowed: yes
 Standards-Version: 3.9.3
 Build-Depends: debhelper (>= 9), intltool, pkg-config, dh-autoreconf,
- guile-1.8-dev (>= 1.8.8+1-4~), imagemagick, libaqbanking33-dev,
- libdbi-dev, libglib2.0-dev (>= 2.6.0), libgnomeui-dev (>= 2.4),
+ guile-1.6-dev, guile-1.6-slib, imagemagick, libaqbanking33-dev,
+ libdbi0-dev, libglib2.0-dev (>= 2.6.0), libgnomeui-dev (>= 2.4),
  libgoffice-0.8-dev, libgtk2.0-dev (>= 2.6), libofx-dev,
- libltdl-dev, libwebkitgtk-dev, libxml2-dev (>= 2.5.10),
+ libltdl-dev, libwebkit-dev, libxml2-dev (>= 2.5.10),
  python (>= 2.6.6-3~), python-dev, slib, zlib1g-dev
 Homepage: http://www.gnucash.org/
 Vcs-Browser: http://git.debian.org/?p=pkg-gnucash/gnucash.git
@@ -19,7 +19,7 @@ Vcs-Git: git://git.debian.org/pkg-gnucash/gnucash.git
 Package: gnucash
 Architecture: any
 Depends: gnucash-common (>= ${source:Version}), ${shlibs:Depends},
-  ${misc:Depends}, ${perl:Depends}, slib, guile-1.8 (>= 1.8.8+1-4~),
+  ${misc:Depends}, ${perl:Depends}, slib, guile-1.6, guile-1.6-slib,
   libfinance-quote-perl, libwww-perl, libhtml-tree-perl,
   libhtml-tableextract-perl, libcrypt-ssleay-perl, libdate-manip-perl
 Suggests: libdbd-mysql, libdbd-pgsql, libdbd-sqlite3
