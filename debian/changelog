@@ -1,8 +1,19 @@
 gnucash (1:2.4.10-2~bpo60+1) squeeze-backports; urgency=low
 
+  [ Micha Lenk ]
   * Rebuild for squeeze-backports.
+  * Change build-deps from guile-1.8-dev back to guile-1.6-dev, guile-1.6.slib,
+    libdbi0-dev to libdbi-dev, and libwebkitgtk-dev to libwebkit-dev
+  * debian/rules: Drop override for dh_autoreconf as the most recent debhelper
+    backport doesn't know '--as-needed'
+  * Add build-conflicts: guile-1.8, as the presence of this package causes
+    build failures
 
- -- Micha Lenk <micha@debian.org>  Mon, 30 Apr 2012 13:30:41 +0200
+  [ Sébastien Villemot ]
+  * Do not use multi-arch path under /usr/lib
+  * Add back lintian overrides for Python rpath
+
+ -- Micha Lenk <micha@debian.org>  Mon, 21 May 2012 23:07:25 +0200
 
 gnucash (1:2.4.10-2) unstable; urgency=low
 
