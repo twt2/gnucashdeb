@@ -1,3 +1,22 @@
+gnucash (1:2.4.10-3) unstable; urgency=low
+
+  [ Dmitry Smirnov ]
+  * Added following patches:
+    - suppress_binreloc_warning.patch: removes start-up message "binreloc
+      relocation support was disabled at configure time" (closes: #443774).
+    - taxi0-presentation_options.patch and
+      taxi1-customization_improvements.patch: improve taxinvoice templates
+      (closes: #655951).
+  * debian/rules: export BUILDING_FROM_SVN=true if 'autogen.sh' is present
+    to switch automatically to 'trunk mode' when building from trunk.
+  * debian/copyright: remove no longer required '©' characters.
+  * debian/control: Tightening gnucash relationship to gnucash-common.
+
+  [ Micha Lenk ]
+  * Update build-deps after soname bump in libaqbanking.
+
+ -- Micha Lenk <micha@debian.org>  Wed, 06 Jun 2012 21:22:18 +0200
+
 gnucash (1:2.4.10-2) unstable; urgency=low
 
   [ Dmitry Smirnov ]
