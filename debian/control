@@ -7,7 +7,7 @@ Uploaders: Micha Lenk <micha@debian.org>,
 DM-Upload-Allowed: yes
 Standards-Version: 3.9.3
 Build-Depends: debhelper (>= 9), intltool, pkg-config, dh-autoreconf,
- guile-1.8-dev (>= 1.8.8+1-4~), imagemagick, libaqbanking33-dev,
+ guile-1.8-dev (>= 1.8.8+1-4~), imagemagick, libaqbanking34-dev,
  libdbi-dev, libglib2.0-dev (>= 2.6.0), libgnomeui-dev (>= 2.4),
  libgoffice-0.8-dev, libgtk2.0-dev (>= 2.6), libofx-dev,
  libltdl-dev, libwebkitgtk-dev, libxml2-dev (>= 2.5.10),
