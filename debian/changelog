@@ -1,3 +1,11 @@
+gnucash (1:2.4.10-4) unstable; urgency=low
+
+  * Remove accidentally sneaked-in patch debian-changes-1:2.4.10-3 that
+    reverted all or most of the intended patches (closes: #677467).
+    Thanks to Sébastien Villemot for realizing and reporting it.
+
+ -- Micha Lenk <micha@debian.org>  Thu, 14 Jun 2012 22:52:30 +0200
+
 gnucash (1:2.4.10-3) unstable; urgency=low
 
   [ Dmitry Smirnov ]
