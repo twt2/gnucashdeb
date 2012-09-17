@@ -894,6 +894,7 @@ QofBookFileType
 gnc_is_our_first_xml_chunk(char *chunk, gboolean *with_encoding)
 {
     char *cursor = NULL;
+    size_t n;
 
     if (with_encoding)
     {
@@ -909,8 +910,6 @@ gnc_is_our_first_xml_chunk(char *chunk, gboolean *with_encoding)
 
     if (strncmp(cursor, "<?xml", 5) == 0)
     {
-        char *tag_compare;
-
         if (!search_for('>', &cursor))
         {
             return GNC_BOOK_NOT_OURS;
@@ -921,9 +920,14 @@ gnc_is_our_first_xml_chunk(char *chunk, gboolean *with_encoding)
             return GNC_BOOK_NOT_OURS;
         }
 
-        tag_compare = g_strdup_printf("<%s\n", gnc_v2_xml_version_string);
+        if (*cursor != '<')
+        {
+            return GNC_BOOK_NOT_OURS;
+        }
 
-        if (strncmp(cursor, tag_compare, strlen(tag_compare)) == 0)
+        n = strlen(gnc_v2_xml_version_string);
+        if ((strncmp(cursor + 1, gnc_v2_xml_version_string, n) == 0)
+                && isspace(*(cursor + 1 + n)))
         {
             if (with_encoding)
             {
@@ -938,13 +942,10 @@ gnc_is_our_first_xml_chunk(char *chunk, gboolean *with_encoding)
                     }
                 }
             }
-            g_free (tag_compare);
             return GNC_BOOK_XML2_FILE;
         }
 
-        g_free (tag_compare);
-
-        if (strncmp(cursor, "<gnc>\n", strlen("<gnc>\n")) == 0)
+        if (strncmp(cursor, "<gnc>", strlen("<gnc>")) == 0)
             return GNC_BOOK_XML1_FILE;
 
         /* If it doesn't match any of the above but has '<gnc-v...', it must */
