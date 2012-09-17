@@ -15,6 +15,7 @@
 
 @SET_MAKE@
 
+
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -36,8 +37,7 @@ build_triplet = @build@
 host_triplet = @host@
 check_PROGRAMS = sqlite3test$(EXEEXT)
 subdir = src/optional/python-bindings
-DIST_COMMON = $(pkgpython_PYTHON) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in
+DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/macros/ac_pkg_swig.m4 \
 	$(top_srcdir)/macros/ac_python_devel.m4 \
@@ -80,7 +80,7 @@ am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
 am__installdirs = "$(DESTDIR)$(pkgpyexecdir)" \
-	"$(DESTDIR)$(pkgpythondir)"
+	"$(DESTDIR)$(pkgpyexecdir)"
 LTLIBRARIES = $(pkgpyexec_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 _gnucash_core_c_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
@@ -123,7 +123,7 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	install-pdf-recursive install-ps-recursive install-recursive \
 	installcheck-recursive installdirs-recursive pdf-recursive \
 	ps-recursive uninstall-recursive
-py_compile = $(top_srcdir)/py-compile
+DATA = $(pkgpyexec_DATA)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
@@ -413,7 +413,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = . tests
 SWIG_FILES = gnucash_core.i timespec.i
-pkgpython_PYTHON = \
+pkgpyexec_DATA = \
   __init__.py \
   function_class.py \
   gnucash_core.py \
@@ -483,6 +483,7 @@ _gnucash_core_c_la_LIBADD = \
 @BUILDING_FROM_SVN_TRUE@	${top_srcdir}/src/engine/gnc-pricedb.h
 
 EXTRA_DIST = \
+  $(pkgpyexec_DATA) \
   $(SWIG_FILES) \
   example_scripts/simple_book.py \
   example_scripts/simple_session.py \
@@ -635,44 +636,26 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
-install-pkgpythonPYTHON: $(pkgpython_PYTHON)
+install-pkgpyexecDATA: $(pkgpyexec_DATA)
 	@$(NORMAL_INSTALL)
-	test -z "$(pkgpythondir)" || $(MKDIR_P) "$(DESTDIR)$(pkgpythondir)"
-	@list='$(pkgpython_PYTHON)'; dlist=; list2=; test -n "$(pkgpythondir)" || list=; \
+	test -z "$(pkgpyexecdir)" || $(MKDIR_P) "$(DESTDIR)$(pkgpyexecdir)"
+	@list='$(pkgpyexec_DATA)'; test -n "$(pkgpyexecdir)" || list=; \
 	for p in $$list; do \
-	  if test -f "$$p"; then b=; else b="$(srcdir)/"; fi; \
-	  if test -f $$b$$p; then \
-	    $(am__strip_dir) \
-	    dlist="$$dlist $$f"; \
-	    list2="$$list2 $$b$$p"; \
-	  else :; fi; \
-	done; \
-	for file in $$list2; do echo $$file; done | $(am__base_list) | \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
 	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(pkgpythondir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(pkgpythondir)" || exit $$?; \
-	done || exit $$?; \
-	if test -n "$$dlist"; then \
-	  if test -z "$(DESTDIR)"; then \
-	    PYTHON=$(PYTHON) $(py_compile) --basedir "$(pkgpythondir)" $$dlist; \
-	  else \
-	    PYTHON=$(PYTHON) $(py_compile) --destdir "$(DESTDIR)" --basedir "$(pkgpythondir)" $$dlist; \
-	  fi; \
-	else :; fi
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(pkgpyexecdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(pkgpyexecdir)" || exit $$?; \
+	done
 
-uninstall-pkgpythonPYTHON:
+uninstall-pkgpyexecDATA:
 	@$(NORMAL_UNINSTALL)
-	@list='$(pkgpython_PYTHON)'; test -n "$(pkgpythondir)" || list=; \
+	@list='$(pkgpyexec_DATA)'; test -n "$(pkgpyexecdir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	test -n "$$files" || exit 0; \
-	filesc=`echo "$$files" | sed 's|$$|c|'`; \
-	fileso=`echo "$$files" | sed 's|$$|o|'`; \
-	echo " ( cd '$(DESTDIR)$(pkgpythondir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(pkgpythondir)" && rm -f $$files || exit $$?; \
-	echo " ( cd '$(DESTDIR)$(pkgpythondir)' && rm -f" $$filesc ")"; \
-	cd "$(DESTDIR)$(pkgpythondir)" && rm -f $$filesc || exit $$?; \
-	echo " ( cd '$(DESTDIR)$(pkgpythondir)' && rm -f" $$fileso ")"; \
-	cd "$(DESTDIR)$(pkgpythondir)" && rm -f $$fileso
+	echo " ( cd '$(DESTDIR)$(pkgpyexecdir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(pkgpyexecdir)" && rm -f $$files
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run `make' without going through this Makefile.
@@ -870,10 +853,10 @@ distdir: $(DISTFILES)
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
 check: check-recursive
-all-am: Makefile $(LTLIBRARIES)
+all-am: Makefile $(LTLIBRARIES) $(DATA)
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(pkgpyexecdir)" "$(DESTDIR)$(pkgpythondir)"; do \
+	for dir in "$(DESTDIR)$(pkgpyexecdir)" "$(DESTDIR)$(pkgpyexecdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-recursive
@@ -925,13 +908,13 @@ info: info-recursive
 
 info-am:
 
-install-data-am: install-pkgpythonPYTHON
+install-data-am:
 
 install-dvi: install-dvi-recursive
 
 install-dvi-am:
 
-install-exec-am: install-pkgpyexecLTLIBRARIES
+install-exec-am: install-pkgpyexecDATA install-pkgpyexecLTLIBRARIES
 
 install-html: install-html-recursive
 
@@ -971,7 +954,7 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am: uninstall-pkgpyexecLTLIBRARIES uninstall-pkgpythonPYTHON
+uninstall-am: uninstall-pkgpyexecDATA uninstall-pkgpyexecLTLIBRARIES
 
 .MAKE: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) check-am \
 	ctags-recursive install-am install-strip tags-recursive
@@ -985,13 +968,13 @@ uninstall-am: uninstall-pkgpyexecLTLIBRARIES uninstall-pkgpythonPYTHON
 	install-data-am install-dvi install-dvi-am install-exec \
 	install-exec-am install-html install-html-am install-info \
 	install-info-am install-man install-pdf install-pdf-am \
-	install-pkgpyexecLTLIBRARIES install-pkgpythonPYTHON \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs installdirs-am maintainer-clean \
+	install-pkgpyexecDATA install-pkgpyexecLTLIBRARIES install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs installdirs-am maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags tags-recursive uninstall uninstall-am \
-	uninstall-pkgpyexecLTLIBRARIES uninstall-pkgpythonPYTHON
+	uninstall-pkgpyexecDATA uninstall-pkgpyexecLTLIBRARIES
 
 
 @BUILDING_FROM_SVN_TRUE@gnucash_core.c: $(SWIG_FILES) ${top_srcdir}/src/base-typemaps.i ${top_srcdir}/src/engine/engine-common.i $(_gnucash_core_c_includes)

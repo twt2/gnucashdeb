@@ -122,9 +122,9 @@ am__libgncmod_app_utils_la_SOURCES_DIST = swig-app-utils.c \
 	gnc-druid-provider-desc-edge.c gnc-druid-provider-desc-file.c \
 	gnc-druid-provider-desc-multifile.c \
 	gnc-druid-provider-file-cb.c gnc-entry-quickfill.c gnc-euro.c \
-	gnc-exp-parser.c gnc-gettext-util.c gnc-helpers.c \
-	gnc-sx-instance-model.c gncmod-app-utils.c gnc-ui-util.c \
-	guile-util.c option-util.c gnc-help-utils.c
+	gnc-exp-parser.c gnc-features.c gnc-gettext-util.c \
+	gnc-helpers.c gnc-sx-instance-model.c gncmod-app-utils.c \
+	gnc-ui-util.c guile-util.c option-util.c gnc-help-utils.c
 @OS_WIN32_TRUE@am__objects_1 = gnc-help-utils.lo
 am_libgncmod_app_utils_la_OBJECTS = swig-app-utils.lo \
 	business-options.lo QuickFill.lo file-utils.lo gfec.lo \
@@ -135,9 +135,10 @@ am_libgncmod_app_utils_la_OBJECTS = swig-app-utils.lo \
 	gnc-druid-provider-desc-file.lo \
 	gnc-druid-provider-desc-multifile.lo \
 	gnc-druid-provider-file-cb.lo gnc-entry-quickfill.lo \
-	gnc-euro.lo gnc-exp-parser.lo gnc-gettext-util.lo \
-	gnc-helpers.lo gnc-sx-instance-model.lo gncmod-app-utils.lo \
-	gnc-ui-util.lo guile-util.lo option-util.lo $(am__objects_1)
+	gnc-euro.lo gnc-exp-parser.lo gnc-features.lo \
+	gnc-gettext-util.lo gnc-helpers.lo gnc-sx-instance-model.lo \
+	gncmod-app-utils.lo gnc-ui-util.lo guile-util.lo \
+	option-util.lo $(am__objects_1)
 libgncmod_app_utils_la_OBJECTS = $(am_libgncmod_app_utils_la_OBJECTS)
 libgncmod_app_utils_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -477,9 +478,9 @@ libgncmod_app_utils_la_SOURCES = swig-app-utils.c business-options.c \
 	gnc-druid-provider-desc-edge.c gnc-druid-provider-desc-file.c \
 	gnc-druid-provider-desc-multifile.c \
 	gnc-druid-provider-file-cb.c gnc-entry-quickfill.c gnc-euro.c \
-	gnc-exp-parser.c gnc-gettext-util.c gnc-helpers.c \
-	gnc-sx-instance-model.c gncmod-app-utils.c gnc-ui-util.c \
-	guile-util.c option-util.c $(am__append_1)
+	gnc-exp-parser.c gnc-features.c gnc-gettext-util.c \
+	gnc-helpers.c gnc-sx-instance-model.c gncmod-app-utils.c \
+	gnc-ui-util.c guile-util.c option-util.c $(am__append_1)
 gncincludedir = ${GNC_INCLUDE_DIR}
 gncinclude_HEADERS = \
   QuickFill.h \
@@ -502,6 +503,7 @@ gncinclude_HEADERS = \
   gnc-entry-quickfill.h \
   gnc-euro.h \
   gnc-exp-parser.h \
+  gnc-features.h \
   gnc-gettext-util.h \
   gnc-help-utils.h \
   gnc-helpers.h \
@@ -634,6 +636,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-entry-quickfill.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-euro.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-exp-parser.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-features.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-gettext-util.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-help-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-helpers.Plo@am__quote@

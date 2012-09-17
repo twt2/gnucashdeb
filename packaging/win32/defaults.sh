@@ -260,7 +260,7 @@ set_default GLIB_URL                "$GNOME_WIN32_URL/glib/2.28/glib_2.28.1-1_wi
 set_default GLIB_DEV_URL            "$GNOME_WIN32_URL/glib/2.28/glib-dev_2.28.1-1_win32.zip"
 set_default GNOME_VFS_URL           "$GNOME_WIN32_URL/gnome-vfs/2.24/gnome-vfs_2.24.1-1_win32.zip"
 set_default GNOME_VFS_DEV_URL       "$GNOME_WIN32_URL/gnome-vfs/2.24/gnome-vfs-dev_2.24.1-1_win32.zip"
-GTK_VERSION="2.24.8"
+GTK_VERSION="2.24.10"
 set_default GTK_URL                 "$GNOME_WIN32_URL/gtk+/2.24/gtk+_${GTK_VERSION}-1_win32.zip"
 set_default GTK_DEV_URL             "$GNOME_WIN32_URL/gtk+/2.24/gtk+-dev_${GTK_VERSION}-1_win32.zip"
 set_default GTK_DOC_URL             "$GNOME_MIRROR/sources/gtk-doc/1.13/gtk-doc-1.13.tar.bz2"
@@ -370,8 +370,8 @@ set_default AQBANKING5 yes
 # needed.
 
 if [ "$AQBANKING5" = "yes" ]; then
-    GWENHYWFAR_VERSION="4.3.1"
-    set_default GWENHYWFAR_URL "http://www2.aquamaniac.de/sites/download/download.php?package=01&release=65&file=01&dummy=gwenhywfar-${GWENHYWFAR_VERSION}.tar.gz"
+    GWENHYWFAR_VERSION="4.3.2"
+    set_default GWENHYWFAR_URL "http://www2.aquamaniac.de/sites/download/download.php?package=01&release=66&file=01&dummy=gwenhywfar-${GWENHYWFAR_VERSION}.tar.gz"
 else
     GWENHYWFAR_VERSION="3.11.3"
     set_default GWENHYWFAR_URL "http://www2.aquamaniac.de/sites/download/download.php?package=01&release=31&file=01&dummy=gwenhywfar-${GWENHYWFAR_VERSION}.tar.gz"
@@ -384,8 +384,8 @@ set_default KTOBLZCHECK_URL "$SF_MIRROR/ktoblzcheck/ktoblzcheck-${KTOBLZCHECK_VE
 # ktoblzcheck is being installed into GWENHYWFAR_DIR
 
 if [ "$AQBANKING5" = "yes" ]; then
-    AQBANKING_VERSION="5.0.21"
-    set_default AQBANKING_URL "http://www2.aquamaniac.de/sites/download/download.php?package=03&release=91&file=01&dummy=aqbanking-${AQBANKING_VERSION}.tar.gz"
+    AQBANKING_VERSION="5.0.23"
+    set_default AQBANKING_URL "http://www2.aquamaniac.de/sites/download/download.php?package=03&release=93&file=01&dummy=aqbanking-${AQBANKING_VERSION}.tar.gz"
     set_default AQBANKING_WITH_QT no
 else
     AQBANKING_VERSION="4.2.4"
@@ -427,7 +427,7 @@ set_default DOCS_URL "http://svn.gnucash.org/repo/gnucash-docs/trunk"
 set_default DOCS_DIR $GLOBAL_DIR\\gnucash-docs
 set_default XSLTPROCFLAGS ""
 
-set_default ISOCODES_URL "ftp://pkg-isocodes.alioth.debian.org/pub/pkg-isocodes/iso-codes-3.18.tar.bz2"
+set_default ISOCODES_URL "http://pkg-isocodes.alioth.debian.org/downloads/iso-codes-3.34.tar.bz2"
 set_default ISOCODES_DIR $GLOBAL_DIR\\isocodes
 
 ### Local Variables: ***

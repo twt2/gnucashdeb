@@ -20,7 +20,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 # Autoconf initialization
 AC_PREREQ(2.59)
-AC_INIT([GnuCash], [2.4.10], [gnucash-devel@gnucash.org])
+AC_INIT([GnuCash], [2.4.11], [gnucash-devel@gnucash.org])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_SRCDIR(src/engine/Transaction.h)
 
@@ -1311,6 +1311,7 @@ AC_CONFIG_FILES(
   accounts/pt_PT/Makefile
   accounts/ru/Makefile
   accounts/sk/Makefile
+  accounts/sv_SE/Makefile
   accounts/tr_TR/Makefile
   accounts/zh_CN/Makefile
   checks/Makefile
