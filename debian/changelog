@@ -1,3 +1,16 @@
+gnucash (1:2.4.11-1) experimental; urgency=low
+
+  [ Sébastien Villemot ]
+  * Imported Upstream version 2.4.11
+  * debian/copyright: reflect upstream changes
+  * taxi1-customization_improvements.patch: refresh patch
+  * gnucash-tip.patch: remove patch, applied upstream
+
+  [ Dmitry Smirnov ]
+  * adding new hardening-fortification patch
+
+ -- Sébastien Villemot <sebastien.villemot@ens.fr>  Mon, 17 Sep 2012 20:28:03 +0000
+
 gnucash (1:2.4.10-5) unstable; urgency=low
 
   * gnucash-tip.patch: new patch, fixes tip-of-the-day window with GCC 4.7
