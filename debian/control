@@ -1,7 +1,7 @@
 Source: gnucash
 Section: gnome
 Priority: optional
-Maintainer: Sébastien Villemot <sebastien.villemot@ens.fr>
+Maintainer: Sébastien Villemot <sebastien@debian.org>
 Uploaders: Micha Lenk <micha@debian.org>,
            Dmitry Smirnov <onlyjob@member.fsf.org>
 DM-Upload-Allowed: yes
