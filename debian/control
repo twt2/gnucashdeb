@@ -4,7 +4,6 @@ Priority: optional
 Maintainer: Sébastien Villemot <sebastien@debian.org>
 Uploaders: Micha Lenk <micha@debian.org>,
            Dmitry Smirnov <onlyjob@member.fsf.org>
-DM-Upload-Allowed: yes
 Standards-Version: 3.9.3
 Build-Depends: debhelper (>= 9), intltool, pkg-config, dh-autoreconf,
  guile-1.8-dev (>= 1.8.8+1-4~), imagemagick, libaqbanking34-dev,
