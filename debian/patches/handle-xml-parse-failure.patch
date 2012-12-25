@@ -1,9 +1,9 @@
 Description: Handle return value of xmlParseDocument()
  Ignoring errors can lead to data loss.
 Author: Sébastien Villemot <sebastien@debian.org>
+Bug: https://bugzilla.gnome.org/show_bug.cgi?id=672364
 Bug-Debian: http://bugs.debian.org/696282
-Forwarded: no
-Last-Update: 2012-12-19
+Last-Update: 2012-12-25
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/src/backend/xml/sixtp.c
