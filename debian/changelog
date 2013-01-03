@@ -1,3 +1,16 @@
+gnucash (1:2.4.11-2) experimental; urgency=low
+
+  * Use my @debian.org email address
+  * Drop obsolete DM-Upload-Allowed field
+  * Bump to Standards-Version 3.9.4, no changes needed
+  * regcomp-memory-leak.patch: new patch taken from upstream trunk
+    (Closes: #616515)
+  * Ship gnucash-env and gnucash-make-guids in /usr/bin (Closes: #691503)
+  * handle-xml-parse-failure.patch: new patch, fixes potential data loss when
+    XML parsing fails (Closes: #696282)
+
+ -- Sébastien Villemot <sebastien@debian.org>  Thu, 03 Jan 2013 20:40:43 +0100
+
 gnucash (1:2.4.11-1) experimental; urgency=low
 
   [ Sébastien Villemot ]
