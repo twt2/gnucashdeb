@@ -2,7 +2,8 @@ Description: Ensure that account order is preserved when renumbering subaccounts
 Author: Sébastien Villemot <sebastien@debian.org>
 Bug: https://bugzilla.gnome.org/show_bug.cgi?id=696469
 Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=472996
-Last-Update: 2013-03-23
+Applied-Upstream: commit: r22834
+Last-Update: 2013-03-26
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/src/gnome-utils/dialog-account.c
