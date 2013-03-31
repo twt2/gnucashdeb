@@ -6,5 +6,4 @@ hurd-ftbfs.patch
 taxi0-presentation_options.patch
 taxi1-customization_improvements.patch
 regcomp-memory-leak.patch
-handle-xml-parse-failure.patch
 renumber-subaccounts-sort.patch
