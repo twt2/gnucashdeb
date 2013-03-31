@@ -1,3 +1,17 @@
+gnucash (1:2.4.12-1) experimental; urgency=low
+
+  * Imported Upstream version 2.4.12
+    - correctly sort subaccounts when renumbering. (Closes: #472996)
+  * handle-xml-parse-failure.patch: remove patch, applied upstream
+  * Refresh other patches
+  * Add Build-Conflicts against guile-2.0, since it does not support SLIB (yet)
+    (Closes: #697720)
+  * Bump build-dependency on python-dev to >= 2.7.3-13. GnuCash configure
+    script needs the pkg-config script python.pc which is present in that
+    version
+
+ -- Sébastien Villemot <sebastien@debian.org>  Sun, 31 Mar 2013 14:59:43 +0200
+
 gnucash (1:2.4.11-2) experimental; urgency=low
 
   * Use my @debian.org email address
