@@ -24,6 +24,7 @@ libgnc_qof_la_SOURCES =  \
    kvp_frame.c       \
    kvp-util.c        \
    md5.c             \
+   qof-string-cache.c  \
    qofbackend.c      \
    qofclass.c        \
    qofchoice.c       \
@@ -70,6 +71,7 @@ qofinclude_HEADERS = \
    qofreference.h    \
    qofsession.h      \
    qofsql.h          \
+   qof-string-cache.h  \
    qofutil.h         \
    qofbookmerge.h    \
    qof-gobject.h
@@ -104,4 +106,4 @@ test_qofmath_CPPFLAGS=$(AM_CPPFLAGS) -DTEST_128_BIT_MULT
 test_qofmath_LDFLAGS=$(libgnc_qof_la_LDFLAGS)
 test_qofmath_LDADD=$(libgnc_qof_la_LIBADD)
 
-INCLUDES = -DG_LOG_DOMAIN=\"qof\"
+AM_CPPFLAGS += -DG_LOG_DOMAIN=\"qof\"

@@ -20,7 +20,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 # Autoconf initialization
 AC_PREREQ(2.59)
-AC_INIT([GnuCash], [2.4.11], [gnucash-devel@gnucash.org])
+AC_INIT([GnuCash], [2.4.12], [gnucash-devel@gnucash.org])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_SRCDIR(src/engine/Transaction.h)
 
@@ -252,6 +252,14 @@ then
 else
   AC_MSG_RESULT(no)
   _have_glib_testing=no
+fi
+AC_MSG_CHECKING([for GLib 2.32 or later (glib >=2.32.0)])
+if $PKG_CONFIG "glib-2.0 >= 2.32.0"
+then
+  AC_MSG_RESULT(yes)
+  AC_DEFINE([HAVE_GLIB_2_32], [1], [Configure gthread deprecations])
+else
+  AC_MSG_RESULT(no)
 fi
 AM_CONDITIONAL(HAVE_GLIB_TESTING, test "x$_have_glib_testing" = "xyes")
 
@@ -513,11 +521,9 @@ AC_SUBST(GCONF_LIBS)
 
 LIBXML2_REQUIRED=2.5.10
 PKG_CHECK_MODULES(LIBXML2, libxml-2.0 >= $LIBXML2_REQUIRED)
-LIBXML_VERSION=`$PKG_CONFIG --version xml`
 AS_SCRUB_INCLUDE(LIBXML2_CFLAGS)
 AC_SUBST(LIBXML2_CFLAGS)
 AC_SUBST(LIBXML2_LIBS)
-AC_SUBST(LIBXML_VERSION)
 
 oLIBS="$LIBS"
 LIBS="$LIBS $LIBXML2_LIBS"
@@ -729,7 +735,7 @@ LANGINFO_D_FMT_CHECK
 
 dnl Enable locale-specific tax-related information in the accounts
 AC_ARG_ENABLE( locale-specific-tax,
-  [AS_HELP_STRING([--enable-locale-specific-tax],[enable localized tax categories (experimental)])],
+  [AS_HELP_STRING([--enable-locale-specific-tax],[enable localized tax categories (experimental, but used by the german SKR04 account chart)])],
   AC_DEFINE(LOCALE_SPECIFIC_TAX,1,Enable the experimental locale-specific tax categories) )
 
 dnl Make sure we have a proper gettext installed
@@ -1190,6 +1196,15 @@ AC_ARG_ENABLE(python-bindings,
   )
 if test x${enable_python} = "xtrue"
 then
+  # Check for Python. We require python-2.4 because our implementation
+  # doesn't run with earlier version anymore. Building Python from
+  # source creates python.pc, Debian installs python2.pc, and Fedora
+  # 17 makes both.
+  PKG_CHECK_MODULES(PYTHON, python >= 2.4 , , [
+    PKG_CHECK_MODULES(PYTHON, python2 >= 2.4 , , [
+	    AC_MSG_ERROR([Could not find python >= 2.4. If you use --enable-python, you MUST have python installed!])
+    ])
+  ])
   AM_PATH_PYTHON(2.4)
   AC_PYTHON_DEVEL(>= '2.4')
   SWIG_PYTHON
@@ -1431,7 +1446,6 @@ AC_CONFIG_FILES(
   src/business/business-gnome/schemas/Makefile
   src/business/business-gnome/ui/Makefile
   src/business/business-ledger/Makefile
-
   dnl # Stuff for bill/invoice import plugin
   src/plugins/Makefile
   src/plugins/bi_import/Makefile
@@ -1439,7 +1453,6 @@ AC_CONFIG_FILES(
   src/plugins/bi_import/ui/Makefile
   dnl # non-makefiles
   dnl # Please read doc/build-system before adding *anything* here
-
   ,
   dnl # commands go here, but we don't have any right now
 )
