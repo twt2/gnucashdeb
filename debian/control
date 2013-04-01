@@ -24,8 +24,8 @@ Build-Depends: debhelper (>= 9), intltool, pkg-config, dh-autoreconf,
  zlib1g-dev
 Build-Conflicts: guile-2.0
 Homepage: http://www.gnucash.org/
-Vcs-Browser: http://git.debian.org/?p=pkg-gnucash/gnucash.git
-Vcs-Git: git://git.debian.org/pkg-gnucash/gnucash.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-gnucash/gnucash.git
+Vcs-Git: git://anonscm.debian.org/pkg-gnucash/gnucash.git
 
 Package: gnucash
 Architecture: any
