@@ -1,3 +1,19 @@
+gnucash (1:2.4.13-1) unstable; urgency=low
+
+  [ Sébastien Villemot ]
+  * Imported Upstream version 2.4.13
+  * Remove version on python-dev B-D.
+    The gnucash configure script is again able to deal with the absence of a
+    pkg-config script for python
+
+  [ Dmitry Smirnov ]
+  * Re-format (expand) list of Build-Depends
+  * removing unnecessary versioned dependencies
+  * updating my email address; bumping copyright years
+  * use canonical Vcs URLs
+
+ -- Sébastien Villemot <sebastien@debian.org>  Sat, 04 May 2013 16:58:51 +0200
+
 gnucash (1:2.4.12-1) experimental; urgency=low
 
   * Imported Upstream version 2.4.12
