@@ -176,7 +176,7 @@ set_default READLINE_BIN_URL "$SF_MIRROR/gnuwin32/readline-5.0-1-bin.zip"
 set_default READLINE_LIB_URL "$SF_MIRROR/gnuwin32/readline-5.0-1-lib.zip"
 set_default READLINE_DIR $GLOBAL_DIR\\readline
 
-set_default ACTIVE_PERL_URL "http://downloads.activestate.com/ActivePerl/releases/5.14.2.1402/ActivePerl-5.14.2.1402-MSWin32-x86-295342.zip"
+set_default ACTIVE_PERL_URL "http://downloads.activestate.com/ActivePerl/releases/5.14.4.1405/ActivePerl-5.14.4.1405-MSWin32-x86-296746.zip"
 set_default ACTIVE_PERL_DIR $GLOBAL_DIR\\active-perl
 
 #set_default AUTOCONF_URL "http://ftp.gnu.org/gnu/autoconf/autoconf-2.63.tar.bz2"
@@ -359,7 +359,7 @@ set_default OPENSP_URL "$SF_MIRROR/openjade/OpenSP-1.5.2.tar.gz"
 set_default OPENSP_DIR $GLOBAL_DIR\\opensp
 set_default OPENSP_PATCH `pwd`/opensp-1.5.2-patch.diff
 
-LIBOFX_VERSION="0.9.6"
+LIBOFX_VERSION="0.9.8"
 set_default LIBOFX_URL "$SF_MIRROR/libofx/libofx-${LIBOFX_VERSION}.tar.gz"
 set_default LIBOFX_DIR $GLOBAL_DIR\\libofx
 #set_default LIBOFX_PATCH `pwd`/libofx-0.8.3-patch.diff
