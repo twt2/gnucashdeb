@@ -19,7 +19,7 @@ Build-Depends: debhelper (>= 9), intltool, pkg-config, dh-autoreconf,
  libwebkitgtk-dev,
  libxml2-dev,
  python,
- python-dev (>= 2.7.3-13),
+ python-dev,
  slib,
  zlib1g-dev
 Build-Conflicts: guile-2.0
