@@ -57,6 +57,45 @@ static QofLogModule log_module = QOF_MOD_SESSION;
 static GSList *provider_list = NULL;
 static gboolean qof_providers_initialized = FALSE;
 
+/*
+ * These getters are used in tests to reach static vars from outside
+ * They should be removed when no longer needed
+ */
+
+GHookList* get_session_closed_hooks (void );
+GSList* get_provider_list (void );
+gboolean get_qof_providers_initialized (void );
+void unregister_all_providers (void );
+
+GHookList*
+get_session_closed_hooks (void)
+{
+    return session_closed_hooks;
+}
+
+GSList*
+get_provider_list (void)
+{
+    return provider_list;
+}
+
+gboolean
+get_qof_providers_initialized (void)
+{
+    return qof_providers_initialized;
+}
+
+void
+unregister_all_providers (void)
+{
+    if (provider_list)
+    {
+        g_slist_foreach (provider_list, (GFunc) g_free, NULL);
+        g_slist_free (provider_list);
+        provider_list = NULL;
+    }
+}
+
 /* ====================================================================== */
 
 void
@@ -214,7 +253,7 @@ qof_session_init (QofSession *session)
     if (!session) return;
 
     session->entity.e_type = QOF_ID_SESSION;
-    session->books = g_list_append (NULL, qof_book_new ());
+    session->book = qof_book_new ();
     session->book_id = NULL;
     session->backend = NULL;
     session->lock = 1;
@@ -233,49 +272,17 @@ qof_session_new (void)
 QofBook *
 qof_session_get_book (const QofSession *session)
 {
-    GList *node;
     if (!session) return NULL;
+    if (!session->book) return NULL;
 
-    for (node = session->books; node; node = node->next)
+    if ('y' == session->book->book_open)
     {
-        QofBook *book = node->data;
-        if ('y' == book->book_open) return book;
-    }
-    return NULL;
-}
-
-void
-qof_session_add_book (QofSession *session, QofBook *addbook)
-{
-    GList *node;
-    if (!session) return;
-
-    ENTER (" sess=%p book=%p", session, addbook);
-
-    /* See if this book is already there ... */
-    for (node = session->books; node; node = node->next)
-    {
-        QofBook *book = node->data;
-        if (addbook == book) return;
-    }
-
-    if ('y' == addbook->book_open)
-    {
-        /* hack alert -- someone should free all the books in the list,
-         * but it should probably not be us ... since the books backends
-         * should be shutdown first, etc */
-        /* XXX this should probably be an error XXX */
-        g_list_free (session->books);
-        session->books = g_list_append (NULL, addbook);
+        return session->book;
     }
     else
     {
-        /* XXX Need to tell the backend to add a book as well */
-        session->books = g_list_append (session->books, addbook);
+        return NULL;
     }
-
-    qof_book_set_backend (addbook, session->backend);
-    LEAVE (" ");
 }
 
 QofBackend *
@@ -314,685 +321,6 @@ qof_session_ensure_all_data_loaded (QofSession *session)
     qof_session_push_error (session, qof_backend_get_error(backend), NULL);
 }
 
-/* =============================================================== */
-
-typedef struct qof_instance_copy_data
-{
-    QofInstance *from;
-    QofInstance *to;
-    QofParam  *param;
-    GList  *referenceList;
-    GSList *param_list;
-    QofSession *new_session;
-    gboolean error;
-} QofInstanceCopyData;
-
-static void
-qof_book_set_partial(QofBook *book)
-{
-    gboolean partial;
-
-    partial =
-        (gboolean)GPOINTER_TO_INT(qof_book_get_data(book, PARTIAL_QOFBOOK));
-    if (!partial)
-    {
-        qof_book_set_data(book, PARTIAL_QOFBOOK, GINT_TO_POINTER(TRUE));
-    }
-}
-
-void
-qof_session_update_reference_list(QofSession *session, QofInstanceReference *reference)
-{
-    QofBook  *book;
-    GList    *book_ref_list;
-
-    book = qof_session_get_book(session);
-    book_ref_list = (GList*)qof_book_get_data(book, ENTITYREFERENCE);
-    book_ref_list = g_list_append(book_ref_list, reference);
-    qof_book_set_data(book, ENTITYREFERENCE, book_ref_list);
-    qof_book_set_partial(book);
-}
-
-static void
-qof_instance_param_cb(QofParam *param, gpointer data)
-{
-    QofInstanceCopyData *qecd;
-
-    g_return_if_fail(data != NULL);
-    qecd = (QofInstanceCopyData*)data;
-    g_return_if_fail(param != NULL);
-    /* KVP doesn't need a set routine to be copied. */
-    if (0 == safe_strcmp(param->param_type, QOF_TYPE_KVP))
-    {
-        qecd->param_list = g_slist_prepend(qecd->param_list, param);
-        return;
-    }
-    if ((param->param_getfcn != NULL) && (param->param_setfcn != NULL))
-    {
-        qecd->param_list = g_slist_prepend(qecd->param_list, param);
-    }
-}
-
-static void
-col_ref_cb (QofInstance* ref_ent, gpointer user_data)
-{
-    QofInstanceReference *ref;
-    QofInstanceCopyData  *qecd;
-    QofInstance *ent;
-    const GncGUID   *cm_guid;
-    char         cm_sa[GUID_ENCODING_LENGTH + 1];
-    gchar        *cm_string;
-
-    g_return_if_fail(user_data);
-    qecd = (QofInstanceCopyData*)user_data;
-    ent = qecd->from;
-    g_return_if_fail(ent);
-    ref = g_new0(QofInstanceReference, 1);
-    ref->type = ent->e_type;
-    ref->ref_guid = g_new(GncGUID, 1);
-    ref->ent_guid = qof_instance_get_guid(ent);
-    ref->param = qof_class_get_parameter(ent->e_type,
-                                         qecd->param->param_name);
-    cm_guid = qof_entity_get_guid(ref_ent);
-    guid_to_string_buff(cm_guid, cm_sa);
-    cm_string = g_strdup(cm_sa);
-    if (TRUE == string_to_guid(cm_string, ref->ref_guid))
-    {
-        g_free(cm_string);
-        qof_session_update_reference_list(qecd->new_session, ref);
-    }
-}
-
-static void
-qof_instance_foreach_copy(gpointer data, gpointer user_data)
-{
-    QofInstance          *importEnt, *targetEnt/*, *referenceEnt*/;
-    QofInstanceCopyData 	*context;
-    QofInstanceReference  *reference;
-    gboolean		registered_type;
-    /* cm_ prefix used for variables that hold the data to commit */
-    QofParam 		*cm_param;
-    gchar 			*cm_string, *cm_char;
-    const GncGUID 		*cm_guid;
-    KvpFrame 		*cm_kvp;
-    QofCollection *cm_col;
-    /* function pointers and variables for parameter getters that don't use pointers normally */
-    gnc_numeric 	cm_numeric, (*numeric_getter)	(QofInstance*, QofParam*);
-    double 			cm_double, 	(*double_getter)	(QofInstance*, QofParam*);
-    gboolean 		cm_boolean, (*boolean_getter)	(QofInstance*, QofParam*);
-    gint32 			cm_i32, 	(*int32_getter)		(QofInstance*, QofParam*);
-    gint64 			cm_i64, 	(*int64_getter)		(QofInstance*, QofParam*);
-    Timespec 		cm_date, 	(*date_getter)		(QofInstance*, QofParam*);
-    /* function pointers to the parameter setters */
-    void	(*string_setter)	(QofInstance*, const char*);
-    void	(*date_setter)		(QofInstance*, Timespec);
-    void	(*numeric_setter)	(QofInstance*, gnc_numeric);
-    void	(*guid_setter)		(QofInstance*, const GncGUID*);
-    void	(*double_setter)	(QofInstance*, double);
-    void	(*boolean_setter)	(QofInstance*, gboolean);
-    void	(*i32_setter)		(QofInstance*, gint32);
-    void	(*i64_setter)		(QofInstance*, gint64);
-    void	(*char_setter)		(QofInstance*, char*);
-    void	(*kvp_frame_setter)	(QofInstance*, KvpFrame*);
-
-    g_return_if_fail(user_data != NULL);
-    context = (QofInstanceCopyData*) user_data;
-    cm_date.tv_nsec = 0;
-    cm_date.tv_sec =  0;
-    importEnt = context->from;
-    targetEnt = context->to;
-    registered_type = FALSE;
-    cm_param = (QofParam*) data;
-    g_return_if_fail(cm_param != NULL);
-    context->param = cm_param;
-    if (safe_strcmp(cm_param->param_type, QOF_TYPE_STRING) == 0)
-    {
-        cm_string = (gchar*)cm_param->param_getfcn(importEnt, cm_param);
-        if (cm_string)
-        {
-            string_setter = (void(*)(QofInstance*, const char*))cm_param->param_setfcn;
-            if (string_setter != NULL)
-            {
-                string_setter(targetEnt, cm_string);
-            }
-        }
-        registered_type = TRUE;
-    }
-    if (safe_strcmp(cm_param->param_type, QOF_TYPE_DATE) == 0)
-    {
-        date_getter = (Timespec (*)(QofInstance*, QofParam*))cm_param->param_getfcn;
-        cm_date = date_getter(importEnt, cm_param);
-        date_setter = (void(*)(QofInstance*, Timespec))cm_param->param_setfcn;
-        if (date_setter != NULL)
-        {
-            date_setter(targetEnt, cm_date);
-        }
-        registered_type = TRUE;
-    }
-    if ((safe_strcmp(cm_param->param_type, QOF_TYPE_NUMERIC) == 0)  ||
-            (safe_strcmp(cm_param->param_type, QOF_TYPE_DEBCRED) == 0))
-    {
-        numeric_getter = (gnc_numeric (*)(QofInstance*, QofParam*))cm_param->param_getfcn;
-        cm_numeric = numeric_getter(importEnt, cm_param);
-        numeric_setter = (void(*)(QofInstance*, gnc_numeric))cm_param->param_setfcn;
-        if (numeric_setter != NULL)
-        {
-            numeric_setter(targetEnt, cm_numeric);
-        }
-        registered_type = TRUE;
-    }
-    if (safe_strcmp(cm_param->param_type, QOF_TYPE_GUID) == 0)
-    {
-        cm_guid = (const GncGUID*)cm_param->param_getfcn(importEnt, cm_param);
-        guid_setter = (void(*)(QofInstance*, const GncGUID*))cm_param->param_setfcn;
-        if (guid_setter != NULL)
-        {
-            guid_setter(targetEnt, cm_guid);
-        }
-        registered_type = TRUE;
-    }
-    if (safe_strcmp(cm_param->param_type, QOF_TYPE_INT32) == 0)
-    {
-        int32_getter = (gint32 (*)(QofInstance*, QofParam*)) cm_param->param_getfcn;
-        cm_i32 = int32_getter(importEnt, cm_param);
-        i32_setter = (void(*)(QofInstance*, gint32))cm_param->param_setfcn;
-        if (i32_setter != NULL)
-        {
-            i32_setter(targetEnt, cm_i32);
-        }
-        registered_type = TRUE;
-    }
-    if (safe_strcmp(cm_param->param_type, QOF_TYPE_INT64) == 0)
-    {
-        int64_getter = (gint64 (*)(QofInstance*, QofParam*)) cm_param->param_getfcn;
-        cm_i64 = int64_getter(importEnt, cm_param);
-        i64_setter = (void(*)(QofInstance*, gint64))cm_param->param_setfcn;
-        if (i64_setter != NULL)
-        {
-            i64_setter(targetEnt, cm_i64);
-        }
-        registered_type = TRUE;
-    }
-    if (safe_strcmp(cm_param->param_type, QOF_TYPE_DOUBLE) == 0)
-    {
-        double_getter = (double (*)(QofInstance*, QofParam*)) cm_param->param_getfcn;
-        cm_double = double_getter(importEnt, cm_param);
-        double_setter = (void(*)(QofInstance*, double))cm_param->param_setfcn;
-        if (double_setter != NULL)
-        {
-            double_setter(targetEnt, cm_double);
-        }
-        registered_type = TRUE;
-    }
-    if (safe_strcmp(cm_param->param_type, QOF_TYPE_BOOLEAN) == 0)
-    {
-        boolean_getter = (gboolean (*)(QofInstance*, QofParam*)) cm_param->param_getfcn;
-        cm_boolean = boolean_getter(importEnt, cm_param);
-        boolean_setter = (void(*)(QofInstance*, gboolean))cm_param->param_setfcn;
-        if (boolean_setter != NULL)
-        {
-            boolean_setter(targetEnt, cm_boolean);
-        }
-        registered_type = TRUE;
-    }
-    if (safe_strcmp(cm_param->param_type, QOF_TYPE_KVP) == 0)
-    {
-        cm_kvp = (KvpFrame*)cm_param->param_getfcn(importEnt, cm_param);
-        kvp_frame_setter = (void(*)(QofInstance*, KvpFrame*))cm_param->param_setfcn;
-        if (kvp_frame_setter != NULL)
-        {
-            kvp_frame_setter(targetEnt, cm_kvp);
-        }
-        else
-        {
-            QofInstance *target_inst;
-
-            target_inst = (QofInstance*)targetEnt;
-            kvp_frame_delete(target_inst->kvp_data);
-            target_inst->kvp_data = kvp_frame_copy(cm_kvp);
-        }
-        registered_type = TRUE;
-    }
-    if (safe_strcmp(cm_param->param_type, QOF_TYPE_CHAR) == 0)
-    {
-        cm_char = (gchar*)cm_param->param_getfcn(importEnt, cm_param);
-        char_setter = (void(*)(QofInstance*, char*))cm_param->param_setfcn;
-        if (char_setter != NULL)
-        {
-            char_setter(targetEnt, cm_char);
-        }
-        registered_type = TRUE;
-    }
-    if (safe_strcmp(cm_param->param_type, QOF_TYPE_COLLECT) == 0)
-    {
-        cm_col = (QofCollection*)cm_param->param_getfcn(importEnt, cm_param);
-        if (cm_col)
-        {
-            /* create one reference for each member of the collection. */
-            qof_collection_foreach(cm_col, col_ref_cb, context);
-        }
-        registered_type = TRUE;
-    }
-    if (registered_type == FALSE)
-    {
-        /*		referenceEnt = QOF_INSTANCE(cm_param->param_getfcn(importEnt, cm_param));
-        		if(!referenceEnt) { return; }
-        		if(!referenceEnt->e_type) { return; }*/
-        reference = qof_instance_get_reference_from(importEnt, cm_param);
-        if (reference)
-        {
-            qof_session_update_reference_list(context->new_session, reference);
-        }
-    }
-}
-
-static gboolean
-qof_instance_guid_match(QofSession *new_session, QofInstance *original)
-{
-    QofInstance *copy;
-    const GncGUID *g;
-    QofIdTypeConst type;
-    QofBook *targetBook;
-    QofCollection *coll;
-
-    copy = NULL;
-    g_return_val_if_fail(original != NULL, FALSE);
-    targetBook = qof_session_get_book(new_session);
-    g_return_val_if_fail(targetBook != NULL, FALSE);
-    g = qof_instance_get_guid(original);
-    type = g_strdup(original->e_type);
-    coll = qof_book_get_collection(targetBook, type);
-    copy = qof_collection_lookup_entity(coll, g);
-    if (copy)
-    {
-        return TRUE;
-    }
-    return FALSE;
-}
-
-static void
-qof_instance_list_foreach(gpointer data, gpointer user_data)
-{
-    QofInstanceCopyData *qecd;
-    QofInstance *original;
-    QofInstance *inst;
-    QofBook *book;
-    const GncGUID *g;
-
-    g_return_if_fail(data != NULL);
-    original = QOF_INSTANCE(data);
-    g_return_if_fail(user_data != NULL);
-    qecd = (QofInstanceCopyData*)user_data;
-    if (qof_instance_guid_match(qecd->new_session, original))
-    {
-        return;
-    }
-    qecd->from = original;
-    if (!qof_object_compliance(original->e_type, FALSE))
-    {
-        qecd->error = TRUE;
-        return;
-    }
-    book = qof_session_get_book(qecd->new_session);
-    inst = (QofInstance*)qof_object_new_instance(original->e_type, book);
-    if (!inst)
-    {
-        PERR (" failed to create new entity type=%s.", original->e_type);
-        qecd->error = TRUE;
-        return;
-    }
-    qecd->to = inst;
-    g = qof_instance_get_guid(original);
-    qof_instance_set_guid(qecd->to, g);
-    if (qecd->param_list != NULL)
-    {
-        g_slist_free(qecd->param_list);
-        qecd->param_list = NULL;
-    }
-    qof_class_param_foreach(original->e_type, qof_instance_param_cb, qecd);
-    qof_begin_edit(inst);
-    g_slist_foreach(qecd->param_list, qof_instance_foreach_copy, qecd);
-    qof_commit_edit(inst);
-}
-
-static void
-qof_instance_coll_foreach(QofInstance *original, gpointer user_data)
-{
-    QofInstanceCopyData *qecd;
-    const GncGUID *g;
-    QofBook *targetBook;
-    QofCollection *coll;
-    QofInstance *copy;
-
-    g_return_if_fail(original != NULL);
-    g_return_if_fail(user_data != NULL);
-    copy = NULL;
-    qecd = (QofInstanceCopyData*)user_data;
-    targetBook = qof_session_get_book(qecd->new_session);
-    g = qof_instance_get_guid(original);
-    coll = qof_book_get_collection(targetBook, original->e_type);
-    copy = qof_collection_lookup_entity(coll, g);
-    if (copy)
-    {
-        qecd->error = TRUE;
-    }
-}
-
-static void
-qof_instance_coll_copy(QofInstance *original, gpointer user_data)
-{
-    QofInstanceCopyData *qecd;
-    QofBook *book;
-    QofInstance *inst;
-    const GncGUID *g;
-
-    g_return_if_fail(original != NULL);
-    g_return_if_fail(user_data != NULL);
-    qecd = (QofInstanceCopyData*)user_data;
-    book = qof_session_get_book(qecd->new_session);
-    if (!qof_object_compliance(original->e_type, TRUE))
-    {
-        return;
-    }
-    inst = (QofInstance*)qof_object_new_instance(original->e_type, book);
-    qecd->to = inst;
-    qecd->from = original;
-    g = qof_instance_get_guid(original);
-    qof_instance_set_guid(qecd->to, g);
-    qof_begin_edit(inst);
-    g_slist_foreach(qecd->param_list, qof_instance_foreach_copy, qecd);
-    qof_commit_edit(inst);
-}
-
-gboolean
-qof_instance_copy_to_session(QofSession* new_session, QofInstance* original)
-{
-    QofInstanceCopyData qecd;
-    QofInstance *inst;
-    QofBook *book;
-
-    if (!new_session || !original)
-    {
-        return FALSE;
-    }
-    if (qof_instance_guid_match(new_session, original))
-    {
-        return FALSE;
-    }
-    if (!qof_object_compliance(original->e_type, TRUE))
-    {
-        return FALSE;
-    }
-    qof_event_suspend();
-    qecd.param_list = NULL;
-    book = qof_session_get_book(new_session);
-    qecd.new_session = new_session;
-    qof_book_set_partial(book);
-    inst = (QofInstance*)qof_object_new_instance(original->e_type, book);
-    qecd.to = inst;
-    qecd.from = original;
-    qof_instance_set_guid(qecd.to, qof_instance_get_guid(original));
-    qof_begin_edit(inst);
-    qof_class_param_foreach(original->e_type, qof_instance_param_cb, &qecd);
-    qof_commit_edit(inst);
-    if (g_slist_length(qecd.param_list) == 0)
-    {
-        return FALSE;
-    }
-    g_slist_foreach(qecd.param_list, qof_instance_foreach_copy, &qecd);
-    g_slist_free(qecd.param_list);
-    qof_event_resume();
-    return TRUE;
-}
-
-gboolean qof_instance_copy_list(QofSession *new_session, GList *entity_list)
-{
-    QofInstanceCopyData *qecd;
-
-    if (!new_session || !entity_list)
-    {
-        return FALSE;
-    }
-    ENTER (" list=%d", g_list_length(entity_list));
-    qecd = g_new0(QofInstanceCopyData, 1);
-    qof_event_suspend();
-    qecd->param_list = NULL;
-    qecd->new_session = new_session;
-    qof_book_set_partial(qof_session_get_book(new_session));
-    g_list_foreach(entity_list, qof_instance_list_foreach, qecd);
-    qof_event_resume();
-    if (qecd->error)
-    {
-        PWARN (" some/all entities in the list could not be copied.");
-    }
-    g_free(qecd);
-    LEAVE (" ");
-    return TRUE;
-}
-
-gboolean
-qof_instance_copy_coll(QofSession *new_session, QofCollection *entity_coll)
-{
-    QofInstanceCopyData qecd;
-
-    g_return_val_if_fail(new_session, FALSE);
-    if (!entity_coll)
-    {
-        return FALSE;
-    }
-    qof_event_suspend();
-    qecd.param_list = NULL;
-    qecd.new_session = new_session;
-    qof_book_set_partial(qof_session_get_book(qecd.new_session));
-    qof_collection_foreach(entity_coll, qof_instance_coll_foreach, &qecd);
-    qof_class_param_foreach(qof_collection_get_type(entity_coll),
-                            qof_instance_param_cb, &qecd);
-    qof_collection_foreach(entity_coll, qof_instance_coll_copy, &qecd);
-    if (qecd.param_list != NULL)
-    {
-        g_slist_free(qecd.param_list);
-    }
-    qof_event_resume();
-    return TRUE;
-}
-
-struct recurse_s
-{
-    QofSession *session;
-    gboolean   success;
-    GList      *ref_list;
-    GList      *ent_list;
-};
-
-static void
-recurse_collection_cb (QofInstance *ent, gpointer user_data)
-{
-    struct recurse_s *store;
-
-    if (user_data == NULL)
-    {
-        return;
-    }
-    store = (struct recurse_s*)user_data;
-    if (!ent || !store)
-    {
-        return;
-    }
-    store->success = qof_instance_copy_to_session(store->session, ent);
-    if (store->success)
-    {
-        store->ent_list = g_list_append(store->ent_list, ent);
-    }
-}
-
-static void
-recurse_ent_cb(QofInstance *ent, gpointer user_data)
-{
-    GList      *ref_list, *i, *j, *ent_list, *child_list;
-    QofParam   *ref_param;
-    QofInstance  *ref_ent, *child_ent;
-    QofSession *session;
-    struct recurse_s *store;
-    gboolean   success;
-
-    if (user_data == NULL)
-    {
-        return;
-    }
-    store = (struct recurse_s*)user_data;
-    session = store->session;
-    success = store->success;
-    ref_list = NULL;
-    child_ent = NULL;
-    ref_list = g_list_copy(store->ref_list);
-    if ((!session) || (!ent))
-    {
-        return;
-    }
-    ent_list = NULL;
-    child_list = NULL;
-    i = NULL;
-    j = NULL;
-    for (i = ref_list; i != NULL; i = i->next)
-    {
-        if (i->data == NULL)
-        {
-            continue;
-        }
-        ref_param = (QofParam*)i->data;
-        if (ref_param->param_name == NULL)
-        {
-            continue;
-        }
-        if (0 == safe_strcmp(ref_param->param_type, QOF_TYPE_COLLECT))
-        {
-            QofCollection *col;
-
-            col = ref_param->param_getfcn(ent, ref_param);
-            if (col)
-            {
-                qof_collection_foreach(col, recurse_collection_cb, store);
-            }
-            continue;
-        }
-        ref_ent = QOF_INSTANCE(ref_param->param_getfcn(ent, ref_param));
-        if ((ref_ent) && (ref_ent->e_type))
-        {
-            store->success = qof_instance_copy_to_session(session, ref_ent);
-            if (store->success)
-            {
-                ent_list = g_list_append(ent_list, ref_ent);
-            }
-        }
-    }
-    for (i = ent_list; i != NULL; i = i->next)
-    {
-        if (i->data == NULL)
-        {
-            continue;
-        }
-        child_ent = QOF_INSTANCE(i->data);
-        if (child_ent == NULL)
-        {
-            continue;
-        }
-        ref_list = qof_class_get_referenceList(child_ent->e_type);
-        for (j = ref_list; j != NULL; j = j->next)
-        {
-            if (j->data == NULL)
-            {
-                continue;
-            }
-            ref_param = (QofParam*)j->data;
-            ref_ent = ref_param->param_getfcn(child_ent, ref_param);
-            if (ref_ent != NULL)
-            {
-                success = qof_instance_copy_to_session(session, ref_ent);
-                if (success)
-                {
-                    child_list = g_list_append(child_list, ref_ent);
-                }
-            }
-        }
-    }
-    for (i = child_list; i != NULL; i = i->next)
-    {
-        if (i->data == NULL)
-        {
-            continue;
-        }
-        ref_ent = QOF_INSTANCE(i->data);
-        if (ref_ent == NULL)
-        {
-            continue;
-        }
-        ref_list = qof_class_get_referenceList(ref_ent->e_type);
-        for (j = ref_list; j != NULL; j = j->next)
-        {
-            if (j->data == NULL)
-            {
-                continue;
-            }
-            ref_param = (QofParam*)j->data;
-            child_ent = ref_param->param_getfcn(ref_ent, ref_param);
-            if (child_ent != NULL)
-            {
-                qof_instance_copy_to_session(session, child_ent);
-            }
-        }
-    }
-}
-
-gboolean
-qof_instance_copy_coll_r(QofSession *new_session, QofCollection *coll)
-{
-    struct recurse_s store;
-    gboolean success;
-
-    if ((!new_session) || (!coll))
-    {
-        return FALSE;
-    }
-    store.session = new_session;
-    success = TRUE;
-    store.success = success;
-    store.ent_list = NULL;
-    store.ref_list = qof_class_get_referenceList(qof_collection_get_type(coll));
-    success = qof_instance_copy_coll(new_session, coll);
-    if (success)
-    {
-        qof_collection_foreach(coll, recurse_ent_cb, &store);
-    }
-    return success;
-}
-
-gboolean qof_instance_copy_one_r(QofSession *new_session, QofInstance *ent)
-{
-    struct recurse_s store;
-    QofCollection *coll;
-    gboolean success;
-
-    if ((!new_session) || (!ent))
-    {
-        return FALSE;
-    }
-    store.session = new_session;
-    success = TRUE;
-    store.success = success;
-    store.ref_list = qof_class_get_referenceList(ent->e_type);
-    success = qof_instance_copy_to_session(new_session, ent);
-    if (success == TRUE)
-    {
-        coll = qof_book_get_collection(qof_session_get_book(new_session), ent->e_type);
-        if (coll)
-        {
-            qof_collection_foreach(coll, recurse_ent_cb, &store);
-        }
-    }
-    return success;
-}
-
-
 /* ====================================================================== */
 
 /** Programs that use their own backends also need to call
@@ -1008,14 +336,10 @@ static void
 qof_session_load_backend(QofSession * session, const char * access_method)
 {
     GSList *p;
-    GList *node;
     QofBackendProvider *prov;
-    QofBook *book;
     char *msg;
-    gint num;
     gboolean prov_type;
     gboolean (*type_check) (const char*);
-    gchar *libdir_from_env = NULL;
 
     ENTER (" list=%d, initted=%s", g_slist_length(provider_list),
            qof_providers_initialized ? "true" : "false");
@@ -1053,12 +377,8 @@ qof_session_load_backend(QofSession * session, const char * access_method)
             /* Use the providers creation callback */
             session->backend = (*(prov->backend_new))();
             session->backend->provider = prov;
-            /* Tell the books about the backend that they'll be using. */
-            for (node = session->books; node; node = node->next)
-            {
-                book = node->data;
-                qof_book_set_backend (book, session->backend);
-            }
+            /* Tell the book about the backend that they'll be using. */
+            qof_book_set_backend (session->book, session->backend);
             LEAVE (" ");
             return;
         }
@@ -1066,6 +386,7 @@ qof_session_load_backend(QofSession * session, const char * access_method)
     }
     msg = g_strdup_printf("failed to load '%s' using access_method", access_method);
     qof_session_push_error (session, ERR_BACKEND_NO_HANDLER, msg);
+    g_free(msg);
     LEAVE (" ");
 }
 
@@ -1130,16 +451,16 @@ qof_session_begin (QofSession *session, const char * book_id,
     }
     scheme = g_uri_parse_scheme (book_id);
     if (g_strcmp0 (scheme, "file") == 0)
-	filename = g_filename_from_uri (book_id, NULL, NULL);
+        filename = g_filename_from_uri (book_id, NULL, NULL);
     else if (!scheme)
-	filename = g_strdup (book_id);
+        filename = g_strdup (book_id);
 
     if (filename && g_file_test (filename, G_FILE_TEST_IS_DIR))
     {
         if (ERR_BACKEND_NO_ERR == qof_session_get_error(session))
             qof_session_push_error (session, ERR_BACKEND_BAD_URL, NULL);
-	g_free (filename);
-	g_free (scheme);
+        g_free (filename);
+        g_free (scheme);
         LEAVE("Can't open a directory");
         return;
     }
@@ -1207,8 +528,7 @@ void
 qof_session_load (QofSession *session,
                   QofPercentageFunc percentage_func)
 {
-    QofBook *newbook, *ob;
-    QofBookList *oldbooks, *node;
+    QofBook *newbook, *oldbook;
     QofBackend *be;
     QofBackendError err;
 
@@ -1221,14 +541,14 @@ qof_session_load (QofSession *session,
     /* At this point, we should are supposed to have a valid book
     * id and a lock on the file. */
 
-    oldbooks = session->books;
+    oldbook = session->book;
 
     /* XXX why are we creating a book here? I think the books
     * need to be handled by the backend ... especially since
     * the backend may need to load multiple books ... XXX. FIXME.
     */
     newbook = qof_book_new();
-    session->books = g_list_append (NULL, newbook);
+    session->book = newbook;
     PINFO ("new book=%p", newbook);
 
     qof_session_clear_error (session);
@@ -1274,18 +594,12 @@ qof_session_load (QofSession *session,
         /* Something broke, put back the old stuff */
         qof_book_set_backend (newbook, NULL);
         qof_book_destroy (newbook);
-        g_list_free (session->books);
-        session->books = oldbooks;
+        session->book = oldbook;
         LEAVE("error from backend %d", qof_session_get_error(session));
         return;
     }
-    for (node = oldbooks; node; node = node->next)
-    {
-        ob = node->data;
-        qof_book_set_backend (ob, NULL);
-        qof_book_destroy (ob);
-    }
-    g_list_free (oldbooks);
+    qof_book_set_backend (oldbook, NULL);
+    qof_book_destroy (oldbook);
 
     LEAVE ("sess = %p, book_id=%s", session, session->book_id
            ? session->book_id : "(null)");
@@ -1311,14 +625,12 @@ void
 qof_session_save (QofSession *session,
                   QofPercentageFunc percentage_func)
 {
-    GList *node;
     QofBackend *be;
     gboolean partial, change_backend;
     QofBackendProvider *prov;
     GSList *p;
-    QofBook *book, *abook;
+    QofBook *book;
     int err;
-    gint num;
     char *msg = NULL;
     char *book_id;
 
@@ -1402,12 +714,8 @@ qof_session_save (QofSession *session,
                         msg = NULL;
                     }
                 }
-                /* Tell the books about the backend that they'll be using. */
-                for (node = session->books; node; node = node->next)
-                {
-                    book = node->data;
-                    qof_book_set_backend (book, session->backend);
-                }
+                /* Tell the book about the backend that they'll be using. */
+                qof_book_set_backend (session->book, session->backend);
                 p = NULL;
             }
             if (p)
@@ -1437,19 +745,16 @@ qof_session_save (QofSession *session,
     be = session->backend;
     if (be)
     {
-        for (node = session->books; node; node = node->next)
+        /* if invoked as SaveAs(), then backend not yet set */
+        qof_book_set_backend (session->book, be);
+        be->percentage = percentage_func;
+        if (be->sync)
         {
-            abook = node->data;
-            /* if invoked as SaveAs(), then backend not yet set */
-            qof_book_set_backend (abook, be);
-            be->percentage = percentage_func;
-            if (be->sync)
-            {
-                (be->sync)(be, abook);
-                if (save_error_handler(be, session))
-                    goto leave;
-            }
+            (be->sync)(be, session->book);
+            if (save_error_handler(be, session))
+                goto leave;
         }
+
         /* If we got to here, then the backend saved everything
         * just fine, and we are done. So return. */
         /* Return the book_id to previous value. */
@@ -1526,7 +831,6 @@ qof_session_end (QofSession *session)
 void
 qof_session_destroy (QofSession *session)
 {
-    GList *node;
     if (!session) return;
 
     ENTER ("sess=%p book_id=%s", session, session->book_id
@@ -1537,14 +841,9 @@ qof_session_destroy (QofSession *session)
     /* destroy the backend */
     qof_session_destroy_backend(session);
 
-    for (node = session->books; node; node = node->next)
-    {
-        QofBook *book = node->data;
-        qof_book_set_backend (book, NULL);
-        qof_book_destroy (book);
-    }
-
-    session->books  = NULL;
+    qof_book_set_backend (session->book, NULL);
+    qof_book_destroy (session->book);
+    session->book  = NULL;
 
     g_free (session);
 
@@ -1557,29 +856,27 @@ qof_session_destroy (QofSession *session)
 void
 qof_session_swap_data (QofSession *session_1, QofSession *session_2)
 {
-    GList *books_1, *books_2, *node;
+    QofBook *book_1, *book_2;
+    gboolean tmp;
 
     if (session_1 == session_2) return;
     if (!session_1 || !session_2) return;
 
     ENTER ("sess1=%p sess2=%p", session_1, session_2);
 
-    books_1 = session_1->books;
-    books_2 = session_2->books;
+    book_1 = session_1->book;
+    book_2 = session_2->book;
 
-    session_1->books = books_2;
-    session_2->books = books_1;
+    // Swap the read_only flags backwards.
+    tmp = book_1->read_only;
+    book_1->read_only = book_2->read_only;
+    book_2->read_only = tmp;
 
-    for (node = books_1; node; node = node->next)
-    {
-        QofBook *book_1 = node->data;
-        qof_book_set_backend (book_1, session_2->backend);
-    }
-    for (node = books_2; node; node = node->next)
-    {
-        QofBook *book_2 = node->data;
-        qof_book_set_backend (book_2, session_1->backend);
-    }
+    session_1->book = book_2;
+    session_2->book = book_1;
+
+    qof_book_set_backend (book_1, session_2->backend);
+    qof_book_set_backend (book_2, session_1->backend);
 
     LEAVE (" ");
 }
@@ -1649,6 +946,22 @@ qof_session_export (QofSession *tmp_session,
     }
 
     return TRUE;
+}
+
+/* ================= Static function access for testing ================= */
+
+void init_static_qofsession_pointers (void);
+
+void (*p_qof_session_load_backend) (QofSession * session, const char * access_method);
+void (*p_qof_session_clear_error) (QofSession *session);
+void (*p_qof_session_destroy_backend) (QofSession *session);
+
+void
+init_static_qofsession_pointers (void)
+{
+    p_qof_session_load_backend = qof_session_load_backend;
+    p_qof_session_clear_error = qof_session_clear_error;
+    p_qof_session_destroy_backend = qof_session_destroy_backend;
 }
 
 /* =================== END OF FILE ====================================== */

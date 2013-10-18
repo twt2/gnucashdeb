@@ -3690,12 +3690,30 @@
   }
 
   {
-    const char *fullname = "Kwacha";
+    const char *fullname = "Kwacha (old)";
     gnc_commodity *c = gnc_commodity_new(book,
 					 CUR_I18N(fullname),
                                          "ISO4217",
                                          "ZMK",
                                          "894",
+                                         100);
+
+    if(!c) {
+      PWARN("failed to create commodity for currency %s", fullname);
+    } else {
+      if(!gnc_commodity_table_insert(table, c)) {
+        PWARN("failed to insert %s into commodity table", fullname);
+      }
+    }
+  }
+
+  {
+    const char *fullname = "Zambian Kwacha";
+    gnc_commodity *c = gnc_commodity_new(book,
+					 CUR_I18N(fullname),
+                                         "ISO4217",
+                                         "ZMW",
+                                         "967",
                                          100);
 
     if(!c) {

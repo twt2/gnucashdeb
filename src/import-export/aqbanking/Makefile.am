@@ -1,11 +1,11 @@
-SUBDIRS = . schemas
+SUBDIRS = . gschemas
 
 pkglib_LTLIBRARIES = libgncmod-aqbanking.la
 
 libgncmod_aqbanking_la_SOURCES = \
   dialog-ab-trans.c \
-  dialog-daterange.c \
-  druid-ab-initial.c \
+  dialog-ab-daterange.c \
+  assistant-ab-initial.c \
   gnc-ab-getbalance.c \
   gnc-ab-gettrans.c \
   gnc-ab-kvp.c \
@@ -19,8 +19,8 @@ libgncmod_aqbanking_la_SOURCES = \
 
 noinst_HEADERS = \
   dialog-ab-trans.h \
-  dialog-daterange.h \
-  druid-ab-initial.h \
+  dialog-ab-daterange.h \
+  assistant-ab-initial.h \
   gnc-ab-getbalance.h \
   gnc-ab-gettrans.h \
   gnc-ab-kvp.h \
@@ -32,7 +32,9 @@ noinst_HEADERS = \
   gnc-plugin-aqbanking.h
 
 libgncmod_aqbanking_la_LDFLAGS = -avoid-version
-
+if OS_WIN32
+libgncmod_aqbanking_la_LDFLAGS += -export-symbols-regex .*
+endif
 libgncmod_aqbanking_la_LIBADD = \
   ${top_builddir}/src/import-export/libgncmod-generic-import.la \
   ${top_builddir}/src/gnome/libgnc-gnome.la \
@@ -42,8 +44,7 @@ libgncmod_aqbanking_la_LIBADD = \
   ${top_builddir}/src/core-utils/libgnc-core-utils.la \
   ${top_builddir}/src/gnc-module/libgnc-module.la \
   ${top_builddir}/src/libqof/qof/libgnc-qof.la \
-  ${GNOME_LIBS} \
-  ${GLADE_LIBS} \
+  ${GTK_LIBS} \
   ${GLIB_LIBS} \
   ${GWENGUI_GTK2_LIBS} \
   ${AQBANKING_LIBS}
@@ -61,8 +62,7 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/core-utils \
   -I${top_srcdir}/src/gnc-module \
   -I${top_srcdir}/src/libqof/qof \
-  ${GNOME_CFLAGS} \
-  ${GLADE_CFLAGS} \
+  ${GTK_CFLAGS} \
   ${GLIB_CFLAGS} \
   ${AQBANKING_CFLAGS}
 
@@ -70,10 +70,11 @@ uidir = $(GNC_UI_DIR)
 ui_DATA = \
   gnc-plugin-aqbanking-ui.xml
 
-gladedir = $(GNC_GLADE_DIR)
-glade_DATA = \
-  aqbanking.glade
+gtkbuilderdir = $(GNC_GTKBUILDER_DIR)
+gtkbuilder_DATA = \
+  assistant-ab-initial.glade \
+  dialog-ab.glade
 
-EXTRA_DIST = ${ui_DATA} ${glade_DATA}
+EXTRA_DIST = ${ui_DATA} ${gtkbuilder_DATA}
 
 AM_CPPFLAGS += -DG_LOG_DOMAIN=\"gnc.import.aqbanking\"

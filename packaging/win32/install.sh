@@ -57,8 +57,8 @@ register_env_var READLINE_CPPFLAGS " "
 register_env_var READLINE_LDFLAGS " "
 register_env_var REGEX_CPPFLAGS " "
 register_env_var REGEX_LDFLAGS " "
-register_env_var WEBKIT_CFLAGS " "
-register_env_var WEBKIT_LIBS " "
+register_env_var SQLITE3_CFLAGS " "
+register_env_var SQLITE3_LIBS " "
 
 # steps
 # There is no reason to ever need to comment these out!
@@ -78,18 +78,18 @@ if [ "$CROSS_COMPILE" != "yes" ]; then
 fi
 add_step inst_autotools
 add_step inst_gmp
-if [ "$CROSS_COMPILE" != "yes" ]; then
- add_step inst_svn
-fi
 add_step inst_exetype
-add_step inst_libxslt
 add_step inst_gnome
 add_step inst_guile
+if [ "$CROSS_COMPILE" != "yes" ]; then
+ add_step inst_svn
+ add_step inst_git
+fi
 add_step inst_gnutls
+add_step inst_libxslt
 add_step inst_isocodes
 add_step inst_swig
 add_step inst_pcre
-add_step inst_libbonoboui
 add_step inst_libgsf
 if [ "$CROSS_COMPILE" != "yes" ]; then
  add_step inst_hh
@@ -103,11 +103,13 @@ add_step inst_gwenhywfar
 add_step inst_ktoblzcheck
 add_step inst_aqbanking
 add_step inst_libdbi
+
+# libsoup and enchant needed by webkit
+add_step inst_libsoup
+add_step inst_enchant
 add_step inst_webkit
+
 ##
-if [ "$UPDATE_SOURCES" = "yes" ]; then
- add_step svn_up
-fi
 if [ "$WITH_CUTECASH" = "yes" ]; then
  add_step inst_cmake
  add_step inst_cutecash

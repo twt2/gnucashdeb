@@ -23,7 +23,6 @@
 
 #include <glib.h>
 #include <glib/gstdio.h>
-#include <libguile.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
@@ -38,7 +37,6 @@
 # define read _read
 #endif
 
-#include "guile-mappings.h"
 #include "file-utils.h"
 #include "gnc-engine.h"
 #include "gnc-filepath-utils.h"
@@ -50,27 +48,6 @@ static QofLogModule log_module = GNC_MOD_GUILE;
 
 /********************************************************************\
 \********************************************************************/
-
-char *
-gncFindFile (const char * filename)
-{
-    const gchar *full_filename = NULL;
-    SCM find_doc_file;
-    SCM scm_filename;
-    SCM scm_result;
-
-    if (!filename || *filename == '\0')
-        return NULL;
-
-    find_doc_file = scm_c_eval_string("gnc:find-doc-file");
-    scm_filename = scm_makfrom0str ((char *) filename);
-    scm_result = scm_call_1(find_doc_file, scm_filename);
-
-    if (scm_is_string(scm_result))
-        full_filename = scm_to_locale_string(scm_result);
-
-    return g_strdup (full_filename);
-}
 
 /********************************************************************\
  * gncReadFile                                                      *
@@ -88,14 +65,10 @@ gncReadFile (const char * filename, char ** data)
     int   size = 0;
     int   fd;
 
-    /* construct absolute path -- twiddle the relative path we received */
     if (!filename || filename[0] == '\0') return 0;
 
-    /* take absolute paths without searching */
-    if (!g_path_is_absolute (filename))
-        fullname = gncFindFile (filename);
-    else
-        fullname = g_strdup (filename);
+    /* construct absolute path if we received a relative path */
+    fullname = gnc_path_find_localized_html_file (filename);
 
     if (!fullname) return 0;
 
@@ -198,7 +171,7 @@ gnc_find_state_file (const gchar *url,
                      const gchar *guid,
                      gchar **filename_p)
 {
-    gchar *basename, *original = NULL, *filename, *tmp, *file_guid;
+    gchar *basename, *original = NULL, *filename, *file_guid;
     gchar *sf_extension = NULL, *newstyle_filename = NULL;
     GKeyFile *key_file = NULL;
     gint i;
@@ -268,7 +241,7 @@ gnc_find_state_file (const gchar *url,
                                           STATE_FILE_TOP, STATE_FILE_BOOK_GUID,
                                           NULL);
         DEBUG("File GncGUID is %s", file_guid ? file_guid : "<not found>");
-        if (safe_strcmp(guid, file_guid) == 0)
+        if (g_strcmp0(guid, file_guid) == 0)
         {
             DEBUG("Matched !!!");
             g_free(file_guid);

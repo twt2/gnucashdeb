@@ -103,7 +103,7 @@ log4glib_handler(const gchar     *log_domain,
 
     {
         char timestamp_buf[10];
-        time_t now;
+        time64 now;
         struct tm now_tm;
         const char *format_24hour =
 #ifdef G_OS_WIN32
@@ -113,8 +113,8 @@ log4glib_handler(const gchar     *log_domain,
 #endif
             ;
         gchar *level_str = qof_log_level_to_string(log_level);
-        now = time(NULL);
-        localtime_r(&now, &now_tm);
+        now = gnc_time (NULL);
+        gnc_localtime_r (&now, &now_tm);
         qof_strftime(timestamp_buf, 9, format_24hour, &now_tm);
 
         fprintf(fout, "* %s %*s <%s> %*s%s%s",
@@ -162,7 +162,7 @@ qof_log_init_filename(const gchar* log_filename)
             fout = fopen(fname, "wb");
 #else
             /* We must not overwrite /dev/null */
-            g_assert(safe_strcmp(log_filename, "/dev/null") != 0);
+            g_assert(g_strcmp0(log_filename, "/dev/null") != 0);
 
             /* Windows prevents renaming of open files, so the next command silently fails there
              * No problem, the filename on Winows will simply have the random characters */

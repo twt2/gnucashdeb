@@ -35,8 +35,6 @@
 ;; files we can load from the top-level because they're "well behaved"
 ;; (these should probably be in modules eventually)
 (load-from-path "string.scm")
-(load-from-path "doc.scm")
-(load-from-path "main-window.scm")  ;; depends on app-utils (N_, etc.)...
 (load-from-path "fin.scm")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -48,21 +46,8 @@
 (export gnc:error)
 (export gnc:msg)
 (export gnc:debug)
-(export string-join)
 (export gnc:backtrace-if-exception)
-(export gnc:main)
 (export gnc:safe-strcmp) ;; only used by aging.scm atm...
-
-(re-export hash-fold)
-
-;; from command-line.scm
-(export gnc:*doc-path*)
-
-;; from doc.scm
-(export gnc:find-doc-file)
-
-;; from main-window.scm
-(export gnc:main-window-properties-cb)
 
 ;; Get the Makefile.am/configure.in generated variables.
 (load-from-path "build-config.scm")
@@ -74,7 +59,9 @@
 (debug-enable 'backtrace)
 (read-enable 'positions)
 
-(debug-set! maxdepth 100000)
+;; maxdepth doesn't exist in guile 2 and onwards:
+(if (< (string->number (major-version)) 2)
+    (debug-set! maxdepth 100000))
 (debug-set! stack    200000)
 
 ;;(use-modules (ice-9 statprof))
@@ -92,32 +79,6 @@
        (a 1)
        (b -1)
        (else 0))))
-
-(cond-expand
- (guile-2)
- (else
-  (if (not (defined? 'hash-fold))
-      (define (hash-fold proc init table)
-        (for-each 
-         (lambda (bin)
-           (for-each 
-            (lambda (elt)
-              (set! init (proc (car elt) (cdr elt) init)))
-            bin))
-         (vector->list table))))))
-
-(define (string-join lst joinstr)
-  ;; This should avoid a bunch of unnecessary intermediate string-appends.
-  ;; I'm presuming those are more expensive than cons...
-  (if (or (not (list? lst)) (null? lst))
-      ""
-      (apply string-append
-             (car lst)
-             (let loop ((remaining-elements (cdr lst)))
-               (if (null? remaining-elements)
-                   '()
-                   (cons joinstr (cons (car remaining-elements)
-                                       (loop (cdr remaining-elements)))))))))
 
 (define (gnc:backtrace-if-exception proc . args)
   (define (dumper key . args)
@@ -193,22 +154,3 @@
 
     ;; Put it back together
     (string-join (reverse parts-out) "/")))
-
-(define (gnc:main)
-
-  ;;  (statprof-reset 0 50000) ;; 20 times/sec
-  ;;  (statprof-start)
-
-  ;; Now the fun begins.
-  (gnc:debug "starting up (1).")
-
-  ;; Now we can load a bunch of files.
-  (load-from-path "command-line.scm") ;; depends on app-utils (N_, etc.)...
-
-  (gnc:initialize-config-vars) ;; in command-line.scm
-  ;; handle unrecognized command line args
-  (if (not (gnc:handle-command-line-args))
-      (gnc:shutdown 1))
-
-  ;;return to C
-  )

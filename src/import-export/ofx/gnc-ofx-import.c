@@ -30,7 +30,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/time.h>
-#include <libguile.h>
 #include <math.h>
 
 #include <libofx/libofx.h>
@@ -41,19 +40,21 @@
 
 #include "Account.h"
 #include "Transaction.h"
-#include "gnc-associate-account.h"
+#include "engine-helpers.h"
 #include "gnc-ofx-import.h"
 #include "gnc-file.h"
 #include "gnc-engine.h"
 #include "gnc-ui-util.h"
 #include "gnc-glib-utils.h"
-#include "core-utils/gnc-gconf-utils.h"
+#include "gnc-prefs.h"
 #include "gnome-utils/gnc-ui.h"
 #include "gnome-utils/dialog-account.h"
+#include "dialog-utils.h"
 
 #include "gnc-ofx-kvp.h"
 
-#define GCONF_SECTION "dialogs/import/ofx"
+#define GNC_PREFS_GROUP "dialogs.import.ofx"
+#define GNC_PREF_AUTO_COMMODITY "auto-create-commodity"
 
 static QofLogModule log_module = GNC_MOD_IMPORT;
 
@@ -314,13 +315,10 @@ static Account *gnc_ofx_new_account(const char* name,
 int ofx_proc_transaction_cb(struct OfxTransactionData data, void * transaction_user_data)
 {
     char dest_string[255];
-    time_t current_time;
+    time64 current_time = gnc_time (NULL);
     Account *account;
     Account *investment_account = NULL;
     Account *income_account = NULL;
-/***CPC 20130207 ref: OFX Commodity Account Patch, Burke***
-    gchar *investment_account_text;************************/
-/***CPC 20130207 ref: OFX Commodity Account Patch, Burke***/
     gchar *investment_account_text, *investment_account_onlineid;
     gnc_commodity *currency = NULL;
     gnc_commodity *investment_commodity = NULL;
@@ -361,31 +359,29 @@ int ofx_proc_transaction_cb(struct OfxTransactionData data, void * transaction_u
     transaction = xaccMallocTransaction(book);
     xaccTransBeginEdit(transaction);
 
-    if (data.date_initiated_valid)
+    /* Note: Unfortunately libofx <= 0.9.5 will not report a missing
+     * date field as an invalid one. Instead, it will report it as
+     * valid and return a completely bogus date. Starting with
+     * libofx-0.9.6 (not yet released as of 2012-09-09), it will still
+     * be reported as valid but at least the date integer itself is
+     * just plain zero. */
+    if (data.date_posted_valid && (data.date_posted != 0))
     {
-        xaccTransSetDatePostedSecs(transaction, data.date_initiated);
+        /* The hopeful case: We have a posted_date */
+        xaccTransSetDatePostedSecsNormalized(transaction, data.date_posted);
+    } else if (data.date_initiated_valid && (data.date_initiated != 0))
+    {
+        /* No posted date? Maybe we have an initiated_date */
+        xaccTransSetDatePostedSecsNormalized(transaction, data.date_initiated);
     }
-    else if (data.date_posted_valid)
+    else
     {
-        xaccTransSetDatePostedSecs(transaction, data.date_posted);
+        /* Uh no, no valid date. As a workaround use today's date */
+        xaccTransSetDatePostedSecsNormalized(transaction, current_time);
     }
 
-    if (data.date_posted_valid)
-    {
-        xaccTransSetDatePostedSecs(transaction, data.date_posted);
-    }
+    xaccTransSetDateEnteredSecs(transaction, current_time);
 
-    current_time = time(NULL);
-    xaccTransSetDateEnteredSecs(transaction, mktime(localtime(&current_time)));
-
-    if (data.check_number_valid)
-    {
-        xaccTransSetNum(transaction, data.check_number);
-    }
-    else if (data.reference_number_valid)
-    {
-        xaccTransSetNum(transaction, data.reference_number);
-    }
     /* Put transaction name in Description, or memo if name unavailable */
     if (data.name_valid)
     {
@@ -423,7 +419,7 @@ int ofx_proc_transaction_cb(struct OfxTransactionData data, void * transaction_u
     if (data.date_funds_available_valid)
     {
         Timespec ts;
-        timespecFromTime_t(&ts, data.date_funds_available);
+        timespecFromTime64(&ts, data.date_funds_available);
         gnc_timespec_to_iso8601_buff (ts, dest_string);
         tmp = notes;
         notes = g_strdup_printf("%s%s%s", tmp, "|Date funds available:", dest_string);
@@ -489,6 +485,15 @@ int ofx_proc_transaction_cb(struct OfxTransactionData data, void * transaction_u
             gnc_amount = gnc_ofx_numeric_from_double_txn(data.amount, transaction);
             xaccSplitSetBaseValue(split, gnc_amount, xaccTransGetCurrency(transaction));
 
+            /* set tran-num and/or split-action per book option */
+            if (data.check_number_valid)
+            {
+                gnc_set_num_action(transaction, split, data.check_number, NULL);
+            }
+            else if (data.reference_number_valid)
+            {
+                gnc_set_num_action(transaction, split, data.reference_number, NULL);
+            }
             /* Also put the ofx transaction's memo in the
              * split's memo field */
             if (data.memo_valid)
@@ -522,32 +527,21 @@ int ofx_proc_transaction_cb(struct OfxTransactionData data, void * transaction_u
                 // As we now have the commodity, select the account with that commodity.
 
                 investment_account_text = g_strdup_printf( /* This string is a default account
-								  name. It MUST NOT contain the
-								  character ':' anywhere in it or
-								  in any translations.  */
+                                                              name. It MUST NOT contain the
+                                                              character ':' anywhere in it or
+                                                              in any translations.  */
                                               _("Stock account for security \"%s\""),
                                               data.security_data_ptr->secname);
-/***CPC 20130207 ref: OFX Commodity Account Patch, Burke***/
-		investment_account_onlineid = g_strdup_printf( "%s%s", data.account_id, data.unique_id);
 
-/***CPC 20130207 ref: OFX Commodity Account Patch, Burke***
-*               // @FIXME: Add the automated selection or creation of account here!
-*
-*               // First check whether we can find the right investment_account without asking the user
-*               investment_account = gnc_import_select_account(NULL,
-*                                    data.unique_id, FALSE, investment_account_text,
-*                                    investment_commodity, ACCT_TYPE_STOCK, NULL, NULL);
-***********************************************************/
-
-/***CPC 20130207 ref: OFX Commodity Account Patch, Burke***/
-		investment_account = gnc_import_select_account(NULL, 
-								   investment_account_onlineid,
-								   1,
-								   investment_account_text,
-								   investment_commodity,
-								   ACCT_TYPE_STOCK,
-								   NULL,
-								   NULL);
+                investment_account_onlineid = g_strdup_printf( "%s%s", data.account_id, data.unique_id);
+                investment_account = gnc_import_select_account(NULL,
+                                                               investment_account_onlineid,
+                                                               1,
+                                                               investment_account_text,
+                                                               investment_commodity,
+                                                               ACCT_TYPE_STOCK,
+                                                               NULL,
+                                                               NULL);
 
                 // but use it only if that's really the right commodity
                 if (investment_account
@@ -633,8 +627,7 @@ int ofx_proc_transaction_cb(struct OfxTransactionData data, void * transaction_u
                     PERR("No investment account found for text: %s\n", investment_account_text);
                 }
                 g_free (investment_account_text);
-/***CPC 20130207 ref: OFX Commodity Account Patch, Burke***/
-		g_free (investment_account_onlineid);
+                g_free (investment_account_onlineid);
                 investment_account_text = NULL;
 
                 if (investment_account != NULL &&
@@ -653,6 +646,16 @@ int ofx_proc_transaction_cb(struct OfxTransactionData data, void * transaction_u
                     xaccSplitSetAmount(split, gnc_units);
                     xaccSplitSetValue(split, gnc_amount);
 
+                    /* set tran-num and/or split-action per book option */
+                    if (data.check_number_valid)
+                    {
+                        gnc_set_num_action(transaction, split, data.check_number, NULL);
+                    }
+                    else if (data.reference_number_valid)
+                    {
+                        gnc_set_num_action(transaction, split,
+                                                data.reference_number, NULL);
+                    }
                     if (data.security_data_ptr->memo_valid)
                     {
                         xaccSplitSetMemo(split, data.security_data_ptr->memo);
@@ -686,9 +689,9 @@ int ofx_proc_transaction_cb(struct OfxTransactionData data, void * transaction_u
                     {
                         DEBUG("Couldn't find an associated income account");
                         investment_account_text = g_strdup_printf( /* This string is a default account
-									  name. It MUST NOT contain the
-									  character ':' anywhere in it or
-									  in any translations.  */
+                                                                      name. It MUST NOT contain the
+                                                                      character ':' anywhere in it or
+                                                                      in any translations.  */
                                                       _("Income account for security \"%s\""),
                                                       data.security_data_ptr->secname);
                         income_account = gnc_import_select_account(
@@ -791,11 +794,14 @@ int ofx_proc_statement_cb(struct OfxStatementData data, void * statement_user_da
 
 int ofx_proc_account_cb(struct OfxAccountData data, void * account_user_data)
 {
-    Account *selected_account;
     gnc_commodity_table * commodity_table;
     gnc_commodity * default_commodity;
     GNCAccountType default_type = ACCT_TYPE_NONE;
     gchar * account_description;
+    /* In order to trigger a book options display on the creation of a new book,
+     * we need to detect when we are dealing with a new book. */
+    gboolean new_book = gnc_is_new_book();
+
     const gchar * account_type_name = _("Unknown OFX account");
 
     if (data.account_id_valid)
@@ -847,21 +853,30 @@ int ofx_proc_account_cb(struct OfxAccountData data, void * account_user_data)
                 break;
             default:
                 PERR("WRITEME: ofx_proc_account() This is an unknown account type!");
+                break;
             }
         }
 
+        /* If the OFX importer was started in Gnucash in a 'new_book' situation,
+         * as described above, the first time the 'ofx_proc_account_cb' function
+         * is called a book is created. (This happens after the 'new_book' flag
+         * is set in 'gnc_get_current_commodities', called above.) So, before
+         * calling 'gnc_import_select_account', allow the user to set book
+         * options. */
+        if (new_book)
+            new_book = gnc_new_book_option_display();
+
         gnc_utf8_strip_invalid(data.account_name);
         account_description = g_strdup_printf( /* This string is a default account
-					      name. It MUST NOT contain the
-					      character ':' anywhere in it or
-					      in any translation.  */
+                                                  name. It MUST NOT contain the
+                                                  character ':' anywhere in it or
+                                                  in any translation.  */
                                   "%s \"%s\"",
                                   account_type_name,
                                   data.account_name);
-        selected_account = gnc_import_select_account(NULL,
-                           data.account_id, 1,
-                           account_description, default_commodity,
-                           default_type, NULL, NULL);
+        gnc_import_select_account(NULL, data.account_id, 1,
+                                  account_description, default_commodity,
+                                  default_type, NULL, NULL);
         g_free(account_description);
     }
     else
@@ -915,7 +930,7 @@ void gnc_file_ofx_import (void)
 
     DEBUG("gnc_file_ofx_import(): Begin...\n");
 
-    default_dir = gnc_get_default_directory(GCONF_SECTION);
+    default_dir = gnc_get_default_directory(GNC_PREFS_GROUP);
     selected_filename = gnc_file_dialog(_("Select an OFX/QFX file to process"),
                                         NULL,
                                         default_dir,
@@ -930,7 +945,7 @@ void gnc_file_ofx_import (void)
 
         /* Remember the directory as the default. */
         default_dir = g_path_get_dirname(selected_filename);
-        gnc_set_default_directory(GCONF_SECTION, default_dir);
+        gnc_set_default_directory(GNC_PREFS_GROUP, default_dir);
         g_free(default_dir);
 
         /*strncpy(file,selected_filename, 255);*/
@@ -939,9 +954,9 @@ void gnc_file_ofx_import (void)
         /* Create the Generic transaction importer GUI. */
         gnc_ofx_importer_gui = gnc_gen_trans_list_new(NULL, NULL, FALSE, 42);
 
-        /* Look up the needed gconf options */
+        /* Look up the needed preferences */
         auto_create_commodity =
-            gnc_gconf_get_bool(GCONF_IMPORT_SECTION, "auto_create_commodity", NULL);
+            gnc_prefs_get_bool (GNC_PREFS_GROUP_IMPORT, GNC_PREF_AUTO_COMMODITY);
 
         /* Initialize libofx */
 

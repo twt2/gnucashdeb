@@ -45,7 +45,7 @@
 #include "gnc-ui.h"
 
 /* This static indicates the debugging module that this .o belongs to.  */
-static QofLogModule log_module = G_LOG_DOMAIN;
+G_GNUC_UNUSED static QofLogModule log_module = G_LOG_DOMAIN;
 
 static void save_templates(GtkWidget *parent, Account *gnc_acc, GList *templates,
                            gboolean dont_ask);
@@ -84,7 +84,6 @@ gnc_ab_maketrans(GtkWidget *parent, Account *gnc_acc,
     AB_BANKING *api;
     gboolean online = FALSE;
     AB_ACCOUNT *ab_acc;
-    GncABTransDialog *dialog = NULL;
     GList *templates = NULL;
     GncABTransDialog *td = NULL;
     gboolean successful = FALSE;
@@ -214,12 +213,23 @@ gnc_ab_maketrans(GtkWidget *parent, Account *gnc_acc,
                 xfer_dialog, _("Online Banking Bank-Internal Transfer"));
             gnc_xfer_dialog_lock_from_account_tree(xfer_dialog);
             break;
+        case SEPA_TRANSFER:
+            gnc_xfer_dialog_set_title(
+                xfer_dialog, _("Online Banking European (SEPA) Transfer"));
+            gnc_xfer_dialog_lock_from_account_tree(xfer_dialog);
+            break;
+        case SEPA_DEBITNOTE:
+            gnc_xfer_dialog_set_title(
+                xfer_dialog, _("Online Banking European (SEPA) Debit Note"));
+            gnc_xfer_dialog_lock_to_account_tree(xfer_dialog);
+            break;
         case SINGLE_TRANSFER:
         default:
             gnc_xfer_dialog_set_title(
                 xfer_dialog, _("Online Banking Transaction"));
             gnc_xfer_dialog_lock_from_account_tree(xfer_dialog);
         }
+        gnc_xfer_dialog_set_to_show_button_active(xfer_dialog, TRUE);
 
         amount = double_to_gnc_numeric(
                      AB_Value_GetValueAsDouble(AB_Transaction_GetValue(ab_trans)),
@@ -227,6 +237,7 @@ gnc_ab_maketrans(GtkWidget *parent, Account *gnc_acc,
                      GNC_HOW_RND_ROUND_HALF_UP);
         gnc_xfer_dialog_set_amount(xfer_dialog, amount);
         gnc_xfer_dialog_set_amount_sensitive(xfer_dialog, FALSE);
+        gnc_xfer_dialog_set_date_sensitive(xfer_dialog, FALSE);
 
         description = gnc_ab_description_to_gnc(ab_trans);
         gnc_xfer_dialog_set_description(xfer_dialog, description);
@@ -280,7 +291,7 @@ gnc_ab_maketrans(GtkWidget *parent, Account *gnc_acc,
                 successful = FALSE;
                 if (!gnc_verify_dialog(
                             parent, FALSE, "%s",
-                            _("An error occurred while executing the job.  Please check "
+                            _("An error occurred while executing the job. Please check "
                               "the log window for the exact error message.\n"
                               "\n"
                               "Do you want to enter the job again?")))

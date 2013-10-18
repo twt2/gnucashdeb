@@ -31,6 +31,7 @@
 #include <string.h>
 
 #include "gnucash-sheet.h"
+#include "gnucash-sheetP.h"
 #include "gnucash-color.h"
 #include "gnucash-style.h"
 #include "gnucash-grid.h"
@@ -292,7 +293,6 @@ void
 gnc_header_reconfigure (GncHeader *header)
 {
     GnomeCanvas *canvas;
-    GtkWidget *widget;
     GnucashSheet *sheet;
     SheetBlockStyle *old_style;
     int w, h;
@@ -301,7 +301,6 @@ gnc_header_reconfigure (GncHeader *header)
     g_return_if_fail (GNC_IS_HEADER (header));
 
     canvas = GNOME_CANVAS_ITEM(header)->canvas;
-    widget = GTK_WIDGET (header->sheet);
     sheet = GNUCASH_SHEET(header->sheet);
     old_style = header->style;
 
@@ -421,7 +420,7 @@ gnc_header_resize_column (GncHeader *header, gint col, gint width)
     gnucash_sheet_set_col_width (sheet, col, width);
 
     gnucash_cursor_configure (GNUCASH_CURSOR(sheet->cursor));
-    gnc_item_edit_configure (GNC_ITEM_EDIT(sheet->item_editor));
+    gnc_item_edit_configure (gnucash_sheet_get_item_edit (sheet));
 
     gnc_header_reconfigure (header);
     gnucash_sheet_set_scroll_region (sheet);
@@ -596,6 +595,12 @@ gnc_header_event (GnomeCanvasItem *item, GdkEvent *event)
 }
 
 
+/* Note that g_value_set_object() refs the object, as does
+ * g_object_get(). But g_object_get() only unrefs once when it disgorges
+ * the object, leaving an unbalanced ref, which leaks. So instead of
+ * using g_value_set_object(), use g_value_take_object() which doesn't
+ * ref the object when used in get_property().
+ */
 static void
 gnc_header_get_property (GObject *object,
                          guint param_id,
@@ -607,7 +612,7 @@ gnc_header_get_property (GObject *object,
     switch (param_id)
     {
     case PROP_SHEET:
-        g_value_set_object (value, header->sheet);
+        g_value_take_object (value, header->sheet);
         break;
     case PROP_CURSOR_NAME:
         g_value_set_string (value, header->cursor_name);
@@ -772,8 +777,3 @@ gnc_header_new (GnucashSheet *sheet)
 }
 
 
-/*
-  Local Variables:
-  c-basic-offset: 8
-  End:
-*/

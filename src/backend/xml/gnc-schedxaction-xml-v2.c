@@ -44,8 +44,6 @@
 
 #include "sixtp-dom-parsers.h"
 
-#include "gnc-gconf-utils.h"
-
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "gnc.backend.file.sx"
 
@@ -248,7 +246,7 @@ sx_enabled_handler( xmlNodePtr node, gpointer sx_pdata )
     SchedXaction *sx = pdata->sx;
     gchar *tmp = dom_tree_to_text( node );
 
-    sx->enabled = (safe_strcmp( tmp, "y" ) == 0 ? TRUE : FALSE );
+    sx->enabled = (g_strcmp0( tmp, "y" ) == 0 ? TRUE : FALSE );
 
     return TRUE;
 }
@@ -260,7 +258,7 @@ sx_autoCreate_handler( xmlNodePtr node, gpointer sx_pdata )
     SchedXaction *sx = pdata->sx;
     gchar *tmp = dom_tree_to_text( node );
 
-    sx->autoCreateOption = (safe_strcmp( tmp, "y" ) == 0 ? TRUE : FALSE );
+    sx->autoCreateOption = (g_strcmp0( tmp, "y" ) == 0 ? TRUE : FALSE );
 
     return TRUE;
 }
@@ -272,7 +270,7 @@ sx_notify_handler( xmlNodePtr node, gpointer sx_pdata )
     SchedXaction *sx = pdata->sx;
     gchar *tmp = dom_tree_to_text( node );
 
-    sx->autoCreateNotify = (safe_strcmp( tmp, "y" ) == 0 ? TRUE : FALSE );
+    sx->autoCreateNotify = (g_strcmp0( tmp, "y" ) == 0 ? TRUE : FALSE );
 
     return TRUE;
 }

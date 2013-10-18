@@ -297,7 +297,7 @@ qof_instance_init_data (QofInstance *inst, QofIdType type, QofBook *book)
      * OK, it might eliminate programming errors. */
 
     col_type = qof_collection_get_type(col);
-    if (safe_strcmp(col_type, type))
+    if (g_strcmp0(col_type, type))
     {
         PERR ("attempt to insert \"%s\" into \"%s\"", type, col_type);
         return;
@@ -353,6 +353,12 @@ qof_instance_finalize_real (GObject *instp)
     priv->dirty = FALSE;
 }
 
+/* Note that g_value_set_object() refs the object, as does
+ * g_object_get(). But g_object_get() only unrefs once when it disgorges
+ * the object, leaving an unbalanced ref, which leaks. So instead of
+ * using g_value_set_object(), use g_value_take_object() which doesn't
+ * ref the object when used in get_property().
+ */
 static void
 qof_instance_get_property (GObject         *object,
                            guint            prop_id,
@@ -376,7 +382,7 @@ qof_instance_get_property (GObject         *object,
         g_value_set_pointer(value, priv->collection);
         break;
     case PROP_BOOK:
-        g_value_set_object(value, priv->book);
+        g_value_take_object(value, priv->book);
         break;
     case PROP_KVP_DATA:
         g_value_set_pointer(value, inst->kvp_data);
@@ -418,13 +424,11 @@ qof_instance_set_property (GObject         *object,
                            GParamSpec      *pspec)
 {
     QofInstance *inst;
-    QofInstancePrivate *priv;
     Timespec *ts;
 
     g_return_if_fail(QOF_IS_INSTANCE(object));
 
     inst = QOF_INSTANCE(object);
-    priv = GET_PRIVATE(inst);
 
     switch (prop_id)
     {
@@ -602,17 +606,6 @@ qof_instance_set_slots (QofInstance *inst, KvpFrame *frm)
     inst->kvp_data = frm;
 }
 
-Timespec
-qof_instance_get_last_update (const QofInstance *inst)
-{
-    if (!inst)
-    {
-        Timespec ts = {0, -1};
-        return ts;
-    }
-    return GET_PRIVATE(inst)->last_update;
-}
-
 void
 qof_instance_set_last_update (QofInstance *inst, Timespec ts)
 {
@@ -643,13 +636,6 @@ void qof_instance_reset_editlevel (gpointer ptr)
 {
     g_return_if_fail(QOF_IS_INSTANCE(ptr));
     GET_PRIVATE(ptr)->editlevel = 0;
-}
-
-gboolean
-qof_instance_check_edit(const QofInstance *inst)
-{
-    g_return_val_if_fail(QOF_IS_INSTANCE(inst), FALSE);
-    return (GET_PRIVATE(inst)->editlevel > 0);
 }
 
 int
@@ -770,14 +756,6 @@ qof_instance_get_version (gconstpointer inst)
     return GET_PRIVATE(inst)->version;
 }
 
-gint
-qof_instance_compare_version (gconstpointer inst1, gconstpointer inst2)
-{
-    g_return_val_if_fail(QOF_IS_INSTANCE(inst1), 1);
-    g_return_val_if_fail(QOF_IS_INSTANCE(inst2), -1);
-    return GET_PRIVATE(inst2)->version - GET_PRIVATE(inst1)->version;
-}
-
 void
 qof_instance_set_version (gpointer inst, gint32 vers)
 {
@@ -791,18 +769,6 @@ qof_instance_copy_version (gpointer to, gconstpointer from)
     g_return_if_fail(QOF_IS_INSTANCE(to));
     g_return_if_fail(QOF_IS_INSTANCE(from));
     GET_PRIVATE(to)->version = GET_PRIVATE(from)->version;
-}
-
-void
-qof_instance_increment_version (gpointer inst, guint32 new_check)
-{
-    QofInstancePrivate *priv;
-
-    g_return_if_fail(QOF_IS_INSTANCE(inst));
-
-    priv = GET_PRIVATE(inst);
-    priv->version++;
-    priv->version_check = new_check;
 }
 
 guint32
@@ -852,64 +818,6 @@ void qof_instance_set_idata(gpointer inst, guint32 idata)
 }
 
 /* ========================================================== */
-
-void
-qof_instance_gemini (QofInstance *to, const QofInstance *from)
-{
-    QofInstancePrivate *from_priv, *to_priv, *fb_priv, *tb_priv;
-    time_t now;
-
-    g_return_if_fail(QOF_IS_INSTANCE(to));
-    g_return_if_fail(QOF_IS_INSTANCE(from));
-
-    from_priv = GET_PRIVATE(from);
-    to_priv = GET_PRIVATE(to);
-    fb_priv = GET_PRIVATE(from_priv->book);
-    tb_priv = GET_PRIVATE(to_priv->book);
-
-    /* Books must differ for a gemini to be meaningful */
-    if (from_priv->book == to_priv->book)
-        return;
-
-    now = time(0);
-
-    /* Make a note of where the copy came from */
-    gnc_kvp_bag_add (to->kvp_data, "gemini", now,
-                     "inst_guid", &from_priv->guid,
-                     "book_guid", &fb_priv->guid,
-                     NULL);
-    gnc_kvp_bag_add (from->kvp_data, "gemini", now,
-                     "inst_guid", &to_priv->guid,
-                     "book_guid", &tb_priv->guid,
-                     NULL);
-
-    to_priv->dirty = TRUE;
-}
-
-QofInstance *
-qof_instance_lookup_twin (const QofInstance *src, QofBook *target_book)
-{
-    QofCollection *col;
-    KvpFrame *fr;
-    GncGUID * twin_guid;
-    QofInstance * twin;
-    QofInstancePrivate *bpriv;
-
-    if (!src || !target_book) return NULL;
-    ENTER (" ");
-
-    bpriv = GET_PRIVATE(QOF_INSTANCE(target_book));
-    fr = gnc_kvp_bag_find_by_guid (src->kvp_data, "gemini",
-                                   "book_guid", &bpriv->guid);
-
-    twin_guid = kvp_frame_get_guid (fr, "inst_guid");
-
-    col = qof_book_get_collection (target_book, src->e_type);
-    twin = (QofInstance *) qof_collection_lookup_entity (col, twin_guid);
-
-    LEAVE (" found twin=%p", twin);
-    return twin;
-}
 
 /* Returns a displayable name to represent this object */
 gchar* qof_instance_get_display_name(const QofInstance* inst)
@@ -1079,16 +987,6 @@ gboolean qof_commit_edit (QofInstance *inst)
     priv->editlevel--;
     if (0 < priv->editlevel) return FALSE;
 
-#if 0
-    if ((0 == priv->editlevel) && priv->dirty)
-    {
-        QofBackend * be = qof_book_get_backend(priv->book);
-        if (be && qof_backend_commit_exists(be))
-        {
-            qof_backend_run_commit(be, inst);
-        }
-    }
-#endif
     if (0 > priv->editlevel)
     {
         PERR ("unbalanced call - resetting (was %d)", priv->editlevel);
@@ -1105,10 +1003,8 @@ qof_commit_edit_part2(QofInstance *inst,
 {
     QofInstancePrivate *priv;
     QofBackend * be;
-    gboolean dirty;
 
     priv = GET_PRIVATE(inst);
-    dirty = priv->dirty;
 
     /* See if there's a backend.  If there is, invoke it. */
     be = qof_book_get_backend(priv->book);
@@ -1160,9 +1056,3 @@ qof_commit_edit_part2(QofInstance *inst,
 
 /* ========================== END OF FILE ======================= */
 
-// Local Variables:
-// mode: c
-// indent-tabs-mode: nil
-// c-block-comment-prefix: "* "
-// eval: (c-add-style "gnc" '("k&r" (c-basic-offset . 4) (c-offsets-alist (case-label . +))) t)
-// End:

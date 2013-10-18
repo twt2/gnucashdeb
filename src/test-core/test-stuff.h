@@ -4,7 +4,7 @@
  *
  * Modified by bstanley 20010323
  * removed testing functionality which depends on the rest of gnucash -
- * sepearated into gnc-test-stuff.h
+ * separated into gnc-test-stuff.h
  *
  */
 
@@ -52,6 +52,7 @@ Otherwise, only failures are printed out.
  * Apparently C99 can, too, but it's not exactly standard either.
 #define do_test_args( result, title, format ) do_test_call( result, title, __FILE__, __LINE__, format, ... );
 */
+
 
 /* Privately used to indicate a test result. You may use these if you
  * wish, but it's easier to use the do_test macro above.
@@ -126,5 +127,6 @@ gchar* get_random_string_without(const char *exclude_chars);
 gint64 get_random_gint64(void);
 double get_random_double(void);
 const char* get_random_string_in_array(const char* str_list[]);
+
 
 #endif /* TEST_STUFF_H */

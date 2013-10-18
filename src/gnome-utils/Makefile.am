@@ -1,4 +1,4 @@
-SUBDIRS = glade schemas . test ui
+SUBDIRS = gtkbuilder gschemas . test ui
 
 pkglib_LTLIBRARIES = libgncmod-gnome-utils.la
 
@@ -15,38 +15,41 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/lib/libc \
   -I${top_srcdir}/src/libqof/qof \
   ${GLIB_CFLAGS} \
-  ${GLADE_CFLAGS} \
   ${GTK_CFLAGS} \
-  ${GNOME_CFLAGS} \
   ${GNOME_KEYRING_CFLAGS} \
   ${GUILE_INCS} \
   ${QOF_CFLAGS} \
-  ${GOFFICE_CFLAGS} \
   ${LIBGDA_CFLAGS} \
+  ${LIBXML2_CFLAGS} \
   ${GTK_MAC_CFLAGS}
 
 libgncmod_gnome_utils_la_SOURCES = \
   account-quickfill.c \
+  assistant-utils.c \
+  assistant-xml-encoding.c \
   cursors.c \
   dialog-account.c \
   dialog-book-close.c \
   dialog-commodity.c \
+  dialog-dup-trans.c \
   dialog-file-access.c \
   dialog-object-references.c \
   dialog-options.c \
   dialog-preferences.c \
-  dialog-query-list.c \
+  dialog-query-view.c \
   dialog-reset-warnings.c \
+  dialog-tax-table.c \
   dialog-totd.c \
   dialog-transfer.c \
   dialog-userpass.c \
   dialog-utils.c \
-  druid-utils.c \
-  druid-gconf-setup.c \
-  druid-gnc-xml-import.c \
   gnc-account-sel.c \
   gnc-amount-edit.c \
   gnc-autosave.c \
+  gnc-cell-renderer-date.c \
+  gnc-cell-renderer-popup.c \
+  gnc-cell-renderer-popup-entry.c \
+  gnc-combott.c \
   gnc-commodity-edit.c \
   gnc-currency-edit.c \
   gnc-date-delta.c \
@@ -55,11 +58,6 @@ libgncmod_gnome_utils_la_SOURCES = \
   gnc-dense-cal.c \
   gnc-dense-cal-model.c \
   gnc-dense-cal-store.c \
-  gnc-dialog.c \
-  gnc-druid-gnome.c \
-  gnc-druid-provider-edge-gnome.c \
-  gnc-druid-provider-file-gnome.c \
-  gnc-druid-provider-multifile-gnome.c \
   gnc-embedded-window.c \
   gnc-file.c \
   gnc-frequency.c \
@@ -79,21 +77,28 @@ libgncmod_gnome_utils_la_SOURCES = \
   gnc-plugin-page.c \
   gnc-plugin.c \
   gnc-period-select.c \
-  gnc-query-list.c \
+  gnc-query-view.c \
   gnc-splash.c \
   gnc-sx-instance-dense-cal-adapter.c \
   gnc-sx-list-tree-model-adapter.c \
+  gnc-tree-control-split-reg.c \
   gnc-tree-model.c \
   gnc-tree-model-account-types.c \
   gnc-tree-model-account.c \
   gnc-tree-model-budget.c \
+  gnc-tree-model-owner.c \
   gnc-tree-model-commodity.c \
   gnc-tree-model-price.c \
+  gnc-tree-model-split-reg.c \
+  gnc-tree-util-split-reg.c \
   gnc-tree-view-account.c \
   gnc-tree-view-commodity.c \
+  gnc-tree-view-owner.c \
   gnc-tree-view-price.c \
+  gnc-tree-view-split-reg.c \
   gnc-tree-view-sx-list.c \
   gnc-tree-view.c \
+  gnc-warnings.c \
   gnc-window.c \
   gncmod-gnome-utils.c \
   misc-gnome-utils.c \
@@ -105,23 +110,27 @@ libgncmod_gnome_utils_la_SOURCES = \
 gncincludedir = ${GNC_INCLUDE_DIR}
 gncinclude_HEADERS = \
   account-quickfill.h \
+  assistant-utils.h \
+  assistant-xml-encoding.h \
   dialog-account.h \
   dialog-book-close.h \
   dialog-commodity.h \
+  dialog-dup-trans.h \
   dialog-file-access.h \
   dialog-preferences.h \
   dialog-object-references.h \
   dialog-options.h \
-  dialog-query-list.h \
+  dialog-query-view.h \
   dialog-reset-warnings.h \
   dialog-totd.h \
   dialog-transfer.h \
   dialog-utils.h \
-  druid-utils.h \
-  druid-gconf-setup.h \
-  druid-gnc-xml-import.h \
   gnc-account-sel.h \
   gnc-amount-edit.h \
+  gnc-cell-renderer-date.h \
+  gnc-cell-renderer-popup.h \
+  gnc-cell-renderer-popup-entry.h \
+  gnc-combott.h \
   gnc-commodity-edit.h \
   gnc-currency-edit.h \
   gnc-date-delta.h \
@@ -130,7 +139,6 @@ gncinclude_HEADERS = \
   gnc-dense-cal.h \
   gnc-dense-cal-model.h \
   gnc-dense-cal-store.h \
-  gnc-druid-gnome-ui.h \
   gnc-embedded-window.h \
   gnc-file.h \
   gnc-frequency.h \
@@ -148,34 +156,36 @@ gncinclude_HEADERS = \
   gnc-plugin-page.h \
   gnc-plugin.h \
   gnc-period-select.h \
-  gnc-query-list.h \
+  gnc-query-view.h \
   gnc-splash.h \
   gnc-sx-instance-dense-cal-adapter.h \
   gnc-sx-list-tree-model-adapter.h \
+  gnc-tree-control-split-reg.h \
   gnc-tree-model.h \
   gnc-tree-model-account-types.h \
   gnc-tree-model-account.h \
   gnc-tree-model-budget.h \
+  gnc-tree-model-owner.h \
   gnc-tree-model-commodity.h \
   gnc-tree-model-price.h \
+  gnc-tree-model-split-reg.h \
+  gnc-tree-util-split-reg.h \
   gnc-tree-view-account.h \
   gnc-tree-view-commodity.h \
+  gnc-tree-view-owner.h \
   gnc-tree-view-price.h \
+  gnc-tree-view-split-reg.h \
   gnc-tree-view-sx-list.h \
   gnc-tree-view.h \
   gnc-ui.h \
   gnc-window.h \
   misc-gnome-utils.h \
   print-session.h \
-  gnc-dialog.h \
   window-main-summarybar.h
 
 noinst_HEADERS = \
+  dialog-tax-table.h \
   gnc-autosave.h \
-  gnc-druid-gnome.h \
-  gnc-druid-provider-edge-gnome.h \
-  gnc-druid-provider-file-gnome.h \
-  gnc-druid-provider-multifile-gnome.h \
   gnc-gobject-utils.h \
   gnc-gtk-utils.h \
   search-param.h
@@ -190,9 +200,8 @@ libgncmod_gnome_utils_la_LIBADD = \
   ${top_builddir}/src/app-utils/libgncmod-app-utils.la \
   $(top_builddir)/lib/libc/libc-missing.la \
   ${top_builddir}/src/libqof/qof/libgnc-qof.la \
-  ${GNOME_LIBS} \
+  ${GTK_LIBS} \
   ${GNOME_KEYRING_LIBS} \
-  ${GLADE_LIBS} \
   ${GUILE_LIBS} \
   ${GLIB_LIBS} \
   ${DB_LIBS} \
@@ -200,11 +209,19 @@ libgncmod_gnome_utils_la_LIBADD = \
   ${LIBXML2_LIBS} \
   ${GTK_MAC_LIBS}
 
+BUILT_SOURCES = gnc-warnings.c gnc-warnings.h
+
+gnc-warnings.c: gschemas/org.gnucash.warnings.gschema.xml.in make-gnc-warnings-c.xsl
+	xsltproc -o $@ $(srcdir)/make-gnc-warnings-c.xsl $<
+
+gnc-warnings.h: gschemas/org.gnucash.warnings.gschema.xml.in make-gnc-warnings-h.xsl
+	xsltproc -o $@ $(srcdir)/make-gnc-warnings-h.xsl $<
+
 if HAVE_X11_XLIB_H
   libgncmod_gnome_utils_la_LIBADD += -lX11
 endif
 
-if BUILDING_FROM_SVN
+if BUILDING_FROM_SCM
 swig-gnome-utils.c: gnome-utils.i \
                     ${top_srcdir}/src/base-typemaps.i
 	$(SWIG) -guile $(SWIG_ARGS) -Linkage module \
@@ -219,6 +236,8 @@ gncscm_DATA = gnc-menu-extensions.scm
 
 EXTRA_DIST = \
   gnome-utils.i \
+  make-gnc-warnings-c.xsl \
+  make-gnc-warnings-h.xsl \
   ${gncmod_DATA} \
   ${gncscm_DATA}
 

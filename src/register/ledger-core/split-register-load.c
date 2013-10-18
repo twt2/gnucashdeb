@@ -37,6 +37,7 @@
 #include "recncell.h"
 #include "split-register.h"
 #include "split-register-p.h"
+#include "engine-helpers.h"
 
 
 /* This static indicates the debugging module that this .o belongs to. */
@@ -211,7 +212,7 @@ _find_split_with_parent_txn(gconstpointer a, gconstpointer b)
 }
 
 static void add_quickfill_completions(TableLayout *layout, Transaction *trans,
-                                      gboolean has_last_num)
+                                      Split *split, gboolean has_last_num)
 {
     Split *s;
     int i = 0;
@@ -227,7 +228,7 @@ static void add_quickfill_completions(TableLayout *layout, Transaction *trans,
     if (!has_last_num)
         gnc_num_cell_set_last_num(
             (NumCell *) gnc_table_layout_get_cell(layout, NUM_CELL),
-            xaccTransGetNum(trans));
+            gnc_get_num_action(trans, split));
 
     while ((s = xaccTransGetSplit(trans, i)) != NULL)
     {
@@ -262,11 +263,14 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
 
     gboolean start_primary_color = TRUE;
     gboolean found_pending = FALSE;
+    gboolean need_divider_upper = FALSE;
+    gboolean found_divider_upper = FALSE;
     gboolean found_divider = FALSE;
     gboolean has_last_num = FALSE;
     gboolean multi_line;
     gboolean dynamic;
     gboolean we_own_slist = FALSE;
+    gboolean use_autoreadonly = qof_book_uses_autoreadonly(gnc_get_current_book());
 
     VirtualCellLocation vcell_loc;
     VirtualLocation save_loc;
@@ -274,7 +278,7 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
     int new_trans_split_row = -1;
     int new_trans_row = -1;
     int new_split_row = -1;
-    time_t present;
+    time64 present, autoreadonly_time = 0;
 
     g_return_if_fail(reg);
     table = reg->table;
@@ -294,47 +298,20 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
     if (blank_split == NULL)
     {
         Transaction *new_trans;
-        gnc_commodity * currency = NULL;
+        gboolean currency_from_account = TRUE;
 
         /* Determine the proper currency to use for this transaction.
          * if default_account != NULL and default_account->commodity is
          * a currency, then use that.  Otherwise use the default currency.
          */
-        if (default_account != NULL)
-        {
-            gnc_commodity * commodity = xaccAccountGetCommodity (default_account);
-            if (gnc_commodity_is_currency(commodity))
-                currency = commodity;
-            else
-            {
-                Account *parent_account = default_account;
-                /* Account commodity is not a currency, walk up the tree until
-                 * we find a parent account that is a currency account and use
-                 * it's currency.
-                 */
-                do
-                {
-                    parent_account = gnc_account_get_parent (parent_account);
-                    if (parent_account)
-                    {
-                        commodity = xaccAccountGetCommodity (parent_account);
-                        if (gnc_commodity_is_currency(commodity))
-                        {
-                            currency = commodity;
-                            break;
-                        }
-                    }
-                }
-                while (parent_account && !currency);
-            }
+        gnc_commodity * currency = gnc_account_or_default_currency(default_account, &currency_from_account);
 
+        if (default_account != NULL && !currency_from_account)
+        {
             /* If we don't have a currency then pop up a warning dialog */
-            if (!currency)
-            {
-                gnc_info_dialog(NULL, "%s",
-                                _("Could not determine the account currency.  "
-                                  "Using the default currency provided by your system."));
-            }
+            gnc_info_dialog(NULL, "%s",
+                            _("Could not determine the account currency. "
+                              "Using the default currency provided by your system."));
         }
 
         gnc_suspend_gui_refresh ();
@@ -342,9 +319,8 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
         new_trans = xaccMallocTransaction (gnc_get_current_book ());
 
         xaccTransBeginEdit (new_trans);
-        xaccTransSetCurrency (new_trans,
-                              currency ? currency : gnc_default_currency());
-        xaccTransSetDatePostedSecs (new_trans, info->last_date_entered);
+        xaccTransSetCurrency (new_trans, currency);
+        xaccTransSetDatePostedSecsNormalized(new_trans, info->last_date_entered);
         blank_split = xaccMallocSplit (gnc_get_current_book ());
         xaccSplitSetParent(blank_split, new_trans);
         /* We don't want to commit this transaction yet, because the split
@@ -361,6 +337,7 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
 
         info->blank_split_guid = *xaccSplitGetGUID (blank_split);
         info->blank_split_edited = FALSE;
+        info->auto_complete = FALSE;
         DEBUG("created new blank_split=%p", blank_split);
 
         gnc_resume_gui_refresh ();
@@ -430,7 +407,14 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
     vcell_loc.virt_row++;
 
     /* get the current time and reset the dividing row */
-    present = gnc_timet_get_today_end ();
+    present = gnc_time64_get_today_end ();
+    if (use_autoreadonly)
+    {
+        GDate *d = qof_book_get_autoreadonly_gdate(gnc_get_current_book());
+        // "d" is NULL if use_autoreadonly is FALSE
+        autoreadonly_time = d ? timespecToTime64(gdate_to_timespec(*d)) : 0;
+        g_date_free(d);
+    }
 
     if (info->first_pass)
     {
@@ -473,6 +457,7 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
             gnc_split_register_recn_cell_confirm, reg);
     }
 
+    table->model->dividing_row_upper = -1;
     table->model->dividing_row = -1;
 
     // Ensure that the transaction and splits being edited are in the split
@@ -529,8 +514,23 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
         }
 
         if (info->show_present_divider &&
+                use_autoreadonly &&
+                !found_divider_upper)
+        {
+            if (xaccTransGetDate (trans) >= autoreadonly_time)
+            {
+                table->model->dividing_row_upper = vcell_loc.virt_row;
+                found_divider_upper = TRUE;
+            }
+            else
+            {
+                need_divider_upper = TRUE;
+            }
+        }
+
+        if (info->show_present_divider &&
                 !found_divider &&
-                (present < xaccTransGetDate (trans)))
+                (xaccTransGetDate (trans) > present))
         {
             table->model->dividing_row = vcell_loc.virt_row;
             found_divider = TRUE;
@@ -539,7 +539,7 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
         /* If this is the first load of the register,
          * fill up the quickfill cells. */
         if (info->first_pass)
-            add_quickfill_completions(reg->table->layout, trans, has_last_num);
+            add_quickfill_completions(reg->table->layout, trans, split, has_last_num);
 
         if (trans == find_trans)
             new_trans_row = vcell_loc.virt_row;
@@ -564,6 +564,15 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
     /* add the blank split at the end. */
     if (pending_trans == blank_trans)
         found_pending = TRUE;
+
+    /* No upper divider yet? Store it now */
+    if (info->show_present_divider &&
+            use_autoreadonly &&
+            !found_divider_upper && need_divider_upper)
+    {
+        table->model->dividing_row_upper = vcell_loc.virt_row;
+        found_divider_upper = TRUE;
+    }
 
     if (blank_trans == find_trans)
         new_trans_row = vcell_loc.virt_row;
@@ -610,7 +619,6 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
     /* restore the cursor to its rightful position */
     {
         VirtualLocation trans_split_loc;
-        Split *trans_split;
 
         if (new_split_row > 0)
             save_loc.vcell_loc.virt_row = new_split_row;
@@ -621,9 +629,8 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
 
         trans_split_loc = save_loc;
 
-        trans_split =
-            gnc_split_register_get_trans_split (reg, save_loc.vcell_loc,
-                                                &trans_split_loc.vcell_loc);
+	gnc_split_register_get_trans_split (reg, save_loc.vcell_loc,
+					    &trans_split_loc.vcell_loc);
 
         if (dynamic || multi_line || info->trans_expanded)
         {

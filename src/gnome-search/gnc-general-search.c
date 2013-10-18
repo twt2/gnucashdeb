@@ -84,7 +84,7 @@ static guint general_search_signals[LAST_SIGNAL];
 /**
  * gnc_general_search_get_type:
  *
- * Returns the GtkType for the GNCGeneralSearch widget
+ * Returns the GType for the GNCGeneralSearch widget
  */
 GType
 gnc_general_search_get_type (void)
@@ -121,7 +121,7 @@ gnc_general_search_class_init (GNCGeneralSearchClass *klass)
 
     object_class = (GtkObjectClass*) klass;
 
-    parent_class = gtk_type_class (gtk_hbox_get_type ());
+    parent_class = g_type_class_peek_parent (klass);
 
     general_search_signals[SELECTION_CHANGED] =
         g_signal_new("changed",
@@ -504,6 +504,14 @@ gnc_general_search_new (QofIdTypeConst type,
     return GTK_WIDGET (gsl);
 }
 
+void
+gnc_general_search_grab_focus (GNCGeneralSearch *gsl)
+{
+    g_assert(gsl);
+    g_assert(gsl->entry);
+    gtk_widget_grab_focus(gsl->entry);
+}
+
 /**
  * gnc_general_search_set_selected:
  * @gsl: the general selection widget
@@ -567,8 +575,3 @@ gnc_general_search_allow_clear (GNCGeneralSearch *gsl, gboolean allow_clear)
     gsl->allow_clear = allow_clear;
 }
 
-/*
-  Local Variables:
-  c-basic-offset: 8
-  End:
-*/

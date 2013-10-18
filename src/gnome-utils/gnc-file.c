@@ -24,11 +24,10 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include <errno.h>
-#include <libguile.h>
 #include <string.h>
 
 #include "dialog-utils.h"
-#include "druid-gnc-xml-import.h"
+#include "assistant-xml-encoding.h"
 #include "gnc-commodity.h"
 #include "gnc-component-manager.h"
 #include "gnc-engine.h"
@@ -304,6 +303,8 @@ show_session_error (QofBackendError io_error,
                                GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
                                label, GTK_RESPONSE_YES,
                                NULL);
+        if (parent == NULL)
+            gtk_window_set_skip_taskbar_hint(GTK_WINDOW(dialog), FALSE);
         response = gtk_dialog_run(GTK_DIALOG(dialog));
         gtk_widget_destroy(dialog);
         uh_oh = (response != GTK_RESPONSE_YES);
@@ -389,7 +390,7 @@ show_session_error (QofBackendError io_error,
         break;
 
     case ERR_FILEIO_WRITE_ERROR:
-        fmt = _("Could not write to file %s.  Check that you have "
+        fmt = _("Could not write to file %s. Check that you have "
                 "permission to write to this file and that "
                 "there is sufficient space to create it.");
         gnc_error_dialog(parent, fmt, displayname);
@@ -404,7 +405,7 @@ show_session_error (QofBackendError io_error,
         /* Translators: the first %s is a path in the filesystem,
          * the second %s is PACKAGE_NAME, which by default is "GnuCash"
          */
-        fmt = _("You attempted to save in\n%s\nor a subdirectory thereof.  "
+        fmt = _("You attempted to save in\n%s\nor a subdirectory thereof. "
                 "This is not allowed as %s reserves that directory for internal use.\n\n"
                 "Please try again in a different directory.");
         gnc_error_dialog (parent, fmt, gnc_dotgnucash_dir(), PACKAGE_NAME);
@@ -440,9 +441,9 @@ show_session_error (QofBackendError io_error,
     case ERR_SQL_BAD_DBI:
 
         fmt = _("The library \"libdbi\" installed on your system doesn't correctly "
-                "store large numbers.  This means GnuCash cannot use SQL databases "
-                "correctly.  Gnucash will not open or save to SQL databases until this is "
-                "fixed by installing a different version of \"libdbi\".  Please see "
+                "store large numbers. This means GnuCash cannot use SQL databases "
+                "correctly. Gnucash will not open or save to SQL databases until this is "
+                "fixed by installing a different version of \"libdbi\". Please see "
                 "https://bugzilla.gnome.org/show_bug.cgi?id=611936 for more "
                 "information.");
 
@@ -569,9 +570,7 @@ gnc_file_query_save (gboolean can_cancel)
         gint response;
         const char *title = _("Save changes to the file?");
         /* This should be the same message as in gnc-main-window.c */
-        const gchar *message =
-            _("If you don't save, changes from the past %d minutes will be discarded.");
-        time_t oldest_change;
+        time64 oldest_change;
         gint minutes;
 
         dialog = gtk_message_dialog_new(GTK_WINDOW(parent),
@@ -580,9 +579,11 @@ gnc_file_query_save (gboolean can_cancel)
                                         GTK_BUTTONS_NONE,
                                         "%s", title);
         oldest_change = qof_book_get_session_dirty_time(current_book);
-        minutes = (time(NULL) - oldest_change) / 60 + 1;
+        minutes = (gnc_time (NULL) - oldest_change) / 60 + 1;
         gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog),
-                message, minutes);
+                ngettext("If you don't save, changes from the past %d minute will be discarded.",
+                         "If you don't save, changes from the past %d minutes will be discarded.",
+                         minutes), minutes);
         gtk_dialog_add_button(GTK_DIALOG(dialog),
                               _("Continue _Without Saving"), GTK_RESPONSE_OK);
 
@@ -591,6 +592,9 @@ gnc_file_query_save (gboolean can_cancel)
                                   GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
         gtk_dialog_add_button(GTK_DIALOG(dialog),
                               GTK_STOCK_SAVE, GTK_RESPONSE_YES);
+
+        gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_YES);
+
         response = gtk_dialog_run(GTK_DIALOG(dialog));
         gtk_widget_destroy(dialog);
 
@@ -605,7 +609,8 @@ gnc_file_query_save (gboolean can_cancel)
         default:
             if (can_cancel)
                 return FALSE;
-            /* No cancel function available.  Fall through. */
+            /* No cancel function available. */
+            /* Fall through */
 
         case GTK_RESPONSE_OK:
             return TRUE;
@@ -621,9 +626,10 @@ gnc_file_query_save (gboolean can_cancel)
 #define RESPONSE_NEW  1
 #define RESPONSE_OPEN 2
 #define RESPONSE_QUIT 3
+#define RESPONSE_READONLY 4
 
 static gboolean
-gnc_post_file_open (const char * filename)
+gnc_post_file_open (const char * filename, gboolean is_readonly)
 {
     QofSession *current_session, *new_session;
     QofBook *new_book;
@@ -640,9 +646,9 @@ gnc_post_file_open (const char * filename)
     gint32 port = 0;
 
 
-    ENTER(" ");
+    ENTER("filename %s", filename);
 RESTART:
-    if (!filename) return FALSE;
+    if (!filename || (*filename == '\0')) return FALSE;
 
     /* Convert user input into a normalized uri
      * Note that the normalized uri for internal use can have a password */
@@ -681,7 +687,7 @@ RESTART:
     if (gnc_uri_is_file_protocol(protocol))
     {
         gchar *default_dir = g_path_get_dirname(path);
-        gnc_set_default_directory (GCONF_DIR_OPEN_SAVE, default_dir);
+        gnc_set_default_directory (GNC_PREFS_GROUP_OPEN_SAVE, default_dir);
         g_free(default_dir);
     }
 
@@ -705,25 +711,26 @@ RESTART:
     /* but first, check to make sure we've got a session going. */
     new_session = qof_session_new ();
 
-    qof_session_begin (new_session, newfile, FALSE, FALSE, FALSE);
+    // Begin the new session. If we are in read-only mode, ignore the locks.
+    qof_session_begin (new_session, newfile, is_readonly, FALSE, FALSE);
     io_err = qof_session_get_error (new_session);
 
     if (ERR_BACKEND_BAD_URL == io_err)
     {
-	gchar *directory;
-	show_session_error (io_err, newfile, GNC_FILE_DIALOG_OPEN);
-	io_err = ERR_BACKEND_NO_ERR;
-	if (g_file_test (filename, G_FILE_TEST_IS_DIR))
-	    directory = g_strdup (filename);
-	else
-	    directory = gnc_get_default_directory (GCONF_DIR_OPEN_SAVE);
+        gchar *directory;
+        show_session_error (io_err, newfile, GNC_FILE_DIALOG_OPEN);
+        io_err = ERR_BACKEND_NO_ERR;
+        if (g_file_test (filename, G_FILE_TEST_IS_DIR))
+            directory = g_strdup (filename);
+        else
+            directory = gnc_get_default_directory (GNC_PREFS_GROUP_OPEN_SAVE);
 
-	filename = gnc_file_dialog (NULL, NULL, directory,
-				    GNC_FILE_DIALOG_OPEN);
-	qof_session_destroy (new_session);
-	new_session = NULL;
-	g_free (directory);
-	goto RESTART;
+        filename = gnc_file_dialog (NULL, NULL, directory,
+                                    GNC_FILE_DIALOG_OPEN);
+        qof_session_destroy (new_session);
+        new_session = NULL;
+        g_free (directory);
+        goto RESTART;
     }
     /* if file appears to be locked, ask the user ... */
     else if (ERR_BACKEND_LOCKED == io_err || ERR_BACKEND_READONLY == io_err)
@@ -760,11 +767,14 @@ RESTART:
                                         fmt1, displayname);
         gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog),
                 "%s", fmt2);
+        gtk_window_set_skip_taskbar_hint(GTK_WINDOW(dialog), FALSE);
 
-        gnc_gtk_dialog_add_button(dialog, _("_Open Anyway"),
-                                  GTK_STOCK_OPEN, RESPONSE_OPEN);
+        gnc_gtk_dialog_add_button(dialog, _("_Open Read-Only"),
+                                  GTK_STOCK_REVERT_TO_SAVED, RESPONSE_READONLY);
         gnc_gtk_dialog_add_button(dialog, _("_Create New File"),
                                   GTK_STOCK_NEW, RESPONSE_NEW);
+        gnc_gtk_dialog_add_button(dialog, _("Open _Anyway"),
+                                  GTK_STOCK_OPEN, RESPONSE_OPEN);
         if (shutdown_cb)
             gtk_dialog_add_button(GTK_DIALOG(dialog),
                                   GTK_STOCK_QUIT, RESPONSE_QUIT);
@@ -776,27 +786,35 @@ RESTART:
         {
             rc = shutdown_cb ? RESPONSE_QUIT : RESPONSE_NEW;
         }
-        if (rc == RESPONSE_QUIT)
+        switch (rc)
         {
+        case RESPONSE_QUIT:
             if (shutdown_cb)
                 shutdown_cb(0);
             g_assert(1);
-        }
-        else if (rc == RESPONSE_OPEN)
-        {
+            break;
+        case RESPONSE_READONLY:
+            is_readonly = TRUE;
+            // re-enable the splash screen, file loading and display of
+            // reports may take some time
+            gnc_show_splash_screen();
+            /* user told us to open readonly. We do ignore locks (just as before), but now also force the opening. */
+            qof_session_begin (new_session, newfile, is_readonly, FALSE, TRUE);
+            break;
+        case RESPONSE_OPEN:
             // re-enable the splash screen, file loading and display of
             // reports may take some time
             gnc_show_splash_screen();
             /* user told us to ignore locks. So ignore them. */
             qof_session_begin (new_session, newfile, TRUE, FALSE, FALSE);
-        }
-        else
-        {
+            break;
+        default:
             /* Can't use the given file, so just create a new
              * database so that the user will get a window that
              * they can click "Exit" on.
              */
             gnc_file_new ();
+            break;
         }
     }
     /* if the database doesn't exist, ask the user ... */
@@ -843,6 +861,13 @@ RESTART:
         qof_session_load (new_session, gnc_window_show_progress);
         gnc_window_show_progress(NULL, -1.0);
         xaccLogEnable();
+
+        if (is_readonly)
+        {
+            // If the user chose "open read-only" above, make sure to have this
+            // read-only here.
+            qof_book_mark_readonly(qof_session_get_book(new_session));
+        }
 
         /* check for i/o error, put up appropriate error dialog */
         io_err = qof_session_pop_error (new_session);
@@ -897,7 +922,7 @@ RESTART:
         /* test for unknown features. */
         if (!uh_oh)
         {
-            gchar *msg = test_unknown_features(new_session);
+            gchar *msg = gnc_features_test_unknown(qof_session_get_book (new_session));
 
             if (msg)
             {
@@ -909,6 +934,12 @@ RESTART:
             }
         }
     }
+
+    g_free (protocol);
+    g_free (hostname);
+    g_free (username);
+    g_free (password);
+    g_free (path);
 
     gnc_unset_busy_cursor (NULL);
 
@@ -992,13 +1023,13 @@ gnc_file_open (void)
         g_free ( filepath );
     }
     else
-        default_dir = gnc_get_default_directory(GCONF_DIR_OPEN_SAVE);
+        default_dir = gnc_get_default_directory(GNC_PREFS_GROUP_OPEN_SAVE);
 
     newfile = gnc_file_dialog (_("Open"), NULL, default_dir, GNC_FILE_DIALOG_OPEN);
     g_free ( last );
     g_free ( default_dir );
 
-    result = gnc_post_file_open ( newfile );
+    result = gnc_post_file_open ( newfile, /*is_readonly*/ FALSE );
 
     /* This dialogue can show up early in the startup process. If the
      * user fails to pick a file (by e.g. hitting the cancel button), we
@@ -1010,14 +1041,14 @@ gnc_file_open (void)
 }
 
 gboolean
-gnc_file_open_file (const char * newfile)
+gnc_file_open_file (const char * newfile, gboolean open_readonly)
 {
     if (!newfile) return FALSE;
 
     if (!gnc_file_query_save (TRUE))
         return FALSE;
 
-    return gnc_post_file_open (newfile);
+    return gnc_post_file_open (newfile, open_readonly);
 }
 
 /* Note: this dialog will only be used when dbi is not enabled
@@ -1027,14 +1058,9 @@ gnc_file_open_file (const char * newfile)
 void
 gnc_file_export (void)
 {
-    QofSession *new_session;
-    QofSession *session;
     const char *filename;
     char *default_dir = NULL;        /* Default to last open */
     char *last;
-    char *newfile;
-    const char *oldfile;
-    QofBackendError io_err = ERR_BACKEND_NO_ERR;
 
     ENTER(" ");
 
@@ -1046,7 +1072,7 @@ gnc_file_export (void)
         g_free ( filepath );
     }
     else
-        default_dir = gnc_get_default_directory(GCONF_DIR_EXPORT);
+        default_dir = gnc_get_default_directory(GNC_PREFS_GROUP_EXPORT);
 
     filename = gnc_file_dialog (_("Save"), NULL, default_dir,
                                 GNC_FILE_DIALOG_SAVE);
@@ -1111,7 +1137,7 @@ gnc_file_do_export(const char * filename)
     {
         /* Remember the directory as the default. */
         gchar *default_dir = g_path_get_dirname(path);
-        gnc_set_default_directory (GCONF_DIR_OPEN_SAVE, default_dir);
+        gnc_set_default_directory (GNC_PREFS_GROUP_OPEN_SAVE, default_dir);
         g_free(default_dir);
 
         /* Prevent user to store file in GnuCash' private configuration
@@ -1218,6 +1244,19 @@ gnc_file_save (void)
         return;
     }
 
+    if (qof_book_is_readonly(qof_session_get_book(session)))
+    {
+        gint response = gnc_ok_cancel_dialog(gnc_ui_get_toplevel(),
+                                             GTK_RESPONSE_CANCEL,
+                                             _("The database was opened read-only. "
+                                               "Do you want to save it to a different place?"));
+        if (response == GTK_RESPONSE_OK)
+        {
+            gnc_file_save_as ();
+        }
+        return;
+    }
+
     /* use the current session to save to file */
     save_in_progress++;
     gnc_set_busy_cursor (NULL, TRUE);
@@ -1269,7 +1308,7 @@ gnc_file_save_as (void)
         g_free ( filepath );
     }
     else
-        default_dir = gnc_get_default_directory(GCONF_DIR_OPEN_SAVE);
+        default_dir = gnc_get_default_directory(GNC_PREFS_GROUP_OPEN_SAVE);
 
     filename = gnc_file_dialog (_("Save"), NULL, default_dir,
                                 GNC_FILE_DIALOG_SAVE);
@@ -1336,7 +1375,7 @@ gnc_file_do_save_as (const char* filename)
     {
         /* Remember the directory as the default. */
         gchar *default_dir = g_path_get_dirname(path);
-        gnc_set_default_directory (GCONF_DIR_OPEN_SAVE, default_dir);
+        gnc_set_default_directory (GNC_PREFS_GROUP_OPEN_SAVE, default_dir);
         g_free(default_dir);
 
         /* Prevent user to store file in GnuCash' private configuration

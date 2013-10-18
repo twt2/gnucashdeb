@@ -4,7 +4,7 @@
 #include <libguile.h>
 #include "guile-mappings.h"
 
-#include "engine-helpers.h"
+#include "engine-helpers-guile.h"
 #include "gnc-module.h"
 #include "test-engine-stuff.h"
 #include "test-stuff.h"
@@ -23,7 +23,7 @@ test_query (Query *q, SCM val2str)
     args = scm_cons (scm_q, SCM_EOL);
     str_q = scm_apply (val2str, args, SCM_EOL);
 
-    args = scm_cons (scm_makfrom0str ("'"), scm_cons (str_q, SCM_EOL));
+    args = scm_cons (scm_from_locale_string ("'"), scm_cons (str_q, SCM_EOL));
     str_q = scm_string_append (args);
 
     scm_display (str_q, SCM_UNDEFINED);

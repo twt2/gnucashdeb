@@ -45,11 +45,15 @@
 
 #include "gnc-path.h"
 #include "gnc-filepath-utils.h"
+#include "libqof/qof/qof.h"
 
 #ifdef _MSC_VER
 #include <glib/gwin32.h>
 #define PATH_MAX MAXPATHLEN
 #endif
+
+/* This static indicates the debugging module that this .o belongs to.  */
+static QofLogModule log_module = G_LOG_DOMAIN;
 
 
 /**
@@ -119,7 +123,6 @@ check_path_return_if_valid(gchar *path)
 gchar *
 gnc_resolve_file_path (const gchar * filefrag)
 {
-    int namelen;
     gchar *fullpath = NULL, *tmp_path = NULL;
 
     /* seriously invalid */
@@ -135,10 +138,6 @@ gnc_resolve_file_path (const gchar * filefrag)
     /* check for an absolute file path */
     if (g_path_is_absolute(filefrag))
         return g_strdup (filefrag);
-
-    /* get conservative on the length so that sprintf(getpid()) works ... */
-    /* strlen ("/.LCK") + sprintf (%x%d) */
-    namelen = strlen (filefrag) + 25;
 
     /* Look in the current working directory */
     tmp_path = g_get_current_dir();
@@ -173,6 +172,123 @@ gnc_resolve_file_path (const gchar * filefrag)
      * back anyway */
     g_warning("create new file %s", fullpath);
     return fullpath;
+
+}
+
+/* Searches for a file fragment paths set via GNC_DOC_PATH environment
+ * variable. If this variable is not set, fall back to search in
+ * - a html directory in the local user's gnucash settings directory
+ *   (typically $HOME/.gnucash/html)
+ * - the gnucash documentation directory
+ *   (typically /usr/share/doc/gnucash)
+ * - the gnucash data directory
+ *   (typically /usr/share/gnucash)
+ * It searches in this order.
+ *
+ * This is used by gnc_path_find_localized_file to search for
+ * localized versions of files if they exist.
+ */
+static gchar *
+gnc_path_find_localized_html_file_internal (const gchar * file_name)
+{
+    gchar *full_path = NULL;
+    int i;
+    const gchar *env_doc_path = g_getenv("GNC_DOC_PATH");
+    const gchar *default_dirs[] =
+        {
+            gnc_build_dotgnucash_path ("html"),
+            gnc_path_get_pkgdocdir (),
+            gnc_path_get_pkgdatadir (),
+            NULL
+        };
+    gchar **dirs;
+
+    if (!file_name || *file_name == '\0')
+        return NULL;
+
+    /* Allow search path override via GNC_DOC_PATH environment variable */
+    if (env_doc_path)
+        dirs = g_strsplit (env_doc_path, G_SEARCHPATH_SEPARATOR_S, -1);
+    else
+        dirs = (gchar **)default_dirs;
+
+    for (i = 0; dirs[i]; i++)
+    {
+        full_path = g_build_filename (dirs[i], file_name, (gchar *)NULL);
+        DEBUG ("Checking for existence of %s", full_path);
+        full_path = check_path_return_if_valid (full_path);
+        if (full_path != NULL)
+            return full_path;
+    }
+
+    return NULL;
+}
+
+/** @brief Find an absolute path to a localized version of a given
+ *  relative path to a html or html related file.
+ *  If no localized version exists, an absolute path to the file
+ *  is searched for. If that file doesn't exist either, returns NULL.
+ *
+ *  @warning file_name should be a simple path fragment. It shouldn't
+ *  contain xml:// or http:// or <whatever>:// other protocol specifiers.
+ *
+ *  If passed a string which g_path_is_absolute declares an absolute
+ *  path, return the argument.
+ *
+ *  Otherwise, assume that file_name is a well-formed relative path and
+ *  try to find a file with its path relative to
+ *  \li a localized subdirectory in the html directory
+ *      of the user's configuration directory
+ *      (e.g. $HOME/.gnucash/html/de_DE, $HOME/.gnucash/html/en,...)
+ *  \li a localized subdirectory in the gnucash documentation directory
+ *      (e.g. /usr/share/doc/gnucash/C,...)
+ *  \li the html directory of the user's configuration directory
+ *      (e.g. $HOME/.gnucash/html)
+ *  \li the gnucash documentation directory
+ *      (e.g. /usr/share/doc/gnucash/)
+ *  \li last resort option: the gnucash data directory
+ *      (e.g. /usr/share/gnucash/)
+ *
+ *  The paths are searched for in that order. If a matching file is
+ *  found, return the absolute path to it.
+
+ *  If one isn't found, return NULL.
+ *
+ *  @param file_name The file path to resolve
+ *
+ *  @return An absolute file path or NULL if no file is found.
+ */
+gchar *
+gnc_path_find_localized_html_file (const gchar *file_name)
+{
+    gchar *loc_file_name = NULL;
+    gchar *full_path = NULL;
+    const gchar * const *lang;
+    int i;
+
+    if (!file_name || *file_name == '\0')
+        return NULL;
+
+    /* An absolute path is returned unmodified. */
+    if (g_path_is_absolute (file_name))
+        return g_strdup (file_name);
+
+    /* First try to find the file in any of the localized directories
+     * the user has set up on his system
+     */
+    for (lang = g_get_language_names (); *lang; lang++)
+    {
+        loc_file_name = g_build_filename (*lang, file_name, (gchar *)NULL);
+        full_path = gnc_path_find_localized_html_file_internal (loc_file_name);
+        g_free (loc_file_name);
+        if (full_path != NULL)
+            return full_path;
+    }
+
+    /* If not found in a localized directory, try to find the file
+     * in any of the base directories
+     */
+    return gnc_path_find_localized_html_file_internal (file_name);
 
 }
 
@@ -219,7 +335,7 @@ gnc_validate_directory (const gchar *dirname)
             g_fprintf(stderr,
                       _("The directory\n"
                         "  %s\n"
-                        "exists but cannot be accessed.  This program \n"
+                        "exists but cannot be accessed. This program \n"
                         "must have full access (read/write/execute) to \n"
                         "the directory in order to function properly.\n"),
                       dirname);
@@ -239,7 +355,7 @@ gnc_validate_directory (const gchar *dirname)
                       _("An unknown error occurred when validating that the\n"
                         "  %s\n"
                         "directory exists and is usable. Please correct the\n"
-                        "problem and restart GnuCash.  The reported error \n"
+                        "problem and restart GnuCash. The reported error \n"
                         "was '%s' (errno %d)."),
                       dirname, g_strerror(errno) ? g_strerror(errno) : "", errno);
             exit(1);
@@ -421,6 +537,68 @@ gnc_build_stdreports_path (const gchar *filename)
 {
     gchar *result = g_build_filename(gnc_path_get_stdreportsdir(), filename, (gchar *)NULL);
     return result;
+}
+
+static gchar *
+gnc_filepath_locate_file (const gchar *default_path, const gchar *name)
+{
+    gchar *fullname;
+
+    g_return_val_if_fail (name != NULL, NULL);
+
+    if (g_path_is_absolute (name))
+        fullname = g_strdup (name);
+    else if (default_path)
+        fullname = g_build_filename (default_path, name, NULL);
+    else
+        fullname = gnc_resolve_file_path (name);
+
+    if (!g_file_test (fullname, G_FILE_TEST_IS_REGULAR))
+    {
+        g_error ("Could not locate file %s", name);
+        g_free (fullname);
+        return NULL;
+    }
+
+    return fullname;
+}
+
+gchar *
+gnc_filepath_locate_data_file (const gchar *name)
+{
+    return gnc_filepath_locate_file (gnc_path_get_pkgdatadir(), name);
+}
+
+gchar *
+gnc_filepath_locate_pixmap (const gchar *name)
+{
+    gchar *default_path;
+    gchar *fullname;
+
+    default_path = g_build_filename (gnc_path_get_pkgdatadir (), "pixmaps", NULL);
+    fullname = gnc_filepath_locate_file (default_path, name);
+    g_free(default_path);
+
+    return fullname;
+}
+
+gchar *
+gnc_filepath_locate_ui_file (const gchar *name)
+{
+    gchar *default_path;
+    gchar *fullname;
+
+    default_path = g_build_filename (gnc_path_get_pkgdatadir (), "ui", NULL);
+    fullname = gnc_filepath_locate_file (default_path, name);
+    g_free(default_path);
+
+    return fullname;
+}
+
+gchar *
+gnc_filepath_locate_doc_file (const gchar *name)
+{
+    return gnc_filepath_locate_file (gnc_path_get_pkgdocdir(), name);
 }
 
 

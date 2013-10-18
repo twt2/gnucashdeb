@@ -3,8 +3,9 @@
  * Copyright (C) 2001,2006 Joshua Sled <jsled@asynchronous.org>     *
  *                                                                  *
  * This program is free software; you can redistribute it and/or    *
- * modify it under the terms of version 2 and/or version 3 of the GNU General Public *
- * License as published by the Free Software Foundation.            *
+ * modify it under the terms of version 2 and/or version 3 of the   *
+ * GNU General Public License as published by the Free Software     *
+ * Foundation.                                                      *
  *                                                                  *
  * This program is distributed in the hope that it will be useful,  *
  * but WITHOUT ANY WARRANTY; without even the implied warranty of   *
@@ -27,11 +28,11 @@
 #define DIALOG_SCHEDXACTION_CM_CLASS "dialog-scheduledtransactions"
 #define DIALOG_SCHEDXACTION_EDITOR_CM_CLASS "dialog-scheduledtransaction-editor"
 
-#define SXED_GCONF_SECTION "dialogs/scheduled_trans/transaction_editor"
-#define KEY_CREATE_AUTO "create_auto"
-#define KEY_NOTIFY "notify"
-#define KEY_CREATE_DAYS	"create_days"
-#define KEY_REMIND_DAYS	"remind_days"
+#define GNC_PREFS_GROUP_SXED "dialogs.sxs.transaction-editor"
+#define GNC_PREF_CREATE_DAYS "create-days"
+#define GNC_PREF_REMIND_DAYS "remind-days"
+#define GNC_PREF_CREATE_AUTO "create-auto"
+#define GNC_PREF_NOTIFY      "notify"
 
 typedef struct _GncSxEditorDialog GncSxEditorDialog;
 

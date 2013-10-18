@@ -193,6 +193,7 @@ GNC_TEST_DEPS = \
   --library-dir    ${top_builddir}/src/backend/xml
 
 TESTS_ENVIRONMENT = \
+  GUILE_WARN_DEPRECATED=no \
   GNC_ACCOUNT_PATH=${top_srcdir}/accounts/C \
   GNC_TEST_FILES=${srcdir}/test-files/xml2 \
   SRCDIR=${srcdir} \
@@ -246,8 +247,7 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/libqof/qof \
   ${LIBXML2_CFLAGS} \
   ${GLIB_CFLAGS} \
-  ${GUILE_INCS} \
-  ${GCONF_CFLAGS}
+  ${GUILE_INCS}
 
 EXTRA_DIST = \
   grab-types.pl \

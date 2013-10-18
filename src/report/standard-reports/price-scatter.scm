@@ -83,17 +83,17 @@
     (add-option
      (gnc:make-multichoice-option
       pagename-price optname-price-source
-      "f" (N_ "The source of price information") 
+      "f" (N_ "The source of price information.") 
       'actual-transactions
       (list (vector 'weighted-average 
                     (N_ "Weighted Average")
-                    (N_ "The weighted average of all currency transactions of the past"))
+                    (N_ "The weighted average of all currency transactions of the past."))
             (vector 'actual-transactions
                     (N_ "Actual Transactions")
-                    (N_ "The instantaneous price of actual currency transactions in the past"))
+                    (N_ "The instantaneous price of actual currency transactions in the past."))
             (vector 'pricedb
                     (N_ "Price Database")
-                    (N_ "The recorded prices"))
+                    (N_ "The recorded prices."))
             )))
 
     (add-option
@@ -116,7 +116,7 @@
      (gnc:make-color-option
       gnc:pagename-display optname-markercolor
       "b"
-      (N_ "Color of the marker")
+      (N_ "Color of the marker.")
       (list #xb2 #x22 #x22 0)
       255 #f))
 
@@ -205,12 +205,15 @@
     (gnc:html-scatter-set-height! chart height)
     (gnc:html-scatter-set-marker! chart 
                                   (case marker
+                                    ((diamond) "diamond")
                                     ((circle) "circle")
-                                    ((cross) "cross")
                                     ((square) "square")
-                                    ((asterisk) "asterisk")
-                                    ((filledcircle) "filled circle")
-                                    ((filledsquare) "filled square")))
+                                    ((cross) "x")
+                                    ((plus) "plus")
+                                    ((dash) "dash")
+                                    ((filleddiamond) "filledDiamond")
+                                    ((filledcircle) "filledCircle")
+                                    ((filledsquare) "filledSquare")))
     (gnc:html-scatter-set-markercolor! chart mcolor)
     (gnc:html-scatter-set-y-axis-label!
      chart 

@@ -57,6 +57,7 @@ struct timeval
 #include "gnc-engine.h"
 #include "gnc-lot.h"
 #include "gnc-event.h"
+#include <gnc-gdate-utils.h>
 
 #include "qofbackend-p.h"
 
@@ -198,7 +199,8 @@ enum
     PROP_ENTER_DATE
 };
 
-void check_open (const Transaction *trans)
+void
+check_open (const Transaction *trans)
 {
     if (trans && 0 >= qof_instance_get_editlevel(trans))
         PERR ("transaction %p not open for editing", trans);
@@ -208,12 +210,12 @@ void check_open (const Transaction *trans)
 gboolean
 xaccTransStillHasSplit(const Transaction *trans, const Split *s)
 {
-    return (s->parent == trans && !qof_instance_get_destroying(s));
+    return (s && s->parent == trans && !qof_instance_get_destroying(s));
 }
 
 /* Executes 'cmd_block' for each split currently in the transaction,
  * using the in-edit state.  Use the variable 's' for each split. */
-#define FOR_EACH_SPLIT(trans, cmd_block) do {                           \
+#define FOR_EACH_SPLIT(trans, cmd_block) if (trans->splits) {		\
         GList *splits;                                                  \
         for (splits = (trans)->splits; splits; splits = splits->next) { \
             Split *s = splits->data;                                    \
@@ -221,7 +223,7 @@ xaccTransStillHasSplit(const Transaction *trans, const Split *s)
                 cmd_block;                                              \
             }                                                           \
         }                                                               \
-    } while (0)
+    }
 
 G_INLINE_FUNC void mark_trans (Transaction *trans);
 void mark_trans (Transaction *trans)
@@ -232,7 +234,6 @@ void mark_trans (Transaction *trans)
 G_INLINE_FUNC void gen_event_trans (Transaction *trans);
 void gen_event_trans (Transaction *trans)
 {
-#ifndef REGISTER_STILL_DEPENDS_ON_ACCOUNT_EVENTS
     GList *node;
 
     for (node = trans->splits; node; node = node->next)
@@ -249,7 +250,6 @@ void gen_event_trans (Transaction *trans)
             qof_event_gen (QOF_INSTANCE(lot), QOF_EVENT_MODIFY, NULL);
         }
     }
-#endif
 }
 
 /* GObject Initialization */
@@ -289,6 +289,12 @@ gnc_transaction_finalize(GObject* txnp)
     G_OBJECT_CLASS(gnc_transaction_parent_class)->finalize(txnp);
 }
 
+/* Note that g_value_set_object() refs the object, as does
+ * g_object_get(). But g_object_get() only unrefs once when it disgorges
+ * the object, leaving an unbalanced ref, which leaks. So instead of
+ * using g_value_set_object(), use g_value_take_object() which doesn't
+ * ref the object when used in get_property().
+ */
 static void
 gnc_transaction_get_property(GObject* object,
                              guint prop_id,
@@ -309,7 +315,7 @@ gnc_transaction_get_property(GObject* object,
         g_value_set_string(value, tx->description);
         break;
     case PROP_CURRENCY:
-        g_value_set_object(value, tx->common_currency);
+        g_value_take_object(value, tx->common_currency);
         break;
     case PROP_POST_DATE:
         g_value_set_boxed(value, &tx->date_posted);
@@ -319,6 +325,7 @@ gnc_transaction_get_property(GObject* object,
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
     }
 }
 
@@ -352,6 +359,7 @@ gnc_transaction_set_property(GObject* object,
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
     }
 }
 
@@ -406,7 +414,7 @@ gnc_transaction_class_init(TransactionClass* klass)
      g_param_spec_boxed("post-date",
                         "Post Date",
                         "The date the transaction occurred.",
-                        GNC_TYPE_NUMERIC,
+                        GNC_TYPE_TIMESPEC,
                         G_PARAM_READWRITE));
 
     g_object_class_install_property
@@ -415,7 +423,7 @@ gnc_transaction_class_init(TransactionClass* klass)
      g_param_spec_boxed("enter-date",
                         "Enter Date",
                         "The date the transaction was entered.",
-                        GNC_TYPE_NUMERIC,
+                        GNC_TYPE_TIMESPEC,
                         G_PARAM_READWRITE));
 }
 
@@ -450,6 +458,10 @@ xaccMallocTransaction (QofBook *book)
 }
 
 #ifdef DUMP_FUNCTIONS
+/* Please don't delete this function.  Although it is not called by
+   any other code in GnuCash, it is useful when debugging.  For example
+   it can be called using the gdb "call" command when stopped at a
+   breakpoint.  */
 void
 xaccTransDump (const Transaction *trans, const char *tag)
 {
@@ -556,10 +568,10 @@ xaccDupeTransaction (const Transaction *from)
     return to;
 }
 
-/*
+/********************************************************************\
  * Use this routine to externally duplicate a transaction.  It creates
  * a full fledged transaction with unique guid, splits, etc.
- */
+\********************************************************************/
 Transaction *
 xaccTransClone (const Transaction *from)
 {
@@ -598,10 +610,98 @@ xaccTransClone (const Transaction *from)
     return to;
 }
 
+/*################## Added for Reg2 #################*/
 
 /********************************************************************\
+ * Copy a transaction to the 'clipboard' transaction using
+ *  xaccDupeTransaction. The 'clipboard' transaction must never
+ *  be dereferenced.
 \********************************************************************/
+Transaction * xaccTransCopyToClipBoard(const Transaction *from_trans)
+{
+    Transaction *to_trans;
 
+    if (!from_trans)
+        return NULL;
+
+    to_trans = xaccDupeTransaction(from_trans);
+    return to_trans;
+}
+
+/********************************************************************\
+ * Copy a transaction to another using the function below without
+ *  changing any account information.
+\********************************************************************/
+void
+xaccTransCopyOnto(const Transaction *from_trans, Transaction *to_trans)
+{
+    xaccTransCopyFromClipBoard(from_trans, to_trans, NULL, NULL, TRUE);
+}
+
+/********************************************************************\
+ * This function explicitly must robustly handle some unusual input.
+ *
+ *  'from_trans' may be a duped trans (see xaccDupeTransaction), so its
+ *   splits may not really belong to the accounts that they say they do.
+ *
+ *  'from_acc' need not be a valid account. It may be an already freed
+ *   Account. Therefore, it must not be dereferenced at all.
+ *
+ *   Neither 'from_trans', nor 'from_acc', nor any of 'from's splits may
+ *   be modified in any way.
+ *
+ *   'no_date' if TRUE will not copy the date posted.
+ *
+ *   The 'to_trans' transaction will end up with valid copies of from's
+ *   splits.  In addition, the copies of any of from's splits that were
+ *   in from_acc (or at least claimed to be) will end up in to_acc.
+\********************************************************************/
+void
+xaccTransCopyFromClipBoard(const Transaction *from_trans, Transaction *to_trans,
+                           const Account *from_acc, Account *to_acc, gboolean no_date)
+{
+    Timespec ts = {0,0};
+    gboolean change_accounts = FALSE;
+    GList *node;
+
+    if (!from_trans || !to_trans)
+        return;
+
+    change_accounts = from_acc && GNC_IS_ACCOUNT(to_acc) && from_acc != to_acc;
+    xaccTransBeginEdit(to_trans);
+
+    FOR_EACH_SPLIT(to_trans, xaccSplitDestroy(s));
+
+    xaccTransSetCurrency(to_trans, xaccTransGetCurrency(from_trans));
+    xaccTransSetDescription(to_trans, xaccTransGetDescription(from_trans));
+
+    if ((xaccTransGetNum(to_trans) == NULL) || (g_strcmp0 (xaccTransGetNum(to_trans), "") == 0))
+        xaccTransSetNum(to_trans, xaccTransGetNum(from_trans));
+
+    xaccTransSetNotes(to_trans, xaccTransGetNotes(from_trans));
+    if(!no_date)
+    {
+        xaccTransGetDatePostedTS(from_trans, &ts);
+        xaccTransSetDatePostedTS(to_trans, &ts);
+    }
+
+    /* Each new split will be parented to 'to' */
+    for (node = from_trans->splits; node; node = node->next)
+    {
+        Split *new_split = xaccMallocSplit( qof_instance_get_book(QOF_INSTANCE(from_trans)));
+        xaccSplitCopyOnto(node->data, new_split);
+        if (change_accounts && xaccSplitGetAccount(node->data) == from_acc)
+            xaccSplitSetAccount(new_split, to_acc);
+        xaccSplitSetParent(new_split, to_trans);
+    }
+    xaccTransCommitEdit(to_trans);
+}
+
+/*################## Added for Reg2 #################*/
+
+/********************************************************************\
+ Free the transaction.
+\********************************************************************/
 static void
 xaccFreeTransaction (Transaction *trans)
 {
@@ -684,7 +784,7 @@ xaccTransEqual(const Transaction *ta, const Transaction *tb,
 
     if (!ta || !tb)
     {
-        PWARN ("one is NULL");
+        PINFO ("one is NULL");
         return FALSE;
     }
 
@@ -696,14 +796,14 @@ xaccTransEqual(const Transaction *ta, const Transaction *tb,
     {
         if (qof_instance_guid_compare(ta, tb) != 0)
         {
-            PWARN ("GUIDs differ");
+            PINFO ("GUIDs differ");
             return FALSE;
         }
     }
 
     if (!gnc_commodity_equal(ta->common_currency, tb->common_currency))
     {
-        PWARN ("commodities differ %s vs %s",
+        PINFO ("commodities differ %s vs %s",
                gnc_commodity_get_unique_name (ta->common_currency),
                gnc_commodity_get_unique_name (tb->common_currency));
         return FALSE;
@@ -716,7 +816,7 @@ xaccTransEqual(const Transaction *ta, const Transaction *tb,
 
         (void)gnc_timespec_to_iso8601_buff(ta->date_entered, buf1);
         (void)gnc_timespec_to_iso8601_buff(tb->date_entered, buf2);
-        PWARN ("date entered differs: '%s' vs '%s'", buf1, buf2);
+        PINFO ("date entered differs: '%s' vs '%s'", buf1, buf2);
         return FALSE;
     }
 
@@ -727,23 +827,23 @@ xaccTransEqual(const Transaction *ta, const Transaction *tb,
 
         (void)gnc_timespec_to_iso8601_buff(ta->date_posted, buf1);
         (void)gnc_timespec_to_iso8601_buff(tb->date_posted, buf2);
-        PWARN ("date posted differs: '%s' vs '%s'", buf1, buf2);
+        PINFO ("date posted differs: '%s' vs '%s'", buf1, buf2);
         return FALSE;
     }
 
     /* If the same book, since we use cached strings, we can just compare pointer
      * equality for num and description
      */
-    if ((same_book && ta->num != tb->num) || (!same_book && safe_strcmp(ta->num, tb->num) != 0))
+    if ((same_book && ta->num != tb->num) || (!same_book && g_strcmp0(ta->num, tb->num) != 0))
     {
-        PWARN ("num differs: %s vs %s", ta->num, tb->num);
+        PINFO ("num differs: %s vs %s", ta->num, tb->num);
         return FALSE;
     }
 
     if ((same_book && ta->description != tb->description)
-            || (!same_book && safe_strcmp(ta->description, tb->description)))
+            || (!same_book && g_strcmp0(ta->description, tb->description)))
     {
-        PWARN ("descriptions differ: %s vs %s", ta->description, tb->description);
+        PINFO ("descriptions differ: %s vs %s", ta->description, tb->description);
         return FALSE;
     }
 
@@ -755,7 +855,7 @@ xaccTransEqual(const Transaction *ta, const Transaction *tb,
         frame_a = kvp_frame_to_string (ta->inst.kvp_data);
         frame_b = kvp_frame_to_string (tb->inst.kvp_data);
 
-        PWARN ("kvp frames differ:\n%s\n\nvs\n\n%s", frame_a, frame_b);
+        PINFO ("kvp frames differ:\n%s\n\nvs\n\n%s", frame_a, frame_b);
 
         g_free (frame_a);
         g_free (frame_b);
@@ -767,7 +867,7 @@ xaccTransEqual(const Transaction *ta, const Transaction *tb,
     {
         if ((!ta->splits && tb->splits) || (!tb->splits && ta->splits))
         {
-            PWARN ("only one has splits");
+            PINFO ("only one has splits");
             return FALSE;
         }
 
@@ -789,7 +889,7 @@ xaccTransEqual(const Transaction *ta, const Transaction *tb,
 
                 if (!node_b)
                 {
-                    PWARN ("first has split %s and second does not",
+                    PINFO ("first has split %s and second does not",
                            guid_to_string (xaccSplitGetGUID (split_a)));
                     return FALSE;
                 }
@@ -799,20 +899,20 @@ xaccTransEqual(const Transaction *ta, const Transaction *tb,
                 if (!xaccSplitEqual (split_a, split_b, check_guids, check_balances,
                                      FALSE))
                 {
-                    char str_a[GUID_ENCODING_LENGTH+1];
-                    char str_b[GUID_ENCODING_LENGTH+1];
+                    char str_a[GUID_ENCODING_LENGTH + 1];
+                    char str_b[GUID_ENCODING_LENGTH + 1];
 
                     guid_to_string_buff (xaccSplitGetGUID (split_a), str_a);
                     guid_to_string_buff (xaccSplitGetGUID (split_b), str_b);
 
-                    PWARN ("splits %s and %s differ", str_a, str_b);
+                    PINFO ("splits %s and %s differ", str_a, str_b);
                     return FALSE;
                 }
             }
 
             if (g_list_length (ta->splits) != g_list_length (tb->splits))
             {
-                PWARN ("different number of splits");
+                PINFO ("different number of splits");
                 return FALSE;
             }
         }
@@ -909,12 +1009,12 @@ xaccTransGetImbalance (const Transaction * trans)
                 imbal_value);
             }
             imbal_list = gnc_monetary_list_add_value(imbal_list, commodity,
-            xaccSplitGetAmount(s));
+                         xaccSplitGetAmount(s));
         }
 
         /* Add it to the value accumulator in case we need it. */
         imbal_value = gnc_numeric_add(imbal_value, xaccSplitGetValue(s),
-        GNC_DENOM_AUTO, GNC_HOW_DENOM_EXACT);
+                                      GNC_DENOM_AUTO, GNC_HOW_DENOM_EXACT);
     } );
 
 
@@ -941,7 +1041,35 @@ xaccTransIsBalanced (const Transaction *trans)
 {
     MonetaryList *imbal_list;
     gboolean result;
-    if (! gnc_numeric_zero_p(xaccTransGetImbalanceValue(trans)))
+    gnc_numeric imbal = gnc_numeric_zero();
+    gnc_numeric imbal_trading = gnc_numeric_zero();
+
+    if (trans == NULL) return FALSE;
+
+    if (xaccTransUseTradingAccounts(trans))
+    {
+        /* Transaction is imbalanced if the value is imbalanced in either 
+           trading or non-trading splits.  One can't be used to balance
+           the other. */
+        FOR_EACH_SPLIT(trans, 
+        {
+            if (xaccAccountGetType(xaccSplitGetAccount(s)) != ACCT_TYPE_TRADING)
+            {
+                imbal = gnc_numeric_add(imbal, xaccSplitGetValue(s),
+                                        GNC_DENOM_AUTO, GNC_HOW_DENOM_EXACT);
+            }
+            else
+            {
+                imbal_trading = gnc_numeric_add(imbal_trading, xaccSplitGetValue(s),
+                                                GNC_DENOM_AUTO, GNC_HOW_DENOM_EXACT);
+            }
+        } 
+        );
+    }
+    else
+        imbal = xaccTransGetImbalanceValue(trans);
+    
+    if (! gnc_numeric_zero_p(imbal) || ! gnc_numeric_zero_p(imbal_trading))
         return FALSE;
 
     if (!xaccTransUseTradingAccounts (trans))
@@ -982,6 +1110,56 @@ xaccTransGetAccountAmount (const Transaction *trans, const Account *acc)
                                total, xaccSplitGetAmount(s)));
     return total;
 }
+
+/*################## Added for Reg2 #################*/
+gboolean
+xaccTransGetRateForCommodity(const Transaction *trans,
+                             const gnc_commodity *split_com,
+                             const Split *split, gnc_numeric *rate)
+{
+    GList *splits;
+    gnc_commodity *trans_curr;
+
+    if (trans == NULL || split_com == NULL || split == NULL)
+	return FALSE;
+
+    trans_curr = xaccTransGetCurrency (trans);
+    if (gnc_commodity_equal (trans_curr, split_com))
+    {
+        if (rate)
+            *rate = gnc_numeric_create (1, 1);
+        return TRUE;
+    }
+
+    for (splits = trans->splits; splits; splits = splits->next)
+    {
+        Split *s = splits->data;
+        gnc_commodity *comm;
+
+        if (!xaccTransStillHasSplit (trans, s)) continue;
+
+        if (s == split)
+        {
+            comm = xaccAccountGetCommodity (xaccSplitGetAccount(s));
+            if (gnc_commodity_equal (split_com, comm))
+            {
+                gnc_numeric amt = xaccSplitGetAmount (s);
+                gnc_numeric val = xaccSplitGetValue (s);
+
+                if (!gnc_numeric_zero_p (xaccSplitGetAmount (s)) &&
+                    !gnc_numeric_zero_p (xaccSplitGetValue (s)))
+                {
+                    if (rate)
+                        *rate = gnc_numeric_div (amt, val, GNC_DENOM_AUTO,
+                                                GNC_HOW_DENOM_REDUCE);
+                    return TRUE;
+                }
+            }
+        }
+    }
+    return FALSE;
+}
+/*################## Added for Reg2 #################*/
 
 gnc_numeric
 xaccTransGetAccountConvRate(const Transaction *txn, const Account *acc)
@@ -1121,8 +1299,11 @@ xaccTransBeginEdit (Transaction *trans)
 
     if (qof_book_shutting_down(qof_instance_get_book(trans))) return;
 
-    xaccOpenLog ();
-    xaccTransWriteLog (trans, 'B');
+    if (!qof_book_is_readonly(qof_instance_get_book(trans)))
+    {
+        xaccOpenLog ();
+        xaccTransWriteLog (trans, 'B');
+    }
 
     /* Make a clone of the transaction; we will use this
      * in case we need to roll-back the edit. */
@@ -1173,11 +1354,13 @@ do_destroy (Transaction *trans)
     gboolean shutting_down = qof_book_shutting_down(qof_instance_get_book(trans));
 
     /* If there are capital-gains transactions associated with this,
-     * they need to be destroyed too.  */
-    destroy_gains (trans);
+     * they need to be destroyed too unless we're shutting down in
+     * which case all transactions will be destroyed. */
+    if (!shutting_down)
+        destroy_gains (trans);
 
     /* Make a log in the journal before destruction.  */
-    if (!shutting_down)
+    if (!shutting_down && !qof_book_is_readonly(qof_instance_get_book(trans)))
         xaccTransWriteLog (trans, 'D');
 
     qof_event_gen (&trans->inst, QOF_EVENT_DESTROY, NULL);
@@ -1192,7 +1375,7 @@ do_destroy (Transaction *trans)
     for (node = trans->splits; node; node = node->next)
     {
         Split *s = node->data;
-        if (s->parent == trans)
+        if (s && s->parent == trans)
         {
             xaccSplitDestroy(s);
         }
@@ -1200,7 +1383,7 @@ do_destroy (Transaction *trans)
     for (node = trans->splits; node; node = node->next)
     {
         Split *s = node->data;
-        if (s->parent == trans)
+        if (s && s->parent == trans)
         {
             xaccSplitCommitEdit(s);
         }
@@ -1286,7 +1469,8 @@ static void trans_cleanup_commit(Transaction *trans)
     }
     g_list_free(slist);
 
-    xaccTransWriteLog (trans, 'C');
+    if (!qof_book_is_readonly(qof_instance_get_book(trans)))
+        xaccTransWriteLog (trans, 'C');
 
     /* Get rid of the copy we made. We won't be rolling back,
      * so we don't need it any more.  */
@@ -1396,11 +1580,26 @@ xaccTransRollbackEdit (Transaction *trans)
     Transaction *orig;
     GList *slist;
     int num_preexist, i;
+
+/* FIXME: This isn't quite the right way to handle nested edits --
+ * there should be a stack of transaction states that are popped off
+ * and restored at each level -- but it does prevent restoring to the
+ * editlevel 0 state until one is returning to editlevel 0, and
+ * thereby prevents a crash caused by trans->orig getting NULLed too
+ * soon.
+ */
+    if (!qof_instance_get_editlevel (QOF_INSTANCE (trans))) return;
+    if (qof_instance_get_editlevel (QOF_INSTANCE (trans)) > 1) {
+	 qof_instance_decrease_editlevel (QOF_INSTANCE (trans));
+	 return;
+    }
+
     ENTER ("trans addr=%p\n", trans);
 
     check_open(trans);
 
     /* copy the original values back in. */
+
     orig = trans->orig;
     SWAP(trans->num, orig->num);
     SWAP(trans->description, orig->description);
@@ -1412,6 +1611,9 @@ xaccTransRollbackEdit (Transaction *trans)
     /* The splits at the front of trans->splits are exactly the same
        splits as in the original, but some of them may have changed, so
        we restore only those. */
+/* FIXME: Runs off the transaction's splits, so deleted splits are not
+ * restored!
+ */
     num_preexist = g_list_length(orig->splits);
     slist = g_list_copy(trans->splits);
     for (i = 0, node = slist, onode = orig->splits; node;
@@ -1434,7 +1636,7 @@ xaccTransRollbackEdit (Transaction *trans)
             s->amount = so->amount;
             s->value = so->value;
             s->lot = so->lot;
-            s->gains_split = s->gains_split;
+            s->gains_split = so->gains_split;
             //SET_GAINS_A_VDIRTY(s);
             s->date_reconciled = so->date_reconciled;
             qof_instance_mark_clean(QOF_INSTANCE(s));
@@ -1510,7 +1712,8 @@ xaccTransRollbackEdit (Transaction *trans)
         }
     }
 
-    xaccTransWriteLog (trans, 'R');
+    if (!qof_book_is_readonly(qof_instance_get_book(trans)))
+        xaccTransWriteLog (trans, 'R');
 
     xaccFreeTransaction (trans->orig);
 
@@ -1538,6 +1741,13 @@ xaccTransIsOpen (const Transaction *trans)
 int
 xaccTransOrder (const Transaction *ta, const Transaction *tb)
 {
+    return xaccTransOrder_num_action (ta, NULL, tb, NULL);
+}
+
+int
+xaccTransOrder_num_action (const Transaction *ta, const char *actna,
+                            const Transaction *tb, const char *actnb)
+{
     char *da, *db;
     int na, nb, retval;
 
@@ -1549,8 +1759,16 @@ xaccTransOrder (const Transaction *ta, const Transaction *tb)
     DATE_CMP(ta, tb, date_posted);
 
     /* otherwise, sort on number string */
-    na = atoi(ta->num);
-    nb = atoi(tb->num);
+    if (actna && actnb) /* split action string, if not NULL */
+    {
+        na = atoi(actna);
+        nb = atoi(actnb);
+    }
+    else                /* else transaction num string */
+    {
+        na = atoi(ta->num);
+        nb = atoi(tb->num);
+    }
     if (na < nb) return -1;
     if (na > nb) return +1;
 
@@ -1577,10 +1795,11 @@ xaccTransSetDateInternal(Transaction *trans, Timespec *dadate, Timespec val)
     xaccTransBeginEdit(trans);
 
     {
-        time_t secs = (time_t) val.tv_sec;
-        gchar *tstr = ctime(&secs);
-        PINFO ("addr=%p set date to %" G_GUINT64_FORMAT ".%09ld %s",
+        time64 secs = (time64) val.tv_sec;
+        gchar *tstr = gnc_ctime (&secs);
+        PINFO ("addr=%p set date to %" G_GUINT64_FORMAT ".%09ld %s\n",
                trans, val.tv_sec, val.tv_nsec, tstr ? tstr : "(null)");
+        g_free(tstr);
     }
 
     *dadate = val;
@@ -1604,12 +1823,20 @@ set_gains_date_dirty (Transaction *trans)
 }
 
 void
-xaccTransSetDatePostedSecs (Transaction *trans, time_t secs)
+xaccTransSetDatePostedSecs (Transaction *trans, time64 secs)
 {
     Timespec ts = {secs, 0};
     if (!trans) return;
     xaccTransSetDateInternal(trans, &trans->date_posted, ts);
     set_gains_date_dirty (trans);
+}
+
+void
+xaccTransSetDatePostedSecsNormalized (Transaction *trans, time64 time)
+{
+    GDate date;
+    gnc_gdate_set_time64(&date, time);
+    xaccTransSetDatePostedGDate(trans, date);
 }
 
 void
@@ -1635,7 +1862,7 @@ xaccTransSetDatePostedGDate (Transaction *trans, GDate date)
 }
 
 void
-xaccTransSetDateEnteredSecs (Transaction *trans, time_t secs)
+xaccTransSetDateEnteredSecs (Transaction *trans, time64 secs)
 {
     Timespec ts = {secs, 0};
     if (!trans) return;
@@ -1880,11 +2107,19 @@ xaccTransGetIsClosingTxn (const Transaction *trans)
 /********************************************************************\
 \********************************************************************/
 
-time_t
+time64
 xaccTransGetDate (const Transaction *trans)
 {
     return trans ? trans->date_posted.tv_sec : 0;
 }
+
+/*################## Added for Reg2 #################*/
+time64
+xaccTransGetDateEntered (const Transaction *trans)
+{
+    return trans ? trans->date_entered.tv_sec : 0;
+}
+/*################## Added for Reg2 #################*/
 
 void
 xaccTransGetDatePostedTS (const Transaction *trans, Timespec *ts)
@@ -1979,6 +2214,61 @@ xaccTransGetReadOnly (const Transaction *trans)
     return trans ? kvp_frame_get_string (
                trans->inst.kvp_data, TRANS_READ_ONLY_REASON) : NULL;
 }
+
+gboolean xaccTransIsReadonlyByPostedDate(const Transaction *trans)
+{
+    GDate *threshold_date;
+    GDate trans_date;
+    const QofBook *book = xaccTransGetBook (trans);
+    gboolean result;
+    g_assert(trans);
+
+    if (!qof_book_uses_autoreadonly(book))
+    {
+        return FALSE;
+    }
+
+    threshold_date = qof_book_get_autoreadonly_gdate(book);
+    g_assert(threshold_date); // ok because we checked uses_autoreadonly before
+    trans_date = xaccTransGetDatePostedGDate(trans);
+
+//    g_warning("there is auto-read-only with days=%d, trans_date_day=%d, threshold_date_day=%d",
+//              qof_book_get_num_days_autofreeze(book),
+//              g_date_get_day(&trans_date),
+//              g_date_get_day(threshold_date));
+
+    if (g_date_compare(&trans_date, threshold_date) < 0)
+    {
+        //g_warning("we are auto-read-only");
+        result = TRUE;
+    }
+    else
+    {
+        result = FALSE;
+    }
+    g_date_free(threshold_date);
+    return result;
+}
+
+/*################## Added for Reg2 #################*/
+
+gboolean xaccTransInFutureByPostedDate (const Transaction *trans)
+{
+    time64 present;
+    gboolean result;
+    g_assert(trans);
+
+    present = gnc_time64_get_today_end ();
+
+    if (trans->date_posted.tv_sec > present)
+        result = TRUE;
+    else
+        result = FALSE;
+
+    return result;
+}
+
+/*################## Added for Reg2 #################*/
 
 gboolean
 xaccTransHasReconciledSplitsByAccount (const Transaction *trans,
@@ -2077,7 +2367,7 @@ xaccTransVoid(Transaction *trans, const char *reason)
     KvpFrame *frame;
     KvpValue *val;
     Timespec now;
-    char iso8601_str[ISO_DATELENGTH+1] = "";
+    char iso8601_str[ISO_DATELENGTH + 1] = "";
 
     g_return_if_fail(trans && reason);
 
@@ -2090,7 +2380,7 @@ xaccTransVoid(Transaction *trans, const char *reason)
     kvp_frame_set_string(frame, trans_notes_str, _("Voided transaction"));
     kvp_frame_set_string(frame, void_reason_str, reason);
 
-    now.tv_sec = time(NULL);
+    now.tv_sec = gnc_time (NULL);
     now.tv_nsec = 0;
     gnc_timespec_to_iso8601_buff(now, iso8601_str);
     kvp_frame_set_string(frame, void_time_str, iso8601_str);
@@ -2444,6 +2734,23 @@ gboolean xaccTransRegister (void)
     qof_class_register (GNC_ID_TRANS, (QofSortFunc)xaccTransOrder, params);
 
     return qof_object_register (&trans_object_def);
+}
+
+TransTestFunctions*
+_utest_trans_fill_functions (void)
+{
+    TransTestFunctions *func = g_new (TransTestFunctions, 1);
+
+    func->mark_trans = mark_trans;
+    func->gen_event_trans = gen_event_trans;
+    func->xaccFreeTransaction = xaccFreeTransaction;
+    func->destroy_gains = destroy_gains;
+    func->do_destroy = do_destroy;
+    func->was_trans_emptied = was_trans_emptied;
+    func->trans_on_error = trans_on_error;
+    func->trans_cleanup_commit = trans_cleanup_commit;
+    func->xaccTransScrubGainsDate = xaccTransScrubGainsDate;
+    return func;
 }
 
 /************************ END OF ************************************\

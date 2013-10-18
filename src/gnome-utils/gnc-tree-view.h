@@ -33,6 +33,7 @@
 #define __GNC_TREE_VIEW_H
 
 #include <gtk/gtk.h>
+#include "gnc-cell-renderer-date.h"
 
 G_BEGIN_DECLS
 
@@ -67,12 +68,26 @@ GType gnc_tree_view_get_type (void);
    g_object_set_data(col, ATTRIBUTE_NAME, value);
 */
 
+/* The column id refers to a specific column in the tree model.  It is
+ * also attached to the side of the tree column to allow lookup of a
+ * GtkTreeViewColumn when passed a column id from the underlying
+ * model. By convention, negative column numbers are used when the
+ * visible column has no association with the underlying model.*/
+#define MODEL_COLUMN "model_column"
+
+/* For checkbox columns, this contains the real title for the column. */
+#define REAL_TITLE  "real_title"
+
+/* The name of this column to use when saving the view's state.  It is
+ * used internally to map this colum's properties to the saved state. */
+#define PREF_NAME  "pref-name"
+
 /* A column with this attribute set cannot be hidden from view. Valid
    values: GINT_TO_POINTER(0) and GINT_TO_POINTER(1) */
 #define ALWAYS_VISIBLE  "always-visible"
 
-/* This attribute controls visibility of a non-gconf column or a gconf
-   column before a visibility preference has been recorded. Valid values:
+/* This attribute controls visibility of a column if not state was saved
+   for this column (yet). Valid values:
    GINT_TO_POINTER(0) and GINT_TO_POINTER(1)  */
 #define DEFAULT_VISIBLE  "default-visible"
 
@@ -93,9 +108,7 @@ typedef void (* renderer_toggled) (GtkCellRendererToggle *cell_renderer_toggle,
  *  It takes all the parameters necessary to hook a GtkTreeModel
  *  column to a GtkTreeViewColumn.  It handles creating a tooltip to
  *  show the full title name, and setting the sort and edit callback
- *  functions.  If the tree has a gconf section associated with it,
- *  this function also wires up the column so that its visibility and
- *  width are remembered.
+ *  functions.
  *
  *  @param view A pointer to a generic GncTreeView.
  *
@@ -109,8 +122,7 @@ typedef void (* renderer_toggled) (GtkCellRendererToggle *cell_renderer_toggle,
  *
  *  @param pref_name The internal name of this column.  This name is
  *  used in several functions to look up the column, and it is also
- *  used to create the keys used to record the column width and
- *  visibility in gconf.
+ *  used when saving/restoring the view's state.
  *
  *  @param model_data_column The index of the GtkTreeModel data column
  *  used to determine whether the displayed checkbox for each row will
@@ -142,9 +154,7 @@ gnc_tree_view_add_toggle_column (GncTreeView *view,
 
 /** This function adds a new text column to a GncTreeView base view.
  *  It takes all the parameters necessary to hook a GtkTreeModel
- *  column to a GtkTreeViewColumn.  If the tree has a gconf section
- *  associated with it, this function also wires up the column so that
- *  its visibility and width are remembered.
+ *  column to a GtkTreeViewColumn.
  *
  *  @param view A pointer to a generic GncTreeView.
  *
@@ -152,8 +162,7 @@ gnc_tree_view_add_toggle_column (GncTreeView *view,
  *
  *  @param pref_name The internal name of this column.  This name is
  *  used in several functions to look up the column, and it is also
- *  used to create the keys used to record the column width and
- *  visibility in gconf.
+ *  used when saving/restoring the view's state.
  *
  *  @param stock_icon_name The name of the stock icon to display to
  *  the left of the text in this column.  Used for adding icons like
@@ -208,11 +217,25 @@ gnc_tree_view_add_combo_column (GncTreeView *view,
                                 gint combo_model_text_column,
                                 GtkTreeIterCompareFunc column_sort_fn);
 
+
+/** This function adds a new date column to a GncTreeView base
+ *  view.  The parameters it takes in common with
+ *  gnc_tree_view_add_text_column() behave the same as there.
+ */
+GtkTreeViewColumn *
+gnc_tree_view_add_date_column (GncTreeView *view,
+                                   const gchar *column_title,
+                                   const gchar *pref_name,
+                                   const gchar *stock_icon_name,
+                                   const gchar *sizing_text,
+                                   gint model_data_column,
+                                   gint model_visibility_column,
+                                   GtkTreeIterCompareFunc column_sort_fn);
+
+
 /** This function adds a new numeric column to a GncTreeView base
  *  view.  It takes all the parameters necessary to hook a
- *  GtkTreeModel column to a GtkTreeViewColumn.  If the tree has a
- *  gconf section associated with it, this function also wires up the
- *  column so that its visibility and width are remembered.  A numeric
+ *  GtkTreeModel column to a GtkTreeViewColumn.  A numeric
  *  column is nothing more then a text column with a few extra
  *  attributes.
  *
@@ -222,8 +245,7 @@ gnc_tree_view_add_combo_column (GncTreeView *view,
  *
  *  @param pref_name The internal name of this column.  This name is
  *  used in several functions to look up the column, and it is also
- *  used to create the keys used to record the column width and
- *  visibility in gconf.
+ *  used when saving/restoring the view's state.
  *
  *  @param sizing_text A string used to compute the default width of
  *  the column.  This text is never displayed.
@@ -285,8 +307,7 @@ gint gnc_tree_view_append_column (GncTreeView *view,
  *  this view object must use this function instead of directly
  *  calling the gtk_tree_view_set_model function.  This function takes
  *  the additional step of attaching a callback function to the model
- *  to catch any changes to the sorting of the model.  These changes
- *  are propagated into gconf by the callback function.
+ *  to catch any changes to the sorting of the model.
  *
  *  @param view The visible tree widget.
  *
@@ -295,14 +316,14 @@ gint gnc_tree_view_append_column (GncTreeView *view,
 void gnc_tree_view_set_model(GncTreeView *view, GtkTreeModel *model);
 
 /** Make all the correct columns visible, respecting their default
- *  visibility setting, their "always" visibility setting, and their
- *  gconf visibility settings, if managed by gconf.
+ *  visibility setting, their "always" visibility setting, and the
+ *  last saved state if available.
  *
  *  @param view A pointer to an gnc tree view.
  */
 void gnc_tree_view_configure_columns (GncTreeView *view);
 
-/** Find a tree column given the "pref name" used with gconf.  This
+/** Find a tree column given the "pref name".  This
  *  function simply runs the list of all (visible and invisible)
  *  columns looking for a match.  Column names were attached to each
  *  column at the time the column was created.
@@ -317,46 +338,80 @@ gnc_tree_view_find_column_by_name (GncTreeView *view,
                                    const gchar *wanted);
 
 /** This function is called to set up or remove an association between
- *  a gconf section and the display of a view.  It will first remove
- *  any existing association, and then install the new one.  This
- *  involves storing the gconf section value, requesting notification
- *  from gconf of any changes to keys in that section, then attaching
- *  several signals to catch user changes to the view.
+ *  a saved state section and the display of a view.  It will first remove
+ *  any existing association, and then install the new one.
  *
  *  @note This function currently marks the first column as autosized
- *  and all other columns as fixed size (with the size tracked by
- *  gconf).  This may change in the future.  It must change if we want
+ *  and all other columns as fixed size.
+ *  This may change in the future.  It must change if we want
  *  to take advantage of the "fixed row height" performance
  *  enhancements added to GtkTreeView in gtk-2.4
  *
  *  @param view The tree view.
  *
- *  @param section Link the view to this gconf section.  This is
- *  everything after "/apps/gnucash".  I.E. "dialogs/edit_prices".
- *  Use NULL to disconnect a gconf association.
+ *  @param section Link the view to this saved state section.
+ *  Use NULL to disconnect saved state association.
  */
-void gnc_tree_view_set_gconf_section (GncTreeView *view,
+void gnc_tree_view_set_state_section (GncTreeView *view,
                                       const gchar *section);
 
 /** This function is called to get the current association between a
- *  gconf section and the display of a view.  It returns the same
- *  value passed to gnc_tree_view_set_gconf_section(); i.e. a string
- *  like "dialogs/edit_prices".
+ *  saved state section and the display of a view.  It returns the same
+ *  value passed to gnc_tree_view_set_state_section().
  *
  *  @param view The tree view.
  *
- *  @return The current gconf section.  This is everything after
- *  "/apps/gnucash".  I.E "dialogs/edit_prices".
+ *  @return The current state section.
  */
-const gchar *gnc_tree_view_get_gconf_section (GncTreeView *view);
+const gchar *gnc_tree_view_get_state_section (GncTreeView *view);
 
+
+/** This function is called to completely wipe the treeview's state
+ *  information (column visibility, width, sorting order,..).
+ *  This function may be called at any time; either when the user
+ *  wants to disconnect or when the view object is being destroyed.
+ *
+ *  @param view The tree view.
+ */
+void gnc_tree_view_remove_state_information(GncTreeView *view);
+
+/** This function set the columns that will be allocated the free space
+ *  in the view.
+ *
+ *  @param view The tree view.
+ *
+ *  @param list of column names.
+ */
 void gnc_tree_view_expand_columns (GncTreeView *view,
                                    gchar *first_column_name,
                                    ...);
 
+/** This function links the cell backgrounds of the two control columns
+ *  to a column in the model that has color strings or a cell data function
+ *  that sets the "cell-background" property.
+ *
+ *  @param view The tree view.
+ *
+ *  @param column The column in the model containing color strings.
+ *
+ *  @param func This is a cell data function that sets the "cell-background".
+ */
+void
+gnc_tree_view_set_control_column_background (GncTreeView *view, gint column,
+                                             GtkTreeCellDataFunc func);
+
+/** This allows the columns to be setup without the model connected
+ *
+ *  @param view The tree view.
+ *
+ *  @param sort model.
+ */
+void
+gnc_tree_view_set_sort_user_data (GncTreeView *view, GtkTreeModel *s_model);
+
 /** This function is called to set the "show-column-menu" property on
  *  this view.  This function has no visible effect if the
- *  "gconf-section" property has not been set.
+ *  "state-section" property has not been set.
  *
  *  @param view The tree view.
  *

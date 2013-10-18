@@ -41,8 +41,8 @@ struct _QofSession
     QofInstance entity;
 
     /* A book holds pointers to the various types of datasets.
-     * A session may have multiple books. */
-    GList *books;
+     * A session has exactly one book. */
+    QofBook *book;
 
     /* The requested book id, in the form or a URI, such as
      * file:/some/where, or sql:server.host.com:555
@@ -66,6 +66,16 @@ struct _QofSession
     gint lock;
 };
 
+typedef struct qof_instance_copy_data
+{
+    QofInstance *from;
+    QofInstance *to;
+    QofParam  *param;
+    GList  *referenceList;
+    GSList *param_list;
+    QofSession *new_session;
+    gboolean error;
+} QofInstanceCopyData;
 
 QofBackend * qof_session_get_backend (const QofSession *session);
 

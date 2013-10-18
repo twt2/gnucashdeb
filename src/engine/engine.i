@@ -1,23 +1,36 @@
 %module sw_engine
 %{
 /* Includes the header in the wrapper code */
-#include <config.h>
+#include "config.h"
 #include <glib.h>
-#include <qof.h>
-#include <Query.h>
-#include <guile-mappings.h>
-#include <gnc-budget.h>
-#include <gnc-commodity.h>
-#include <gnc-engine.h>
-#include <gnc-filepath-utils.h>
-#include <gnc-pricedb.h>
-#include <gnc-lot.h>
-#include <gnc-session-scm.h>
-#include <gnc-hooks-scm.h>
-#include <engine-helpers.h>
-#include <SX-book.h>
-#include <kvp-scm.h>
+#include "qof.h"
+#include "Query.h"
+#include "guile-mappings.h"
+#include "gnc-budget.h"
+#include "gnc-commodity.h"
+#include "gnc-engine.h"
+#include "gnc-filepath-utils.h"
+#include "gnc-pricedb.h"
+#include "gnc-lot.h"
+#include "gnc-hooks-scm.h"
+#include "engine-helpers.h"
+#include "engine-helpers-guile.h"
+#include "SX-book.h"
+#include "kvp-scm.h"
 #include "glib-helpers.h"
+
+#include "gncAddress.h"
+#include "gncBillTerm.h"
+#include "gncCustomer.h"
+#include "gncEmployee.h"
+#include "gncEntry.h"
+#include "gncInvoice.h"
+#include "gncJob.h"
+#include "gncOrder.h"
+#include "gncOwner.h"
+#include "gncTaxTable.h"
+#include "gncVendor.h"
+#include "gncBusGuile.h"
 
 SCM scm_init_sw_engine_module (void);
 %}
@@ -69,7 +82,6 @@ functions. */
 
 %newobject xaccSplitGetCorrAccountFullName;
 %newobject gnc_numeric_to_string;
-%newobject gnc_build_dotgnucash_path;
 %newobject gnc_build_book_path;
 
 /* Parse the header file to generate wrappers */
@@ -77,7 +89,50 @@ functions. */
   static QofIdType QOF_ID_BOOK_SCM (void) { return QOF_ID_BOOK; }
 }
 
+/* Allow '#f' in guile to be used to represent NULL in 'C' for functions *
+ * 'gnc_set_num_action', 'gnc_get_num_action' and 'gnc_get_action_num' in *
+ * 'engine-helpers.c' */
+%typemap(in) Transaction *trans {
+  if ($input == SCM_BOOL_F)
+    $1 = NULL;
+  else
+    $1 = (Transaction *)SWIG_MustGetPtr($input, SWIGTYPE_p_Transaction, 1, 0);
+}
+
+%typemap(in) Split *split {
+  if ($input == SCM_BOOL_F)
+    $1 = NULL;
+  else
+    $1 = (Split *)SWIG_MustGetPtr($input, SWIGTYPE_p_Split, 2, 0);
+}
+
+%typemap(in) char * num (int must_free = 0) {
+  if ($input == SCM_BOOL_F)
+    $1 = NULL;
+  else
+  {
+    $1 = (char *)SWIG_scm2str($input);
+    must_free3 = 1;
+  }
+}
+
+%typemap(in) char * action (int must_free = 0) {
+  if ($input == SCM_BOOL_F)
+    $1 = NULL;
+  else
+  {
+    $1 = (char *)SWIG_scm2str($input);
+    must_free4 = 1;
+  }
+}
+
 %include <engine-helpers.h>
+%include <engine-helpers-guile.h>
+%typemap(in) Transaction *trans;
+%typemap(in) Split *split;
+%typemap(in) char * num;
+%typemap(in) char * action;
+
 %include <gnc-pricedb.h>
 
 QofSession * qof_session_new (void);
@@ -127,7 +182,6 @@ KvpFrame* qof_book_get_slots(QofBook* book);
 
 Timespec timespecCanonicalDayTime(Timespec t);
 
-gchar * gnc_build_dotgnucash_path (const gchar *filename);
 gchar * gnc_build_book_path (const gchar *filename);
 
 %include <gnc-budget.h>
@@ -147,7 +201,7 @@ gchar * gnc_build_book_path (const gchar *filename);
 
     key = scm_to_locale_string (key_scm);
     gkey = g_strdup (key);
-    gnc_free_scm_locale_string(key);
+    free (key);
 
     path = g_list_prepend (path, gkey);
 
@@ -163,7 +217,6 @@ void gnc_quote_source_set_fq_installed (GList *sources_list);
 %ignore gnc_commodity_table_get_quotable_commodities;
 %include <gnc-commodity.h>
 
-%include <gnc-session-scm.h>
 void gnc_hook_add_scm_dangler (const gchar *name, SCM proc);
 void gnc_hook_run (const gchar *name, gpointer data);
 %include <gnc-hooks.h>
@@ -271,6 +324,7 @@ KvpValue * kvp_frame_get_slot_path_gslist (KvpFrame *frame, GSList *key_path);
     SET_ENUM("SPLIT-ACCOUNT");
     SET_ENUM("SPLIT-VALUE");
     SET_ENUM("SPLIT-MEMO");
+    SET_ENUM("SPLIT-ACTION");
     SET_ENUM("SPLIT-DATE-RECONCILED");
     SET_ENUM("SPLIT-ACCT-FULLNAME");
     SET_ENUM("SPLIT-CORR-ACCT-NAME");
@@ -284,6 +338,8 @@ KvpValue * kvp_frame_get_slot_path_gslist (KvpFrame *frame, GSList *key_path);
 
     SET_ENUM("OPTION-SECTION-ACCOUNTS");
     SET_ENUM("OPTION-NAME-TRADING-ACCOUNTS");
+    SET_ENUM("OPTION-NAME-AUTO-READONLY-DAYS");
+    SET_ENUM("OPTION-NAME-NUM-FIELD-SOURCE");
 
     SET_ENUM("OPTION-SECTION-BUDGETING");
     SET_ENUM("OPTION-NAME-DEFAULT-BUDGET");
@@ -303,3 +359,5 @@ KvpValue * kvp_frame_get_slot_path_gslist (KvpFrame *frame, GSList *key_path);
 
 }
 #endif
+
+%include business-core.i

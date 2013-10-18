@@ -103,67 +103,95 @@ struct _gncEntryClass
 
 static QofLogModule log_module = GNC_MOD_BUSINESS;
 
-/* You must edit the functions in this block in tandem.  KEEP THEM IN
-   SYNC! */
 
-#define GNC_RETURN_ENUM_AS_STRING(x,s) case (x): return (s);
+/* You must edit the functions in this block in tandem.
+ * KEEP THIS FUNCTION IN SYNC with the one below! */
 const char *
 gncEntryDiscountHowToString (GncDiscountHow how)
 {
     switch (how)
     {
-        GNC_RETURN_ENUM_AS_STRING(GNC_DISC_PRETAX, "PRETAX");
-        GNC_RETURN_ENUM_AS_STRING(GNC_DISC_SAMETIME, "SAMETIME");
-        GNC_RETURN_ENUM_AS_STRING(GNC_DISC_POSTTAX, "POSTTAX");
+    case (GNC_DISC_PRETAX):
+        return "PRETAX";
+    case (GNC_DISC_SAMETIME):
+        return "SAMETIME";
+    case (GNC_DISC_POSTTAX):
+        return "POSTTAX";
     default:
         g_warning ("asked to translate unknown discount-how %d.\n", how);
         break;
     }
-    return(NULL);
+    return NULL;
 }
 
+/* You must edit the functions in this block in tandem.
+ * KEEP THIS FUNCTION IN SYNC with the one above! */
+gboolean gncEntryDiscountStringToHow (const char *str, GncDiscountHow *how)
+{
+    if (g_strcmp0 ("PRETAX", str) == 0)
+    {
+        *how = GNC_DISC_PRETAX;
+        return TRUE;
+    }
+    if (g_strcmp0 ("SAMETIME", str) == 0)
+    {
+        *how = GNC_DISC_SAMETIME;
+        return TRUE;
+    }
+    if (g_strcmp0 ("POSTTAX", str) == 0)
+    {
+        *how = GNC_DISC_POSTTAX;
+        return TRUE;
+    }
+    g_warning ("asked to translate unknown discount-how string %s.\n",
+               str ? str : "(null)");
+
+    return FALSE;
+}
+
+/* You must edit the functions in this block in tandem.
+ * KEEP THIS FUNCTION IN SYNC with the one below! */
 const char * gncEntryPaymentTypeToString (GncEntryPaymentType type)
 {
     switch (type)
     {
-        GNC_RETURN_ENUM_AS_STRING(GNC_PAYMENT_CASH, "CASH");
-        GNC_RETURN_ENUM_AS_STRING(GNC_PAYMENT_CARD, "CARD");
+    case (GNC_PAYMENT_CASH):
+        return "CASH";
+    case (GNC_PAYMENT_CARD):
+        return "CARD";
     default:
         g_warning ("asked to translate unknown payment type %d.\n", type);
         break;
     }
-    return(NULL);
+    return NULL ;
 }
-#undef GNC_RETURN_ENUM_AS_STRING
-#define GNC_RETURN_ON_MATCH(s,x,r) \
-  if(safe_strcmp((s), (str)) == 0) { *(r) = x; return(TRUE); }
-gboolean gncEntryDiscountStringToHow (const char *str, GncDiscountHow *how)
-{
-    GNC_RETURN_ON_MATCH ("PRETAX", GNC_DISC_PRETAX, how);
-    GNC_RETURN_ON_MATCH ("SAMETIME", GNC_DISC_SAMETIME, how);
-    GNC_RETURN_ON_MATCH ("POSTTAX", GNC_DISC_POSTTAX, how);
-    g_warning ("asked to translate unknown discount-how string %s.\n",
-               str ? str : "(null)");
 
-    return(FALSE);
-}
+/* You must edit the functions in this block in tandem.
+ * KEEP THIS FUNCTION IN SYNC with the one above! */
 gboolean gncEntryPaymentStringToType (const char *str, GncEntryPaymentType *type)
 {
-    GNC_RETURN_ON_MATCH ("CASH", GNC_PAYMENT_CASH, type);
-    GNC_RETURN_ON_MATCH ("CARD", GNC_PAYMENT_CARD, type);
+    if (g_strcmp0 ("CASH", str) == 0)
+    {
+        *type = GNC_PAYMENT_CASH;
+        return TRUE;
+    }
+    if (g_strcmp0 ("CARD", str) == 0)
+    {
+        *type = GNC_PAYMENT_CARD;
+        return TRUE;
+    }
     g_warning ("asked to translate unknown discount-how string %s.\n",
                str ? str : "(null)");
 
-    return(FALSE);
+    return FALSE;
 }
-#undef GNC_RETURN_ON_MATCH
 
-#define _GNC_MOD_NAME	GNC_ID_ENTRY
+#define _GNC_MOD_NAME GNC_ID_ENTRY
 
 #define SET_STR(obj, member, str) { \
 	char * tmp; \
 	\
-	if (!safe_strcmp (member, str)) return; \
+	if (!g_strcmp0 (member, str)) return; \
 	gncEntryBeginEdit (obj); \
 	tmp = CACHE_INSERT (str); \
 	CACHE_REMOVE (member); \
@@ -418,29 +446,6 @@ static void gncEntryFree (GncEntry *entry)
     g_object_unref (entry);
 }
 
-GncEntry *
-gncCloneEntry (GncEntry *from, QofBook *book)
-{
-    /* XXX unfinished */
-    return NULL;
-}
-
-GncEntry *
-gncEntryObtainTwin (GncEntry *from, QofBook *book)
-{
-    GncEntry *entry;
-    if (!book) return NULL;
-
-    entry = (GncEntry *) qof_instance_lookup_twin (QOF_INSTANCE(from), book);
-    if (!entry)
-    {
-        entry = gncCloneEntry (from, book);
-    }
-
-    return entry;
-}
-
-
 /* ================================================================ */
 /* Set Functions */
 
@@ -466,6 +471,19 @@ void gncEntrySetDate (GncEntry *entry, Timespec date)
         if (entry->bill)
             gncInvoiceSortEntries(entry->bill);
     }
+}
+
+void gncEntrySetDateGDate (GncEntry *entry, const GDate* date)
+{
+    if (!entry || !date || !g_date_valid(date))
+        return;
+
+    /* Watch out: Here we are deviating from the initial convention that a
+    GDate always converts to the start time of the day. Instead, the GDate is
+    converted to "noon" on the respective date. This is not nice, but this
+    convention was used for the Timespec of GncEntry all the time, so we better
+    stick to it.*/
+    gncEntrySetDate(entry, timespecCanonicalDayTime(gdate_to_timespec(*date)));
 }
 
 void gncEntrySetDateEntered (GncEntry *entry, Timespec date)
@@ -508,6 +526,17 @@ void gncEntrySetQuantity (GncEntry *entry, gnc_numeric quantity)
     if (gnc_numeric_eq (entry->quantity, quantity)) return;
     gncEntryBeginEdit (entry);
     entry->quantity = quantity;
+    entry->values_dirty = TRUE;
+    mark_entry (entry);
+    gncEntryCommitEdit (entry);
+}
+
+void gncEntrySetDocQuantity (GncEntry *entry, gnc_numeric quantity, gboolean is_cn)
+{
+    if (!entry) return;
+    if (gnc_numeric_eq (entry->quantity, quantity)) return;
+    gncEntryBeginEdit (entry);
+    entry->quantity = (is_cn ? gnc_numeric_neg (quantity) : quantity);
     entry->values_dirty = TRUE;
     mark_entry (entry);
     gncEntryCommitEdit (entry);
@@ -625,7 +654,7 @@ void qofEntrySetInvDiscType (GncEntry *entry, const char *type_string)
 
 void qofEntrySetInvDiscHow  (GncEntry *entry, const char *type)
 {
-    GncDiscountHow how;
+    GncDiscountHow how = GNC_DISC_PRETAX;
 
     if (!entry) return;
     gncEntryBeginEdit (entry);
@@ -739,11 +768,6 @@ void gncEntrySetOrder (GncEntry *entry, GncOrder *order)
     mark_entry (entry);
     gncEntryCommitEdit (entry);
 
-    /* Generate an event modifying the Order's end-owner */
-#if 0
-    qof_event_gen (gncOwnerGetEndGUID (gncOrderGetOwner (order)),
-                   QOF_EVENT_MODIFY, NULL);
-#endif
 }
 
 /* called from gncInvoice when we're added to the Invoice */
@@ -768,7 +792,7 @@ void gncEntrySetBill (GncEntry *entry, GncInvoice *bill)
     gncEntryCommitEdit (entry);
 }
 
-void gncEntryCopy (const GncEntry *src, GncEntry *dest)
+void gncEntryCopy (const GncEntry *src, GncEntry *dest, gboolean add_entry)
 {
     if (!src || !dest) return;
 
@@ -802,16 +826,20 @@ void gncEntryCopy (const GncEntry *src, GncEntry *dest)
     if (src->b_tax_table)
         gncEntrySetBillTaxTable (dest, src->b_tax_table);
 
-    if (src->order)
-        gncOrderAddEntry (src->order, dest);
+    if (add_entry)
+    {
+        if (src->order)
+            gncOrderAddEntry (src->order, dest);
 
-    if (src->invoice)
-        gncInvoiceAddEntry (src->invoice, dest);
+        if (src->invoice)
+            gncInvoiceAddEntry (src->invoice, dest);
 
-    if (src->bill)
-        gncBillAddEntry (src->bill, dest);
+        if (src->bill)
+            gncBillAddEntry (src->bill, dest);
+    }
 
     dest->values_dirty = TRUE;
+    mark_entry (dest);
     gncEntryCommitEdit (dest);
 }
 
@@ -825,6 +853,11 @@ Timespec gncEntryGetDate (const GncEntry *entry)
     ts.tv_nsec = 0;
     if (!entry) return ts;
     return entry->date;
+}
+
+GDate gncEntryGetDateGDate(const GncEntry *entry)
+{
+    return timespec_to_gdate(gncEntryGetDate(entry));
 }
 
 Timespec gncEntryGetDateEntered (const GncEntry *entry)
@@ -858,6 +891,12 @@ gnc_numeric gncEntryGetQuantity (const GncEntry *entry)
 {
     if (!entry) return gnc_numeric_zero();
     return entry->quantity;
+}
+
+gnc_numeric gncEntryGetDocQuantity (const GncEntry *entry, gboolean is_cn)
+{
+    gnc_numeric value = gncEntryGetQuantity (entry);
+    return (is_cn ? gnc_numeric_neg (value) : value);
 }
 
 /* Customer Invoice */
@@ -1003,23 +1042,24 @@ GncOrder * gncEntryGetOrder (const GncEntry *entry)
  * In other words, we combine the quantity, unit-price, discount and
  * taxes together, depending on various flags.
  *
- * There are four potental ways to combine these numbers:
+ * There are four potential ways to combine these numbers:
  * Discount:     Pre-Tax   Post-Tax
  *   Tax   :     Included  Not-Included
  *
  * The process is relatively simple:
  *
- *  1) compute the agregate price (price*qty)
- *  2) if taxincluded, then back-compute the agregate pre-tax price
+ *  1) compute the aggregate price (price*qty)
+ *  2) if taxincluded, then back-compute the aggregate pre-tax price
  *  3) apply discount and taxes in the appropriate order
  *  4) return the requested results.
  *
- * step 2 can be done with agregate taxes; no need to compute them all
+ * Step 2 can be done with aggregate taxes; no need to compute them all
  * unless the caller asked for the tax_value.
  *
- * Note that the returned "value" is such that value + tax == "total
- * to pay," which means in the case of tax-included that the returned
- * "value" may be less than the agregate price, even without a
+ * Note that the returned "value" is such that
+ *   value + tax == "total to pay"
+ * which means in the case of tax-included that the returned
+ * "value" may be less than the aggregate price, even without a
  * discount.  If you want to display the tax-included value, you need
  * to add the value and taxes together.  In other words, the value is
  * the amount the merchant gets; the taxes are the amount the gov't
@@ -1037,16 +1077,16 @@ void gncEntryComputeValue (gnc_numeric qty, gnc_numeric price,
                            gnc_numeric *value, gnc_numeric *discount_value,
                            GList **tax_value)
 {
-    gnc_numeric	aggregate;
-    gnc_numeric	pretax;
-    gnc_numeric	result;
-    gnc_numeric	tax;
-    gnc_numeric	percent = gnc_numeric_create (100, 1);
-    gnc_numeric	tpercent = gnc_numeric_zero ();
-    gnc_numeric	tvalue = gnc_numeric_zero ();
+    gnc_numeric aggregate;
+    gnc_numeric pretax;
+    gnc_numeric result;
+    gnc_numeric tax;
+    gnc_numeric percent = gnc_numeric_create (100, 1);
+    gnc_numeric tpercent = gnc_numeric_zero ();
+    gnc_numeric tvalue = gnc_numeric_zero ();
 
-    GList * 	entries = gncTaxTableGetEntries (tax_table);
-    GList * 	node;
+    GList     * entries = gncTaxTableGetEntries (tax_table);
+    GList     * node;
 
     /* Step 1: compute the aggregate price */
 
@@ -1072,6 +1112,7 @@ void gncEntryComputeValue (gnc_numeric qty, gnc_numeric price,
             break;
         default:
             g_warning ("Unknown tax type: %d", gncTaxTableEntryGetType (entry));
+            break;
         }
     }
     /* now we need to convert from 5% -> .05 */
@@ -1113,10 +1154,10 @@ void gncEntryComputeValue (gnc_numeric qty, gnc_numeric price,
      */
 
     /*
-     * Type:	discount	tax
-     * PRETAX	pretax		pretax-discount
-     * SAMETIME	pretax		pretax
-     * POSTTAX	pretax+tax	pretax
+     * Type:    discount    tax
+     * PRETAX   pretax      pretax-discount
+     * SAMETIME pretax      pretax
+     * POSTTAX  pretax+tax  pretax
      */
 
     switch (discount_how)
@@ -1162,6 +1203,7 @@ void gncEntryComputeValue (gnc_numeric qty, gnc_numeric price,
 
     default:
         g_warning ("unknown DiscountHow value: %d", discount_how);
+        break;
     }
 
     /* Step 4:  return the requested results. */
@@ -1284,6 +1326,7 @@ gncEntryRecomputeValues (GncEntry *entry)
     /* Determine the commodity denominator */
     denom = get_entry_commodity_denom (entry);
 
+    gncEntryBeginEdit (entry);
     /* Compute the invoice values */
     gncEntryComputeValue (entry->quantity, entry->i_price,
                           (entry->i_taxable ? entry->i_tax_table : NULL),
@@ -1316,53 +1359,123 @@ gncEntryRecomputeValues (GncEntry *entry)
     entry->b_tax_value_rounded = gnc_numeric_convert (entry->b_tax_value, denom,
                                  GNC_HOW_RND_ROUND_HALF_UP);
     entry->values_dirty = FALSE;
+    mark_entry (entry);
+    gncEntryCommitEdit (entry);
 }
 
-void gncEntryGetValue (GncEntry *entry, gboolean is_inv, gnc_numeric *value,
-                       gnc_numeric *discount_value, gnc_numeric *tax_value,
-                       GList **tax_values)
-{
-    if (!entry) return;
-    gncEntryRecomputeValues (entry);
-    if (value)
-        *value = (is_inv ? entry->i_value : entry->b_value);
-    if (discount_value)
-        *discount_value = (is_inv ? entry->i_disc_value : gnc_numeric_zero());
-    if (tax_value)
-        *tax_value = (is_inv ? entry->i_tax_value : entry->b_tax_value);
-    if (tax_values)
-        *tax_values = (is_inv ? entry->i_tax_values : entry->b_tax_values);
-}
-
-gnc_numeric gncEntryReturnValue (GncEntry *entry, gboolean is_inv)
+/* The "Int" functions below are for internal use only.
+ * Outside this file, use the "Doc" or "Bal" variants found below instead. */
+static gnc_numeric gncEntryGetIntValue (GncEntry *entry, gboolean round, gboolean is_cust_doc)
 {
     if (!entry) return gnc_numeric_zero();
     gncEntryRecomputeValues (entry);
-    return (is_inv ? entry->i_value_rounded : entry->b_value_rounded);
+    if (round)
+        return (is_cust_doc ? entry->i_value_rounded : entry->b_value_rounded);
+    else
+        return (is_cust_doc ? entry->i_value : entry->b_value);
 }
 
-gnc_numeric gncEntryReturnTaxValue (GncEntry *entry, gboolean is_inv)
+static gnc_numeric gncEntryGetIntTaxValue (GncEntry *entry, gboolean round, gboolean is_cust_doc)
 {
     if (!entry) return gnc_numeric_zero();
     gncEntryRecomputeValues (entry);
-    return (is_inv ? entry->i_tax_value_rounded : entry->b_tax_value_rounded);
+    if (round)
+        return (is_cust_doc ? entry->i_tax_value_rounded : entry->b_tax_value_rounded);
+    else
+        return (is_cust_doc ? entry->i_tax_value : entry->b_tax_value);
 }
 
-AccountValueList * gncEntryReturnTaxValues (GncEntry *entry, gboolean is_inv)
+/* Careful: the returned list is managed by the entry, and will only be valid for a short time */
+static AccountValueList * gncEntryGetIntTaxValues (GncEntry *entry, gboolean is_cust_doc)
 {
     if (!entry) return NULL;
     gncEntryRecomputeValues (entry);
-    return (is_inv ? entry->i_tax_values : entry->b_tax_values);
+    return (is_cust_doc ? entry->i_tax_values : entry->b_tax_values);
 }
 
-gnc_numeric gncEntryReturnDiscountValue (GncEntry *entry, gboolean is_inv)
+static gnc_numeric gncEntryGetIntDiscountValue (GncEntry *entry, gboolean round, gboolean is_cust_doc)
 {
     if (!entry) return gnc_numeric_zero();
     gncEntryRecomputeValues (entry);
-    return (is_inv ? entry->i_disc_value_rounded : gnc_numeric_zero());
+    if (round)
+        return (is_cust_doc ? entry->i_disc_value_rounded : gnc_numeric_zero());
+    else
+        return (is_cust_doc ? entry->i_disc_value : gnc_numeric_zero());
 }
 
-/* XXXX this exsitnace of this routine is just wrong */
+gnc_numeric gncEntryGetDocValue (GncEntry *entry, gboolean round, gboolean is_cust_doc, gboolean is_cn)
+{
+    gnc_numeric value = gncEntryGetIntValue (entry, round, is_cust_doc);
+    return (is_cn ? gnc_numeric_neg (value) : value);
+}
+
+gnc_numeric gncEntryGetDocTaxValue (GncEntry *entry, gboolean round, gboolean is_cust_doc, gboolean is_cn)
+{
+    gnc_numeric value = gncEntryGetIntTaxValue (entry, round, is_cust_doc);
+    return (is_cn ? gnc_numeric_neg (value) : value);
+}
+
+/* Careful: the returned list is NOT owned by the entry and should be freed by the caller */
+AccountValueList * gncEntryGetDocTaxValues (GncEntry *entry, gboolean is_cust_doc, gboolean is_cn)
+{
+    AccountValueList *int_values = gncEntryGetIntTaxValues (entry, is_cust_doc);
+    AccountValueList *values = NULL, *node;
+
+    /* Make a copy of the list with negated values if necessary. */
+    for (node = int_values; node; node = node->next)
+    {
+        GncAccountValue *acct_val = node->data;
+        values = gncAccountValueAdd (values, acct_val->account,
+                                     (is_cn ? gnc_numeric_neg (acct_val->value)
+                                      : acct_val->value));
+    }
+
+    return values;
+}
+
+gnc_numeric gncEntryGetDocDiscountValue (GncEntry *entry, gboolean round, gboolean is_cust_doc, gboolean is_cn)
+{
+    gnc_numeric value = gncEntryGetIntDiscountValue (entry, round, is_cust_doc);
+    return (is_cn ? gnc_numeric_neg (value) : value);
+}
+
+gnc_numeric gncEntryGetBalValue (GncEntry *entry, gboolean round, gboolean is_cust_doc)
+{
+    gnc_numeric value = gncEntryGetIntValue (entry, round, is_cust_doc);
+    return (is_cust_doc ? gnc_numeric_neg (value) : value);
+}
+
+gnc_numeric gncEntryGetBalTaxValue (GncEntry *entry, gboolean round, gboolean is_cust_doc)
+{
+    gnc_numeric value = gncEntryGetIntTaxValue (entry, round, is_cust_doc);
+    return (is_cust_doc ? gnc_numeric_neg (value) : value);
+}
+
+/* Careful: the returned list is NOT owned by the entry and should be freed by the caller */
+AccountValueList * gncEntryGetBalTaxValues (GncEntry *entry, gboolean is_cust_doc)
+{
+    AccountValueList *int_values = gncEntryGetIntTaxValues (entry, is_cust_doc);
+    AccountValueList *values = NULL, *node;
+
+    /* Make a copy of the list with negated values if necessary. */
+    for (node = int_values; node; node = node->next)
+    {
+        GncAccountValue *acct_val = node->data;
+        values = gncAccountValueAdd (values, acct_val->account,
+                                     (is_cust_doc ? gnc_numeric_neg (acct_val->value)
+                                      : acct_val->value));
+    }
+
+    return values;
+}
+
+gnc_numeric gncEntryGetBalDiscountValue (GncEntry *entry, gboolean round, gboolean is_cust_doc)
+{
+    gnc_numeric value = gncEntryGetIntDiscountValue (entry, round, is_cust_doc);
+    return (is_cust_doc ? gnc_numeric_neg (value) : value);
+}
+
+/* XXX this existence of this routine is just wrong */
 gboolean gncEntryIsOpen (const GncEntry *entry)
 {
     if (!entry) return FALSE;
@@ -1411,17 +1524,17 @@ int gncEntryCompare (const GncEntry *a, const GncEntry *b)
     compare = timespec_cmp (&(a->date_entered), &(b->date_entered));
     if (compare) return compare;
 
-    compare = safe_strcmp (a->desc, b->desc);
+    compare = g_strcmp0 (a->desc, b->desc);
     if (compare) return compare;
 
-    compare = safe_strcmp (a->action, b->action);
+    compare = g_strcmp0 (a->action, b->action);
     if (compare) return compare;
 
     return qof_instance_guid_compare(a, b);
 }
 
 #define CHECK_STRING(X, Y, FIELD) \
-    if (safe_strcmp((X)->FIELD, (Y)->FIELD) != 0) \
+    if (g_strcmp0((X)->FIELD, (Y)->FIELD) != 0) \
     { \
         PWARN("%s differ: %s vs %s", #FIELD, (X)->FIELD, (Y)->FIELD); \
         return FALSE; \
@@ -1448,87 +1561,6 @@ int gncEntryCompare (const GncEntry *a, const GncEntry *b)
         return FALSE; \
     }
 
-gboolean gncEntryEqual(const GncEntry *a, const GncEntry *b)
-{
-    if (a == NULL && b == NULL) return TRUE;
-    if (a == NULL || b == NULL) return FALSE;
-
-    g_return_val_if_fail(GNC_IS_ENTRY(a), FALSE);
-    g_return_val_if_fail(GNC_IS_ENTRY(b), FALSE);
-
-    CHECK_STRING(a, b, desc);
-    CHECK_STRING(a, b, action);
-    CHECK_STRING(a, b, notes);
-    CHECK_NUMERIC(a, b, quantity);
-
-    if (a->invoice != NULL)
-    {
-        CHECK_ACCOUNT(a, b, i_account);
-        CHECK_NUMERIC(a, b, i_price);
-        CHECK_VALUE(a, b, i_taxable);
-        CHECK_VALUE(a, b, i_taxincluded);
-        if (!gncTaxTableEqual(a->i_tax_table, b->i_tax_table))
-        {
-            PWARN("i_tax_table differ");
-            return FALSE;
-        }
-
-        CHECK_NUMERIC(a, b, i_discount);
-        CHECK_VALUE(a, b, i_disc_type);
-        CHECK_VALUE(a, b, i_disc_how);
-        CHECK_NUMERIC(a, b, i_value);
-        CHECK_NUMERIC(a, b, i_value_rounded);
-        CHECK_NUMERIC(a, b, i_tax_value);
-        CHECK_NUMERIC(a, b, i_tax_value_rounded);
-        CHECK_NUMERIC(a, b, i_disc_value);
-        CHECK_NUMERIC(a, b, i_disc_value_rounded);
-
-#if 0
-        Timespec	date;
-        Timespec	date_entered;
-
-        /* employee bill data */
-        GncEntryPaymentType b_payment;
-
-        /* customer invoice */
-        GList *	i_tax_values;
-        Timespec	i_taxtable_modtime;
-
-#endif
-    }
-
-    if (a->bill != NULL)
-    {
-        CHECK_ACCOUNT(a, b, b_account);
-        CHECK_NUMERIC(a, b, b_price);
-
-        CHECK_NUMERIC(a, b, b_value);
-        CHECK_NUMERIC(a, b, b_value_rounded);
-        CHECK_NUMERIC(a, b, b_tax_value);
-        CHECK_NUMERIC(a, b, b_tax_value_rounded);
-#if 0
-        Timespec	date;
-        Timespec	date_entered;
-
-        /* vendor bill data */
-        gboolean	b_taxable;
-        gboolean	b_taxincluded;
-        GncTaxTable *	b_tax_table;
-        gboolean	billable;
-        GncOwner	billto;
-
-        /* employee bill data */
-        GncEntryPaymentType b_payment;
-
-        /* vendor bill */
-        GList *	b_tax_values;
-        Timespec	b_taxtable_modtime;
-#endif
-    }
-    /* FIXME: Need real tests */
-
-    return TRUE;
-}
 
 /* ============================================================= */
 /* Object declaration */

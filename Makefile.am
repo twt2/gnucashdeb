@@ -1,8 +1,6 @@
 
 SUBDIRS = . doc lib src intl-scm packaging po accounts checks
 
-docdir = ${GNC_DOC_INSTALL_DIR}
-
 GNC_CTAGS_FILE = @GNC_CTAGS_FILE@
 GNC_ETAGS_FILE = @GNC_ETAGS_FILE@
 
@@ -45,7 +43,6 @@ EXTRA_DIST = \
   macros/binreloc.m4 \
   macros/compiler-flags.m4 \
   macros/ac_pkg_swig.m4 \
-  macros/gnome-guile-checks.m4 \
   macros/legacy_macros.m4 \
   po/gnucash.pot \
   po/POTFILES.in \
@@ -80,7 +77,7 @@ EXTRA_DIST = \
   intltool-extract.in \
   intltool-merge.in \
   intltool-update.in \
-  util/gnc-svnversion
+  util/gnc-scm-info
 
 ## We borrow guile's convention and use @-...-@ as the substitution
 ## brackets here, instead of the usual @...@.  This prevents autoconf
@@ -186,19 +183,32 @@ intl-scm/guile-strings.c:
 
 .potfiles:
 
+GIT_CMD = @GIT_CMD@
 SVN = svn
 XSLTPROC = xsltproc
+SCM_TYPE = @SCM_TYPE@
 
-if BUILDING_FROM_SVN
+if BUILDING_FROM_SCM
 # This rule will generate a ChangeLog of gnucash/trunk commits, plus
 # all additional branches that are added in
 # ./macros/svn2cl.xsl. (FIXME: Is the dependency on NEWS really a good
 # idea? Before a release, NEWS will get updated because of the version
 # change, so this should fit just fine.)
 ChangeLog: NEWS
-	$(SVN) log -v --xml -r HEAD:22702 http://svn.gnucash.org/repo/gnucash | \
-	  $(XSLTPROC) --stringparam strip-prefix "gnucash/branches/2.4" \
-	  --stringparam include-rev "yes" $(srcdir)/macros/svn2cl.xsl - > $@
+	cd $(abs_srcdir) ; \
+	if test x$(SCM_TYPE) = xsvn ; then \
+	  $(SVN) log -v --xml -r HEAD:'{2013-01-01}' http://svn.gnucash.org/repo/gnucash | \
+	    $(XSLTPROC) --stringparam strip-prefix "gnucash/trunk" \
+	    --stringparam include-rev "yes" $(abs_srcdir)/macros/svn2cl.xsl - > $(abs_builddir)/$@ ; \
+	else \
+	  if test x$(SCM_TYPE) = xgit ; then \
+	    "$(GIT_CMD)" log --format="%ad %aN %n%n%x09* %s%d%n" --date=short --since=2013-01-01 > $(abs_builddir)/$@ ; \
+	  else \
+	    touch $(abs_builddir)/$@ ; \
+	    echo "Note: not in svn or git. ChangeLog not regenerated." ; \
+	  fi ; \
+	fi ; \
+	cd $(abs_builddir)
 endif
 
 ASTYLE = /usr/bin/astyle

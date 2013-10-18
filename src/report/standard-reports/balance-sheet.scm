@@ -65,6 +65,7 @@
 (define-module (gnucash report standard-reports balance-sheet))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (gnucash gnc-module))
+(use-modules (gnucash app-utils))
 
 (gnc:module-load "gnucash/report/report-system" 0)
 
@@ -73,15 +74,15 @@
 ;; define all option's names and help text so that they are properly
 ;; defined in *one* place.
 (define optname-report-title (N_ "Report Title"))
-(define opthelp-report-title (N_ "Title for this report"))
+(define opthelp-report-title (N_ "Title for this report."))
 
 (define optname-party-name (N_ "Company name"))
-(define opthelp-party-name (N_ "Name of company/individual"))
+(define opthelp-party-name (N_ "Name of company/individual."))
 
 (define optname-date (N_ "Balance Sheet Date"))
 (define optname-report-form (N_ "Single column Balance Sheet"))
 (define opthelp-report-form
-  (N_ "Print liability/equity section in the same column under the assets section as opposed to a second column right of the assets section"))
+  (N_ "Print liability/equity section in the same column under the assets section as opposed to a second column right of the assets section."))
 ;; FIXME this needs an indent option
 
 (define optname-accounts (N_ "Accounts"))
@@ -89,55 +90,58 @@
   (N_ "Report on these accounts, if display depth allows."))
 (define optname-depth-limit (N_ "Levels of Subaccounts"))
 (define opthelp-depth-limit
-  (N_ "Maximum number of levels in the account tree displayed"))
+  (N_ "Maximum number of levels in the account tree displayed."))
 (define optname-bottom-behavior (N_ "Flatten list to depth limit"))
 (define opthelp-bottom-behavior
-  (N_ "Displays accounts which exceed the depth limit at the depth limit"))
+  (N_ "Displays accounts which exceed the depth limit at the depth limit."))
 
 (define optname-parent-balance-mode (N_ "Parent account balances"))
 (define optname-parent-total-mode (N_ "Parent account subtotals"))
 
 (define optname-show-zb-accts (N_ "Include accounts with zero total balances"))
 (define opthelp-show-zb-accts
-  (N_ "Include accounts with zero total (recursive) balances in this report"))
+  (N_ "Include accounts with zero total (recursive) balances in this report."))
 (define optname-omit-zb-bals (N_ "Omit zero balance figures"))
 (define opthelp-omit-zb-bals
-  (N_ "Show blank space in place of any zero balances which would be shown"))
+  (N_ "Show blank space in place of any zero balances which would be shown."))
 
 (define optname-use-rules (N_ "Show accounting-style rules"))
 (define opthelp-use-rules
-  (N_ "Use rules beneath columns of added numbers like accountants do"))
+  (N_ "Use rules beneath columns of added numbers like accountants do."))
 
 (define optname-account-links (N_ "Display accounts as hyperlinks"))
-(define opthelp-account-links (N_ "Shows each account in the table as a hyperlink to its register window"))
+(define opthelp-account-links (N_ "Shows each account in the table as a hyperlink to its register window."))
 
 (define optname-label-assets (N_ "Label the assets section"))
 (define opthelp-label-assets
-  (N_ "Whether or not to include a label for the assets section"))
+  (N_ "Whether or not to include a label for the assets section."))
 (define optname-total-assets (N_ "Include assets total"))
 (define opthelp-total-assets
-  (N_ "Whether or not to include a line indicating total assets"))
+  (N_ "Whether or not to include a line indicating total assets."))
+(define optname-standard-order (N_ "Use standard US layout"))
+(define opthelp-standard-order
+  (N_ "Report section order is assets/liabilities/equity (rather than assets/equity/liabilities)."))
 (define optname-label-liabilities (N_ "Label the liabilities section"))
 (define opthelp-label-liabilities
-  (N_ "Whether or not to include a label for the liabilities section"))
+  (N_ "Whether or not to include a label for the liabilities section."))
 (define optname-total-liabilities (N_ "Include liabilities total"))
 (define opthelp-total-liabilities
-  (N_ "Whether or not to include a line indicating total liabilities"))
+  (N_ "Whether or not to include a line indicating total liabilities."))
 (define optname-label-equity (N_ "Label the equity section"))
 (define opthelp-label-equity
-  (N_ "Whether or not to include a label for the equity section"))
+  (N_ "Whether or not to include a label for the equity section."))
 (define optname-total-equity (N_ "Include equity total"))
 (define opthelp-total-equity
-  (N_ "Whether or not to include a line indicating total equity"))
+  (N_ "Whether or not to include a line indicating total equity."))
 
 (define pagename-commodities (N_ "Commodities"))
 (define optname-report-commodity (N_ "Report's currency"))
 (define optname-price-source (N_ "Price Source"))
 (define optname-show-foreign (N_ "Show Foreign Currencies"))
 (define opthelp-show-foreign
-  (N_ "Display any foreign currency amount in an account"))
+  (N_ "Display any foreign currency amount in an account."))
 (define optname-show-rates (N_ "Show Exchange Rates"))
-(define opthelp-show-rates (N_ "Show the exchange rates used"))
+(define opthelp-show-rates (N_ "Show the exchange rates used."))
 
 
 ;; options generator
@@ -154,10 +158,7 @@
     (add-option
       (gnc:make-string-option
       gnc:pagename-general optname-party-name
-      "b" opthelp-party-name ""))
-    ;; this should default to company name in (gnc-get-current-book)
-    ;; does anyone know the function to get the company name??
-    ;; (GnuCash is *so* well documented... sigh)
+      "b" opthelp-party-name (or (gnc:company-info gnc:*company-name*) "")))
     
     ;; date at which to report balance
     (gnc:options-add-report-date!
@@ -167,6 +168,11 @@
      (gnc:make-simple-boolean-option
       gnc:pagename-general optname-report-form
       "d" opthelp-report-form #t))
+
+    (add-option
+      (gnc:make-simple-boolean-option
+       gnc:pagename-general optname-standard-order
+       "dd" opthelp-standard-order #t))
 
     ;; accounts to work on
     (add-option
@@ -294,6 +300,8 @@
          (date-secs (gnc:timepair->secs date-tp))
          (report-form? (get-option gnc:pagename-general
                                optname-report-form))
+         (standard-order? (get-option gnc:pagename-general 
+                                      optname-standard-order))
          (compute-unrealized-gains? (not (qof-book-use-trading-accounts 
                                            (gnc-get-current-book))))
          (accounts (get-option gnc:pagename-accounts
@@ -422,6 +430,24 @@
           acct-list)
       balance-collector))
 
+    ;; Format the liabilities section of the report
+    (define (liability-block label-liabilities? parent-table table-env liability-accounts params
+                                       total-liabilities? liability-balance)
+      (let* ((liability-table #f))               ;; gnc:html-acct-table
+	      (if label-liabilities?
+		  (add-subtotal-line 
+		      parent-table (_ "Liabilities") #f #f))
+	      (set! liability-table
+		  (gnc:make-html-acct-table/env/accts
+		      table-env liability-accounts))
+	      (gnc:html-table-add-account-balances
+		  parent-table liability-table params)
+	      (if total-liabilities?
+		  (add-subtotal-line
+		      parent-table (_ "Total Liabilities") #f liability-balance))
+
+	      (add-rule parent-table)))
+	      
     ;;(gnc:warn "account names" liability-account-names)
     (gnc:html-document-set-title! 
      doc (string-append company-name " " report-title " "
@@ -461,7 +487,6 @@
 	       (table-env #f)                      ;; parameters for :make-
 	       (params #f)                         ;; and -add-account-
                (asset-table #f)                    ;; gnc:html-acct-table
-               (liability-table #f)                ;; gnc:html-acct-table
                (equity-table #f)                   ;; gnc:html-acct-table
 	       (get-total-balance-fn
 		(lambda (account)
@@ -625,20 +650,11 @@
 	      (add-rule left-table))
 	  
 	  (gnc:report-percent-done 85)
-	  (if label-liabilities?
-	      (add-subtotal-line 
-	       right-table (_ "Liabilities") #f #f))
-	  (set! liability-table
-		(gnc:make-html-acct-table/env/accts
-		 table-env liability-accounts))
-	  (gnc:html-table-add-account-balances
-	   right-table liability-table params)
-	  (if total-liabilities?
-	      (add-subtotal-line
-	       right-table (_ "Total Liabilities") #f liability-balance))
-	  
-	  (add-rule right-table)
-	  
+          (if standard-order?
+	    (liability-block label-liabilities? right-table table-env
+	                          liability-accounts params
+                                  total-liabilities? liability-balance))
+  
 	  (gnc:report-percent-done 88)
 	  (if label-equity?
 	      (add-subtotal-line
@@ -672,9 +688,14 @@
 	  (if total-equity?
 	      (add-subtotal-line
 	       right-table (_ "Total Equity") #f total-equity-balance))
-	  
+  
 	  (add-rule right-table)
 	  
+	  (if (not standard-order?)
+	    (liability-block label-liabilities? right-table table-env
+	                          liability-accounts params
+                                  total-liabilities? liability-balance))
+
           (add-subtotal-line
            right-table (_ "Total Liabilities & Equity")
 	   #f liability-plus-equity)

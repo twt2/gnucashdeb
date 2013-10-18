@@ -26,7 +26,7 @@
 #include <glib.h>
 
 /** Returns the installation prefix path, usually
- * "$prefix". Needed for gnome_program_init().
+ * "$prefix".
  *
  * @returns A newly allocated string. */
 gchar *gnc_path_get_prefix(void);
@@ -38,19 +38,25 @@ gchar *gnc_path_get_prefix(void);
 gchar *gnc_path_get_bindir(void);
 
 /** Returns the libdir path, usually
- * "$prefix/lib". Needed for gnome_program_init(void).
+ * "$prefix/lib".
  *
  * @returns A newly allocated string. */
 gchar *gnc_path_get_libdir(void);
 
 /** Returns the pkgdatadir path, usually
- * "$prefix/share/gnucash". Needed for gnome_program_init(void).
+ * "$prefix/share/gnucash". Needed for gnc_gnome_locate_*().
  *
  * @returns A newly allocated string. */
 gchar *gnc_path_get_pkgdatadir(void);
 
+/** Returns the pkgdocdir path, usually
+ * "$prefix/share/doc/gnucash".
+ *
+ * @returns A newly allocated string. */
+gchar *gnc_path_get_pkgdocdir(void);
+
 /** Returns the pkgsysconfdir path, usually
- * "$prefix/etc/gnucash". Needed for gnome_program_init(void).
+ * "$prefix/etc/gnucash".
  *
  * @returns A newly allocated string. */
 gchar *gnc_path_get_pkgsysconfdir(void);
@@ -62,11 +68,11 @@ gchar *gnc_path_get_pkgsysconfdir(void);
  * @returns A newly allocated string. */
 gchar *gnc_path_get_pkglibdir(void);
 
-/** Returns the glade file path, usually
- * "$prefix/share/gnucash/glade".
+/** Returns the gtkbuilder file path, usually
+ * "$prefix/share/gnucash/gktbuilder".
  *
  * @returns A newly allocated string. */
-gchar *gnc_path_get_gladedir(void);
+gchar *gnc_path_get_gtkbuilderdir(void);
 
 /** Returns the localedir path, usually
  * "$prefix/share/locale".
@@ -92,15 +98,6 @@ gchar *gnc_path_get_reportdir(void);
  *
  * @returns A newly allocated string. */
 gchar *gnc_path_get_stdreportsdir(void);
-
-/** Returns the gconf schema config source path, usually
- * "$prefix/etc/gconf/gconf.xml.defaults".
- *
- * @param force_slashes Use slashes as separator of the elements
- * of the path.
- *
- * @returns A newly allocated string. */
-gchar *gnc_path_get_gconfdir(gboolean force_slashes);
 
 
 

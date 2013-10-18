@@ -20,15 +20,19 @@
 (use-modules (srfi srfi-1))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (gnucash gnc-module))
+(use-modules (ice-9 syncase))
 
-(gnc:module-load "gnucash/engine" 0)
+;; Guile 2 needs to find the symbols from the c module at compile time already
+(cond-expand
+  (guile-2
+    (eval-when
+      (compile load eval) 
+      (gnc:module-load "gnucash/engine" 0)))
+  (else
+    (gnc:module-load "gnucash/engine" 0)))
 
 ;; c-interface.scm
 (export gnc:error->string)
-(export gnc:gettext)
-(export gnc:_)
-(export _)
-(export-syntax N_)
 (export gnc:make-string-database)
 
 ;; options.scm
@@ -152,6 +156,7 @@
 (export gnc:secs->timepair)
 (export gnc:timepair->date)
 (export gnc:date->timepair)
+(export gnc:timepair?)
 (export gnc:date-get-year)
 (export gnc:date-get-quarter)
 (export gnc:date-get-month-day)
@@ -215,6 +220,7 @@
 (export gnc:timepair-start-day-time)
 (export gnc:timepair-end-day-time)
 (export gnc:timepair-previous-day)
+(export gnc:timepair-next-day)
 (export gnc:reldate-get-symbol)
 (export gnc:reldate-get-string)
 (export gnc:reldate-get-desc)
@@ -273,6 +279,27 @@
 (define gnc:*kvp-option-path* (list KVP-OPTION-PATH))
 (export gnc:*kvp-option-path*)
 
+;; gettext functions
+(define gnc:gettext gnc-gettext-helper)
+(define _ gnc:gettext)
+(define-syntax N_
+  (syntax-rules ()
+    ((_ x) x)))
+
+(export gnc:gettext)
+(export _)
+
+(if (< (string->number (major-version)) 2)
+    (export-syntax N_))
+
+;; A lot of Gnucash's code uses procedural interfaces to load modules.
+;; This normally works, for procedures -- but for values that need to be
+;; known at expand time, like macros, it doesn't work (in Guile 2.0 at
+;; least). So instead of auditing all the code, since N_ is really the
+;; only Gnucash-defined macro in use, the surgical solution is just to
+;; make N_ available everywhere.
+(module-define! the-root-module 'N_ (module-ref (current-module) 'N_))
+
 (load-from-path "c-interface.scm")
 (load-from-path "config-var.scm")
 (load-from-path "options.scm")
@@ -281,3 +308,40 @@
 (load-from-path "date-utilities.scm")
 (load-from-path "simple-obj.scm")
 
+;; Business options
+(define gnc:*business-label* (N_ "Business"))
+(define gnc:*company-name* (N_ "Company Name"))
+(define gnc:*company-addy* (N_ "Company Address"))
+(define gnc:*company-id* (N_ "Company ID"))
+(define gnc:*company-phone* (N_ "Company Phone Number"))
+(define gnc:*company-fax* (N_ "Company Fax Number"))
+(define gnc:*company-url* (N_ "Company Website URL"))
+(define gnc:*company-email* (N_ "Company Email Address"))
+(define gnc:*company-contact* (N_ "Company Contact Person"))
+
+(define (gnc:company-info key)
+  ;; Access company info from key-value pairs for current book
+  (kvp-frame-get-slot-path-gslist
+    (qof-book-get-slots (gnc-get-current-book))
+    (append gnc:*kvp-option-path* (list gnc:*business-label* key))))
+
+(export gnc:*business-label* gnc:*company-name*  gnc:*company-addy* 
+        gnc:*company-id*     gnc:*company-phone* gnc:*company-fax* 
+        gnc:*company-url*    gnc:*company-email* gnc:*company-contact*
+        gnc:company-info)
+
+(define gnc:*option-section-accounts* OPTION-SECTION-ACCOUNTS)
+(define gnc:*option-name-trading-accounts* OPTION-NAME-TRADING-ACCOUNTS)
+(define gnc:*option-name-auto-readonly-days* OPTION-NAME-AUTO-READONLY-DAYS)
+(define gnc:*option-name-num-field-source* OPTION-NAME-NUM-FIELD-SOURCE)
+
+(export gnc:*option-section-accounts* gnc:*option-name-trading-accounts*
+        gnc:*option-name-auto-readonly-days* gnc:*option-name-num-field-source*)
+
+(define gnc:*option-section-budgeting* OPTION-SECTION-BUDGETING)
+(define gnc:*option-name-default-budget* OPTION-NAME-DEFAULT-BUDGET)
+
+(export gnc:*option-section-budgeting* gnc:*option-name-default-budget*)
+
+(load-from-path "business-options.scm")
+(load-from-path "business-prefs.scm")

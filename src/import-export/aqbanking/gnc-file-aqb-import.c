@@ -50,6 +50,7 @@ typedef GWEN_SYNCIO GWEN_IO_LAYER;
 #endif
 
 #include "dialog-ab-trans.h"
+#include "dialog-utils.h"
 #include "gnc-file.h"
 #include "gnc-file-aqb-import.h"
 #include "gnc-gwen-gui.h"
@@ -89,7 +90,7 @@ gnc_file_aqbanking_import(const gchar *aqbanking_importername,
     GString *errstr = NULL;
 
     /* Select a file */
-    default_dir = gnc_get_default_directory(GCONF_SECTION_AQBANKING);
+    default_dir = gnc_get_default_directory(GNC_PREFS_GROUP_AQBANKING);
     selected_filename = gnc_file_dialog(_("Select a file to import"),
                                         NULL, default_dir,
                                         GNC_FILE_DIALOG_IMPORT);
@@ -101,7 +102,7 @@ gnc_file_aqbanking_import(const gchar *aqbanking_importername,
 
     /* Remember the directory as the default */
     default_dir = g_path_get_dirname(selected_filename);
-    gnc_set_default_directory(GCONF_SECTION_AQBANKING, default_dir);
+    gnc_set_default_directory(GNC_PREFS_GROUP_AQBANKING, default_dir);
     g_free(default_dir);
 
     dtaus_fd = g_open(selected_filename, O_RDONLY, 0);
@@ -180,15 +181,15 @@ gnc_file_aqbanking_import(const gchar *aqbanking_importername,
     g_assert(io);
     GWEN_SyncIo_AddFlags(io, GWEN_SYNCIO_FILE_FLAGS_READ);
     {
-	/* We must explicitly call "Connect" on the GWEN_SYNCIO
-	 * object. */
-	int rv = GWEN_SyncIo_Connect(io);
-	if (rv < 0)
-	{
-	    g_warning("gnc_file_aqbanking_import: Failed to open file %s: %d", selected_filename, rv);
-	    goto cleanup;
-	}
-	g_assert(GWEN_SyncIo_GetStatus(io) == GWEN_SyncIo_Status_Connected);
+        /* We must explicitly call "Connect" on the GWEN_SYNCIO
+         * object. */
+        int rv = GWEN_SyncIo_Connect(io);
+        if (rv < 0)
+        {
+            g_warning("gnc_file_aqbanking_import: Failed to open file %s: %d", selected_filename, rv);
+            goto cleanup;
+        }
+        g_assert(GWEN_SyncIo_GetStatus(io) == GWEN_SyncIo_Status_Connected);
     }
 #else
     io = GWEN_Io_LayerFile_new(dtaus_fd, -1);
@@ -219,6 +220,11 @@ gnc_file_aqbanking_import(const gchar *aqbanking_importername,
     GWEN_Io_Layer_free(io);
 #endif
     io = NULL;
+
+    /* Before importing the results, if this is a new book, let user specify
+     * book options, since they affect how transactions are created */
+    if (gnc_is_new_book())
+        gnc_new_book_option_display();
 
     /* Import the results */
     ieci = gnc_ab_import_context(context, AWAIT_TRANSACTIONS,
@@ -340,9 +346,9 @@ cleanup:
     if (io)
     {
 #ifdef AQBANKING_VERSION_5_PLUS
-	GWEN_SyncIo_free(io);
+        GWEN_SyncIo_free(io);
 #else
-	GWEN_Io_Layer_free(io);
+        GWEN_Io_Layer_free(io);
 #endif
     }
 

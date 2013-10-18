@@ -31,6 +31,7 @@
 #include <string.h>
 #include "gfec.h"
 
+#include "gnc-guile-utils.h"
 #include "gnc-report.h"
 
 /* Fow now, this is global, like it was in guile.  It _should_ be per-book. */
@@ -81,7 +82,7 @@ gint gnc_report_add(SCM report)
     value = scm_call_1(get_id, report);
     if (scm_is_number(value))
     {
-        id = scm_num2int(value, SCM_ARG1, G_STRFUNC);
+        id = scm_to_int(value);
         if (!g_hash_table_lookup(reports, &id))
         {
             key = g_new(gint, 1);
@@ -142,7 +143,7 @@ error_handler(const char *str)
 gboolean
 gnc_run_report (gint report_id, char ** data)
 {
-    const gchar *free_data;
+    gchar *free_data;
     SCM scm_text;
     gchar *str;
 
@@ -156,8 +157,7 @@ gnc_run_report (gint report_id, char ** data)
     if (scm_text == SCM_UNDEFINED || !scm_is_string (scm_text))
         return FALSE;
 
-    free_data = scm_to_locale_string (scm_text);
-    *data = g_strdup (free_data);
+    *data = gnc_scm_to_locale_string (scm_text);
 
     return TRUE;
 }
@@ -184,16 +184,11 @@ gchar*
 gnc_report_name( SCM report )
 {
     SCM    get_name = scm_c_eval_string("gnc:report-name");
-    SCM    value;
 
     if (report == SCM_BOOL_F)
         return NULL;
 
-    value = scm_call_1(get_name, report);
-    if (!scm_is_string(value))
-        return NULL;
-
-    return g_strdup(scm_to_locale_string(value));
+    return gnc_scm_call_1_to_string(get_name, report);
 }
 
 gchar*
@@ -210,7 +205,7 @@ gnc_get_default_report_font_family(void)
     g_list_free(top_list);
     top_widget_style = gtk_rc_get_style(top_widget);
     default_font_family =
-	pango_font_description_get_family(top_widget_style->font_desc);
+        pango_font_description_get_family(top_widget_style->font_desc);
 
     if (default_font_family == NULL)
         return g_strdup("Arial");

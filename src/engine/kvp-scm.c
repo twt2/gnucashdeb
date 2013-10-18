@@ -1,18 +1,13 @@
 #include "config.h"
 
-#include <qof.h>
+#include "qof.h"
 #include <libguile.h>
-#include <engine-helpers.h>
+#include "engine-helpers-guile.h"
 
 #include "kvp-scm.h"
 #include "guile-mappings.h"
+#include "gnc-guile-utils.h"
 #include "swig-runtime.h"
-
-int
-gnc_kvp_value_ptr_p(SCM arg)
-{
-    return TRUE;
-}
 
 /* NOTE: There are some problems with this approach. Currently,
  *       guids are stored simply as strings in scheme, so some
@@ -20,6 +15,7 @@ gnc_kvp_value_ptr_p(SCM arg)
  *       unlikely. The general problem is distinguishing kvp
  *       types based only on the scheme type.
  */
+
 KvpValue *
 gnc_scm_to_kvp_value_ptr(SCM val)
 {
@@ -28,11 +24,11 @@ gnc_scm_to_kvp_value_ptr(SCM val)
         /* in guile 1.8 (exact? ) only works on numbers */
         if (scm_is_exact (val) && gnc_gh_gint64_p(val))
         {
-            return kvp_value_new_gint64(gnc_scm_to_gint64(val));
+            return kvp_value_new_gint64(scm_to_int64(val));
         }
         else
         {
-            return kvp_value_new_double(scm_num2dbl(val, G_STRFUNC));
+            return kvp_value_new_double(scm_to_double(val));
         }
     }
     else if (gnc_numeric_p(val))
@@ -51,10 +47,11 @@ gnc_scm_to_kvp_value_ptr(SCM val)
     }
     else if (scm_is_string(val))
     {
-        const gchar *newstr;
+        gchar *newstr;
         KvpValue *ret;
-        newstr = scm_to_locale_string (val);
+        newstr = gnc_scm_to_locale_string (val);
         ret = kvp_value_new_string(newstr);
+        g_free (newstr);
         return ret;
     }
     else if (SWIG_IsPointerOfType(val, SWIG_TypeQuery("_p_KvpFrame")))
@@ -73,19 +70,21 @@ gnc_scm_to_kvp_value_ptr(SCM val)
 SCM
 gnc_kvp_value_ptr_to_scm(KvpValue* val)
 {
+    const gchar *string;
     switch (kvp_value_get_type(val))
     {
     case KVP_TYPE_GINT64:
-        return gnc_gint64_to_scm(kvp_value_get_gint64(val));
+        return scm_from_int64(kvp_value_get_gint64(val));
         break;
     case KVP_TYPE_DOUBLE:
-        return scm_make_real(kvp_value_get_double(val));
+        return scm_from_double (kvp_value_get_double(val));
         break;
     case KVP_TYPE_NUMERIC:
         return gnc_numeric_to_scm(kvp_value_get_numeric(val));
         break;
     case KVP_TYPE_STRING:
-        return scm_makfrom0str(kvp_value_get_string(val));
+        string = kvp_value_get_string(val);
+        return string ? scm_from_locale_string(string) : SCM_BOOL_F;
         break;
     case KVP_TYPE_GUID:
     {

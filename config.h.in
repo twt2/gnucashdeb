@@ -9,9 +9,6 @@
 /* Enable debug memory */
 #undef DEBUG_MEMORY
 
-/* Enable reference count dumps */
-#undef DEBUG_REFERENCE_COUNTING
-
 /* Use binary relocation? */
 #undef ENABLE_BINRELOC
 
@@ -29,15 +26,6 @@
 
 /* GetText version number */
 #undef GETTEXT_PACKAGE
-
-/* Guile Major version number */
-#undef GNC_GUILE_MAJOR_VERSION
-
-/* Guile Micro version number */
-#undef GNC_GUILE_MICRO_VERSION
-
-/* Guile Minor version number */
-#undef GNC_GUILE_MINOR_VERSION
 
 /* using GNOME */
 #undef GNOME
@@ -65,9 +53,6 @@
 
 /* Don't use deprecated gtk functions */
 #undef GTK_DISABLE_DEPRECATED
-
-/* is sizeof(long_long) >= sizeof(gint64) */
-#undef GUILE_LONG_LONG_OK
 
 /* Don't use deprecated glib functions */
 #undef G_DISABLE_DEPRECATED
@@ -120,6 +105,12 @@
 /* Configure gthread deprecations */
 #undef HAVE_GLIB_2_32
 
+/* Configure g_type_init deprecation */
+#undef HAVE_GLIB_2_36
+
+/* Configure leading quote around assertions */
+#undef HAVE_GLIB_2_38
+
 /* Define to 1 if you have the <glob.h> header file. */
 #undef HAVE_GLOB_H
 
@@ -128,18 +119,6 @@
 
 /* System has gnome-keyring 0.6 or better */
 #undef HAVE_GNOME_KEYRING
-
-/* System has gtkhtml 3.16.0 or better */
-#undef HAVE_GTKHTML_3_16
-
-/* System has gtk 2.12.0 or better */
-#undef HAVE_GTK_2_12
-
-/* Guile present */
-#undef HAVE_GUILE
-
-/* System has guile 1.8 or better */
-#undef HAVE_GUILE18
 
 /* System has HtmlHelpW */
 #undef HAVE_HTMLHELPW
@@ -155,9 +134,6 @@
 
 /* Define if your <locale.h> file defines LC_MESSAGES. */
 #undef HAVE_LC_MESSAGES
-
-/* Define to 1 if you have the `m' library (-lm). */
-#undef HAVE_LIBM
 
 /* Define to 1 if you have the `pthread' library (-lpthread). */
 #undef HAVE_LIBPTHREAD
@@ -188,6 +164,9 @@
 
 /* System has an OS X Key chain */
 #undef HAVE_OSX_KEYCHAIN
+
+/* Define to 1 if you have the <pow.h> header file. */
+#undef HAVE_POW_H
 
 /* Define to 1 if you have the `pthread_mutex_init' function. */
 #undef HAVE_PTHREAD_MUTEX_INIT
@@ -331,9 +310,6 @@
 
 /* Version number of package */
 #undef VERSION
-
-/* Use webkit instead of gtkhtml */
-#undef WANT_WEBKIT
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */

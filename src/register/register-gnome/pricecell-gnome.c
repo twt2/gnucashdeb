@@ -28,8 +28,8 @@
 
 #include "config.h"
 
-#include <gnome.h>
 #include <locale.h>
+#include <gdk/gdkkeysyms.h>
 
 #include "gnc-locale-utils.h"
 #include "gnc-exp-parser.h"
@@ -37,6 +37,9 @@
 #include "pricecell.h"
 #include "pricecell-gnome.h"
 
+#ifdef G_OS_WIN32
+# include <gdk/gdkwin32.h>
+#endif
 
 static gboolean
 gnc_price_cell_direct_update (BasicCell *bcell,
@@ -57,15 +60,20 @@ gnc_price_cell_direct_update (BasicCell *bcell,
 
     is_return = FALSE;
 
+#ifdef G_OS_WIN32
+    /* gdk never sends GDK_KP_Decimal on win32. See #486658 */
+    if (event->hardware_keycode == VK_DECIMAL)
+        event->keyval = GDK_KP_Decimal;
+#endif
     switch (event->keyval)
     {
-    case GDK_Return:
+    case GDK_KEY_Return:
         if (!(event->state &
                 (GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SHIFT_MASK)))
             is_return = TRUE;
         /* fall through */
 
-    case GDK_KP_Enter:
+    case GDK_KEY_KP_Enter:
     {
         char *error_loc;
         gnc_numeric amount;
@@ -103,7 +111,7 @@ gnc_price_cell_direct_update (BasicCell *bcell,
         return !is_return;
     }
 
-    case GDK_KP_Decimal:
+    case GDK_KEY_KP_Decimal:
         break;
 
     default:
@@ -155,11 +163,10 @@ gnc_basic_cell_insert_decimal(BasicCell *bcell,
     end = MAX(*start_selection, *end_selection);
 
     /* length in bytes, not chars. do not use g_utf8_strlen. */
-    buf = malloc(strlen(bcell->value) + 1);
-    memset(buf, 0, strlen(bcell->value) + 1);
+    buf = g_malloc0(strlen(bcell->value) + 1);
     g_utf8_strncpy(buf, bcell->value, start);
     g_string_append(newval_gs, buf);
-    free(buf);
+    g_free(buf);
 
     g_string_append_unichar(newval_gs, decimal_point);
 

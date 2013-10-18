@@ -75,7 +75,9 @@
   (let* ((col-vector (make-vector columns-used-size #f))
          (set-col (make-set-col col-vector)))
     (set-col (opt-val "Display" "Date") 0)
-    (set-col (opt-val "Display" "Num") 1)
+    (set-col (if (gnc:lookup-option options "Display" "Num")
+                 (opt-val "Display" "Num")
+                 (opt-val "Display" "Num/Action")) 1)
     (set-col 
         (if (opt-val "__reg" "journal")
         (or (opt-val "Display" "Memo") (opt-val "Display" "Description") (opt-val "__reg" "double") )
@@ -111,13 +113,17 @@
 
 (define (make-heading-list column-vector
                            debit-string credit-string amount-string
-                           multi-rows?)
+                           multi-rows? action-for-num? ledger-type?)
   (let ((heading-list '()))
     (gnc:debug "Column-vector" column-vector)
     (if (date-col column-vector)
         (addto! heading-list (_ "Date")))
     (if (num-col column-vector)
-        (addto! heading-list (_ "Num")))
+        (addto! heading-list (if action-for-num?
+                                 (if ledger-type?
+                                     (_ "T-Num")
+                                     (_ "Num/Action"))
+                                 (_ "Num"))))
     (if (description-col column-vector)
         (addto! heading-list (_ "Description")))
     (if (memo-col column-vector)
@@ -159,8 +165,9 @@
         (gnc-numeric-neg balance)
         balance)))
 
-(define (add-split-row table split column-vector row-style
-                       transaction-info? split-info? double? memo? description?)
+(define (add-split-row table split column-vector row-style transaction-info?
+                       split-info? action-for-num? ledger-type? double? memo?
+                       description? total-collector)
   (let* ((row-contents '())
          (parent (xaccSplitGetParent split))
          (account (xaccSplitGetAccount split))
@@ -184,9 +191,11 @@
                 (gnc:make-html-table-cell/markup
 					"text-cell"
                     (if transaction-info?
-                        (xaccTransGetNum parent)
+                        (if (and action-for-num? ledger-type?)
+                            (gnc-get-num-action parent #f)
+                            (gnc-get-num-action parent split))
                         (if split-info?
-                            (xaccSplitGetAction split)
+                            (gnc-get-action-num  #f split)
                             " ")))))
     (if (description-col column-vector)
         (addto! row-contents
@@ -302,12 +311,13 @@
                      (gnc:html-split-anchor
                       split
                       (gnc:make-gnc-monetary
-                       currency (gnc:split-get-balance-display split-info? split))))
+                        currency (cadr (total-collector 'getpair currency #f)))))
                     " ")))
 
     (gnc:html-table-append-row/markup! table row-style
                                        (reverse row-contents))
-    (if (and double? transaction-info? (description-col column-vector))
+    (if (and double? transaction-info?)
+        (if (or (num-col column-vector) (description-col column-vector))
         (begin
           (let ((count 0))
             (set! row-contents '())
@@ -315,16 +325,27 @@
                 (begin
                   (set! count (+ count 1))
                   (addto! row-contents " ")))
-            (if (num-col column-vector)
+            (if (and (num-col column-vector) (description-col column-vector))
                 (begin
                   (set! count (+ count 1))
-                  (addto! row-contents " ")))
-            (addto! row-contents
+                  (addto! row-contents
+                    (gnc:make-html-table-cell/markup
+					  "text-cell"
+                      (if (and action-for-num? (not ledger-type?))
+                          (gnc-get-num-action parent #f)
+                          " ")))))
+            (if (description-col column-vector)
+                (addto! row-contents ;; 
                     (gnc:make-html-table-cell/size
                      1 (- (num-columns-required column-vector) count)
                      (xaccTransGetNotes parent)))
+                (gnc:make-html-table-cell/size
+                     1 (- (num-columns-required column-vector) (- count 1))
+                     (if (and action-for-num? (not ledger-type?))
+                         (gnc-get-num-action parent #f)
+                         " ")))
             (gnc:html-table-append-row/markup! table row-style
-                                               (reverse row-contents)))))
+                                               (reverse row-contents))))))
     split-value))
 
 (define (lookup-sort-key sort-option)
@@ -344,6 +365,8 @@
   (gnc:register-reg-option
    (gnc:make-internal-option "__reg" "journal" #f))
   (gnc:register-reg-option
+   (gnc:make-internal-option "__reg" "ledger-type" #f))
+  (gnc:register-reg-option
    (gnc:make-internal-option "__reg" "double" #f))
   (gnc:register-reg-option
    (gnc:make-internal-option "__reg" "debit-string" (_ "Debit")))
@@ -353,7 +376,7 @@
   (gnc:register-reg-option
    (gnc:make-string-option
     (N_ "General") (N_ "Title")
-    "a" (N_ "The title of the report")
+    "a" (N_ "The title of the report.")
     (N_ "Register Report")))
 
   (gnc:register-reg-option
@@ -361,10 +384,15 @@
     (N_ "Display") (N_ "Date")
     "b" (N_ "Display the date?") #t))
 
-  (gnc:register-reg-option
-   (gnc:make-simple-boolean-option
-    (N_ "Display") (N_ "Num")
-    "c" (N_ "Display the check number?") #t))
+  (if (qof-book-use-split-action-for-num-field (gnc-get-current-book))
+      (gnc:register-reg-option
+       (gnc:make-simple-boolean-option
+        (N_ "Display") (N_ "Num/Action")
+        "c" (N_ "Display the check number/action?") #t))
+      (gnc:register-reg-option
+       (gnc:make-simple-boolean-option
+        (N_ "Display") (N_ "Num")
+        "c" (N_ "Display the check number?") #t)))
 
   (gnc:register-reg-option
    (gnc:make-simple-boolean-option
@@ -402,8 +430,8 @@
     "ia" (N_ "Display the amount?")  
     'double
     (list
-     (vector 'single (N_ "Single") (N_ "Single Column Display"))
-     (vector 'double (N_ "Double") (N_ "Two Column Display")))))
+     (vector 'single (N_ "Single") (N_ "Single Column Display."))
+     (vector 'double (N_ "Double") (N_ "Two Column Display.")))))
 
   (gnc:register-reg-option
    (gnc:make-simple-boolean-option
@@ -413,7 +441,7 @@
   (gnc:register-reg-option
    (gnc:make-simple-boolean-option
     (N_ "Display") (N_ "Running Balance")
-    "k" (N_ "Display a running balance") #t))
+    "k" (N_ "Display a running balance?") #t))
 
   (gnc:register-reg-option
    (gnc:make-simple-boolean-option
@@ -425,12 +453,21 @@
 
   gnc:*report-options*)
 
+;; -----------------------------------------------------------------
+;; create the report result
+;; -----------------------------------------------------------------
+
 (define (make-split-table splits options
                           debit-string credit-string amount-string)
+  ;; ----------------------------------
+  ;; local helper
+  ;; ----------------------------------
   (define (opt-val section name)
     (gnc:option-value (gnc:lookup-option options section name)))
   (define (reg-report-journal?)
     (opt-val "__reg" "journal"))
+  (define (reg-report-ledger-type?)
+    (opt-val "__reg" "ledger-type"))
   (define (reg-report-double?)
     (opt-val "__reg" "double"))
   (define (reg-report-invoice?)
@@ -511,24 +548,34 @@
       (total-amount 'add split-currency split-amount)
       (total-value 'add trans-currency split-value)))
 
-  (define (add-other-split-rows split table used-columns row-style)
+  (define (add-other-split-rows split table used-columns row-style
+                                action-for-num? ledger-type? total-collector)
     (define (other-rows-driver split parent table used-columns i)
       (let ((current (xaccTransGetSplit parent i)))
         (if (not (null? current))
             (begin
-              (add-split-row table current used-columns row-style #f #t #f (opt-val "Display" "Memo") (opt-val "Display" "Description"))
+              (add-split-row table current used-columns row-style #f #t
+                                action-for-num? ledger-type? #f
+                                (opt-val "Display" "Memo")
+                                (opt-val "Display" "Description")
+                                total-collector)
               (other-rows-driver split parent table
                                  used-columns (+ i 1))))))
 
     (other-rows-driver split (xaccSplitGetParent split)
                        table used-columns 0))
 
+  ;; ----------------------------------
+  ;; main loop
+  ;; ----------------------------------
   (define (do-rows-with-subtotals leader
                                   splits
                                   table
                                   used-columns
                                   width
                                   multi-rows?
+                                  action-for-num?
+                                  ledger-type?
                                   double?
                                   odd-row?
                                   total-collector
@@ -538,8 +585,13 @@
                                   debit-value
                                   credit-value)
     (if (null? splits)
+      ;; ----------------------------------
+      ;; exit condition reached
+      ;; ----------------------------------
 	(begin
-	  ;; add debit/credit totals
+          ;; ------------------------------------
+	  ;; add debit/credit totals to the table
+          ;; ------------------------------------
 	  (if (reg-report-show-totals?)
 	      (begin
 		(add-subtotal-row (_ "Total Debits") leader table used-columns
@@ -550,11 +602,16 @@
                                   debit-value "grand-total" #t)
                 (add-subtotal-row (_ "Total Value Credits") leader table used-columns
                                   credit-value "grand-total" #t)))
-          (add-subtotal-row (_ "Net Change") leader table used-columns
+          (if ledger-type?
+            (add-subtotal-row (_ "Net Change") leader table used-columns
 			    total-collector "grand-total" #f)
+          )
           (add-subtotal-row (_ "Value Change") leader table used-columns
                             total-value "grand-total" #t))
 
+      ;; ----------------------------------
+      ;; process the splits list
+      ;; ----------------------------------
         (let* ((current (car splits))
                (current-row-style (if multi-rows? "normal-row"
                                       (if odd-row? "normal-row"
@@ -562,26 +619,10 @@
                (rest (cdr splits))
                (next (if (null? rest) #f
                          (car rest)))
-               ;; The general ledger has a split that doesn't have an account
-               ;; set yet (the new entry transaction).
-               ;; This split should be skipped or the report errors out.
-               ;; See bug #639082
-               (valid-split? (not (null? (xaccSplitGetAccount current))))
-               (split-value (if valid-split?
-                            (add-split-row table 
-                                           current 
-                                           used-columns 
-                                           current-row-style
-                                           #t
-                                           (not multi-rows?)
-                                           double?
-                                           (opt-val "Display" "Memo")
-                                           (opt-val "Display" "Description")))))
-
-          (if (and multi-rows? valid-split?)
-              (add-other-split-rows 
-               current table used-columns "alternate-row"))
-
+               (valid-split? (not (null? (xaccSplitGetAccount current)))))
+          ;; ----------------------------------------------
+          ;; update totals, but don't add them to the table
+          ;; ----------------------------------------------
           (if (and multi-rows? valid-split?)
               (for-each (lambda (split)
                           (if (string=? (gncAccountGetGUID
@@ -597,6 +638,39 @@
                                  total-collector total-value
                                  debit-collector debit-value
                                  credit-collector credit-value))
+          ;; ----------------------------------
+          ;; add the splits to the table
+          ;; ----------------------------------
+          ;; The general ledger has a split that doesn't have an account
+          ;; set yet (the new entry transaction).
+          ;; This split should be skipped or the report errors out.
+          ;; See bug #639082
+          (if valid-split?
+            (add-split-row
+              table
+              current
+              used-columns
+              current-row-style
+              #t
+              (not multi-rows?)
+              action-for-num?
+              ledger-type?
+              double?
+              (opt-val "Display" "Memo")
+              (opt-val "Display" "Description")
+              total-collector
+            )
+          )
+          (if (and multi-rows? valid-split?)
+            (add-other-split-rows
+              current
+              table used-columns
+              "alternate-row"
+              action-for-num?
+              ledger-type?
+              total-collector
+            )
+          )
 
           (do-rows-with-subtotals leader
                                   rest
@@ -604,6 +678,8 @@
                                   used-columns
                                   width 
                                   multi-rows?
+                                  action-for-num?
+                                  ledger-type?
                                   double?
                                   (not odd-row?)                       
                                   total-collector
@@ -612,7 +688,9 @@
                                   total-value
                                   debit-value
                                   credit-value))))
-
+  ;; -----------------------------------------------
+  ;; needed for the call to (do-rows-with-subtotals)
+  ;; -----------------------------------------------
   (define (splits-leader splits)
     (let ((accounts (map xaccSplitGetAccount splits)))
       (if (null? accounts) '()
@@ -621,18 +699,23 @@
                                  (delete (car accounts) (cdr accounts))))
             (if (not (null? (cdr accounts))) '()
                 (car accounts))))))
-
+  ;; ----------------------------------
+  ;; make the split table
+  ;; ----------------------------------
   (let* ((table (gnc:make-html-table))
          (used-columns (build-column-used options))
          (width (num-columns-required used-columns))
          (multi-rows? (reg-report-journal?))
-         (double? (reg-report-double?)))
+         (ledger-type? (reg-report-ledger-type?))
+         (double? (reg-report-double?))
+         (action-for-num? (qof-book-use-split-action-for-num-field
+                                                      (gnc-get-current-book))))
 
     (gnc:html-table-set-col-headers!
      table
      (make-heading-list used-columns
                         debit-string credit-string amount-string
-                        multi-rows?))
+                        multi-rows? action-for-num? ledger-type?))
 
     (do-rows-with-subtotals (splits-leader splits)
                             splits
@@ -640,6 +723,8 @@
                             used-columns
                             width
                             multi-rows?
+                            action-for-num?
+                            ledger-type?
                             double?
                             #t
                             (gnc:make-commodity-collector)
@@ -649,7 +734,9 @@
                             (gnc:make-commodity-collector)
                             (gnc:make-commodity-collector))
     table))
-
+;; -----------------------------------------------------------------
+;; misc
+;; -----------------------------------------------------------------
 (define (string-expand string character replace-string)
   (define (car-line chars)
     (take-while (lambda (c) (not (eqv? c character))) chars))
@@ -743,14 +830,10 @@
            document
            (gnc:make-html-text
             (gnc:html-markup-br)
-            ;;(gnc:option-value
-            ;; (gnc:gconf-get-string "user_info" "name"))
-	    "User Name"
+            "User Name"
             (gnc:html-markup-br)
             (string-expand
-             ;;(gnc:option-value
-	     ;; (gnc:gconf-get-string "user_info" "address"))
-	     "User Address"
+             "User Address"
              #\newline
              "<br>")
             (gnc:html-markup-br)))
@@ -788,11 +871,12 @@
  'renderer reg-renderer
  'in-menu? #f)
 
-(define (gnc:register-report-create-internal invoice? query journal? double?
-                                             title debit-string credit-string)
+(define (gnc:register-report-create-internal invoice? query journal? ledger-type?
+                                             double? title debit-string credit-string)
   (let* ((options (gnc:make-report-options register-report-guid))
          (query-op (gnc:lookup-option options "__reg" "query"))
          (journal-op (gnc:lookup-option options "__reg" "journal"))
+         (ledger-type-op (gnc:lookup-option options "__reg" "ledger-type"))
          (double-op (gnc:lookup-option options "__reg" "double"))
          (title-op (gnc:lookup-option options "General" "Title"))
          (debit-op (gnc:lookup-option options "__reg" "debit-string"))
@@ -806,6 +890,7 @@
 
     (gnc:option-set-value query-op query)
     (gnc:option-set-value journal-op journal?)
+    (gnc:option-set-value ledger-type-op ledger-type?)
     (gnc:option-set-value double-op double?)
     (gnc:option-set-value title-op title)
     (gnc:option-set-value debit-op debit-string)

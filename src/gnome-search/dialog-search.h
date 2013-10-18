@@ -21,8 +21,8 @@
  * Boston, MA  02110-1301,  USA       gnu@gnu.org
  */
 
-#ifndef _GNC_DIALOG_SEARCH_H
-#define _GNC_DIALOG_SEARCH_H
+#ifndef GNC_DIALOG_SEARCH_H
+#define GNC_DIALOG_SEARCH_H
 
 #include "GNCId.h"
 #include "qof.h"
@@ -56,17 +56,30 @@ typedef gpointer (*GNCSearchNewItemCB) (gpointer user_data);
 /* Free the general user_data object */
 typedef void (*GNCSearchFree) (gpointer user_data);
 
-/* This callback is called when (if) the user clicks the 'select'
+/** This callback is called when (if) the user clicks the 'select'
  * button.  The search dialog will close when this callback function
  * returns.
  */
 typedef void (*GNCSearchSelectedCB) (gpointer selected_object,
                                      gpointer user_data);
 
+/** This callback is called when (if) the user clicks the 'select'
+ * button.  The search dialog will close when this callback function
+ * returns.
+ */
+typedef void (*GNCSearchMultiSelectedCB) (GList *list_of_selected_objects,
+        gpointer user_data);
+
 typedef struct
 {
-    const char *		label;
-    GNCSearchCallback	cb_fcn;
+    const char 			*label;
+    GNCSearchCallback	         cb_fcn;
+    GNCSearchMultiSelectedCB     cb_multiselect_fn;
+
+    /** TRUE if this action should be sensitive even in a read-only book. If
+    FALSE, this action is sensitive in read-write book but not in a read-only
+    book. */
+    gboolean      		 sensitive_if_readonly;
 } GNCSearchCallbackButton;
 
 /* Caller MUST supply _EITHER_ a result_callback or a list of callback
@@ -98,7 +111,7 @@ gnc_search_dialog_create (QofIdTypeConst obj_type, const gchar *title,
                           GNCSearchResultCB result_callback,
                           GNCSearchNewItemCB new_item_cb,
                           gpointer user_data, GNCSearchFree free_user_data,
-                          const gchar *gconf_section,
+                          const gchar *prefs_group,
                           const gchar *type_label);
 
 void gnc_search_dialog_destroy (GNCSearchWindow *sw);
@@ -127,4 +140,4 @@ void gnc_search_dialog_set_select_cb (GNCSearchWindow *sw,
 /* Test the dialog */
 void gnc_search_dialog_test (void);
 
-#endif
+#endif /* GNC_DIALOG_SEARCH_H */

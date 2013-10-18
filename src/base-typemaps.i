@@ -5,7 +5,7 @@
 
 /* Not sure why SWIG doesn't figure this out. */
 typedef int gint;
-typedef int time_t;
+typedef gint64 time64;
 typedef unsigned int guint;
 typedef double gdouble;
 typedef float gfloat;
@@ -17,9 +17,12 @@ typedef void * gpointer;
 typedef char gchar;
 
 %typemap (out) char * {
-  $result = scm_makfrom0str((const char *)$1);
-  if (!scm_is_true($result)) {
-    $result = scm_makstr(0, 0);
+  $result = SCM_UNSPECIFIED;
+  if ($1) {
+    $result = scm_from_locale_string((const char *)$1);
+  }
+  if (!$1 || !scm_is_true($result)) {
+    $result = scm_c_make_string(0, SCM_UNDEFINED);
   }
 }
 %typemap(in) GNCPrintAmountInfo "$1 = gnc_scm2printinfo($input);"
@@ -41,8 +44,8 @@ typedef char gchar;
 %typemap(in) gnc_numeric "$1 = gnc_scm_to_numeric($input);"
 %typemap(out) gnc_numeric "$result = gnc_numeric_to_scm($1);"
 
-%typemap(in) gint64 " $1 = gnc_scm_to_gint64($input); "
-%typemap(out) gint64 " $result = gnc_gint64_to_scm($1); "
+%typemap(in) gint64 " $1 = scm_to_int64($input); "
+%typemap(out) gint64 " $result = scm_from_int64($1); "
 
 %define GLIST_HELPER_INOUT(ListType, ElemSwigType)
 %typemap(in) ListType * {
@@ -93,7 +96,7 @@ typedef char gchar;
 }
 
 %typemap(in) gchar * {
-    $1 = ($1_type)PyString_AsString($input);
+    $1 = ($1_ltype)PyString_AsString($input);
 }
 
 %typemap(out) gchar * {
@@ -118,13 +121,13 @@ typedef char gchar;
 %typemap(out) gboolean {
     if ($1 == TRUE)
     {
-        Py_INCREF(Py_True);
         $result = Py_True;
+        Py_INCREF($result);
     }
     else if ($1 == FALSE)
     {
-        Py_INCREF(Py_False);
         $result = Py_False;
+        Py_INCREF($result);
     }
     else
     {
@@ -132,6 +135,28 @@ typedef char gchar;
             PyExc_ValueError,
             "function returning gboolean returned a value that wasn't "
             "TRUE or FALSE.");
+        return NULL;
+    }
+}
+
+%typemap(in) GSList *, QofQueryParamList * {
+    $1 = NULL;
+    /* Check if is a list */
+    if (PyList_Check($input)) {
+        int i;
+        int size = PyList_Size($input);
+        for (i = size-1; i >= 0; i--) {
+            PyObject *o = PyList_GetItem($input, i);
+            if (PyString_Check(o)) {
+                $1 = g_slist_prepend($1,PyString_AsString(PyList_GetItem($input, i)));
+            } else {
+                PyErr_SetString(PyExc_TypeError, "list must contain strings");
+                g_slist_free($1);
+                return NULL;
+            }
+        }
+    } else {
+        PyErr_SetString(PyExc_TypeError, "not a list");
         return NULL;
     }
 }
@@ -158,8 +183,20 @@ typedef char gchar;
             PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
         else if (GNC_IS_PRICE(data))
             PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+        else if (GNC_IS_INVOICE(data))
+            PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncInvoice, 0));
         else if (GNC_IS_ENTRY(data))
             PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
+        else if (GNC_IS_CUSTOMER(data))
+            PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncCustomer, 0));
+        else if (GNC_IS_VENDOR(data))
+            PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncVendor, 0));
+        else if (GNC_IS_EMPLOYEE(data))
+            PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEmployee, 0));
+        else if (GNC_IS_JOB(data))
+            PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncJob, 0));
+        else if (GNC_IS_TAXTABLE(data))
+            PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncTaxTable, 0));
         else if ($1_descriptor == $descriptor(MonetaryList *))
             PyList_Append(list, SWIG_NewPointerObj(data, $descriptor(gnc_monetary *), 0));
         else

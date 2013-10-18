@@ -29,7 +29,7 @@
 (use-modules (gnucash gnc-module))
 
 (gnc:module-load "gnucash/report/report-system" 0)
-(gnc:module-load "gnucash/business-utils" 0)
+(gnc:module-load "gnucash/app-utils" 0)
 
 (use-modules (gnucash report aging))
 (use-modules (gnucash report standard-reports))
@@ -47,7 +47,7 @@
     (add-option
      (gnc:make-account-sel-limited-option
       acc-page this-acc
-      "w" (N_ "The receivables account you wish to examine") 
+      "w" (N_ "The receivables account you wish to examine.") 
       #f #f (list ACCT-TYPE-RECEIVABLE)))
 
     (aging-options-generator options)))
@@ -74,17 +74,24 @@
  'renderer receivables-renderer
  'in-menu? #t)
 
-(define (receivables-report-create-internal acct)
+(define (receivables-report-create-internal acct title show-zeros?)
   (let* ((options (gnc:make-report-options receivables-aging-guid))
-	 (acct-op (gnc:lookup-option options acc-page this-acc)))
+	 (acct-op (gnc:lookup-option options acc-page this-acc))
+	 (zero-op (gnc:lookup-option options acc-page optname-show-zeros))
+	 (title-op (gnc:lookup-option options acc-page gnc:optname-reportname)))
 
     (gnc:option-set-value acct-op acct)
+    (if (not (string-null? title))
+        (gnc:option-set-value title-op title))
+    (gnc:option-set-value zero-op show-zeros?)
     (gnc:make-report receivables-aging-guid options)))
 
 (define (gnc:receivables-report-create-internal
 	 account split query journal? double? title
 	 debit-string credit-string)
-  (receivables-report-create-internal account))
+  (receivables-report-create-internal account "" #f))
 
 (gnc:register-report-hook ACCT-TYPE-RECEIVABLE #f
 			  gnc:receivables-report-create-internal)
+
+(export receivables-report-create-internal)

@@ -6,7 +6,6 @@
 #include <glib-object.h>
 #include <dialog-options.h>
 #include <dialog-utils.h>
-#include <druid-utils.h>
 #include <gnc-amount-edit.h>
 #include <gnc-date-edit.h>
 #include <gnc-file.h>
@@ -18,6 +17,7 @@
 #include <gnc-plugin-file-history.h>
 #include <gnc-ui.h>
 #include <gnc-splash.h>
+#include <dialog-tax-table.h>
 
 SCM scm_init_sw_gnome_utils_module (void);
 %}
@@ -52,3 +52,5 @@ void gnc_unset_busy_cursor (GtkWidget *w);
 void gnc_window_show_progress (const char *message, double percentage);
 
 gboolean gnucash_ui_is_running(void);
+
+TaxTableWindow * gnc_ui_tax_table_window_new (QofBook *book);

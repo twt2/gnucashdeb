@@ -21,8 +21,6 @@
 #ifndef GNUCASH_HEADER_H
 #define GNUCASH_HEADER_H
 
-#include <gnome.h>
-
 
 #define GNC_TYPE_HEADER     (gnc_header_get_type ())
 #define GNC_HEADER(o)       (G_TYPE_CHECK_INSTANCE_CAST((o), GNC_TYPE_HEADER, GncHeader))
@@ -72,8 +70,3 @@ void gnc_header_set_header_rows (GncHeader *header,
 
 #endif /* GNUCASH_HEADER_H */
 
-/*
-  Local Variables:
-  c-basic-offset: 8
-  End:
-*/

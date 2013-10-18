@@ -142,24 +142,6 @@ gnc_search_param_new (void)
     return o;
 }
 
-GNCSearchParam *
-gnc_search_param_clone (GNCSearchParam *param)
-{
-    GNCSearchParam *n;
-    GNCSearchParamPrivate *priv, *n_priv;
-
-    g_return_val_if_fail (GNC_IS_SEARCH_PARAM (param), NULL);
-    priv = GNC_SEARCH_PARAM_GET_PRIVATE(param);
-
-    n = gnc_search_param_new ();
-    n_priv = GNC_SEARCH_PARAM_GET_PRIVATE(n);
-    n->title = param->title;
-    n_priv->param_path = g_slist_copy (priv->param_path);
-    n_priv->type = priv->type;
-
-    return n;
-}
-
 void
 gnc_search_param_set_param_path (GNCSearchParam *param,
                                  QofIdTypeConst search_type,
@@ -297,7 +279,7 @@ gnc_search_param_type_match (GNCSearchParam *a, GNCSearchParam *b)
     a_priv = GNC_SEARCH_PARAM_GET_PRIVATE(a);
     b_priv = GNC_SEARCH_PARAM_GET_PRIVATE(b);
     if (a_priv->type == b_priv->type ||
-            !safe_strcmp (a_priv->type, b_priv->type))
+            !g_strcmp0 (a_priv->type, b_priv->type))
         return TRUE;
 
     return FALSE;

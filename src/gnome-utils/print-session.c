@@ -25,7 +25,6 @@
 #include <gtk/gtk.h>
 
 #include "print-session.h"
-#include "gnc-gconf-utils.h" /* for gnc_gconf_set_string() */
 
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "gnc.printing"
@@ -112,4 +111,9 @@ gnc_ui_page_setup(GtkWindow *parent)
         g_object_unref(settings);
     if (old_page_setup)
         g_object_unref(old_page_setup);
+}
+
+GtkPrintSettings *gnc_print_get_settings()
+{
+    return print_settings;
 }

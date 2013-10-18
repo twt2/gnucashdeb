@@ -38,17 +38,19 @@ gncscmreportmod_DATA = \
    category-barchart.scm \
    daily-reports.scm \
    equity-statement.scm \
-   net-barchart.scm \
-   income-statement.scm \
-   portfolio.scm \
-   price-scatter.scm \
-   register.scm \
-   trial-balance.scm \
    general-journal.scm \
    general-ledger.scm \
-   transaction.scm \
+	 income-statement.scm \
+	 net-barchart.scm \
+   net-linechart.scm \
+	 portfolio.scm \
+   price-scatter.scm \
+   register.scm \
    sx-summary.scm \
-   net-linechart.scm
+	 trial-balance.scm \
+   transaction.scm
+
+
 
 if GNUCASH_SEPARATE_BUILDDIR
 #For executing test cases
@@ -79,7 +81,7 @@ noinst_DATA = .scm-links
 
 EXTRA_DIST = ${gncscmmod_DATA} ${gncscmreportmod_DATA}
 
-CLEANFILES = .scm-links
-DISTCLEANFILES = ${SCM_FILE_LINKS}
+CLEANFILES = .scm-links ${SCM_FILE_LINKS}
+DISTCLEANFILES =
 
 AM_CPPFLAGS += -DG_LOG_DOMAIN=\"gnc.report.standard\"

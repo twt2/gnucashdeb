@@ -916,7 +916,7 @@ add_random_splits(QofBook *book, Transaction *trn, GList *account_list)
 {
     Account *acc, *bcc;
     Split *s;
-    gnc_numeric val, amt;
+    gnc_numeric val;
 
     /* Gotta have at least two different accounts */
     if (1 >= g_list_length (account_list)) return;
@@ -949,23 +949,6 @@ add_random_splits(QofBook *book, Transaction *trn, GList *account_list)
     }
     val = gnc_numeric_neg(val);
     xaccSplitSetValue(s, val);
-
-    if (gnc_commodity_equal (xaccTransGetCurrency(trn),
-                             xaccAccountGetCommodity(bcc)) &&
-            (!do_bork()))
-    {
-        amt = val;
-    }
-    else
-    {
-        gnc_numeric amt2 = xaccSplitGetAmount(s);
-        if (gnc_numeric_positive_p(amt2) ^ gnc_numeric_positive_p(val))
-            amt = gnc_numeric_neg(amt2);
-    }
-
-    if (gnc_numeric_zero_p(val))
-        amt = val;
-
     xaccSplitSetAmount(s, val);
     xaccTransCommitEdit(trn);
 }
@@ -1246,7 +1229,7 @@ make_random_changes_to_account (QofBook *book, Account *account)
 
     set_account_random_string (account, xaccAccountSetName);
 
-    tmp_int = get_random_int_in_range (ACCT_TYPE_BANK, ACCT_TYPE_CREDITLINE);
+    tmp_int = get_random_int_in_range (ACCT_TYPE_BANK, NUM_ACCOUNT_TYPES - 1);
     xaccAccountSetType (account, tmp_int);
 
     set_account_random_string (account, xaccAccountSetCode);
@@ -1436,7 +1419,6 @@ get_random_transaction_with_currency(QofBook *book,
     gint num;
     gchar *numstr;
 
-    numstr = g_new0(gchar, 10);
     if (!account_list)
     {
         account_list = gnc_account_get_descendants (gnc_book_get_root_account (book));
@@ -1449,6 +1431,8 @@ get_random_transaction_with_currency(QofBook *book,
                      "get_random_transaction_with_currency: account_list too short");
         return NULL;
     }
+
+    numstr = g_new0(gchar, 10);
 
     trans = xaccMallocTransaction(book);
 
@@ -1596,6 +1580,7 @@ get_random_queryop(void)
         break;
     default:
         g_assert_not_reached();
+        break;
     };
     if (gnc_engine_debug_random) printf ("op = %d (int was %d), ", op, op_num);
     return op;
@@ -1707,6 +1692,7 @@ set_query_sort (QofQuery *q, sort_type_t sort_code)
     default:
         g_slist_free (standard);
         g_return_if_fail (FALSE);
+        break;
     }
 
     qof_query_set_sort_order (q, p1, p2, p3);
@@ -1939,10 +1925,9 @@ add_random_transactions_to_book (QofBook *book, gint num_transactions)
     while (num_transactions--)
     {
         gnc_commodity *com;
-        Transaction *trans;
 
         com = get_random_commodity_from_table (table);
-        trans = get_random_transaction_with_currency (book, com, accounts);
+        get_random_transaction_with_currency (book, com, accounts);
     }
     g_list_free (accounts);
 }

@@ -51,6 +51,21 @@ typedef GList GncInvoiceList;
 
 #define GNC_ID_INVOICE    "gncInvoice"
 
+typedef enum
+{
+    GNC_INVOICE_UNDEFINED ,
+    GNC_INVOICE_CUST_INVOICE ,       /* Invoice */
+    GNC_INVOICE_VEND_INVOICE ,       /* Bill */
+    GNC_INVOICE_EMPL_INVOICE ,       /* Voucher */
+    GNC_INVOICE_CUST_CREDIT_NOTE ,   /* Credit Note for a customer */
+    GNC_INVOICE_VEND_CREDIT_NOTE ,   /* Credit Note from a vendor */
+    GNC_INVOICE_EMPL_CREDIT_NOTE ,   /* Credit Note from an employee,
+                                        not sure this makes sense,
+                                        but all code is symmetrical
+                                        so I've added it to prevent unexpected errors */
+    GNC_INVOICE_NUM_TYPES
+} GncInvoiceType;
+
 /* --- type macros --- */
 #define GNC_TYPE_INVOICE            (gnc_invoice_get_type ())
 #define GNC_INVOICE(o)              \
@@ -84,6 +99,9 @@ GncInvoice *gncInvoiceCopy (const GncInvoice *other_invoice);
  @{ */
 void gncInvoiceSetID (GncInvoice *invoice, const char *id);
 void gncInvoiceSetOwner (GncInvoice *invoice, GncOwner *owner);
+/** Set the DateOpened using a GDate argument. (Note: Internally this stores
+the date in a Timespec as created through timespecCanonicalDayTime()). */
+void gncInvoiceSetDateOpenedGDate (GncInvoice *invoice, const GDate *date);
 void gncInvoiceSetDateOpened (GncInvoice *invoice, Timespec date);
 void gncInvoiceSetDatePosted (GncInvoice *invoice, Timespec date);
 void gncInvoiceSetTerms (GncInvoice *invoice, GncBillTerm *terms);
@@ -91,6 +109,7 @@ void gncInvoiceSetBillingID (GncInvoice *invoice, const char *billing_id);
 void gncInvoiceSetNotes (GncInvoice *invoice, const char *notes);
 void gncInvoiceSetCurrency (GncInvoice *invoice, gnc_commodity *currency);
 void gncInvoiceSetActive (GncInvoice *invoice, gboolean active);
+void gncInvoiceSetIsCreditNote (GncInvoice *invoice, gboolean credit_note);
 void gncInvoiceSetBillTo (GncInvoice *invoice, GncOwner *billto);
 void gncInvoiceSetToChargeAmount (GncInvoice *invoice, gnc_numeric amount);
 /** @} */
@@ -98,13 +117,10 @@ void gncInvoiceSetToChargeAmount (GncInvoice *invoice, gnc_numeric amount);
 void gncInvoiceAddEntry (GncInvoice *invoice, GncEntry *entry);
 void gncInvoiceRemoveEntry (GncInvoice *invoice, GncEntry *entry);
 void gncInvoiceAddPrice (GncInvoice *invoice, GNCPrice *price);
-void gncInvoiceRemovePrice (GncInvoice *invoice, GNCPrice *price);
 
 /** Call this function when adding an entry to a bill instead of an invoice */
 void gncBillAddEntry (GncInvoice *bill, GncEntry *entry);
 void gncBillRemoveEntry (GncInvoice *bill, GncEntry *entry);
-void gncBillAddPrice (GncInvoice *bill, GNCPrice *price);
-void gncBillRemovePrice (GncInvoice *bill, GNCPrice *price);
 
 /** Call this function when an Entry is changed and you want to
     re-sort the list of entries
@@ -114,27 +130,30 @@ void gncInvoiceSortEntries (GncInvoice *invoice);
 /** @name Get Functions
  @{ */
 const char * gncInvoiceGetID (const GncInvoice *invoice);
-GncOwner * gncInvoiceGetOwner (GncInvoice *invoice);
+const GncOwner * gncInvoiceGetOwner (const GncInvoice *invoice);
 Timespec gncInvoiceGetDateOpened (const GncInvoice *invoice);
 Timespec gncInvoiceGetDatePosted (const GncInvoice *invoice);
 Timespec gncInvoiceGetDateDue (const GncInvoice *invoice);
 GncBillTerm * gncInvoiceGetTerms (const GncInvoice *invoice);
 const char * gncInvoiceGetBillingID (const GncInvoice *invoice);
 const char * gncInvoiceGetNotes (const GncInvoice *invoice);
-GncOwnerType gncInvoiceGetOwnerType (GncInvoice *invoice);
-const char * gncInvoiceGetTypeFromOwnerType (GncOwnerType type);
-const char * gncInvoiceGetType (GncInvoice *invoice);
+GncOwnerType gncInvoiceGetOwnerType (const GncInvoice *invoice);
+GList * gncInvoiceGetTypeListForOwnerType (const GncOwnerType type);
+GncInvoiceType gncInvoiceGetType (const GncInvoice *invoice);
+const char * gncInvoiceGetTypeString (const GncInvoice *invoice);
 gnc_commodity * gncInvoiceGetCurrency (const GncInvoice *invoice);
 GncOwner * gncInvoiceGetBillTo (GncInvoice *invoice);
 gnc_numeric gncInvoiceGetToChargeAmount (const GncInvoice *invoice);
 gboolean gncInvoiceGetActive (const GncInvoice *invoice);
+gboolean gncInvoiceGetIsCreditNote (const GncInvoice *invoice);
 
 GNCLot * gncInvoiceGetPostedLot (const GncInvoice *invoice);
 Transaction * gncInvoiceGetPostedTxn (const GncInvoice *invoice);
 Account * gncInvoiceGetPostedAcc (const GncInvoice *invoice);
 /** @} */
 
-/** return the "total" amount of the invoice */
+/** Return the "total" amount of the invoice as seen on the document
+ *  (and shown to the user in the reports and invoice ledger). */
 gnc_numeric gncInvoiceGetTotal (GncInvoice *invoice);
 gnc_numeric gncInvoiceGetTotalOf (GncInvoice *invoice, GncEntryPaymentType type);
 gnc_numeric gncInvoiceGetTotalSubtotal (GncInvoice *invoice);
@@ -142,8 +161,17 @@ gnc_numeric gncInvoiceGetTotalTax (GncInvoice *invoice);
 
 typedef GList EntryList;
 EntryList * gncInvoiceGetEntries (GncInvoice *invoice);
-GList * gncInvoiceGetPrices(GncInvoice *invoice);
 GNCPrice * gncInvoiceGetPrice(GncInvoice *invoice, gnc_commodity* commodity);
+
+/** Depending on the invoice type, invoices have a different effect
+ *  on the balance. Customer invoices increase the balance, while
+ *  vendor bills decrease the balance. Credit notes have the opposite
+ *  effect.
+ *
+ *  Returns TRUE if the invoice will increase the balance or FALSE
+ *  otherwise.
+ */
+gboolean gncInvoiceAmountPositive (const GncInvoice *invoice);
 
 /** Post this invoice to an account.  Returns the new Transaction
  * that is tied to this invoice.   The transaction is set with
@@ -156,7 +184,7 @@ gncInvoicePostToAccount (GncInvoice *invoice, Account *acc,
                          const char *memo, gboolean accumulatesplits);
 
 /**
- * UNpost this invoice.  This will destroy the posted transaction and
+ * Unpost this invoice.  This will destroy the posted transaction and
  * return the invoice to its unposted state.  It may leave empty lots
  * out there.  If reset_tax_tables is TRUE, then it will also revert
  * all the Tax Tables to the parent, which will potentially change the
@@ -169,18 +197,30 @@ gboolean
 gncInvoiceUnpost (GncInvoice *invoice, gboolean reset_tax_tables);
 
 /**
- * Apply a payment of "amount" for the owner, between the xfer_account
- * (bank or other asset) and the posted_account (A/R or A/P).  If the
- * caller supplies an (optional) invoice argument, then apply the
- * payment to that invoice first before any other invoice.
- *
- * XXX: yes, this should be in gncOwner, but all the other logic is
- * in gncInvoice...
+ * Attempt to pay the invoice using open payment lots and
+ * lots for documents of the opposite sign (credit notes versus
+ * invoices).
  */
-Transaction *
-gncOwnerApplyPayment (GncOwner *owner, GncInvoice *invoice,
-                      Account *posted_acc, Account *xfer_acc,
-                      gnc_numeric amount, gnc_numeric exch, Timespec date,
+void
+gncInvoiceAutoApplyPayments (GncInvoice *invoice);
+
+/**
+ * A convenience function to apply a payment to an invoice.
+ * It creates a lot for a payment optionally based on an existing
+ * transaction and then tries to balance it with
+ * the given invoice.
+ * Contrary to gncOwnerApplyPayment, no other open documents
+ * or payments for the owner will be considered
+ * to balance the payment.
+ *
+ * This code is actually a convenience wrapper around gncOwnerCreatePaymentLot
+ * and gncOwnerAutoApplyPaymentsWithLots. See their descriptions for more
+ * details on what happens exactly.
+ */
+void
+gncInvoiceApplyPayment (const GncInvoice *invoice, Transaction *txn,
+                      Account *xfer_acc, gnc_numeric amount,
+                      gnc_numeric exch, Timespec date,
                       const char *memo, const char *num);
 
 
@@ -204,7 +244,6 @@ static inline GncInvoice * gncInvoiceLookup (const QofBook *book, const GncGUID 
 void gncInvoiceBeginEdit (GncInvoice *invoice);
 void gncInvoiceCommitEdit (GncInvoice *invoice);
 int gncInvoiceCompare (const GncInvoice *a, const GncInvoice *b);
-gboolean gncInvoiceEqual(const GncInvoice *a, const GncInvoice *b);
 gboolean gncInvoiceIsPosted (const GncInvoice *invoice);
 gboolean gncInvoiceIsPaid (const GncInvoice *invoice);
 
@@ -221,7 +260,9 @@ gboolean gncInvoiceIsPaid (const GncInvoice *invoice);
 #define INVOICE_ACC         "account"
 #define INVOICE_POST_TXN    "posted_txn"
 #define INVOICE_POST_LOT    "posted_lot"
+#define INVOICE_IS_CN       "credit_note"
 #define INVOICE_TYPE        "type"
+#define INVOICE_TYPE_STRING "type_string"
 #define INVOICE_BILLTO      "bill-to"
 #define INVOICE_ENTRIES     "list_of_entries"
 #define INVOICE_JOB         "invoice_job"
@@ -235,6 +276,9 @@ QofBook *gncInvoiceGetBook(GncInvoice *x);
 #define gncInvoiceGetGUID(x) qof_instance_get_guid(QOF_INSTANCE(x))
 #define gncInvoiceRetGUID(x) (x ? *(qof_instance_get_guid(QOF_INSTANCE(x))) : *(guid_null()))
 #define gncInvoiceLookupDirect(G,B) gncInvoiceLookup((B),&(G))
+
+/** Test support function used by test-dbi-business-stuff.c */
+gboolean gncInvoiceEqual(const GncInvoice *a, const GncInvoice *b);
 
 #endif /* GNC_INVOICE_H_ */
 /** @} */

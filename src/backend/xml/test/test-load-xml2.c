@@ -37,15 +37,16 @@
 #include <glib-object.h>
 #include <glib/gstdio.h>
 
-#include "cashobjects.h"
-#include "TransLog.h"
-#include "gnc-engine.h"
-#include "gnc-backend-xml.h"
-#include "io-gncxml-v2.h"
+#include <cashobjects.h>
+#include <TransLog.h>
+#include <gnc-engine.h>
+#include "../gnc-backend-xml.h"
+#include "../io-gncxml-v2.h"
 
-#include "test-stuff.h"
-#include "test-engine-stuff.h"
-#include "test-file-stuff.h"
+#include <test-stuff.h>
+#include <unittest-support.h>
+#include <test-engine-stuff.h>
+#include <test-file-stuff.h>
 
 #define GNC_LIB_NAME "gncmod-backend-xml"
 
@@ -79,12 +80,17 @@ test_load_file(const char *filename)
     QofBook *book;
     Account *root;
     gboolean ignore_lock;
+    gchar *logdomain = "backend.xml";
+    guint loglevel = G_LOG_LEVEL_WARNING;
+    TestErrorStruct check = { loglevel, logdomain, NULL };
+    g_log_set_handler (logdomain, loglevel,
+                       (GLogFunc)test_checked_handler, &check);
 
     session = qof_session_new();
 
     remove_locks(filename);
 
-    ignore_lock = (safe_strcmp(g_getenv("SRCDIR"), ".") != 0);
+    ignore_lock = (g_strcmp0(g_getenv("SRCDIR"), ".") != 0);
     qof_session_begin(session, filename, ignore_lock, FALSE, TRUE);
 
     qof_session_load(session, NULL);
@@ -109,7 +115,6 @@ main (int argc, char ** argv)
     const char *location = g_getenv("GNC_TEST_FILES");
     GDir *xml2_dir;
 
-    g_type_init();
     qof_init();
     cashobjects_register();
     do_test(qof_load_backend_library ("../.libs/", GNC_LIB_NAME),

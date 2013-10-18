@@ -30,6 +30,7 @@
 #include <libguile.h>
 
 #include "gnc-ui-util.h"
+#include "dialog-utils.h"
 #include "qof.h"
 #include "option-util.h"
 #include "gnc-general-search.h"
@@ -99,14 +100,13 @@ get_owner_type_from_option (GNCOption *option)
     SCM odata = gnc_option_get_option_data (option);
 
     /* The option data is enum-typed.  It's just the enum value. */
-    return (GncOwnerType) scm_num2int(odata, SCM_ARG1, G_STRFUNC);
+    return (GncOwnerType) scm_to_int(odata);
 }
 
 
 /* Function to set the UI widget based upon the option */
 static GtkWidget *
 owner_set_widget (GNCOption *option, GtkBox *page_box,
-                  GtkTooltips *tooltips,
                   char *name, char *documentation,
                   /* Return values */
                   GtkWidget **enclosing, gboolean *packed)
@@ -176,7 +176,6 @@ owner_get_value (GNCOption *option, GtkWidget *widget)
 /* Function to set the UI widget based upon the option */
 static GtkWidget *
 customer_set_widget (GNCOption *option, GtkBox *page_box,
-                     GtkTooltips *tooltips,
                      char *name, char *documentation,
                      /* Return values */
                      GtkWidget **enclosing, gboolean *packed)
@@ -235,7 +234,6 @@ customer_get_value (GNCOption *option, GtkWidget *widget)
 /* Function to set the UI widget based upon the option */
 static GtkWidget *
 vendor_set_widget (GNCOption *option, GtkBox *page_box,
-                   GtkTooltips *tooltips,
                    char *name, char *documentation,
                    /* Return values */
                    GtkWidget **enclosing, gboolean *packed)
@@ -293,7 +291,6 @@ vendor_get_value (GNCOption *option, GtkWidget *widget)
 /* Function to set the UI widget based upon the option */
 static GtkWidget *
 employee_set_widget (GNCOption *option, GtkBox *page_box,
-                     GtkTooltips *tooltips,
                      char *name, char *documentation,
                      /* Return values */
                      GtkWidget **enclosing, gboolean *packed)
@@ -368,7 +365,6 @@ create_invoice_widget (GNCOption *option, GtkWidget *hbox)
 /* Function to set the UI widget based upon the option */
 static GtkWidget *
 invoice_set_widget (GNCOption *option, GtkBox *page_box,
-                    GtkTooltips *tooltips,
                     char *name, char *documentation,
                     /* Return values */
                     GtkWidget **enclosing, gboolean *packed)
@@ -425,25 +421,28 @@ static GtkWidget *
 create_taxtable_widget (GNCOption *option, GtkWidget *hbox)
 {
     GtkWidget *widget;
+    GtkBuilder *builder;
 
-    widget = gtk_option_menu_new ();
+    builder = gtk_builder_new();
+    gnc_builder_add_from_file (builder, "business-options-gnome.glade", "taxtable_store");
+    gnc_builder_add_from_file (builder, "business-options-gnome.glade", "taxtable_menu");
 
-    gnc_ui_taxtables_optionmenu (widget, gnc_get_current_book (), TRUE, NULL);
-
+    widget = GTK_WIDGET (gtk_builder_get_object (builder, "taxtable_menu"));
+    gnc_taxtables_combo (GTK_COMBO_BOX(widget), gnc_get_current_book (), TRUE, NULL);
     gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
+
     gnc_option_set_widget (option, widget);
 
-    gnc_ui_optionmenu_set_changed_callback (widget,
-                                            (void(*)(GtkWidget*, gpointer))gnc_option_changed_option_cb,
-                                            option);
+    g_signal_connect (widget, "changed",
+                      G_CALLBACK (gnc_option_changed_option_cb), option);
 
+    g_object_unref(G_OBJECT(builder));
     return widget;
 }
 
 /* Function to set the UI widget based upon the option */
 static GtkWidget *
 taxtable_set_widget (GNCOption *option, GtkBox *page_box,
-                     GtkTooltips *tooltips,
                      char *name, char *documentation,
                      /* Return values */
                      GtkWidget **enclosing, gboolean *packed)
@@ -477,7 +476,7 @@ taxtable_set_value (GNCOption *option, gboolean use_default,
     taxtable = SWIG_MustGetPtr(value, SWIG_TypeQuery("_p__gncTaxTable"), 1, 0);
 
     widget = gnc_option_get_gtk_widget (option);
-    gnc_ui_optionmenu_set_value (widget, taxtable);
+    gnc_simple_combo_set_value (GTK_COMBO_BOX(widget), taxtable);
     return FALSE;
 }
 
@@ -487,7 +486,7 @@ taxtable_get_value (GNCOption *option, GtkWidget *widget)
 {
     GncTaxTable *taxtable;
 
-    taxtable = gnc_ui_optionmenu_get_value (widget);
+    taxtable = gnc_simple_combo_get_value (GTK_COMBO_BOX(widget));
     return SWIG_NewPointerObj(taxtable, SWIG_TypeQuery("_p__gncTaxTable"), 0);
 }
 

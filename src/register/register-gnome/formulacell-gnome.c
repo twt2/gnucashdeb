@@ -28,8 +28,8 @@
 
 #include "config.h"
 
-#include <gnome.h>
 #include <locale.h>
+#include <gdk/gdkkeysyms.h>
 
 #include "gnc-engine.h"
 
@@ -40,6 +40,10 @@
 #include "formulacell.h"
 #include "formulacell-gnome.h"
 #include "pricecell-gnome.h"
+
+#ifdef G_OS_WIN32
+# include <gdk/gdkwin32.h>
+#endif
 
 //static QofLogModule log_module = GNC_MOD_REGISTER;
 
@@ -68,15 +72,20 @@ gnc_formula_cell_direct_update( BasicCell *bcell,
      * this after fixing a bug where one copy was kept up to date, and the
      * other not.  So, fix this.
      */
+#ifdef G_OS_WIN32
+    /* gdk never sends GDK_KP_Decimal on win32. See #486658 */
+    if (event->hardware_keycode == VK_DECIMAL)
+        event->keyval = GDK_KP_Decimal;
+#endif
     switch (event->keyval)
     {
-    case GDK_Return:
+    case GDK_KEY_Return:
         if (!(event->state &
                 (GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SHIFT_MASK)))
             is_return = TRUE;
-        /* FALL THROUGH TO NEXT CASE */
+        /* FALL THROUGH */
 
-    case GDK_KP_Enter:
+    case GDK_KEY_KP_Enter:
     {
         gnc_formula_cell_set_value( cell, cell->cell.value );
 
@@ -87,7 +96,7 @@ gnc_formula_cell_direct_update( BasicCell *bcell,
         return !is_return;
     }
 
-    case GDK_KP_Decimal:
+    case GDK_KEY_KP_Decimal:
         break;
 
     default:

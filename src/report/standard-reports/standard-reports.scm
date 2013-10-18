@@ -6,15 +6,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define-module (gnucash report standard-reports))
-(use-modules (ice-9 slib))
 (use-modules (srfi srfi-13))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (gnucash core-utils))
 
 (export gnc:register-report-create)
 (export gnc:register-report-hook)
-
-(require 'hash-table)
 
 (define gnc:*register-report-hash* (make-hash-table 23))
 
@@ -121,6 +118,7 @@
     )
 )
 
+(gnc:debug "stdrpt-dir=" (gnc-path-get-stdreportsdir))
 (gnc:debug "dir-files=" (directory-files (gnc-path-get-stdreportsdir)))
 (gnc:debug "processed=" (process-file-list (directory-files (gnc-path-get-stdreportsdir))))
 (gnc:debug "report-list=" (get-report-list))
@@ -135,13 +133,13 @@
 (use-modules (gnucash gnc-module))
 (gnc:module-load "gnucash/engine" 0)
 
-(define (gnc:register-report-create account split query journal? double?
-				    title debit-string credit-string)
+(define (gnc:register-report-create account split query journal? ledger-type?
+				    double? title debit-string credit-string)
   (let* ((acct-type (xaccAccountGetType account))
 	 (create-fcn (lookup-register-report acct-type split)))
     (gnc:debug "create-fcn: " create-fcn)
     (if create-fcn
 	(create-fcn account split query journal? double? title
 		    debit-string credit-string)
-	(gnc:register-report-create-internal #f query journal? double? title
-					     debit-string credit-string))))
+	(gnc:register-report-create-internal #f query journal? ledger-type? double?
+					     title debit-string credit-string))))

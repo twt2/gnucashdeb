@@ -27,29 +27,23 @@
 #include <glib.h>
 #include <math.h>
 #if defined(G_OS_WIN32) && !defined(_MSC_VER)
-# include <pow.h>
+# ifdef HAVE_POW_H
+#   include <pow.h>
+# endif
 #endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "gnc-numeric.h"
+
+/* Note: The qofmath128 functions are used mostly here and almost
+         nowhere else. Hence, we inline the C code directly into here so
+         that the compiler can potentially inline the code as-is and speed
+         up the gnc-numeric.c functions. */
 #include "qofmath128.c"
 
 /* static short module = MOD_ENGINE; */
-
-/* =============================================================== */
-
-#if 0
-static const char * _numeric_error_strings[] =
-{
-    "No error",
-    "Argument is not a valid number",
-    "Intermediate result overflow",
-    "Argument denominators differ in GNC_HOW_DENOM_FIXED operation",
-    "Remainder part in GNC_HOW_RND_NEVER operation"
-};
-#endif
 
 /* =============================================================== */
 /* This function is small, simple, and used everywhere below,
@@ -574,14 +568,6 @@ gnc_numeric_mul(gnc_numeric a, gnc_numeric b,
             }
         }
     }
-
-#if 0  /* currently, product denom won't ever be zero */
-    if (product.denom < 0)
-    {
-        product.num   = -product.num;
-        product.denom = -product.denom;
-    }
-#endif
 
     result = gnc_numeric_convert(product, denom, how);
     return result;
@@ -1376,27 +1362,17 @@ gnc_num_dbg_to_string(gnc_numeric n)
 gboolean
 string_to_gnc_numeric(const gchar* str, gnc_numeric *n)
 {
-    size_t num_read;
     gint64 tmpnum;
     gint64 tmpdenom;
 
     if (!str) return FALSE;
 
-#ifdef GNC_DEPRECATED
-    /* must use "<" here because %n's effects aren't well defined */
-    if (sscanf(str, " " QOF_SCANF_LLD "/" QOF_SCANF_LLD "%n",
-               &tmpnum, &tmpdenom, &num_read) < 2)
-    {
-        return FALSE;
-    }
-#else
     tmpnum = g_ascii_strtoll (str, NULL, 0);
     str = strchr (str, '/');
     if (!str) return FALSE;
     str ++;
     tmpdenom = g_ascii_strtoll (str, NULL, 0);
-    num_read = strspn (str, "0123456789");
-#endif
+
     n->num = tmpnum;
     n->denom = tmpdenom;
     return TRUE;

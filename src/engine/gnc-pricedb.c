@@ -34,6 +34,9 @@ static QofLogModule log_module = GNC_MOD_PRICE;
 
 static gboolean add_price(GNCPriceDB *db, GNCPrice *p);
 static gboolean remove_price(GNCPriceDB *db, GNCPrice *p, gboolean cleanup);
+static GNCPrice *lookup_nearest_in_time(GNCPriceDB *db, const gnc_commodity *c,
+                                        const gnc_commodity *currency,
+                                        Timespec t, gboolean sameday);
 
 enum
 {
@@ -70,6 +73,12 @@ gnc_price_finalize(GObject* pricep)
     G_OBJECT_CLASS(gnc_price_parent_class)->finalize(pricep);
 }
 
+/* Note that g_value_set_object() refs the object, as does
+ * g_object_get(). But g_object_get() only unrefs once when it disgorges
+ * the object, leaving an unbalanced ref, which leaks. So instead of
+ * using g_value_set_object(), use g_value_take_object() which doesn't
+ * ref the object when used in get_property().
+ */
 static void
 gnc_price_get_property(GObject* object, guint prop_id, GValue* value, GParamSpec* pspec)
 {
@@ -90,10 +99,10 @@ gnc_price_get_property(GObject* object, guint prop_id, GValue* value, GParamSpec
         g_value_set_boxed(value, &price->value);
         break;
     case PROP_COMMODITY:
-        g_value_set_object(value, price->commodity);
+        g_value_take_object(value, price->commodity);
         break;
     case PROP_CURRENCY:
-        g_value_set_object(value, price->currency);
+        g_value_take_object(value, price->currency);
         break;
     case PROP_DATE:
         g_value_set_boxed(value, &price->tmspec);
@@ -433,7 +442,7 @@ void
 gnc_price_set_source(GNCPrice *p, const char *s)
 {
     if (!p) return;
-    if (safe_strcmp(p->source, s) != 0)
+    if (g_strcmp0(p->source, s) != 0)
     {
         char *tmp;
 
@@ -450,7 +459,7 @@ void
 gnc_price_set_typestr(GNCPrice *p, const char* type)
 {
     if (!p) return;
-    if (safe_strcmp(p->type, type) != 0)
+    if (g_strcmp0(p->type, type) != 0)
     {
         gchar *tmp;
 
@@ -564,11 +573,11 @@ gnc_price_equal (const GNCPrice *p1, const GNCPrice *p2)
     if (!timespec_equal (&ts1, &ts2))
         return FALSE;
 
-    if (safe_strcmp (gnc_price_get_source (p1),
+    if (g_strcmp0 (gnc_price_get_source (p1),
                      gnc_price_get_source (p2)) != 0)
         return FALSE;
 
-    if (safe_strcmp (gnc_price_get_typestr (p1),
+    if (g_strcmp0 (gnc_price_get_typestr (p1),
                      gnc_price_get_typestr (p2)) != 0)
         return FALSE;
 
@@ -1190,7 +1199,7 @@ check_one_price_date (GNCPrice *price, gpointer user_data)
     if (!data->delete_user)
     {
         source = gnc_price_get_source (price);
-        if (safe_strcmp(source, "Finance::Quote") != 0)
+        if (g_strcmp0(source, "Finance::Quote") != 0)
         {
             LEAVE("Not an automatic quote");
             return TRUE;
@@ -1519,143 +1528,14 @@ gnc_pricedb_get_prices(GNCPriceDB *db,
 }
 
 
-PriceList *
+GNCPrice *
 gnc_pricedb_lookup_day(GNCPriceDB *db,
                        const gnc_commodity *c,
                        const gnc_commodity *currency,
                        Timespec t)
 {
-    GList *price_list;
-    GList *result = NULL;
-    GList *item = NULL;
-    GHashTable *currency_hash;
-    QofBook *book;
-    QofBackend *be;
-
-    if (!db || !c || !currency) return NULL;
-    ENTER ("db=%p commodity=%p currency=%p", db, c, currency);
-    book = qof_instance_get_book(&db->inst);
-    be = qof_book_get_backend(book);
-    /* Convert to noon local time. */
-    t = timespecCanonicalDayTime(t);
-#ifdef GNUCASH_MAJOR_VERSION
-    if (be && be->price_lookup)
-    {
-        GNCPriceLookup pl;
-        pl.type = LOOKUP_AT_TIME;
-        pl.prdb = db;
-        pl.commodity = c;
-        pl.currency = currency;
-        pl.date = t;
-        (be->price_lookup) (be, &pl);
-    }
-#endif
-    currency_hash = g_hash_table_lookup(db->commodity_hash, c);
-    if (!currency_hash)
-    {
-        LEAVE (" no currency hash");
-        return NULL;
-    }
-
-    price_list = g_hash_table_lookup(currency_hash, currency);
-    if (!price_list)
-    {
-        LEAVE (" no price list");
-        return NULL;
-    }
-
-    item = price_list;
-    while (item)
-    {
-        GNCPrice *p = item->data;
-        Timespec price_time = timespecCanonicalDayTime(gnc_price_get_time(p));
-        if (timespec_equal(&price_time, &t))
-        {
-            result = g_list_prepend(result, p);
-            gnc_price_ref(p);
-        }
-        item = item->next;
-    }
-    LEAVE (" ");
-    return result;
+    return lookup_nearest_in_time(db, c, currency, t, TRUE);
 }
-
-
-static void
-lookup_day(gpointer key, gpointer val, gpointer user_data)
-{
-    //gnc_commodity *currency = (gnc_commodity *)key;
-    GList *price_list = (GList *)val;
-    GList *item = NULL;
-    GNCPriceLookupHelper *lookup_helper = (GNCPriceLookupHelper *)user_data;
-    GList **return_list = lookup_helper->return_list;
-    Timespec t = lookup_helper->time;
-
-    item = price_list;
-    while (item)
-    {
-        GNCPrice *p = item->data;
-        Timespec price_time = timespecCanonicalDayTime(gnc_price_get_time(p));
-        if (timespec_equal(&price_time, &t))
-        {
-            gnc_price_list_insert(return_list, item->data, FALSE);
-        }
-        item = item->next;
-    }
-}
-
-PriceList *
-gnc_pricedb_lookup_day_any_currency(GNCPriceDB *db,
-                                    const gnc_commodity *c,
-                                    Timespec t)
-{
-    GList *result = NULL;
-    GHashTable *currency_hash;
-    GNCPriceLookupHelper lookup_helper;
-    QofBook *book;
-    QofBackend *be;
-
-    if (!db || !c) return NULL;
-    ENTER ("db=%p commodity=%p", db, c);
-    book = qof_instance_get_book(&db->inst);
-    be = qof_book_get_backend(book);
-    /* Convert to noon local time. */
-    t = timespecCanonicalDayTime(t);
-#ifdef GNUCASH_MAJOR_VERSION
-    if (be && be->price_lookup)
-    {
-        GNCPriceLookup pl;
-        pl.type = LOOKUP_AT_TIME;
-        pl.prdb = db;
-        pl.commodity = c;
-        pl.currency = NULL;  /* can the backend handle this??? */
-        pl.date = t;
-        (be->price_lookup) (be, &pl);
-    }
-#endif
-    currency_hash = g_hash_table_lookup(db->commodity_hash, c);
-    if (!currency_hash)
-    {
-        LEAVE ("no currency hash");
-        return NULL;
-    }
-
-    lookup_helper.return_list = &result;
-    lookup_helper.time = t;
-    g_hash_table_foreach(currency_hash, lookup_day, &lookup_helper);
-
-    if (!result)
-    {
-        LEAVE (" ");
-        return NULL;
-    }
-
-    result = g_list_sort(result, compare_prices_by_date);
-
-    LEAVE (" ");
-    return result;
-}
-
 
 PriceList *
 gnc_pricedb_lookup_at_time(GNCPriceDB *db,
@@ -1716,85 +1596,12 @@ gnc_pricedb_lookup_at_time(GNCPriceDB *db,
     return result;
 }
 
-static void
-lookup_time(gpointer key, gpointer val, gpointer user_data)
-{
-    //gnc_commodity *currency = (gnc_commodity *)key;
-    GList *price_list = (GList *)val;
-    GList *item = NULL;
-    GNCPriceLookupHelper *lookup_helper = (GNCPriceLookupHelper *)user_data;
-    GList **return_list = lookup_helper->return_list;
-    Timespec t = lookup_helper->time;
-
-    item = price_list;
-    while (item)
-    {
-        GNCPrice *p = item->data;
-        Timespec price_time = gnc_price_get_time(p);
-        if (timespec_equal(&price_time, &t))
-        {
-            gnc_price_list_insert(return_list, item->data, FALSE);
-        }
-        item = item->next;
-    }
-}
-
-PriceList *
-gnc_pricedb_lookup_at_time_any_currency(GNCPriceDB *db,
-                                        const gnc_commodity *c,
-                                        Timespec t)
-{
-    GList *result = NULL;
-    GHashTable *currency_hash;
-    GNCPriceLookupHelper lookup_helper;
-    QofBook *book;
-    QofBackend *be;
-
-    if (!db || !c) return NULL;
-    ENTER ("db=%p commodity=%p", db, c);
-    book = qof_instance_get_book(&db->inst);
-    be = qof_book_get_backend(book);
-#ifdef GNUCASH_MAJOR_VERSION
-    if (be && be->price_lookup)
-    {
-        GNCPriceLookup pl;
-        pl.type = LOOKUP_AT_TIME;
-        pl.prdb = db;
-        pl.commodity = c;
-        pl.currency = NULL;  /* can the backend handle this??? */
-        pl.date = t;
-        (be->price_lookup) (be, &pl);
-    }
-#endif
-    currency_hash = g_hash_table_lookup(db->commodity_hash, c);
-    if (!currency_hash)
-    {
-        LEAVE (" no currency hash");
-        return NULL;
-    }
-
-    lookup_helper.return_list = &result;
-    lookup_helper.time = t;
-    g_hash_table_foreach(currency_hash, lookup_time, &lookup_helper);
-
-    if (!result)
-    {
-        LEAVE (" ");
-        return NULL;
-    }
-
-    result = g_list_sort(result, compare_prices_by_date);
-
-    LEAVE (" ");
-    return result;
-}
-
-
-GNCPrice *
-gnc_pricedb_lookup_nearest_in_time(GNCPriceDB *db,
-                                   const gnc_commodity *c,
-                                   const gnc_commodity *currency,
-                                   Timespec t)
+static GNCPrice *
+lookup_nearest_in_time(GNCPriceDB *db,
+                       const gnc_commodity *c,
+                       const gnc_commodity *currency,
+                       Timespec t,
+                       gboolean sameday)
 {
     GList *price_list;
     GNCPrice *current_price = NULL;
@@ -1855,14 +1662,27 @@ gnc_pricedb_lookup_nearest_in_time(GNCPriceDB *db,
         item = item->next;
     }
 
-    if (current_price)
+    if (current_price)      /* How can this be null??? */
     {
         if (!next_price)
         {
+            /* It's earlier than the last price on the list */
             result = current_price;
+            if (sameday)
+            {
+                /* Must be on the same day. */
+                Timespec price_day;
+                Timespec t_day;
+                price_day = timespecCanonicalDayTime(gnc_price_get_time(current_price));
+                t_day = timespecCanonicalDayTime(t);
+                if (!timespec_equal(&price_day, &t_day))
+                    result = NULL;
+            }
         }
         else
         {
+            /* If the requested time is not earlier than the first price on the
+               list, then current_price and next_price will be the same. */
             Timespec current_t = gnc_price_get_time(current_price);
             Timespec next_t = gnc_price_get_time(next_price);
             Timespec diff_current = timespec_diff(&current_t, &t);
@@ -1870,16 +1690,43 @@ gnc_pricedb_lookup_nearest_in_time(GNCPriceDB *db,
             Timespec abs_current = timespec_abs(&diff_current);
             Timespec abs_next = timespec_abs(&diff_next);
 
-            /* Choose the price that is closest to the given time. In case of
-             * a tie, prefer the older price since it actually existed at the
-             * time. (This also fixes bug #541970.) */
-            if (timespec_cmp(&abs_current, &abs_next) < 0)
+            if (sameday)
             {
-                result = current_price;
+                /* Result must be on same day, see if either of the two isn't */
+                Timespec t_day = timespecCanonicalDayTime(t);
+                Timespec current_day = timespecCanonicalDayTime(current_t);
+                Timespec next_day = timespecCanonicalDayTime(next_t);
+                if (timespec_equal(&current_day, &t_day))
+                {
+                    if (timespec_equal(&next_day, &t_day))
+                    {
+                        /* Both on same day, return nearest */
+                        if (timespec_cmp(&abs_current, &abs_next) < 0)
+                            result = current_price;
+                        else
+                            result = next_price;
+                    }
+                    else
+                        /* current_price on same day, next_price not */
+                        result = current_price;
+                }
+                else if (timespec_equal(&next_day, &t_day))
+                    /* next_price on same day, current_price not */
+                    result = next_price;
             }
             else
             {
-                result = next_price;
+                /* Choose the price that is closest to the given time. In case of
+                 * a tie, prefer the older price since it actually existed at the
+                 * time. (This also fixes bug #541970.) */
+                if (timespec_cmp(&abs_current, &abs_next) < 0)
+                {
+                    result = current_price;
+                }
+                else
+                {
+                    result = next_price;
+                }
             }
         }
     }
@@ -1887,6 +1734,15 @@ gnc_pricedb_lookup_nearest_in_time(GNCPriceDB *db,
     gnc_price_ref(result);
     LEAVE (" ");
     return result;
+}
+
+GNCPrice *
+gnc_pricedb_lookup_nearest_in_time(GNCPriceDB *db,
+                                   const gnc_commodity *c,
+                                   const gnc_commodity *currency,
+                                   Timespec t)
+{
+    return lookup_nearest_in_time(db, c, currency, t, FALSE);
 }
 
 GNCPrice *
@@ -2344,106 +2200,6 @@ gnc_pricedb_convert_balance_nearest_price(GNCPriceDB *pdb,
 }
 
 
-gnc_numeric
-gnc_pricedb_convert_balance_latest_before(GNCPriceDB *pdb,
-        gnc_numeric balance,
-        gnc_commodity *balance_currency,
-        gnc_commodity *new_currency,
-        Timespec t)
-{
-    GNCPrice *price, *currency_price;
-    GList *price_list, *list_helper;
-    gnc_numeric currency_price_value;
-    gnc_commodity *intermediate_currency;
-
-    if (gnc_numeric_zero_p (balance) ||
-            gnc_commodity_equiv (balance_currency, new_currency))
-        return balance;
-
-    /* Look for a direct price. */
-    price = gnc_pricedb_lookup_latest_before (pdb, balance_currency, new_currency, t);
-
-    if (price)
-    {
-        balance = gnc_numeric_mul (balance, gnc_price_get_value (price),
-                                   gnc_commodity_get_fraction (new_currency),
-                                   GNC_HOW_RND_ROUND_HALF_UP);
-        gnc_price_unref (price);
-        return balance;
-    }
-
-    /* Look for a price of the new currency in the balance currency and use
-     * the reciprocal if we find it.
-     */
-    price = gnc_pricedb_lookup_latest_before (pdb, new_currency, balance_currency, t);
-    if (price)
-    {
-        balance = gnc_numeric_div (balance, gnc_price_get_value (price),
-                                   gnc_commodity_get_fraction (new_currency),
-                                   GNC_HOW_RND_ROUND_HALF_UP);
-        gnc_price_unref (price);
-        return balance;
-    }
-
-    /*
-     * no direct price found, try if we find a price in another currency
-     * and convert in two stages
-     */
-    price_list = gnc_pricedb_lookup_latest_before_any_currency(pdb, balance_currency, t);
-    if (!price_list)
-    {
-        balance =  gnc_numeric_zero ();
-        return balance;
-    }
-
-    list_helper = price_list;
-    currency_price_value = gnc_numeric_zero();
-
-    do
-    {
-        price = (GNCPrice *)(list_helper->data);
-
-        intermediate_currency = gnc_price_get_currency(price);
-        currency_price = gnc_pricedb_lookup_latest_before(pdb, intermediate_currency,
-                         new_currency, t);
-        if (currency_price)
-        {
-            currency_price_value = gnc_price_get_value(currency_price);
-            gnc_price_unref(currency_price);
-        }
-        else
-        {
-            currency_price = gnc_pricedb_lookup_nearest_in_time(pdb, new_currency,
-                             intermediate_currency, t);
-            if (currency_price)
-            {
-                /* here we need the reciprocal */
-                currency_price_value = gnc_numeric_div(gnc_numeric_create(1, 1),
-                                                       gnc_price_get_value(currency_price),
-                                                       gnc_commodity_get_fraction (new_currency),
-                                                       GNC_HOW_RND_ROUND_HALF_UP);
-                gnc_price_unref(currency_price);
-            }
-        }
-
-        list_helper = list_helper->next;
-    }
-    while ((list_helper != NULL) &&
-            (gnc_numeric_zero_p(currency_price_value)));
-
-    balance = gnc_numeric_mul (balance, currency_price_value,
-                               gnc_commodity_get_fraction (new_currency),
-                               GNC_HOW_RND_ROUND_HALF_UP);
-    balance = gnc_numeric_mul (balance, gnc_price_get_value (price),
-                               gnc_commodity_get_fraction (new_currency),
-                               GNC_HOW_RND_ROUND_HALF_UP);
-
-    gnc_price_list_destroy(price_list);
-    return balance;
-}
-
-
-
 /* ==================================================================== */
 /* gnc_pricedb_foreach_price infrastructure
  */
@@ -2517,12 +2273,12 @@ compare_kvpairs_by_commodity_key(gconstpointer a, gconstpointer b)
     ca = (gnc_commodity *) kvpa->key;
     cb = (gnc_commodity *) kvpb->key;
 
-    cmp_result = safe_strcmp(gnc_commodity_get_namespace(ca),
+    cmp_result = g_strcmp0(gnc_commodity_get_namespace(ca),
                              gnc_commodity_get_namespace(cb));
 
     if (cmp_result != 0) return cmp_result;
 
-    return safe_strcmp(gnc_commodity_get_mnemonic(ca),
+    return g_strcmp0(gnc_commodity_get_mnemonic(ca),
                        gnc_commodity_get_mnemonic(cb));
 }
 
@@ -2741,9 +2497,7 @@ gnc_pricedb_print_contents(GNCPriceDB *db, FILE *f)
 static void
 pricedb_book_begin (QofBook *book)
 {
-    GNCPriceDB *db;
-
-    db = gnc_pricedb_create(book);
+    gnc_pricedb_create(book);
 }
 
 static void

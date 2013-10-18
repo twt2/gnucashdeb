@@ -1,4 +1,4 @@
-SUBDIRS = glade schemas ui
+SUBDIRS = gtkbuilder gschemas ui
 
 lib_LTLIBRARIES = libgnc-gnome.la
 
@@ -16,43 +16,51 @@ libgnc_gnome_la_LIBADD = \
   ${top_builddir}/src/engine/libgncmod-engine.la \
   ${top_builddir}/src/core-utils/libgnc-core-utils.la \
   ${top_builddir}/src/libqof/qof/libgnc-qof.la \
-  ${GLADE_LIBS} \
+  ${LIBXML2_LIBS} \
   ${GUILE_LIBS} \
-  ${GNOME_LIBS} \
+  ${GTK_LIBS} \
   ${GLIB_LIBS} \
   ${QOF_LIBS}
 
 libgnc_gnome_la_SOURCES = \
   swig-gnome.c \
+  assistant-acct-period.c \
+  assistant-hierarchy.c \
+  assistant-loan.c \
+  assistant-stock-split.c \
   dialog-commodities.c \
   dialog-fincalc.c \
   dialog-find-transactions.c \
+  dialog-find-transactions2.c \
+  dialog-lot-viewer.c \
   dialog-new-user.c \
   dialog-price-editor.c \
   dialog-price-edit-db.c \
   dialog-print-check.c \
+  dialog-print-check2.c \
   dialog-progress.c \
   dialog-sx-editor.c \
+  dialog-sx-editor2.c \
   dialog-sx-from-trans.c \
   dialog-sx-since-last-run.c \
   dialog-tax-info.c \
-  druid-acct-period.c \
-  druid-hierarchy.c \
-  druid-loan.c \
-  druid-stock-split.c \
+  gnc-budget-view.c \
   gnc-plugin-account-tree.c \
   gnc-plugin-basic-commands.c \
   gnc-plugin-budget.c \
   gnc-plugin-register.c \
+  gnc-plugin-register2.c \
   gnc-plugin-page-account-tree.c \
   gnc-plugin-page-budget.c \
   gnc-plugin-page-sx-list.c \
   gnc-plugin-page-register.c \
+  gnc-plugin-page-register2.c \
   gnc-split-reg.c \
-  lot-viewer.c \
-  reconcile-list.c \
+  gnc-split-reg2.c \
+  reconcile-view.c \
   top-level.c \
   window-reconcile.c \
+  window-reconcile2.c \
   window-autoclear.c
 
 gnomeappdir = ${datadir}/applications
@@ -63,51 +71,64 @@ gnomeapp_DATA = $(gnomeapp_in_files:.desktop.in=.desktop)
 
 appicondir = $(datadir)/pixmaps
 
+appdatadir = $(datadir)/appdata
+appdata_files = gnucash.appdata.xml
+appdata_DATA = $(appdata_files)
+
 noinst_HEADERS = \
+  assistant-acct-period.h \
+  assistant-hierarchy.h \
+  assistant-loan.h \
+  assistant-stock-split.h \
   dialog-fincalc.h \
   dialog-find-transactions.h \
+  dialog-find-transactions2.h \
+  dialog-lot-viewer.h \
   dialog-new-user.h \
   dialog-print-check.h \
+  dialog-print-check2.h \
   dialog-progress.h \
   dialog-sx-editor.h \
+  dialog-sx-editor2.h \
   dialog-sx-from-trans.h \
   dialog-sx-since-last-run.h \
-  druid-acct-period.h \
-  druid-hierarchy.h \
-  druid-loan.h \
-  druid-stock-split.h \
+  gnc-budget-view.h \
   gnc-plugin-account-tree.h \
   gnc-plugin-basic-commands.h \
   gnc-plugin-budget.h \
   gnc-plugin-register.h \
+  gnc-plugin-register2.h \
   gnc-plugin-page-account-tree.h \
   gnc-plugin-page-budget.h \
   gnc-plugin-page-sx-list.h \
   gnc-plugin-page-register.h \
+  gnc-plugin-page-register2.h \
   gnc-split-reg.h \
-  lot-viewer.h \
-  reconcile-list.h \
+  gnc-split-reg2.h \
+  reconcile-view.h \
   top-level.h \
   window-reconcile.h \
+  window-reconcile2.h \
   window-autoclear.h
 
-if BUILDING_FROM_SVN
+if BUILDING_FROM_SCM
 swig-gnome.c: gnome.i dialog-progress.h ${top_srcdir}/src/base-typemaps.i
 	$(SWIG) -guile $(SWIG_ARGS) -Linkage module \
 	-I${top_srcdir}/src -o $@ $<
 endif
 
 EXTRA_DIST = \
-  gnucash.desktop.in \
-  gnome.i
+  gnome.i \
+  $(gnomeapp_in_files) \
+  $(appdata_files)
 
 AM_CPPFLAGS = \
   -I${top_srcdir}/src \
   -I${top_builddir}/src \
   -I${top_srcdir}/src/core-utils \
-  -I${top_srcdir}/src/calculation \
   -I${top_srcdir}/src/engine \
   -I${top_srcdir}/src/app-utils \
+  -I${top_srcdir}/src/app-utils/calculation \
   -I${top_srcdir}/src/backend/xml \
   -I${top_srcdir}/src/gnome-utils \
   -I${top_srcdir}/src/gnome-search \
@@ -119,9 +140,9 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/report/report-gnome \
   -I${top_srcdir}/lib/libc \
   -I${top_srcdir}/src/libqof/qof \
+  ${LIBXML2_CFLAGS} \
   ${GUILE_INCS} \
-  ${GNOME_CFLAGS} \
-  ${GLADE_CFLAGS} \
+  ${GTK_CFLAGS} \
   $(GLIB_CFLAGS) \
   ${GTK_MAC_CFLAGS}
 

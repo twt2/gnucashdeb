@@ -38,21 +38,22 @@
 #include "dialog-ab-trans.h"
 #include "gnc-ab-kvp.h"
 #include "gnc-ab-utils.h"
-#include "gnc-gconf-utils.h"
 #include "gnc-glib-utils.h"
 #include "gnc-gwen-gui.h"
+#include "gnc-prefs.h"
 #include "gnc-ui.h"
 #include "import-account-matcher.h"
 #include "import-main-matcher.h"
 #include "import-utilities.h"
 #include "qof.h"
+#include "engine-helpers.h"
 
 #ifdef AQBANKING_VERSION_5_PLUS
 # include <aqbanking/abgui.h>
 #endif /* AQBANKING_VERSION_5_PLUS */
 
 /* This static indicates the debugging module that this .o belongs to.  */
-static QofLogModule log_module = G_LOG_DOMAIN;
+G_GNUC_UNUSED static QofLogModule log_module = G_LOG_DOMAIN;
 
 /* Global variables for AB_BANKING caching. */
 static AB_BANKING *gnc_AB_BANKING = NULL;
@@ -85,24 +86,35 @@ struct _GncABImExContextImport
 void
 gnc_GWEN_Init(void)
 {
-    gint i;
+    gchar* gwen_logging = g_strdup(g_getenv("GWEN_LOGLEVEL"));
+    gchar* aqb_logging = g_strdup(g_getenv("AQBANKING_LOGLEVEL"));
 
     /* Initialize gwen library */
     GWEN_Init();
 
     /* Initialize gwen logging */
-    if (gnc_gconf_get_bool(GCONF_SECTION_AQBANKING, KEY_VERBOSE_DEBUG, NULL))
+    if (gnc_prefs_get_bool(GNC_PREFS_GROUP_AQBANKING, GNC_PREF_VERBOSE_DEBUG))
     {
-        GWEN_Logger_SetLevel(NULL, GWEN_LoggerLevel_Info);
-        GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
-        GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevel_Debug);
+        if (!gwen_logging)
+        {
+            GWEN_Logger_SetLevel(NULL, GWEN_LoggerLevel_Info);
+            GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Info);
+        }
+        if (!aqb_logging)
+            GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevel_Debug);
     }
     else
     {
-        GWEN_Logger_SetLevel(NULL, GWEN_LoggerLevel_Error);
-        GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Error);
-        GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevel_Warning);
+        if (!gwen_logging)
+        {
+            GWEN_Logger_SetLevel(NULL, GWEN_LoggerLevel_Error);
+            GWEN_Logger_SetLevel(GWEN_LOGDOMAIN, GWEN_LoggerLevel_Error);
+        }
+        if (!aqb_logging)
+            GWEN_Logger_SetLevel(AQBANKING_LOGDOMAIN, GWEN_LoggerLevel_Warning);
     }
+    g_free(gwen_logging);
+    g_free(aqb_logging);
     gnc_GWEN_Gui_log_init();
 }
 
@@ -459,7 +471,7 @@ gnc_ab_trans_to_gnc(const AB_TRANSACTION *ab_trans, Account *gnc_acc)
     Transaction *gnc_trans;
     const gchar *fitid;
     const GWEN_TIME *valuta_date;
-    time_t current_time;
+    time64 current_time;
     const char *custref;
     gchar *description;
     Split *split;
@@ -481,21 +493,17 @@ gnc_ab_trans_to_gnc(const AB_TRANSACTION *ab_trans, Account *gnc_acc)
             valuta_date = normal_date;
     }
     if (valuta_date)
-        xaccTransSetDatePostedSecs(gnc_trans, GWEN_Time_toTime_t(valuta_date));
+        xaccTransSetDatePostedSecsNormalized(gnc_trans, GWEN_Time_toTime_t(valuta_date));
     else
         g_warning("transaction_cb: Oops, date 'valuta_date' was NULL");
 
-    current_time = time(NULL);
-    xaccTransSetDateEnteredSecs(gnc_trans, mktime(localtime(&current_time)));
+    xaccTransSetDateEnteredSecs(gnc_trans, gnc_time_utc (NULL));
 
     /* Currency.  We take simply the default currency of the gnucash account */
     xaccTransSetCurrency(gnc_trans, xaccAccountGetCommodity(gnc_acc));
 
-    /* Number.  We use the "customer reference", if there is one. */
-    custref = AB_Transaction_GetCustomerReference(ab_trans);
-    if (custref && *custref
-            && g_ascii_strncasecmp(custref, "NONREF", 6) != 0)
-        xaccTransSetNum(gnc_trans, custref);
+    /* Trans-Num or Split-Action set with gnc_set_num_action below per book
+     * option */
 
     /* Description */
     description = gnc_ab_description_to_gnc(ab_trans);
@@ -510,6 +518,13 @@ gnc_ab_trans_to_gnc(const AB_TRANSACTION *ab_trans, Account *gnc_acc)
     split = xaccMallocSplit(book);
     xaccSplitSetParent(split, gnc_trans);
     xaccSplitSetAccount(split, gnc_acc);
+
+    /* Set the transaction number or split action field based on book option.
+     * We use the "customer reference", if there is one. */
+    custref = AB_Transaction_GetCustomerReference(ab_trans);
+    if (custref && *custref
+            && g_ascii_strncasecmp(custref, "NONREF", 6) != 0)
+        gnc_set_num_action (gnc_trans, split, custref, NULL);
 
     /* Set OFX unique transaction ID */
     fitid = AB_Transaction_GetFiId(ab_trans);
@@ -612,10 +627,12 @@ txn_transaction_cb(const AB_TRANSACTION *element, gpointer user_data)
         case AB_Transaction_TypeDebitNote:
             trans_type = SINGLE_DEBITNOTE;
             break;
+        case AB_Transaction_TypeEuTransfer:
+            trans_type = SEPA_TRANSFER;
+            break;
         case AB_Transaction_TypeTransaction:
             /* trans_type = SINGLE_INTERNAL_TRANSFER;
              * break; */
-        case AB_Transaction_TypeEuTransfer:
         case AB_Transaction_TypeTransfer:
         default:
             trans_type = SINGLE_TRANSFER;
@@ -636,7 +653,7 @@ txn_transaction_cb(const AB_TRANSACTION *element, gpointer user_data)
                         _("The backend found an error during the preparation "
                           "of the job. It is not possible to execute this job. \n"
                           "\n"
-                          "Most probable the bank does not support your chosen "
+                          "Most probably the bank does not support your chosen "
                           "job or your Online Banking account does not have the permission "
                           "to execute this job. More error messages might be "
                           "visible on your console log.\n"
@@ -791,7 +808,7 @@ bal_accountinfo_cb(AB_IMEXPORTER_ACCOUNTINFO *element, gpointer user_data)
     const AB_VALUE *booked_val = NULL, *noted_val = NULL;
     gdouble booked_value, noted_value;
     gnc_numeric value;
-    time_t booked_tt = 0;
+    time64 booked_tt = 0;
     GtkWidget *dialog;
     gboolean show_recn_window = FALSE;
 
@@ -860,7 +877,7 @@ bal_accountinfo_cb(AB_IMEXPORTER_ACCOUNTINFO *element, gpointer user_data)
         {
             /* No time found? Use today because the HBCI query asked for today's
              * balance. */
-            booked_tt = gnc_timet_get_day_start(time(NULL));
+            booked_tt = gnc_time64_get_day_start(gnc_time(NULL));
         }
         booked_val = AB_Balance_GetValue(booked_bal);
         if (booked_val)

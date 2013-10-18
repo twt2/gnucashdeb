@@ -18,14 +18,14 @@ LDADD = \
   $(top_builddir)/src/app-utils/libgncmod-app-utils.la \
   ${top_builddir}/src/gnome-utils/libgncmod-gnome-utils.la \
   ${top_builddir}/src/engine/libgncmod-engine.la \
-  ${GLIB_LIBS}
+  ${GLIB_LIBS} \
+  ${GUILE_LIBS}
 
 TESTS = \
   test-link \
   test-import-parse
 
 GNC_TEST_DEPS = --gnc-module-dir ${top_builddir}/src/engine \
-  --gnc-module-dir ${top_builddir}/src/calculation \
   --gnc-module-dir ${top_builddir}/src/app-utils \
   --gnc-module-dir ${top_builddir}/src/gnome-utils \
   --gnc-module-dir ${top_builddir}/src/import-export \
@@ -38,7 +38,6 @@ GNC_TEST_DEPS = --gnc-module-dir ${top_builddir}/src/engine \
 \
   --library-dir    ${top_builddir}/src/libqof/qof \
   --library-dir    ${top_builddir}/src/core-utils \
-  --library-dir    ${top_builddir}/src/calculation \
   --library-dir    ${top_builddir}/src/app-utils \
   --library-dir    ${top_builddir}/src/gnome-utils \
   --library-dir    ${top_builddir}/src/engine \
@@ -47,6 +46,7 @@ GNC_TEST_DEPS = --gnc-module-dir ${top_builddir}/src/engine \
   --library-dir    ${top_builddir}/src/gnc-module
 
 TESTS_ENVIRONMENT = \
+  GUILE_WARN_DEPRECATED=no \
   GNC_BUILDDIR=`\cd ${top_builddir} && pwd` \
   $(shell ${top_srcdir}/src/gnc-test-env --no-exports ${GNC_TEST_DEPS})
 

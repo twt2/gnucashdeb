@@ -46,7 +46,6 @@
 #include "SX-book.h"
 #include "Recurrence.h"
 
-#include "gnc-gconf-utils.h"
 #include "gnc-uri-utils.h"
 #include "gnc-filepath-utils.h"
 #include "gnc-locale-utils.h"
@@ -58,13 +57,16 @@
 #endif
 
 #ifdef G_OS_WIN32
-#include <Winsock2.h>
+#include <winsock2.h>
 #define GETPID() GetCurrentProcessId()
 #else
 #include <limits.h>
 #include <unistd.h>
 #define GETPID() getpid()
 #endif
+
+/* For direct access to dbi data structs, sadly needed for datetime */
+#include <dbi/dbi-dev.h>
 
 #define GNC_HOST_NAME_MAX 255
 #define TRANSACTION_NAME "trans"
@@ -227,8 +229,6 @@ create_tables_cb( const gchar* type, gpointer data_p, gpointer be_p )
 static void
 sqlite3_error_fn( dbi_conn conn, /*@ unused @*/ void* user_data )
 {
-    GncDbiBackend *be = (GncDbiBackend*)user_data;
-    GncDbiSqlConnection *dbi_conn = (GncDbiSqlConnection*)be->sql_be.conn;
     const gchar* msg;
 
     (void)dbi_conn_error( conn, &msg );
@@ -264,6 +264,7 @@ gnc_dbi_sqlite3_session_begin( QofBackend *qbe, QofSession *session,
     {
         qof_backend_set_error( qbe, ERR_FILEIO_FILE_NOT_FOUND );
         qof_backend_set_message(qbe, "Sqlite3 file %s not found", filepath);
+        PWARN ("Sqlite3 file %s not found", filepath);
         goto exit;
     }
 
@@ -271,6 +272,7 @@ gnc_dbi_sqlite3_session_begin( QofBackend *qbe, QofSession *session,
     {
         qof_backend_set_error (qbe, ERR_BACKEND_STORE_EXISTS);
         msg = "Might clobber, no force";
+        PWARN ("%s", msg);
         goto exit;
     }
 
@@ -322,22 +324,22 @@ gnc_dbi_sqlite3_session_begin( QofBackend *qbe, QofSession *session,
     }
 
     dbi_test_result = conn_test_dbi_library( be->conn );
-    switch( dbi_test_result )
+    switch ( dbi_test_result )
     {
-        case GNC_DBI_PASS:
-            break;
+    case GNC_DBI_PASS:
+        break;
 
-        case GNC_DBI_FAIL_SETUP:
-            qof_backend_set_error( qbe, ERR_SQL_DBI_UNTESTABLE );
-            qof_backend_set_message( qbe,
-                    "SQLite3: Failed to setup for large number test" );
-            break;
+    case GNC_DBI_FAIL_SETUP:
+        qof_backend_set_error( qbe, ERR_SQL_DBI_UNTESTABLE );
+        qof_backend_set_message( qbe,
+                                 "SQLite3: Failed to setup for large number test" );
+        break;
 
-        case GNC_DBI_FAIL_TEST:
-            qof_backend_set_error( qbe, ERR_SQL_BAD_DBI );
-            qof_backend_set_message( qbe,
-                    "SQLite3 DBI library fails large number test" );
-            break;
+    case GNC_DBI_FAIL_TEST:
+        qof_backend_set_error( qbe, ERR_SQL_BAD_DBI );
+        qof_backend_set_message( qbe,
+                                 "SQLite3 DBI library fails large number test" );
+        break;
     }
     if ( dbi_test_result != GNC_DBI_PASS )
     {
@@ -667,7 +669,8 @@ gnc_dbi_lock_database ( QofBackend* qbe, gboolean ignore_lock )
         result = NULL;
     }
     return FALSE;
-}static void
+}
+static void
 gnc_dbi_unlock( QofBackend *qbe )
 {
     GncDbiBackend *qe = (GncDbiBackend*)qbe;
@@ -810,22 +813,22 @@ gnc_dbi_mysql_session_begin( QofBackend* qbe, QofSession *session,
     if ( result == 0 )
     {
         dbi_test_result = conn_test_dbi_library( be->conn );
-        switch( dbi_test_result )
+        switch ( dbi_test_result )
         {
-            case GNC_DBI_PASS:
-                break;
+        case GNC_DBI_PASS:
+            break;
 
-            case GNC_DBI_FAIL_SETUP:
-                qof_backend_set_error( qbe, ERR_SQL_DBI_UNTESTABLE );
-                qof_backend_set_message( qbe,
-                        "DBI library large number test incomplete" );
-                break;
+        case GNC_DBI_FAIL_SETUP:
+            qof_backend_set_error( qbe, ERR_SQL_DBI_UNTESTABLE );
+            qof_backend_set_message( qbe,
+                                     "DBI library large number test incomplete" );
+            break;
 
-            case GNC_DBI_FAIL_TEST:
-                qof_backend_set_error( qbe, ERR_SQL_BAD_DBI );
-                qof_backend_set_message( qbe,
-                        "DBI library fails large number test" );
-                break;
+        case GNC_DBI_FAIL_TEST:
+            qof_backend_set_error( qbe, ERR_SQL_BAD_DBI );
+            qof_backend_set_message( qbe,
+                                     "DBI library fails large number test" );
+            break;
         }
         if ( GNC_DBI_PASS != dbi_test_result )
         {
@@ -898,22 +901,22 @@ gnc_dbi_mysql_session_begin( QofBackend* qbe, QofSession *session,
                 goto exit;
             }
             dbi_test_result = conn_test_dbi_library( be->conn );
-            switch( dbi_test_result )
+            switch ( dbi_test_result )
             {
-                case GNC_DBI_PASS:
-                    break;
+            case GNC_DBI_PASS:
+                break;
 
-                case GNC_DBI_FAIL_SETUP:
-                    qof_backend_set_error( qbe, ERR_SQL_DBI_UNTESTABLE );
-                    qof_backend_set_message( qbe,
-                            "MySql: Failed to setup for large number test" );
-                    break;
+            case GNC_DBI_FAIL_SETUP:
+                qof_backend_set_error( qbe, ERR_SQL_DBI_UNTESTABLE );
+                qof_backend_set_message( qbe,
+                                         "MySql: Failed to setup for large number test" );
+                break;
 
-                case GNC_DBI_FAIL_TEST:
-                    qof_backend_set_error( qbe, ERR_SQL_BAD_DBI );
-                    qof_backend_set_message( qbe,
-                            "MySql DBI library fails large number test" );
-                    break;
+            case GNC_DBI_FAIL_TEST:
+                qof_backend_set_error( qbe, ERR_SQL_BAD_DBI );
+                qof_backend_set_message( qbe,
+                                         "MySql DBI library fails large number test" );
+                break;
             }
             if ( dbi_test_result != GNC_DBI_PASS )
             {
@@ -1138,20 +1141,20 @@ gnc_dbi_postgres_session_begin( QofBackend *qbe, QofSession *session,
         dbi_test_result = conn_test_dbi_library( be->conn );
         switch ( dbi_test_result )
         {
-            case GNC_DBI_PASS:
-                break;
+        case GNC_DBI_PASS:
+            break;
 
-            case GNC_DBI_FAIL_SETUP:
-                qof_backend_set_error( qbe, ERR_SQL_DBI_UNTESTABLE );
-                qof_backend_set_message( qbe,
-                        "Postgresql: Failed to setup for large number test" );
-                break;
+        case GNC_DBI_FAIL_SETUP:
+            qof_backend_set_error( qbe, ERR_SQL_DBI_UNTESTABLE );
+            qof_backend_set_message( qbe,
+                                     "Postgresql: Failed to setup for large number test" );
+            break;
 
-            case GNC_DBI_FAIL_TEST:
-                qof_backend_set_error( qbe, ERR_SQL_BAD_DBI );
-                qof_backend_set_message( qbe,
-                        "Postgresql DBI library fails large number test" );
-                break;
+        case GNC_DBI_FAIL_TEST:
+            qof_backend_set_error( qbe, ERR_SQL_BAD_DBI );
+            qof_backend_set_message( qbe,
+                                     "Postgresql DBI library fails large number test" );
+            break;
         }
         if ( dbi_test_result != GNC_DBI_PASS )
         {
@@ -1225,22 +1228,22 @@ gnc_dbi_postgres_session_begin( QofBackend *qbe, QofSession *session,
                 goto exit;
             }
             dbi_test_result = conn_test_dbi_library( be->conn );
-            switch( dbi_test_result )
+            switch ( dbi_test_result )
             {
-                case GNC_DBI_PASS:
-                    break;
+            case GNC_DBI_PASS:
+                break;
 
-                case GNC_DBI_FAIL_SETUP:
-                    qof_backend_set_error( qbe, ERR_SQL_DBI_UNTESTABLE );
-                    qof_backend_set_message( qbe,
-                            "DBI library large number test incomplete" );
-                    break;
+            case GNC_DBI_FAIL_SETUP:
+                qof_backend_set_error( qbe, ERR_SQL_DBI_UNTESTABLE );
+                qof_backend_set_message( qbe,
+                                         "DBI library large number test incomplete" );
+                break;
 
-                case GNC_DBI_FAIL_TEST:
-                    qof_backend_set_error( qbe, ERR_SQL_BAD_DBI );
-                    qof_backend_set_message( qbe,
-                            "DBI library fails large number test" );
-                    break;
+            case GNC_DBI_FAIL_TEST:
+                qof_backend_set_error( qbe, ERR_SQL_BAD_DBI );
+                qof_backend_set_message( qbe,
+                                         "DBI library fails large number test" );
+                break;
             }
             if ( GNC_DBI_PASS != dbi_test_result )
             {
@@ -1292,7 +1295,7 @@ conn_get_index_list_pgsql( dbi_conn conn )
     GSList *list = NULL;
     const gchar *errmsg;
     dbi_result result;
-    g_print( "Retrieving postgres index list\n");
+    PINFO ( "Retrieving postgres index list\n");
     result = dbi_conn_query( conn, "SELECT relname FROM pg_class AS a INNER JOIN pg_index AS b ON (b.indexrelid = a.oid) INNER JOIN pg_namespace AS c ON (a.relnamespace = c.oid) WHERE reltype = '0' AND indisprimary = 'f' AND nspname = 'public'" );
     if ( dbi_conn_error( conn, &errmsg ) != DBI_ERROR_NONE )
     {
@@ -1456,6 +1459,7 @@ conn_table_manage_backup (GncDbiSqlConnection *conn,
     case drop_backup:
         result = dbi_conn_queryf( conn->conn, "DROP TABLE %s",
                                   new_name );
+        break;
     default:
         break;
     }
@@ -1525,7 +1529,7 @@ conn_table_operation( GncSqlConnection *sql_conn, GSList *table_name_list,
                     if ( result )
                         break;
                 }
-                /* Note fall-through */
+                /* Fall through */
             case backup:
             case drop_backup:
                 result = conn_table_manage_backup( conn, table_name, op );
@@ -1556,48 +1560,6 @@ conn_table_operation( GncSqlConnection *sql_conn, GSList *table_name_list,
 }
 
 /**
- * Really a bit of an understatement. More like "delete everything in
- * storage and replace with what's in memory".
- *
- * THIS ROUTINE IS EXTREMELY DANGEROUS AND CAN LEAD TO SEVERE DATA
- * LOSS It should be used *only* by gnc_dbi_safe_sync_all!
- *
- * @param qbe: QofBackend for the session.
- * @param book: QofBook to be saved in the database.
- */
-static void
-gnc_dbi_sync_all( QofBackend* qbe, /*@ dependent @*/ QofBook *book )
-{
-    GncDbiBackend* be = (GncDbiBackend*)qbe;
-    GncDbiSqlConnection *conn = (GncDbiSqlConnection*)(((GncSqlBackend*)be)->conn);
-    GSList* table_name_list;
-    const gchar* dbname;
-    gint status;
-
-    g_return_if_fail( be != NULL );
-    g_return_if_fail( book != NULL );
-
-    ENTER( "book=%p, primary=%p", book, be->primary_book );
-
-    /* Destroy the current contents of the database */
-    dbname = dbi_conn_get_option( be->conn, "dbname" );
-    table_name_list = conn->provider->get_table_list( conn->conn, dbname );
-    if ( !conn_table_operation( (GncSqlConnection*)conn, table_name_list,
-                                drop ) )
-    {
-        qof_backend_set_error( qbe, ERR_BACKEND_SERVER_ERR );
-        return;
-    }
-    gnc_table_slist_free( table_name_list );
-    /* Save all contents */
-    be->is_pristine_db = TRUE;
-    be->primary_book = book;
-    gnc_sql_sync_all( &be->sql_be, book );
-
-    LEAVE( "book=%p", book );
-}
-
-/**
  * Safely resave a database by renaming all of its tables, recreating
  * everything, and then dropping the backup tables only if there were
  * no errors. If there are errors, drop the new tables and restore the
@@ -1613,7 +1575,6 @@ gnc_dbi_safe_sync_all( QofBackend *qbe, QofBook *book )
     GncDbiSqlConnection *conn = (GncDbiSqlConnection*)(((GncSqlBackend*)be)->conn);
     GSList *table_list, *index_list, *iter;
     const gchar* dbname = NULL;
-    gint status;
 
     g_return_if_fail( be != NULL );
     g_return_if_fail( book != NULL );
@@ -1722,8 +1683,8 @@ init_sql_backend( GncDbiBackend* dbi_be )
     be->events_pending = NULL;
     be->process_events = NULL;
 
-/* The SQL/DBI backend doesn't need to be synced until it is
- * configured for multiuser access. */
+    /* The SQL/DBI backend doesn't need to be synced until it is
+     * configured for multiuser access. */
     be->sync = gnc_dbi_safe_sync_all;
     be->safe_sync = gnc_dbi_safe_sync_all;
     be->load_config = NULL;
@@ -1738,7 +1699,7 @@ init_sql_backend( GncDbiBackend* dbi_be )
     gnc_sql_init( &dbi_be->sql_be );
 
     dbi_be->sql_be.conn = NULL;
-    dbi_be->sql_be.primary_book = NULL;
+    dbi_be->sql_be.book = NULL;
 }
 
 static QofBackend*
@@ -1797,7 +1758,7 @@ gnc_dbi_check_sqlite3_file( const gchar *uri )
 {
     FILE* f;
     gchar buf[50];
-    size_t chars_read;
+    G_GNUC_UNUSED size_t chars_read;
     gint status;
     gchar *filename;
 
@@ -2007,8 +1968,6 @@ row_get_value_at_col_name( GncSqlRow* row, const gchar* col_name )
     gushort type;
     guint attrs;
     GValue* value;
-    time_t time;
-    struct tm tm_struct;
 
     type = dbi_result_get_field_type( dbi_row->result, col_name );
     attrs = dbi_result_get_field_attribs( dbi_row->result, col_name );
@@ -2048,26 +2007,20 @@ row_get_value_at_col_name( GncSqlRow* row, const gchar* col_name )
         {
             return NULL;
         }
-	time = dbi_result_get_datetime( dbi_row->result, col_name );
-	/* Protect gmtime from time values < 0 to work around a mingw
-	   bug that fills struct_tm with garbage values which in turn
-	   creates a string that GDate can't parse. */
-	if (time >= 0)
-	  {
-	    (void)gmtime_r( &time, &tm_struct );
-	    (void)g_value_init( value, G_TYPE_STRING );
-	    g_value_take_string( value,
-				 g_strdup_printf( "%d%02d%02d%02d%02d%02d",
-						  1900 + tm_struct.tm_year,
-						  tm_struct.tm_mon + 1,
-						  tm_struct.tm_mday,
-						  tm_struct.tm_hour,
-						  tm_struct.tm_min,
-						  tm_struct.tm_sec ) );
-	  }
 	else
-	  g_value_take_string (value, "19691231235959");
-        
+	{
+	    /* A seriously evil hack to work around libdbi bug #15
+	     * https://sourceforge.net/p/libdbi/bugs/15/. When libdbi
+	     * v0.9 is widely available this can be replaced with
+	     * dbi_result_get_as_longlong.
+	     */
+	    dbi_result_t *result = (dbi_result_t*)(dbi_row->result);
+	    guint64 row = dbi_result_get_currow (result);
+	    guint idx = dbi_result_get_field_idx (result, col_name) - 1;
+	    time64 time = result->rows[row]->field_values[idx].d_datetime;
+	    (void)g_value_init( value, G_TYPE_INT64 );
+	    g_value_set_int64 (value, time);
+	}
         break;
     default:
         PERR( "Field %s: unknown DBI_TYPE: %d\n", col_name, type );
@@ -2347,20 +2300,6 @@ conn_create_statement_from_sql( /*@ observer @*/ GncSqlConnection* conn, const g
     return create_dbi_statement( conn, sql );
 }
 
-static GValue*
-create_gvalue_from_string( /*@ only @*/ gchar* s )
-{
-    GValue* s_gval;
-
-    s_gval = g_new0( GValue, 1 );
-    g_assert( s_gval != NULL );
-
-    (void)g_value_init( s_gval, G_TYPE_STRING );
-    g_value_take_string( s_gval, s );
-
-    return s_gval;
-}
-
 static gboolean
 conn_does_table_exist( GncSqlConnection* conn, const gchar* table_name )
 {
@@ -2523,7 +2462,6 @@ add_columns_ddl( GncSqlConnection* conn,
 {
     GString* ddl;
     const GList* list_node;
-    const GncSqlColumnTableEntry* table_row;
     guint col_num;
     GncDbiSqlConnection* dbi_conn = (GncDbiSqlConnection*)conn;
 
@@ -2861,7 +2799,6 @@ conn_create_index( /*@ unused @*/ GncSqlConnection* conn, /*@ unused @*/ const g
     GncDbiSqlConnection* dbi_conn = (GncDbiSqlConnection*)conn;
     gchar* ddl;
     dbi_result result;
-    gint status;
 
     g_return_val_if_fail( conn != NULL, FALSE );
     g_return_val_if_fail( index_name != NULL, FALSE );
@@ -2898,7 +2835,6 @@ conn_add_columns_to_table( /*@ unused @*/ GncSqlConnection* conn, /*@ unused @*/
     GncDbiSqlConnection* dbi_conn = (GncDbiSqlConnection*)conn;
     gchar* ddl;
     dbi_result result;
-    gint status;
 
     g_return_val_if_fail( conn != NULL, FALSE );
     g_return_val_if_fail( table_name != NULL, FALSE );
@@ -2956,7 +2892,6 @@ conn_get_table_list( dbi_conn conn, const gchar* dbname )
     while ( dbi_result_next_row( tables ) != 0 )
     {
         const gchar* table_name;
-        dbi_result result;
 
         table_name = dbi_result_get_string_idx( tables, 1 );
         list = g_slist_prepend( list, strdup( table_name ) );
@@ -3080,7 +3015,7 @@ conn_test_dbi_library( dbi_conn conn )
         PWARN("Test_DBI_Library: Failed to retrieve test row into table: %s",
               errmsg );
         result = dbi_conn_query( conn, "DROP TABLE numtest" );
-	gnc_pop_locale( LC_NUMERIC );
+        gnc_pop_locale( LC_NUMERIC );
         return GNC_DBI_FAIL_SETUP;
     }
     while ( dbi_result_next_row( result ))

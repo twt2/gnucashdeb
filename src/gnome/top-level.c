@@ -36,11 +36,10 @@
 #include "dialog-sx-editor.h"
 #include "dialog-transfer.h"
 #include "dialog-totd.h"
-#include "druid-hierarchy.h"
+#include "assistant-hierarchy.h"
 #include "file-utils.h"
 #include "gnc-component-manager.h"
 #include "gnc-engine.h"
-#include "gnc-gconf-utils.h"
 #include "gnc-file.h"
 #include "gnc-hooks.h"
 #include "gfec.h"
@@ -51,8 +50,10 @@
 #include "gnc-plugin-basic-commands.h" /* FIXME Remove this line*/
 #include "gnc-plugin-file-history.h" /* FIXME Remove this line*/
 #include "gnc-plugin-register.h" /* FIXME Remove this line*/
+#include "gnc-plugin-register2.h" /* FIXME Remove this line*/
 #include "gnc-plugin-budget.h"
 #include "gnc-plugin-page-register.h"
+#include "gnc-plugin-page-register2.h"
 #include "gnc-plugin-manager.h" /* FIXME Remove this line*/
 #include "gnc-html.h"
 #include "gnc-gnome-utils.h"
@@ -112,7 +113,6 @@ gnc_html_register_url_cb (const char *location, const char *label,
     Account     * account = NULL;
     Transaction * trans;
     GList       * node;
-    QofBook     * book = gnc_get_current_book();
     GncGUID       guid;
     QofInstance * entity = NULL;
 
@@ -191,7 +191,6 @@ static gboolean
 gnc_html_price_url_cb (const char *location, const char *label,
                        gboolean new_window, GNCURLResult *result)
 {
-    QofBook     * book = gnc_get_current_book();
     GncGUID       guid;
     QofInstance * entity = NULL;
 
@@ -419,12 +418,14 @@ gnc_main_gui_init (void)
         gnc_plugin_manager_get (), gnc_plugin_menu_additions_new ());
     gnc_plugin_manager_add_plugin (
         gnc_plugin_manager_get (), gnc_plugin_register_new ());
+    gnc_plugin_manager_add_plugin (
+        gnc_plugin_manager_get (), gnc_plugin_register2_new ());
     /* I'm not sure why the FIXME note says to remove this.  Maybe
        each module should be adding its own plugin to the manager?
        Anyway... Oh, maybe... nah */
     gnc_plugin_manager_add_plugin (gnc_plugin_manager_get (),
                                    gnc_plugin_budget_new ());
-    gnc_ui_hierarchy_druid_initialize();
+    gnc_ui_hierarchy_assistant_initialize();
 
     /* Run the ui startup hooks. */
     gnc_hook_run(HOOK_UI_STARTUP, NULL);
@@ -433,9 +434,6 @@ gnc_main_gui_init (void)
                          gnc_restore_all_state, NULL);
     gnc_hook_add_dangler(HOOK_BOOK_CLOSED,
                          gnc_save_all_state, NULL);
-
-    /* CAS: I'm not really sure why we remove before adding. */
-    gnc_hook_remove_dangler(HOOK_BOOK_CLOSED, (GFunc)gnc_reports_flush_global);
     gnc_hook_add_dangler(HOOK_BOOK_CLOSED,
                          (GFunc)gnc_reports_flush_global, NULL);
 

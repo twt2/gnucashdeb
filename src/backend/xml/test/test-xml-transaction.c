@@ -33,23 +33,24 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
-#include "gnc-xml-helper.h"
-#include "gnc-xml.h"
-#include "gnc-engine.h"
-#include "cashobjects.h"
-#include "sixtp-parsers.h"
+#include "../gnc-xml-helper.h"
+#include "../gnc-xml.h"
+#include <gnc-engine.h>
+#include <cashobjects.h>
+#include "../sixtp-parsers.h"
 
-#include "sixtp-dom-parsers.h"
-#include "TransLog.h"
-#include "io-gncxml-gen.h"
+#include "../sixtp-dom-parsers.h"
+#include <TransLog.h>
+#include "../io-gncxml-gen.h"
 
-#include "test-stuff.h"
-#include "test-engine-stuff.h"
-#include "test-file-stuff.h"
+#include <test-stuff.h>
+#include <test-engine-stuff.h>
+#include <test-file-stuff.h>
+#include <unittest-support.h>
 
-#include "AccountP.h"
-#include "Transaction.h"
-#include "TransactionP.h"
+#include <AccountP.h>
+#include <Transaction.h>
+#include <TransactionP.h>
 
 static QofBook *book;
 
@@ -68,7 +69,7 @@ find_appropriate_node(xmlNodePtr node, Split *spl)
 
         for (mark2 = mark->xmlChildrenNode; mark2; mark2 = mark2->next)
         {
-            if (safe_strcmp((char*)mark2->name, "split:value") == 0)
+            if (g_strcmp0((char*)mark2->name, "split:value") == 0)
             {
                 gnc_numeric *num = dom_tree_to_gnc_numeric(mark2);
 
@@ -79,7 +80,7 @@ find_appropriate_node(xmlNodePtr node, Split *spl)
 
                 g_free(num);
             }
-            else if (safe_strcmp((char*)mark2->name, "split:account") == 0)
+            else if (g_strcmp0((char*)mark2->name, "split:account") == 0)
             {
                 GncGUID *accid = dom_tree_to_guid(mark2);
                 Account *account = xaccSplitGetAccount (spl);
@@ -108,7 +109,7 @@ equals_node_val_vs_split_internal(xmlNodePtr node, Split* spl)
 
     for (mark = node->children; mark != NULL; mark = mark->next)
     {
-        if (safe_strcmp((char*)mark->name, "split:id") == 0)
+        if (g_strcmp0((char*)mark->name, "split:id") == 0)
         {
             GncGUID *id = dom_tree_to_guid(mark);
 
@@ -119,18 +120,18 @@ equals_node_val_vs_split_internal(xmlNodePtr node, Split* spl)
             }
             g_free(id);
         }
-        else if (safe_strcmp((char*)mark->name, "split:memo") == 0)
+        else if (g_strcmp0((char*)mark->name, "split:memo") == 0)
         {
             char *memo = dom_tree_to_text(mark);
 
-            if (safe_strcmp(memo, xaccSplitGetMemo(spl)) != 0)
+            if (g_strcmp0(memo, xaccSplitGetMemo(spl)) != 0)
             {
                 g_free(memo);
                 return "memos differ";
             }
             g_free(memo);
         }
-        else if (safe_strcmp((char*)mark->name, "split:reconciled-state") == 0)
+        else if (g_strcmp0((char*)mark->name, "split:reconciled-state") == 0)
         {
             char *rs = dom_tree_to_text(mark);
 
@@ -141,7 +142,7 @@ equals_node_val_vs_split_internal(xmlNodePtr node, Split* spl)
             }
             g_free(rs);
         }
-        else if (safe_strcmp((char*)mark->name, "split:value") == 0)
+        else if (g_strcmp0((char*)mark->name, "split:value") == 0)
         {
             gnc_numeric *num = dom_tree_to_gnc_numeric(mark);
             gnc_numeric val = xaccSplitGetValue(spl);
@@ -157,7 +158,7 @@ equals_node_val_vs_split_internal(xmlNodePtr node, Split* spl)
             }
             g_free(num);
         }
-        else if (safe_strcmp((char*)mark->name, "split:quantity") == 0)
+        else if (g_strcmp0((char*)mark->name, "split:quantity") == 0)
         {
             gnc_numeric *num = dom_tree_to_gnc_numeric(mark);
             gnc_numeric val = xaccSplitGetAmount(spl);
@@ -182,7 +183,7 @@ equals_node_val_vs_split_internal(xmlNodePtr node, Split* spl)
             }
             g_free(num);
         }
-        else if (safe_strcmp((char*)mark->name, "split:account") == 0)
+        else if (g_strcmp0((char*)mark->name, "split:account") == 0)
         {
             GncGUID *id = dom_tree_to_guid(mark);
             Account *account = xaccSplitGetAccount (spl);
@@ -236,7 +237,7 @@ node_and_transaction_equal(xmlNodePtr node, Transaction *trn)
 {
     xmlNodePtr mark;
 
-    while (safe_strcmp ((char*)node->name, "text") == 0)
+    while (g_strcmp0 ((char*)node->name, "text") == 0)
         node = node->next;
 
     if (!check_dom_tree_version(node, "2.0.0"))
@@ -244,17 +245,17 @@ node_and_transaction_equal(xmlNodePtr node, Transaction *trn)
         return "version wrong.  Not 2.0.0 or not there";
     }
 
-    if (!node->name || safe_strcmp((char*)node->name, "gnc:transaction"))
+    if (!node->name || g_strcmp0((char*)node->name, "gnc:transaction"))
     {
         return "Name of toplevel node is bad";
     }
 
     for (mark = node->xmlChildrenNode; mark; mark = mark->next)
     {
-        if (safe_strcmp((char*)mark->name, "text") == 0)
+        if (g_strcmp0((char*)mark->name, "text") == 0)
         {
         }
-        else if (safe_strcmp((char*)mark->name, "trn:id") == 0)
+        else if (g_strcmp0((char*)mark->name, "trn:id") == 0)
         {
             if (!equals_node_val_vs_guid(mark, xaccTransGetGUID(trn)))
             {
@@ -265,7 +266,7 @@ node_and_transaction_equal(xmlNodePtr node, Transaction *trn)
         /* This test will fail for many splits where the transaction has
          * splits in different commodities -- eg, buying or selling a
          * stock. jralls 2010-11-02 */
-        else if (safe_strcmp((char*)mark->name, "trn:currency") == 0)
+        else if (g_strcmp0((char*)mark->name, "trn:currency") == 0)
         {
 #if 0
             if (!equals_node_val_vs_commodity(
@@ -275,42 +276,42 @@ node_and_transaction_equal(xmlNodePtr node, Transaction *trn)
             }
 #endif
         }
-        else if (safe_strcmp((char*)mark->name, "trn:num") == 0)
+        else if (g_strcmp0((char*)mark->name, "trn:num") == 0)
         {
             if (!equals_node_val_vs_string(mark, xaccTransGetNum(trn)))
             {
                 return "nums differ";
             }
         }
-        else if (safe_strcmp((char*)mark->name, "trn:date-posted") == 0)
+        else if (g_strcmp0((char*)mark->name, "trn:date-posted") == 0)
         {
             if (!equals_node_val_vs_date(mark, xaccTransRetDatePostedTS(trn)))
             {
                 return "posted dates differ";
             }
         }
-        else if (safe_strcmp((char*)mark->name, "trn:date-entered") == 0)
+        else if (g_strcmp0((char*)mark->name, "trn:date-entered") == 0)
         {
             if (!equals_node_val_vs_date(mark, xaccTransRetDateEnteredTS(trn)))
             {
                 return "entered dates differ";
             }
         }
-        else if (safe_strcmp((char*)mark->name, "trn:description") == 0)
+        else if (g_strcmp0((char*)mark->name, "trn:description") == 0)
         {
             if (!equals_node_val_vs_string(mark, xaccTransGetDescription(trn)))
             {
                 return "descriptions differ";
             }
         }
-        else if (safe_strcmp((char*)mark->name, "trn:slots") == 0)
+        else if (g_strcmp0((char*)mark->name, "trn:slots") == 0)
         {
             if (!equals_node_val_vs_kvp_frame(mark, xaccTransGetSlots(trn)))
             {
                 return "slots differ";
             }
         }
-        else if (safe_strcmp((char*)mark->name, "trn:splits") == 0)
+        else if (g_strcmp0((char*)mark->name, "trn:splits") == 0)
         {
             char *msg = equals_node_val_vs_splits (mark, trn);
             if (msg != NULL)
@@ -374,7 +375,6 @@ test_transaction(void)
     for (i = 0; i < 50; i++)
     {
         Transaction *ran_trn;
-        Account *root;
         xmlNodePtr test_node;
         gnc_commodity *com, *new_com;
         gchar *compare_msg;
@@ -383,7 +383,7 @@ test_transaction(void)
 
         /* The next line exists for its side effect of creating the
          * account tree. */
-        root = get_random_account_tree(book);
+        get_random_account_tree(book);
         ran_trn = get_random_transaction(book);
         new_com = get_random_commodity( book );
         if (!ran_trn)
@@ -467,11 +467,15 @@ test_transaction(void)
             sixtp *parser;
             tran_data data;
 
+            gchar *msg = "[xaccAccountScrubCommodity()] Account \"\" does not have a commodity!";
+            gchar *logdomain = "gnc.engine.scrub";
+            guint loglevel = G_LOG_LEVEL_CRITICAL;
+            TestErrorStruct check = { loglevel, logdomain, msg };
+            g_log_set_handler (logdomain, loglevel,
+                               (GLogFunc)test_checked_handler, &check);
             data.trn = ran_trn;
             data.com = com;
             data.value = i;
-
-            g_print(" There will follow a bunch of CRIT scrub errors about the account not having a commodity. There isn't an account in the XML, so of course not. Ignore the errors\n");
             parser = gnc_transaction_sixtp_parser_create();
 
             if (!gnc_xml_parse_file(parser, filename1, test_add_transaction,

@@ -30,6 +30,7 @@
 #include <gtk/gtk.h>
 #include <math.h>
 #include <stdlib.h>
+#include <gnc-gdate-utils.h>
 
 /**
  * Marking ...
@@ -402,11 +403,11 @@ gnc_dense_cal_init(GncDenseCal *dcal)
     dcal->topPadding = 2;
 
     {
-        GDate *now = g_date_new();
-        g_date_set_time_t(now, time(NULL));
-        _gnc_dense_cal_set_month(dcal, g_date_get_month(now), FALSE);
-        _gnc_dense_cal_set_year(dcal, g_date_get_year(now), FALSE);
-        g_date_free(now);
+	GDate now;
+	g_date_clear (&now, 1);
+        gnc_gdate_set_today (&now);
+        _gnc_dense_cal_set_month(dcal, g_date_get_month(&now), FALSE);
+        _gnc_dense_cal_set_year(dcal, g_date_get_year(&now), FALSE);
     }
 
     recompute_extents(dcal);
@@ -522,7 +523,7 @@ _gnc_dense_cal_set_month(GncDenseCal *dcal, GDateMonth mon, gboolean redraw)
     g_timer_start(t);
     recompute_extents(dcal);
     g_debug("recompute_extents: %f", g_timer_elapsed(t, NULL) * 1000.);
-    if (redraw && GTK_WIDGET_REALIZED(dcal))
+    if (redraw && gtk_widget_get_realized(GTK_WIDGET(dcal)))
     {
         g_timer_start(t);
         recompute_x_y_scales(dcal);
@@ -552,7 +553,7 @@ _gnc_dense_cal_set_year(GncDenseCal *dcal, guint year, gboolean redraw)
     dcal->year = year;
     recompute_first_of_month_offset(dcal);
     recompute_extents(dcal);
-    if (redraw && GTK_WIDGET_REALIZED(dcal))
+    if (redraw && gtk_widget_get_realized(GTK_WIDGET(dcal)))
     {
         recompute_x_y_scales(dcal);
         gnc_dense_cal_draw_to_buffer(dcal);
@@ -599,7 +600,7 @@ gnc_dense_cal_set_num_months(GncDenseCal *dcal, guint num_months)
     dcal->numMonths = num_months;
     recompute_extents(dcal);
     recompute_mark_storage(dcal);
-    if (GTK_WIDGET_REALIZED(dcal))
+    if (gtk_widget_get_realized(GTK_WIDGET(dcal)))
     {
         recompute_x_y_scales(dcal);
         gnc_dense_cal_draw_to_buffer(dcal);
@@ -645,7 +646,7 @@ gnc_dense_cal_dispose (GObject *object)
         return;
     dcal->disposed = TRUE;
 
-    if (GTK_WIDGET_REALIZED(dcal->transPopup))
+    if (gtk_widget_get_realized(GTK_WIDGET(dcal->transPopup)))
     {
         gtk_widget_hide(GTK_WIDGET(dcal->transPopup));
         gtk_widget_destroy(GTK_WIDGET(dcal->transPopup));
@@ -671,11 +672,8 @@ gnc_dense_cal_dispose (GObject *object)
 static void
 gnc_dense_cal_finalize (GObject *object)
 {
-    GncDenseCal *dcal;
     g_return_if_fail (object != NULL);
     g_return_if_fail (GNC_IS_DENSE_CAL (object));
-
-    dcal = GNC_DENSE_CAL(object);
 
     if (G_OBJECT_CLASS (parent_class)->finalize)
         G_OBJECT_CLASS(parent_class)->finalize(object);
@@ -747,11 +745,8 @@ _gdc_compute_min_size(GncDenseCal *dcal, guint *min_width, guint *min_height)
 static void
 recompute_x_y_scales(GncDenseCal *dcal)
 {
-    GtkWidget *widget;
     int denom;
     int width, height;
-
-    widget = GTK_WIDGET(dcal);
 
     width = DENSE_CAL_DEFAULT_WIDTH;
     height = DENSE_CAL_DEFAULT_HEIGHT;
@@ -870,7 +865,7 @@ gnc_dense_cal_expose(GtkWidget *widget,
         return FALSE;
 
     dcal = GNC_DENSE_CAL(user_data);
-    gc = widget->style->fg_gc[GTK_WIDGET_STATE(widget)];
+    gc = widget->style->fg_gc[gtk_widget_get_state(widget)];
     gdk_draw_drawable(GDK_DRAWABLE(GTK_WIDGET(dcal->cal_drawing_area)->window),
                       gc, GDK_DRAWABLE(dcal->drawbuf),
                       0, 0, 0, 0, -1, -1);
@@ -915,7 +910,7 @@ gnc_dense_cal_draw_to_buffer(GncDenseCal *dcal)
         GList *mcList, *mcListIter;
 
         gc = gdk_gc_new(GTK_WIDGET(dcal)->window);
-        gdk_gc_copy(gc, widget->style->fg_gc[GTK_WIDGET_STATE(widget)]);
+        gdk_gc_copy(gc, widget->style->fg_gc[gtk_widget_get_state(widget)]);
 
         /* reset all of the month position offsets. */
         for (i = 0; i < 12; i++)
@@ -1736,14 +1731,14 @@ gdc_add_tag_markings(GncDenseCal *cal, guint tag)
 
     dates = g_new0(GDate*, num_marks);
     calDate = g_date_new_dmy(1, cal->month, cal->year);
-    
+
     for (idx = 0; idx < num_marks; idx++)
     {
         dates[idx] = g_date_new();
         gnc_dense_cal_model_get_instance(cal->model, tag, idx, dates[idx]);
     }
 
-    if(g_date_get_julian(dates[0]) < g_date_get_julian(calDate))
+    if (g_date_get_julian(dates[0]) < g_date_get_julian(calDate))
     {
         _gnc_dense_cal_set_month(cal, g_date_get_month(dates[0]), FALSE);
         _gnc_dense_cal_set_year(cal, g_date_get_year(dates[0]), FALSE);
@@ -1757,7 +1752,7 @@ gdc_add_tag_markings(GncDenseCal *cal, guint tag)
     }
     g_free(dates);
     g_date_free(calDate);
-    
+
 cleanup:
     g_free(info);
 }

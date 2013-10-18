@@ -19,7 +19,7 @@
 \********************************************************************/
 /** @addtogroup Engine
     @{ */
-/** @addtogroup Transaction Financial Transactions
+/** @addtogroup Transaction Transaction, Split
     A good overview of transactions, splits and accounts can be
     found in the texinfo documentation, together with an overview of
     how to use this API.
@@ -119,6 +119,7 @@ GType gnc_transaction_get_type(void);
 #define TXN_TYPE_NONE	 '\0' /**< No transaction type       */
 #define TXN_TYPE_INVOICE 'I'  /**< Transaction is an invoice */
 #define TXN_TYPE_PAYMENT 'P'  /**< Transaction is a payment  */
+#define TXN_TYPE_LINK    'L'  /**< Transaction is a link between (invoice and payment) lots  */
 /** @} */
 
 /* --------------------------------------------------------------- */
@@ -219,6 +220,42 @@ gboolean      xaccTransIsOpen (const Transaction *trans);
 Transaction * xaccTransLookup (const GncGUID *guid, QofBook *book);
 #define xaccTransLookupDirect(g,b) xaccTransLookup(&(g),b)
 
+/*################## Added for Reg2 #################*/
+
+/** Copy a transaction to the 'clipboard' transaction using
+ *  xaccDupeTransaction. The 'clipboard' transaction must never
+ *  be dereferenced.
+ */
+Transaction * xaccTransCopyToClipBoard(const Transaction *from_trans);
+
+/** Copy a transaction to another using the function below without
+ *  changing any account information.
+ */
+void xaccTransCopyOnto(const Transaction *from_trans, Transaction *to_trans);
+
+/** This function explicitly must robustly handle some unusual input.
+ *
+ *  'from_trans' may be a duped trans (see xaccDupeTransaction), so its
+ *   splits may not really belong to the accounts that they say they do.
+ *
+ *  'from_acc' need not be a valid account. It may be an already freed
+ *   Account. Therefore, it must not be dereferenced at all.
+ *
+ *   Neither 'from_trans', nor 'from_acc', nor any of 'from's splits may be modified
+ *   in any way.
+ *
+ *   'no_date' if TRUE will not copy the date posted.
+ *
+ *   The 'to_trans' transaction will end up with valid copies of from's
+ *   splits.  In addition, the copies of any of from's splits that were
+ *   in from_acc (or at least claimed to be) will end up in to_acc.
+ */
+void xaccTransCopyFromClipBoard(const Transaction *from_trans, Transaction *to_trans,
+                           const Account *from_acc, Account *to_acc, gboolean no_date);
+
+/*################## Added for Reg2 #################*/
+
+
 Split * xaccTransFindSplitByAccount(const Transaction *trans,
                                     const Account *acc);
 
@@ -263,17 +300,26 @@ void	      xaccTransSetTxnType (Transaction *trans, char type);
  * See #TXN_TYPE_NONE, #TXN_TYPE_INVOICE and #TXN_TYPE_PAYMENT */
 char	      xaccTransGetTxnType (const Transaction *trans);
 
-
-/** Sets the transaction Number (or ID) field*/
+/** Sets the transaction Number (or ID) field; rather than use this function
+ *  directly, see 'gnc_set_num_action' in engine/engine-helpers.c & .h which
+ *  takes a user-set book option for selecting the source for the num-cell (the
+ *  transaction-number or the split-action field) in registers/reports into
+ *  account automatically  */
 void          xaccTransSetNum (Transaction *trans, const char *num);
+
 /** Sets the transaction Description */
 void          xaccTransSetDescription (Transaction *trans, const char *desc);
+
 /** Sets the transaction Notes
  *
  The Notes field is only visible in the register in double-line mode */
 void          xaccTransSetNotes (Transaction *trans, const char *notes);
 
-/** Gets the transaction Number (or ID) field*/
+/** Gets the transaction Number (or ID) field; rather than use this function
+ *  directly, see 'gnc_get_num_action' and 'gnc_get_action_num' in
+ *  engine/engine-helpers.c & .h which takes a user-set book option for
+ *  selecting the source for the num-cell (the transaction-number or the
+ *  split-action field) in registers/reports into account automatically  */
 const char *  xaccTransGetNum (const Transaction *trans);
 /** Gets the transaction Description */
 const char *  xaccTransGetDescription (const Transaction *trans);
@@ -317,14 +363,31 @@ int xaccTransGetSplitIndex(const Transaction *trans, const Split *split);
     this list when you are done with it. */
 /*@ dependent @*/
 SplitList *   xaccTransGetSplitList (const Transaction *trans);
-gboolean xaccTransStillHasSplit(const Transaction *trans, const Split *s);
+gboolean      xaccTransStillHasSplit(const Transaction *trans, const Split *s);
 
-
-/** Set the transaction to be ReadOnly */
+/** Set the transaction to be ReadOnly by setting a non-NULL value as "reason".
+ *
+ * FIXME: If "reason" is NULL, this function does nothing, instead of removing the
+ * readonly flag; the actual removal is possible only through
+ * xaccTransClearReadOnly(). */
 void          xaccTransSetReadOnly (Transaction *trans, const char *reason);
 void	      xaccTransClearReadOnly (Transaction *trans);
-/** FIXME: document me */
+
+/** Returns a non-NULL value if this Transaction was marked as read-only with
+ * some specific "reason" text. */
 const char *  xaccTransGetReadOnly (const Transaction *trans);
+
+/** Returns TRUE if this Transaction is read-only because its posted-date is
+ * older than the "auto-readonly" threshold of this book. See
+ * qof_book_uses_autofreeze() and qof_book_get_autofreeze_gdate(). */
+gboolean xaccTransIsReadonlyByPostedDate(const Transaction *trans);
+
+/*################## Added for Reg2 #################*/
+
+/** Returns TRUE if this Transaction's posted-date is in the future */
+gboolean xaccTransInFutureByPostedDate (const Transaction *trans);
+
+/*################## Added for Reg2 #################*/
 
 /** Returns the number of splits in this transaction. */
 int           xaccTransCountSplits (const Transaction *trans);
@@ -398,6 +461,15 @@ gnc_numeric xaccTransGetAccountValue (const Transaction *trans,
 gnc_numeric xaccTransGetAccountAmount (const Transaction *trans,
                                        const Account *account);
 
+/*################## Added for Reg2 #################*/
+/* Gets the amt/val rate, i.e. rate from the transaction currency to
+   the 'split_com' */
+gboolean
+xaccTransGetRateForCommodity(const Transaction *trans,
+                             const gnc_commodity *split_com,
+                             const Split *split_to_exclude, gnc_numeric *rate);
+/*################## Added for Reg2 #################*/
+
 /* Compute the conversion rate for the transaction to this account.
  * Any "split value" (which is in the transaction currency),
  * multiplied by this conversion rate, will give you the value you
@@ -427,8 +499,33 @@ gnc_numeric xaccTransGetAccountBalance (const Transaction *trans,
  *      GncGUID (compare as a guid)
  *    Finally, it returns zero if all of the above match.
  *    Note that it does *NOT* compare its member splits.
+ *    Note also that it calls xaccTransOrder_num_action with actna and actnb
+ *    set as NULL.
  */
 int  xaccTransOrder     (const Transaction *ta, const Transaction *tb);
+
+
+/**
+ * The xaccTransOrder_num_action(ta,actna,tb,actnb) method is useful for sorting.
+ *    Orders ta and tb
+ *      return <0 if ta sorts before tb
+ *      return >0 if ta sorts after tb
+ *      return 0 if they are absolutely equal
+ *
+ *    The comparrison uses the following fields, in order:
+ *      date posted  (compare as a date)
+ *      if actna and actnb are NULL,
+ *          num field (compare as an integer)
+ *      else actna and actnb  (compare as an integer)
+ *      date entered (compare as a date)
+ *      description field (comcpare as a string using strcmp())
+ *      GncGUID (compare as a guid)
+ *    Finally, it returns zero if all of the above match.
+ *    Note that it does *NOT* compare its member splits (except action as
+ *    specified above).
+ */
+int  xaccTransOrder_num_action (const Transaction *ta, const char *actna,
+                                const Transaction *tb, const char *actnb);
 
 /** @} */
 
@@ -459,10 +556,26 @@ void          xaccTransSetDate (Transaction *trans,
 void xaccTransSetDatePostedGDate (Transaction *trans, GDate date);
 
 /** The xaccTransSetDatePostedSecs() method will modify the <i>posted</i>
-    date of the transaction, specified by a time_t (see ctime(3)). The
-    posted date is the date when this transaction was posted at the
-    bank. */
-void          xaccTransSetDatePostedSecs (Transaction *trans, time_t time);
+ *  date of the transaction, specified by a time64 (see ctime(3)). The
+ *  posted date is the date when this transaction was posted at the
+ *  bank.
+ *
+ * Please do not use this function, as the extra time-of-day part messes up a
+ * lot of places. Rather, please use xaccTransSetDatePostedGDate() or
+ * xaccTransSetDatePostedSecsNormalized().
+ */
+void          xaccTransSetDatePostedSecs (Transaction *trans, time64 time);
+
+/** This function sets the <i>posted</i> date of the transaction, specified by
+ * a time64 (see ctime(3)). Contrary to xaccTransSetDatePostedSecs(), the time
+ * will be normalized to only the date part, and the time-of-day will be
+ * ignored. The resulting date is the same as if it had been set as a GDate
+ * through xaccTransSetDatePostedGDate().
+ *
+ * Please prefer this function over xaccTransSetDatePostedSecs().
+ *
+ * The posted date is the date when this transaction was posted at the bank. */
+void          xaccTransSetDatePostedSecsNormalized (Transaction *trans, time64 time);
 
 /**  The xaccTransSetDatePostedTS() method does the same thing as
      xaccTransSetDatePostedSecs(), but takes a struct timespec64. */
@@ -471,7 +584,7 @@ void          xaccTransSetDatePostedTS (Transaction *trans,
 
 /** Modify the date of when the transaction was entered. The entered
  * date is the date when the register entry was made. */
-void          xaccTransSetDateEnteredSecs (Transaction *trans, time_t time);
+void          xaccTransSetDateEnteredSecs (Transaction *trans, time64 time);
 /** Modify the date of when the transaction was entered. The entered
  * date is the date when the register entry was made. */
 void          xaccTransSetDateEnteredTS (Transaction *trans,
@@ -484,7 +597,7 @@ void	      xaccTransSetDateDueTS (Transaction *trans, const Timespec *ts);
     the date when this transaction was posted at the bank. (Although
     having different function names, GetDate and GetDatePosted refer
     to the same single date.)*/
-time_t        xaccTransGetDate (const Transaction *trans);
+time64        xaccTransGetDate (const Transaction *trans);
 /** Retrieve the posted date of the transaction. The posted date is
     the date when this transaction was posted at the bank. (Although
     having different function names, GetDate and GetDatePosted refer
@@ -499,6 +612,11 @@ Timespec      xaccTransRetDatePostedTS (const Transaction *trans);
     the date when this transaction was posted at the bank. */
 GDate      xaccTransGetDatePostedGDate (const Transaction *trans);
 
+/*################## Added for Reg2 #################*/
+/** Retrieve the date of when the transaction was entered. The entered
+ * date is the date when the register entry was made.*/
+time64        xaccTransGetDateEntered (const Transaction *trans);
+/*################## Added for Reg2 #################*/
 /** Retrieve the date of when the transaction was entered. The entered
  * date is the date when the register entry was made.*/
 void          xaccTransGetDateEnteredTS (const Transaction *trans, Timespec *ts);

@@ -30,6 +30,7 @@
 #include "test-stuff.h"
 #include "test-dbi-stuff.h"
 #include "test-dbi-business-stuff.h"
+#include <unittest-support.h>
 
 #include "Account.h"
 #include "Split.h"
@@ -40,7 +41,7 @@
 #include "gncEmployee.h"
 #include "gncVendor.h"
 
-static QofLogModule log_module = "test-dbi";
+G_GNUC_UNUSED static QofLogModule log_module = "test-dbi";
 
 static void
 compare_single_customer( QofInstance* inst, gpointer user_data )
@@ -175,8 +176,8 @@ compare_taxtables( QofBook* book_1, QofBook* book_2 )
     do_compare( book_1, book_2, GNC_ID_TAXTABLE, compare_single_taxtable, "TaxTable lists match" );
 }
 
-static void
-compare_books( QofBook* book_1, QofBook* book_2 )
+void
+compare_business_books( QofBook* book_1, QofBook* book_2 )
 {
     compare_billterms( book_1, book_2 );
     compare_taxtables( book_1, book_2 );
@@ -188,32 +189,3 @@ compare_books( QofBook* book_1, QofBook* book_2 )
     compare_vendors( book_1, book_2 );
 }
 
-void
-test_dbi_business_store_and_reload( const gchar* driver, QofSession* session_1, const gchar* url )
-{
-    QofSession* session_2;
-    QofSession* session_3;
-
-    printf( "Testing %s\n", driver );
-
-    // Save the session data
-    session_2 = qof_session_new();
-    qof_session_begin( session_2, url, FALSE, TRUE, TRUE );
-    qof_session_swap_data( session_1, session_2 );
-    qof_session_save( session_2, NULL );
-
-    // Reload the session data
-    session_3 = qof_session_new();
-    qof_session_begin( session_3, url, TRUE, FALSE, FALSE );
-    qof_session_load( session_3, NULL );
-
-    // Compare with the original data
-    compare_books( qof_session_get_book( session_2 ), qof_session_get_book( session_3 ) );
-    qof_session_end( session_1 );
-    qof_session_destroy( session_1 );
-    qof_session_end( session_2 );
-    qof_session_destroy( session_2 );
-    g_print(" You may ignore the warning about the lock file having no entries: We had to ignore locking to run two sessions on the same database\n");
-    qof_session_end( session_3 );
-    qof_session_destroy( session_3 );
-}

@@ -8,10 +8,7 @@ gncscmmod_DATA = main.scm price-quotes.scm printf.scm
 
 gnc_regular_scm_files = \
   string.scm \
-  command-line.scm \
-  doc.scm \
   fin.scm \
-  main-window.scm \
   substring-search.scm \
   xml-generator.scm
 
@@ -52,7 +49,6 @@ SCM_FILES = ${gncscm_DATA} ${gncscmmod_DATA}
 EXTRA_DIST = \
   build-config.scm.in \
   config \
-  startup-design.txt \
   ${SCM_FILES}
 
 ## We borrow guile's convention and use @-...-@ as the substitution

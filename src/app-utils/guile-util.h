@@ -29,22 +29,7 @@
 
 #include "qof.h"
 #include "Account.h"
-
-
-/* Helpful functions for calling functions that return
- * specific kinds of values. These functions do error
- * checking to verify the result is of the correct type. */
-char * gnc_guile_call1_to_string(SCM func, SCM arg);
-char * gnc_guile_call1_symbol_to_string(SCM func, SCM arg);
-SCM    gnc_guile_call1_to_procedure(SCM func, SCM arg);
-SCM    gnc_guile_call1_to_list(SCM func, SCM arg);
-SCM    gnc_guile_list_ref(SCM list, int index);
-SCM    gnc_guile_call1_to_vector(SCM func, SCM arg);
-
-/** Wrapper around scm_to_locale_string() that returns a newly
- * allocated string (even for guile-1.6 version). The caller must
- * g_free() the returned string later. */
-gchar * gnc_scm_to_locale_string(SCM scm_string);
+#include "gnc-guile-utils.h"
 
 /* Don't use this to get hold of symbols that are considered private
  * to a given module unless the C code you're writing is considered
@@ -98,15 +83,6 @@ int    gnc_trans_scm_get_num_splits(SCM trans_scm);
 char * gnc_get_debit_string(GNCAccountType account_type);
 char * gnc_get_credit_string(GNCAccountType account_type);
 
-/** Clean up a scheme options string for use in a key/value file.
- *  This function removes all full line comments, removes all blank
- *  lines, and removes all leading/trailing white space.
- *
- *  @note: This function does not correctly handle comments that occur
- *  at the end of a line. Fortunately there aren't any such
- *  comments. */
-gchar *gnc_guile_strip_comments (const gchar *text);
-
 /** An opaque process structure returned by gnc_spawn_process_async. */
 typedef struct _Process Process;
 
@@ -143,8 +119,6 @@ gint gnc_process_get_fd(const Process *proc, const gint std_fd);
  *  @param kill_it If TRUE, kill the process. */
 void gnc_detach_process(Process *proc, const gboolean kill_it);
 
-#endif
-
 /** Convert a time string to calendar time representation.  Combine strptime and
  *  mktime into a single function to avoid the need to wrap struct tm *.
  *
@@ -153,4 +127,6 @@ void gnc_detach_process(Process *proc, const gboolean kill_it);
  *  @param format Format specification.
  *
  *  @return The time in seconds since unix epoch, or -1 on error */
-time_t gnc_parse_time_to_timet(const gchar *s, const gchar *format);
+time64 gnc_parse_time_to_time64 (const gchar *s, const gchar *format);
+
+#endif

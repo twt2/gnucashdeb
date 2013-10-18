@@ -934,7 +934,7 @@ xaccTransFindOldCommonCurrency (Transaction *trans, QofBook *book)
     }
     else if (!gnc_commodity_equiv (retval, trans->common_currency))
     {
-        char guid_str[GUID_ENCODING_LENGTH+1];
+        char guid_str[GUID_ENCODING_LENGTH + 1];
         guid_to_string_buff(xaccTransGetGUID(trans), guid_str);
         PWARN ("expected common currency %s but found %s in txn %s\n",
                gnc_commodity_get_unique_name (trans->common_currency),
@@ -945,7 +945,7 @@ xaccTransFindOldCommonCurrency (Transaction *trans, QofBook *book)
     {
         /* In every situation I can think of, this routine should return
          * common currency.  So make note of this ... */
-        char guid_str[GUID_ENCODING_LENGTH+1];
+        char guid_str[GUID_ENCODING_LENGTH + 1];
         guid_to_string_buff(xaccTransGetGUID(trans), guid_str);
         PWARN ("unable to find a common currency in txn %s, and that is strange.",
                guid_str);
@@ -1008,10 +1008,9 @@ commodity_compare( gconstpointer a, gconstpointer b)
 static gnc_commodity *
 xaccTransFindCommonCurrency (Transaction *trans, QofBook *book)
 {
-    gnc_commodity *com_first, *com_scratch;
+    gnc_commodity *com_scratch;
     GList *node = NULL;
     GSList *comlist = NULL, *found = NULL;
-    int score = 0;
 
     if (!trans) return NULL;
 
@@ -1043,7 +1042,7 @@ xaccTransFindCommonCurrency (Transaction *trans, QofBook *book)
     }
     found = g_slist_sort( comlist, commodity_compare);
 
-    if ( ((CommodityCount*)(found->data))->commodity != NULL)
+    if ( found && found->data && (((CommodityCount*)(found->data))->commodity != NULL))
     {
         return ((CommodityCount*)(found->data))->commodity;
     }
@@ -1087,7 +1086,7 @@ xaccTransScrubCurrency (Transaction *trans)
         else
         {
             SplitList *node;
-            char guid_str[GUID_ENCODING_LENGTH+1];
+            char guid_str[GUID_ENCODING_LENGTH + 1];
             guid_to_string_buff(xaccTransGetGUID(trans), guid_str);
             PWARN ("no common transaction currency found for trans=\"%s\" (%s)",
                    trans->description, guid_str);

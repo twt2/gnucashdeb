@@ -38,6 +38,42 @@ static GList *object_modules = NULL;
 static GList *book_list = NULL;
 static GHashTable *backend_data = NULL;
 
+/*
+ * These getters are used in tests to reach static vars from outside
+ * They should be removed when no longer needed
+ */
+
+gboolean get_object_is_initialized( void );
+GList* get_object_modules( void );
+GList* get_book_list( void );
+GHashTable* get_backend_data( void );
+
+gboolean
+get_object_is_initialized( void )
+{
+    return object_is_initialized;
+}
+
+GList*
+get_object_modules( void )
+{
+    return object_modules;
+}
+
+GList*
+get_book_list( void )
+{
+    return book_list;
+}
+
+GHashTable*
+get_backend_data( void )
+{
+    return backend_data;
+}
+
+/*********/
+
 gpointer
 qof_object_new_instance (QofIdTypeConst type_name, QofBook *book)
 {
@@ -190,10 +226,10 @@ qof_object_foreach (QofIdTypeConst type_name, QofBook *book,
 }
 
 static void
-do_append (QofInstance *qof_p, gpointer list_p)
+do_prepend (QofInstance *qof_p, gpointer list_p)
 {
     GList **list = list_p;
-    *list = g_list_append(*list, qof_p);
+    *list = g_list_prepend(*list, qof_p);
 }
 
 void
@@ -202,7 +238,7 @@ qof_object_foreach_sorted (QofIdTypeConst type_name, QofBook *book, QofInstanceF
     GList *list = NULL;
     GList *iter;
 
-    qof_object_foreach(type_name, book, do_append, &list);
+    qof_object_foreach(type_name, book, do_prepend, &list);
 
     list = g_list_sort(list, qof_instance_guid_compare);
 
@@ -212,6 +248,13 @@ qof_object_foreach_sorted (QofIdTypeConst type_name, QofBook *book, QofInstanceF
     }
 
     g_list_free(list);
+
+    // FIXME: Apparently this is a memory leak, as this g_list_free doesn't
+    // free all of the allocated memory of g_list_append in do_append(). Why?!?
+    // Does g_list_sort have special side-effects on the memory of the list?
+    // Subsequently, I've changed the g_list_append into g_list_prepend, but
+    // solely for performance reasons. To my surprise, this also makes the
+    // dubious memory leak go away. But again why?!?
 }
 
 const char *
@@ -312,7 +355,7 @@ const QofObject * qof_object_lookup (QofIdTypeConst name)
     for (iter = object_modules; iter; iter = iter->next)
     {
         obj = iter->data;
-        if (!safe_strcmp (obj->e_type, name))
+        if (!g_strcmp0 (obj->e_type, name))
             return obj;
     }
     return NULL;

@@ -39,21 +39,20 @@
 
 #include "config.h"
 
-#include <gnome.h>
-#include <libguile.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "gnucash-sheet.h"
+#include "gnucash-sheetP.h"
 #include "gnucash-style.h"
 #include "table-allgui.h"
 #include "table-gnome.h"
-#include "guile-mappings.h"
-#include "gnc-gconf-utils.h"
+#include "gnc-prefs.h"
 #include "gnc-engine.h"
 
-#define GCONF_SECTION "window/pages/register"
+#include "gnc-ledger-display.h"
+
 
 
 /** Static Globals *****************************************************/
@@ -65,20 +64,20 @@ static QofLogModule log_module = GNC_MOD_REGISTER;
 /** Implementation *****************************************************/
 
 void
-gnc_table_save_state (Table *table)
+gnc_table_save_state (Table *table, gchar * state_key)
 {
     GnucashSheet *sheet;
     GNCHeaderWidths widths;
     GList *node;
     gchar *key;
-
+    
     if (!table)
         return;
 
     if (table->ui_data == NULL)
         return;
 
-    if (!gnc_gconf_get_bool(GCONF_GENERAL, KEY_SAVE_GEOMETRY, NULL))
+    if (!gnc_prefs_get_bool(GNC_PREFS_GROUP_GENERAL, GNC_PREF_SAVE_GEOMETRY))
         return;
 
     sheet = GNUCASH_SHEET (table->ui_data);
@@ -102,7 +101,7 @@ gnc_table_save_state (Table *table)
 
         /* Remember whether the column is visible */
         key = g_strdup_printf("%s_width", cell->cell_name);
-        gnc_gconf_set_int(GCONF_SECTION, key, width, NULL);
+        // FIXME the actual state saving is currently not implemented
         g_free(key);
     }
 
@@ -147,8 +146,13 @@ table_destroy_cb (Table *table)
 /* Um, this function checks that data is not null but never uses it.
    Weird.  Also, since this function only works with a GnucashRegister
    widget, maybe some of it should be moved to gnucash-sheet.c. */
+/* Adding to previous note:  Since data doesn't appear do anything and to 
+   align the function with save_state() I've removed the check for 
+   NULL and changed two calls in dialog_order.c and dialog_invoice.c 
+   to pass NULL as second parameter. */
+   
 void
-gnc_table_init_gui (GtkWidget *widget, void *data)
+gnc_table_init_gui (GtkWidget *widget, gchar * state_key)
 {
     GNCHeaderWidths widths;
     GnucashSheet *sheet;
@@ -157,12 +161,15 @@ gnc_table_init_gui (GtkWidget *widget, void *data)
     GList *node;
     gchar *key;
     guint value;
-
+ 
+    // Stuff for per-register settings load.
     g_return_if_fail (widget != NULL);
     g_return_if_fail (GNUCASH_IS_REGISTER (widget));
-    g_return_if_fail (data != NULL);
-
-    ENTER("widget=%p, data=%p", widget, data);
+    
+    PINFO("state_key=%s",state_key);
+    
+    ENTER("widget=%p, data=%p", widget, "");
+    
 
     greg = GNUCASH_REGISTER (widget);
     sheet = GNUCASH_SHEET (greg->sheet);
@@ -178,7 +185,7 @@ gnc_table_init_gui (GtkWidget *widget, void *data)
 
     widths = gnc_header_widths_new ();
 
-    if (gnc_gconf_get_bool(GCONF_GENERAL, KEY_SAVE_GEOMETRY, NULL))
+    if (gnc_prefs_get_bool(GNC_PREFS_GROUP_GENERAL, GNC_PREF_SAVE_GEOMETRY))
     {
         node = gnc_table_layout_get_cells (table->layout);
         for (; node; node = node->next)
@@ -190,7 +197,8 @@ gnc_table_init_gui (GtkWidget *widget, void *data)
 
             /* Remember whether the column is visible */
             key = g_strdup_printf("%s_width", cell->cell_name);
-            value = gnc_gconf_get_int(GCONF_SECTION, key, NULL);
+            // FIXME the actual state loading is currently not implemented
+            value = 0;
             if (value != 0)
                 gnc_header_widths_set_width (widths, cell->cell_name, value);
             g_free(key);
@@ -295,8 +303,3 @@ gnc_table_gnome_init (void)
     gnc_table_set_default_gui_handlers (&gui_handlers);
 }
 
-/*
-  Local Variables:
-  c-basic-offset: 8
-  End:
-*/

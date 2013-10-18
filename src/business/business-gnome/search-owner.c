@@ -106,7 +106,7 @@ gnc_search_owner_class_init (GNCSearchOwnerClass *class)
     GNCSearchCoreTypeClass *gnc_search_core_type = (GNCSearchCoreTypeClass *)class;
 
     object_class = G_OBJECT_CLASS (class);
-    parent_class = gtk_type_class(gnc_search_core_type_get_type ());
+    parent_class = g_type_class_peek_parent (class);
 
     object_class->finalize = gnc_search_owner_finalize;
 
@@ -127,13 +127,7 @@ gnc_search_owner_init (GNCSearchOwner *o)
 static void
 gnc_search_owner_finalize (GObject *obj)
 {
-    GNCSearchOwner *o;
-    GNCSearchOwnerPrivate *priv;
-
     g_assert (IS_GNCSEARCH_OWNER (obj));
-
-    o = GNCSEARCH_OWNER(obj);
-    priv = GNC_SEARCH_OWNER_GET_PRIVATE(o);
 
     G_OBJECT_CLASS (parent_class)->finalize(obj);
 }
