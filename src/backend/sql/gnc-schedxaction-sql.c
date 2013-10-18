@@ -51,7 +51,7 @@
 #define SCHEDXACTION_TABLE "schedxactions"
 #define TABLE_VERSION 1
 
-/*@ unused @*/ static QofLogModule log_module = G_LOG_DOMAIN;
+G_GNUC_UNUSED static QofLogModule log_module = G_LOG_DOMAIN;
 
 #define SX_MAX_NAME_LEN 2048
 
@@ -90,7 +90,7 @@ load_single_sx( GncSqlBackend* be, GncSqlRow* row )
 
     guid = gnc_sql_load_guid( be, row );
     g_assert( guid != NULL );
-    pSx = xaccSchedXactionMalloc( be->primary_book );
+    pSx = xaccSchedXactionMalloc( be->book );
 
     gnc_sx_begin_edit( pSx );
     gnc_sql_load_object( be, row, GNC_SX_ID, pSx, col_table );
@@ -121,7 +121,7 @@ load_all_sxes( GncSqlBackend* be )
         GncSqlRow* row;
         SchedXactions *sxes;
         GList* list = NULL;
-        sxes = gnc_book_get_schedxactions( be->primary_book );
+        sxes = gnc_book_get_schedxactions( be->book );
 
         row = gnc_sql_result_get_first_row( result );
         while ( row != NULL )

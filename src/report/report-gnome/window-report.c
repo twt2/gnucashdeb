@@ -27,7 +27,6 @@
 
 #include "config.h"
 
-#include <gnome.h>
 #include <glib/gi18n.h>
 #include <errno.h>
 #include <libguile.h>
@@ -37,6 +36,7 @@
 #include "dialog-options.h"
 #include "file-utils.h"
 #include "gnc-gkeyfile-utils.h"
+#include "gnc-guile-utils.h"
 #include "gnc-report.h"
 #include "gnc-ui.h"
 #include "option-util.h"
@@ -159,12 +159,14 @@ gnc_report_window_default_params_editor(SCM options, SCM report)
             {
                 ptr = scm_call_1(get_template_name, ptr);
                 if (scm_is_string(ptr))
-                    title = scm_to_locale_string(ptr);
+                    title = gnc_scm_to_locale_string (ptr);
             }
         }
 
         /* Don't forget to translate the window title */
         prm->win  = gnc_options_dialog_new((gchar*) (title && *title ? _(title) : ""));
+
+        g_free ((gpointer *) title);
 
         scm_gc_protect_object(prm->scm_options);
         scm_gc_protect_object(prm->cur_report);
@@ -309,7 +311,10 @@ gnc_html_help_url_cb (const char *location, const char *label,
 {
     g_return_val_if_fail (location != NULL, FALSE);
 
-    gnc_gnome_help (location, label);
+    if (label && (*label != '\0'))
+        gnc_gnome_help (location, label);
+    else
+        gnc_gnome_help (location, NULL);
     return TRUE;
 }
 

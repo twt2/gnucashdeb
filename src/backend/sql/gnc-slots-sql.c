@@ -209,7 +209,7 @@ get_key_from_path( GString *path )
 static gchar *
 get_path_from_path( GString *path )
 {
-    gchar *str = NULL, *key = NULL, *ret = NULL;
+    gchar *str = NULL, *key = NULL;
 
     g_return_val_if_fail( path != NULL, NULL );
 
@@ -979,7 +979,7 @@ load_slot_for_book_object( GncSqlBackend* be, GncSqlRow* row, BookLookupFn looku
 
     guid = load_obj_guid( be, row );
     g_return_if_fail( guid != NULL );
-    inst = lookup_fn( guid, be->primary_book );
+    inst = lookup_fn( guid, be->book );
     g_return_if_fail( inst != NULL );
 
     slot_info.be = be;

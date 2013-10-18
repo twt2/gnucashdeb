@@ -7,13 +7,11 @@
 
 (define-module (gnucash report report-system))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
-(use-modules (ice-9 slib))
 (use-modules (ice-9 regex))
 (use-modules (srfi srfi-1))
 (use-modules (srfi srfi-19))
 (use-modules (gnucash gnc-module))
-
-(require 'hash-table)
+(use-modules (gnucash core-utils))
 
 (gnc:module-load "gnucash/engine" 0)
 (gnc:module-load "gnucash/app-utils" 0)
@@ -95,11 +93,13 @@
 (export gnc:html-build-acct-table)
 (export gnc:first-html-build-acct-table)
 (export gnc:html-make-exchangerates)
+(export gnc:html-make-generic-warning)
 (export gnc:html-make-no-account-warning)
 (export gnc:html-make-generic-budget-warning)
 (export gnc:html-make-generic-options-warning)
 (export gnc:html-make-generic-simple-warning)
 (export gnc:html-make-empty-data-warning)
+(export gnc:html-make-options-link)
 
 ;; report.scm
 (export gnc:menuname-reports)
@@ -116,11 +116,8 @@
 
 (export gnc:define-report)
 (export <report>)
-(export gnc:report-template-new-options/name)
 (export gnc:report-template-new-options/report-guid)
-(export gnc:report-template-menu-name/name)
 (export gnc:report-template-menu-name/report-guid)
-(export gnc:report-template-renderer/name)
 (export gnc:report-template-renderer/report-guid)
 (export gnc:report-template-new-options)
 (export gnc:report-template-version)
@@ -137,6 +134,7 @@
 (export gnc:report-template-menu-tip)
 (export gnc:report-template-export-types)
 (export gnc:report-template-export-thunk)
+(export gnc:report-template-has-unique-name?)
 (export gnc:report-type)
 (export gnc:report-set-type!)
 (export gnc:report-id)
@@ -152,8 +150,8 @@
 (export gnc:report-ctext)
 (export gnc:report-set-ctext!)
 (export gnc:make-report)
-(export gnc:restore-report)
 (export gnc:restore-report-by-guid)
+(export gnc:restore-report-by-guid-with-custom-template)
 (export gnc:make-report-options)
 (export gnc:report-export-types)
 (export gnc:report-export-thunk)
@@ -161,17 +159,29 @@
 (export gnc:report-name)
 (export gnc:report-stylesheet)
 (export gnc:report-set-stylesheet!)
-(export gnc:all-report-template-names)
-(export gnc:custom-report-template-names)
+(export gnc:all-report-template-guids)
+(export gnc:custom-report-template-guids)
 (export gnc:delete-report)
+(export gnc:rename-report)
 (export gnc:find-report-template)
 (export gnc:report-generate-restore-forms)
 (export gnc:report-generate-saved-forms)
-(export gnc:report-save-to-savefile)
+(export gnc:report-to-template-new)
+(export gnc:report-to-template-update)
 (export gnc:report-render-html)
 (export gnc:report-run)
 (export gnc:report-templates-for-each)
 (export gnc:report-embedded-list)
+(export gnc:report-template-is-custom/template-guid?)
+(export gnc:is-custom-report-type)
+;; Legacy : the following 3 functions are only needed to
+;; load a saved-reports file version 2.0
+(export gnc:report-template-new-options/name)
+(export gnc:report-template-menu-name/name)
+(export gnc:report-template-renderer/name)
+;; Legacy: this function is needed only to restore
+;; a open report when loading a book last saved in GnuCash 2.2
+(export gnc:restore-report)
 
 ;; html-barchart.scm
 
@@ -387,10 +397,6 @@
 (export gnc:html-linechart-line-width)
 ;; html-style-info.scm
 
-(export make-kvtable)
-(export kvt-ref)
-(export kvt-set!)
-(export kvt-fold)
 (export <html-markup-style-info>)
 (export gnc:html-markup-style-info?)
 (export gnc:make-html-markup-style-info-internal)
@@ -677,6 +683,7 @@
 (export gnc-commodity-collector-allzero?)
 (export gnc:account-get-trans-type-balance-interval)
 (export gnc:account-get-trans-type-balance-interval-with-closing)
+(export gnc:account-get-total-flow)
 (export gnc:account-get-pos-trans-total-interval)
 (export gnc:account-get-trans-type-splits-interval)
 (export gnc:double-col)

@@ -21,6 +21,8 @@
 ;; Boston, MA  02110-1301,  USA       gnu@gnu.org
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(load-from-path "html-jqplot.scm")
+
 (define <html-barchart>
   (make-record-type "<html-barchart>"
                     '(width 
@@ -140,6 +142,14 @@
 ;; used for all of the rows. Otherwise we could have cols*rows urls
 ;; (quite a lot), but this first requires fixing
 ;; guppi_bar_1_callback() in gnome/gnc-html-guppi.c .
+;; FIXME url's haven't been working since GnuCash 1.x
+;;       GnuCash 2.x switched from guppy to goffice, which
+;;       made it very hard to remain the url functionality
+;;       At this point I (gjanssens) is in the process of
+;;       moving from goffice to jqplot for our charts
+;;       which perhaps may allow urls again in the charts
+;;       I'm keeping the parameters below around to remind
+;;       us this still has to be investigated again
 (define gnc:html-barchart-button-1-bar-urls
   (record-accessor <html-barchart> 'button-1-bar-urls))
 
@@ -326,115 +336,163 @@
          (col-labels (catenate-escaped-strings 
                       (gnc:html-barchart-col-labels barchart)))
          (col-colors (catenate-escaped-strings 
-                      (gnc:html-barchart-col-colors barchart))))
+                      (gnc:html-barchart-col-colors barchart)))
+         (series-data-start (lambda (series-index)
+                         (push "var d")
+                         (push series-index)
+                         (push " = [];\n")))
+         (series-data-add (lambda (series-index x y)
+                         (push (string-append
+                               "  d"
+                               (number->string series-index)
+                               ".push(["
+                               (number->string x)
+                               ", "
+                               (number->string y)
+                               "]);\n"))))
+         (series-data-end (lambda (series-index label)
+                         (push "data.push(d")
+                         (push series-index)
+                         (push ");\n")
+                         (push "series.push({ label: \"")
+                         (push label)
+                         (push "\"});\n\n")))
+         ; Use a unique chart-id for each chart. This prevents chart
+         ; clashed on multi-column reports
+         (chart-id (string-append "chart-" (number->string (random 999999)))))
     (if (and (list? data)
              (not (null? data))
-	     (gnc:not-all-zeros data))
-        (begin 
-          (push "<object classid=\"")(push GNC-CHART-BAR)(push "\" width=")
-          (push (gnc:html-barchart-width barchart))
-          (push " height=") 
-          (push (gnc:html-barchart-height barchart))
-          (push ">\n")
-          (if title
-              (begin 
-                (push "  <param name=\"title\" value=\"")
-                (push title) (push "\">\n")))
-          (if subtitle
-              (begin 
-                (push "  <param name=\"subtitle\" value=\"")
-                (push subtitle) (push "\">\n")))
-          (if url-1
-              (begin 
-                (push "  <param name=\"bar_urls_1\" value=\"")
-                (push url-1)
-                (push "\">\n")))
-          (if url-2
-              (begin 
-                (push "  <param name=\"bar_urls_2\" value=\"")
-                (push url-2)
-                (push "\">\n")))
-          (if url-3
-              (begin 
-                (push "  <param name=\"bar_urls_3\" value=\"")
-                (push url-3)
-                (push "\">\n")))
-          (if legend-1 
-              (begin 
-                (push "  <param name=\"legend_urls_1\" value=\"")
-                (push legend-1)
-                (push "\">\n")))
-          (if legend-2
-              (begin 
-                (push "  <param name=\"legend_urls_2\" value=\"")
-                (push legend-2)
-                (push "\">\n")))
-          (if legend-3 
-              (begin 
-                (push "  <param name=\"legend_urls_3\" value=\"")
-                (push legend-3)
-                (push "\">\n")))
-          (if (and data (list? data))
+             (gnc:not-all-zeros data))
+        (begin
+            (push (gnc:html-js-include "jqplot/jquery.min.js"))
+            (push (gnc:html-js-include "jqplot/jquery.jqplot.js"))
+            (push (gnc:html-js-include "jqplot/jqplot.barRenderer.js"))
+            (push (gnc:html-js-include "jqplot/jqplot.categoryAxisRenderer.js"))
+            (push (gnc:html-js-include "jqplot/jqplot.highlighter.js"))
+            (push (gnc:html-js-include "jqplot/jqplot.canvasTextRenderer.js"))
+            (push (gnc:html-js-include "jqplot/jqplot.canvasAxisTickRenderer.js"))
+            (push (gnc:html-css-include "jqplot/jquery.jqplot.css"))
+
+            (push "<div id=\"")(push chart-id)(push "\" style=\"width:")
+            (push (gnc:html-barchart-width barchart))
+            (push "px;height:")
+            (push (gnc:html-barchart-height barchart))
+            (push "px;\"></div>\n")
+            (push "<script id=\"source\">\n$(function () {")
+
+            (push "var data = [];")
+            (push "var series = [];\n")
+
+            (if (and data (list? data))
               (let ((rows (length data))
                     (cols 0))
-                (push "  <param name=\"data_rows\" value=\"")
-                (push rows) (push "\">\n")
-                (if (list? (car data))
-                    (begin 
-                      (set! cols (length (car data)))
-                      (push "  <param name=\"data_cols\" value=\"")
-                      (push cols)
-                      (push "\">\n")))           
-                (push "  <param name=\"data\" value=\"")
-                (let loop ((col 0))
-                  (for-each 
-                   (lambda (row)
-                     (push (ensure-numeric (list-ref-safe row col)))
-                     (push " "))
-                   data)
+                (let loop ((col 0) (rowcnt 1))
+                  (series-data-start col)
+                  (if (list? (car data))
+                      (begin 
+                        (set! cols (length (car data)))))    
+                  (for-each
+                    (lambda (row)
+                      (series-data-add col rowcnt
+                                       (ensure-numeric (list-ref-safe row col)))
+                      (set! rowcnt (+ rowcnt 1)))
+                    data)
+                  (series-data-end col (list-ref-safe (gnc:html-barchart-col-labels barchart) col))
                   (if (< col (- cols 1))
-                      (loop (+ 1 col))))
-                (push "\">\n")))
-          (if (and (string? x-label) (> (string-length x-label) 0))
+                      (loop (+ 1 col) 1)))))
+
+
+            (push "var options = {
+                   shadowAlpha: 0.07,
+                   stackSeries: false,
+                   legend: {
+                        show: true,
+                        placement: \"outsideGrid\", },
+                   seriesDefaults: {
+                        renderer: $.jqplot.BarRenderer,
+                        rendererOptions: {
+                            shadowAlpha: 0.04,
+                            shadowDepth: 3,
+                        },
+                        fillToZero: true,
+                   },
+                   series: series,
+                   axesDefaults: {
+                   },        
+                   grid: {
+                   },
+                   axes: {
+                       xaxis: {
+                           renderer: $.jqplot.CategoryAxisRenderer,
+                           tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                           tickOptions: {
+                               angle: -30,
+                               fontSize: '10pt',
+                           },
+                       },
+                       yaxis: {
+                           autoscale: true,
+                       },
+                   },
+                   highlighter: {
+                       tooltipContentEditor: formatTooltip,
+                   }
+                };\n")
+
+            (push "  options.stackSeries = ")
+            (push (if (gnc:html-barchart-stacked? barchart)
+                "true;\n"
+                "false;\n"))
+
+            (if title
               (begin 
-                (push "  <param name=\"x_axis_label\" value=\"")
+                (push "  options.title = \"")
+                (push title) (push "\";\n")))
+
+            (if subtitle
+              (begin 
+                (push "  options.title += \" (")
+                (push subtitle) (push ")\";\n")))
+
+            (if (and (string? x-label) (> (string-length x-label) 0))
+              (begin 
+                (push "  options.axes.xaxis.label = \"")
                 (push x-label)
-                (push "\">\n")))
-          (if (and (string? y-label) (> (string-length y-label) 0))
+                (push "\";\n")))
+            (if (and (string? y-label) (> (string-length y-label) 0))
               (begin 
-                (push "  <param name=\"y_axis_label\" value=\"")
+                (push "  options.axes.yaxis.label = \"")
                 (push y-label)
-                (push "\">\n")))
-          (if (and (string? col-colors) (> (string-length col-colors) 0))
+                (push "\";\n")))
+            (if (and (string? row-labels) (> (string-length row-labels) 0))
               (begin 
-                (push "  <param name=\"col_colors\" value=\"")
-                (push col-colors)
-                (push "\">\n")))
-          (if (and (string? row-labels) (> (string-length row-labels) 0))
-              (begin 
-                (push "  <param name=\"row_labels\" value=\"")
-                (push row-labels)
-                (push "\">\n")))
-          (if (and (string? col-labels) (> (string-length col-labels) 0))
-              (begin 
-                (push "  <param name=\"col_labels\" value=\"")
-                (push col-labels)
-                (push "\">\n")))
-	  (push "  <param name=\"rotate_row_labels\" value=\"")
-	  (push (if (gnc:html-barchart-row-labels-rotated? barchart)
-		    "1\">\n"
-		    "0\">\n"))
-	  (push "  <param name=\"stacked\" value=\"")
-	  (push (if (gnc:html-barchart-stacked? barchart)
-		    "1\">\n"
-		    "0\">\n"))
-	  (push "  <param name=\"legend_reversed\" value=\"")
-	  (push (if (gnc:html-barchart-legend-reversed? barchart)
-		    "1\">\n"
-		    "0\">\n"))
-          (push "Unable to push bar chart\n")
-          (push "</object> &nbsp;\n"))
+                (push "  options.axes.xaxis.ticks = [")
+                (for-each (lambda (val)
+                        (push "\"")
+                        (push val)
+                        (push "\","))
+                    (gnc:html-barchart-row-labels barchart))
+                (push "];\n")))
+
+
+            (push "$.jqplot.config.enablePlugins = true;")
+            (push "var plot = $.jqplot('")(push chart-id)(push"', data, options);
+
+  function formatTooltip(str, seriesIndex, pointIndex) {
+      if (options.axes.xaxis.ticks[pointIndex] !== undefined)
+          x = options.axes.xaxis.ticks[pointIndex];
+      else
+          x = pointIndex;
+      y = data[seriesIndex][pointIndex][1].toFixed(2);
+      return options.series[seriesIndex].label + ' ' + x + '<br><b>' + y + '</b>';
+  }\n") 
+
+            (push "});\n</script>")
+
+            (gnc:msg (string-join (reverse (map (lambda (e) (if (number? e) (number->string e) e)) retval)) ""))
+ 
+        )
         (begin 
-	  (gnc:warn "barchart has no non-zero data.")
-	  " "))
+          (gnc:warn "barchart has no non-zero data.")
+            " "))
     retval))

@@ -35,13 +35,10 @@
 #include "SchedXaction.h"
 #include "Transaction.h"
 #include "gnc-engine.h"
+#include "engine-helpers.h"
 
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "gnc.engine.sx"
-
-/* Local Prototypes *****/
-
-void sxprivtransactionListMapDelete( gpointer data, gpointer user_data );
 
 enum
 {
@@ -95,6 +92,12 @@ gnc_schedxaction_finalize(GObject* sxp)
     G_OBJECT_CLASS(gnc_schedxaction_parent_class)->finalize(sxp);
 }
 
+/* Note that g_value_set_object() refs the object, as does
+ * g_object_get(). But g_object_get() only unrefs once when it disgorges
+ * the object, leaving an unbalanced ref, which leaks. So instead of
+ * using g_value_set_object(), use g_value_take_object() which doesn't
+ * ref the object when used in get_property().
+ */
 static void
 gnc_schedxaction_get_property (GObject         *object,
                                guint            prop_id,
@@ -151,7 +154,7 @@ gnc_schedxaction_get_property (GObject         *object,
         g_value_set_int(value, sx->instance_num);
         break;
     case PROP_TEMPLATE_ACCOUNT:
-        g_value_set_object(value, sx->template_acct);
+        g_value_take_object(value, sx->template_acct);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -787,28 +790,6 @@ gint gnc_sx_get_num_occur_daterange(const SchedXaction *sx, const GDate* start_d
     return result;
 }
 
-
-KvpValue *
-xaccSchedXactionGetSlot( const SchedXaction *sx, const char *slot )
-{
-    if (!sx) return NULL;
-
-    return kvp_frame_get_slot(sx->inst.kvp_data, slot);
-}
-
-void
-xaccSchedXactionSetSlot( SchedXaction *sx,
-                         const char *slot,
-                         const KvpValue *value )
-{
-    if (!sx) return;
-
-    gnc_sx_begin_edit(sx);
-    kvp_frame_set_slot( sx->inst.kvp_data, slot, value );
-    qof_instance_set_dirty(&sx->inst);
-    gnc_sx_commit_edit(sx);
-}
-
 gboolean
 xaccSchedXactionGetEnabled( const SchedXaction *sx )
 {
@@ -1041,7 +1022,10 @@ gnc_sx_set_instance_count(SchedXaction *sx, gint instance_num)
     g_return_if_fail(sx);
     if (sx->instance_num == instance_num)
         return;
+    gnc_sx_begin_edit(sx);
     sx->instance_num = instance_num;
+    qof_instance_set_dirty(&sx->inst);
+    gnc_sx_commit_edit(sx);
 }
 
 GList *
@@ -1065,9 +1049,10 @@ pack_split_info (TTSplitInfo *s_info, Account *parent_acct,
     xaccSplitSetMemo(split,
                      gnc_ttsplitinfo_get_memo(s_info));
 
-    xaccSplitSetAction(split,
+    /* Set split-action with gnc_set_num_action which is the same as
+     * xaccSplitSetAction with these arguments */
+    gnc_set_num_action(NULL, split, NULL,
                        gnc_ttsplitinfo_get_action(s_info));
-
 
     xaccAccountInsertSplit(parent_acct,
                            split);
@@ -1137,10 +1122,12 @@ xaccSchedXactionSetTemplateTrans(SchedXaction *sx, GList *t_t_list,
         xaccTransSetDescription(new_trans,
                                 gnc_ttinfo_get_description(tti));
 
-        xaccTransSetDatePostedSecs(new_trans, time(NULL));
+        xaccTransSetDatePostedSecsNormalized(new_trans, gnc_time (NULL));
 
-        xaccTransSetNum(new_trans,
-                        gnc_ttinfo_get_num(tti));
+        /* Set tran-num with gnc_set_num_action which is the same as
+         * xaccTransSetNum with these arguments */
+        gnc_set_num_action(new_trans, NULL,
+                        gnc_ttinfo_get_num(tti), NULL);
         xaccTransSetCurrency( new_trans,
                               gnc_ttinfo_get_currency(tti) );
 
@@ -1184,18 +1171,6 @@ gnc_sx_incr_temporal_state(const SchedXaction *sx, SXTmpStateData *stateData )
         tsd->num_occur_rem -= 1;
     }
     tsd->num_inst += 1;
-}
-
-void
-gnc_sx_revert_to_temporal_state( SchedXaction *sx, SXTmpStateData *stateData )
-{
-    SXTmpStateData *tsd = (SXTmpStateData*)stateData;
-    gnc_sx_begin_edit(sx);
-    sx->last_date        = tsd->last_date;
-    sx->num_occurances_remain = tsd->num_occur_rem;
-    sx->instance_num     = tsd->num_inst;
-    qof_instance_set_dirty(&sx->inst);
-    gnc_sx_commit_edit(sx);
 }
 
 void

@@ -34,10 +34,11 @@
 #include "Account.h"
 #include "gnc-accounting-period.h"
 #include "gnc-commodity.h"
-#include "gnc-gconf-utils.h"
+#include "gnc-prefs.h"
 #include "gnc-engine.h"
 #include "gnc-event.h"
 #include "gnc-gobject-utils.h"
+#include "gnc-ui-balances.h"
 #include "gnc-ui-util.h"
 
 #define TREE_MODEL_ACCOUNT_CM_CLASS "tree-model-account"
@@ -108,23 +109,21 @@ typedef struct GncTreeModelAccountPrivate
 
 /** Tell the GncTreeModelAccount code to update the color that it will
  *  use for negative numbers.  This function will iterate over all
- *  existing models and update their setting from gconf.
+ *  existing models and update their setting.
  *
  *  @internal
  */
 static void
-gnc_tree_model_account_update_color (GConfEntry *entry, gpointer user_data)
+gnc_tree_model_account_update_color (gpointer gsettings, gchar *key, gpointer user_data)
 {
     GncTreeModelAccountPrivate *priv;
     GncTreeModelAccount *model;
-    GConfValue *value;
     gboolean use_red;
 
     g_return_if_fail(GNC_IS_TREE_MODEL_ACCOUNT(user_data));
     model = user_data;
     priv = GNC_TREE_MODEL_ACCOUNT_GET_PRIVATE(model);
-    value = gconf_entry_get_value(entry);
-    use_red = gconf_value_get_bool(value);
+    use_red = gnc_prefs_get_bool (GNC_PREFS_GROUP_GENERAL, GNC_PREF_NEGATIVE_IN_RED);
     priv->negative_color = use_red ? "red" : "black";
 }
 /************************************************************/
@@ -201,16 +200,16 @@ gnc_tree_model_account_init (GncTreeModelAccount *model)
         model->stamp = g_random_int ();
     }
 
-    red = gnc_gconf_get_bool(GCONF_GENERAL, KEY_NEGATIVE_IN_RED, NULL);
+    red = gnc_prefs_get_bool(GNC_PREFS_GROUP_GENERAL, GNC_PREF_NEGATIVE_IN_RED);
 
     priv = GNC_TREE_MODEL_ACCOUNT_GET_PRIVATE(model);
     priv->book = NULL;
     priv->root = NULL;
     priv->negative_color = red ? "red" : "black";
 
-    gnc_gconf_general_register_cb(KEY_NEGATIVE_IN_RED,
-                                  gnc_tree_model_account_update_color,
-                                  model);
+    gnc_prefs_register_cb(GNC_PREFS_GROUP_GENERAL, GNC_PREF_NEGATIVE_IN_RED,
+                          gnc_tree_model_account_update_color,
+                          model);
 
     LEAVE(" ");
 }
@@ -228,10 +227,6 @@ gnc_tree_model_account_finalize (GObject *object)
 
     model = GNC_TREE_MODEL_ACCOUNT (object);
     priv = GNC_TREE_MODEL_ACCOUNT_GET_PRIVATE(model);
-
-    gnc_gconf_general_remove_cb(KEY_NEGATIVE_IN_RED,
-                                gnc_tree_model_account_update_color,
-                                model);
 
     priv->book = NULL;
 
@@ -260,7 +255,7 @@ gnc_tree_model_account_dispose (GObject *object)
         priv->event_handler_id = 0;
     }
 
-    gnc_gconf_general_remove_cb(KEY_NEGATIVE_IN_RED,
+    gnc_prefs_remove_cb_by_func(GNC_PREFS_GROUP_GENERAL, GNC_PREF_NEGATIVE_IN_RED,
                                 gnc_tree_model_account_update_color,
                                 model);
 
@@ -427,6 +422,7 @@ gnc_tree_model_account_get_column_type (GtkTreeModel *tree_model,
     case GNC_TREE_MODEL_ACCOUNT_COL_LASTNUM:
 
     case GNC_TREE_MODEL_ACCOUNT_COL_COLOR_PRESENT:
+    case GNC_TREE_MODEL_ACCOUNT_COL_COLOR_ACCOUNT:
     case GNC_TREE_MODEL_ACCOUNT_COL_COLOR_BALANCE:
     case GNC_TREE_MODEL_ACCOUNT_COL_COLOR_BALANCE_PERIOD:
     case GNC_TREE_MODEL_ACCOUNT_COL_COLOR_CLEARED:
@@ -576,7 +572,7 @@ gnc_tree_model_account_compute_period_balance(GncTreeModelAccount *model,
         gboolean *negative)
 {
     GncTreeModelAccountPrivate *priv;
-    time_t t1, t2;
+    time64 t1, t2;
     gnc_numeric b3;
 
     if ( negative )
@@ -613,7 +609,7 @@ gnc_tree_model_account_get_value (GtkTreeModel *tree_model,
     Account *account;
     gboolean negative; /* used to set "deficit style" also known as red numbers */
     gchar *string;
-    time_t last_date;
+    time64 last_date;
 
     g_return_if_fail (GNC_IS_TREE_MODEL_ACCOUNT (model));
     g_return_if_fail (iter != NULL);
@@ -804,6 +800,11 @@ gnc_tree_model_account_get_value (GtkTreeModel *tree_model,
         g_free (string);
         break;
 
+    case GNC_TREE_MODEL_ACCOUNT_COL_COLOR_ACCOUNT:
+        g_value_init (value, G_TYPE_STRING);
+        g_value_set_string (value, xaccAccountGetColor (account));
+        break;
+
     case GNC_TREE_MODEL_ACCOUNT_COL_NOTES:
         g_value_init (value, G_TYPE_STRING);
         g_value_set_string (value, xaccAccountGetNotes (account));
@@ -831,6 +832,7 @@ gnc_tree_model_account_get_value (GtkTreeModel *tree_model,
 
     default:
         g_assert_not_reached ();
+        break;
     }
     LEAVE(" ");
 }
@@ -840,7 +842,6 @@ gnc_tree_model_account_iter_next (GtkTreeModel *tree_model,
                                   GtkTreeIter *iter)
 {
     GncTreeModelAccount *model = GNC_TREE_MODEL_ACCOUNT (tree_model);
-    GncTreeModelAccountPrivate *priv;
     Account *account, *parent;
     gint i;
 
@@ -850,8 +851,6 @@ gnc_tree_model_account_iter_next (GtkTreeModel *tree_model,
     g_return_val_if_fail (iter->stamp == model->stamp, FALSE);
 
     ENTER("model %p, iter %s", tree_model, iter_to_string(iter));
-
-    priv = GNC_TREE_MODEL_ACCOUNT_GET_PRIVATE(model);
 
     parent = (Account *) iter->user_data2;
     if (parent == NULL)
@@ -940,7 +939,6 @@ gnc_tree_model_account_iter_has_child (GtkTreeModel *tree_model,
                                        GtkTreeIter *iter)
 {
     GncTreeModelAccount *model;
-    GncTreeModelAccountPrivate *priv;
     Account *account;
 
     g_return_val_if_fail (GNC_IS_TREE_MODEL_ACCOUNT (tree_model), FALSE);
@@ -948,7 +946,6 @@ gnc_tree_model_account_iter_has_child (GtkTreeModel *tree_model,
     ENTER("model %p, iter %s", tree_model, iter_to_string(iter));
 
     model = GNC_TREE_MODEL_ACCOUNT (tree_model);
-    priv = GNC_TREE_MODEL_ACCOUNT_GET_PRIVATE(model);
 
     gnc_leave_return_val_if_fail (iter != NULL, FALSE);
     gnc_leave_return_val_if_fail (iter->user_data != NULL, FALSE);
@@ -970,14 +967,12 @@ gnc_tree_model_account_iter_n_children (GtkTreeModel *tree_model,
                                         GtkTreeIter *iter)
 {
     GncTreeModelAccount *model;
-    GncTreeModelAccountPrivate *priv;
     gint num;
 
     g_return_val_if_fail (GNC_IS_TREE_MODEL_ACCOUNT (tree_model), FALSE);
     ENTER("model %p, iter %s", tree_model, iter_to_string(iter));
 
     model = GNC_TREE_MODEL_ACCOUNT (tree_model);
-    priv = GNC_TREE_MODEL_ACCOUNT_GET_PRIVATE(model);
 
     if (iter == NULL)
     {
@@ -1009,7 +1004,7 @@ gnc_tree_model_account_iter_nth_child (GtkTreeModel *tree_model,
     if (parent_iter)
     {
         gchar *parent_string;
-        parent_string = strdup(iter_to_string(parent_iter));
+        parent_string = g_strdup(iter_to_string(parent_iter));
         ENTER("model %p, iter %s, parent_iter %s, n %d",
               tree_model, iter_to_string(iter),
               parent_string, n);
@@ -1068,7 +1063,6 @@ gnc_tree_model_account_iter_parent (GtkTreeModel *tree_model,
                                     GtkTreeIter *child)
 {
     GncTreeModelAccount *model;
-    GncTreeModelAccountPrivate *priv;
     Account *account, *parent;
     gint i;
 
@@ -1076,7 +1070,7 @@ gnc_tree_model_account_iter_parent (GtkTreeModel *tree_model,
     {
         gchar *child_string;
 
-        child_string = strdup(iter_to_string(child));
+        child_string = g_strdup(iter_to_string(child));
         ENTER("model %p, iter %s, child %s",
               tree_model, iter_to_string(iter),
               child_string);
@@ -1090,7 +1084,6 @@ gnc_tree_model_account_iter_parent (GtkTreeModel *tree_model,
     gnc_leave_return_val_if_fail (GNC_IS_TREE_MODEL_ACCOUNT (tree_model), FALSE);
 
     model = GNC_TREE_MODEL_ACCOUNT (tree_model);
-    priv = GNC_TREE_MODEL_ACCOUNT_GET_PRIVATE(model);
 
     gnc_leave_return_val_if_fail (child != NULL, FALSE);
     gnc_leave_return_val_if_fail (child->user_data != NULL, FALSE);

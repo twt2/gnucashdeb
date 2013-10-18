@@ -59,19 +59,16 @@ static QofLogModule log_module = G_LOG_DOMAIN;
 static GncSqlColumnTableEntry col_table[] =
 {
     { "guid",       CT_GUID,          0,                COL_NNUL | COL_PKEY, "guid" },
-    { "username",   CT_STRING,        MAX_USERNAME_LEN, COL_NNUL,          "username" },
-    { "id",         CT_STRING,        MAX_ID_LEN,       COL_NNUL,          NULL, EMPLOYEE_ID },
-    { "language",   CT_STRING,        MAX_LANGUAGE_LEN, COL_NNUL,          NULL, EMPLOYEE_LANGUAGE },
-    { "acl",        CT_STRING,        MAX_ACL_LEN,      COL_NNUL,          NULL, EMPLOYEE_ACL },
-    { "active",     CT_BOOLEAN,       0,                COL_NNUL,          NULL, QOF_PARAM_ACTIVE },
-    {
-        "currency",   CT_COMMODITYREF,  0,                COL_NNUL,          NULL, NULL,
-        (QofAccessFunc)gncEmployeeGetCurrency, (QofSetterFunc)gncEmployeeSetCurrency
-    },
-    { "ccard_guid", CT_ACCOUNTREF,    0,                0,                 NULL, EMPLOYEE_CC },
-    { "workday",    CT_NUMERIC,       0,                COL_NNUL,          NULL, EMPLOYEE_WORKDAY },
-    { "rate",       CT_NUMERIC,       0,                COL_NNUL,          NULL, EMPLOYEE_RATE },
-    { "addr",       CT_ADDRESS,       0,                0,                 NULL, EMPLOYEE_ADDR },
+    { "username",   CT_STRING,        MAX_USERNAME_LEN, COL_NNUL,            "username" },
+    { "id",         CT_STRING,        MAX_ID_LEN,       COL_NNUL,            "id" },
+    { "language",   CT_STRING,        MAX_LANGUAGE_LEN, COL_NNUL,            "language" },
+    { "acl",        CT_STRING,        MAX_ACL_LEN,      COL_NNUL,            "acl" },
+    { "active",     CT_BOOLEAN,       0,                COL_NNUL,            "active" },
+    { "currency",   CT_COMMODITYREF,  0,                COL_NNUL,            "currency" },
+    { "ccard_guid", CT_ACCOUNTREF,    0,                0,                   "credit-card-account" },
+    { "workday",    CT_NUMERIC,       0,                COL_NNUL,            "workday" },
+    { "rate",       CT_NUMERIC,       0,                COL_NNUL,            "rate" },
+    { "addr",       CT_ADDRESS,       0,                0,                   "address" },
     { NULL }
 };
 
@@ -85,10 +82,10 @@ load_single_employee( GncSqlBackend* be, GncSqlRow* row )
     g_return_val_if_fail( row != NULL, NULL );
 
     guid = gnc_sql_load_guid( be, row );
-    pEmployee = gncEmployeeLookup( be->primary_book, guid );
+    pEmployee = gncEmployeeLookup( be->book, guid );
     if ( pEmployee == NULL )
     {
-        pEmployee = gncEmployeeCreate( be->primary_book );
+        pEmployee = gncEmployeeCreate( be->book );
     }
     gnc_sql_load_object( be, row, GNC_ID_EMPLOYEE, pEmployee, col_table );
     qof_instance_mark_clean( QOF_INSTANCE(pEmployee) );
@@ -101,13 +98,8 @@ load_all_employees( GncSqlBackend* be )
 {
     GncSqlStatement* stmt;
     GncSqlResult* result;
-    QofBook* pBook;
-    gnc_commodity_table* pTable;
 
     g_return_if_fail( be != NULL );
-
-    pBook = be->primary_book;
-    pTable = gnc_commodity_table_get_table( pBook );
 
     stmt = gnc_sql_create_select_statement( be, TABLE_NAME );
     result = gnc_sql_execute_select_statement( be, stmt );
@@ -259,7 +251,7 @@ write_employees( GncSqlBackend* be )
 
     data.be = be;
     data.is_ok = TRUE;
-    qof_object_foreach( GNC_ID_EMPLOYEE, be->primary_book, write_single_employee, &data );
+    qof_object_foreach( GNC_ID_EMPLOYEE, be->book, write_single_employee, &data );
 
     return data.is_ok;
 }

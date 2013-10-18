@@ -19,8 +19,8 @@ dnl Process this file with autoconf to produce a configure script.
 #   Footer    - Autoconf footer stuff
 
 # Autoconf initialization
-AC_PREREQ(2.59)
-AC_INIT([GnuCash], [2.4.13], [gnucash-devel@gnucash.org])
+AC_PREREQ(2.60)
+AC_INIT([GnuCash], [2.5.6], [gnucash-devel@gnucash.org])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_SRCDIR(src/engine/Transaction.h)
 
@@ -48,7 +48,7 @@ USER_OPTIMIZATION=""
 for flag in $CFLAGS; do
   tmp_flag=`echo $flag | sed -e 's,-O.,,'`
   if test -z "$tmp_flag"; then
-    USER_OPTIMIZATION="$USER_OPTIMIZATION ${tmp_flag}"
+    USER_OPTIMIZATION="$USER_OPTIMIZATION ${flag}"
   fi
 done
 
@@ -60,16 +60,6 @@ AC_PROG_CC
 AM_PROG_CC_C_O
 AC_GNU_SOURCE
 AC_PROG_INTLTOOL
-
-AM_GCONF_SOURCE_2
-
-# Override gconf default install locations.  The default is to always
-# put them into /etc.  This change puts them into $(prefix)/etc.
-if test "x$GCONF_SCHEMA_INSTALL_SOURCE" = "x"; then
-  GCONF_SCHEMA_CONFIG_SOURCE="xml::${sysconfdir}/gconf/gconf.xml.defaults"
-fi
-GCONF_SCHEMA_CONFIG_SOURCE_DIRONLY=`echo $GCONF_SCHEMA_CONFIG_SOURCE | cut -d ':' -f 3`
-AC_SUBST(GCONF_SCHEMA_CONFIG_SOURCE_DIRONLY)
 
 
 AC_SUBST(GNUCASH_MAJOR_VERSION)
@@ -128,7 +118,7 @@ AC_ARG_ENABLE(gtkmm,
 AS_IF([test x${enable_GTKMM} = "xtrue"],
   [
     # We require gtkmm, of course
-    PKG_CHECK_MODULES(GTKMM, gtkmm-2.4 >= 2.16)
+    PKG_CHECK_MODULES(GTKMM, gtkmm-2.4 >= 2.24)
     # and also the c++ compiler
     AC_PROG_CXXCPP
     AC_PROG_CXX
@@ -153,7 +143,7 @@ AC_PROG_MAKE_SET
 AC_PROG_LN_S
 AC_HEADER_STDC
 
-AC_CHECK_HEADERS(limits.h sys/time.h sys/times.h sys/wait.h)
+AC_CHECK_HEADERS(limits.h sys/time.h sys/times.h sys/wait.h pow.h)
 AC_CHECK_FUNCS(stpcpy memcpy timegm towupper)
 AC_CHECK_FUNCS(setenv,,[
   AC_CHECK_FUNCS(putenv,,[
@@ -174,39 +164,61 @@ if test x$am_cv_scanf_lld = "xno"; then
   fi
 fi
 
-# test whether we are building directly from SVN/SVK
-${srcdir}/util/gnc-svnversion ${srcdir} >/dev/null 2>&1
-if test $? = 0 -o "x${BUILDING_FROM_SVN}" = "xyes" ; then
-  BUILDING_FROM_SVN=yes
+# test whether we are building directly from svn/svk/git/bzr
+AC_MSG_CHECKING(if building from an scm managed directory)
+savedir="$PWD"
+cd "${srcdir}"
+./util/gnc-scm-info -r . >/dev/null 2>&1
+if test $? = 0 -o "x${BUILDING_FROM_SCM}" = "xyes" ; then
+  BUILDING_FROM_SCM=yes
+  SCM_TYPE=$(./util/gnc-scm-info -t .)
+  AC_MSG_RESULT($SCM_TYPE)
+
+  if test "x${SCM_TYPE}" = "xgit"; then
+    AC_MSG_CHECKING(git command to use due to detected git repo)
+    # The windows build uses environment variable $GIT_CMD to invoke git (adding git
+    # to the PATH in Windows results in a build failure).
+    # So for platform independence, use GIT_CMD for all
+    if test -z "${GIT_CMD}" ; then
+      GIT_CMD=git
+    fi
+    AC_MSG_RESULT(${GIT_CMD})
+  fi
 
   # We need at least version 1.3.31 of SWIG because
   # that's when SWIG doesn't barf on the "inline" keyword in C headers anymore
   AC_PROG_SWIG(1.3.31)
 else
-  BUILDING_FROM_SVN=no
-  # Make sure we've got swig-runtime.h and gnc-svninfo.h
+  AC_MSG_RESULT(no)
+  BUILDING_FROM_SCM=no
+  SCM_TYPE=
+
+  # Make sure we've got swig-runtime.h and gnc-scm-info.h
   AC_CHECK_FILE(${srcdir}/src/swig-runtime.h, [],
     [AC_MSG_ERROR([
 
-It looks like you are NOT building from Subversion
-but I cannot find swig-runtime.h.  Check your PATH
-and make sure we can find svnversion in your PATH!
+It looks like you are NOT building from Subversion, svk, git or bzr
+but I cannot find swig-runtime.h.  Check your PATH and make sure
+we can find gnc-scm-info in your PATH!
 Either that or contact gnucash-devel@gnucash.org because
 the tarball you downloaded is broken.
 
     ])])
-  AC_CHECK_FILE(${srcdir}/src/core-utils/gnc-svninfo.h, [],
+  AC_CHECK_FILE(${srcdir}/src/core-utils/gnc-scm-info.h, [],
     [AC_MSG_ERROR([
 
-It looks like you are NOT building from Subversion
-but I cannot find gnc-svninfo.h.  Check your PATH
-and make sure we can find svnversion in your PATH!
+It looks like you are NOT building from Subversion, svk, git or bzr
+but I cannot find gnc-scm-info.h.  Check your PATH and make sure
+we can find gnc-scm-info in your PATH!
 Either that or contact gnucash-devel@gnucash.org because
 the tarball you downloaded is broken.
 
     ])])
 fi
-AM_CONDITIONAL(BUILDING_FROM_SVN, test "x$BUILDING_FROM_SVN" = "xyes")
+cd "${savedir}"
+AM_CONDITIONAL(BUILDING_FROM_SCM, test "x$BUILDING_FROM_SCM" = "xyes")
+AC_SUBST(SCM_TYPE)
+AC_SUBST(GIT_CMD)
 
 # Build dir adjustments
 AM_CONDITIONAL(GNUCASH_SEPARATE_BUILDDIR, test "x${srcdir}" != "x.")
@@ -227,43 +239,63 @@ if test "x$PKG_CONFIG" = x; then
 fi
 
 ### --------------------------------------------------------------------------
-### Glib checks..
+### Glib checks.
 
-AM_PATH_GLIB_2_0(2.12.0,,AC_MSG_ERROR([
-*** GLIB >= 2.12 is required to build Gnucash; please make sure you have the
-*** development headers installed. The latest version of GLIB is
-*** always available at ftp://ftp.gnome.org/pub/gnome/sources/glib/.]),
-    gthread gobject gmodule)
-
-AC_MSG_CHECKING([for untested GLIB versions (glib >= 2.13.0)])
-if $PKG_CONFIG 'glib-2.0 >= 2.13.0'
-then
-  AC_MSG_RESULT(yes)
-  HAVE_UNTESTED_GLIB=yes
-else
-  AC_MSG_RESULT(no)
-fi
-
-AC_MSG_CHECKING([for GLib testing (glib >= 2.16.0)])
-if $PKG_CONFIG 'glib-2.0 >= 2.16.0'
-then
-  AC_MSG_RESULT(yes)
-  _have_glib_testing=yes
-else
-  AC_MSG_RESULT(no)
-  _have_glib_testing=no
-fi
-AC_MSG_CHECKING([for GLib 2.32 or later (glib >=2.32.0)])
-if $PKG_CONFIG "glib-2.0 >= 2.32.0"
-then
-  AC_MSG_RESULT(yes)
+# We require glib >= 2.28, released together with gtk-2.24;
+# We first check for other versions due to deprecations.
+# 2.36 deprecated g_type_init
+# 2.32 deprecated some gthread functions
+PKG_CHECK_MODULES(GLIB, glib-2.0 >= 2.38 gio-2.0 >= 2.25 gthread-2.0 gobject-2.0 gmodule-2.0,
+[
+  AC_DEFINE([HAVE_GLIB_2_38], [1], [Configure leading quote around assertions])
+  AC_DEFINE([HAVE_GLIB_2_36], [1], [Configure g_type_init deprecation])
   AC_DEFINE([HAVE_GLIB_2_32], [1], [Configure gthread deprecations])
-else
-  AC_MSG_RESULT(no)
-fi
-AM_CONDITIONAL(HAVE_GLIB_TESTING, test "x$_have_glib_testing" = "xyes")
-
+],
+[
+  PKG_CHECK_MODULES(GLIB,
+                        glib-2.0 >= 2.36 gio-2.0 >= 2.25 gthread-2.0 gobject-2.0 gmodule-2.0,
+  [
+    AC_DEFINE([HAVE_GLIB_2_36], [1], [Configure g_type_init deprecation])
+    AC_DEFINE([HAVE_GLIB_2_32], [1], [Configure gthread deprecations])
+  ],
+  [
+    PKG_CHECK_MODULES(GLIB,
+                        glib-2.0 >= 2.32 gio-2.0 >= 2.25 gthread-2.0 gobject-2.0 gmodule-2.0,
+    [
+        AC_DEFINE([HAVE_GLIB_2_32], [1], [Configure gthread deprecations])
+    ],
+    [
+	PKG_CHECK_MODULES(GLIB,
+                        glib-2.0 >= 2.28 gio-2.0 >= 2.25 gthread-2.0 gobject-2.0 gmodule-2.0)
+    ])
+  ])
+])
 AC_CHECK_HEADERS(dirent.h dlfcn.h dl.h utmp.h locale.h mcheck.h unistd.h wctype.h)
+
+GLIB_GSETTINGS
+
+# I'm sure we (used to?) require this in various places, so don't remove
+# this test unless you've done sufficient code review/testing.
+AC_MSG_CHECKING(if unsigned long is at least as big as guint32)
+GNC_OLDCFLAGS="$CFLAGS"
+GNC_OLDLDFLAGS="$LDFLAGS"
+CFLAGS="${CFLAGS} ${GLIB_CFLAGS}"
+LDFLAGS="${LDFLAGS} ${GLIB_LIBS}"
+AC_TRY_RUN([
+  #include <glib.h>
+  int main(int argc, char *argv[]) {
+    return(!(sizeof(unsigned long) >= sizeof(guint32)));
+  }
+],[
+  AC_MSG_RESULT(yes)
+],[
+  AC_MSG_RESULT(no)
+  AC_MSG_ERROR(cannot continue, size of unsigned long too small.)
+],[
+  AC_MSG_RESULT(assuming yes)
+])
+CFLAGS="$GNC_OLDCFLAGS"
+LDFLAGS="$GNC_OLDLDFLAGS"
 
 # Gnucash replaced dlopen/dlsym by the g_module functions; dlsym
 # is needed optionally in one place for BSD linkers, though.
@@ -310,7 +342,7 @@ update to latest  darwin])
       PKG_CHECK_MODULES([GTK_MAC], gtk-mac-integration,
                         [_gtk_mac=yes], [_gtk_mac=no])
       if test "x$_gtk_mac" = xyes; then
-        GTK_MAC_LIBS="${GTK_MAC_LIBS} -lobjc"
+        GTK_MAC_LIBS="${GTK_MAC_LIBS} -lobjc -framework Cocoa"
         GTK_MAC_CFLAGS="${GTK_MAC_CFLAGS} -xobjective-c"
       fi
       AC_MSG_RESULT(${_gtk_mac})
@@ -399,8 +431,19 @@ if test "x$GUILE_INCS" != x; then
   saved_GUILE_INCS="$GUILE_INCS"
 fi
 GUILE_LIBS=""
-GNOME_CHECK_GUILE
 
+# Look up GUILE_CFLAGS and GUILE_LIBS, and version check
+PKG_CHECK_MODULES(GUILE, [guile-1.8 >= 1.8.5], , [
+  PKG_CHECK_MODULES(GUILE, [guile-2.0 >= 2.0.0], , [AC_MSG_ERROR([
+    guile does not appear to be installed correctly, or is not in the
+    correct version range.  Perhaps you have not installed the guile
+    development packages?  Gnucash requires at least version 1.8.5 to build.
+  ])])
+])
+# Look up GUILE executable
+AC_PATH_PROG(GUILE, guile)
+
+GUILE_INCS="${GUILE_CFLAGS}"
 if test "x$saved_GUILE_LIBS" != x; then
   GUILE_LIBS="$saved_GUILE_LIBS"
 fi
@@ -409,92 +452,9 @@ if test "x$saved_GUILE_INCS" != x; then
 fi
 
 AS_SCRUB_INCLUDE(GUILE_INCS)
+AC_SUBST(GUILE_INCS)
 AC_SUBST(GUILE_LIBS)
-
-AM_GUILE_VERSION_CHECK(1.6.7, , , [AC_MSG_ERROR([
-
-  guile does not appear to be installed correctly, or is not in the
-  correct version range.  Perhaps you have not installed the guile
-  development packages?  Gnucash requires at least version 1.6.7 to build.
-])])
-
 AC_SUBST(GUILE)
-AC_DEFINE_UNQUOTED(GNC_GUILE_MAJOR_VERSION, ${guile_major_version},
-    [Guile Major version number])
-AC_DEFINE_UNQUOTED(GNC_GUILE_MINOR_VERSION, ${guile_minor_version},
-    [Guile Minor version number])
-AC_DEFINE_UNQUOTED(GNC_GUILE_MICRO_VERSION, ${guile_micro_version},
-    [Guile Micro version number])
-
-AM_GUILE_VERSION_CHECK(1.8.0, , [
-  AC_DEFINE(HAVE_GUILE18,1,[System has guile 1.8 or better])
-], )
-
-AS_SCRUB_INCLUDE(CFLAGS)
-
-AC_MSG_CHECKING([for SLIB support])
-if ${GUILE} -c "(use-modules (ice-9 slib)) (require 'printf)" > /dev/null 2>&1
-then
-  AC_MSG_RESULT(yes)
-else
-  AC_MSG_ERROR([
-
-Cannot find SLIB.  Are you sure you have it installed?
-See http://bugzilla.gnome.org/show_bug.cgi?id=347922
-and http://bugzilla.gnome.org/show_bug.cgi?id=483631
-
-])
-fi
-
-### Check size of long_long - some guile's are broken.
-AC_MSG_CHECKING(if guile long_long is at least as big as gint64)
-GNC_OLDCFLAGS="$CFLAGS"
-GNC_OLDLDFLAGS="$LDFLAGS"
-CFLAGS="${GNOME_CFLAGS} ${GUILE_INCS} ${CFLAGS} ${GLIB_CFLAGS}"
-LDFLAGS="${LDFLAGS} ${GLIB_LIBS}"
-AC_TRY_RUN([
-  #include <glib.h>
-  #include <libguile/__scm.h>
-  int main(int argc, char *argv[]) {
-    return(!(sizeof(long_long) >= sizeof(gint64)));
-  }
-],[
-  AC_MSG_RESULT(yes)
-  AC_CHECK_LIB(guile, scm_long_long2num,
-    AC_DEFINE(GUILE_LONG_LONG_OK,1,is sizeof(long_long) >= sizeof(gint64)))
-],[
-  AC_MSG_RESULT(no)
-],[
-  AC_MSG_RESULT(assuming yes)
-  AC_CHECK_LIB(guile, scm_long_long2num,
-    AC_DEFINE(GUILE_LONG_LONG_OK,1,is sizeof(long_long) >= sizeof(gint64)))
-])
-CFLAGS="$GNC_OLDCFLAGS"
-LDFLAGS="$GNC_OLDLDFLAGS"
-
-# One of the places this is critical is in gnc_scm_to_gint64 and inverse.
-# However, I'm sure we require this elsewhere, so don't remove this test
-# unless you've done sufficient code review/testing.
-AC_MSG_CHECKING(if unsigned long is at least as big as guint32)
-GNC_OLDCFLAGS="$CFLAGS"
-GNC_OLDLDFLAGS="$LDFLAGS"
-CFLAGS="${GNOME_CFLAGS} ${GUILE_INCS} ${CFLAGS} ${GLIB_CFLAGS}"
-LDFLAGS="${LDFLAGS} ${GLIB_LIBS}"
-AC_TRY_RUN([
-  #include <glib.h>
-  int main(int argc, char *argv[]) {
-    return(!(sizeof(unsigned long) >= sizeof(guint32)));
-  }
-],[
-  AC_MSG_RESULT(yes)
-],[
-  AC_MSG_RESULT(no)
-  AC_MSG_ERROR(cannot continue, size of unsigned long too small.)
-],[
-  AC_MSG_RESULT(assuming yes)
-])
-CFLAGS="$GNC_OLDCFLAGS"
-LDFLAGS="$GNC_OLDLDFLAGS"
 
 ### --------------------------------------------------------------------------
 ### See if we need guile-www
@@ -505,16 +465,6 @@ AC_MSG_CHECKING([if guile needs our copy of (guile www)])
 GUILE_MODULE_AVAILABLE(gnc_have_guile_www,[(www main)])
 
 AM_CONDITIONAL(GNC_HAVE_GUILE_WWW, test "${gnc_have_guile_www}" = yes)
-
-### --------------------------------------------------------------------------
-### look for gconf
-
-PKG_CHECK_MODULES(GCONF, gconf-2.0 >= "2.0")
-# Look up gconftool-2
-AC_PATH_PROG(GCONFTOOL, gconftool-2)
-AC_SUBST(GCONFTOOL)
-AC_SUBST(GCONF_CFLAGS)
-AC_SUBST(GCONF_LIBS)
 
 ### --------------------------------------------------------------------------
 ### LIBXML -- GNOME_XML_LIB is defined by GNOME_XML_CHECK
@@ -533,6 +483,14 @@ AC_CHECK_LIB(xml2, xmlElemDump, [:], [
   AC_MSG_ERROR([libxml2 is required for GnuCash])
   ])
 LIBS="$oLIBS"
+
+### --------------------------------------------------------------------------
+### LIBXSLT
+
+PKG_CHECK_MODULES(LIBXSLT, libxslt)
+AS_SCRUB_INCLUDE(LIBXLT_CFLAGS)
+AC_SUBST(LIBXSLT_CFLAGS)
+AC_SUBST(LIBXSLT_LIBS)
 
 ### --------------------------------------------------------------------------
 ### Zlib
@@ -571,15 +529,58 @@ AC_ARG_ENABLE(dbi,
    [want_dbi=true])
 if test x${want_dbi} = xtrue
 then
+  EXTRA_SEARCH_LIBS=""
   AC_CHECK_HEADERS(dbi/dbi.h)
   if test "x$ac_cv_header_dbi_dbi_h" != xno; then
+    save_libs=$LIBS
     AC_ARG_WITH( dbi-dbd-dir,
       [AS_HELP_STRING([--with-dbi-dbd-dir=PATH],[specify location of libdbi drivers @<:@default=${libdir}/dbd@:>@])],
-      GNC_DBD_DIR="$with_dbi_dbd_dir",
-      GNC_DBD_DIR="")
+      [[GNC_DBD_DIR="$with_dbi_dbd_dir"
+       EXTRA_SEARCH_LIBS=$GNC_DBD_DIR]],
+      [[GNC_DBD_DIR=""
+       EXTRA_SEARCH_LIBS="/usr/lib/dbd:/usr/lib64/dbd:${libdir}/dbd"]]
+       )
+    case $host_os in
+       win32*|mingw*)
+	 LDINC="#include <windows.h>"
+	 LDFUNCARGS=""
+	 LDEXT=dll
+	 ;;
+       *)
+	 LDINC="#include <dlfcn.h>"
+	 LDFUNCARGS=", RTLD_NOW"
+	 LDEXT=so
+	 export LIBS="$lt_cv_dlopen_libs $LIBS"
+	 ;;
+      esac
+      export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$EXTRA_SEARCH_LIBS"
+      AC_MSG_CHECKING([Looking for at least one supported DBD module])
+      AC_RUN_IFELSE([AC_LANG_PROGRAM([$LDINC],
+				     [[if (!$lt_cv_dlopen("libdbdsqlite3.$LDEXT"$LDFUNCARGS)) return -1;
+				     ]])],AC_MSG_RESULT([SQLite3]),
+      	AC_RUN_IFELSE([AC_LANG_PROGRAM([$LDINC],
+				     [[if (!$lt_cv_dlopen("libdbdmysql.$LDEXT"$LDFUNCARGS)) return -1;
+					]])],AC_MSG_RESULT([MySql]),
+	  AC_RUN_IFELSE([AC_LANG_PROGRAM([$LDINC],
+				     [[if (!$lt_cv_dlopen("libdbdpgsql.$LDEXT"$LDFUNCARGS)) return -1;
+					 ]])],AC_MSG_RESULT([Postgresql]),
+        				 AC_MSG_ERROR([
+Unable to find any of the supported dbd modules
+(libdbdsqlite3, libdbdmysql, or libdbdpgsql) needed to actually use the SQL
+backend.
+
+If you do have them installed the problem is either that dlopen cannot
+find them or that dlopen itself is not getting linked. Check config.log
+to find out which.  You can add the option --with-dbi-dbd-dir pointing to
+the directory in which they are located.
+
+If you do not actually want to build with libdi add --disable-dbi
+to the configure argument list and run it again.
+       ]))))
 
     LIBDBI_LIBS=-ldbi
     _COMPONENTS="$_COMPONENTS dbi"
+    LIBS=$saved_libs
   else
     AC_MSG_ERROR([
 
@@ -594,13 +595,13 @@ fi
 AC_SUBST(LIBDBI_LIBS)
 AC_SUBST(GNC_DBD_DIR)
 AM_CONDITIONAL(CUSTOM_GNC_DBD_DIR, [test x"$GNC_DBD_DIR" != "x"])
-AM_CONDITIONAL(WITH_DBI, [test "x$ac_cv_header_dbi_dbi_h" == xyes])
+AM_CONDITIONAL(WITH_DBI, [test "x$ac_cv_header_dbi_dbi_h" = xyes])
 
 ### --------------------------------------------------------------------------
 ### Variables
 ### Set up all the initial variable values...
 GNC_CONFIGDIR='${sysconfdir}/gnucash'
-GNC_DOC_INSTALL_DIR='${pkgdatadir}/doc'
+GNC_DOC_INSTALL_DIR='${docdir}'
 GNC_INCLUDE_DIR='${includedir}/gnucash'
 GNC_SCM_INSTALL_DIR='${pkgdatadir}/scm'
 GNC_SHAREDIR='${pkgdatadir}'
@@ -608,7 +609,7 @@ GNC_LIBEXECDIR='${libexecdir}/gnucash'
 
 GNC_ACCOUNTS_DIR='${GNC_SHAREDIR}/accounts'
 GNC_CHECKS_DIR='${GNC_SHAREDIR}/checks'
-GNC_GLADE_DIR='${GNC_SHAREDIR}/glade'
+GNC_GTKBUILDER_DIR='${GNC_SHAREDIR}/gtkbuilder'
 GNC_UI_DIR='${GNC_SHAREDIR}/ui'
 GNC_PIXMAP_DIR='${GNC_SHAREDIR}/pixmaps'
 
@@ -616,7 +617,7 @@ AC_SUBST(GNC_ACCOUNTS_DIR)
 AC_SUBST(GNC_CHECKS_DIR)
 AC_SUBST(GNC_CONFIGDIR)
 AC_SUBST(GNC_DOC_INSTALL_DIR)
-AC_SUBST(GNC_GLADE_DIR)
+AC_SUBST(GNC_GTKBUILDER_DIR)
 AC_SUBST(GNC_UI_DIR)
 AC_SUBST(GNC_INCLUDE_DIR)
 AC_SUBST(GNC_PIXMAP_DIR)
@@ -633,19 +634,14 @@ AC_ARG_ENABLE( debug,
      CFLAGS="${CFLAGS} -g ${USER_OPTIMIZATION}"
      LDFLAGS="${LDFLAGS} -g"
      AC_DEFINE(DEBUG_MEMORY,1,[Enable debug memory])
-     AC_DEFINE(DEBUG_MEMORY,0,[Enable debug memory])
+  ],
+  [     AC_DEFINE(DEBUG_MEMORY,0,[Enable debug memory])
   ])
 
 AC_ARG_ENABLE( profile,
   [AS_HELP_STRING([--enable-profile],[compile with profiling set])],
   CFLAGS="${CFLAGS} -pg"
   LDFLAGS="${LDFLAGS} -pg")
-
-AC_ARG_ENABLE( ref-counts-dumps,
-  [AS_HELP_STRING([--enable-ref-counts-dumps],[compile with ref count dumps])],
-  AC_DEFINE(DEBUG_REFERENCE_COUNTING,1,[Enable reference count dumps])
-  AC_DEFINE(DEBUG_REFERENCE_COUNTING,0,[Enable reference count dumps]) )
-
 
 ### --------------------------------------------------------------------------
 ### OFX
@@ -912,56 +908,23 @@ then
   fi
   GNOME_COMPILE_WARNINGS
 
-  PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.10)
+  PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.24.0)
   AS_SCRUB_INCLUDE(GTK_CFLAGS)
   AC_SUBST(GTK_CFLAGS)
   AC_SUBST(GTK_LIBS)
 
-  AC_MSG_CHECKING([for untested GTK versions (gtk > 2.11.0)])
-  if $PKG_CONFIG 'gtk+-2.0 > 2.11.0'
-  then
-    AC_MSG_RESULT(yes)
-    HAVE_UNTESTED_GTK=yes
-  fi
-
-  AC_MSG_CHECKING([for GTK >= 2.12.0])
-  if $PKG_CONFIG 'gtk+-2.0 >= 2.12.0'
-  then
-    AC_MSG_RESULT(yes)
-    AC_DEFINE(HAVE_GTK_2_12,1,[System has gtk 2.12.0 or better])
-    HAVE_GTK_2_12=yes
-  fi
-
-  PKG_CHECK_MODULES(GNOME, libgnomeui-2.0 >= 2.4)
-  AS_SCRUB_INCLUDE(GNOME_CFLAGS)
-  AC_SUBST(GNOME_CFLAGS)
-  AC_SUBST(GNOME_LIBS)
-
-  AC_MSG_CHECKING([for untested GNOME versions (libgnome >= 2.19.0)])
-  if $PKG_CONFIG 'libgnome-2.0 >= 2.19.0'
-  then
-    AC_MSG_RESULT(yes)
-    HAVE_UNTESTED_GNOME=yes
-  else
-    AC_MSG_RESULT(no)
-  fi
+  PKG_CHECK_MODULES(GNOMECANVAS, libgnomecanvas-2.0)
+  AS_SCRUB_INCLUDE(GNOMECANVAS_CFLAGS)
+  AC_SUBST(GNOMECANVAS_CFLAGS)
+  AC_SUBST(GNOMECANVAS_LIBS)
 
   PKG_CHECK_MODULES(GDK_PIXBUF, gdk-pixbuf-2.0)
   AS_SCRUB_INCLUDE(GDK_PIXBUF_CFLAGS)
   AC_SUBST(GDK_PIXBUF_CFLAGS)
   AC_SUBST(GDK_PIXBUF_LIBS)
 
-  PKG_CHECK_MODULES(GLADE, libglade-2.0 >= 2.4)
-  AS_SCRUB_INCLUDE(GLADE_CFLAGS)
-  AC_SUBST(GLADE_CFLAGS)
-  AC_SUBST(GLADE_LIBS)
-
    # checks for goffice
-  PKG_CHECK_MODULES(GOFFICE, libgoffice-0.8 >= 0.7.0, [goffice=1], [
-    PKG_CHECK_MODULES(GOFFICE, libgoffice-0.6 >= 0.6.0, [goffice=1], [
-      PKG_CHECK_MODULES(GOFFICE, libgoffice-0.5 >= 0.5.1, [goffice=1], [AC_MSG_ERROR([Cannot find libgoffice.>= 0.5.1])])
-    ])
-  ])
+  PKG_CHECK_MODULES(GOFFICE, libgoffice-0.8 >= 0.7.0, [goffice=1], [AC_MSG_ERROR([Cannot find libgoffice.>= 0.5.1])])
   AS_SCRUB_INCLUDE(GOFFICE_CFLAGS)
   AC_SUBST(GOFFICE_CFLAGS)
   AC_SUBST(GOFFICE_LIBS)
@@ -971,35 +934,21 @@ then
 
   AC_MSG_CHECKING([the html engine])
   AC_ARG_WITH(html_engine,
-              AS_HELP_STRING([--with-html-engine=@<:@webkit/gtkhtml@:>@],
-                             [Select HTML engine [default=gtkhtml]]),
-              [],[with_html_engine="gtkhtml"])
+              AS_HELP_STRING([--with-html-engine=@<:@webkit@:>@],
+                             [Obsolete: Only webkit is used as HTML engine now]),
+              [],[with_html_engine="webkit"])
 
   AC_MSG_RESULT([$with_html_engine])
 
   case "$with_html_engine" in
 
     gtkhtml)
-      # check for gtkhtml >= 3.14 with gtkprint support
-      gtkhtml=0
-      PKG_CHECK_MODULES(GTKHTML, libgtkhtml-3.14, [
-        # check for gtkhtml >= 3.16 (includes gtk_html_print_operation_run())
-        AC_MSG_CHECKING(for GtkHTML - version >= 3.16.0)
-        if $PKG_CONFIG 'libgtkhtml-3.14 >= 3.16.0'; then
-          AC_MSG_RESULT(yes)
-          AC_DEFINE(HAVE_GTKHTML_3_16,1,[System has gtkhtml 3.16.0 or better])
-          HAVE_GTKHTML_3_16=1
-        else
-          AC_MSG_RESULT(no)
-        fi
-      ], [
-        AC_MSG_ERROR([cannot find GtkHTML >= 3.14])
-      ])
+      # No more gtkhtml in gnucash-2.5.0
+      AC_MSG_ERROR([gtkhtml is no longer sufficient for gnucash, as we now require the CSS/javascript features using webkit. Please remove your --with-html-engine argument from configure.])
       ;;
 
     webkit)
       PKG_CHECK_MODULES(WEBKIT, webkit-1.0 >= "1.0")
-      AC_DEFINE(WANT_WEBKIT,1,[Use webkit instead of gtkhtml])
       case "$platform" in
         win32)
           # 1.1.90 has both functions
@@ -1030,25 +979,14 @@ then
         esac
         ;;
 
-    *) AC_MSG_ERROR([Invalid HTML engine: must be gtkhtml or webkit]) ;;
+    *) AC_MSG_ERROR([Invalid HTML engine: must be webkit]) ;;
   esac
 
-  AM_CONDITIONAL(HTML_USING_WEBKIT, [test x${with_html_engine} = xwebkit])
   AC_SUBST(WEBKIT_CFLAGS)
   AC_SUBST(WEBKIT_LIBS)
-  AS_SCRUB_INCLUDE(GTKHTML_CFLAGS)
 
   dnl if Mac OSX, also scrub /sw/include
   dnl GIVEN_CFLAGS=$(echo $GIVEN_CFLAGS | sed -e "s;-I/sw/include ;;" | sed -e "s;-I/sw/include$;;")
-
-  case $host_os in
-    darwin*)
-      GTKHTML_CFLAGS=`echo $GTKHTML_CFLAGS | ${SED} -e "s;-I/sw/include ;;" | ${SED} -e "s;-I/sw/include$;;"`
-      GTKHTML_CFLAGS=`echo $GTKHTML_CFLAGS | ${SED} -e "s;-I/sw/include/gtkhtml ;;" | ${SED} -e "s;-I/sw/includ/gtkhtmle$;;"`
-      ;;
-  esac
-  AC_SUBST(GTKHTML_CFLAGS)
-  AC_SUBST(GTKHTML_LIBS)
 
   ###-----------------------------------------------------------------------
   ## Find a suitable password store
@@ -1099,12 +1037,8 @@ fi
 ###-------------------------------------------------------------------------
 ### Selectively disable deprecated bits of glib/gdk/gtk/gnome
 ###-------------------------------------------------------------------------
-if test x${HAVE_UNTESTED_GLIB} = "xyes"
-then
-  allow_deprecated=true
-else
-  allow_deprecated=false
-fi
+
+allow_deprecated=true
 AC_ARG_ENABLE(deprecated-glib,
   [AS_HELP_STRING([--disable-deprecated-glib],[don't use deprecated glib functions])],
   [case "${enableval}" in
@@ -1114,16 +1048,13 @@ AC_ARG_ENABLE(deprecated-glib,
   )
 if test x${allow_deprecated} != "xtrue"
 then
+  # FIXME: This define is unused; this block can be removed
   AC_DEFINE(G_DISABLE_DEPRECATED,1, [Don't use deprecated glib functions])
 fi
 
 
-if test x${HAVE_UNTESTED_GTK} = "xyes"
-then
-  allow_deprecated=true
-else
-  allow_deprecated=false
-fi
+# default: Allow deprecated gtk functions
+allow_deprecated=true
 AC_ARG_ENABLE(deprecated-gtk,
   [AS_HELP_STRING([--disable-deprecated-gtk],[don't use deprecated gtk, gdk or gdk-pixbuf functions])],
   [case "${enableval}" in
@@ -1133,18 +1064,14 @@ AC_ARG_ENABLE(deprecated-gtk,
   )
 if test x${allow_deprecated} != "xtrue"
 then
+  # FIXME: This define is unused; this block can be removed
   AC_DEFINE(GTK_DISABLE_DEPRECATED,1, [Don't use deprecated gtk functions])
   AC_DEFINE(GDK_DISABLE_DEPRECATED,1, [Don't use deprecated gdk functions])
   AC_DEFINE(GDK_PIXBUF_DISABLE_DEPRECATED,1, [Don't use deprecated gdk-pixbuf functions])
 fi
 
 
-if test x${HAVE_UNTESTED_GNOME} = "xyes"
-then
-  allow_deprecated=true
-else
-  allow_deprecated=false
-fi
+allow_deprecated=true
 AC_ARG_ENABLE(deprecated-gnome,
   [AS_HELP_STRING([--disable-deprecated-gnome],[don't use deprecated gnome functions])],
   [case "${enableval}" in
@@ -1154,6 +1081,7 @@ AC_ARG_ENABLE(deprecated-gnome,
   )
 if test x${allow_deprecated} != "xtrue"
 then
+  # FIXME: This define is unused; this block can be removed
   AC_DEFINE(GNOME_DISABLE_DEPRECATED,1, [Don't use deprecated gnome functions])
 fi
 
@@ -1172,8 +1100,6 @@ case $host_os in
     ;;
 esac
 
-#AC_REPLACE_FUNCS(scm_strptime)
-
 if test x$am_cv_val_LC_MESSAGES = "xno"; then
   LC_MESSAGES_ENUM="LC_ALL"
 else
@@ -1182,17 +1108,17 @@ fi
 AC_SUBST(LC_MESSAGES_ENUM)
 
 ###--------------------------------------------------------
-### Make Python bindings optional
+### Make Python plugin and bindings optional
 ###--------------------------------------------------------
-enable_python=false
 
-AC_ARG_ENABLE(python-bindings,
-  [AS_HELP_STRING([--enable-python-bindings],[enable python bindings])],
+AC_ARG_ENABLE(python,
+  [AS_HELP_STRING([--enable-python],[enable python plugin and bindings])],
   [case "${enableval}" in
      yes) enable_python=true ;;
      no) enable_python=false ;;
-     *) enable_python=true ;;
-   esac]
+     *) enable_python=false    # default: false
+   esac],
+  [enable_python=false] # default: false
   )
 if test x${enable_python} = "xtrue"
 then
@@ -1202,7 +1128,7 @@ then
 	   AC_MSG_ERROR([Could not find python >= 2.4. If you use --enable-python, you MUST have python installed!])
     ])
   AC_PYTHON_DEVEL(>= '2.4')
-  if [ "x${PYTHON}" = "x" ]
+  if test "x${PYTHON}" = "x"
   then
 	   AC_MSG_ERROR([Could not find Python development files. Make sure that the correct python-devel package is installed.])
   fi
@@ -1210,6 +1136,13 @@ then
   _COMPONENTS="$_COMPONENTS python"
 fi
 AM_CONDITIONAL(WITH_PYTHON, [test x${enable_python} = xtrue])
+
+AC_ARG_ENABLE(python-bindings,
+  [AS_HELP_STRING([--enable-python-bindings],[obsolete: replaced by --enable-python])],
+  if test "x$enableval" != "xno" ; then
+    AC_MSG_ERROR([--enable-python-bindings is obsolete: The option has been renamed into --enable-python])
+  fi)
+
 
 ###-------------------------------------------------------------------------
 ### Additional compiler warnings (or not) if we're running GCC
@@ -1228,9 +1161,9 @@ then
   #warnFLAGS="${warnFLAGS} -Werror-implicit-function-declaration" # In -Wall
 
   # error-on-warning should not be active in (stable) release tarballs
-  if test "x$BUILDING_FROM_SVN" = "xyes"
+  if test "x$BUILDING_FROM_SCM" = "xyes"
   then
-    # This code is from SVN/SVK, so enable error-on-warning
+    # This code is from svn/svk/git/bzr, so enable error-on-warning
     error_on_warning_as_default="yes"
   else
     # This is from a tarball, so disable error-on-warning
@@ -1294,6 +1227,8 @@ chmod u+x ${srcdir}/src/bin/overrides/gnucash-make-guids
 LIBOBJS_SEDSCRIPT="s,\.[[^.]]* ,$U&,g;s,\.[[^.]]*\$\$,$U&,"
 AC_SUBST(LIBOBJS_SEDSCRIPT)
 
+# Don't add empty lines in the following macro, they
+# will cause the Windows build to fail if using a git repo as source
 AC_CONFIG_FILES(
   po/Makefile.in
   dnl # Makefiles
@@ -1338,7 +1273,6 @@ AC_CONFIG_FILES(
   lib/stf/Makefile
   packaging/Makefile
   packaging/win32/Makefile
-  packaging/win32/gnucash.iss
   src/Makefile
   src/app-utils/Makefile
   src/app-utils/test/Makefile
@@ -1356,8 +1290,6 @@ AC_CONFIG_FILES(
   src/bin/test/Makefile
   src/core-utils/Makefile
   src/core-utils/test/Makefile
-  src/calculation/Makefile
-  src/calculation/test/Makefile
   src/debug/Makefile
   src/debug/valgrind/Makefile
   src/doc/Makefile
@@ -1373,39 +1305,45 @@ AC_CONFIG_FILES(
   src/gnc-module/test/mod-baz/Makefile
   src/gnc-module/test/misc-mods/Makefile
   src/gnome/Makefile
-  src/gnome/gnucash.desktop.in
-  src/gnome/glade/Makefile
-  src/gnome/schemas/Makefile
+  src/gnome/gtkbuilder/Makefile
+  src/gnome/gschemas/Makefile
   src/gnome/ui/Makefile
   src/gnome-utils/Makefile
-  src/gnome-utils/glade/Makefile
-  src/gnome-utils/schemas/Makefile
+  src/gnome-utils/gtkbuilder/Makefile
+  src/gnome-utils/gschemas/Makefile
   src/gnome-utils/test/Makefile
   src/gnome-utils/ui/Makefile
   src/gnome-search/Makefile
   src/html/Makefile
   src/import-export/Makefile
   src/import-export/test/Makefile
+  src/import-export/ofx/gschemas/Makefile
   src/import-export/qif-import/Makefile
   src/import-export/qif/Makefile
   src/import-export/qif/test/Makefile
-  src/import-export/qif-import/schemas/Makefile
+  src/import-export/qif-import/gschemas/Makefile
   src/import-export/qif-import/test/Makefile
-  src/import-export/schemas/Makefile
+  src/import-export/gschemas/Makefile
   src/import-export/ofx/Makefile
   src/import-export/ofx/test/Makefile
-  src/import-export/csv/Makefile
+  src/import-export/csv-import/Makefile
+  src/import-export/csv-import/gschemas/Makefile
+  src/import-export/csv-export/Makefile
+  src/import-export/csv-export/gschemas/Makefile
   src/import-export/log-replay/Makefile
   src/import-export/aqbanking/Makefile
-  src/import-export/aqbanking/schemas/Makefile
+  src/import-export/aqbanking/gschemas/Makefile
   src/libqof/Makefile
   src/libqof/qof/Makefile
   src/libqof/qof/test/Makefile
   src/optional/Makefile
   src/optional/gtkmm/Makefile
+  src/optional/gtkmm/test/Makefile
   src/optional/python-bindings/Makefile
   src/optional/python-bindings/tests/Makefile
   src/pixmaps/Makefile
+  src/python/Makefile
+  src/python/pycons/Makefile
   src/quotes/Makefile
   src/register/Makefile
   src/register/ledger-core/Makefile
@@ -1429,6 +1367,7 @@ AC_CONFIG_FILES(
   src/report/stylesheets/test/Makefile
   src/report/utility-reports/Makefile
   src/report/utility-reports/test/Makefile
+  src/report/jqplot/Makefile
   src/scm/Makefile
   src/scm/gnumeric/Makefile
   src/tax/Makefile
@@ -1436,21 +1375,25 @@ AC_CONFIG_FILES(
   src/tax/us/test/Makefile
   src/test-core/Makefile
   src/business/Makefile
-  src/business/business-core/Makefile
-  src/business/business-core/test/Makefile
-  src/business/business-utils/Makefile
-  src/business/dialog-tax-table/Makefile
   src/business/business-gnome/Makefile
-  src/business/business-gnome/glade/Makefile
-  src/business/business-gnome/schemas/Makefile
+  src/business/business-gnome/gtkbuilder/Makefile
+  src/business/business-gnome/gschemas/Makefile
   src/business/business-gnome/ui/Makefile
   src/business/business-ledger/Makefile
   dnl # Stuff for bill/invoice import plugin
   src/plugins/Makefile
   src/plugins/bi_import/Makefile
-  src/plugins/bi_import/glade/Makefile
+  src/plugins/bi_import/gtkbuilder/Makefile
   src/plugins/bi_import/ui/Makefile
+  dnl # Stuff for customer import.
+  src/plugins/customer_import/Makefile
+  src/plugins/customer_import/gtkbuilder/Makefile
+  src/plugins/customer_import/ui/Makefile
   dnl # non-makefiles
+  packaging/win32/gnucash.iss
+  src/bin/gnucash.rc
+  src/gnome/gnucash.desktop.in
+
   dnl # Please read doc/build-system before adding *anything* here
   ,
   dnl # commands go here, but we don't have any right now
@@ -1464,7 +1407,6 @@ AC_MSG_RESULT([
   gnucash version ...... : $VERSION
   Build for host ....... : $host
   Optional components... : $_COMPONENTS
-  HTML engine .......... : $with_html_engine
   Extra Warnings ....... : $warnFLAGS
   CPPFLAGS ............. : $CPPFLAGS
   CFLAGS ............... : $CFLAGS

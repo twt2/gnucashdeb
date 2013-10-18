@@ -21,7 +21,7 @@ AM_CPPFLAGS = -I${top_builddir} ${GLIB_CFLAGS} ${GNOME_CFLAGS} ${GTK_CFLAGS} \
   ${GUILE_INCS} \
   ${GTK_MAC_CFLAGS}
 
-SUFFIXES = .rc .res
+SUFFIXES = .rc
 
 # Some settings are platform dependent. Let's define them per platform.
 if PLATFORM_WIN32
@@ -29,8 +29,8 @@ if PLATFORM_WIN32
 GNUCASH_RESOURCE_FILE = gnucash.rc
 dist_noinst_DATA = gnucash.rc
 
-.rc.res:
-	$(AM_V_GEN)$(RC) -i '$<' --input-format=rc -o '$@' -O coff
+.rc.o:
+	$(AM_V_GEN)$(RC) -I${top_srcdir}/src/pixmaps -i '$<' --input-format=rc -o '$@' -O coff
 
 configdir = ${GNC_CONFIGDIR}
 config_DATA = environment
@@ -60,6 +60,7 @@ BIN_NAME = gnucash
 bin_PROGRAMS = ${BIN_NAME}
 gnucash_SOURCES = gnucash-bin.c ${GNUCASH_RESOURCE_FILE}
 gnucash_LDADD = \
+  ${top_builddir}/src/register/ledger-core/libgncmod-ledger-core.la \
   ${top_builddir}/src/report/report-gnome/libgncmod-report-gnome.la \
   ${top_builddir}/src/gnome/libgnc-gnome.la \
   ${top_builddir}/src/gnome-utils/libgncmod-gnome-utils.la \
@@ -70,7 +71,6 @@ gnucash_LDADD = \
   ${top_builddir}/src/libqof/qof/libgnc-qof.la \
   ${GUILE_LIBS} \
   ${GLIB_LIBS} \
-  ${GNOME_LIBS} \
   ${GTK_LIBS}
 
 GNUCASH_BIN_INSTALL_NAME=`echo ${BIN_NAME} | sed -e '$(transform)'`
@@ -119,6 +119,14 @@ environment: environment.in ${top_builddir}/config.status Makefile
 if CUSTOM_GNC_DBD_DIR
 	echo 'GNC_DBD_DIR=@GNC_DBD_DIR@' >> $@.tmp
 endif
+	if [ "a$(prefix)" != "a/usr" ] && [ "a$(prefix)" != "a/usr/local" ]; \
+	then \
+		echo >> $@.tmp; \
+		echo "# GnuCash was not installed in the default location" >> $@.tmp; \
+		echo "# XDG_DATA_DIRS will be set so that our documentation" >> $@.tmp; \
+		echo "# and gsettings schemas are found." >> $@.tmp; \
+		echo "XDG_DATA_DIRS=$(prefix)/share:{XDG_DATA_DIRS}:/usr/local/share/:/usr/share/" >> $@.tmp; \
+	fi
 	mv $@.tmp $@
 
 CLEANFILES = $(BUILT_SOURCES) ${config_DATA} ${PLATFORM_FILES}
@@ -145,7 +153,6 @@ gnc_common_scripts = gnucash-env gnucash-make-guids
 
 bin_SCRIPTS = \
     ${gnc_common_scripts} \
-	update-gnucash-gconf \
 	${PLATFORM_FILES}
 
 # if you change gncoverridedir, make sure you change ./overrides/Makefile.am too.
@@ -155,33 +162,16 @@ gncoverridesdir = ${GNC_LIBEXECDIR}/overrides
 ${gnc_common_scripts}: generate-gnc-script ${top_builddir}/config.status
 	${srcdir}/generate-gnc-script $@ "${gncoverridesdir}"
 
-CLEANFILES += ${gnc_common_scripts} update-gnucash-gconf
+CLEANFILES += ${gnc_common_scripts}
 
-## We borrow guile's convention and use @-...-@ as the substitution
-## brackets here, instead of the usual @...@.  This prevents autoconf
-## from substituting the values directly into the left-hand sides of
-## the sed substitutions.
-update-gnucash-gconf: update-gnucash-gconf.in \
-		${top_builddir}/config.status Makefile
-	rm -f $@.tmp
-	sed < $< > $@.tmp \
-	    -e 's#@-GCONF_SCHEMA_FILE_DIR-@#${GCONF_SCHEMA_FILE_DIR}#g'
-	mv $@.tmp $@
-	chmod +x $@
-else
-bin_SCRIPTS = guile-setup.cmd
 endif
 
 EXTRA_DIST = \
     generate-gnc-script \
-	update-gnucash-gconf.in \
 	gnucash-launcher.in \
 	gnucash-valgrind.in \
 	gnucash-gdb.in \
 	environment.in \
 	gnucash-setup-env-osx.in
 
-if PLATFORM_WIN32
-EXTRA_DIST += guile-setup.cmd
-endif
 AM_CPPFLAGS += -DG_LOG_DOMAIN=\"gnc.bin\"

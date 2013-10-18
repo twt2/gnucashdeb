@@ -30,30 +30,31 @@
 
 struct GncEntryLedger_s
 {
-    GncGUID		blank_entry_guid;
-    gboolean	blank_entry_edited;
+    GncGUID       blank_entry_guid;
+    gboolean      blank_entry_edited;
     gboolean      traverse_to_new;
 
-    gboolean	loading;	/* To keep from recursing from events */
-    gboolean	full_refresh;	/* Is a full refresh ok? */
-    gint		component_id;	/* To register for events */
+    gboolean      loading;       /* To keep from recursing from events */
+    gboolean      full_refresh;  /* Is a full refresh ok? */
+    gint          component_id;  /* To register for events */
 
-    Timespec	last_date_entered;
+    GDate       last_date_entered;
 
-    GncEntry *	hint_entry;	/* A Hint for where to display */
+    GncEntry    * hint_entry;    /* A Hint for where to display */
 
-    GtkWidget *	parent;
-    QofBook *	book;
-    Table *	table;
-    GncOrder *	order;
-    GncInvoice *	invoice;
-    QofQuery *	query;
+    GtkWidget   * parent;
+    QofBook     * book;
+    Table       * table;
+    GncOrder    * order;
+    GncInvoice  * invoice;
+    QofQuery    * query;
 
     GncEntryLedgerType type;
 
-    gboolean	is_invoice;	/* is this an invoice (or a bill)? */
+    gboolean   is_cust_doc;      /* is this document customer or vendor related ? */
+    gboolean   is_credit_note;   /* is this an invoice (or a bill)? */
 
-    const gchar * gconf_section;
+    const gchar * prefs_group;
 };
 
 GncEntry * gnc_entry_ledger_get_entry (GncEntryLedger *ledger,

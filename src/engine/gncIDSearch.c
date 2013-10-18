@@ -83,7 +83,7 @@ static void * search(QofBook * book, const gchar *id, void * object, QofIdType t
     g_return_val_if_fail (type, NULL);
     g_return_val_if_fail (id, NULL);
     g_return_val_if_fail (book, NULL);
-    
+
     // Build the query
     q = qof_query_create_for (type);
     qof_query_set_book (q, book);
@@ -92,21 +92,18 @@ static void * search(QofBook * book, const gchar *id, void * object, QofIdType t
 
     if (strcmp(type, GNC_CUSTOMER_MODULE_NAME))
     {
-        GncCustomer *c = NULL;
         qof_query_add_term (q, qof_query_build_param_list("CUSTOMER_ID"), string_pred_data, QOF_QUERY_AND);
     }
     else if (strcmp(type, GNC_INVOICE_MODULE_NAME))
     {
-        GncInvoice *c = NULL;
         qof_query_add_term (q, qof_query_build_param_list("INVOICE_ID"), string_pred_data, QOF_QUERY_AND);
     }
     else if (strcmp(type, GNC_VENDOR_MODULE_NAME))
     {
-        GncVendor *c = NULL;
         qof_query_add_term (q, qof_query_build_param_list("VENDOR_ID"), string_pred_data, QOF_QUERY_AND);
     }
-    
-    
+
+
     // Run the query
     result = qof_query_run (q);
 
@@ -134,7 +131,7 @@ static void * search(QofBook * book, const gchar *id, void * object, QofIdType t
             {
                 object = c;
                 break;
-            }            
+            }
             result = g_list_next (result);
         }
     }

@@ -1,30 +1,5 @@
-%module sw_business_core
-%{
-/* Includes the header in the wrapper code */
-#include <config.h>
-#include <gncAddress.h>
-#include <gncBillTerm.h>
-#include <gncCustomer.h>
-#include <gncEmployee.h>
-#include <gncEntry.h>
-#include <gncInvoice.h>
-#include <gncJob.h>
-#include <gncOrder.h>
-#include <gncOwner.h>
-#include <gncTaxTable.h>
-#include <gncVendor.h>
-%}
-
 #if defined(SWIGGUILE)
 %{
-#include <guile-mappings.h>
-#include <gncBusGuile.h>
-#ifdef _MSC_VER
-# define snprintf _snprintf
-#endif
-#include "engine-helpers.h"
-#include "gncBusGuile.h"
-
 /* Disable -Waddress.  GCC 4.2 warns (and fails to compile with -Werror) when
  * passing the address of a guid on the stack to QOF_BOOK_LOOKUP_ENTITY via
  * gncInvoiceLookup and friends.  When the macro gets inlined, the compiler
@@ -33,12 +8,8 @@
 #if (__GNUC__ >= 4 && __GNUC_MINOR__ >= 2)
 #    pragma GCC diagnostic warning "-Waddress"
 #endif
-
-SCM scm_init_sw_business_core_module (void);
 %}
 #endif
-
-%import "base-typemaps.i"
 
 %rename(gncOwnerReturnGUID) gncOwnerRetGUID;
 
@@ -187,6 +158,13 @@ static GncInvoiceList * qof_query_run_for_invoices(QofQuery *q) {
     SET_ENUM("OWNER-PARENTG");
     SET_ENUM("OWNER-FROM-LOT");
 
+    SET_ENUM("GNC-INVOICE-UNDEFINED");
+    SET_ENUM("GNC-INVOICE-CUST-INVOICE");
+    SET_ENUM("GNC-INVOICE-VEND-INVOICE");
+    SET_ENUM("GNC-INVOICE-EMPL-INVOICE");
+    SET_ENUM("GNC-INVOICE-CUST-CREDIT-NOTE");
+    SET_ENUM("GNC-INVOICE-VEND-CREDIT-NOTE");
+    SET_ENUM("GNC-INVOICE-EMPL-CREDIT-NOTE");
 
 #undefine SET_ENUM
   }

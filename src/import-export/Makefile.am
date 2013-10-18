@@ -4,8 +4,8 @@ endif
 if WITH_AQBANKING
     AQBANKING_DIR=aqbanking
 endif
-SUBDIRS = . schemas qif qif-import \
-	${OFX_DIR} ${AQBANKING_DIR} log-replay test csv
+SUBDIRS = . gschemas qif qif-import \
+	${OFX_DIR} ${AQBANKING_DIR} log-replay test csv-import csv-export
 
 pkglib_LTLIBRARIES=libgncmod-generic-import.la
 
@@ -20,16 +20,11 @@ libgncmod_generic_import_la_SOURCES = \
 	import-settings.c \
 	import-match-map.c \
 	import-main-matcher.c \
-	gnc-import-desc-format.c \
-	gnc-import-format-cb.c \
-	gnc-import-format-gnome.c \
 	gncmod-generic-import.c
 
 gncincludedir = ${GNC_INCLUDE_DIR}
 gncinclude_HEADERS = \
   import-match-map.h \
-  gnc-import-desc-format.h \
-  gnc-import-format-cb.h \
   import-parse.h
 
 noinst_HEADERS = \
@@ -40,8 +35,7 @@ noinst_HEADERS = \
   import-match-map.h \
   import-match-picker.h \
   import-settings.h \
-  import-utilities.h \
-  gnc-import-format-gnome.h
+  import-utilities.h
 
 libgncmod_generic_import_la_LDFLAGS = -avoid-version
 
@@ -52,15 +46,11 @@ libgncmod_generic_import_la_LIBADD = \
   ${top_builddir}/src/core-utils/libgnc-core-utils.la \
   ${top_builddir}/src/gnc-module/libgnc-module.la \
   ${top_builddir}/src/libqof/qof/libgnc-qof.la \
-  ${GNOME_LIBS} \
-  ${GLADE_LIBS} \
   ${REGEX_LIBS} \
   ${GLIB_LIBS}
 
-gladedir = ${GNC_GLADE_DIR}
-glade_DATA = \
-  generic-import.glade \
-  import-provider-format.glade
+gtkbuilderdir = ${GNC_GTKBUILDER_DIR}
+gtkbuilder_DATA = dialog-import.glade
 
 AM_CPPFLAGS = \
   -I${top_srcdir}/src \
@@ -71,13 +61,11 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/gnome \
   -I${top_srcdir}/src/gnome-utils \
   -I${top_srcdir}/src/libqof/qof \
-  ${GNOME_CFLAGS} \
-  ${GLADE_CFLAGS} \
-  ${GUILE_INCS} \
+  ${GTK_CFLAGS} \
   ${GLIB_CFLAGS}
 
 EXTRA_DIST = \
-  $(glade_DATA) \
+  $(gtkbuilder_DATA) \
   generic-import-design.txt
 
 AM_CPPFLAGS += -DG_LOG_DOMAIN=\"gnc.i-e\"

@@ -65,7 +65,7 @@ static QofLogModule log_module = GNC_MOD_BUSINESS;
 #define SET_STR(obj, member, str) { \
 	char * tmp; \
 	\
-	if (!safe_strcmp (member, str)) return; \
+	if (!g_strcmp0 (member, str)) return; \
 	gncOrderBeginEdit (obj); \
 	tmp = CACHE_INSERT (str); \
 	CACHE_REMOVE (member); \
@@ -84,7 +84,12 @@ void mark_order (GncOrder *order)
 enum
 {
     PROP_0,
-    PROP_NOTES
+    PROP_ID,
+    PROP_NOTES,
+    PROP_ACTIVE,
+    PROP_DATE_OPENED,
+    PROP_DATE_CLOSED,
+    PROP_REFERENCE
 };
 
 /* GObject Initialization */
@@ -113,15 +118,30 @@ gnc_order_get_property (GObject         *object,
                         GValue          *value,
                         GParamSpec      *pspec)
 {
-    GncOrder *order;
+    GncOrder *priv;
 
     g_return_if_fail(GNC_IS_ORDER(object));
 
-    order = GNC_ORDER(object);
+    priv = GNC_ORDER(object);
     switch (prop_id)
     {
+    case PROP_ID:
+        g_value_set_string(value, priv->id);
+        break;
     case PROP_NOTES:
-        g_value_set_string(value, order->notes);
+        g_value_set_string(value, priv->notes);
+        break;
+    case PROP_ACTIVE:
+        g_value_set_boolean(value, priv->active);
+        break;
+    case PROP_DATE_OPENED:
+        g_value_set_boxed(value, &priv->opened);
+        break;
+    case PROP_DATE_CLOSED:
+        g_value_set_boxed(value, &priv->closed);
+        break;
+    case PROP_REFERENCE:
+        g_value_set_string(value, priv->reference);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -142,8 +162,23 @@ gnc_order_set_property (GObject         *object,
     order = GNC_ORDER(object);
     switch (prop_id)
     {
+    case PROP_ID:
+        gncOrderSetID(order, g_value_get_string(value));
+        break;
     case PROP_NOTES:
         gncOrderSetNotes(order, g_value_get_string(value));
+        break;
+    case PROP_ACTIVE:
+        gncOrderSetActive(order, g_value_get_boolean(value));
+        break;
+    case PROP_DATE_OPENED:
+        gncOrderSetDateOpened(order, *(Timespec*)g_value_get_boxed(value));
+        break;
+    case PROP_DATE_CLOSED:
+        gncOrderSetDateClosed(order, *(Timespec*)g_value_get_boxed(value));
+        break;
+    case PROP_REFERENCE:
+        gncOrderSetReference(order, g_value_get_string(value));
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -181,11 +216,59 @@ gnc_order_class_init (GncOrderClass *klass)
 
     g_object_class_install_property
     (gobject_class,
+     PROP_ID,
+     g_param_spec_string ("id",
+                          "Order ID",
+                          "The order id is an arbitrary string "
+                          "assigned by the user to identify the order.",
+                          NULL,
+                          G_PARAM_READWRITE));
+
+    g_object_class_install_property
+    (gobject_class,
      PROP_NOTES,
-     g_param_spec_string ("name",
+     g_param_spec_string ("notes",
                           "Order Notes",
                           "The order notes is an arbitrary string "
                           "assigned by the user to provide notes about "
+                          "this order.",
+                          NULL,
+                          G_PARAM_READWRITE));
+
+    g_object_class_install_property
+    (gobject_class,
+     PROP_ACTIVE,
+     g_param_spec_boolean ("active",
+                           "Active",
+                           "TRUE if the order is active.  FALSE if inactive.",
+                           FALSE,
+                           G_PARAM_READWRITE));
+
+    g_object_class_install_property
+    (gobject_class,
+     PROP_DATE_OPENED,
+     g_param_spec_boxed("date-opened",
+                        "Date Opened",
+                        "The date the order was opened.",
+                        GNC_TYPE_TIMESPEC,
+                        G_PARAM_READWRITE));
+
+    g_object_class_install_property
+    (gobject_class,
+     PROP_DATE_CLOSED,
+     g_param_spec_boxed("date-closed",
+                        "Date Closed",
+                        "The date the order was closed.",
+                        GNC_TYPE_TIMESPEC,
+                        G_PARAM_READWRITE));
+
+    g_object_class_install_property
+    (gobject_class,
+     PROP_REFERENCE,
+     g_param_spec_string ("reference",
+                          "Order Reference",
+                          "The order reference is an arbitrary string "
+                          "assigned by the user to provide a reference for "
                           "this order.",
                           NULL,
                           G_PARAM_READWRITE));
@@ -234,57 +317,6 @@ static void gncOrderFree (GncOrder *order)
 
     /* qof_instance_release (&order->inst); */
     g_object_unref (order);
-}
-
-GncOrder *
-gncCloneOrder (GncOrder *from, QofBook *book)
-{
-    GList *node;
-    GncOrder *order;
-
-    if (!book) return NULL;
-
-    order = g_object_new (GNC_TYPE_ORDER, NULL);
-    qof_instance_init_data (&order->inst, _GNC_MOD_NAME, book);
-    qof_instance_gemini (&order->inst, &from->inst);
-
-    order->id = CACHE_INSERT (from->id);
-    order->notes = CACHE_INSERT (from->notes);
-    order->reference = CACHE_INSERT (from->reference);
-
-    order->active = from->active;
-    order->printname = NULL; /* yes, null, that's right */
-    order->opened = from->opened;
-    order->closed = from->closed;
-
-    order->owner = gncCloneOwner (&from->owner, book);
-
-    order->entries = NULL;
-    for (node = g_list_last(from->entries); node; node = node->prev)
-    {
-        GncEntry *entry = node->data;
-        entry = gncEntryObtainTwin (entry, book);
-        order->entries = g_list_prepend (order->entries, entry);
-    }
-
-    qof_event_gen (&order->inst, QOF_EVENT_CREATE, NULL);
-
-    return order;
-}
-
-GncOrder *
-gncOrderObtainTwin (GncOrder *from, QofBook *book)
-{
-    GncOrder *order;
-    if (!book) return NULL;
-
-    order = (GncOrder *) qof_instance_lookup_twin (QOF_INSTANCE(from), book);
-    if (!order)
-    {
-        order = gncCloneOrder (from, book);
-    }
-
-    return order;
 }
 
 /* =============================================================== */
@@ -367,21 +399,25 @@ void gncOrderAddEntry (GncOrder *order, GncEntry *entry)
     if (old == order) return;			/* I already own it */
     if (old) gncOrderRemoveEntry (old, entry);
 
+    gncOrderBeginEdit (order);
     order->entries = g_list_insert_sorted (order->entries, entry,
                                            (GCompareFunc)gncEntryCompare);
 
     /* This will send out an event -- make sure we're attached */
     gncEntrySetOrder (entry, order);
     mark_order (order);
+    gncOrderCommitEdit (order);
 }
 
 void gncOrderRemoveEntry (GncOrder *order, GncEntry *entry)
 {
     if (!order || !entry) return;
 
+    gncOrderBeginEdit (order);
     gncEntrySetOrder (entry, NULL);
     order->entries = g_list_remove (order->entries, entry);
     mark_order (order);
+    gncOrderCommitEdit (order);
 }
 
 /* Get Functions */
@@ -481,10 +517,10 @@ int gncOrderCompare (const GncOrder *a, const GncOrder *b)
     int compare;
 
     if (a == b) return 0;
-    if (!a && b) return -1;
-    if (a && !b) return 1;
+    if (!a) return -1;
+    if (!b) return 1;
 
-    compare = safe_strcmp (a->id, b->id);
+    compare = g_strcmp0 (a->id, b->id);
     if (compare) return compare;
 
     compare = timespec_cmp (&(a->opened), &(b->opened));
@@ -496,54 +532,6 @@ int gncOrderCompare (const GncOrder *a, const GncOrder *b)
     return qof_instance_guid_compare(a, b);
 }
 
-gboolean gncOrderEqual(const GncOrder * a, const GncOrder *b)
-{
-    if (a == NULL && b == NULL) return TRUE;
-    if (a == NULL || b == NULL) return FALSE;
-
-    g_return_val_if_fail(GNC_IS_ORDER(a), FALSE);
-    g_return_val_if_fail(GNC_IS_ORDER(b), FALSE);
-
-    if (safe_strcmp(a->id, b->id) != 0)
-    {
-        PWARN("IDs differ: %s vs %s", a->id, b->id);
-        return FALSE;
-    }
-
-    if (safe_strcmp(a->notes, b->notes) != 0)
-    {
-        PWARN("Notes differ: %s vs %s", a->notes, b->notes);
-        return FALSE;
-    }
-
-    if (a->active != b->active)
-    {
-        PWARN("Active flags differ");
-        return FALSE;
-    }
-
-    if (safe_strcmp(a->reference, b->reference) != 0)
-    {
-        PWARN("References differ: %s vs %s", a->reference, b->reference);
-        return FALSE;
-    }
-
-    if (safe_strcmp(a->printname, b->printname) != 0)
-    {
-        PWARN("printnames differ: %s vs %s", a->printname, b->printname);
-        return FALSE;
-    }
-
-    /* FIXME: Need real tests */
-#if 0
-    GncOwner	owner;
-    GList *	entries;
-    Timespec 	opened;
-    Timespec 	closed;
-#endif
-
-    return TRUE;
-}
 
 /* =========================================================== */
 /* Package-Private functions */

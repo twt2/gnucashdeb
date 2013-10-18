@@ -34,7 +34,7 @@
 (use-modules (gnucash main))		; for gnc:debug
 
 (gnc:module-load "gnucash/report/report-system" 0)
-(gnc:module-load "gnucash/business-utils" 0)
+(gnc:module-load "gnucash/app-utils" 0)
 
 (use-modules (gnucash report standard-reports))
 (use-modules (gnucash report business-reports))
@@ -60,9 +60,9 @@
 (define opthelp-expenseaccounts (N_ "The expense accounts where the expenses are recorded which are subtracted from the sales to give the profit."))
 
 (define optname-show-column-expense (N_ "Show Expense Column"))
-(define opthelp-show-column-expense (N_ "Show the column with the expenses per customer"))
+(define opthelp-show-column-expense (N_ "Show the column with the expenses per customer."))
 (define optname-show-own-address (N_ "Show Company Address"))
-(define opthelp-show-own-address (N_ "Show your own company's address and the date of printing"))
+(define opthelp-show-own-address (N_ "Show your own company's address and the date of printing."))
 
 (define pagename-columndisplay (N_ "Display Columns"))
 (define date-header (N_ "Date"))
@@ -72,10 +72,10 @@
 (define amount-header (N_ "Amount"))
 
 ;;(define optname-invoicelines (N_ "Show Invoices"))
-;;(define opthelp-invoicelines (N_ "Show Invoice Transactions and include them in the balance"))
+;;(define opthelp-invoicelines (N_ "Show Invoice Transactions and include them in the balance."))
 
 ;(define optname-paymentlines (N_ "(Experimental) Show Payments"))
-;(define opthelp-paymentlines (N_ "Show Payment Transactions and include them in the balance"))
+;(define opthelp-paymentlines (N_ "Show Payment Transactions and include them in the balance."))
 
 ;(define optname-show-txn-table (N_ "(Experimental) Show Transaction Table"))
 ;(define opthelp-show-txn-table (N_ "Show the table with all transactions. If false, only show the total amount per customer."))
@@ -84,9 +84,9 @@
 (define opthelp-show-zero-lines (N_ "Show the table lines with customers which did not have any transactions in the reporting period, hence would show all zeros in the columns."))
 
 (define optname-sortkey (N_ "Sort Column"))
-(define opthelp-sortkey (N_ "Choose the column by which the result table is sorted"))
+(define opthelp-sortkey (N_ "Choose the column by which the result table is sorted."))
 (define optname-sortascending (N_ "Sort Order"))
-(define opthelp-sortascending (N_ "Choose the ordering of the column sort: Either ascending or descending"))
+(define opthelp-sortascending (N_ "Choose the ordering of the column sort: Either ascending or descending."))
 
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -236,7 +236,7 @@
 	  (if (not (null? invoice))
 	      (set! due-date (gncInvoiceGetDateDue invoice)))
 
-	  (let ((row (make-row column-vector date due-date (xaccTransGetNum txn)
+	  (let ((row (make-row column-vector date due-date (gnc-get-num-action txn split)
 			       type-str (xaccSplitGetMemo split)
 			       (gnc:make-gnc-monetary currency value)))
 		(row-style (if odd-row? "normal-row" "alternate-row")))
@@ -446,20 +446,20 @@
     (list
      (vector 'customername
 	     (N_ "Customer Name")
-	     (N_ "Sort alphabetically by customer name"))
+	     (N_ "Sort alphabetically by customer name."))
      (vector 'profit
 	     (N_ "Profit")
-	     (N_ "Sort by profit amount"))
+	     (N_ "Sort by profit amount."))
      (vector 'markup
              ;; Translators: "Markup" is profit amount divided by sales amount
 	     (N_ "Markup")
-	     (N_ "Sort by markup (which is profit amount divided by sales)"))
+	     (N_ "Sort by markup (which is profit amount divided by sales)."))
      (vector 'sales
 	     (N_ "Sales")
-	     (N_ "Sort by sales amount"))
+	     (N_ "Sort by sales amount."))
      (vector 'expense
              (N_ "Expense")
-             (N_ "Sort by expense amount")))))
+             (N_ "Sort by expense amount.")))))
 
   (add-option
    (gnc:make-multichoice-option
@@ -469,10 +469,10 @@
     (list
      (vector 'ascend
 	     (N_ "Ascending")
-	     (N_ "A to Z, smallest to largest"))
+	     (N_ "A to Z, smallest to largest."))
      (vector 'descend
 	     (N_ "Descending")
-	     (N_ "Z to A, largest to smallest")))))
+	     (N_ "Z to A, largest to smallest.")))))
 
   (add-option
    (gnc:make-simple-boolean-option
@@ -1006,7 +1006,7 @@
 	 document
 	 (gnc:make-html-text
 	  (sprintf #f 
-		   (_ "No valid %s selected.  Click on the Options button to select a company.")
+		   (_ "No valid %s selected. Click on the Options button to select a company.")
 		   (_ type-str))))) ;; FIXME because of translations: Please change this string into full sentences instead of sprintf, because in non-english languages the "no valid" has different forms depending on the grammatical gender of the "%s".
 
     (qof-query-destroy owner-query)

@@ -1,19 +1,19 @@
-SUBDIRS = ui glade .
+SUBDIRS = ui gtkbuilder .
 
 pkglib_LTLIBRARIES = libgncmod-bi_import.la
 
 libgncmod_bi_import_la_SOURCES = \
-  gnc-plugin-bi_import.c \
-  gncmod-bi_import.c \
-  gui.c \
-  helpers.c \
-  bi_import.c
+  gnc-plugin-bi-import.c \
+  gncmod-bi-import.c \
+  dialog-bi-import-gui.c \
+  dialog-bi-import-helper.c \
+  dialog-bi-import.c
 
 noinst_HEADERS = \
-  gnc-plugin-bi_import.h \
-  gui.h \
-  helpers.h \
-  bi_import.h
+  gnc-plugin-bi-import.h \
+  dialog-bi-import-gui.h \
+  dialog-bi-import-helper.h \
+  dialog-bi-import.h
 
 libgncmod_bi_import_la_LDFLAGS = -avoid-version
 
@@ -26,8 +26,6 @@ libgncmod_bi_import_la_LIBADD = \
   ${top_builddir}/src/gnc-module/libgnc-module.la \
   ${top_builddir}/src/libqof/qof/libgnc-qof.la \
   ${top_builddir}/lib/libc/libc-missing.la \
-  ${GNOME_LIBS} \
-  ${GLADE_LIBS} \
   ${QOF_LIBS} \
   ${GLIB_LIBS}
 
@@ -49,8 +47,7 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/core-utils \
   -I${top_srcdir}/src/gnc-module \
   -I${top_srcdir}/lib/libc \
-  ${GNOME_CFLAGS} \
-  ${GLADE_CFLAGS} \
+  ${GTK_CFLAGS} \
   ${QOF_CFLAGS} \
   ${GLIB_CFLAGS}
 

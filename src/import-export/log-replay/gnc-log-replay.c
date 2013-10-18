@@ -30,7 +30,6 @@
 #include <glib/gstdio.h>
 #include <string.h>
 #include <sys/time.h>
-#include <libguile.h>
 #include <errno.h>
 
 #include "Account.h"
@@ -44,7 +43,7 @@
 #include "gnc-ui-util.h"
 #include "gnc-gui-query.h"
 
-#define GCONF_SECTION "dialogs/log_replay"
+#define GNC_PREFS_GROUP "dialogs.log-replay"
 
 /* NW: If you want a new log_module, just define
 a unique string either in gnc-engine.h or
@@ -480,6 +479,10 @@ static void  process_trans_record(  FILE *log_file)
                         {
                             acct = xaccAccountLookupDirect(record.acc_guid, book);
                             xaccAccountInsertSplit(acct, split);
+
+                            // No currency in the txn yet? Set one now.
+                            if (!xaccTransGetCurrency(trans))
+                                xaccTransSetCurrency(trans, gnc_account_or_default_currency(acct, NULL));
                         }
                         if (is_new_split)
                             xaccTransAppendSplit(trans, split);
@@ -559,7 +562,7 @@ void gnc_file_log_replay (void)
     /* Don't log the log replay. This would only result in redundant logs */
     xaccLogDisable();
 
-    default_dir = gnc_get_default_directory(GCONF_SECTION);
+    default_dir = gnc_get_default_directory(GNC_PREFS_GROUP);
 
     filter = gtk_file_filter_new();
     gtk_file_filter_set_name(filter, "*.log");
@@ -574,7 +577,7 @@ void gnc_file_log_replay (void)
     {
         /* Remember the directory as the default. */
         default_dir = g_path_get_dirname(selected_filename);
-        gnc_set_default_directory(GCONF_SECTION, default_dir);
+        gnc_set_default_directory(GNC_PREFS_GROUP, default_dir);
         g_free(default_dir);
 
         /*strncpy(file,selected_filename, 255);*/
@@ -619,7 +622,7 @@ void gnc_file_log_replay (void)
                         PERR("File header not recognised:\n%s", read_buf);
                         PERR("Expected:\n%s", expected_header);
                         gnc_error_dialog(NULL, "%s",
-                                         _("The log file you selected cannot be read.  "
+                                         _("The log file you selected cannot be read. "
                                            "The file header was not recognized."));
                     }
                     else

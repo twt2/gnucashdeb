@@ -16,14 +16,14 @@ AppUpdatesURL=http://www.gnucash.org
 VersionInfoVersion=@VERSION@
 DefaultDirName={pf}\@PACKAGE@
 DefaultGroupName=GnuCash
-LicenseFile=@prefix@\..\dist\share\@PACKAGE@\doc\COPYING
+LicenseFile=@prefix@\..\dist\share\doc\@PACKAGE@\COPYING
 Compression=lzma
 MinVersion=5.0,5.0
 PrivilegesRequired=poweruser
 OutputDir=.
 OutputBaseFilename=@PACKAGE@-@VERSION@-setup
 UninstallFilesDir={app}\uninstall\@PACKAGE@
-InfoAfterFile=@prefix@\..\dist\share\@PACKAGE@\doc\README.win32-bin.txt
+InfoAfterFile=@prefix@\..\dist\share\doc\@PACKAGE@\README.win32-bin.txt
 SetupIconFile=@prefix@\..\dist\share\@PACKAGE@\pixmaps\gnucash-icon.ico
 WizardSmallImageFile=@prefix@\..\dist\share\@PACKAGE@\pixmaps\gnucash-icon-48x48.bmp
 
@@ -52,8 +52,8 @@ Name: "{group}\{cm:IconName_Uninstall}"; Filename: "{uninstallexe}"; Comment: "{
 Name: "{commondesktop}\GnuCash"; Filename: "{app}\bin\gnucash.exe"; WorkingDir: "{app}\bin"; Comment: "{cm:IconComment_GnuCash}"; IconFilename: "{app}\share\gnucash\pixmaps\gnucash-icon.ico"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\bin\guile-setup.cmd"; Description: "Add SLib to Guile vocabulary"; Parameters: """{app}"""
 Filename: "{app}\bin\gnucash.exe"; Description: "{cm:RunPrg}"; WorkingDir: "{app}\bin"; OnlyBelowVersion: 0,6; Flags: postinstall skipifsilent
+Filename: "{app}\bin\guile.cmd"; Flags: runhidden
 ;; The Windows firewall exceptions, see http://www.vincenzo.net/isxkb/index.php?title=Adding_a_rule_to_the_Windows_firewall
 Filename: "{sys}\netsh.exe"; Parameters: "firewall add allowedprogram ""{app}\bin\gnucash.exe"" ""GnuCash Free Finance Manager"" ENABLE ALL"; StatusMsg: "{cm:StatusMsgFirewall}"; Flags: runhidden; MinVersion: 0,5.01.2600sp2;
 Filename: "{sys}\netsh.exe"; Parameters: "firewall add allowedprogram ""{app}\bin\gconfd-2.exe"" ""GConf Settings Manager"" ENABLE ALL"; StatusMsg: "{cm:StatusMsgFirewall}"; Flags: runhidden; MinVersion: 0,5.01.2600sp2;
@@ -75,38 +75,39 @@ Source: "@prefix@\..\dist\etc\@PACKAGE@\environment"; DestDir: "{app}\etc\@PACKA
 ; Note: The above AfterInstall function will adapt the 
 ; environment config file on-the-fly by the Pascal script below.
 Source: "@prefix@\..\dist\lib\*"; DestDir: "{app}\lib"; Flags: recursesubdirs; Components: main
-Source: "@prefix@\..\dist\libexec\*"; DestDir: "{app}\libexec"; Flags: recursesubdirs; Components: main
-Source: "@prefix@\..\dist\share\*"; DestDir: "{app}\share"; Flags: recursesubdirs; Components: main;
+;; We don't have anything in libexec anymore at the moment
+;Source: "@prefix@\..\dist\libexec\*"; DestDir: "{app}\libexec"; Flags: recursesubdirs; Components: main
+Source: "@prefix@\..\dist\share\*"; DestDir: "{app}\share"; Flags: recursesubdirs; Components: main
 
 ;;; Not needed with AQBANKING5!
 ;; Additionally, we ship the Qt DLLs because the Online-Banking-Wizard
 ;; lib/aqbanking/plugins/@-aqbanking_so_effective-@/wizards/qt3-wizard.exe needs them.
-@-aqb_pfx-@Source: "@-qtbindir-@\QtCore4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
-@-aqb_pfx-@Source: "@-qtbindir-@\QtGui4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
-@-aqb_pfx-@Source: "@-qtbindir-@\mingwm10.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
-;; The following are all needed by Qt3Support
-@-aqb_pfx-@Source: "@-qtbindir-@\Qt3Support4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
-@-aqb_pfx-@Source: "@-qtbindir-@\QtXml4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
-@-aqb_pfx-@Source: "@-qtbindir-@\QtSql4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
-@-aqb_pfx-@Source: "@-qtbindir-@\QtNetwork4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+;Source: "@-qtbindir-@\QtCore4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+;Source: "@-qtbindir-@\QtGui4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+;Source: "@-qtbindir-@\mingwm10.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+;;; The following are all needed by Qt3Support
+;Source: "@-qtbindir-@\Qt3Support4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+;Source: "@-qtbindir-@\QtXml4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+;Source: "@-qtbindir-@\QtSql4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
+;Source: "@-qtbindir-@\QtNetwork4.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
 
 ;; The translations
 ;Source: "@prefix@\..\dist\share\locale\*"; DestDir: "{app}\share\locale"; Flags: recursesubdirs; Components: translations
 ;
 ;; The account templates
-;Source: "@prefix@\..\dist\share\gnucash\accounts\*"; DestDir: "{app}\share\gnucash\accounts"; Flags: recursesubdirs; Components: templates
+;Source: "@prefix@\..\dist\share\@PACKAGE@\accounts\*"; DestDir: "{app}\share\@PACKAGE@\accounts"; Flags: recursesubdirs; Components: templates
 
 ; And all the documentation
-Source: "@prefix@\..\dist\share\@PACKAGE@\doc\README"; DestDir: "{app}\doc\@PACKAGE@"; Components: main
-Source: "@prefix@\..\dist\share\@PACKAGE@\doc\README.win32-bin.txt"; DestDir: "{app}\doc\@PACKAGE@"; Components: main
-Source: "@prefix@\..\dist\share\@PACKAGE@\doc\README-de.win32-bin.txt"; DestDir: "{app}\doc\@PACKAGE@"; Components: main
-Source: "@prefix@\..\dist\share\@PACKAGE@\doc\README-fr.win32-bin.txt"; DestDir: "{app}\doc\@PACKAGE@"; Components: main
-Source: "@prefix@\..\dist\share\@PACKAGE@\doc\README-it.win32-bin.txt"; DestDir: "{app}\doc\@PACKAGE@"; Components: main
-Source: "@prefix@\..\dist\share\@PACKAGE@\doc\README-zh_CN.win32-bin.txt"; DestDir: "{app}\doc\@PACKAGE@"; Components: main
-Source: "@prefix@\..\dist\share\@PACKAGE@\doc\README-zh_TW.win32-bin.txt"; DestDir: "{app}\doc\@PACKAGE@"; Components: main
-Source: "@prefix@\..\dist\share\@PACKAGE@\doc\COPYING"; DestDir: "{app}\doc\@PACKAGE@"; Flags: ignoreversion; Components: main
-Source: "@prefix@\..\dist\share\@PACKAGE@\doc\AUTHORS"; DestDir: "{app}\doc\@PACKAGE@"; Components: main
-Source: "@prefix@\..\dist\share\@PACKAGE@\doc\ChangeLog"; DestDir: "{app}\doc\@PACKAGE@"; Components: main
+Source: "@prefix@\..\dist\share\doc\@PACKAGE@\README"; DestDir: "{app}\doc\@PACKAGE@"; Components: main
+Source: "@prefix@\..\dist\share\doc\@PACKAGE@\README.win32-bin.txt"; DestDir: "{app}\doc\@PACKAGE@"; Components: main
+Source: "@prefix@\..\dist\share\doc\@PACKAGE@\README-de.win32-bin.txt"; DestDir: "{app}\doc\@PACKAGE@"; Components: main
+Source: "@prefix@\..\dist\share\doc\@PACKAGE@\README-fr.win32-bin.txt"; DestDir: "{app}\doc\@PACKAGE@"; Components: main
+Source: "@prefix@\..\dist\share\doc\@PACKAGE@\README-it.win32-bin.txt"; DestDir: "{app}\doc\@PACKAGE@"; Components: main
+Source: "@prefix@\..\dist\share\doc\@PACKAGE@\README-zh_CN.win32-bin.txt"; DestDir: "{app}\doc\@PACKAGE@"; Components: main
+Source: "@prefix@\..\dist\share\doc\@PACKAGE@\README-zh_TW.win32-bin.txt"; DestDir: "{app}\doc\@PACKAGE@"; Components: main
+Source: "@prefix@\..\dist\share\doc\@PACKAGE@\COPYING"; DestDir: "{app}\doc\@PACKAGE@"; Flags: ignoreversion; Components: main
+Source: "@prefix@\..\dist\share\doc\@PACKAGE@\AUTHORS"; DestDir: "{app}\doc\@PACKAGE@"; Components: main
+Source: "@prefix@\..\dist\share\doc\@PACKAGE@\ChangeLog"; DestDir: "{app}\doc\@PACKAGE@"; Components: main
 
 
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -162,8 +163,8 @@ Root: HKLM; Subkey: "Software\AqBanking\Paths"; ValueType: string; ValueName: "c
 ; Delete the created config script on uninstall
 ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 [UninstallDelete]
+Type: files; Name: "{app}\bin\guile.cmd"
 Type: files; Name: "{app}\etc\gnucash\environment"
-Type: files; Name: "{app}\share\guile\1.8\slibcat"
 Type: filesandordirs; Name: "{app}\share\guile"
 Type: filesandordirs; Name: "{app}\etc\gconf"
 Type: dirifempty; Name: "{app}\etc\gnucash"
@@ -307,6 +308,30 @@ begin
   StringChange(Result, '\', '/');
 end;
 
+procedure MyAfterInstallConfig();
+var
+  FileName, FileString, appdir, libdir, pkglibdir, pkgdatadir: String;
+  Res: Boolean;
+begin
+
+  { Get the installation-specific paths }
+  appdir := ExpandConstant('{app}');
+  pkgdatadir := appdir + '\share\gnucash';
+
+  { Create the guile.cmd file; #10 is the linefeed character and #13 CR }
+
+  FileName := appdir + '\bin\guile.cmd' ;
+  FileString := 'set GUILE_LOAD_PATH=' + pkgdatadir + '\guile-modules;' + pkgdatadir + '\scm;' + appdir + '\share\guile\1.8;%GUILE_LOAD_PATH%'#13#10 ;
+  FileString := FileString + 'start guile.exe %*'#13#10 ;
+
+  { Save the final file }
+
+  Res := SaveStringToFile(FileName, FileString, False);
+  if Res = False then
+    MsgBox('Error on saving '+FileName+' for completing the installation', mbInformation, MB_OK);
+
+end;
+
 function BackslashPath(const S: String): String;
 begin
   { Convert c:\soft to c:/soft }
@@ -341,9 +366,7 @@ begin
       { Adapt GUILE_LOAD_PATH parameter and prevent cygwin interference in SCHEME_LIBRARY_PATH }
       if (Pos('GUILE_LOAD_PATH', EnvStrList[iLineCounter]) = 1) then
       begin
-        EnvStrList[iLineCounter - 1] := EnvStrList[iLineCounter - 1] + #13#10 + 'GUILE_HOME={GNC_HOME}/share/guile/1.8';
-        EnvStrList[iLineCounter - 1] := EnvStrList[iLineCounter - 1] + #13#10 + 'GUILE_IMPLEMENTATION_PATH={GUILE_HOME}';
-        StringChangeEx(EnvStrList[iLineCounter], '{GUILE_LOAD_PATH}', '{GUILE_HOME};{GUILE_LOAD_PATH}', True);
+        StringChangeEx(EnvStrList[iLineCounter], '{GUILE_LOAD_PATH}', '{GNC_HOME}/share/guile/1.8;{GUILE_LOAD_PATH}', True);
 
         EnvStrList[iLineCounter] := EnvStrList[iLineCounter] + #13#10 + '# Clear SCHEME_LIBRARY_PATH to prevent interference from other guile installations (like cygwin)' + #13#10;
         EnvStrList[iLineCounter] := EnvStrList[iLineCounter] + 'SCHEME_LIBRARY_PATH=' + #13#10;
@@ -365,16 +388,16 @@ end;
 
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl"
-Name: "de"; MessagesFile: "compiler:Languages\German.isl"; InfoAfterFile: "@prefix@\share\@PACKAGE@\doc\README-de.win32-bin.txt"
+Name: "de"; MessagesFile: "compiler:Languages\German.isl"; InfoAfterFile: "@prefix@\share\doc\@PACKAGE@\README-de.win32-bin.txt"
 Name: "el"; MessagesFile: "@prefix@\share\@PACKAGE@\Greek-4-5.1.11.isl"
-Name: "fr"; MessagesFile: "compiler:Languages\French.isl"; InfoAfterFile: "@prefix@\share\@PACKAGE@\doc\README-fr.win32-bin.txt"
-Name: "it"; MessagesFile: "compiler:Languages\Italian.isl"; InfoAfterFile: "@prefix@\share\@PACKAGE@\doc\README-it.win32-bin.txt"
+Name: "fr"; MessagesFile: "compiler:Languages\French.isl"; InfoAfterFile: "@prefix@\share\doc\@PACKAGE@\README-fr.win32-bin.txt"
+Name: "it"; MessagesFile: "compiler:Languages\Italian.isl"; InfoAfterFile: "@prefix@\share\doc\@PACKAGE@\README-it.win32-bin.txt"
 Name: "ja"; MessagesFile: "@prefix@\share\@PACKAGE@\Japanese-5-5.1.11.isl"
-Name: "lv"; MessagesFile: "@prefix@\share\@PACKAGE@\Latvian-1-5.1.11.isl"; InfoAfterFile: "@prefix@\share\@PACKAGE@\doc\README-lv.win32-bin.txt"
-Name: "nl"; MessagesFile: "compiler:Languages\Dutch.isl"; InfoAfterFile: "@prefix@\share\@PACKAGE@\doc\README-nl.win32-bin.txt"
+Name: "lv"; MessagesFile: "@prefix@\share\@PACKAGE@\Latvian-1-5.1.11.isl"; InfoAfterFile: "@prefix@\share\doc\@PACKAGE@\README-lv.win32-bin.txt"
+Name: "nl"; MessagesFile: "compiler:Languages\Dutch.isl"; InfoAfterFile: "@prefix@\share\doc\@PACKAGE@\README-nl.win32-bin.txt"
 Name: "pt_BR"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
-Name: "zh_CN"; MessagesFile: "@prefix@\share\@PACKAGE@\ChineseSimp-12-5.1.11.isl"; InfoAfterFile: "@prefix@\share\@PACKAGE@\doc\README-zh_CN.win32-bin.txt"
-Name: "zh_TW"; MessagesFile: "@prefix@\share\@PACKAGE@\ChineseTrad-2-5.1.11.isl"; InfoAfterFile: "@prefix@\share\@PACKAGE@\doc\README-zh_TW.win32-bin.txt"
+Name: "zh_CN"; MessagesFile: "@prefix@\share\@PACKAGE@\ChineseSimp-12-5.1.11.isl"; InfoAfterFile: "@prefix@\share\doc\@PACKAGE@\README-zh_CN.win32-bin.txt"
+Name: "zh_TW"; MessagesFile: "@prefix@\share\@PACKAGE@\ChineseTrad-2-5.1.11.isl"; InfoAfterFile: "@prefix@\share\doc\@PACKAGE@\README-zh_TW.win32-bin.txt"
 
 ;; The following language files are available as well, in alphabetical
 ;; order: Basque, BrazilianPortuguese, Catalan, Czech, Danish, Dutch,
@@ -620,31 +643,31 @@ lv.IconComment_Uninstall=Noņemt GnuCash grāmatvedības programmu
 ;; Dutch translation
 
 nl.FullInstall=Volledige installatie
-nl.CustomInstall=Aangepaste installatie
-nl.CreateDesktopIcon=Een snelkoppeling op het &bureablad plaatsen
+nl.CustomInstall=Aangepaste installatiie
+nl.CreateDesktopIcon=Een &bureablad icoon aanmaken
 nl.CreateMenuLink=Een verwijzing in het start menu aanmaken
 nl.RunPrg=GnuCash nu starten
 nl.AdditionalIcons=Deze iconen aanmaken:
-nl.StatusMsgFirewall=Regels voor de Windows firewall installeren...
+nl.StatusMsgFirewall=Windows firewall regels installeren...
 
-nl.MainFiles=GnuCash-programma
+nl.MainFiles=GnuCash Programma
 nl.TranslFiles=Vertalingsbestanden
 nl.TemplFiles=Grootboekrekeningssjablonen
 
-nl.IconComment_GnuCash=GnuCash, vrije boekhoudsoftware
-nl.IconName_README=LEESMIJ tonen
-nl.IconComment_README=Het LEESMIJ-bestand tonen
+nl.IconComment_GnuCash=GnuCash Vrij Financieel Beheer
+nl.IconName_README=LEESMIJ Tonen
+nl.IconComment_README=Het LEESMIJ bestand tonen
 nl.IconFilename_README=README-nl.win32-bin.txt
-nl.IconName_FAQ=Veelgestelde vragen (online)
-nl.IconName_Bugzilla=Een bug rapporteren (online)
-nl.IconName_InstallFQ=Online koersinformatie installeren
-nl.IconComment_InstallFQ=De benodigde perl module Finance Quote installeren om online koersen op te vragen. Hiervoor is ActivePerl versie 5.8 of hoger nodig.
+nl.IconName_FAQ=FAQ (Online)
+nl.IconName_Bugzilla=Een Bug Melden (Online)
+nl.IconName_InstallFQ=Online Koersen Opvragen installeren
+nl.IconComment_InstallFQ=De benodigde perl module Finance Quote om online koersen op te vragen installeren.  Hiervoor is ActivePerl 5.8 of recenter nodig.
 nl.IconName_Uninstall=GnuCash verwijderen
-nl.IconComment_Uninstall=De GnuCash boekhoudsoftware verwijderen
+nl.IconComment_Uninstall=Het financieel beheersprogramma GnuCash verwijderen
 
-nl.AIWP_Title=Eerdere installatie gevonden
+nl.AIWP_Title=Een eerdere installatie werd gevonden
 nl.AIWP_Description=%1 is momenteel op deze computer geïnstalleerd
-nl.AIWP_Message=Deze eerdere installatie moet verwijderd worden alvorens verder te gaan.%n%nAls u dat niet wilt, klik dan nu op Annuleren om de huidige installatie af te breken.%n%nKlik op Volgende om %1 te verwijderen en de installatie te vervolgen.%n%nOpmerking: alleen het programma zal verwijderd worden, niet de financiële data.
+nl.AIWP_Message=Deze eerdere installatie moet verwijderd worden alvorens verder te gaan.%n%nAls je dat niet wil, klik dan nu op Annuleren om de huidige installatie af te breken.%n%nKlik op Volgende om %1 te verwijderen en de installatie te vervolgen.%n%nOpmerking: enkel het programma zal verwijderd worden, niet je financiële data.
 
 
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

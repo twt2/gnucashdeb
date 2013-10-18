@@ -30,11 +30,43 @@
 #include "config.h"
 
 #include <string.h>
+#include <libgnomecanvas/libgnomecanvas.h>
 
 #include "gnucash-sheet.h"
+#include "gnucash-sheetP.h"
 #include "gnucash-grid.h"
 #include "gnucash-color.h"
 #include "gnucash-style.h"
+
+
+struct _GnucashGrid
+{
+    GnomeCanvasItem canvas_item;
+
+    GnucashSheet *sheet;
+
+    /* The first and last displayed block */
+    int        top_block;
+    int        bottom_block;
+
+    /* Offset from spreadsheet origin in units */
+    long       top_offset;
+    long       left_offset;
+
+    GdkGC      *grid_gc;    /* Draw grid gc */
+    GdkGC      *fill_gc;    /* Default background fill gc */
+    GdkGC      *gc;     /* Color used for the cell */
+
+    GdkColor   background;
+    GdkColor   grid_color;
+    GdkColor   default_color;
+};
+
+
+struct _GnucashGridClass
+{
+    GnomeCanvasItemClass parent_class;
+};
 
 static GnomeCanvasItem *gnucash_grid_parent_class;
 
@@ -367,6 +399,57 @@ gnucash_draw_hatching (GdkDrawable *drawable, GdkGC *gc,
                    x + 2, y + 2, x + 2 + height / 3, y + 2 + height / 3);
 }
 
+#ifdef READONLY_LINES_WITH_CHANGED_FG_COLOR
+/** For a given byte value, multiply the difference to 0xFF by a rational number,
+specified by numerator and denominator. This is some simple integer arithmetics
+for the case when we don't even need a conversion to floating point and
+backwards. */
+static guint8 inc_intensity_byte(guint8 input, int numerator, int denominator)
+{
+    guint8 result_inv, result;
+    guint8 input_inv = 0xff - input;
+    result_inv = (input_inv * numerator) / denominator;
+    result = 0xff - result_inv;
+    return result;
+}
+
+/** For a given RGB value, increase the color intensity for each of the three
+colors indentically by 10 percent (i.e. make them "less black" and "more gray")
+and return this changed RGB value. */
+static guint32 inc_intensity_10percent(guint32 argb)
+{
+    guint32 result =
+            (inc_intensity_byte((argb & 0x00FF0000) >> 16, 8, 10) << 16)
+            + (inc_intensity_byte((argb & 0x0000FF00) >> 8, 8, 10) << 8)
+            + (inc_intensity_byte(argb & 0x000000FF, 8, 10));
+    return result;
+}
+#endif
+
+/** For a given byte value, multiply the value by a rational number,
+specified by numerator and denominator. This is some simple integer arithmetics
+for the case when we don't even need a conversion to floating point and
+backwards. */
+static guint8 dec_intensity_byte(guint8 input, int numerator, int denominator)
+{
+    guint8 result;
+    result = (input * numerator) / denominator;
+    return result;
+}
+
+/** For a given RGB value, decrease the color intensity for each of the three
+colors indentically by 10 percent and return this changed RGB value. */
+static guint32 dec_intensity_10percent(guint32 argb)
+{
+    // Multiply each single byte by 9/10 i.e. by 0.9 which decreases the
+    // intensity by 10 percent.
+    guint32 result =
+            (dec_intensity_byte((argb & 0x00FF0000) >> 16, 9, 10) << 16)
+            + (dec_intensity_byte((argb & 0x0000FF00) >> 8, 9, 10) << 8)
+            + (dec_intensity_byte(argb & 0x000000FF, 9, 10));
+    return result;
+}
+
 static void
 draw_cell (GnucashGrid *grid,
            SheetBlock *block,
@@ -400,6 +483,13 @@ draw_cell (GnucashGrid *grid,
     else
     {
         argb = gnc_table_get_bg_color (table, virt_loc, &hatching);
+        // Are we in a read-only row? Then make the background color somewhat more gray.
+        if ((virt_loc.phys_row_offset == (block->style->nrows - 1))
+                && (table->model->dividing_row_upper >= 0)
+                && (virt_loc.vcell_loc.virt_row < table->model->dividing_row_upper))
+        {
+            argb = dec_intensity_10percent(argb);
+        }
         bg_color = gnucash_color_argb_to_gdk (argb);
     }
 
@@ -449,7 +539,36 @@ draw_cell (GnucashGrid *grid,
         gnucash_draw_hatching (drawable, grid->gc,
                                x, y, width, height);
 
-    /* dividing line */
+    /* dividing line upper (red) */
+    if ((virt_loc.phys_row_offset == 0) &&
+            (table->model->dividing_row_upper >= 0))
+    {
+        if (virt_loc.vcell_loc.virt_row == table->model->dividing_row_upper)
+        {
+            gdk_gc_set_foreground (grid->gc, &gn_red);
+            gdk_draw_line (drawable, grid->gc, x, y - 1, x + width, y - 1);
+            gdk_draw_line (drawable, grid->gc, x, y,   x + width, y);
+            gdk_draw_line (drawable, grid->gc, x, y + 1, x + width, y + 1);
+        }
+    }
+
+    if ((virt_loc.phys_row_offset == (block->style->nrows - 1)) &&
+            (table->model->dividing_row_upper >= 0))
+    {
+        if (virt_loc.vcell_loc.virt_row ==
+                (table->model->dividing_row_upper - 1))
+        {
+            gdk_gc_set_foreground (grid->gc, &gn_red);
+            gdk_draw_line (drawable, grid->gc, x, y + height - 1,
+                           x + width, y + height - 1);
+            gdk_draw_line (drawable, grid->gc, x, y + height,
+                           x + width, y + height);
+            gdk_draw_line (drawable, grid->gc, x, y + height + 1,
+                           x + width, y + height + 1);
+        }
+    }
+
+    /* dividing line lower (blue) */
     if ((virt_loc.phys_row_offset == 0) &&
             (table->model->dividing_row >= 0))
     {
@@ -487,6 +606,15 @@ draw_cell (GnucashGrid *grid,
     font = pango_font_description_copy (pango_context_get_font_description (context));
 
     argb = gnc_table_get_fg_color (table, virt_loc);
+#ifdef READONLY_LINES_WITH_CHANGED_FG_COLOR
+    // Are we in a read-only row? Then make the foreground color somewhat less black
+    if ((virt_loc.phys_row_offset == (block->style->nrows - 1))
+            && (table->model->dividing_row_upper >= 0)
+            && (virt_loc.vcell_loc.virt_row < table->model->dividing_row_upper))
+    {
+        argb = inc_intensity_10percent(argb);
+    }
+#endif
     fg_color = gnucash_color_argb_to_gdk (argb);
 
     gdk_gc_set_foreground (grid->gc, fg_color);
@@ -680,11 +808,7 @@ gnucash_grid_set_property (GObject         *object,
                            const GValue    *value,
                            GParamSpec      *pspec)
 {
-    GnomeCanvasItem *item;
-    GnucashGrid *grid;
-
-    item = GNOME_CANVAS_ITEM (object);
-    grid = GNUCASH_GRID (object);
+    GnucashGrid *grid = GNUCASH_GRID (object);
 
     switch (prop_id)
     {
@@ -698,22 +822,24 @@ gnucash_grid_set_property (GObject         *object,
 }
 
 
+/* Note that g_value_set_object() refs the object, as does
+ * g_object_get(). But g_object_get() only unrefs once when it disgorges
+ * the object, leaving an unbalanced ref, which leaks. So instead of
+ * using g_value_set_object(), use g_value_take_object() which doesn't
+ * ref the object when used in get_property().
+ */
 static void
 gnucash_grid_get_property (GObject         *object,
                            guint            prop_id,
                            GValue          *value,
                            GParamSpec      *pspec)
 {
-    GnomeCanvasItem *item;
-    GnucashGrid *grid;
-
-    item = GNOME_CANVAS_ITEM (object);
-    grid = GNUCASH_GRID (object);
+    GnucashGrid *grid = GNUCASH_GRID (object);
 
     switch (prop_id)
     {
     case PROP_SHEET:
-        g_value_set_object (value, grid->sheet);
+        g_value_take_object (value, grid->sheet);
         break;
     default:
         break;
@@ -784,8 +910,3 @@ gnucash_grid_get_type (void)
 }
 
 
-/*
-  Local Variables:
-  c-basic-offset: 8
-  End:
-*/

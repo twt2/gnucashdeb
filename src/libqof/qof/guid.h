@@ -64,7 +64,7 @@ typedef union GNC_INTERNAL_GUID
 #define GNC_VALUE_HOLDS_GUID(value) G_VALUE_HOLDS(value, GNC_TYPE_GUID)
 
 GType gnc_guid_get_type (void);
-G_CONST_RETURN GncGUID* gnc_value_get_guid (const GValue *value);
+const GncGUID* gnc_value_get_guid (const GValue *value);
 
 /** number of characters needed to encode a guid as a string
  * not including the null terminator. */
@@ -80,37 +80,6 @@ G_CONST_RETURN GncGUID* gnc_value_get_guid (const GValue *value);
  *  erase the effect of the first call.
  */
 void guid_init(void);
-
-/** Initialize the id generator with a variety of random sources. and
- *  with the data given in the salt argument. This argument can be
- *  used to add additional randomness to the generated ids.
- *
- *  @param salt The additional random values to add to the generator.
- *
- *  @param salt_len The length of the additional random values.
- *
- *  @note Only one of guid_init(), guid_init_with_salt() and
- *  guid_init_only_salt() should be called.  Calling any
- *  initialization function a second time will reset the generator and
- *  erase the effect of the first call.
- */
-void guid_init_with_salt(const void *salt, size_t salt_len);
-
-/** Initialize the id generator with the data given in the salt
- *  argument, but not with any other source. Calling this function with
- *  a specific argument will reliably produce a specific sequence of
- *  ids.
- *
- *  @param salt The additional random values to add to the generator.
- *
- *  @param salt_len The length of the additional random values.
- *
- *  @note Only one of guid_init(), guid_init_with_salt() and
- *  guid_init_only_salt() should be called.  Calling any
- *  initialization function a second time will reset the generator and
- *  erase the effect of the first call.
- */
-void guid_init_only_salt(const void *salt, size_t salt_len);
 
 /** Release the memory chunk associated with gui storage. Use this
  *  only when shutting down the program, as it invalidates *all*

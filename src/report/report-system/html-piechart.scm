@@ -21,6 +21,8 @@
 ;; Boston, MA  02110-1301,  USA       gnu@gnu.org
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(load-from-path "html-jqplot.scm")
+
 (define <html-piechart>
   (make-record-type "<html-piechart>"
                     '(width
@@ -95,6 +97,14 @@
 (define gnc:html-piechart-set-subtitle!
   (record-modifier <html-piechart> 'subtitle))
 
+;; FIXME url's haven't been working since GnuCash 1.x
+;;       GnuCash 2.x switched from guppy to goffice, which
+;;       made it very hard to remain the url functionality
+;;       At this point I (gjanssens) is in the process of
+;;       moving from goffice to jqplot for our charts
+;;       which perhaps may allow urls again in the charts
+;;       I'm keeping the parameters below around to remind
+;;       us this still has to be investigated again
 (define gnc:html-piechart-button-1-slice-urls
   (record-accessor <html-piechart> 'button-1-slice-urls))
 
@@ -193,88 +203,59 @@
          (labels 
           (catenate-escaped-strings (gnc:html-piechart-labels piechart)))
          (colors 
-          (catenate-escaped-strings (gnc:html-piechart-colors piechart))))
+          (catenate-escaped-strings (gnc:html-piechart-colors piechart)))
+         ; Use a unique chart-id for each chart. This prevents chart
+         ; clashed on multi-column reports
+         (chart-id (string-append "chart-" (number->string (random 999999)))))
     (if (and (list? data) 
              (not (null? data)))
         (begin 
-          (push "<object classid=\"")(push GNC-CHART-PIE)(push "\" width=")
-          (push (gnc:html-piechart-width piechart))
-          (push " height=") 
-          (push (gnc:html-piechart-height piechart))
-          (push ">\n")
-          (if title
+            (push (gnc:html-js-include "jqplot/jquery.min.js"))
+            (push (gnc:html-js-include "jqplot/jquery.jqplot.js"))
+            (push (gnc:html-js-include "jqplot/jqplot.pieRenderer.js"))
+            (push (gnc:html-css-include "jqplot/jquery.jqplot.css"))
+
+            (push "<div id=\"")(push chart-id)(push "\" style=\"width:")
+            (push (gnc:html-piechart-width piechart))
+            (push "px;height:")
+            (push (gnc:html-piechart-height piechart))
+            (push "px;\"></div>\n")
+            (push "<script id=\"source\">\n$(function () {")
+
+            (push "var data = [];\n")
+
+            (if (and data (list? data))
               (begin 
-                (push "  <param name=\"title\" value=\"")
-                (push title) (push "\">\n")))
-          (if subtitle
-              (begin 
-                (push "  <param name=\"subtitle\" value=\"")
-                (push subtitle) (push "\">\n")))
-          (if (and data (list? data))
-              (begin 
-                (push "  <param name=\"datasize\" value=\"")
-                (push (length data)) (push "\">\n")
-                (push "  <param name=\"data\" value=\"")
                 (for-each 
-                 (lambda (datum)
+                 (lambda (datum label)
+                   (push "  data.push(['")
+                   (push label)
+                   (push "',")
                    (push datum)
-                   (push " "))
-                 data)
-                (push "\">\n")))
-          (if (and (string? colors)
-                   (> (string-length colors) 0))
+                   (push "]);\n"))
+                 data (gnc:html-piechart-labels piechart))))
+
+            (push "var options = {
+                    seriesDefaults: {
+                        renderer: $.jqplot.PieRenderer,
+                    },
+                    legend: {
+                         show: true,
+                         placement: \"outsideGrid\", },
+                   };\n")
+
+            (if title
               (begin 
-                (push "  <param name=\"colors\" value=\"")
-                (push colors)
-                (push "\">\n")))
-          (if (and (string? labels)
-                   (> (string-length labels) 0))
+                (push "  options.title = \"")
+                (push title) (push "\";\n")))
+            (if subtitle
               (begin 
-                (push "  <param name=\"labels\" value=\"")
-                (push labels)
-                (push "\">\n")))
-          (if url-1 
-              (begin 
-                (push "  <param name=\"slice_urls_1\" value=\"")
-                (push url-1)
-                (push "\">\n")))
-          (if url-2
-              (begin 
-                (push "  <param name=\"slice_urls_2\" value=\"")
-                (push url-2)
-                (push "\">\n")))
-          (if url-3 
-              (begin 
-                (push "  <param name=\"slice_urls_3\" value=\"")
-                (push url-3)
-                (push "\">\n")))
-          (if legend-1 
-              (begin 
-                (push "  <param name=\"legend_urls_1\" value=\"")
-                (push legend-1)
-                (push "\">\n")))
-          (if legend-2
-              (begin 
-                (push "  <param name=\"legend_urls_2\" value=\"")
-                (push legend-2)
-                (push "\">\n")))
-          (if legend-3 
-              (begin 
-                (push "  <param name=\"legend_urls_3\" value=\"")
-                (push legend-3)
-                (push "\">\n")))
-          (push "Unable to display pie chart\n")
-          (push "</object> &nbsp;\n"))
-	(begin (gnc:warn "null-data, not rendering piechart")
-	       " "))
+                (push "  options.title += \" (")
+                (push subtitle) (push ")\";\n")))
+
+            (push "$.jqplot.config.enablePlugins = true;\n")
+            (push "var plot = $.jqplot('")(push chart-id)(push "', [data], options);\n")
+            (push "});\n</script>"))
+        (begin (gnc:warn "null-data, not rendering piechart")
+               " "))
     retval))
-
-
-
-
-
-
-
-
-
-

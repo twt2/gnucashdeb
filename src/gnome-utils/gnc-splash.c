@@ -28,9 +28,10 @@
 #include "gnc-gnome-utils.h"
 #include "gnc-splash.h"
 #include "core-utils/gnc-version.h"
-#include "gnc-gconf-utils.h"
+#include "gnc-prefs.h"
 
 #define MARKUP_STRING "<span size='small'>%s</span>"
+#define GNC_PREF_SHOW_SPLASH "show-splash-screen"
 
 static GtkWidget * splash = NULL;
 static GtkWidget * progress = NULL;
@@ -61,7 +62,7 @@ gnc_show_splash_screen (void)
     gchar *ver_string, *markup;
 
     if (splash) return;
-    if (!gnc_gconf_get_bool(GCONF_GENERAL, "show_splash_screen", NULL)) return;
+    if (!gnc_prefs_get_bool(GNC_PREFS_GROUP_GENERAL, GNC_PREF_SHOW_SPLASH)) return;
 
     splash = gtk_window_new (GTK_WINDOW_TOPLEVEL);
     gtk_window_set_decorated(GTK_WINDOW (splash), FALSE);
@@ -85,14 +86,22 @@ gnc_show_splash_screen (void)
     frame = gtk_frame_new (NULL);
     vbox = gtk_vbox_new (FALSE, 3);
     hbox = gtk_hbox_new (FALSE, 3);
-#ifdef GNUCASH_SVN
+#ifdef GNUCASH_SCM
     /* Development version */
-    ver_string = g_strdup_printf(_("Version: GnuCash-%s svn (r%s built %s)"),
-                                 VERSION, GNUCASH_SVN_REV, GNUCASH_BUILD_DATE);
+    /* Translators: 1st %s is the GnuCash version (eg 2.4.11);
+                    2nd %s is the scm type (svn/svk/git/bzr);
+                    3rd %s is the scm revision number;
+                    4th %s is the build date */
+    ver_string = g_strdup_printf(_("Version: GnuCash-%s %s (rev %s built %s)"),
+                                 VERSION, GNUCASH_SCM, GNUCASH_SCM_REV,
+                                 GNUCASH_BUILD_DATE);
 #else
     /* Dist Tarball */
-    ver_string = g_strdup_printf(_("Version: GnuCash-%s (r%s built %s)"),
-                                 VERSION, GNUCASH_SVN_REV, GNUCASH_BUILD_DATE);
+    /* Translators: 1st %s is the GnuCash version (eg 2.4.11);
+                    2nd %s is the scm (svn/svk/git/bzr) revision number;
+                    3rd %s is the build date */
+    ver_string = g_strdup_printf(_("Version: GnuCash-%s (rev %s built %s)"),
+                                 VERSION, GNUCASH_SCM_REV, GNUCASH_BUILD_DATE);
 #endif
 
     version = gtk_label_new(NULL);

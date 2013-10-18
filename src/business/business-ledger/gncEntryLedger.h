@@ -35,10 +35,16 @@ typedef enum
     GNCENTRY_ORDER_VIEWER,
     GNCENTRY_INVOICE_ENTRY,
     GNCENTRY_INVOICE_VIEWER,
+    GNCENTRY_CUST_CREDIT_NOTE_ENTRY,
+    GNCENTRY_CUST_CREDIT_NOTE_VIEWER,
     GNCENTRY_BILL_ENTRY,
     GNCENTRY_BILL_VIEWER,
+    GNCENTRY_VEND_CREDIT_NOTE_ENTRY,
+    GNCENTRY_VEND_CREDIT_NOTE_VIEWER,
     GNCENTRY_EXPVOUCHER_ENTRY,
     GNCENTRY_EXPVOUCHER_VIEWER,
+    GNCENTRY_EMPL_CREDIT_NOTE_ENTRY,
+    GNCENTRY_EMPL_CREDIT_NOTE_VIEWER,
     GNCENTRY_NUM_REGISTER_TYPES
 } GncEntryLedgerType;
 
@@ -150,6 +156,6 @@ void gnc_entry_ledger_move_current_entry_updown (GncEntryLedger *ledger,
 
 QofQuery * gnc_entry_ledger_get_query (GncEntryLedger *ledger);
 
-void gnc_entry_ledger_set_gconf_section (GncEntryLedger *ledger, const gchar *string);
+void gnc_entry_ledger_set_prefs_group (GncEntryLedger *ledger, const gchar *string);
 
 #endif /* GNC_ENTRY_LEDGER_H */

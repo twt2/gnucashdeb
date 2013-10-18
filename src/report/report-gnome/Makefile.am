@@ -14,25 +14,24 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/html \
   -I${top_srcdir}/src/report/report-system \
   -I${top_srcdir}/src/libqof/qof \
-  ${GLADE_CFLAGS} \
   ${GUILE_INCS} \
-  ${GNOME_CFLAGS} \
+  ${GTK_CFLAGS} \
   ${GLIB_CFLAGS}
 
 libgncmod_report_gnome_la_SOURCES = \
   swig-report-gnome.c \
-  dialog-column-view.c \
+  dialog-report-column-view.c \
   dialog-custom-report.c \
-  dialog-style-sheet.c \
+  dialog-report-style-sheet.c \
   gnc-plugin-page-report.c \
   gncmod-report-gnome.c \
   window-report.c
 
 gncincludedir = ${GNC_INCLUDE_DIR}
 gncinclude_HEADERS = \
-  dialog-column-view.h \
+  dialog-report-column-view.h \
   dialog-custom-report.h \
-  dialog-style-sheet.h \
+  dialog-report-style-sheet.h \
   gnc-plugin-page-report.h \
   window-report.h
 
@@ -47,12 +46,10 @@ libgncmod_report_gnome_la_LIBADD = \
   ${top_builddir}/src/html/libgncmod-html.la \
   ${top_builddir}/src/report/report-system/libgncmod-report-system.la \
   ${top_builddir}/src/libqof/qof/libgnc-qof.la \
-  ${GLADE_LIBS} \
   ${GUILE_LIBS} \
-  ${GNOME_LIBS} \
   ${GLIB_LIBS}
 
-if BUILDING_FROM_SVN
+if BUILDING_FROM_SCM
 swig-report-gnome.c: report-gnome.i ${top_srcdir}/src/base-typemaps.i
 	$(SWIG) -guile $(SWIG_ARGS) -Linkage module \
 	-I${top_srcdir}/src -o $@ $<
@@ -63,10 +60,10 @@ gncmod_DATA = report-gnome.scm
 
 noinst_DATA = .scm-links
 
-gladedir = $(GNC_GLADE_DIR)
-glade_DATA = \
-  report.glade \
-  custom-report-dialog.glade
+gtkbuilderdir = $(GNC_GTKBUILDER_DIR)
+gtkbuilder_DATA = \
+  dialog-report.glade \
+  dialog-custom-report.glade
 
 uidir = $(GNC_UI_DIR)
 
@@ -75,7 +72,7 @@ ui_DATA = \
 
 EXTRA_DIST = \
   report-gnome.i \
-  ${glade_DATA} \
+  ${gtkbuilder_DATA} \
   ${gncmod_DATA} \
   ${ui_DATA}
 

@@ -1,18 +1,16 @@
-SUBDIRS = . test schemas
+SUBDIRS = . test gschemas
 
 pkglib_LTLIBRARIES=libgncmod-qif-import.la
 
 libgncmod_qif_import_la_SOURCES = \
   dialog-account-picker.c \
-  druid-qif-import.c \
+  assistant-qif-import.c \
   gnc-plugin-qif-import.c \
-  gnc-druid-test.c \
   gncmod-qif-import.c
 
 noinst_HEADERS = \
   dialog-account-picker.h \
-  druid-qif-import.h \
-  gnc-druid-test.h \
+  assistant-qif-import.h \
   gnc-plugin-qif-import.h
 
 libgncmod_qif_import_la_LDFLAGS = -avoid-version
@@ -27,8 +25,6 @@ libgncmod_qif_import_la_LIBADD = \
   ${top_builddir}/src/gnc-module/libgnc-module.la \
   ${top_builddir}/src/libqof/qof/libgnc-qof.la \
   ${GUILE_LIBS} \
-  ${GNOME_LIBS} \
-  ${GLADE_LIBS} \
   ${GLIB_LIBS}
 
 
@@ -48,8 +44,10 @@ gncscm_DATA = \
   qif-to-gnc.scm \
   qif-utils.scm
 
-gladedir = ${GNC_GLADE_DIR}
-glade_DATA = qif.glade
+gtkbuilderdir = ${GNC_GTKBUILDER_DIR}
+gtkbuilder_DATA = \
+   dialog-account-picker.glade \
+   assistant-qif-import.glade
 
 AM_CPPFLAGS = \
   -I${top_srcdir}/src \
@@ -64,8 +62,7 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/libqof/qof \
   ${GUILE_INCS} \
   ${GLIB_CFLAGS} \
-  ${GLADE_CFLAGS} \
-  ${GNOME_CFLAGS} 
+  ${GTK_CFLAGS}
 
 uidir = $(GNC_UI_DIR)
 ui_DATA = \
@@ -73,7 +70,7 @@ ui_DATA = \
 
 EXTRA_DIST = \
   ${gncscm_DATA} \
-  ${glade_DATA} \
+  ${gtkbuilder_DATA} \
   file-format.txt \
   $(ui_DATA)
 

@@ -41,6 +41,9 @@
 #include "io-gncxml-gen.h"
 #include "sixtp-utils.h"
 
+/*
+#define __DEBUG 1
+*/
 /***********************************************************************/
 
 static int
@@ -122,7 +125,7 @@ check_dom_tree_version(xmlNodePtr node, gchar *verstr)
                          FALSE);
 
     verteststr = (char*) node->properties->xmlAttrPropertyValue->content;
-    if (safe_strcmp(verstr, verteststr) == 0)
+    if (g_strcmp0(verstr, verteststr) == 0)
     {
         return TRUE;
     }
@@ -146,7 +149,7 @@ equals_node_val_vs_string(xmlNodePtr node, const gchar* str)
     {
         return FALSE;
     }
-    else if (safe_strcmp(cmp1, str) == 0)
+    else if (g_strcmp0(cmp1, str) == 0)
     {
         g_free(cmp1);
         return TRUE;
@@ -388,7 +391,7 @@ test_files_in_dir(int argc, char **argv, gxpf_callback cb,
         {
             if (!S_ISDIR(file_info.st_mode))
             {
-#if 0
+#ifdef __DEBUG
                 printf( "testing load of file \"%s\":\n", argv[count] );
 #endif
                 test_load_file(to_open, cb, top_parser, book);

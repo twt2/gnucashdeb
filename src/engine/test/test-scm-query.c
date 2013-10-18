@@ -3,7 +3,7 @@
 #include <glib.h>
 #include <libguile.h>
 
-#include "engine-helpers.h"
+#include "engine-helpers-guile.h"
 #include "gnc-module.h"
 #include "test-engine-stuff.h"
 #include "test-stuff.h"
@@ -62,6 +62,7 @@ run_tests (void)
 static void
 main_helper (void *closure, int argc, char **argv)
 {
+    gnc_module_system_init ();
     gnc_module_load("gnucash/engine", 0);
 
     xaccLogDisable ();

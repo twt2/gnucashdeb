@@ -25,11 +25,11 @@ src/libqof/qof/qofsql.c
 # check. Once the whole world has upgraded to intltool 0.50, intl-scm
 # can be deleted and these files added to POTFILES.in.
 
+src/app-utils/app-utils.scm
+src/app-utils/business-prefs.scm
 src/app-utils/date-utilities.scm
+src/app-utils/gnucash/app-utils.scm
 src/app-utils/prefs.scm
-src/business/business-utils/business-prefs.scm
-src/business/business-utils/business-utils.scm
-src/business/business-utils/gnucash/business-utils.scm
 src/import-export/qif-import/qif-dialog-utils.scm
 src/import-export/qif-import/qif-file.scm
 src/import-export/qif-import/qif-import/qif-dialog-utils.scm
@@ -157,4 +157,3 @@ src/tax/us/de_DE.scm
 src/tax/us/gnucash/tax/de_DE.scm
 src/tax/us/txf-de_DE.scm
 src/tax/us/txf.scm
-

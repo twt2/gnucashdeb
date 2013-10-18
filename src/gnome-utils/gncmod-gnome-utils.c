@@ -17,11 +17,6 @@
 #include "qof.h"
 #include "gnc-gui-query.h"
 
-#include "gnc-druid-gnome.h"
-#include "gnc-druid-provider-edge-gnome.h"
-#include "gnc-druid-provider-file-gnome.h"
-#include "gnc-druid-provider-multifile-gnome.h"
-
 GNC_MODULE_API_DECL(libgncmod_gnome_utils)
 
 /* version of the gnc module system interface we require */
@@ -64,12 +59,6 @@ libgncmod_gnome_utils_gnc_module_init(int refcount)
         return FALSE;
     }
 
-    /* load the calculation module (we depend on it) */
-    if (!gnc_module_load("gnucash/calculation", 0))
-    {
-        return FALSE;
-    }
-
     if (!gnc_module_load("gnucash/app-utils", 0))
     {
         return FALSE;
@@ -83,12 +72,6 @@ libgncmod_gnome_utils_gnc_module_init(int refcount)
     if (refcount == 0)
     {
         gnc_options_ui_initialize ();
-
-        /* register the druid pieces */
-        gnc_druid_gnome_register();
-        gnc_druid_provider_edge_gnome_register();
-        gnc_druid_provider_file_gnome_register();
-        gnc_druid_provider_multifile_gnome_register();
     }
 
     return TRUE;

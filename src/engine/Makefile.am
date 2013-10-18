@@ -15,7 +15,6 @@ AM_CPPFLAGS = \
 libgncmod_engine_la_SOURCES = \
   Account.c \
   Recurrence.c \
-  Period.c \
   Query.c \
   SchedXaction.c \
   SX-book.c \
@@ -28,7 +27,6 @@ libgncmod_engine_la_SOURCES = \
   Transaction.c \
   cap-gains.c \
   cashobjects.c \
-  gnc-associate-account.c \
   gnc-budget.c \
   gnc-commodity.c \
   gnc-engine.c \
@@ -37,14 +35,12 @@ libgncmod_engine_la_SOURCES = \
   gnc-lot.c \
   gnc-pricedb.c \
   gnc-session.c \
-  gnc-session-scm.c \
   gncmod-engine.c \
   swig-engine.c \
   kvp-scm.c \
   engine-helpers.c \
   glib-helpers.c  \
   policy.c \
-  swig-business-core.c \
   gncBusGuile.c \
   gncBusiness.c \
   gncAddress.c \
@@ -68,7 +64,6 @@ gncinclude_HEADERS = \
   FreqSpec.h \
   Recurrence.h \
   GNCId.h \
-  Period.h \
   SchedXaction.h \
   SX-book.h \
   SX-ttinfo.h \
@@ -82,8 +77,8 @@ gncinclude_HEADERS = \
   cap-gains.h \
   cashobjects.h \
   engine-helpers.h \
+  engine-helpers-guile.h \
   glib-helpers.h \
-  gnc-associate-account.h \
   gnc-budget.h \
   gnc-commodity.h \
   gnc-engine.h \
@@ -91,7 +86,6 @@ gncinclude_HEADERS = \
   gnc-hooks.h \
   gnc-pricedb.h \
   gnc-session.h \
-  gnc-session-scm.h \
   kvp-scm.h \
   policy.h \
   gncAddress.h \
@@ -147,7 +141,8 @@ libgncmod_engine_la_LIBADD = \
   ${top_builddir}/lib/libc/libc-missing.la
 
 gncmoddir = ${GNC_SHAREDIR}/guile-modules/gnucash
-gncmod_DATA = engine.scm 
+gncmod_DATA = engine.scm \
+  business-core.scm
 
 gncscmdir = ${GNC_SHAREDIR}/scm
 gncscm_DATA = \
@@ -194,22 +189,20 @@ endif
 
 noinst_DATA = .scm-links
 
-if BUILDING_FROM_SVN
+if BUILDING_FROM_SCM
 
 # The generated file depends on various libqof headers. Out of
-# laziness I only include one here - more might be needed
+# laziness I only include a few here - more might be needed
 # subsequently.
-QOFHEADERS = ${top_srcdir}/src/libqof/qof/qofbook.h
+QOFHEADERS = \
+  $(top_srcdir)/src/libqof/qof/qofbook.h \
+  $(top_srcdir)/src/libqof/qof/qofbookslots.h
 
-swig-engine.c: engine.i ${top_srcdir}/src/base-typemaps.i \
-               ${QOFHEADERS} \
-               ${gncinclude_HEADERS} ${noinst_HEADERS}
+swig-engine.c: engine.i $(top_srcdir)/src/base-typemaps.i \
+               $(QOFHEADERS) \
+               $(gncinclude_HEADERS) $(noinst_HEADERS)
 	$(SWIG) -guile $(SWIG_ARGS) -Linkage module \
 	-I${top_srcdir}/src/libqof/qof -I${top_srcdir}/src -o $@ $<
-swig-business-core.c: business-core.i ${noinst_HEADERS} \
-                      ${top_srcdir}/src/base-typemaps.i
-	$(SWIG) -guile $(SWIG_ARGS) -Linkage module \
-	-I${top_srcdir}/src -o $@ $<
 endif
 
 iso-4217-currencies.c: iso-4217-currencies.scm iso-currencies-to-c
@@ -220,7 +213,7 @@ BUILT_SOURCES = iso-4217-currencies.c
 
 CLEANFILES = $(BUILT_SOURCES) .scm-links \
 	${SCM_FILE_LINKS}
-MAINTAINERCLEANFILES = swig-engine.c swig-business-core.c
+MAINTAINERCLEANFILES = swig-engine.c
 
 clean-local:
 	rm -rf gnucash

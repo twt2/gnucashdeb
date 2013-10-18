@@ -1,7 +1,246 @@
 Version history:
 ------- -------
- 2.4.13  19 Apr 2013
-       2.4.13 is a bugfix release. Please see the Changelog for details
+ 2.5.6 - 7 October 2013
+       	 This is the seventh release in the UNSTABLE 2.5 series.
+
+	 Geert Janssens has rewritten the preferences system to use
+	 GSettings from GIO (GLib) instead of GConf. This is a simpler
+	 and more robust backend which writes to the OS's native prefs
+	 -- defaults on OS X and the Registry on MSWindows -- and
+	 allows us to remove several troublesome dependencies
+	 including GConf, ORBit, and DBus. The change includes a
+	 migration script that will run at Gnucash startup.
+
+	 WARNING: the saved settings in gconf are not (yet) migrated
+         to gsettings !  running gnucash as of this commit will start
+         you with default values for all preferences !  You can of
+         course change your preferences, your changes will be saved
+         properly in gsettings and restored when you restart
+         gnucash. But what has been set in GConf before will basically
+         be ignored.
+
+	 Bug Fixes:
+
+	 Bug 632362 - Unable to create "reversing transaction" again
+	 after it is removed
+
+	 Bug 654196 - "make check" fails when built with --enable-dbi
+
+	 Bug 674862 - 2038 bug in libdbi
+
+	 Bug 682280 - bill/invoice importer fails to save imported bills/invoice
+
+	 Bug 684670 - Interest amount calculation is wrong in Sqlite3 format
+
+	 Bug 699450- New budgets cause Account Name column to expand
+	 until display bigger than screen. -- Robert Ratliff
+	 <ratliff.bobby@gmail.com>
+
+	 Bug 708700 - "make check" fails (missing glib bits)--
+	 Frédéric Perrin <fred+gnome@resel.fr>
+
+Bug 704039 - time zone is not respected in Windows -- Thanks to Kuang-che Wu <kcwu@csie.org>
+
+
+      	 Translations Updated: Dutch
+ 2.5.5 - 10 September 2013
+       	 This is the sixth release in the UNSTABLE 2.5 series.
+
+	 No new features are added in this release.
+
+	 Bug Fixes:
+
+	 334939 - Account Report and Account Transaction Report are
+	 apparently the same, but different. Change menu entry for the single
+	 transaction Account Report from "Accout Transaction Report" to
+	 "Account Report - Single Transaction" Author: Carsten Rinke
+
+	 603183 - Equity statement shows incorrect changes
+	 Add function gnc:account-get-total-flow to report-utilities.scm
+	 This function filters the splits from the source to the target accounts
+	 and returns a commodity collector.
+	 It does NOT do currency exchanges. Export the new function
+	 gnc:account-get-total-flow from report-utilities.scm. Apply the new
+	 function gnc:account-get-total-flow for the "Withdrawal" calculation.
+	 Author: Carsten Rinke
+
+	 629136 - Move the code that updates the sensitivity
+	 of immutable page actions from gnc_main_window_switch_page to
+	 gnc_main_window_generate_title. Patch by Guilherme Salgado.
+
+	 696492 - Change report name in menu or in report output to be
+	 consistent Change the register name to "Accout Transaction Report"
+	 when the register type is GENERAL_LEDGER, INCOME_LEDGER, or default
+	 in function gnc_reg_get_name().  Patch by Carsten Rinke.
+
+	 704039 - time zone is not respected on windows Author: Kuang-che Wu
+
+	 704056 - Online Banking (Online Actions) does not appear in Action menu
+	 Ensure that all functions are exported to the dll.
+
+	 704525 - When you have a mix of chart types (bar charts and pie
+	 charts). Add new procedure gnc:substring-replace-from-to
+	 Similar to gnc:substring-replace, but offers the possibility to
+	 replace substrings in a range of occurances. Add calls to
+	 gnc:substring-replace-from-to to procedure gnc:report-run.
+	 Filter out all occurances of jquery.min.js and jquery.jqplot.js
+	 except for the first occurances.  Author: Carsten Rinke
+
+	 Translations updated: Lithuatnian
+
+ 2.5.4 - 4 August 2013
+         This is the fifth release in the UNSTABLE 2.5 series.
+
+	 New Features:
+
+	 Register2 work: Restore the delete-transaction-up/down
+	 feature, replace the filter-and-sort model with a qof query
+	 which loads only a subset of transactions to improve speed,
+	 and some date and cursor changes.
+
+	 Aurimas Fišeras contribued patches to make CSV Account import
+	 table header translatable, to fix translation of table
+	 headers, fix dash marker usage, and some other translation
+	 issues.
+
+	 Revert the Bitcoin support until the patch is rewritten with
+	 a better UI.
+
+	 Bug Fixes:
+	 703897: Functions which can return null always return a Python
+	  object, Tom Lofts.
+	 704183: ofx file import tries to match online_id against
+	  ACCTID[space]ACCTKEY even when ACCTKEY is empty, G. Paul Ziemba
+	 704185: GnuCash 2.5 doesn't build on FreeBSD
+
+	 Translations Updated: Catalan, Danish, Italian, and  Lithuanian
+
+ 2.5.3 - 7 July 2013
+         This is the fourth release in the UNSTABLE 2.5 series.
+
+	 New Features:
+	 Save and Save As for custom report templates (Geert Jansens)
+	 Customized report settings can now be saved without renaming
+	 the report, and updates saved directly replacing the previously
+	 saved report or "saved as" to a new name.
+
+	 It's now possible to post multiple invoices from the find
+	 dialog. GnuCash was crashing if you searched for all unposted
+	 invoices, selected two or more of them, and posted them.
+	 This was because the list of invoices to be posted changed
+	 while it was being processed.  As part of fixing this the
+	 prompt for post date, due date, etc. will only be given once,
+	 not once per invoice.
+
+	 Register2 work: Better commodity/currency handling, sanity checks
+	 when converting TreePaths, Posted Dates now work like the old Register,
+
+	 PostedDate is now recorded only as a date, with no time.
+
+	 Peter Broadberry contributed faster versions of several reports.
+
+	 Bug Fixes:
+	 703272: list of windows in OSX Windows menu
+	 699686: Startup dialog windows should be top level (Simon Arlot)
+	 701670: (OSX)Command-V in reconcile window pastes data in register
+	 702899: Fix crash in scrubbing code
+	 703305: Fix crash on entering a non-valid date
+	 The crash that occurs when duplicating multiple invoices from Find
+	  results.
+	 691587: Catch scheme exceptions when converting error messages
+	 669964: Fix txn creation that forgot to set a txn currency.
+	 672595: After creation of a new book, make sure to set it to dirty
+	 700582: Enable online actions in Register2
+	 Now works with automake 1.13
+
+	 Translations Updated: Catalan, Italian, Lithuanian
+
+ 2.5.2 - 27 May 2013
+         This is the third release in the UNSTABLE 2.5 series.
+
+	 Robert Fewell continues his work on the GtkTreeModel register,
+	 including better transaction editing without using the mouse and
+	 some display issues.
+
+	 Sam Morris contributed a patch supporting retrieving Bitcoin and
+	 Litecoin exchange rates from Mt. Gox with Finance::Quote
+
+	 Fix Bug 700197, backend errors when creating Customers with the
+	 Python bindings. Patch by Tom Lofts
+
+	 Carsten Rinke provided several patches:
+	 Bug #682800 Generated balances on Report different than calculated
+	 balances on Ledger when using "open subaccounts"
+	 Bug #622778 Miscalculation in cashflow reports
+	 Bug #584869 net change line in general journal report
+
+	 Bug #589865 - Budget flow period doesn't work. Patches by Carsten
+	 Rinke and Mikhail Tsaplin
+
+	 The translation files have been copied from the 2.4 branch.
+	 Translators may start working on the new strings, though string
+	 freeze is scheduled for 2.5.5 in early September.
+
+	 Translations Updated: Danish, German, Italian
+
+ 2.5.1 -  5 May 2013
+         This is the second release in the UNSTABLE 2.5 series.
+
+	 Robert Fewell has continued his work on the GtkTreeModel register.
+	 It is now the default for account registers.
+
+	 Geert Janssens has begun work on replacing the GConf configuration
+	 management tool with the newer GSettings API from recent versions
+	 of GLib.
+
+	 Tom Lofts contributed the beginning of a RESTful Python API
+	 to enable access to minimal account, invoice, and customer
+	 information in a JSON format.
+
+	 Christian Stimming fixed the very long wait time for the UI to
+	 become responsive when running the import matcher.
+
+	 Also some bug fixes, package upgrades, and minor improvements.
+
+ 2.5.0 - 30 Mar 2013
+
+         The Gnucash Development Team is pleased to release Gnucash 2.5.0,
+	 the first release of an unstable series leading to Gnucash 2.6.0.
+
+	 This release is UNSTABLE and SHOULD NOT BE USED in production.
+
+	 Robert Fewell has contributed a rewrite of the ledger
+	 (Gnucash's primary interface window) to use the GtkTreeModel
+	 (select "register 2" from the menu) as well as a new CSV
+	 import/export facility for account trees.
+
+	 Gnucash now requires Gtk+-2.24 and GLib-2.26. We've removed
+	 most of the dependencies on libraries obsoleted by project
+	 Ridley and will be in position to move to Gtk+-3.x once the
+	 GtkTreeModel register window work is complete. This means
+	 that Gnucash 2.5 requires Debian 6, RHEL 6, or one of the
+	 more aggressive distributions like Ubuntu.
+
+	 Gnucash now works with Guile-2.0.
+
+	 The business module has been revamped and we introduce a new
+	 feature, Credit Notes. It is now possible to import customers
+	 and vendors from a CSV file as well.
+
+	 The "Num" field is now optionally per-split rather than
+	 per-transaction.
+
+	 When opening a locked "book" one now has the option of
+	 opening it read-only. Note that Gnucash is still a
+	 single-user program and that the database backends are still
+	 used only as a data store.
+
+	 Gnucash is no longer subject to the "2038" bug, so that
+	 30-year mortgages can now be entered correctly.
+
+	 By agreement of all authors we have relicensed Gnucash to the
+	 Gnu Public License Version 2 or later from just Version 2.
+
  2.4.12  30 Mar 2013
        2.4.12 is a bugfix release. Please see the Changelog for details
  2.4.11  14 Jul 2012
@@ -61,7 +300,7 @@ Version history:
 
        * Updated AqBanking on Win32.</li>
  
-2.3.0 - 14 May 2009
+ 2.3.0 - 14 May 2009
  	 o Welcome to GnuCash 2.3.0 the first of several unstable releases of
 	 the GnuCash Open Source Accounting Software which will eventually lead
 	 to the stable version 2.4.0. This release is the very first to use an

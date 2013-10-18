@@ -172,12 +172,14 @@ gnc_module_system_refresh(void)
         {
             /* is the file a loadable module? */
 
-            /* Gotcha: On MacOS, G_MODULE_SUFFIX is defined as "so", but if we do
-             * not build clean libtool modules with "-module", we get dynamic
-             * libraries ending on .dylib
-             * On Windows, all modules will move to bin/, so they will be mixed with
-             * other libraries, such as gtk+. Adding a prefix "libgncmod" filter will prevent
-             * module loader load other libraries. And the filter should works on other platform.
+            /* Gotcha: On MacOS, G_MODULE_SUFFIX is defined as "so",
+             * but if we do not build clean libtool modules with
+             * "-module", we get dynamic libraries ending on .dylib On
+             * Windows, all modules will move to bin/, so they will be
+             * mixed with other libraries, such as gtk+. Adding a
+             * prefix "libgncmod" filter will prevent the module loader
+             * from loading other libraries. The filter should work on
+             * other platforms.
              */
             if ((g_str_has_suffix(dent, "." G_MODULE_SUFFIX)
                     || g_str_has_suffix(dent, ".dylib"))
@@ -433,7 +435,7 @@ gnc_module_load_common(const char * module_name, gint iface, gboolean optional)
     GModule         * gmodule;
     GNCModuleInfo   * modinfo;
 
-    ENTER("module_name: %s",module_name);
+    ENTER("module_name: %s", module_name);
 
     if (!loaded_modules)
     {

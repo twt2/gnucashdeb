@@ -42,7 +42,7 @@ gchar *gnc_path_get_bindir()
 }
 
 /** Returns the libdir path, usually
- * "$prefix/lib". Needed for gnome_program_init().
+ * "$prefix/lib".
  *
  * @returns A newly allocated string. */
 gchar *gnc_path_get_libdir()
@@ -52,7 +52,7 @@ gchar *gnc_path_get_libdir()
 }
 
 /** Returns the datadir path, usually
- * "$prefix/share/gnucash". Needed for gnome_program_init().
+ * "$prefix/share/gnucash". Needed for gnc_gnome_locate_*().
  *
  * @returns A newly allocated string. */
 gchar *gnc_path_get_pkgdatadir()
@@ -64,8 +64,21 @@ gchar *gnc_path_get_pkgdatadir()
     return result;
 }
 
+/** Returns the docdir path, usually
+ * "$prefix/share/doc/gnucash".
+ *
+ * @returns A newly allocated string. */
+gchar *gnc_path_get_pkgdocdir()
+{
+    gchar *docdir = gnc_gbr_find_data_dir (DATADIR);
+    gchar *result = g_build_filename (docdir, "doc", "gnucash", (char*)NULL);
+    g_free (docdir);
+    //printf("Returning pkgdocdir %s\n", result);
+    return result;
+}
+
 /** Returns the sysconfdir path, usually
- * "$prefix/etc/gnucash". Needed for gnome_program_init().
+ * "$prefix/etc/gnucash".
  *
  * @returns A newly allocated string. */
 gchar *gnc_path_get_pkgsysconfdir()
@@ -96,16 +109,16 @@ gchar *gnc_path_get_pkglibdir()
     return result;
 }
 
-/** Returns the glade file path, usually
- * "$prefix/share/gnucash/glade".
+/** Returns the gtkbuilder file path, usually
+ * "$prefix/share/gnucash/gtkbuilder".
  *
  * @returns A newly allocated string. */
-gchar *gnc_path_get_gladedir()
+gchar *gnc_path_get_gtkbuilderdir()
 {
     gchar *pkgdatadir = gnc_path_get_pkgdatadir ();
-    gchar *result = g_build_filename (pkgdatadir, "glade", (char*)NULL);
+    gchar *result = g_build_filename (pkgdatadir, "gtkbuilder", (char*)NULL);
     g_free (pkgdatadir);
-    //printf("Returning gladedir %s\n", result);
+    //printf("Returning gtkbuilderdir %s\n", result);
     return result;
 }
 
@@ -145,14 +158,14 @@ gchar *gnc_path_get_reportdir()
     const gchar *builddir = g_getenv ("GNC_BUILDDIR");
     if (g_getenv ("GNC_UNINSTALLED") && builddir)
     {
-	result = g_build_filename (builddir, "src", "report", NULL);
+        result = g_build_filename (builddir, "src", "report", NULL);
     }
     else
     {
-	gchar *pkgdatadir = gnc_path_get_pkgdatadir ();
-	result = g_build_filename (pkgdatadir, "guile-modules",
-                                      "gnucash", "report", (char*)NULL);
-	g_free (pkgdatadir);
+        gchar *pkgdatadir = gnc_path_get_pkgdatadir ();
+        result = g_build_filename (pkgdatadir, "guile-modules",
+                                   "gnucash", "report", (char*)NULL);
+        g_free (pkgdatadir);
     }
     //printf("Returning stdreportsdir %s\n", result);
     return result;
@@ -169,42 +182,15 @@ gchar *gnc_path_get_stdreportsdir()
     gchar *reportdir = gnc_path_get_reportdir ();
     if (g_getenv ("GNC_UNINSTALLED"))
     {
-	result = g_build_filename (reportdir, "standard-reports", "gnucash",
-				   "report", "standard-reports", NULL);
+        result = g_build_filename (reportdir, "standard-reports", "gnucash",
+                                   "report", "standard-reports", NULL);
     }
     else
     {
-	result = g_build_filename (reportdir, "standard-reports", NULL);
+        result = g_build_filename (reportdir, "standard-reports", NULL);
     }
     g_free (reportdir);
     //printf("Returning stdreportsdir %s\n", result);
-    return result;
-}
-
-/** Returns the gconf schema config source path, usually
- * "$prefix/etc/gconf/gconf.xml.defaults".
- *
- * @returns A newly allocated string. */
-gchar *gnc_path_get_gconfdir(gboolean force_slashes)
-{
-    gchar *sysconfdir = gnc_gbr_find_etc_dir (SYSCONFDIR);
-    gchar *separator = G_DIR_SEPARATOR_S;
-    gchar *result;
-
-    if (force_slashes)
-    {
-        gchar **splitted;
-        splitted = g_strsplit (sysconfdir, "\\", -1);
-        g_free (sysconfdir);
-        sysconfdir = g_strjoinv ("/", splitted);
-        g_strfreev (splitted);
-        separator = "/";
-    }
-
-    result = g_build_path (separator, sysconfdir, "gconf", "gconf.xml.defaults",
-                           (gchar*)NULL);
-    g_free (sysconfdir);
-    //printf("Returning gconfdir %s\n", result);
     return result;
 }
 

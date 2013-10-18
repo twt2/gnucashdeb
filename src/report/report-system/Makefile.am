@@ -14,13 +14,14 @@ gncinclude_HEADERS = \
 libgncmod_report_system_la_LDFLAGS = -avoid-version
 
 libgncmod_report_system_la_LIBADD = \
+  ${top_builddir}/src/core-utils/libgnc-core-utils.la \
   ${top_builddir}/src/gnc-module/libgnc-module.la \
   ${top_builddir}/src/app-utils/libgncmod-app-utils.la \
   ${GUILE_LIBS} \
   ${GLIB_LIBS} \
   ${GTK_LIBS}
 
-if BUILDING_FROM_SVN
+if BUILDING_FROM_SCM
 swig-report-system.c: report-system.i ${top_srcdir}/src/base-typemaps.i
 	$(SWIG) -guile $(SWIG_ARGS) -Linkage module \
 	-I${top_srcdir}/src -o $@ $<
@@ -28,6 +29,7 @@ endif
 
 AM_CPPFLAGS = \
   -I${top_srcdir}/src \
+  -I${top_srcdir}/src/core-utils \
   -I${top_srcdir}/src/gnc-module \
   -I${top_srcdir}/src/app-utils \
   ${GLIB_CFLAGS} \
@@ -49,11 +51,20 @@ gncscm_DATA = \
      html-table.scm \
      html-text.scm \
      html-utilities.scm \
+     html-jqplot.scm \
      options-utilities.scm \
      report-utilities.scm \
-     report.scm 
+     report.scm
 
 gncmoddir = ${GNC_SHAREDIR}/guile-modules/gnucash/report-system
+
+gncmodscmdir = ${GNC_SHAREDIR}/guile-modules/gnucash/report/report-system
+
+gncmodscm_DATA = \
+     collectors.scm \
+     list-extras.scm \
+     report-collectors.scm
+
 
 gncscmmoddir = ${GNC_SHAREDIR}/guile-modules/gnucash/report/
 gncscmmod_DATA = \
@@ -67,19 +78,22 @@ if GNUCASH_SEPARATE_BUILDDIR
 # for running
 SCM_FILE_LINKS = \
   ${gncscmmod_DATA} \
-  ${gncscm_DATA}
+  ${gncscm_DATA} \
+  ${gncmodscm_DATA}
 endif
 
 .scm-links:
 	$(RM) -rf gnucash
 	mkdir -p  gnucash
 	mkdir -p  gnucash/report
+	mkdir -p  gnucash/report/report-system
 if GNUCASH_SEPARATE_BUILDDIR
 	for X in ${SCM_FILE_LINKS} ; do \
 	  $(LN_S) -f ${srcdir}/$$X . ; \
 	done
 endif
 	( cd gnucash/report; for A in $(gncscmmod_DATA) ; do $(LN_S) -f ../../$$A . ; done )
+	( cd gnucash/report/report-system; for A in $(gncmodscm_DATA) ; do $(LN_S) -f ../../../$$A . ; done )
 if ! OS_WIN32
 # Windows knows no "ln -s" but uses "cp": must copy every time (see bug #566567).
 	touch .scm-links
@@ -87,7 +101,7 @@ endif
 
 noinst_DATA = .scm-links
 
-EXTRA_DIST = report-system.i ${gncscmmod_DATA} ${gncscm_DATA}
+EXTRA_DIST = report-system.i ${gncscmmod_DATA} ${gncscm_DATA} ${gncmodscm_DATA}
 
 clean-local:
 	rm -rf gnucash

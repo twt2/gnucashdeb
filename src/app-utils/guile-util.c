@@ -37,10 +37,11 @@
 #endif
 
 #include "qof.h"
-#include "engine-helpers.h"
+#include "engine-helpers-guile.h"
 #include "glib-helpers.h"
-#include "gnc-gconf-utils.h"
 #include "gnc-glib-utils.h"
+#include "gnc-guile-utils.h"
+#include "gnc-prefs.h"
 #include "guile-util.h"
 #include "guile-mappings.h"
 
@@ -144,179 +145,6 @@ initialize_scm_functions()
 
 
 /********************************************************************\
- * gnc_guile_call1_to_string                                        *
- *   returns the malloc'ed string returned by the guile function    *
- *   or NULL if it can't be retrieved                               *
- *                                                                  *
- * Args: func - the guile function to call                          *
- *       arg  - the single function argument                        *
- * Returns: g_malloc'ed char * or NULL                              *
-\********************************************************************/
-char *
-gnc_guile_call1_to_string(SCM func, SCM arg)
-{
-    SCM value;
-
-    if (scm_is_procedure(func))
-    {
-        value = scm_call_1(func, arg);
-
-        if (scm_is_string(value))
-        {
-            return gnc_scm_to_locale_string(value);
-        }
-        else
-        {
-            PERR("bad value\n");
-        }
-    }
-    else
-    {
-        PERR("not a procedure\n");
-    }
-
-    return NULL;
-}
-
-
-/********************************************************************\
- * gnc_guile_call1_symbol_to_string                                 *
- *   returns the malloc'ed string returned by the guile function    *
- *   or NULL if it can't be retrieved. The return value of the      *
- *   function should be a symbol.                                   *
- *                                                                  *
- * Args: func - the guile function to call                          *
- *       arg  - the single function argument                        *
- * Returns: malloc'ed char * or NULL                                *
-\********************************************************************/
-char *
-gnc_guile_call1_symbol_to_string(SCM func, SCM arg)
-{
-    SCM value;
-
-    if (scm_is_procedure(func))
-    {
-        value = scm_call_1(func, arg);
-
-        if (scm_is_symbol(value))
-            return g_strdup(SCM_SYMBOL_CHARS(value));
-        else
-        {
-            PERR("bad value\n");
-        }
-    }
-    else
-    {
-        PERR("not a procedure\n");
-    }
-
-    return NULL;
-}
-
-
-/********************************************************************\
- * gnc_guile_call1_to_procedure                                     *
- *   returns the SCM handle to the procedure returned by the guile  *
- *   function, or SCM_UNDEFINED if it couldn't be retrieved.        *
- *                                                                  *
- * Args: func - the guile function to call                          *
- *       arg  - the single function argument                        *
- * Returns: SCM function handle or SCM_UNDEFINED                    *
-\********************************************************************/
-SCM
-gnc_guile_call1_to_procedure(SCM func, SCM arg)
-{
-    SCM value;
-
-    if (scm_is_procedure(func))
-    {
-        value = scm_call_1(func, arg);
-
-        if (scm_is_procedure(value))
-            return value;
-        else
-        {
-            PERR("bad value\n");
-        }
-    }
-    else
-    {
-        PERR("not a procedure\n");
-    }
-
-    return SCM_UNDEFINED;
-}
-
-
-/********************************************************************\
- * gnc_guile_call1_to_list                                          *
- *   returns the SCM handle to the list returned by the guile       *
- *   function, or SCM_UNDEFINED if it couldn't be retrieved.        *
- *                                                                  *
- * Args: func - the guile function to call                          *
- *       arg  - the single function argument                        *
- * Returns: SCM list handle or SCM_UNDEFINED                        *
-\********************************************************************/
-SCM
-gnc_guile_call1_to_list(SCM func, SCM arg)
-{
-    SCM value;
-
-    if (scm_is_procedure(func))
-    {
-        value = scm_call_1(func, arg);
-
-        if (scm_is_list(value))
-            return value;
-        else
-        {
-            PERR("bad value\n");
-        }
-    }
-    else
-    {
-        PERR("not a procedure\n");
-    }
-
-    return SCM_UNDEFINED;
-}
-
-
-/********************************************************************\
- * gnc_guile_call1_to_vector                                        *
- *   returns the SCM handle to the vector returned by the guile     *
- *   function, or SCM_UNDEFINED if it couldn't be retrieved.        *
- *                                                                  *
- * Args: func - the guile function to call                          *
- *       arg  - the single function argument                        *
- * Returns: SCM vector handle or SCM_UNDEFINED                      *
-\********************************************************************/
-SCM
-gnc_guile_call1_to_vector(SCM func, SCM arg)
-{
-    SCM value;
-
-    if (scm_is_procedure(func))
-    {
-        value = scm_call_1(func, arg);
-
-        if (scm_is_vector(value))
-            return value;
-        else
-        {
-            PERR("bad value\n");
-        }
-    }
-    else
-    {
-        PERR("not a procedure\n");
-    }
-
-    return SCM_UNDEFINED;
-}
-
-
-/********************************************************************\
   gnc_scm_lookup
 
     returns the SCM binding associated with the given symbol function,
@@ -341,39 +169,9 @@ gnc_guile_call1_to_vector(SCM func, SCM arg)
 SCM
 gnc_scm_lookup(const char *module, const char *symbol)
 {
-#if defined(SCM_GUILE_MAJOR_VERSION) && \
-    (SCM_GUILE_MAJOR_VERSION > 0) && (SCM_GUILE_MINOR_VERSION > 4)
-
     SCM scm_module = scm_c_resolve_module(module);
     SCM value = scm_c_module_lookup(scm_module, symbol);
     return value;
-#else
-
-    gchar *in_guard_str;
-    gchar *thunk_str;
-    SCM in_guard;
-    SCM thunk;
-    SCM out_guard;
-    SCM result;
-
-    in_guard_str =
-        g_strdup_printf("(lambda () (set-current-module (resolve-module (%s))))",
-                        module);
-
-    thunk_str = g_strdup_printf("(lambda () (eval '%s))", symbol);
-
-    in_guard = scm_c_eval_string(in_guard_str);
-    thunk = scm_c_eval_string(thunk_str);
-    out_guard = scm_c_eval_string("(let ((cm (current-module)))"
-                                  "  (lambda () (set-current-module cm)))");
-
-    result = scm_dynamic_wind(in_guard, thunk, out_guard);
-
-    g_free(in_guard_str);
-    g_free(thunk_str);
-
-    return result;
-#endif
 }
 
 #endif
@@ -513,7 +311,7 @@ gnc_split_scm_set_account(SCM split_scm, Account *account)
     if (guid_string == NULL)
         return;
 
-    arg = scm_makfrom0str(guid_string);
+    arg = scm_from_locale_string(guid_string);
 
     scm_call_2(setters.split_scm_account_guid, split_scm, arg);
 }
@@ -539,7 +337,7 @@ gnc_split_scm_set_memo(SCM split_scm, const char *memo)
     if (memo == NULL)
         return;
 
-    arg = scm_makfrom0str(memo);
+    arg = scm_from_locale_string(memo);
 
     scm_call_2(setters.split_scm_memo, split_scm, arg);
 }
@@ -565,7 +363,7 @@ gnc_split_scm_set_action(SCM split_scm, const char *action)
     if (action == NULL)
         return;
 
-    arg = scm_makfrom0str(action);
+    arg = scm_from_locale_string(action);
 
     scm_call_2(setters.split_scm_action, split_scm, arg);
 }
@@ -646,7 +444,7 @@ gnc_split_scm_set_value(SCM split_scm, gnc_numeric value)
  *   return the newly allocated memo of a scheme split, or NULL.    *
  *                                                                  *
  * Args: split_scm - the scheme split                               *
- * Returns: newly allocated memo string                             *
+ * Returns: newly allocated memo string, must be freed with g_free  *
 \********************************************************************/
 char *
 gnc_split_scm_get_memo(SCM split_scm)
@@ -666,13 +464,13 @@ gnc_split_scm_get_memo(SCM split_scm)
 }
 
 
-/********************************************************************\
- * gnc_split_scm_get_action                                         *
- *   return the newly allocated action of a scheme split, or NULL.  *
- *                                                                  *
- * Args: split_scm - the scheme split                               *
- * Returns: newly allocated action string                           *
-\********************************************************************/
+/**********************************************************************\
+ * gnc_split_scm_get_action                                           *
+ *   return the newly allocated action of a scheme split, or NULL.    *
+ *                                                                    *
+ * Args: split_scm - the scheme split                                 *
+ * Returns: newly allocated action string, must be freed with g_free  *
+\**********************************************************************/
 char *
 gnc_split_scm_get_action(SCM split_scm)
 {
@@ -870,8 +668,8 @@ gnc_copy_trans_scm_onto_trans_swap_accounts(SCM trans_scm,
 
         args = scm_cons(commit, args);
 
-        from = scm_makfrom0str(guid_to_string(guid_1));
-        to = scm_makfrom0str(guid_to_string(guid_2));
+        from = scm_from_locale_string(guid_to_string(guid_1));
+        to = scm_from_locale_string(guid_to_string(guid_2));
 
         map = scm_cons(scm_cons(from, to), map);
         map = scm_cons(scm_cons(to, from), map);
@@ -930,7 +728,7 @@ gnc_trans_scm_set_num(SCM trans_scm, const char *num)
     if (num == NULL)
         return;
 
-    arg = scm_makfrom0str(num);
+    arg = scm_from_locale_string(num);
 
     scm_call_2(setters.trans_scm_num, trans_scm, arg);
 }
@@ -956,7 +754,7 @@ gnc_trans_scm_set_description(SCM trans_scm, const char *description)
     if (description == NULL)
         return;
 
-    arg = scm_makfrom0str(description);
+    arg = scm_from_locale_string(description);
 
     scm_call_2(setters.trans_scm_description, trans_scm, arg);
 }
@@ -982,7 +780,7 @@ gnc_trans_scm_set_notes(SCM trans_scm, const char *notes)
     if (notes == NULL)
         return;
 
-    arg = scm_makfrom0str(notes);
+    arg = scm_from_locale_string(notes);
 
     scm_call_2(setters.trans_scm_notes, trans_scm, arg);
 }
@@ -1028,7 +826,7 @@ gnc_trans_scm_get_split_scm(SCM trans_scm, int index)
     if (!gnc_is_trans_scm(trans_scm))
         return SCM_UNDEFINED;
 
-    arg = scm_int2num(index);
+    arg = scm_from_int (index);
 
     return scm_call_2(getters.trans_scm_split_scm, trans_scm, arg);
 }
@@ -1085,7 +883,7 @@ gnc_trans_scm_get_num_splits(SCM trans_scm)
     if (!scm_is_list(result))
         return 0;
 
-    return SCM_LENGTH(result);
+    return scm_to_int(scm_length(result));
 }
 
 
@@ -1099,83 +897,55 @@ gnc_trans_scm_get_num_splits(SCM trans_scm)
 char *
 gnc_get_debit_string(GNCAccountType account_type)
 {
-    const gchar *string;
     SCM result;
     SCM arg;
 
     initialize_scm_functions();
 
-    if (gnc_gconf_get_bool(GCONF_GENERAL, KEY_ACCOUNTING_LABELS, NULL))
+    if (gnc_prefs_get_bool(GNC_PREFS_GROUP_GENERAL, GNC_PREF_ACCOUNTING_LABELS))
         return g_strdup(_("Debit"));
 
     if ((account_type < ACCT_TYPE_NONE) || (account_type >= NUM_ACCOUNT_TYPES))
         account_type = ACCT_TYPE_NONE;
 
-    arg = scm_long2num(account_type);
+    arg = scm_from_long (account_type);
 
     result = scm_call_1(getters.debit_string, arg);
     if (!scm_is_string(result))
         return NULL;
 
-    return gnc_scm_to_locale_string(result);
+    return scm_to_locale_string(result);
 }
 
 
-/********************************************************************\
- * gnc_get_credit_string                                            *
- *   return a credit string for a given account type                *
- *                                                                  *
- * Args: account_type - type of account to get credit string for    *
- * Return: g_malloc'd credit string or NULL                         *
-\********************************************************************/
+/************************************************************************\
+ * gnc_get_credit_string                                                *
+ *   return a credit string for a given account type                    *
+ *                                                                      *
+ * Args: account_type - type of account to get credit string for        *
+ * Return: g_malloc'd credit string or NULL, must be freed with g_free  *
+\************************************************************************/
 char *
 gnc_get_credit_string(GNCAccountType account_type)
 {
-    const gchar *string;
     SCM result;
     SCM arg;
 
     initialize_scm_functions();
 
-    if (gnc_gconf_get_bool(GCONF_GENERAL, KEY_ACCOUNTING_LABELS, NULL))
+    if (gnc_prefs_get_bool(GNC_PREFS_GROUP_GENERAL, GNC_PREF_ACCOUNTING_LABELS))
         return g_strdup(_("Credit"));
 
     if ((account_type < ACCT_TYPE_NONE) || (account_type >= NUM_ACCOUNT_TYPES))
         account_type = ACCT_TYPE_NONE;
 
-    arg = scm_long2num(account_type);
+    arg = scm_from_long (account_type);
 
     result = scm_call_1(getters.credit_string, arg);
     if (!scm_is_string(result))
         return NULL;
 
     return gnc_scm_to_locale_string(result);
-}
-
-
-/*  Clean up a scheme options string for use in a key/value file.
- *  This function removes all full line comments, removes all blank
- *  lines, and removes all leading/trailing white space. */
-gchar *gnc_guile_strip_comments (const gchar *raw_text)
-{
-    gchar *text, **splits;
-    gint i, j;
-
-    splits = g_strsplit(raw_text, "\n", -1);
-    for (i = j = 0; splits[i]; i++)
-    {
-        if ((splits[i][0] == ';') || (splits[i][0] == '\0'))
-        {
-            g_free(splits[i]);
-            continue;
-        }
-        splits[j++] = g_strstrip(splits[i]);
-    }
-    splits[j] = NULL;
-
-    text = g_strjoinv(" ", splits);
-    g_strfreev(splits);
-    return text;
 }
 
 
@@ -1306,8 +1076,8 @@ gnc_detach_process (Process *proc, const gboolean kill_it)
 }
 
 
-time_t
-gnc_parse_time_to_timet(const gchar *s, const gchar *format)
+time64
+gnc_parse_time_to_time64 (const gchar *s, const gchar *format)
 {
     struct tm tm;
 
@@ -1316,17 +1086,5 @@ gnc_parse_time_to_timet(const gchar *s, const gchar *format)
     if (!strptime(s, format, &tm))
         return -1;
 
-    return mktime(&tm);
-}
-
-gchar *gnc_scm_to_locale_string(SCM scm_string)
-{
-    gchar* s;
-    char* x = scm_to_locale_string(scm_string);
-
-    /* scm_to_locale_string() returns a malloc'ed string in guile-1.8
-       (but not in guile-1.6).  Copy to a g_malloc'ed one. */
-    s = g_strdup(x);
-    gnc_free_scm_locale_string(x);
-    return s;
+    return gnc_mktime(&tm);
 }

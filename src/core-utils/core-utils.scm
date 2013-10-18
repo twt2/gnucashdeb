@@ -6,12 +6,22 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define-module (gnucash core-utils))
-(load-extension "libgnc-core-utils" "scm_init_sw_core_utils_module")
+
+;; Guile 2 needs to find the symbols from the extension at compile time already
+(cond-expand
+  (guile-2
+    (eval-when
+      (compile load eval) 
+      (load-extension "libgnc-core-utils" "scm_init_sw_core_utils_module")))
+  (else
+    (load-extension "libgnc-core-utils" "scm_init_sw_core_utils_module")))
+
 (use-modules (sw_core_utils))
 
-(re-export gnc-is-debugging)
+(re-export gnc-prefs-is-debugging-enabled)
 (re-export gnc-path-get-bindir)
 (re-export gnc-path-get-stdreportsdir)
+(re-export gnc-path-find-localized-html-file)
 (re-export gnc-build-dotgnucash-path)
 (re-export gnc-build-report-path)
 (re-export gnc-build-stdreports-path)
@@ -24,3 +34,10 @@
 (re-export gnc-scm-log-msg)
 (re-export gnc-scm-log-debug)
 (re-export gnc-locale-default-iso-currency-code)
+
+(re-export gnc-prefs-set-bool)
+(re-export gnc-prefs-set-int)
+(re-export gnc-prefs-set-int64)
+(re-export gnc-prefs-set-float)
+(re-export gnc-prefs-set-string)
+(re-export gnc-prefs-set-coords)

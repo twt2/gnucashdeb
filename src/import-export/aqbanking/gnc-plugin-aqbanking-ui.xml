@@ -21,8 +21,10 @@
           <menuitem name="ABGetTrans"           action="ABGetTransAction"/>
           <separator name="OnlineActionsSep1"/>
           <menuitem name="ABIssueTrans"         action="ABIssueTransAction"/>
+          <menuitem name="ABIssueSepaTrans"         action="ABIssueSepaTransAction"/>
           <menuitem name="ABIssueIntTrans"      action="ABIssueIntTransAction"/>
           <menuitem name="ABIssueDirectDebit"   action="ABIssueDirectDebitAction"/>
+          <!--menuitem name="ABIssueSepaDirectDebit"         action="ABIssueSepaDirectDebitAction"/-->
           <separator name="OnlineActionsSep2"/>
           <menuitem name="ABViewLogwindow"   action="ABViewLogwindowAction"/>
         </menu>

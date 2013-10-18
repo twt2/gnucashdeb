@@ -47,10 +47,11 @@
 #include <errno.h>
 
 #include "gfec.h"
+#include "dialog-custom-report.h"
 #include "gnc-component-manager.h"
 #include "gnc-engine.h"
-#include "gnc-gconf-utils.h"
 #include "gnc-gnome-utils.h"
+#include "gnc-guile-utils.h"
 #include "gnc-html-history.h"
 #include "gnc-html.h"
 #include "gnc-html-factory.h"
@@ -58,16 +59,18 @@
 #include "gnc-plugin.h"
 #include "gnc-plugin-page-report.h"
 #include "gnc-plugin-file-history.h"
+#include "gnc-prefs.h"
 #include "gnc-report.h"
 #include "gnc-session.h"
 #include "gnc-ui-util.h"
 #include "gnc-ui.h"
 #include "gnc-window.h"
-#include "guile-util.h"
 #include "option-util.h"
 #include "window-report.h"
 #include "swig-runtime.h"
 #include "app-utils/business-options.h"
+#include "gnome-utils/gnc-icons.h"
+#include "gnome-utils/print-session.h"
 
 #define WINDOW_REPORT_CM_CLASS "window-report"
 
@@ -171,9 +174,11 @@ static void gnc_plugin_page_report_back_cb(GtkAction *action, GncPluginPageRepor
 static void gnc_plugin_page_report_reload_cb(GtkAction *action, GncPluginPageReport *rep);
 static void gnc_plugin_page_report_stop_cb(GtkAction *action, GncPluginPageReport *rep);
 static void gnc_plugin_page_report_save_cb(GtkAction *action, GncPluginPageReport *rep);
+static void gnc_plugin_page_report_save_as_cb(GtkAction *action, GncPluginPageReport *rep);
 static void gnc_plugin_page_report_export_cb(GtkAction *action, GncPluginPageReport *rep);
 static void gnc_plugin_page_report_options_cb(GtkAction *action, GncPluginPageReport *rep);
 static void gnc_plugin_page_report_print_cb(GtkAction *action, GncPluginPageReport *rep);
+static void gnc_plugin_page_report_exportpdf_cb(GtkAction *action, GncPluginPageReport *rep);
 static void gnc_plugin_page_report_copy_cb(GtkAction *action, GncPluginPageReport *rep);
 
 GType
@@ -311,15 +316,9 @@ gnc_plugin_page_report_class_init (GncPluginPageReportClass *klass)
 static void
 gnc_plugin_page_report_finalize (GObject *object)
 {
-    GncPluginPageReport *page;
-    GncPluginPageReportPrivate *priv;
-
     g_return_if_fail (GNC_IS_PLUGIN_PAGE_REPORT (object));
 
     ENTER("object %p", object);
-    page = GNC_PLUGIN_PAGE_REPORT (object);
-    priv = GNC_PLUGIN_PAGE_REPORT_GET_PRIVATE(page);
-
     G_OBJECT_CLASS (parent_class)->finalize (object);
     LEAVE(" ");
 }
@@ -400,7 +399,7 @@ gnc_plugin_page_report_create_widget( GncPluginPage *page )
 static int
 gnc_plugin_page_report_check_urltype(URLType t)
 {
-    if (!safe_strcmp (t, URL_TYPE_REPORT))
+    if (!g_strcmp0 (t, URL_TYPE_REPORT))
     {
         return TRUE;
     }
@@ -476,7 +475,7 @@ gnc_plugin_page_report_load_cb(GncHtml * html, URLType type,
      * if any URL is clicked.  If an options URL is clicked, we want to
      * know about it */
     priv = GNC_PLUGIN_PAGE_REPORT_GET_PRIVATE(report);
-    if (!safe_strcmp (type, URL_TYPE_REPORT)
+    if (!g_strcmp0 (type, URL_TYPE_REPORT)
             && location
             && (strlen(location) > 3)
             && !strncmp("id=", location, 3))
@@ -484,7 +483,7 @@ gnc_plugin_page_report_load_cb(GncHtml * html, URLType type,
         report_id = atoi(location + 3);
         DEBUG( "parsed id=%d", report_id );
     }
-    else if (!safe_strcmp( type, URL_TYPE_OPTIONS)
+    else if (!g_strcmp0( type, URL_TYPE_OPTIONS)
              && location
              && (strlen(location) > 10)
              && !strncmp("report-id=", location, 10))
@@ -585,8 +584,6 @@ gnc_plugin_page_report_option_change_cb(gpointer data)
 {
     GncPluginPageReport *report;
     GncPluginPageReportPrivate *priv;
-    GtkActionGroup *action_group;
-    GtkAction *action;
     SCM dirty_report = scm_c_eval_string("gnc:report-set-dirty?!");
     const gchar *old_name;
     gchar *new_name;
@@ -605,12 +602,7 @@ gnc_plugin_page_report_option_change_cb(gpointer data)
     new_name = gnc_option_db_lookup_string_option(priv->cur_odb, "General",
                "Report name", NULL);
     if (strcmp(old_name, new_name) != 0)
-    {
         main_window_update_page_name(GNC_PLUGIN_PAGE(report), new_name);
-        action_group = gnc_plugin_page_get_action_group(GNC_PLUGIN_PAGE(report));
-        action = gtk_action_group_get_action (action_group, "ReportSaveAction");
-        gtk_action_set_sensitive(action, TRUE);
-    }
     g_free(new_name);
 
     /* it's probably already dirty, but make sure */
@@ -639,12 +631,12 @@ gnc_plugin_page_report_history_destroy_cb(gnc_html_history_node * node,
     }
 
     if (node
-            && !safe_strcmp (node->type, URL_TYPE_REPORT)\
+            && !g_strcmp0 (node->type, URL_TYPE_REPORT)\
             && !strncmp("id=", node->location, 3))
     {
         sscanf(node->location + 3, "%d", &report_id);
         /*    printf("unreffing report %d and children\n", report_id);
-              scm_call_1(remover, scm_int2num(report_id)); */
+              scm_call_1(remover, scm_from_int (report_id)); */
     }
     else
     {
@@ -762,7 +754,7 @@ gnc_plugin_page_report_save_page (GncPluginPage *plugin_page,
         embedded = SCM_CDR(embedded);
         if (!scm_is_number(item))
             continue;
-        id = SCM_INUM(item);
+        id = scm_to_int (item);
         tmp_report = gnc_report_find(id);
         scm_text = scm_call_1(gen_save_text, tmp_report);
         if (!scm_is_string (scm_text))
@@ -772,7 +764,7 @@ gnc_plugin_page_report_save_page (GncPluginPage *plugin_page,
         }
 
         key_name = g_strdup_printf(SCHEME_OPTIONS_N, id);
-        text = gnc_guile_strip_comments(scm_to_locale_string(scm_text));
+        text = gnc_scm_strip_comments(scm_text);
         g_key_file_set_string(key_file, group_name, key_name, text);
         g_free(text);
         g_free(key_name);
@@ -785,7 +777,7 @@ gnc_plugin_page_report_save_page (GncPluginPage *plugin_page,
         return;
     }
 
-    text = gnc_guile_strip_comments(scm_to_locale_string(scm_text));
+    text = gnc_scm_strip_comments(scm_text);
     g_key_file_set_string(key_file, group_name, SCHEME_OPTIONS, text);
     g_free(text);
     LEAVE(" ");
@@ -868,7 +860,7 @@ gnc_plugin_page_report_recreate_page (GtkWidget *window,
         return NULL;
     }
 
-    report_id = scm_num2int(final_id, SCM_ARG1, G_STRFUNC);
+    report_id = scm_to_int(final_id);
     report = gnc_report_find(report_id);
     if (!report)
     {
@@ -897,8 +889,6 @@ static void
 gnc_plugin_page_report_name_changed (GncPluginPage *page, const gchar *name)
 {
     GncPluginPageReportPrivate *priv;
-    GtkActionGroup *action_group;
-    GtkAction *action;
     static gint count = 1, max_count = 10;
     const gchar *old_name;
 
@@ -926,15 +916,6 @@ gnc_plugin_page_report_name_changed (GncPluginPage *page, const gchar *name)
 
     /* Have to manually call the option change hook. */
     gnc_plugin_page_report_option_change_cb(page);
-
-    /* Careful. This is called at report construction time. */
-    action_group = gnc_plugin_page_get_action_group(page);
-    if (action_group)
-    {
-        /* Allow the user to save the report now. */
-        action = gtk_action_group_get_action (action_group, "ReportSaveAction");
-        gtk_action_set_sensitive(action, TRUE);
-    }
     LEAVE(" ");
 }
 
@@ -1022,6 +1003,11 @@ static GtkActionEntry report_actions[] =
         G_CALLBACK(gnc_plugin_page_report_print_cb)
     },
     {
+        "FilePrintPDFAction", GNC_STOCK_PDF_EXPORT, N_("Export as P_DF..."), NULL,
+        N_("Export the current report as a PDF document"),
+        G_CALLBACK(gnc_plugin_page_report_exportpdf_cb)
+    },
+    {
         "EditCutAction", GTK_STOCK_CUT, N_("Cu_t"), NULL,
         N_("Cut the current selection and copy it to clipboard"),
         NULL
@@ -1042,12 +1028,16 @@ static GtkActionEntry report_actions[] =
         G_CALLBACK (gnc_plugin_page_report_reload_cb)
     },
     {
-        "ReportSaveAction", GTK_STOCK_SAVE, N_("Add _Report"), "",
-        N_("Add the current report to the `Custom' menu for later use. "
-        "The report will be saved in the file ~/.gnucash/saved-reports-2.4. "
-        "It will be accessible as menu entry in the report menu at the "
-        "next startup of GnuCash."),
+        "ReportSaveAction", GTK_STOCK_SAVE, N_("Save _Report"), "<control><alt>s",
+        N_("Update the current report's saved configuration. "
+        "The report will be saved in the file ~/.gnucash/saved-reports-2.4. "),
         G_CALLBACK(gnc_plugin_page_report_save_cb)
+    },
+    {
+        "ReportSaveAsAction", GTK_STOCK_SAVE_AS, N_("Save Report As..."), "<control><alt><shift>s",
+        N_("Add the current report's configuration to the `Custom Reports' menu. "
+        "The report will be saved in the file ~/.gnucash/saved-reports-2.4. "),
+        G_CALLBACK(gnc_plugin_page_report_save_as_cb)
     },
     {
         "ReportExportAction", GTK_STOCK_CONVERT, N_("Export _Report"), NULL,
@@ -1094,7 +1084,6 @@ static action_toolbar_labels toolbar_labels[] =
 
 static const gchar *initially_insensitive_actions[] =
 {
-    "ReportSaveAction",
     NULL
 };
 
@@ -1148,7 +1137,7 @@ gnc_plugin_page_report_constr_init(GncPluginPageReport *plugin_page, gint report
 
     /* Init parent declared variables */
     parent = GNC_PLUGIN_PAGE(plugin_page);
-    use_new = gnc_gconf_get_bool(GCONF_GENERAL_REPORT, KEY_USE_NEW, NULL);
+    use_new = gnc_prefs_get_bool (GNC_PREFS_GROUP_GENERAL_REPORT, GNC_PREF_USE_NEW);
     name = gnc_report_name( priv->initial_report );
     g_object_set(G_OBJECT(plugin_page),
                  "page-name",      name,
@@ -1342,7 +1331,7 @@ gnc_get_export_type_choice (SCM export_types)
     for (tail = export_types; !scm_is_null (tail); tail = SCM_CDR (tail))
     {
         SCM pair = SCM_CAR (tail);
-        const gchar * name;
+        char * name;
         SCM scm;
 
         if (!scm_is_pair (pair))
@@ -1360,8 +1349,8 @@ gnc_get_export_type_choice (SCM export_types)
             break;
         }
 
-        name = scm_to_locale_string (scm);
-        choices = g_list_prepend (choices, g_strdup (name));
+        name = gnc_scm_to_locale_string (scm);
+        choices = g_list_prepend (choices, name);
     }
 
     if (!bad)
@@ -1392,7 +1381,7 @@ gnc_get_export_type_choice (SCM export_types)
     if (choice >= scm_ilength (export_types))
         return SCM_BOOL_F;
 
-    return scm_list_ref (export_types, scm_int2num (choice));
+    return scm_list_ref (export_types, scm_from_int  (choice));
 }
 
 static char *
@@ -1401,20 +1390,19 @@ gnc_get_export_filename (SCM choice)
     char * filepath;
     struct stat statbuf;
     char * title;
-    const gchar * type;
+    const gchar * html_type = _("HTML");
+    char * type;
     int rc;
     char * default_dir;
 
     if (choice == SCM_BOOL_T)
-        type = _("HTML");
+        type = g_strdup (html_type);
     else
-    {
-        type = scm_to_locale_string(SCM_CAR (choice));
-    }
+        type = gnc_scm_to_locale_string(SCM_CAR (choice));
 
     /* %s is the type of what is about to be saved, e.g. "HTML". */
     title = g_strdup_printf (_("Save %s To File"), type);
-    default_dir = gnc_get_default_directory(GCONF_DIR_REPORT);
+    default_dir = gnc_get_default_directory(GNC_PREFS_GROUP_REPORT);
 
     filepath = gnc_file_dialog (title, NULL, default_dir, GNC_FILE_DIALOG_EXPORT);
 
@@ -1422,6 +1410,7 @@ gnc_get_export_filename (SCM choice)
     if (g_strrstr(filepath, ".") == NULL)
         filepath = g_strconcat(filepath, ".", g_ascii_strdown(type, strlen(type)), NULL);
 
+    g_free (type);
     g_free (title);
     g_free (default_dir);
 
@@ -1429,7 +1418,7 @@ gnc_get_export_filename (SCM choice)
         return NULL;
 
     default_dir = g_path_get_dirname(filepath);
-    gnc_set_default_directory (GCONF_DIR_REPORT, default_dir);
+    gnc_set_default_directory (GNC_PREFS_GROUP_REPORT, default_dir);
     g_free(default_dir);
 
     rc = g_stat (filepath, &statbuf);
@@ -1471,24 +1460,63 @@ gnc_get_export_filename (SCM choice)
 }
 
 static void
-gnc_plugin_page_report_save_cb( GtkAction *action, GncPluginPageReport *report )
+gnc_plugin_page_report_save_as_cb( GtkAction *action, GncPluginPageReport *report )
 {
     GncPluginPageReportPrivate *priv;
     SCM save_func;
+    SCM rpt_id;
 
     priv = GNC_PLUGIN_PAGE_REPORT_GET_PRIVATE(report);
     if (priv->cur_report == SCM_BOOL_F)
         return;
 
-    save_func = scm_c_eval_string("gnc:report-save-to-savefile");
-    scm_call_1(save_func, priv->cur_report);
+    /* Create a new report template based on the current report's settings
+     * and allow the user to rename the template.
+     */
+    save_func = scm_c_eval_string("gnc:report-to-template-new");
+    rpt_id = scm_call_1(save_func, priv->cur_report);
 
+    /* Open Custom Reports dialog to allow user to change the name */
+    if (!scm_is_null (rpt_id))
     {
-        GtkActionGroup *action_group =
-            gnc_plugin_page_get_action_group(GNC_PLUGIN_PAGE(report));
-        GtkAction *action =
-            gtk_action_group_get_action (action_group, "ReportSaveAction");
-        gtk_action_set_sensitive(action, FALSE);
+        GncPluginPage *reportPage = GNC_PLUGIN_PAGE (report);
+        GtkWidget *window = reportPage->window;
+
+        if (window)
+            g_return_if_fail(GNC_IS_MAIN_WINDOW(window));
+
+        gnc_ui_custom_report_edit_name (GNC_MAIN_WINDOW (window), rpt_id);
+    }
+
+}
+
+static void
+gnc_plugin_page_report_save_cb( GtkAction *action, GncPluginPageReport *report )
+{
+    GncPluginPageReportPrivate *priv;
+    SCM check_func, save_func;
+    SCM rpt_id;
+
+    priv = GNC_PLUGIN_PAGE_REPORT_GET_PRIVATE(report);
+    if (priv->cur_report == SCM_BOOL_F)
+        return;
+
+    check_func = scm_c_eval_string("gnc:is-custom-report-type");
+    if (scm_is_true (scm_call_1 (check_func, priv->cur_report)))
+    {
+        /* The current report is already based on a custom report.
+         * Replace the existing one instead of adding a new one
+         */
+        save_func = scm_c_eval_string("gnc:report-to-template-update");
+        rpt_id = scm_call_1(save_func, priv->cur_report);
+    }
+    else
+    {
+        /* The current report is not based on a custom report.
+         * So let's create a new report template based on this report
+         * and allow the user to change the name.
+         */
+        gnc_plugin_page_report_save_as_cb (action, report);
     }
 }
 
@@ -1527,7 +1555,7 @@ gnc_plugin_page_report_export_cb( GtkAction *action, GncPluginPageReport *report
         SCM res;
 
         choice = SCM_CDR (choice);
-        file_scm = scm_makfrom0str (filepath);
+        file_scm = scm_from_locale_string (filepath);
 
         res = scm_call_3 (export_thunk, priv->cur_report, choice, file_scm);
 
@@ -1578,16 +1606,59 @@ gnc_plugin_page_report_options_cb( GtkAction *action, GncPluginPageReport *repor
     }
 }
 
-static void
-gnc_plugin_page_report_print_cb( GtkAction *action, GncPluginPageReport *report )
+static GncInvoice *lookup_invoice(GncPluginPageReportPrivate *priv)
 {
-    GncPluginPageReportPrivate *priv;
-    gchar *report_name = NULL;
+    g_assert(priv);
+    return gnc_option_db_lookup_invoice_option(priv->cur_odb, "General",
+            "Invoice Number", NULL);
+}
+
+#define GNC_PREFS_GROUP_REPORT_PDFEXPORT GNC_PREFS_GROUP_GENERAL_REPORT "/pdf-export"
+#define GNC_PREF_FILENAME_DATE_FMT "filename-date-format"
+#define GNC_PREF_FILENAME_FMT "filename-format"
+
+static gchar *report_create_jobname(GncPluginPageReportPrivate *priv)
+{
     gchar *job_name = NULL;
-    gchar *job_date = qof_print_date( time( NULL ) );
+    gchar *report_name = NULL;
+    const gchar *report_number = "";
+    gchar *job_date;
     const gchar *default_jobname = N_("GnuCash-Report");
 
-    priv = GNC_PLUGIN_PAGE_REPORT_GET_PRIVATE(report);
+    g_assert(priv);
+
+    {
+        // Look up the date format that was chosen in the preferences database
+        QofDateFormat date_format_here;
+        QofDateFormat date_format_old = qof_date_format_get();
+        char *format_code = gnc_prefs_get_string(GNC_PREFS_GROUP_REPORT_PDFEXPORT,
+                                                 GNC_PREF_FILENAME_DATE_FMT);
+        if (*format_code == '\0')
+        {
+            g_free(format_code);
+            format_code = g_strdup("locale");
+        }
+
+        if (gnc_date_string_to_dateformat(format_code, &date_format_here))
+        {
+            PERR("Incorrect date format code");
+            if (format_code != NULL)
+                free(format_code);
+        }
+
+        // To apply this chosen date format, temporarily switch the
+        // process-wide default to our chosen date format. Note: It is a
+        // totally brain-dead implementation of qof_print_date() to not offer a
+        // variation where the QofDateFormat can be passed as an argument.
+        // Hrmpf.
+        qof_date_format_set(date_format_here);
+
+        job_date = qof_print_date( time( NULL ) );
+
+        // Restore to the original general  date format
+        qof_date_format_set(date_format_old);
+    }
+
 
     if (priv->cur_report == SCM_BOOL_F)
         report_name = g_strdup (_(default_jobname));
@@ -1609,7 +1680,10 @@ gnc_plugin_page_report_print_cb( GtkAction *action, GncPluginPageReport *report 
                       "Report name", NULL);
         if (!report_name)
             report_name = g_strdup (_(default_jobname));
-        if (safe_strcmp(report_name, _("Printable Invoice")) == 0)
+        if (g_strcmp0(report_name, _("Printable Invoice")) == 0
+                || g_strcmp0(report_name, _("Tax Invoice")) == 0
+                || g_strcmp0(report_name, _("Easy Invoice")) == 0
+                || g_strcmp0(report_name, _("Fancy Invoice")) == 0)
         {
             /* Again HACK alert: We modify this single known string here into
              * something more appropriate. */
@@ -1617,25 +1691,24 @@ gnc_plugin_page_report_print_cb( GtkAction *action, GncPluginPageReport *report 
             report_name = g_strdup(_("Invoice"));
         }
 
-        invoice = gnc_option_db_lookup_invoice_option(priv->cur_odb, "General",
-                  "Invoice Number", NULL);
+        invoice = lookup_invoice(priv);
         if (invoice)
         {
-            const gchar *invoice_number = gncInvoiceGetID(invoice);
-            if (invoice_number)
-            {
-                /* Report is for an invoice. Add the invoice number to
-                 * the job name. */
-                gchar *name_number = g_strjoin ( "_", report_name, invoice_number, NULL );
-                g_free (report_name);
-                report_name = name_number;
-            }
+            // Report is for an invoice. Hence, we get a number of the invoice.
+            report_number = gncInvoiceGetID(invoice);
         }
     }
 
-    job_name = g_strjoin ( "_", report_name, job_date, NULL );
+    if (report_name && job_date)
+    {
+        // Look up the sprintf format of the output name from the preferences database
+        char* format = gnc_prefs_get_string(GNC_PREFS_GROUP_REPORT_PDFEXPORT, GNC_PREF_FILENAME_FMT);
+
+        job_name = g_strdup_printf(format, report_name, report_number, job_date);
+
+        g_free(format);
+    }
     g_free (report_name);
-    report_name = NULL;
     g_free (job_date);
 
     {
@@ -1682,9 +1755,83 @@ gnc_plugin_page_report_print_cb( GtkAction *action, GncPluginPageReport *report 
         }
     }
 
+    return job_name;
+}
+
+static void
+gnc_plugin_page_report_print_cb( GtkAction *action, GncPluginPageReport *report )
+{
+    GncPluginPageReportPrivate *priv = GNC_PLUGIN_PAGE_REPORT_GET_PRIVATE(report);
+    gchar *job_name = report_create_jobname(priv);
+
     //g_warning("Setting job name=%s", job_name);
 
-    gnc_html_print(priv->html, job_name);
+    gnc_html_print(priv->html, job_name, FALSE);
+
+    g_free (job_name);
+}
+
+#define KVP_OWNER_EXPORT_PDF_DIRNAME "export-pdf-directory"
+
+static void
+gnc_plugin_page_report_exportpdf_cb( GtkAction *action, GncPluginPageReport *report )
+{
+    GncPluginPageReportPrivate *priv = GNC_PLUGIN_PAGE_REPORT_GET_PRIVATE(report);
+    gchar *job_name = report_create_jobname(priv);
+    GncInvoice *invoice;
+    GncOwner *owner = NULL;
+    KvpFrame *kvp = NULL;
+
+    // Do we have an invoice report?
+    invoice = lookup_invoice(priv);
+    if (invoice)
+    {
+        // Does this invoice also have an owner?
+        owner = (GncOwner*) gncInvoiceGetOwner(invoice);
+        if (owner)
+        {
+            // Yes. In the kvp, look up the key for the Export-PDF output
+            // directory. If it exists, prepend this to the job name so that
+            // we can export to PDF.
+            kvp = gncOwnerGetSlots(owner);
+            if (kvp)
+            {
+                const char *dirname = kvp_frame_get_string(kvp, KVP_OWNER_EXPORT_PDF_DIRNAME);
+                if (dirname && g_file_test(dirname, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
+                {
+                    gchar *tmp = g_build_filename(dirname, job_name, NULL);
+                    g_free(job_name);
+                    job_name = tmp;
+                }
+            }
+        }
+    }
+
+    //g_warning("Setting job name=%s", job_name);
+
+    gnc_html_print(priv->html, job_name, TRUE);
+
+    if (owner && kvp)
+    {
+        // As this is an invoice report with some owner, we will try to look up the
+        // chosen output directory from the print settings and store it again in the owner kvp.
+        GtkPrintSettings *print_settings = gnc_print_get_settings();
+        if (print_settings && gtk_print_settings_has_key(print_settings, GNC_GTK_PRINT_SETTINGS_EXPORT_DIR))
+        {
+            const char* dirname = gtk_print_settings_get(print_settings,
+                                  GNC_GTK_PRINT_SETTINGS_EXPORT_DIR);
+            // Only store the directory if it exists.
+            if (g_file_test(dirname, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
+            {
+                QofInstance *qofinstance = qofOwnerGetOwner(owner);
+                //gncOwnerBeginEdit(owner);
+                kvp_frame_set_string(kvp, KVP_OWNER_EXPORT_PDF_DIRNAME, dirname);
+                if (qofinstance)
+                    qof_instance_set_dirty(qofinstance);
+                // shoot... there is no such thing as: gncOwnerCommitEdit(owner);
+            }
+        }
+    }
 
     g_free (job_name);
 }

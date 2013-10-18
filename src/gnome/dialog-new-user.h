@@ -23,11 +23,14 @@
 #ifndef DIALOG_NEW_USER_H
 #define DIALOG_NEW_USER_H
 
+#define GNC_PREFS_GROUP_NEW_USER "dialogs.new-user"
+#define GNC_PREF_FIRST_STARTUP "first-startup"
+
 void gnc_ui_new_user_dialog (void);
 void gnc_set_first_startup (gboolean first_startup);
 
-/* Register the qif-import druid */
-void gnc_new_user_dialog_register_qif_druid (void (*cb_fcn)(void));
+/* Register the qif-import assistant */
+void gnc_new_user_dialog_register_qif_assistant (void (*cb_fcn)(void));
 
 /* private */
 void gncp_new_user_finish (void);

@@ -28,7 +28,6 @@
 #include <libguile.h>
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
-#include <libgnome/libgnome.h>
 #include "glib.h"
 #include "gnc-module.h"
 #include "gnc-path.h"
@@ -43,15 +42,15 @@
 #include "top-level.h"
 #include "gfec.h"
 #include "gnc-commodity.h"
-#include "gnc-main.h"
+#include "gnc-prefs.h"
+#include "gnc-gsettings.h"
 #include "gnc-main-window.h"
 #include "gnc-splash.h"
 #include "gnc-gnome-utils.h"
 #include "gnc-plugin-file-history.h"
-#include "gnc-gconf-utils.h"
 #include "dialog-new-user.h"
 #include "gnc-session.h"
-#include "engine-helpers.h"
+#include "engine-helpers-guile.h"
 #include "swig-runtime.h"
 
 /* This static indicates the debugging module that this .o belongs to.  */
@@ -66,34 +65,99 @@ static QofLogModule log_module = GNC_MOD_GUI;
 #  include <Foundation/Foundation.h>
 #endif
 
-/* GNUCASH_SVN is defined whenever we're building from an SVN tree */
-#ifdef GNUCASH_SVN
+/* GNUCASH_SCM is defined whenever we're building from an svn/svk/git/bzr tree */
+#ifdef GNUCASH_SCM
 static int is_development_version = TRUE;
 #else
 static int is_development_version = FALSE;
+#define GNUCASH_SCM 0
 #endif
 
 /* Command-line option variables */
-static int gnucash_show_version = 0;
-static const char *add_quotes_file = NULL;
-static int nofile = 0;
-static const char *file_to_load = NULL;
-static gchar **log_flags = NULL;
-static gchar *log_to_filename = NULL;
+static int          gnucash_show_version = 0;
+static int          debugging        = 0;
+static int          extra            = 0;
+static gchar      **log_flags        = NULL;
+static gchar       *log_to_filename  = NULL;
+static int          nofile           = 0;
+static const gchar *gsettings_prefix = NULL;
+static const char  *add_quotes_file  = NULL;
+static char        *namespace_regexp = NULL;
+static const char  *file_to_load     = NULL;
+static gchar      **args_remaining   = NULL;
+
+static GOptionEntry options[] =
+{
+    {
+        "version", 'v', 0, G_OPTION_ARG_NONE, &gnucash_show_version,
+        N_("Show GnuCash version"), NULL
+    },
+
+    {
+        "debug", '\0', 0, G_OPTION_ARG_NONE, &debugging,
+        N_("Enable debugging mode: increasing logging to provide deep detail."), NULL
+    },
+
+    {
+        "extra", '\0', 0, G_OPTION_ARG_NONE, &extra,
+        N_("Enable extra/development/debugging features."), NULL
+    },
+
+    {
+        "log", '\0', 0, G_OPTION_ARG_STRING_ARRAY, &log_flags,
+        N_("Log level overrides, of the form \"log.ger.path={debug,info,warn,crit,error}\""),
+        NULL
+    },
+
+    {
+        "logto", '\0', 0, G_OPTION_ARG_STRING, &log_to_filename,
+        N_("File to log into; defaults to \"/tmp/gnucash.trace\"; can be \"stderr\" or \"stdout\"."),
+        NULL
+    },
+
+    {
+        "nofile", '\0', 0, G_OPTION_ARG_NONE, &nofile,
+        N_("Do not load the last file opened"), NULL
+    },
+    {
+        "gsettings-prefix", '\0', 0, G_OPTION_ARG_STRING, &gsettings_prefix,
+        N_("Set the prefix for gsettings schemas for gsettings queries. This can be useful to have a different settings tree while debugging."),
+        /* Translators: Argument description for autohelp; see
+           http://developer.gnome.org/doc/API/2.0/glib/glib-Commandline-option-parser.html */
+        N_("GSETTINGSPREFIX")
+    },
+    {
+        "add-price-quotes", '\0', 0, G_OPTION_ARG_STRING, &add_quotes_file,
+        N_("Add price quotes to given GnuCash datafile"),
+        /* Translators: Argument description for autohelp; see
+           http://developer.gnome.org/doc/API/2.0/glib/glib-Commandline-option-parser.html */
+        N_("FILE")
+    },
+    {
+        "namespace", '\0', 0, G_OPTION_ARG_STRING, &namespace_regexp,
+        N_("Regular expression determining which namespace commodities will be retrieved"),
+        /* Translators: Argument description for autohelp; see
+           http://developer.gnome.org/doc/API/2.0/glib/glib-Commandline-option-parser.html */
+        N_("REGEXP")
+    },
+    {
+        G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_STRING_ARRAY, &args_remaining, NULL, N_("[datafile]") },
+    { NULL }
+};
 
 static void
 gnc_print_unstable_message(void)
 {
     if (!is_development_version) return;
 
-    g_print("\n\n%s%s%s%s%s%s\n%s%s%s\n\n",
-            _("This is a development version. It may or may not work.\n"),
-            _("Report bugs and other problems to gnucash-devel@gnucash.org.\n"),
-            _("You can also lookup and file bug reports at http://bugzilla.gnome.org\n"),
-            _("The last stable version was "), PACKAGE_NAME, " 2.4.10",
-            _("The next stable version will be "), PACKAGE_NAME, " 2.6");
+    g_print("\n\n%s\n%s\n%s\n%s\n",
+            _("This is a development version. It may or may not work."),
+            _("Report bugs and other problems to gnucash-devel@gnucash.org"),
+            _("You can also lookup and file bug reports at http://bugzilla.gnome.org"),
+            _("To find the last stable version, please refer to http://www.gnucash.org"));
 }
 
+#ifndef MAC_INTEGRATION
 static gchar  *environment_expand(gchar *param)
 {
     gchar *search_start;
@@ -167,7 +231,6 @@ static gchar  *environment_expand(gchar *param)
 static void
 environment_override()
 {
-    const gchar *path;
     gchar *config_path;
     gchar *env_file;
     GKeyFile    *keyfile = g_key_file_new();
@@ -270,7 +333,7 @@ environment_override()
     g_key_file_free(keyfile);
 }
 
-#ifdef MAC_INTEGRATION
+#else /* MAC_INTEGRATION */
 static void
 set_mac_locale()
 {
@@ -279,10 +342,22 @@ set_mac_locale()
     NSArray *languages = [defs objectForKey: @"AppleLanguages"];
     const gchar *langs = NULL;
     NSLocale *locale = [NSLocale currentLocale];
-    NSString *locale_str = [[[locale objectForKey: NSLocaleLanguageCode]
-			     stringByAppendingString: @"_"]
-			    stringByAppendingString:
-			    [locale objectForKey: NSLocaleCountryCode]];
+    NSString *locale_str;
+    @try
+    {
+	locale_str = [[[locale objectForKey: NSLocaleLanguageCode]
+		       stringByAppendingString: @"_"]
+		      stringByAppendingString:
+		      [locale objectForKey: NSLocaleCountryCode]];
+    }
+    @catch (NSException *err)
+    {
+	PWARN("Locale detection raised error %s: %s. "
+	      "Check that your locale settings in "
+	      "System Preferences>Languages & Text are set correctly.",
+	      [[err name] UTF8String], [[err reason] UTF8String]);
+	locale_str = @"_";
+    }
 /* If we didn't get a valid current locale, the string will be just "_" */
     if ([locale_str isEqualToString: @"_"])
 	locale_str = @"en_US";
@@ -341,7 +416,7 @@ set_mac_locale()
 		  this_lang = [elements componentsJoinedByString: @"_"];
 	    }
 	    new_languages = [new_languages arrayByAddingObject: this_lang];
-/* If it's an english language, add the "C" locale after it so that
+/* If it's an English language, add the "C" locale after it so that
  * any messages can default to it */
 	    if ( [[elements objectAtIndex: 0] isEqualToString: @"en"])
 		new_languages = [new_languages arrayByAddingObject: @"C"];
@@ -434,124 +509,77 @@ load_user_config(void)
     try_load_config_array(stylesheet_files);
 }
 
-/* Parse command line options, using GOption interface */
-
+/* Parse command line options, using GOption interface.
+ * We can't let gtk_init_with_args do it because it fails
+ * before parsing any arguments if the GUI can't be initialized.
+ */
 static void
-gnucash_command_line(int *argc, char **argv)
+gnc_parse_command_line(int *argc, char ***argv)
 {
-    int debugging = 0, extra = 0;
-    char *namespace_regexp = NULL;
-    const gchar *gconf_path = NULL;
+
     GError *error = NULL;
-    GOptionContext *context;
-    GOptionEntry options[] =
-    {
-        {
-            "version", 'v', 0, G_OPTION_ARG_NONE, &gnucash_show_version,
-            _("Show GnuCash version"), NULL
-        },
+    GOptionContext *context = g_option_context_new (_("- GnuCash personal and small business finance management"));
 
-        {
-            "debug", '\0', 0, G_OPTION_ARG_NONE, &debugging,
-            _("Enable debugging mode: increasing logging to provide deep detail."), NULL
-        },
-
-        {
-            "extra", '\0', 0, G_OPTION_ARG_NONE, &extra,
-            _("Enable extra/development/debugging features."), NULL
-        },
-
-        {
-            "log", '\0', 0, G_OPTION_ARG_STRING_ARRAY, &log_flags,
-            _("Log level overrides, of the form \"log.ger.path={debug,info,warn,crit,error}\""),
-            NULL
-        },
-
-        {
-            "logto", '\0', 0, G_OPTION_ARG_STRING, &log_to_filename,
-            _("File to log into; defaults to \"/tmp/gnucash.trace\"; can be \"stderr\" or \"stdout\"."),
-            NULL
-        },
-
-        {
-            "nofile", '\0', 0, G_OPTION_ARG_NONE, &nofile,
-            _("Do not load the last file opened"), NULL
-        },
-        {
-            "gconf-path", '\0', 0, G_OPTION_ARG_STRING, &gconf_path,
-            _("Set the prefix path for gconf queries"),
-            /* Translators: Argument description for autohelp; see
-               http://developer.gnome.org/doc/API/2.0/glib/glib-Commandline-option-parser.html */
-            _("GCONFPATH")
-        },
-        {
-            "add-price-quotes", '\0', 0, G_OPTION_ARG_STRING, &add_quotes_file,
-            _("Add price quotes to given GnuCash datafile"),
-            /* Translators: Argument description for autohelp; see
-               http://developer.gnome.org/doc/API/2.0/glib/glib-Commandline-option-parser.html */
-            _("FILE")
-        },
-        {
-            "namespace", '\0', 0, G_OPTION_ARG_STRING, &namespace_regexp,
-            _("Regular expression determining which namespace commodities will be retrieved"),
-            /* Translators: Argument description for autohelp; see
-               http://developer.gnome.org/doc/API/2.0/glib/glib-Commandline-option-parser.html */
-            _("REGEXP")
-        },
-        { NULL }
-    };
-
-    context = g_option_context_new (" [datafile]");
     g_option_context_add_main_entries (context, options, GETTEXT_PACKAGE);
-    g_option_context_add_group (context, gtk_get_option_group (FALSE));
-    if (!g_option_context_parse (context, argc, &argv, &error))
+    g_option_context_add_group (context, gtk_get_option_group(FALSE));
+    if (!g_option_context_parse (context, argc, argv, &error))
     {
-        g_warning("Error parsing command line arguments: [%s]; try `gnucash --help` for available options.", error->message);
-        exit(1);
+        g_printerr (_("%s\nRun '%s --help' to see a full list of available command line options.\n"),
+                    error->message, *argv[0]);
+        g_error_free (error);
+        exit (1);
     }
     g_option_context_free (context);
-    if (error)
-        g_error_free(error);
-
-    if (*argc > 0)
-        file_to_load = argv[1];
 
     if (gnucash_show_version)
     {
+        gchar *fixed_message;
+
         if (is_development_version)
         {
-            /* Translators: %s is the version number */
-            g_print(_("GnuCash %s development version"), VERSION);
+            fixed_message = g_strdup_printf(_("GnuCash %s development version"), VERSION);
+
+            /* Translators: 1st %s is a fixed message, which is translated independently;
+                            2nd %s is the scm type (svn/svk/git/bzr);
+                            3rd %s is the scm revision number;
+                            4th %s is the build date */
+            g_print ( _("%s\nThis copy was built from %s rev %s on %s."),
+                      fixed_message, GNUCASH_SCM, GNUCASH_SCM_REV,
+                      GNUCASH_BUILD_DATE );
         }
         else
         {
-            /* Translators: %s is the version number */
-            g_print(_("GnuCash %s"), VERSION);
+            fixed_message = g_strdup_printf(_("GnuCash %s"), VERSION);
+
+            /* Translators: 1st %s is a fixed message, which is translated independently;
+                            2nd %s is the scm (svn/svk/git/bzr) revision number;
+                            3rd %s is the build date */
+            g_print ( _("%s\nThis copy was built from rev %s on %s."),
+                      fixed_message, GNUCASH_SCM_REV, GNUCASH_BUILD_DATE );
         }
         g_print("\n");
-        /* Translators: 1st %s is the build date; 2nd %s is the SVN
-           revision number */
-        g_print(_("Built %s from r%s"), GNUCASH_BUILD_DATE, GNUCASH_SVN_REV);
-        g_print("\n");
+        g_free (fixed_message);
         exit(0);
     }
 
-    gnc_set_extra(extra);
+    gnc_prefs_set_debugging(debugging);
+    gnc_prefs_set_extra(extra);
 
-    if (!gconf_path)
+    if (!gsettings_prefix)
     {
-        const char *path = g_getenv("GNC_GCONF_PATH");
-        if (path)
-            gconf_path = path;
+        const char *prefix = g_getenv("GNC_GSETTINGS_PREFIX");
+        if (prefix)
+            gsettings_prefix = prefix;
         else
-            gconf_path = GCONF_PATH;
+            gsettings_prefix = GSET_SCHEMA_PREFIX;
     }
-
-    gnc_set_gconf_path(g_strdup(gconf_path));
-    gnc_set_debugging(debugging);
+    gnc_gsettings_set_prefix(g_strdup(gsettings_prefix));
 
     if (namespace_regexp)
-        gnc_main_set_namespace_regexp(namespace_regexp);
+        gnc_prefs_set_namespace_regexp(namespace_regexp);
+
+    if (args_remaining)
+        file_to_load = args_remaining[0];
 }
 
 static void
@@ -572,7 +600,8 @@ load_gnucash_modules()
         { "gnucash/register/register-gnome", 0, FALSE },
         { "gnucash/import-export/qif-import", 0, FALSE },
         { "gnucash/import-export/ofx", 0, TRUE },
-        { "gnucash/import-export/csv", 0, TRUE },
+        { "gnucash/import-export/csv-import", 0, TRUE },
+        { "gnucash/import-export/csv-export", 0, TRUE },
         { "gnucash/import-export/log-replay", 0, TRUE },
         { "gnucash/import-export/aqbanking", 0, TRUE },
         { "gnucash/report/report-system", 0, FALSE },
@@ -583,6 +612,7 @@ load_gnucash_modules()
         { "gnucash/report/report-gnome", 0, FALSE },
         { "gnucash/business-gnome", 0, TRUE },
         { "gnucash/gtkmm", 0, TRUE },
+        { "gnucash/python", 0, TRUE },
     };
 
     /* module initializations go here */
@@ -689,6 +719,10 @@ inner_main (void *closure, int argc, char **argv)
     main_mod = scm_c_resolve_module("gnucash main");
     scm_set_current_module(main_mod);
 
+    /* GnuCash switched to gsettings to store its preferences in version 2.5.6
+     * Migrate the user's preferences from gconf if needed */
+    gnc_gsettings_migrate_from_gconf();
+
     load_gnucash_modules();
 
     /* Load the config before starting up the gui. This insures that
@@ -708,8 +742,6 @@ inner_main (void *closure, int argc, char **argv)
 
     gnc_hook_add_dangler(HOOK_UI_SHUTDOWN, (GFunc)gnc_file_quit, NULL);
 
-    scm_c_eval_string("(gnc:main)");
-
     /* Install Price Quote Sources */
     gnc_update_splash_screen(_("Checking Finance::Quote..."), GNC_SPLASH_PERCENTAGE_UNKNOWN);
     scm_c_use_module("gnucash price-quotes");
@@ -720,11 +752,10 @@ inner_main (void *closure, int argc, char **argv)
     if (!nofile && (fn = get_file_to_load()))
     {
         gnc_update_splash_screen(_("Loading data..."), GNC_SPLASH_PERCENTAGE_UNKNOWN);
-        gnc_file_open_file(fn);
+        gnc_file_open_file(fn, /*open_readonly*/ FALSE);
         g_free(fn);
     }
-    else if (gnc_gconf_get_bool("dialogs/new_user", "first_startup", &error)
-             && !error)
+    else if (gnc_prefs_get_bool(GNC_PREFS_GROUP_NEW_USER, GNC_PREF_FIRST_STARTUP))
     {
         gnc_destroy_splash_screen();
         gnc_ui_new_user_dialog();
@@ -763,7 +794,7 @@ gnc_log_init()
 
     gnc_log_default();
 
-    if (gnc_is_debugging())
+    if (gnc_prefs_is_debugging_enabled())
     {
         qof_log_set_level("", QOF_LOG_INFO);
         qof_log_set_level("qof", QOF_LOG_INFO);
@@ -819,8 +850,6 @@ main(int argc, char ** argv)
             g_error_free(binreloc_error);
         }
     }
-#else
-    g_message("main: binreloc relocation support was disabled at configure time.\n");
 #endif
 
     /* This should be called before gettext is initialized
@@ -835,49 +864,41 @@ main(int argc, char ** argv)
 #ifdef HAVE_GETTEXT
     {
         gchar *localedir = gnc_path_get_localedir();
-        /* setlocale(LC_ALL, ""); is already called by gtk_set_locale()
-           via gtk_init() -- except that it hasn't been called yet. */
         bindtextdomain(GETTEXT_PACKAGE, localedir);
         textdomain(GETTEXT_PACKAGE);
         bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
         g_free(localedir);
     }
 #endif
-
-    qof_log_init();
-    qof_log_set_default(QOF_LOG_INFO);
-
-    gnucash_command_line(&argc, argv);
+    
+    gnc_parse_command_line(&argc, &argv);
     gnc_print_unstable_message();
+
     gnc_log_init();
 
-    gnc_module_system_init();
-
+    /* If asked via a command line parameter, fetch quotes only */
     if (add_quotes_file)
     {
-        gchar *prefix = gnc_path_get_prefix ();
-        gchar *pkgsysconfdir = gnc_path_get_pkgsysconfdir ();
-        gchar *pkgdatadir = gnc_path_get_pkgdatadir ();
-        gchar *pkglibdir = gnc_path_get_pkglibdir ();
-        /* This option needs to run without a display, so we can't
-           initialize any GUI libraries.  */
-        gnome_program_init(
-            PACKAGE, VERSION, LIBGNOME_MODULE,
-            argc, argv,
-            GNOME_PARAM_APP_PREFIX, prefix,
-            GNOME_PARAM_APP_SYSCONFDIR, pkgsysconfdir,
-            GNOME_PARAM_APP_DATADIR, pkgdatadir,
-            GNOME_PARAM_APP_LIBDIR, pkglibdir,
-            GNOME_PARAM_NONE);
-        g_free (prefix);
-        g_free (pkgsysconfdir);
-        g_free (pkgdatadir);
-        g_free (pkglibdir);
+        /* First initialize the module system, even though gtk hasn't been initialized. */
+        gnc_module_system_init();
         scm_boot_guile(argc, argv, inner_main_add_price_quotes, 0);
         exit(0);  /* never reached */
     }
 
-    gnc_gnome_init (argc, argv, VERSION);
+    /* We need to initialize gtk before looking up all modules */
+    gnc_gtk_add_rc_file ();
+    if(!gtk_init_check (&argc, &argv))
+    {
+        g_printerr(_("%s\nRun '%s --help' to see a full list of available command line options.\n"),
+                   _("Error: could not initialize graphical user interface and option add-price-quotes was not set."),
+                   argv[0]);
+        return 1;
+    }
+
+    /* Now the module files are looked up, which might cause some library
+    initialization to be run, hence gtk must be initialized beforehand. */
+    gnc_module_system_init();
+
     gnc_gui_init();
     scm_boot_guile(argc, argv, inner_main, 0);
     exit(0); /* never reached */

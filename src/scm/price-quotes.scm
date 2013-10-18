@@ -397,7 +397,7 @@
 	     ct))
 	   (commodity-list #f)
 	   (currency-list (filter
-			   (lambda (a) (not (equal? (cadr a) (caddr a))))
+			   (lambda (a) (not (gnc-commodity-equiv (cadr a) (caddr a))))
 			   (call-with-values 
                                (lambda () (partition!
                                            (lambda (cmd)
@@ -497,7 +497,17 @@
                  (= (length call-data) (+ 1 (length call-result))))
 
             ;; OK, continue.
-            (for-each process-a-quote (cdr call-data) call-result)
+	    (for-each
+	     (lambda (call-data-item call-result-item)
+	       (if (and (list? call-result-item) (list? (car call-result-item)))
+		   (for-each
+		    (lambda (result-subitem)
+		      (gnc:debug "call-data-item: " call-data-item)
+		      (gnc:debug "result-subitem: " result-subitem)
+		      (process-a-quote call-data-item result-subitem))
+		    call-result-item)
+		   (process-a-quote call-data-item call-result-item)))
+	     (cdr call-data) call-result)
 
             ;; else badly formed result, must assume all garbage.
             (for-each
@@ -516,7 +526,7 @@
 
   (define (timestr->time-pair timestr time-zone)
     ;; time-zone is ignored currently
-    (cons (gnc-parse-time-to-timet timestr "%Y-%m-%d %H:%M:%S")
+    (cons (gnc-parse-time-to-time64 timestr "%Y-%m-%d %H:%M:%S")
           0))
 
   (define (commodity-tz-quote-triple->price book c-tz-quote-triple)

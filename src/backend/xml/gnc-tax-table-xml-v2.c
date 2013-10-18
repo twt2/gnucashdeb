@@ -348,10 +348,10 @@ taxtable_entries_handler (xmlNodePtr node, gpointer taxtable_pdata)
     {
         GncTaxTableEntry *entry;
 
-        if (safe_strcmp ("text", (char*)mark->name) == 0)
+        if (g_strcmp0 ("text", (char*)mark->name) == 0)
             continue;
 
-        if (safe_strcmp (gnc_taxtableentry_string, (char*)mark->name))
+        if (g_strcmp0 (gnc_taxtableentry_string, (char*)mark->name))
             return FALSE;
 
         entry = dom_tree_to_ttentry (mark, pdata->book);
@@ -415,13 +415,10 @@ gnc_taxtable_end_handler(gpointer data_for_children,
                          gpointer parent_data, gpointer global_data,
                          gpointer *result, const gchar *tag)
 {
-    int successful;
     GncTaxTable *table;
     xmlNodePtr tree = (xmlNodePtr)data_for_children;
     gxpf_data *gdata = (gxpf_data*)global_data;
     QofBook *book = gdata->bookdata;
-
-    successful = TRUE;
 
     if (parent_data)
     {

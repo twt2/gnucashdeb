@@ -38,8 +38,8 @@
 #include <config.h>
 #endif
 
-#include <gnome.h>
-
+#include <gtk/gtk.h>
+#include <gdk/gdk.h>
 #include "gnucash-color.h"
 
 static int color_inited;
@@ -169,8 +169,3 @@ gnucash_color_init (void)
 }
 
 
-/*
-  Local Variables:
-  c-basic-offset: 8
-  End:
-*/

@@ -43,10 +43,11 @@
 #include "dialog-file-access.h"
 #include "dialog-fincalc.h"
 #include "dialog-find-transactions.h"
+#include "dialog-find-transactions2.h"
 #include "dialog-sx-since-last-run.h"
 #include "dialog-totd.h"
-#include "druid-acct-period.h"
-#include "druid-loan.h"
+#include "assistant-acct-period.h"
+#include "assistant-loan.h"
 #include "gnc-engine.h"
 #include "gnc-file.h"
 #include "gnc-gui-query.h"
@@ -55,27 +56,34 @@
 #include "gnc-window.h"
 #include "gnc-session.h"
 #include "gnc-plugin-page-sx-list.h"
+#include "gnc-plugin-file-history.h"
 
 /* This static indicates the debugging module that this .o belongs to.  */
-static QofLogModule log_module = GNC_MOD_GUI;
+G_GNUC_UNUSED static QofLogModule log_module = GNC_MOD_GUI;
 
 static void gnc_plugin_basic_commands_class_init (GncPluginBasicCommandsClass *klass);
 static void gnc_plugin_basic_commands_init (GncPluginBasicCommands *plugin);
 static void gnc_plugin_basic_commands_finalize (GObject *object);
 
 static void gnc_plugin_basic_commands_add_to_window (GncPlugin *plugin, GncMainWindow *window, GQuark type);
+static void gnc_plugin_basic_commands_main_window_page_changed(GncMainWindow *window, GncPluginPage *page, gpointer user_data);
 
 /* Command callbacks */
 static void gnc_main_window_cmd_file_new (GtkAction *action, GncMainWindowActionData *data);
 static void gnc_main_window_cmd_file_open (GtkAction *action, GncMainWindowActionData *data);
 static void gnc_main_window_cmd_file_save (GtkAction *action, GncMainWindowActionData *data);
 static void gnc_main_window_cmd_file_save_as (GtkAction *action, GncMainWindowActionData *data);
+static void gnc_main_window_cmd_file_revert (GtkAction *action, GncMainWindowActionData *data);
 static void gnc_main_window_cmd_file_export_accounts (GtkAction *action, GncMainWindowActionData *data);
 static void gnc_main_window_cmd_edit_tax_options (GtkAction *action, GncMainWindowActionData *data);
 static void gnc_main_window_cmd_actions_mortgage_loan (GtkAction *action, GncMainWindowActionData *data);
 static void gnc_main_window_cmd_actions_scheduled_transaction_editor (GtkAction *action, GncMainWindowActionData *data);
 static void gnc_main_window_cmd_actions_since_last_run (GtkAction *action, GncMainWindowActionData *data);
+
+#if CLOSE_BOOKS_ACTUALLY_WORKS
 static void gnc_main_window_cmd_actions_close_books (GtkAction *action, GncMainWindowActionData *data);
+#endif /* CLOSE_BOOKS_ACTUALLY_WORKS */
+
 static void gnc_main_window_cmd_tools_financial_calculator (GtkAction *action, GncMainWindowActionData *data);
 static void gnc_main_window_cmd_tools_close_book (GtkAction *action, GncMainWindowActionData *data);
 static void gnc_main_window_cmd_tools_find_transactions (GtkAction *action, GncMainWindowActionData *data);
@@ -96,12 +104,12 @@ static GtkActionEntry gnc_plugin_actions [] =
     /* File menu */
 
     {
-        "FileNewAction", GTK_STOCK_NEW, N_("New _File"), NULL,
+        "FileNewAction", GTK_STOCK_NEW, N_("New _File"), "<control>n",
         N_("Create a new file"),
         G_CALLBACK (gnc_main_window_cmd_file_new)
     },
     {
-        "FileOpenAction", GTK_STOCK_OPEN, N_("_Open..."), NULL,
+        "FileOpenAction", GTK_STOCK_OPEN, N_("_Open..."), "<control>o",
         N_("Open an existing GnuCash file"),
         G_CALLBACK (gnc_main_window_cmd_file_open)
     },
@@ -112,8 +120,13 @@ static GtkActionEntry gnc_plugin_actions [] =
     },
     {
         "FileSaveAsAction", GTK_STOCK_SAVE_AS, N_("Save _As..."), "<shift><control>s",
-        NULL,
+        N_("Save this file with a different name"),
         G_CALLBACK (gnc_main_window_cmd_file_save_as)
+    },
+    {
+        "FileRevertAction", GTK_STOCK_REVERT_TO_SAVED, N_("Re_vert"), NULL,
+        N_("Reload the current database, reverting all unsaved changes"),
+        G_CALLBACK (gnc_main_window_cmd_file_revert)
     },
     {
         "FileExportAccountsAction", GTK_STOCK_CONVERT,
@@ -211,6 +224,15 @@ static const gchar *gnc_plugin_important_actions[] =
     NULL,
 };
 
+/** These actions, plus FileSaveAction, are made not sensitive (i.e.,
+ * their toolbar and menu items are grayed out and do not send events
+ * when clicked) when the current book is "Read Only".
+ */
+static const gchar *readonly_inactive_actions[] =
+{
+    "ToolsBookCloseAction",
+    NULL
+};
 
 /** The instance private data structure for an basic commands
  *  plugin. */
@@ -290,6 +312,52 @@ gnc_plugin_basic_commands_add_to_window (GncPlugin *plugin,
         GncMainWindow *window,
         GQuark type)
 {
+    g_signal_connect(window, "page_changed",
+                     G_CALLBACK(gnc_plugin_basic_commands_main_window_page_changed),
+                     plugin);
+}
+
+/** Update the actions sensitivity
+*/
+static void update_inactive_actions(GncPluginPage *plugin_page)
+{
+    GncMainWindow  *window;
+    GtkActionGroup *action_group;
+    GtkAction *file_save_action;
+
+    // We are readonly - so we have to switch particular actions to inactive.
+    gboolean is_readwrite = !qof_book_is_readonly(gnc_get_current_book());
+    gboolean is_dirty = qof_book_session_not_saved (gnc_get_current_book ());
+
+    // We continue only if the current page is a plugin page
+    if (!plugin_page || !GNC_IS_PLUGIN_PAGE(plugin_page))
+        return;
+
+    window = GNC_MAIN_WINDOW(plugin_page->window);
+    g_return_if_fail(GNC_IS_MAIN_WINDOW(window));
+    action_group = gnc_main_window_get_action_group(window, PLUGIN_ACTIONS_NAME);
+    g_return_if_fail(GTK_IS_ACTION_GROUP(action_group));
+
+    /* Set the action's sensitivity */
+    gnc_plugin_update_actions (action_group, readonly_inactive_actions,
+                               "sensitive", is_readwrite);
+    /* FileSaveAction needs to be set separately because it has *two* conditions */
+    file_save_action = gtk_action_group_get_action (action_group,
+                       "FileSaveAction");
+    gtk_action_set_sensitive (file_save_action, is_readwrite && is_dirty);
+}
+
+static void
+gnc_plugin_basic_commands_main_window_page_changed(GncMainWindow *window,
+        GncPluginPage *page,
+        gpointer user_data)
+{
+    /* Make sure not to call this with a NULL GncPluginPage */
+    if (page)
+    {
+        // Update the action sensitivity due to read-only
+        update_inactive_actions(page);
+    }
 }
 
 /** Initialize the class for a new basic commands plugin.  This will
@@ -348,13 +416,7 @@ gnc_plugin_basic_commands_init (GncPluginBasicCommands *plugin)
 static void
 gnc_plugin_basic_commands_finalize (GObject *object)
 {
-    GncPluginBasicCommands *plugin;
-    GncPluginBasicCommandsPrivate *priv;
-
     g_return_if_fail (GNC_IS_PLUGIN_BASIC_COMMANDS (object));
-
-    plugin = GNC_PLUGIN_BASIC_COMMANDS (object);
-    priv = GNC_PLUGIN_BASIC_COMMANDS_GET_PRIVATE (plugin);
 
     G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -420,6 +482,26 @@ gnc_main_window_cmd_file_save_as (GtkAction *action, GncMainWindowActionData *da
 #endif
     gnc_window_set_progressbar_window (NULL);
     /* FIXME GNOME 2 Port (update the title etc.) */
+}
+
+static void
+gnc_main_window_cmd_file_revert (GtkAction *action, GncMainWindowActionData *data)
+{
+    g_return_if_fail (data != NULL);
+
+    if (!gnc_main_window_all_finish_pending())
+        return;
+
+    gnc_window_set_progressbar_window (GNC_WINDOW(data->window));
+
+    {
+        gchar *filename = gnc_history_get_last();
+        // And actually open the current file again
+        gnc_file_open_file (filename, qof_book_is_readonly(gnc_get_current_book()));
+        g_free(filename);
+    }
+
+    gnc_window_set_progressbar_window (NULL);
 }
 
 static void
@@ -501,14 +583,15 @@ gnc_main_window_cmd_actions_since_last_run (GtkAction *action, GncMainWindowActi
 static void
 gnc_main_window_cmd_actions_mortgage_loan (GtkAction *action, GncMainWindowActionData *data)
 {
-    gnc_ui_sx_loan_druid_create ();
+    gnc_ui_sx_loan_assistant_create ();
 }
-
+#ifdef CLOSE_BOOKS_ACTUALLY_WORKS
 static void
 gnc_main_window_cmd_actions_close_books (GtkAction *action, GncMainWindowActionData *data)
 {
     gnc_acct_period_dialog();
 }
+#endif /* CLOSE_BOOKS_ACTUALLY_WORKS */
 
 static void
 gnc_main_window_cmd_tools_price_editor (GtkAction *action, GncMainWindowActionData *data)
@@ -541,7 +624,10 @@ gnc_main_window_cmd_tools_close_book (GtkAction *action, GncMainWindowActionData
 static void
 gnc_main_window_cmd_tools_find_transactions (GtkAction *action, GncMainWindowActionData *data)
 {
-    gnc_ui_find_transactions_dialog_create (NULL);
+//    gnc_ui_find_transactions_dialog_create (NULL);
+/*################## Added for Reg2 #################*/
+    gnc_ui_find_transactions_dialog_create2 (NULL);
+/*################## Added for Reg2 #################*/
 }
 
 static void

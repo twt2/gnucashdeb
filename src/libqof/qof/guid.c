@@ -71,7 +71,7 @@ static QofLogModule log_module = QOF_MOD_ENGINE;
  *
  * @return the value stored in @a value
  */
-G_CONST_RETURN GncGUID*
+const GncGUID*
 gnc_value_get_guid (const GValue *value)
 {
     GncGUID *val;
@@ -315,7 +315,7 @@ static size_t
 init_from_time(void)
 {
     size_t total;
-    time_t t_time;
+    time64 time;
 #ifdef HAVE_SYS_TIMES_H
     clock_t clocks;
     struct tms tms_buf;
@@ -325,9 +325,9 @@ init_from_time(void)
 
     total = 0;
 
-    t_time = time(NULL);
-    md5_process_bytes(&t_time, sizeof(t_time), &guid_context);
-    total += sizeof(t_time);
+    time = gnc_time (NULL);
+    md5_process_bytes(&time, sizeof(time), &guid_context);
+    total += sizeof(time);
 
 #ifdef HAVE_SYS_TIMES_H
     clocks = times(&tms_buf);
@@ -492,7 +492,7 @@ guid_init(void)
     {
         int n, i;
 
-        srand((unsigned int) time(NULL));
+        srand((unsigned int) gnc_time (NULL));
 
         for (i = 0; i < 32; i++)
         {
@@ -524,24 +524,6 @@ guid_init(void)
 
     guid_initialized = TRUE;
     LEAVE();
-}
-
-void
-guid_init_with_salt(const void *salt, size_t salt_len)
-{
-    guid_init();
-
-    md5_process_bytes(salt, salt_len, &guid_context);
-}
-
-void
-guid_init_only_salt(const void *salt, size_t salt_len)
-{
-    md5_init_ctx(&guid_context);
-
-    md5_process_bytes(salt, salt_len, &guid_context);
-
-    guid_initialized = TRUE;
 }
 
 void

@@ -41,7 +41,6 @@
 #include "gnc-tree-view.h"
 #include "gnc-tree-view-sx-list.h"
 #include "gnc-sx-list-tree-model-adapter.h"
-#include "gnc-gconf-utils.h"
 
 #define LOG_MOD "gnc.ui.tree-view.sx-list"
 static QofLogModule log_module = LOG_MOD;
@@ -139,12 +138,8 @@ gnc_tree_view_sx_list_dispose(GObject *object)
 static void
 gnc_tree_view_sx_list_finalize(GObject *object)
 {
-    GncTreeViewSxList *view;
-
     gnc_leave_return_if_fail(object != NULL);
     gnc_leave_return_if_fail(GNC_IS_TREE_VIEW_SX_LIST (object));
-
-    view = GNC_TREE_VIEW_SX_LIST(object);
 
     if (G_OBJECT_CLASS(parent_class)->finalize)
         (* G_OBJECT_CLASS(parent_class)->finalize) (object);

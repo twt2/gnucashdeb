@@ -91,7 +91,7 @@
     (add-option
      (gnc:make-simple-boolean-option
       gnc:pagename-accounts optname-subacct
-      "a" (N_ "Include sub-accounts of all selected accounts") #t))
+      "a" (N_ "Include sub-accounts of all selected accounts.") #t))
 
     (add-option
      (gnc:make-account-list-option
@@ -111,7 +111,7 @@
 
     (gnc:options-add-account-levels! 
      options gnc:pagename-accounts optname-levels "b" 
-     (N_ "Show accounts to this depth and not further") 
+     (N_ "Show accounts to this depth and not further.") 
      2)
 
     (add-option
@@ -348,7 +348,7 @@
 	       ;; date->string of srfi-19, similar to get_wday_name()
 	       ;; in src/engine/FreqSpeq.c. For now, we simply use
 	       ;; the normal translations, which show up in the glade
-	       ;; file src/gnome/glade/sched-xact.glade anyway.
+	       ;; file src/gnome-utils/gtkbuilder/gnc-frequency.glade anyway.
                (days-of-week (list (_"Sunday") (_"Monday") 
 				   (_"Tuesday") (_"Wednesday") 
 				   (_"Thursday") (_"Friday") (_"Saturday"))))

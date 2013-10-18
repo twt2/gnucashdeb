@@ -29,88 +29,99 @@
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
-#include <glade/glade.h>
-
-#include "import-parse.h"
 #include "dialog-utils.h"
+#include "import-parse.h"
 #include "gnc-ui-util.h"
 
 #define MAX_CHOICES 6
 
 static void
-choice_option_changed (GtkWidget *widget, gint index, gpointer index_p)
+option_changed_cb (GtkWidget *widget, gpointer index_p)
 {
     gint *my_index = index_p;
-    *my_index = index;
+    *my_index = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 }
+
 
 static GncImportFormat
 add_menu_and_run_dialog(GtkWidget *dialog, GtkWidget *menu_box, GncImportFormat fmt)
 {
-    GtkWidget *menu;
+    GtkComboBox  *combo;
+    GtkListStore *store;
+    GtkTreeIter iter;
+    GtkCellRenderer *cell;
     gint index = 0, count = 0;
+    gint *index_p = &index;
     GncImportFormat formats[MAX_CHOICES];
-    GNCOptionInfo menus[MAX_CHOICES];
 
-    memset(&menus, 0, sizeof(menus));
+    store = gtk_list_store_new(1, G_TYPE_STRING);
 
     if (fmt & GNCIF_NUM_PERIOD)
     {
+        gtk_list_store_append (store, &iter);
+        gtk_list_store_set (store, &iter, 0, _("Period: 123,456.78"), -1);
         formats[count] = GNCIF_NUM_PERIOD;
-        menus[count].name = _("Period: 123,456.78");
-        menus[count].callback = choice_option_changed;
-        menus[count].user_data = &index;
         count++;
     }
 
     if (fmt & GNCIF_NUM_COMMA)
     {
+        gtk_list_store_append (store, &iter);
+        gtk_list_store_set (store, &iter, 0, _("Comma: 123.456,78"), -1);
         formats[count] = GNCIF_NUM_COMMA;
-        menus[count].name = _("Comma: 123.456,78");
-        menus[count].callback = choice_option_changed;
-        menus[count].user_data = &index;
         count++;
     }
 
     if (fmt & GNCIF_DATE_MDY)
     {
+        gtk_list_store_append (store, &iter);
+        gtk_list_store_set (store, &iter, 0, _("m/d/y"), -1);
         formats[count] = GNCIF_DATE_MDY;
-        menus[count].name = _("m/d/y");
-        menus[count].callback = choice_option_changed;
-        menus[count].user_data = &index;
         count++;
     }
 
     if (fmt & GNCIF_DATE_DMY)
     {
+        gtk_list_store_append (store, &iter);
+        gtk_list_store_set (store, &iter, 0, _("d/m/y"), -1);
         formats[count] = GNCIF_DATE_DMY;
-        menus[count].name = _("d/m/y");
-        menus[count].callback = choice_option_changed;
-        menus[count].user_data = &index;
         count++;
     }
 
     if (fmt & GNCIF_DATE_YMD)
     {
+        gtk_list_store_append (store, &iter);
+        gtk_list_store_set (store, &iter, 0, _("y/m/d"), -1);
         formats[count] = GNCIF_DATE_YMD;
-        menus[count].name = _("y/m/d");
-        menus[count].callback = choice_option_changed;
-        menus[count].user_data = &index;
         count++;
     }
 
     if (fmt & GNCIF_DATE_YDM)
     {
+        gtk_list_store_append (store, &iter);
+        gtk_list_store_set (store, &iter, 0, _("y/d/m"), -1);
         formats[count] = GNCIF_DATE_YDM;
-        menus[count].name = _("y/d/m");
-        menus[count].callback = choice_option_changed;
-        menus[count].user_data = &index;
         count++;
     }
 
     g_assert(count > 1);
-    menu = gnc_build_option_menu(menus, count);
-    gtk_box_pack_start(GTK_BOX(menu_box), menu, TRUE, TRUE, 0);
+
+    combo = GTK_COMBO_BOX(gtk_combo_box_new_with_model(GTK_TREE_MODEL(store)));
+    g_object_unref(store);
+
+    /* Create cell renderer. */
+    cell = gtk_cell_renderer_text_new();
+
+    /* Pack it to the combo box. */
+    gtk_cell_layout_pack_start( GTK_CELL_LAYOUT( combo ), cell, FALSE );
+
+    /* Connect renderer to data source */
+    gtk_cell_layout_set_attributes( GTK_CELL_LAYOUT( combo ), cell, "text", 0, NULL );
+
+    g_signal_connect(G_OBJECT(combo), "changed",
+                         G_CALLBACK(option_changed_cb), index_p);
+
+    gtk_box_pack_start(GTK_BOX(menu_box), GTK_WIDGET(combo), TRUE, TRUE, 0);
 
     gtk_widget_show_all(dialog);
     gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
@@ -120,11 +131,11 @@ add_menu_and_run_dialog(GtkWidget *dialog, GtkWidget *menu_box, GncImportFormat 
     return formats[index];
 }
 
+
 GncImportFormat
 gnc_import_choose_fmt(const char* msg, GncImportFormat fmts, gpointer data)
-
 {
-    GladeXML *xml;
+    GtkBuilder *builder;
     GtkWidget *dialog;
     GtkWidget *widget;
 
@@ -135,12 +146,16 @@ gnc_import_choose_fmt(const char* msg, GncImportFormat fmts, gpointer data)
     {
         return fmts;
     }
-
-    xml = gnc_glade_xml_new("generic-import.glade", "format_picker");
-    dialog = glade_xml_get_widget(xml, "format_picker");
-    widget = glade_xml_get_widget(xml, "msg_label");
+    /* Open the Glade Builder file */
+    builder = gtk_builder_new();
+    gnc_builder_add_from_file (builder, "dialog-import.glade", "format_picker");
+    dialog = GTK_WIDGET(gtk_builder_get_object (builder, "format_picker"));
+    widget = GTK_WIDGET(gtk_builder_get_object (builder, "msg_label"));
     gtk_label_set_text(GTK_LABEL(widget), msg);
 
-    widget = glade_xml_get_widget(xml, "menu_box");
+    widget = GTK_WIDGET(gtk_builder_get_object (builder, "menu_box"));
+
+    g_object_unref(G_OBJECT(builder));
+
     return add_menu_and_run_dialog(dialog, widget, fmts);
 }
