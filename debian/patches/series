@@ -1,1 +1,2 @@
 hardening-fortify.patch
+dont-clean-gnucash-core-c.patch

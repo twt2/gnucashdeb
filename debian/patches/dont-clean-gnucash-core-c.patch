@@ -1,0 +1,19 @@
+Description: Do not remove gnucash_core.c in clean rule
+ That file is a built source. It is already removed by the maintainer-clean
+ rule.
+Author: Sébastien Villemot <sebastien@debian.org>
+Applied-Upstream: http://svn.gnucash.org/trac/changeset/23302, 2.5.7
+Last-Update: 2013-10-19
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/src/optional/python-bindings/Makefile.am
++++ b/src/optional/python-bindings/Makefile.am
+@@ -129,7 +129,7 @@
+ 
+ noinst_DATA = .py-links
+ 
+-CLEANFILES = $(BUILT_SOURCES) .py-links gnucash_core.c gnucash_core.c.py
++CLEANFILES = $(BUILT_SOURCES) .py-links gnucash_core.c.py
+ 
+ clean-local:
+ 	rm -rf gnucash
