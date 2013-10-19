@@ -5,7 +5,7 @@ Maintainer: Sébastien Villemot <sebastien@debian.org>
 Uploaders: Dmitry Smirnov <onlyjob@debian.org>
 Standards-Version: 3.9.4
 Build-Depends: debhelper (>= 9), intltool, pkg-config, dh-autoreconf,
- guile-1.8-dev (>= 1.8.8+1-4~),
+ guile-2.0-dev,
  imagemagick,
  libaqbanking34-dev,
  libdbi-dev,
@@ -19,9 +19,8 @@ Build-Depends: debhelper (>= 9), intltool, pkg-config, dh-autoreconf,
  libxml2-dev,
  python,
  python-dev,
- slib,
  zlib1g-dev
-Build-Conflicts: guile-2.0
+Build-Conflicts: guile-1.8
 Homepage: http://www.gnucash.org/
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-gnucash/gnucash.git
 Vcs-Git: git://anonscm.debian.org/pkg-gnucash/gnucash.git
@@ -29,7 +28,7 @@ Vcs-Git: git://anonscm.debian.org/pkg-gnucash/gnucash.git
 Package: gnucash
 Architecture: any
 Depends: gnucash-common (= ${source:Version}), ${shlibs:Depends},
-  ${misc:Depends}, ${perl:Depends}, slib, guile-1.8 (>= 1.8.8+1-4~),
+  ${misc:Depends}, ${perl:Depends}, guile-2.0,
   libfinance-quote-perl, libwww-perl, libhtml-tree-perl,
   libhtml-tableextract-perl, libcrypt-ssleay-perl, libdate-manip-perl
 Suggests: libdbd-mysql, libdbd-pgsql, libdbd-sqlite3
