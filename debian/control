@@ -63,7 +63,7 @@ Description: debugging symbols for the accounting software Gnucash
 
 Package: gnucash-common
 Architecture: all
-Depends: ${misc:Depends}
+Depends: ${misc:Depends}, libjs-jquery
 Recommends: gnucash (>= ${source:Version})
 Breaks: gnucash (<< 2.4.0-1~)
 Replaces: gnucash (<< 2.4.0-1~)
