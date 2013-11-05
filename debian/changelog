@@ -1,3 +1,13 @@
+gnucash (1:2.5.7-1) experimental; urgency=low
+
+  * New upstream development release.
+    - no longer crashes at startup when there is no old gconf settings to
+      migrate (Closes: #727767).
+  * debian/copyright: reflect upstream changes.
+  * dont-clean-gnucash-core-c.patch: remove patch, applied upstream.
+
+ -- Sébastien Villemot <sebastien@debian.org>  Tue, 05 Nov 2013 21:01:24 +0100
+
 gnucash (1:2.5.6-1) experimental; urgency=low
 
   [ Sébastien Villemot ]
