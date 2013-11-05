@@ -70,7 +70,7 @@ static QofLogModule log_module = GNC_MOD_GUI;
 static int is_development_version = TRUE;
 #else
 static int is_development_version = FALSE;
-#define GNUCASH_SCM 0
+#define GNUCASH_SCM ""
 #endif
 
 /* Command-line option variables */
@@ -157,7 +157,6 @@ gnc_print_unstable_message(void)
             _("To find the last stable version, please refer to http://www.gnucash.org"));
 }
 
-#ifndef MAC_INTEGRATION
 static gchar  *environment_expand(gchar *param)
 {
     gchar *search_start;
@@ -310,10 +309,13 @@ environment_override()
             for ( j = 0; j < val_count; j++ )
             {
                 gchar *expanded = environment_expand (val_list[j]);
-                new_val = g_build_path (G_SEARCHPATH_SEPARATOR_S, tmp_val, expanded, NULL);
-                g_free (tmp_val);
-                g_free(expanded);
-                tmp_val = new_val;
+                if (expanded && strlen(expanded))
+                {
+                    new_val = g_build_path (G_SEARCHPATH_SEPARATOR_S, tmp_val, expanded, NULL);
+                    g_free (tmp_val);
+                    g_free(expanded);
+                    tmp_val = new_val;
+                }
             }
             g_strfreev (val_list);
 
@@ -333,7 +335,7 @@ environment_override()
     g_key_file_free(keyfile);
 }
 
-#else /* MAC_INTEGRATION */
+#ifdef MAC_INTEGRATION
 static void
 set_mac_locale()
 {
@@ -408,9 +410,9 @@ set_mac_locale()
 	    if ([elements count] > 1) {
 		if ([[elements objectAtIndex: 0] isEqualToString: @"zh"]) {
 		    if ([[elements objectAtIndex: 1] isEqualToString: @"Hans"])
-			this_lang = [NSString stringWithString: @"zh_CN"];
+			this_lang = @"zh_CN";
 		    else
-			this_lang = [NSString stringWithString: @"zh_TW"];
+			this_lang = @"zh_TW";
 		}
 		else
 		  this_lang = [elements componentsJoinedByString: @"_"];
@@ -858,9 +860,8 @@ main(int argc, char ** argv)
      */
 #ifdef MAC_INTEGRATION
     set_mac_locale();
-#else
-    environment_override();
 #endif
+    environment_override();
 #ifdef HAVE_GETTEXT
     {
         gchar *localedir = gnc_path_get_localedir();

@@ -31,6 +31,13 @@
 #include "gncInvoice.h"
 
 
+#define GNC_PREFS_GROUP_INVOICE "dialogs.business.invoice"
+#define GNC_PREFS_GROUP_BILL    "dialogs.business.bill"
+#define GNC_PREFS_GROUP_VOUCHER "dialogs.business.voucher"
+
+#define GNC_PREF_AUTO_PAY "auto-pay"
+
+
 GtkWidget * gnc_owner_select_create (GtkWidget *label, GtkWidget *hbox,
                                      QofBook *book, GncOwner *owner);
 
@@ -56,8 +63,8 @@ void gnc_invoice_set_owner (GtkWidget *widget, GncOwner *owner);
 /* Fill in a combo box with the appropriate list of accounts
  * Returns the default selected account */
 Account * gnc_account_select_combo_fill (GtkWidget *combo, QofBook *book,
-                                         GList *acct_types,
-                                         GList *acct_commodities);
+        GList *acct_types,
+        GList *acct_commodities);
 
 /* Returns the currently selected account in the combo box*/
 Account * gnc_account_select_combo_get_active (GtkWidget *combo);

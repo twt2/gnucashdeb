@@ -2451,6 +2451,10 @@ def gnc_commodity_get_quote_tz(*args):
   """gnc_commodity_get_quote_tz(gnc_commodity const * cm) -> char const *"""
   return _gnucash_core_c.gnc_commodity_get_quote_tz(*args)
 
+def gnc_commodity_get_user_symbol(*args):
+  """gnc_commodity_get_user_symbol(gnc_commodity const * cm) -> char const *"""
+  return _gnucash_core_c.gnc_commodity_get_user_symbol(*args)
+
 def gnc_commodity_set_mnemonic(*args):
   """gnc_commodity_set_mnemonic(gnc_commodity * cm, char const * mnemonic)"""
   return _gnucash_core_c.gnc_commodity_set_mnemonic(*args)
@@ -2486,6 +2490,10 @@ def gnc_commodity_set_quote_source(*args):
 def gnc_commodity_set_quote_tz(*args):
   """gnc_commodity_set_quote_tz(gnc_commodity * cm, char const * tz)"""
   return _gnucash_core_c.gnc_commodity_set_quote_tz(*args)
+
+def gnc_commodity_set_user_symbol(*args):
+  """gnc_commodity_set_user_symbol(gnc_commodity * cm, char const * user_symbol)"""
+  return _gnucash_core_c.gnc_commodity_set_user_symbol(*args)
 
 def gnc_commodity_increment_usage_count(*args):
   """gnc_commodity_increment_usage_count(gnc_commodity * cm)"""
@@ -2853,7 +2861,7 @@ def gncOwnerApplyPayment(*args):
   """
     gncOwnerApplyPayment(GncOwner const * owner, Transaction * txn, GList * lots, Account * posted_acc, Account * xfer_acc, 
         _gnc_numeric amount, _gnc_numeric exch, Timespec date, char const * memo, 
-        char const * num)
+        char const * num, gboolean auto_pay)
     """
   return _gnucash_core_c.gncOwnerApplyPayment(*args)
 
@@ -3786,7 +3794,7 @@ def gncInvoiceAmountPositive(*args):
 def gncInvoicePostToAccount(*args):
   """
     gncInvoicePostToAccount(GncInvoice * invoice, Account * acc, Timespec * posted_date, Timespec * due_date, 
-        char const * memo, gboolean accumulatesplits) -> Transaction *
+        char const * memo, gboolean accumulatesplits, gboolean autopay) -> Transaction *
     """
   return _gnucash_core_c.gncInvoicePostToAccount(*args)
 

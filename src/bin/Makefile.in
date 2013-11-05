@@ -253,6 +253,7 @@ GNC_LIBEXECDIR = @GNC_LIBEXECDIR@
 GNC_PIXMAP_DIR = @GNC_PIXMAP_DIR@
 GNC_SCM_INSTALL_DIR = @GNC_SCM_INSTALL_DIR@
 GNC_SHAREDIR = @GNC_SHAREDIR@
+GNC_SYSTEM_XDG_DATA_DIRS = @GNC_SYSTEM_XDG_DATA_DIRS@
 GNC_UI_DIR = @GNC_UI_DIR@
 GNOMECANVAS_CFLAGS = @GNOMECANVAS_CFLAGS@
 GNOMECANVAS_LIBS = @GNOMECANVAS_LIBS@
@@ -374,6 +375,7 @@ VERSION = @VERSION@
 WEBKIT_CFLAGS = @WEBKIT_CFLAGS@
 WEBKIT_LIBS = @WEBKIT_LIBS@
 XGETTEXT = @XGETTEXT@
+XSLTPROC = @XSLTPROC@
 ZLIB_LIBS = @ZLIB_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -453,26 +455,16 @@ AM_CPPFLAGS = -I${top_builddir} ${GLIB_CFLAGS} ${GNOME_CFLAGS} \
 	-I${top_srcdir}/src/libqof/qof ${GUILE_INCS} ${GTK_MAC_CFLAGS} \
 	-DG_LOG_DOMAIN=\"gnc.bin\"
 SUFFIXES = .rc
+config_DATA = environment
+configdir = ${GNC_CONFIGDIR}
 
 # Some settings are platform dependent. Let's define them per platform.
 # Windows specific settings go here:
 @PLATFORM_WIN32_TRUE@GNUCASH_RESOURCE_FILE = gnucash.rc
 @PLATFORM_WIN32_TRUE@dist_noinst_DATA = gnucash.rc
-@PLATFORM_OSX_QUARTZ_FALSE@@PLATFORM_WIN32_FALSE@configdir = ${GNC_CONFIGDIR}
-@PLATFORM_WIN32_TRUE@configdir = ${GNC_CONFIGDIR}
-@PLATFORM_OSX_QUARTZ_FALSE@@PLATFORM_WIN32_FALSE@config_DATA = environment
-@PLATFORM_WIN32_TRUE@config_DATA = environment
 
 # All other platforms use these settings:
-@PLATFORM_OSX_QUARTZ_FALSE@@PLATFORM_WIN32_FALSE@PLATFORM_FILES = gnucash-valgrind
-
-# OSX/Quartz specific settings go here:
-@PLATFORM_OSX_QUARTZ_TRUE@@PLATFORM_WIN32_FALSE@PLATFORM_FILES = gnucash-setup-env \
-@PLATFORM_OSX_QUARTZ_TRUE@@PLATFORM_WIN32_FALSE@	gnucash-launcher \
-@PLATFORM_OSX_QUARTZ_TRUE@@PLATFORM_WIN32_FALSE@	gnucash-gdb \
-@PLATFORM_OSX_QUARTZ_TRUE@@PLATFORM_WIN32_FALSE@	gnucash-valgrind
-
-@CUSTOM_GNC_DBD_DIR_TRUE@@PLATFORM_OSX_QUARTZ_TRUE@@PLATFORM_WIN32_FALSE@gnc_dbd_dir_override = export GNC_DBD_DIR="@GNC_DBD_DIR@"
+@PLATFORM_WIN32_FALSE@PLATFORM_FILES = gnucash-valgrind
 BIN_NAME = gnucash
 gnucash_SOURCES = gnucash-bin.c ${GNUCASH_RESOURCE_FILE}
 gnucash_LDADD = \
@@ -520,11 +512,8 @@ CLEANFILES = $(BUILT_SOURCES) ${config_DATA} ${PLATFORM_FILES} \
 @PLATFORM_WIN32_FALSE@gncoverridesdir = ${GNC_LIBEXECDIR}/overrides
 EXTRA_DIST = \
     generate-gnc-script \
-	gnucash-launcher.in \
 	gnucash-valgrind.in \
-	gnucash-gdb.in \
-	environment.in \
-	gnucash-setup-env-osx.in
+	environment.in
 
 all: all-recursive
 
@@ -1020,20 +1009,6 @@ uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS \
 @PLATFORM_WIN32_TRUE@.rc.o:
 @PLATFORM_WIN32_TRUE@	$(AM_V_GEN)$(RC) -I${top_srcdir}/src/pixmaps -i '$<' --input-format=rc -o '$@' -O coff
 
-gnucash-launcher: gnucash-launcher.in ${top_builddir}/config.status Makefile
-	rm -f $@.tmp
-	sed < $< > $@.tmp \
-	    -e "s#@-GNUCASH_BIN_INSTALL_NAME-@#${GNUCASH_BIN_INSTALL_NAME}#g"
-	mv $@.tmp $@
-	chmod u+x $@
-
-gnucash-gdb: gnucash-gdb.in ${top_builddir}/config.status Makefile
-	rm -f $@.tmp
-	sed < $< > $@.tmp \
-	    -e "s#@-GNUCASH_BIN_INSTALL_NAME-@#${GNUCASH_BIN_INSTALL_NAME}#g"
-	mv $@.tmp $@
-	chmod u+x $@
-
 gnucash-valgrind: gnucash-valgrind.in ${top_builddir}/config.status Makefile
 	rm -f $@.tmp
 	sed < $< > $@.tmp \
@@ -1042,33 +1017,21 @@ gnucash-valgrind: gnucash-valgrind.in ${top_builddir}/config.status Makefile
 	mv $@.tmp $@
 	chmod u+x $@
 
-gnucash-setup-env: gnucash-setup-env-osx.in ${top_builddir}/config.status Makefile
-	rm -f $@.tmp
-	sed < $< > $@.tmp \
-	    -e 's#@-BIN_DIR-@#${bindir}#g' \
-	    -e 's#@-GNC_DBD_DIR-@#${GNC_DBD_DIR}#g' \
-	    -e 's#@-GNC_GUILE_MODULE_DIR-@#${GNC_SHAREDIR}/guile-modules#g' \
-	    -e 's#@-GNC_SCM_INSTALL_DIR-@#${GNC_SCM_INSTALL_DIR}#g' \
-	    -e 's#@-GNC_LIB_INSTALLDIR-@#${libdir}#' \
-	    -e 's#@-GNC_PKGLIB_INSTALLDIR-@#${pkglibdir}#g' \
-	    -e "s#@-TOP_SRC_DIR-@#`pwd`/${top_srcdir}#g" \
-	    -e 's#@-PATH_SEPARATOR-@#${PATH_SEPARATOR}#g' \
-	    -e 's#@-PREFIX-@#${prefix}#g'
-	mv $@.tmp $@
-	chmod u+x $@
-
 environment: environment.in ${top_builddir}/config.status Makefile
 	rm -f $@.tmp
 	sed < $< > $@.tmp \
 	    -e '/@-NOTE.*-@/ D'
 @CUSTOM_GNC_DBD_DIR_TRUE@	echo 'GNC_DBD_DIR=@GNC_DBD_DIR@' >> $@.tmp
-	if [ "a$(prefix)" != "a/usr" ] && [ "a$(prefix)" != "a/usr/local" ]; \
+    # Set XDG_DATA_DIRS if necessary.  The three components of the search path are the
+    # directory used by GnuCash, whatever was specified in the environment at run time, and
+    # the default value specified via configure.
+	if [ "a$(datadir)" != "a/usr/share" ] && [ "a$(datadir)" != "a/usr/local/share" ]; \
 	then \
 		echo >> $@.tmp; \
 		echo "# GnuCash was not installed in the default location" >> $@.tmp; \
 		echo "# XDG_DATA_DIRS will be set so that our documentation" >> $@.tmp; \
 		echo "# and gsettings schemas are found." >> $@.tmp; \
-		echo "XDG_DATA_DIRS=$(prefix)/share:{XDG_DATA_DIRS}:/usr/local/share/:/usr/share/" >> $@.tmp; \
+		echo "XDG_DATA_DIRS=$(datadir);{XDG_DATA_DIRS};${GNC_SYSTEM_XDG_DATA_DIRS}" >> $@.tmp; \
 	fi
 	mv $@.tmp $@
 

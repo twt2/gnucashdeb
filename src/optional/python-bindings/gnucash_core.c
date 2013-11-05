@@ -20752,6 +20752,28 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_gnc_commodity_get_user_symbol(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  gnc_commodity *arg1 = (gnc_commodity *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:gnc_commodity_get_user_symbol",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_gnc_commodity, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_commodity_get_user_symbol" "', argument " "1"" of type '" "gnc_commodity const *""'"); 
+  }
+  arg1 = (gnc_commodity *)(argp1);
+  result = (char *)gnc_commodity_get_user_symbol((gnc_commodity const *)arg1);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_gnc_commodity_set_mnemonic(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   gnc_commodity *arg1 = (gnc_commodity *) 0 ;
@@ -21042,6 +21064,39 @@ SWIGINTERN PyObject *_wrap_gnc_commodity_set_quote_tz(PyObject *SWIGUNUSEDPARM(s
   }
   arg2 = (char *)(buf2);
   gnc_commodity_set_quote_tz(arg1,(char const *)arg2);
+  resultobj = SWIG_Py_Void();
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gnc_commodity_set_user_symbol(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  gnc_commodity *arg1 = (gnc_commodity *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:gnc_commodity_set_user_symbol",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_gnc_commodity, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_commodity_set_user_symbol" "', argument " "1"" of type '" "gnc_commodity *""'"); 
+  }
+  arg1 = (gnc_commodity *)(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gnc_commodity_set_user_symbol" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  gnc_commodity_set_user_symbol(arg1,(char const *)arg2);
   resultobj = SWIG_Py_Void();
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return resultobj;
@@ -25505,6 +25560,7 @@ SWIGINTERN PyObject *_wrap_gncOwnerApplyPayment(PyObject *SWIGUNUSEDPARM(self), 
   Timespec arg8 ;
   char *arg9 = (char *) 0 ;
   char *arg10 = (char *) 0 ;
+  gboolean arg11 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
   void *argp3 = 0 ;
@@ -25533,8 +25589,9 @@ SWIGINTERN PyObject *_wrap_gncOwnerApplyPayment(PyObject *SWIGUNUSEDPARM(self), 
   PyObject * obj7 = 0 ;
   PyObject * obj8 = 0 ;
   PyObject * obj9 = 0 ;
+  PyObject * obj10 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOO:gncOwnerApplyPayment",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOO:gncOwnerApplyPayment",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10)) SWIG_fail;
   {
     GncOwner * temp_owner = gncOwnerNew();
     void * pointer_to_real_thing;
@@ -25628,7 +25685,21 @@ SWIGINTERN PyObject *_wrap_gncOwnerApplyPayment(PyObject *SWIGUNUSEDPARM(self), 
     SWIG_exception_fail(SWIG_ArgError(res10), "in method '" "gncOwnerApplyPayment" "', argument " "10"" of type '" "char const *""'");
   }
   arg10 = (char *)(buf10);
-  gncOwnerApplyPayment((struct _gncOwner const *)arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,(char const *)arg9,(char const *)arg10);
+  {
+    if (obj10 == Py_True)
+    arg11 = TRUE;
+    else if (obj10 == Py_False)
+    arg11 = FALSE;
+    else
+    {
+      PyErr_SetString(
+        PyExc_ValueError,
+        "Python object passed to a gboolean argument was not True "
+        "or False" );
+      return NULL;
+    }
+  }
+  gncOwnerApplyPayment((struct _gncOwner const *)arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,(char const *)arg9,(char const *)arg10,arg11);
   resultobj = SWIG_Py_Void();
   {
     gncOwnerFree(arg1);
@@ -32157,6 +32228,7 @@ SWIGINTERN PyObject *_wrap_gncInvoicePostToAccount(PyObject *SWIGUNUSEDPARM(self
   Timespec *arg4 = (Timespec *) 0 ;
   char *arg5 = (char *) 0 ;
   gboolean arg6 ;
+  gboolean arg7 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -32172,9 +32244,10 @@ SWIGINTERN PyObject *_wrap_gncInvoicePostToAccount(PyObject *SWIGUNUSEDPARM(self
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
   PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
   Transaction *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOO:gncInvoicePostToAccount",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOO:gncInvoicePostToAccount",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__gncInvoice, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncInvoicePostToAccount" "', argument " "1"" of type '" "GncInvoice *""'"); 
@@ -32218,7 +32291,21 @@ SWIGINTERN PyObject *_wrap_gncInvoicePostToAccount(PyObject *SWIGUNUSEDPARM(self
       return NULL;
     }
   }
-  result = (Transaction *)gncInvoicePostToAccount(arg1,arg2,arg3,arg4,(char const *)arg5,arg6);
+  {
+    if (obj6 == Py_True)
+    arg7 = TRUE;
+    else if (obj6 == Py_False)
+    arg7 = FALSE;
+    else
+    {
+      PyErr_SetString(
+        PyExc_ValueError,
+        "Python object passed to a gboolean argument was not True "
+        "or False" );
+      return NULL;
+    }
+  }
+  result = (Transaction *)gncInvoicePostToAccount(arg1,arg2,arg3,arg4,(char const *)arg5,arg6,arg7);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Transaction, 0 |  0 );
   if (alloc5 == SWIG_NEWOBJ) free((char*)buf5);
   return resultobj;
@@ -40409,6 +40496,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gnc_commodity_get_quote_source", _wrap_gnc_commodity_get_quote_source, METH_VARARGS, (char *)"gnc_commodity_get_quote_source(gnc_commodity const * cm) -> gnc_quote_source *"},
 	 { (char *)"gnc_commodity_get_default_quote_source", _wrap_gnc_commodity_get_default_quote_source, METH_VARARGS, (char *)"gnc_commodity_get_default_quote_source(gnc_commodity const * cm) -> gnc_quote_source *"},
 	 { (char *)"gnc_commodity_get_quote_tz", _wrap_gnc_commodity_get_quote_tz, METH_VARARGS, (char *)"gnc_commodity_get_quote_tz(gnc_commodity const * cm) -> char const *"},
+	 { (char *)"gnc_commodity_get_user_symbol", _wrap_gnc_commodity_get_user_symbol, METH_VARARGS, (char *)"gnc_commodity_get_user_symbol(gnc_commodity const * cm) -> char const *"},
 	 { (char *)"gnc_commodity_set_mnemonic", _wrap_gnc_commodity_set_mnemonic, METH_VARARGS, (char *)"gnc_commodity_set_mnemonic(gnc_commodity * cm, char const * mnemonic)"},
 	 { (char *)"gnc_commodity_set_namespace", _wrap_gnc_commodity_set_namespace, METH_VARARGS, (char *)"gnc_commodity_set_namespace(gnc_commodity * cm, char const * new_namespace)"},
 	 { (char *)"gnc_commodity_set_fullname", _wrap_gnc_commodity_set_fullname, METH_VARARGS, (char *)"gnc_commodity_set_fullname(gnc_commodity * cm, char const * fullname)"},
@@ -40418,6 +40506,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gnc_commodity_set_quote_flag", _wrap_gnc_commodity_set_quote_flag, METH_VARARGS, (char *)"gnc_commodity_set_quote_flag(gnc_commodity * cm, gboolean const flag)"},
 	 { (char *)"gnc_commodity_set_quote_source", _wrap_gnc_commodity_set_quote_source, METH_VARARGS, (char *)"gnc_commodity_set_quote_source(gnc_commodity * cm, gnc_quote_source * src)"},
 	 { (char *)"gnc_commodity_set_quote_tz", _wrap_gnc_commodity_set_quote_tz, METH_VARARGS, (char *)"gnc_commodity_set_quote_tz(gnc_commodity * cm, char const * tz)"},
+	 { (char *)"gnc_commodity_set_user_symbol", _wrap_gnc_commodity_set_user_symbol, METH_VARARGS, (char *)"gnc_commodity_set_user_symbol(gnc_commodity * cm, char const * user_symbol)"},
 	 { (char *)"gnc_commodity_increment_usage_count", _wrap_gnc_commodity_increment_usage_count, METH_VARARGS, (char *)"gnc_commodity_increment_usage_count(gnc_commodity * cm)"},
 	 { (char *)"gnc_commodity_decrement_usage_count", _wrap_gnc_commodity_decrement_usage_count, METH_VARARGS, (char *)"gnc_commodity_decrement_usage_count(gnc_commodity * cm)"},
 	 { (char *)"gnc_commodity_equiv", _wrap_gnc_commodity_equiv, METH_VARARGS, (char *)"gnc_commodity_equiv(gnc_commodity const * a, gnc_commodity const * b) -> gboolean"},
@@ -40514,7 +40603,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gncOwnerApplyPayment", _wrap_gncOwnerApplyPayment, METH_VARARGS, (char *)"\n"
 		"gncOwnerApplyPayment(GncOwner const * owner, Transaction * txn, GList * lots, Account * posted_acc, Account * xfer_acc, \n"
 		"    _gnc_numeric amount, _gnc_numeric exch, Timespec date, char const * memo, \n"
-		"    char const * num)\n"
+		"    char const * num, gboolean auto_pay)\n"
 		""},
 	 { (char *)"gncOwnerGetAccountTypesList", _wrap_gncOwnerGetAccountTypesList, METH_VARARGS, (char *)"gncOwnerGetAccountTypesList(GncOwner const * owner) -> GList *"},
 	 { (char *)"gncOwnerGetCommoditiesList", _wrap_gncOwnerGetCommoditiesList, METH_VARARGS, (char *)"gncOwnerGetCommoditiesList(GncOwner const * owner) -> GList *"},
@@ -40731,7 +40820,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gncInvoiceAmountPositive", _wrap_gncInvoiceAmountPositive, METH_VARARGS, (char *)"gncInvoiceAmountPositive(GncInvoice const * invoice) -> gboolean"},
 	 { (char *)"gncInvoicePostToAccount", _wrap_gncInvoicePostToAccount, METH_VARARGS, (char *)"\n"
 		"gncInvoicePostToAccount(GncInvoice * invoice, Account * acc, Timespec * posted_date, Timespec * due_date, \n"
-		"    char const * memo, gboolean accumulatesplits) -> Transaction *\n"
+		"    char const * memo, gboolean accumulatesplits, gboolean autopay) -> Transaction *\n"
 		""},
 	 { (char *)"gncInvoiceUnpost", _wrap_gncInvoiceUnpost, METH_VARARGS, (char *)"gncInvoiceUnpost(GncInvoice * invoice, gboolean reset_tax_tables) -> gboolean"},
 	 { (char *)"gncInvoiceAutoApplyPayments", _wrap_gncInvoiceAutoApplyPayments, METH_VARARGS, (char *)"gncInvoiceAutoApplyPayments(GncInvoice * invoice)"},

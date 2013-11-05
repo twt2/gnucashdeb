@@ -683,7 +683,7 @@ gnc_dialog_post_invoice(InvoiceWindow *iw, char *message,
     invoice = iw_get_invoice (iw);
     if (!invoice)
         return FALSE;
-        
+
     ddue_label = _("Due Date");
     post_label = _("Post Date");
     acct_label = _("Post to Account");
@@ -726,7 +726,7 @@ gnc_dialog_post_invoice(InvoiceWindow *iw, char *message,
     owner_inst = qofOwnerGetOwner (gncOwnerGetEndOwner (&(iw->owner)));
     kvpf = qof_instance_get_slots (owner_inst);
     *acc = xaccAccountLookup (kvp_frame_get_guid (kvpf, LAST_POSTED_TO_ACCT),
-                             iw->book);
+                              iw->book);
 
     /* Get the default for the accumulate option */
     *accumulate = gnc_prefs_get_bool(GNC_PREFS_GROUP_INVOICE, GNC_PREF_ACCUM_SPLITS);
@@ -736,11 +736,11 @@ gnc_dialog_post_invoice(InvoiceWindow *iw, char *message,
             acct_types, acct_commodities, iw->book, iw->terms,
             ddue, postdate, memo, acc, accumulate))
         return FALSE;
-    
+
     return TRUE;
 }
 
-struct post_invoice_params 
+struct post_invoice_params
 {
     Timespec ddue;          /* Due date */
     Timespec postdate;      /* Date posted */
@@ -763,8 +763,7 @@ gnc_invoice_post(InvoiceWindow *iw, struct post_invoice_params *post_params)
     const char *text;
     EntryList *entries, *entries_iter;
     GncEntry* entry;
-    gboolean is_cust_doc;
-    gboolean is_cn;
+    gboolean is_cust_doc, is_cn, auto_pay;
     gboolean show_dialog = TRUE;
     gboolean post_ok = TRUE;
 
@@ -931,7 +930,12 @@ gnc_invoice_post(InvoiceWindow *iw, struct post_invoice_params *post_params)
     qof_commit_edit (owner_inst);
 
     /* ... post it ... */
-    gncInvoicePostToAccount (invoice, acc, &postdate, &ddue, memo, accumulate);
+    if (is_cust_doc)
+        auto_pay = gnc_prefs_get_bool (GNC_PREFS_GROUP_INVOICE, GNC_PREF_AUTO_PAY);
+    else
+        auto_pay = gnc_prefs_get_bool (GNC_PREFS_GROUP_BILL, GNC_PREF_AUTO_PAY);
+
+    gncInvoicePostToAccount (invoice, acc, &postdate, &ddue, memo, accumulate, auto_pay);
 
 cleanup:
     gncInvoiceCommitEdit (invoice);
@@ -1746,7 +1750,7 @@ gnc_invoice_update_window (InvoiceWindow *iw, GtkWidget *widget)
         if (timespec_equal (&ts, &ts_zero))
         {
             gnc_date_edit_set_time (GNC_DATE_EDIT (iw->opened_date),
-				    gnc_time (NULL));
+                                    gnc_time (NULL));
         }
         else
         {
@@ -1786,8 +1790,8 @@ gnc_invoice_update_window (InvoiceWindow *iw, GtkWidget *widget)
 
     gnc_invoice_id_changed_cb(NULL, iw);
     if (iw->dialog_type == NEW_INVOICE ||
-        iw->dialog_type == DUP_INVOICE ||
-        iw->dialog_type == MOD_INVOICE)
+            iw->dialog_type == DUP_INVOICE ||
+            iw->dialog_type == MOD_INVOICE)
     {
         if (widget)
             gtk_widget_show (widget);
@@ -2786,10 +2790,10 @@ multi_post_invoice_cb (GList *invoice_list, gpointer user_data)
 {
     struct post_invoice_params post_params;
     InvoiceWindow *iw;
-    
+
     if (g_list_length(invoice_list) == 0)
         return;
-        
+
     // Get the posting parameters for these invoices
     iw = gnc_ui_invoice_edit(invoice_list->data);
     if (!gnc_dialog_post_invoice(iw, _("Do you really want to post these invoices?"),
@@ -3139,6 +3143,8 @@ gnc_invoice_show_bills_due (QofBook *book, double days_in_advance)
     /* Create the param list (in reverse order) */
     if (param_list == NULL)
     {
+        param_list = gnc_search_param_prepend (param_list, _("CN?"), NULL, type,
+                                               INVOICE_IS_CN, NULL);
         param_list = gnc_search_param_prepend (param_list, _("Amount"), NULL, type,
                                                INVOICE_POST_LOT, LOT_BALANCE, NULL);
         param_list = gnc_search_param_prepend (param_list, _("Company"), NULL, type,
@@ -3157,7 +3163,7 @@ gnc_invoice_show_bills_due (QofBook *book, double days_in_advance)
      * AND  invoice -> lot -> is_closed? == FALSE
      * AND  invoice -> type != customer invoice
      * AND  invoice -> type != customer credit note
-     * AND  invoice -> due >= (today - days_in_advance)
+     * AND  invoice -> due <= (today + days_in_advance)
      */
 
     qof_query_add_boolean_match (q, g_slist_prepend(NULL, INVOICE_IS_POSTED), TRUE,
@@ -3198,7 +3204,7 @@ gnc_invoice_show_bills_due (QofBook *book, double days_in_advance)
                            len),
                   len);
     dialog = gnc_dialog_query_view_create(param_list, q,
-                                        _("Due Bills Reminder"),
+                                          _("Due Bills Reminder"),
                                           message,
                                           TRUE, FALSE,
                                           1, GTK_SORT_ASCENDING,
