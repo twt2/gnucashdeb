@@ -101,7 +101,7 @@ License: GPL-3+
 
 Files: 
  src/doc/design/gnucash-design.info
- src/doc/design/gnucash-design.texinfo
+ src/doc/design/gnucash-design.texi
 Copyright: 2000 Gnumatic Incorporated
 License: GFDL-NIV-1.1
 Comment: 
