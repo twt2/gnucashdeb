@@ -152,8 +152,9 @@ am_libgncmod_gnome_utils_la_OBJECTS = account-quickfill.lo \
 	gnc-tree-view-owner.lo gnc-tree-view-price.lo \
 	gnc-tree-view-split-reg.lo gnc-tree-view-sx-list.lo \
 	gnc-tree-view.lo gnc-warnings.lo gnc-window.lo \
-	gncmod-gnome-utils.lo misc-gnome-utils.lo search-param.lo \
-	print-session.lo swig-gnome-utils.lo window-main-summarybar.lo
+	gncmod-gnome-utils.lo misc-gnome-utils.lo tree-view-utils.lo \
+	search-param.lo print-session.lo swig-gnome-utils.lo \
+	window-main-summarybar.lo
 libgncmod_gnome_utils_la_OBJECTS =  \
 	$(am_libgncmod_gnome_utils_la_OBJECTS)
 libgncmod_gnome_utils_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -287,6 +288,7 @@ GNC_LIBEXECDIR = @GNC_LIBEXECDIR@
 GNC_PIXMAP_DIR = @GNC_PIXMAP_DIR@
 GNC_SCM_INSTALL_DIR = @GNC_SCM_INSTALL_DIR@
 GNC_SHAREDIR = @GNC_SHAREDIR@
+GNC_SYSTEM_XDG_DATA_DIRS = @GNC_SYSTEM_XDG_DATA_DIRS@
 GNC_UI_DIR = @GNC_UI_DIR@
 GNOMECANVAS_CFLAGS = @GNOMECANVAS_CFLAGS@
 GNOMECANVAS_LIBS = @GNOMECANVAS_LIBS@
@@ -408,6 +410,7 @@ VERSION = @VERSION@
 WEBKIT_CFLAGS = @WEBKIT_CFLAGS@
 WEBKIT_LIBS = @WEBKIT_LIBS@
 XGETTEXT = @XGETTEXT@
+XSLTPROC = @XSLTPROC@
 ZLIB_LIBS = @ZLIB_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -564,6 +567,7 @@ libgncmod_gnome_utils_la_SOURCES = \
   gnc-window.c \
   gncmod-gnome-utils.c \
   misc-gnome-utils.c \
+  tree-view-utils.c \
   search-param.c \
   print-session.c \
   swig-gnome-utils.c \
@@ -642,6 +646,7 @@ gncinclude_HEADERS = \
   gnc-ui.h \
   gnc-window.h \
   misc-gnome-utils.h \
+  tree-view-utils.h \
   print-session.h \
   window-main-summarybar.h
 
@@ -843,6 +848,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/print-session.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/search-param.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swig-gnome-utils.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tree-view-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/window-main-summarybar.Plo@am__quote@
 
 .c.o:
@@ -1262,10 +1268,10 @@ uninstall-am: uninstall-gncincludeHEADERS uninstall-gncmodDATA \
 
 
 gnc-warnings.c: gschemas/org.gnucash.warnings.gschema.xml.in make-gnc-warnings-c.xsl
-	xsltproc -o $@ $(srcdir)/make-gnc-warnings-c.xsl $<
+	$(XSLTPROC) -o $@ $(srcdir)/make-gnc-warnings-c.xsl $<
 
 gnc-warnings.h: gschemas/org.gnucash.warnings.gschema.xml.in make-gnc-warnings-h.xsl
-	xsltproc -o $@ $(srcdir)/make-gnc-warnings-h.xsl $<
+	$(XSLTPROC) -o $@ $(srcdir)/make-gnc-warnings-h.xsl $<
 
 @BUILDING_FROM_SCM_TRUE@swig-gnome-utils.c: gnome-utils.i \
 @BUILDING_FROM_SCM_TRUE@                    ${top_srcdir}/src/base-typemaps.i

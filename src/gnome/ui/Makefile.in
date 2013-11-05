@@ -174,6 +174,7 @@ GNC_LIBEXECDIR = @GNC_LIBEXECDIR@
 GNC_PIXMAP_DIR = @GNC_PIXMAP_DIR@
 GNC_SCM_INSTALL_DIR = @GNC_SCM_INSTALL_DIR@
 GNC_SHAREDIR = @GNC_SHAREDIR@
+GNC_SYSTEM_XDG_DATA_DIRS = @GNC_SYSTEM_XDG_DATA_DIRS@
 GNC_UI_DIR = @GNC_UI_DIR@
 GNOMECANVAS_CFLAGS = @GNOMECANVAS_CFLAGS@
 GNOMECANVAS_LIBS = @GNOMECANVAS_LIBS@
@@ -295,6 +296,7 @@ VERSION = @VERSION@
 WEBKIT_CFLAGS = @WEBKIT_CFLAGS@
 WEBKIT_LIBS = @WEBKIT_LIBS@
 XGETTEXT = @XGETTEXT@
+XSLTPROC = @XSLTPROC@
 ZLIB_LIBS = @ZLIB_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -371,9 +373,11 @@ ui_DATA = \
 	gnc-plugin-file-history-ui.xml \
 	gnc-plugin-register-ui.xml \
 	gnc-plugin-register2-ui.xml \
+	gnc-plugin-register22-ui.xml \
 	gnc-plugin-page-register-ui.xml \
 	gnc-plugin-page-register2-ui.xml \
         gnc-plugin-page-sx-list-ui.xml \
+        gnc-plugin-page-sx-list2-ui.xml \
 	gnc-plugin-page-sxregister-ui.xml \
 	gnc-sxed-to-create-window-ui.xml \
 	gnc-reconcile-window-ui.xml \

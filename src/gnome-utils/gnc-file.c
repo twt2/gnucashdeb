@@ -47,6 +47,7 @@
 #include "qof.h"
 #include "TransLog.h"
 #include "gnc-session.h"
+#include "gnc-state.h"
 #include "gnc-autosave.h"
 
 
@@ -530,6 +531,7 @@ gnc_file_new (void)
         gnc_hook_run(HOOK_BOOK_CLOSED, session);
 
         gnc_close_gui_component_by_session (session);
+        gnc_state_save (session);
         gnc_clear_current_session();
         qof_event_resume ();
     }
@@ -701,11 +703,15 @@ RESTART:
 
     /* -------------- BEGIN CORE SESSION CODE ------------- */
     /* -- this code is almost identical in FileOpen and FileSaveAs -- */
-    current_session = gnc_get_current_session();
-    qof_session_call_close_hooks(current_session);
-    gnc_hook_run(HOOK_BOOK_CLOSED, current_session);
-    gnc_close_gui_component_by_session (current_session);
-    gnc_clear_current_session();
+    if (gnc_current_session_exist())
+    {
+        current_session = gnc_get_current_session();
+        qof_session_call_close_hooks(current_session);
+        gnc_hook_run(HOOK_BOOK_CLOSED, current_session);
+        gnc_close_gui_component_by_session (current_session);
+        gnc_state_save (current_session);
+        gnc_clear_current_session();
+    }
 
     /* load the accounts from the users datafile */
     /* but first, check to make sure we've got a session going. */
@@ -1554,6 +1560,7 @@ gnc_file_quit (void)
     qof_session_call_close_hooks(session);
     gnc_hook_run(HOOK_BOOK_CLOSED, session);
     gnc_close_gui_component_by_session (session);
+    gnc_state_save (session);
     gnc_clear_current_session();
 
     qof_event_resume ();

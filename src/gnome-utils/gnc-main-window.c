@@ -57,12 +57,12 @@
 #include "gnc-gui-query.h"
 #include "gnc-hooks.h"
 #include "gnc-session.h"
+#include "gnc-state.h"
 #include "gnc-ui.h"
 #include "gnc-ui-util.h"
 #include "gnc-uri-utils.h"
 #include "core-utils/gnc-version.h"
 #include "gnc-window.h"
-#include "gnc-prefs.h"
 #include "gnc-prefs.h"
 #include "option-util.h"
 // +JSLED
@@ -100,6 +100,8 @@ enum
 #define GNC_PREF_TAB_POSITION_RIGHT   "tab-position-right"
 #define GNC_PREF_TAB_WIDTH            "tab-width"
 #define GNC_PREF_TAB_COLOR            "show-account-color-tabs"
+#define GNC_PREF_SAVE_CLOSE_EXPIRES   "save-on-close-expires"
+#define GNC_PREF_SAVE_CLOSE_WAIT_TIME "save-on-close-wait-time"
 
 #define GNC_MAIN_WINDOW_NAME "GncMainWindow"
 
@@ -115,6 +117,11 @@ static GQuark window_type = 0;
 /** A list of all extant main windows. This is for convenience as the
  *  same information can be obtained from the object tracking code. */
 static GList *active_windows = NULL;
+/** Count down timer for the save changes dialog. If the timer reaches zero
+ *  any changes will be saved and the save dialog closed automatically */
+static guint secs_to_save = 0;
+
+#define MSG_AUTO_SAVE _("Changes will be saved automatically in %d seconds")
 
 /* Declarations *********************************************************/
 static void gnc_main_window_class_init (GncMainWindowClass *klass);
@@ -1121,6 +1128,38 @@ gnc_main_window_page_exists (GncPluginPage *page)
     return FALSE;
 }
 
+static gboolean auto_save_countdown (GtkWidget *dialog)
+{
+    GtkWidget *label;
+    gchar *timeoutstr = NULL;
+
+    /* Stop count down if user closed the dialog since the last time we were called */
+    if (!GTK_IS_DIALOG (dialog))
+        return FALSE; /* remove timer */
+
+    /* Stop count down if count down text can't be updated */
+    label = GTK_WIDGET (g_object_get_data (G_OBJECT (dialog), "count-down-label"));
+    if (!GTK_IS_LABEL (label))
+        return FALSE; /* remove timer */
+
+    secs_to_save--;
+    DEBUG ("Counting down: %d seconds", secs_to_save);
+
+    timeoutstr = g_strdup_printf (MSG_AUTO_SAVE, secs_to_save);
+    gtk_label_set_text (GTK_LABEL (label), timeoutstr);
+    g_free (timeoutstr);
+
+    /* Count down reached 0. Save and close dialog */
+    if (!secs_to_save)
+    {
+        gtk_dialog_response (GTK_DIALOG(dialog), GTK_RESPONSE_APPLY);
+        return FALSE; /* remove timer */
+    }
+
+    /* Run another cycle */
+    return TRUE;
+}
+
 
 /** This function prompts the user to save the file with a dialog that
  *  follows the HIG guidelines.
@@ -1136,7 +1175,7 @@ gnc_main_window_prompt_for_save (GtkWidget *window)
 {
     QofSession *session;
     QofBook *book;
-    GtkWidget *dialog;
+    GtkWidget *dialog, *msg_area, *label;
     gint response;
     const gchar *filename, *tmp;
     const gchar *title = _("Save changes to file %s before closing?");
@@ -1194,6 +1233,28 @@ gnc_main_window_prompt_for_save (GtkWidget *window)
                            GTK_STOCK_SAVE, GTK_RESPONSE_APPLY,
                            NULL);
     gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_APPLY);
+
+    /* If requested by the user, add a timeout to the question to save automatically
+     * if the user doesn't answer after a chosen number of seconds.
+     */
+    if (gnc_prefs_get_bool (GNC_PREFS_GROUP_GENERAL, GNC_PREF_SAVE_CLOSE_EXPIRES))
+    {
+        gchar *timeoutstr = NULL;
+
+        secs_to_save = gnc_prefs_get_int (GNC_PREFS_GROUP_GENERAL, GNC_PREF_SAVE_CLOSE_WAIT_TIME);
+        timeoutstr = g_strdup_printf (MSG_AUTO_SAVE, secs_to_save);
+        label = GTK_WIDGET(gtk_label_new (timeoutstr));
+        g_free (timeoutstr);
+        gtk_widget_show (label);
+
+        msg_area = gtk_message_dialog_get_message_area (GTK_MESSAGE_DIALOG(dialog));
+        gtk_box_pack_end (GTK_BOX(msg_area), label, TRUE, TRUE, 0);
+        g_object_set (G_OBJECT (label), "xalign", 0.0, NULL);
+
+        g_object_set_data (G_OBJECT (dialog), "count-down-label", label);
+        g_timeout_add_seconds (1, (GSourceFunc)auto_save_countdown, dialog);
+    }
+
     response = gtk_dialog_run (GTK_DIALOG (dialog));
     gtk_widget_destroy(dialog);
 
@@ -1447,7 +1508,7 @@ gnc_main_window_generate_title (GncMainWindow *window)
     }
     /* Update the menus based upon whether this is an "immutable" page. */
     immutable = page &&
-        g_object_get_data (G_OBJECT (page), PLUGIN_PAGE_IMMUTABLE);
+                g_object_get_data (G_OBJECT (page), PLUGIN_PAGE_IMMUTABLE);
     gnc_plugin_update_actions(priv->action_group,
                               immutable_page_actions,
                               "sensitive", !immutable);
@@ -1529,7 +1590,9 @@ static gboolean statusbar_notification_off(gpointer user_data_unused)
         GtkWidget *statusbar = gnc_main_window_get_statusbar(GNC_WINDOW(mainwindow));
         gtk_statusbar_remove(GTK_STATUSBAR(statusbar), 0, gnc_statusbar_notification_messageid);
         gnc_statusbar_notification_messageid = 0;
-    } else {
+    }
+    else
+    {
         g_warning("oops, no GncMainWindow obtained\n");
     }
     return FALSE; // should not be called again
@@ -1576,9 +1639,9 @@ static gchar *generate_statusbar_lastmodified_message()
                     that has the a.m. or p.m. string in its locale, second
                     string is for locales that do not have that string. */
                     gchar *time_string =
-                            g_date_time_format (gdt, (strlen(dummy_strftime_has_ampm) > 0)
-                                                ? _("Last modified on %a, %b %e, %Y at %I:%M%P")
-                                                : _("Last modified on %a, %b %e, %Y at %H:%M"));
+                        g_date_time_format (gdt, (strlen(dummy_strftime_has_ampm) > 0)
+                                            ? _("Last modified on %a, %b %e, %Y at %I:%M%P")
+                                            : _("Last modified on %a, %b %e, %Y at %H:%M"));
 
                     g_date_time_unref (gdt);
 
@@ -1614,7 +1677,7 @@ statusbar_notification_lastmodified()
     GList *iter;
     GtkWidget *widget = NULL;
     for (iter = active_windows; iter && !(widget && GNC_IS_MAIN_WINDOW(widget));
-         iter = g_list_next(iter))
+            iter = g_list_next(iter))
     {
         widget = iter->data;
     }
@@ -1636,7 +1699,9 @@ statusbar_notification_lastmodified()
         // notification again after 10 seconds
         g_timeout_add(10 * 1000, statusbar_notification_off, NULL); // maybe not needed anyway?
 #endif
-    } else {
+    }
+    else
+    {
         g_warning("uh oh, no GNC_IS_MAIN_WINDOW\n");
     }
 }
@@ -3558,7 +3623,7 @@ gnc_main_window_setup_window (GncMainWindow *window)
                            GNC_PREF_TAB_POSITION_RIGHT,
                            gnc_main_window_update_tab_position,
                            window);
-    //gnc_main_window_update_tab_position(NULL, NULL, window);
+    gnc_main_window_update_tab_position(NULL, NULL, window);
 
     gnc_main_window_init_menu_updaters(window);
 
@@ -3647,11 +3712,6 @@ gnc_quartz_set_menu(GncMainWindow* window)
         gtk_widget_hide (GTK_WIDGET (item));
 
     item = gtk_ui_manager_get_widget (window->ui_merge,
-                                      "/menubar/Edit/EditPreferences");
-    if (GTK_IS_MENU_ITEM (item))
-        gtkosx_application_insert_app_menu_item (theApp, GTK_WIDGET (item), 0);
-
-    item = gtk_ui_manager_get_widget (window->ui_merge,
                                       "/menubar/Help/HelpAbout");
     if (GTK_IS_MENU_ITEM (item))
     {
@@ -3660,6 +3720,11 @@ gnc_quartz_set_menu(GncMainWindow* window)
                 0);
         gtkosx_application_insert_app_menu_item (theApp, GTK_WIDGET (item), 0);
     }
+
+    item = gtk_ui_manager_get_widget (window->ui_merge,
+                                      "/menubar/Edit/EditPreferences");
+    if (GTK_IS_MENU_ITEM (item))
+        gtkosx_application_insert_app_menu_item (theApp, GTK_WIDGET (item), 0);
 
     item = gtk_ui_manager_get_widget (window->ui_merge,
                                       "/menubar/Help");
@@ -3868,7 +3933,7 @@ gnc_main_window_cmd_page_setup (GtkAction *action,
 
 static void
 gnc_book_options_dialog_apply_cb(GNCOptionWin * optionwin,
-                            gpointer user_data)
+                                 gpointer user_data)
 {
     GNCOptionDB * options = user_data;
     kvp_frame *slots = qof_book_get_slots (gnc_get_current_book ());
@@ -3889,7 +3954,7 @@ gnc_book_options_dialog_apply_cb(GNCOptionWin * optionwin,
 
 static void
 gnc_book_options_dialog_close_cb(GNCOptionWin * optionwin,
-                            gpointer user_data)
+                                 gpointer user_data)
 {
     GNCOptionDB * options = user_data;
 
@@ -3909,7 +3974,7 @@ gnc_book_options_dialog_cb (gboolean modal, gchar *title)
     gnc_option_db_clean (options);
 
     optionwin = gnc_options_dialog_new_modal (modal,
-                                                (title ? title : _( "Book Options")));
+                (title ? title : _( "Book Options")));
     gnc_options_dialog_build_contents (optionwin, options);
 
     gnc_options_dialog_set_book_options_help_cb (optionwin);

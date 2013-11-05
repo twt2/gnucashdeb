@@ -76,7 +76,8 @@ host_triplet = @host@
 subdir = src/app-utils
 DIST_COMMON = README $(gncinclude_HEADERS) $(noinst_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(top_srcdir)/depcomp $(top_srcdir)/mkinstalldirs
+	$(srcdir)/migratable-prefs.xml.in $(top_srcdir)/depcomp \
+	$(top_srcdir)/mkinstalldirs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/macros/ac_pkg_swig.m4 \
 	$(top_srcdir)/macros/ac_python_devel.m4 \
@@ -94,7 +95,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = migratable-prefs.xml
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -159,7 +160,7 @@ am__libgncmod_app_utils_la_SOURCES_DIST =  \
 	gnc-component-manager.c gnc-entry-quickfill.c gnc-euro.c \
 	gnc-exp-parser.c gnc-gettext-util.c gnc-gsettings.c \
 	gnc-helpers.c gnc-prefs-utils.c gnc-sx-instance-model.c \
-	gncmod-app-utils.c gnc-ui-balances.c gnc-ui-util.c \
+	gnc-state.c gncmod-app-utils.c gnc-ui-balances.c gnc-ui-util.c \
 	guile-util.c option-util.c gnc-help-utils.c
 @OS_WIN32_TRUE@am__objects_1 = gnc-help-utils.lo
 am_libgncmod_app_utils_la_OBJECTS = expression_parser.lo fin.lo \
@@ -169,7 +170,7 @@ am_libgncmod_app_utils_la_OBJECTS = expression_parser.lo fin.lo \
 	gnc-addr-quickfill.lo gnc-component-manager.lo \
 	gnc-entry-quickfill.lo gnc-euro.lo gnc-exp-parser.lo \
 	gnc-gettext-util.lo gnc-gsettings.lo gnc-helpers.lo \
-	gnc-prefs-utils.lo gnc-sx-instance-model.lo \
+	gnc-prefs-utils.lo gnc-sx-instance-model.lo gnc-state.lo \
 	gncmod-app-utils.lo gnc-ui-balances.lo gnc-ui-util.lo \
 	guile-util.lo option-util.lo $(am__objects_1)
 libgncmod_app_utils_la_OBJECTS = $(am_libgncmod_app_utils_la_OBJECTS)
@@ -307,6 +308,7 @@ GNC_LIBEXECDIR = @GNC_LIBEXECDIR@
 GNC_PIXMAP_DIR = @GNC_PIXMAP_DIR@
 GNC_SCM_INSTALL_DIR = @GNC_SCM_INSTALL_DIR@
 GNC_SHAREDIR = @GNC_SHAREDIR@
+GNC_SYSTEM_XDG_DATA_DIRS = @GNC_SYSTEM_XDG_DATA_DIRS@
 GNC_UI_DIR = @GNC_UI_DIR@
 GNOMECANVAS_CFLAGS = @GNOMECANVAS_CFLAGS@
 GNOMECANVAS_LIBS = @GNOMECANVAS_LIBS@
@@ -428,6 +430,7 @@ VERSION = @VERSION@
 WEBKIT_CFLAGS = @WEBKIT_CFLAGS@
 WEBKIT_LIBS = @WEBKIT_LIBS@
 XGETTEXT = @XGETTEXT@
+XSLTPROC = @XSLTPROC@
 ZLIB_LIBS = @ZLIB_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -511,9 +514,9 @@ libgncmod_app_utils_la_SOURCES = calculation/expression_parser.c \
 	gnc-addr-quickfill.c gnc-component-manager.c \
 	gnc-entry-quickfill.c gnc-euro.c gnc-exp-parser.c \
 	gnc-gettext-util.c gnc-gsettings.c gnc-helpers.c \
-	gnc-prefs-utils.c gnc-sx-instance-model.c gncmod-app-utils.c \
-	gnc-ui-balances.c gnc-ui-util.c guile-util.c option-util.c \
-	$(am__append_2)
+	gnc-prefs-utils.c gnc-sx-instance-model.c gnc-state.c \
+	gncmod-app-utils.c gnc-ui-balances.c gnc-ui-util.c \
+	guile-util.c option-util.c $(am__append_2)
 gncincludedir = ${GNC_INCLUDE_DIR}
 gncinclude_HEADERS = \
   QuickFill.h \
@@ -535,6 +538,7 @@ gncinclude_HEADERS = \
   gnc-helpers.h \
   gnc-prefs-utils.h \
   gnc-sx-instance-model.h \
+  gnc-state.h \
   gnc-ui-balances.h \
   gnc-ui-util.h \
   guile-util.h \
@@ -630,6 +634,8 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+migratable-prefs.xml: $(top_builddir)/config.status $(srcdir)/migratable-prefs.xml.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-pkglibLTLIBRARIES: $(pkglib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
 	@list='$(pkglib_LTLIBRARIES)'; test -n "$(pkglibdir)" || list=; \
@@ -694,6 +700,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-help-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-helpers.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-prefs-utils.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-state.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-sx-instance-model.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-ui-balances.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-ui-util.Plo@am__quote@

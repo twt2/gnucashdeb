@@ -68,7 +68,7 @@
 static QofLogModule log_module = GNC_MOD_BUDGET;
 
 #define PLUGIN_PAGE_BUDGET_CM_CLASS "budget-view"
-#define STATE_SECTION_PREFIX "window/pages/budget"
+#define STATE_SECTION_PREFIX "Budget"
 
 typedef struct GncBudgetViewPrivate GncBudgetViewPrivate;
 
@@ -82,7 +82,8 @@ struct _GncBudgetViewClass
     GtkVBoxClass w;
 };
 
-enum {
+enum
+{
     TOTALS_TYPE_INCOME,
     TOTALS_TYPE_EXPENSES,
     TOTALS_TYPE_TRANSFERS,
@@ -112,7 +113,7 @@ static void gbv_selection_changed_cb(
 #endif
 static void gbv_treeview_resized_cb(GtkWidget* widget, GtkAllocation* allocation, GncBudgetView* view);
 static gnc_numeric gbv_get_accumulated_budget_amount(GncBudget* budget,
-                                       Account* account, guint period_num);
+        Account* account, guint period_num);
 
 struct GncBudgetViewPrivate
 {
@@ -268,37 +269,6 @@ gnc_budget_view_get_selected_accounts(GncBudgetView* view)
     return gnc_tree_view_account_get_selected_accounts(GNC_TREE_VIEW_ACCOUNT(priv->tree_view));
 }
 
-#if 0
-static void
-gnc_plugin_page_budget_refresh_cb(GHashTable *changes, gpointer user_data)
-{
-    GncBudgetView *view;
-    GncBudgetViewPrivate *priv;
-    const EventInfo* ei;
-
-    view = GNC_BUDGET_VIEW(user_data);
-    priv = GNC_BUDGET_VIEW_GET_PRIVATE(view);
-    if (changes)
-    {
-        ei = gnc_gui_get_entity_events(changes, &priv->key);
-        if (ei)
-        {
-            if (ei->event_mask & QOF_EVENT_DESTROY)
-            {
-                gnc_plugin_page_budget_close_cb(user_data);
-                return;
-            }
-            if (ei->event_mask & QOF_EVENT_MODIFY)
-            {
-                DEBUG("refreshing budget view because budget was modified");
-                gnc_budget_view_refresh(view);
-            }
-        }
-    }
-}
-#endif
-
-
 /****************************
  * GncPluginPage Functions  *
  ***************************/
@@ -344,7 +314,7 @@ gbv_create_widget(GncBudgetView *view)
     tree_view = gnc_tree_view_account_new(FALSE);
     gtk_container_add(GTK_CONTAINER(inner_scrolled_window), GTK_WIDGET(tree_view));
 
-    state_section = g_strjoin("/", STATE_SECTION_PREFIX, guid_to_string(&priv->key), NULL);
+    state_section = g_strjoin(" ", STATE_SECTION_PREFIX, guid_to_string(&priv->key), NULL);
     g_object_set(G_OBJECT(tree_view), "state-section", state_section, NULL);
     g_free (state_section);
 
@@ -520,7 +490,8 @@ gnc_budget_view_delete_budget(GncBudgetView *view)
 
     ENTER("view %p", view);
 
-    gnc_tree_view_remove_state_information (GNC_TREE_VIEW (view));
+    priv = GNC_BUDGET_VIEW_GET_PRIVATE (view);
+    gnc_tree_view_remove_state_information (GNC_TREE_VIEW (priv->tree_view));
 
     LEAVE(" ");
 }
@@ -539,7 +510,7 @@ gnc_budget_view_delete_budget(GncBudgetView *view)
  **********************************************************************/
 static gboolean
 gbv_button_press_cb(GtkWidget *widget, GdkEventButton *event,
-                     GncBudgetView *view)
+                    GncBudgetView *view)
 {
     gboolean result;
 
@@ -774,7 +745,7 @@ bgv_get_total_for_account(Account* account, GncBudget* budget)
             if (gnc_account_n_children(account) != 0)
             {
                 numeric = gbv_get_accumulated_budget_amount(budget, account, period_num);
-		total = gnc_numeric_add(total, numeric, GNC_DENOM_AUTO, GNC_HOW_DENOM_LCD);
+                total = gnc_numeric_add(total, numeric, GNC_DENOM_AUTO, GNC_HOW_DENOM_LCD);
             }
         }
         else
@@ -782,7 +753,7 @@ bgv_get_total_for_account(Account* account, GncBudget* budget)
             numeric = gnc_budget_get_account_period_value(budget, account, period_num);
             if (!gnc_numeric_check(numeric))
             {
-		total = gnc_numeric_add(total, numeric, GNC_DENOM_AUTO, GNC_HOW_DENOM_LCD);
+                total = gnc_numeric_add(total, numeric, GNC_DENOM_AUTO, GNC_HOW_DENOM_LCD);
             }
         }
     }
@@ -895,7 +866,7 @@ totals_col_source(GtkTreeViewColumn *col, GtkCellRenderer *cell,
             assets = bgv_get_total_for_account(priv->assets, budget);
             liabilities = bgv_get_total_for_account(priv->liabilities, budget);
         }
-	value = gnc_numeric_sub(assets, liabilities, GNC_DENOM_AUTO, GNC_HOW_DENOM_LCD);
+        value = gnc_numeric_sub(assets, liabilities, GNC_DENOM_AUTO, GNC_HOW_DENOM_LCD);
         xaccSPrintAmount(amtbuff, value,
                          gnc_account_print_info(priv->assets, FALSE));
         g_object_set(cell, "foreground", "black", NULL);
@@ -921,9 +892,9 @@ totals_col_source(GtkTreeViewColumn *col, GtkCellRenderer *cell,
             assets = bgv_get_total_for_account(priv->assets, budget);
             liabilities = bgv_get_total_for_account(priv->liabilities, budget);
         }
-	value = gnc_numeric_sub(income, expenses, GNC_DENOM_AUTO, GNC_HOW_DENOM_LCD);
-	value = gnc_numeric_sub(value, assets, GNC_DENOM_AUTO, GNC_HOW_DENOM_LCD);
-	value = gnc_numeric_add(value, liabilities, GNC_DENOM_AUTO, GNC_HOW_DENOM_LCD);
+        value = gnc_numeric_sub(income, expenses, GNC_DENOM_AUTO, GNC_HOW_DENOM_LCD);
+        value = gnc_numeric_sub(value, assets, GNC_DENOM_AUTO, GNC_HOW_DENOM_LCD);
+        value = gnc_numeric_add(value, liabilities, GNC_DENOM_AUTO, GNC_HOW_DENOM_LCD);
         xaccSPrintAmount(amtbuff, value,
                          gnc_account_print_info(priv->assets, FALSE));
         if (gnc_numeric_negative_p(value))
@@ -1048,6 +1019,19 @@ gnc_budget_view_refresh(GncBudgetView *view)
 
     gnc_tree_view_configure_columns(GNC_TREE_VIEW(priv->tree_view));
 
+    /* If we're creating new columns to be appended to already existing
+     * columns, first delete the total column. (Then regenerate after
+     * new columns have been appended */
+    if (num_periods_visible != 0 && num_periods > num_periods_visible)
+    {
+        /* Delete the totals column */
+        col = priv->total_col;
+        gtk_tree_view_remove_column(GTK_TREE_VIEW(priv->tree_view), col);
+        priv->total_col = NULL;
+        col = gtk_tree_view_get_column(GTK_TREE_VIEW(priv->totals_tree_view), num_periods_visible+1);
+        gtk_tree_view_remove_column(GTK_TREE_VIEW(priv->totals_tree_view), col);
+    }
+
     /* Create any needed columns */
     while (num_periods_visible < num_periods)
     {
@@ -1092,7 +1076,7 @@ gnc_budget_view_refresh(GncBudgetView *view)
         col = gbv_create_totals_column(view, -1);
         if (col != NULL)
         {
-           gtk_tree_view_append_column(priv->totals_tree_view, col);
+            gtk_tree_view_append_column(priv->totals_tree_view, col);
         }
     }
 

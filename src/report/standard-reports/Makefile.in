@@ -241,6 +241,7 @@ GNC_LIBEXECDIR = @GNC_LIBEXECDIR@
 GNC_PIXMAP_DIR = @GNC_PIXMAP_DIR@
 GNC_SCM_INSTALL_DIR = @GNC_SCM_INSTALL_DIR@
 GNC_SHAREDIR = @GNC_SHAREDIR@
+GNC_SYSTEM_XDG_DATA_DIRS = @GNC_SYSTEM_XDG_DATA_DIRS@
 GNC_UI_DIR = @GNC_UI_DIR@
 GNOMECANVAS_CFLAGS = @GNOMECANVAS_CFLAGS@
 GNOMECANVAS_LIBS = @GNOMECANVAS_LIBS@
@@ -362,6 +363,7 @@ VERSION = @VERSION@
 WEBKIT_CFLAGS = @WEBKIT_CFLAGS@
 WEBKIT_LIBS = @WEBKIT_LIBS@
 XGETTEXT = @XGETTEXT@
+XSLTPROC = @XSLTPROC@
 ZLIB_LIBS = @ZLIB_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -463,14 +465,14 @@ gncscmreportmod_DATA = \
    equity-statement.scm \
    general-journal.scm \
    general-ledger.scm \
-	 income-statement.scm \
-	 net-barchart.scm \
+   income-statement.scm \
+   net-barchart.scm \
    net-linechart.scm \
-	 portfolio.scm \
+   portfolio.scm \
    price-scatter.scm \
    register.scm \
    sx-summary.scm \
-	 trial-balance.scm \
+   trial-balance.scm \
    transaction.scm
 
 
