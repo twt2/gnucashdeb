@@ -293,7 +293,6 @@ GTK_MAC_LIBS = @GTK_MAC_LIBS@
 GUILE = @GUILE@
 GUILE_CFLAGS = @GUILE_CFLAGS@
 GUILE_CONFIG = @GUILE_CONFIG@
-GUILE_INCS = @GUILE_INCS@
 GUILE_LIBS = @GUILE_LIBS@
 GUILE_TOOLS = @GUILE_TOOLS@
 GWENGUI_GTK2_CFLAGS = @GWENGUI_GTK2_CFLAGS@
@@ -581,7 +580,7 @@ AM_CPPFLAGS = -I${top_srcdir}/src -I${top_builddir}/src \
 	-I${top_srcdir}/src/report/report-system \
 	-I${top_srcdir}/src/report/report-gnome \
 	-I${top_srcdir}/lib/libc -I${top_srcdir}/src/libqof/qof \
-	${LIBXML2_CFLAGS} ${GUILE_INCS} ${GTK_CFLAGS} $(GLIB_CFLAGS) \
+	${LIBXML2_CFLAGS} ${GUILE_CFLAGS} ${GTK_CFLAGS} $(GLIB_CFLAGS) \
 	${GTK_MAC_CFLAGS} -DG_LOG_DOMAIN=\"gnc.gui\"
 
 # We build this in an earlier directory.

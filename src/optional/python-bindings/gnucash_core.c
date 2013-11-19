@@ -11267,6 +11267,39 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_xaccTransSetAssociation(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Transaction *arg1 = (Transaction *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:xaccTransSetAssociation",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Transaction, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccTransSetAssociation" "', argument " "1"" of type '" "Transaction *""'"); 
+  }
+  arg1 = (Transaction *)(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "xaccTransSetAssociation" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  xaccTransSetAssociation(arg1,(char const *)arg2);
+  resultobj = SWIG_Py_Void();
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_xaccTransSetNotes(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   Transaction *arg1 = (Transaction *) 0 ;
@@ -11337,6 +11370,28 @@ SWIGINTERN PyObject *_wrap_xaccTransGetDescription(PyObject *SWIGUNUSEDPARM(self
   }
   arg1 = (Transaction *)(argp1);
   result = (char *)xaccTransGetDescription((Transaction const *)arg1);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_xaccTransGetAssociation(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Transaction *arg1 = (Transaction *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:xaccTransGetAssociation",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Transaction, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccTransGetAssociation" "', argument " "1"" of type '" "Transaction const *""'"); 
+  }
+  arg1 = (Transaction *)(argp1);
+  result = (char *)xaccTransGetAssociation((Transaction const *)arg1);
   resultobj = SWIG_FromCharPtr((const char *)result);
   return resultobj;
 fail:
@@ -31400,6 +31455,27 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_gncInvoiceRemoveEntries(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GncInvoice *arg1 = (GncInvoice *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:gncInvoiceRemoveEntries",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__gncInvoice, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncInvoiceRemoveEntries" "', argument " "1"" of type '" "GncInvoice *""'"); 
+  }
+  arg1 = (GncInvoice *)(argp1);
+  gncInvoiceRemoveEntries(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_gncInvoiceGetID(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GncInvoice *arg1 = (GncInvoice *) 0 ;
@@ -40186,9 +40262,11 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"xaccTransGetTxnType", _wrap_xaccTransGetTxnType, METH_VARARGS, (char *)"xaccTransGetTxnType(Transaction const * trans) -> char"},
 	 { (char *)"xaccTransSetNum", _wrap_xaccTransSetNum, METH_VARARGS, (char *)"xaccTransSetNum(Transaction * trans, char const * num)"},
 	 { (char *)"xaccTransSetDescription", _wrap_xaccTransSetDescription, METH_VARARGS, (char *)"xaccTransSetDescription(Transaction * trans, char const * desc)"},
+	 { (char *)"xaccTransSetAssociation", _wrap_xaccTransSetAssociation, METH_VARARGS, (char *)"xaccTransSetAssociation(Transaction * trans, char const * assoc)"},
 	 { (char *)"xaccTransSetNotes", _wrap_xaccTransSetNotes, METH_VARARGS, (char *)"xaccTransSetNotes(Transaction * trans, char const * notes)"},
 	 { (char *)"xaccTransGetNum", _wrap_xaccTransGetNum, METH_VARARGS, (char *)"xaccTransGetNum(Transaction const * trans) -> char const *"},
 	 { (char *)"xaccTransGetDescription", _wrap_xaccTransGetDescription, METH_VARARGS, (char *)"xaccTransGetDescription(Transaction const * trans) -> char const *"},
+	 { (char *)"xaccTransGetAssociation", _wrap_xaccTransGetAssociation, METH_VARARGS, (char *)"xaccTransGetAssociation(Transaction const * trans) -> char const *"},
 	 { (char *)"xaccTransGetNotes", _wrap_xaccTransGetNotes, METH_VARARGS, (char *)"xaccTransGetNotes(Transaction const * trans) -> char const *"},
 	 { (char *)"xaccTransSetIsClosingTxn", _wrap_xaccTransSetIsClosingTxn, METH_VARARGS, (char *)"xaccTransSetIsClosingTxn(Transaction * trans, gboolean is_closing)"},
 	 { (char *)"xaccTransGetIsClosingTxn", _wrap_xaccTransGetIsClosingTxn, METH_VARARGS, (char *)"xaccTransGetIsClosingTxn(Transaction const * trans) -> gboolean"},
@@ -40791,6 +40869,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gncBillAddEntry", _wrap_gncBillAddEntry, METH_VARARGS, (char *)"gncBillAddEntry(GncInvoice * bill, GncEntry * entry)"},
 	 { (char *)"gncBillRemoveEntry", _wrap_gncBillRemoveEntry, METH_VARARGS, (char *)"gncBillRemoveEntry(GncInvoice * bill, GncEntry * entry)"},
 	 { (char *)"gncInvoiceSortEntries", _wrap_gncInvoiceSortEntries, METH_VARARGS, (char *)"gncInvoiceSortEntries(GncInvoice * invoice)"},
+	 { (char *)"gncInvoiceRemoveEntries", _wrap_gncInvoiceRemoveEntries, METH_VARARGS, (char *)"gncInvoiceRemoveEntries(GncInvoice * invoice)"},
 	 { (char *)"gncInvoiceGetID", _wrap_gncInvoiceGetID, METH_VARARGS, (char *)"gncInvoiceGetID(GncInvoice const * invoice) -> char const *"},
 	 { (char *)"gncInvoiceGetOwner", _wrap_gncInvoiceGetOwner, METH_VARARGS, (char *)"gncInvoiceGetOwner(GncInvoice const * invoice) -> GncOwner const *"},
 	 { (char *)"gncInvoiceGetDateOpened", _wrap_gncInvoiceGetDateOpened, METH_VARARGS, (char *)"gncInvoiceGetDateOpened(GncInvoice const * invoice) -> Timespec"},
@@ -42292,6 +42371,7 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, "TRANS_IS_BALANCED",SWIG_FromCharPtr("trans-balanced?"));
   SWIG_Python_SetConstant(d, "TRANS_IS_CLOSING",SWIG_FromCharPtr("trans-is-closing?"));
   SWIG_Python_SetConstant(d, "TRANS_NOTES",SWIG_FromCharPtr("notes"));
+  SWIG_Python_SetConstant(d, "TRANS_ASSOCIATION",SWIG_FromCharPtr("assoc"));
   SWIG_Python_SetConstant(d, "TRANS_TYPE",SWIG_FromCharPtr("type"));
   SWIG_Python_SetConstant(d, "TRANS_VOID_STATUS",SWIG_FromCharPtr("void-p"));
   SWIG_Python_SetConstant(d, "TRANS_VOID_REASON",SWIG_FromCharPtr("void-reason"));

@@ -1,5 +1,5 @@
 
-(define gnc:version "2.5.7")
+(define gnc:version "2.5.8")
 
 ;; Automatically generated defaults (don't use these directly --
 ;; they're used during actual initialization elsewhere)

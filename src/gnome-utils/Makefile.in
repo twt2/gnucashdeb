@@ -312,7 +312,6 @@ GTK_MAC_LIBS = @GTK_MAC_LIBS@
 GUILE = @GUILE@
 GUILE_CFLAGS = @GUILE_CFLAGS@
 GUILE_CONFIG = @GUILE_CONFIG@
-GUILE_INCS = @GUILE_INCS@
 GUILE_LIBS = @GUILE_LIBS@
 GUILE_TOOLS = @GUILE_TOOLS@
 GWENGUI_GTK2_CFLAGS = @GWENGUI_GTK2_CFLAGS@
@@ -486,8 +485,8 @@ AM_CPPFLAGS = -I${top_srcdir}/src/core-utils \
 	-I${top_srcdir}/src -I${top_builddir}/src \
 	-I${top_srcdir}/lib/libc -I${top_srcdir}/src/libqof/qof \
 	${GLIB_CFLAGS} ${GTK_CFLAGS} ${GNOME_KEYRING_CFLAGS} \
-	${GUILE_INCS} ${QOF_CFLAGS} ${LIBGDA_CFLAGS} ${LIBXML2_CFLAGS} \
-	${GTK_MAC_CFLAGS} -DG_LOG_DOMAIN=\"gnc.gui\"
+	${GUILE_CFLAGS} ${QOF_CFLAGS} ${LIBGDA_CFLAGS} \
+	${LIBXML2_CFLAGS} ${GTK_MAC_CFLAGS} -DG_LOG_DOMAIN=\"gnc.gui\"
 libgncmod_gnome_utils_la_SOURCES = \
   account-quickfill.c \
   assistant-utils.c \

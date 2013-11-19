@@ -12,8 +12,8 @@ END-INFO-DIR-ENTRY
 
    Copyright 2000 Gnumatic Incorporated
 
-   This is Edition 2.5.7, last updated 2 November 2013, of the `GnuCash
-Design Document', version 2.5.7.
+   This is Edition 2.5.8, last updated 16 November 2013, of the
+`GnuCash Design Document', version 2.5.8.
 
    Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1 or
@@ -29,8 +29,8 @@ File: gnucash-design.info,  Node: Top,  Next: GNU Free Documentation License,  P
 GnuCash Design Document
 ***********************
 
-This is Edition 2.5.7, last updated 2 November 2013, of the `GnuCash
-Design Document', version 2.5.7.
+This is Edition 2.5.8, last updated 16 November 2013, of the `GnuCash
+Design Document', version 2.5.8.
 
 * Menu:
 
@@ -4925,99 +4925,99 @@ Concept Index
 
 
 Tag Table:
-Node: Top866
-Node: GNU Free Documentation License3229
-Node: Introduction21930
-Node: Top Level23717
-Node: Engine30891
-Node: Engine Introduction32370
-Node: Using and Extending the Engine API35572
-Ref: Using and Extending the Engine API-Footnote-136794
-Node: Globally Unique Identifiers36900
-Node: When to use GUIDs38888
-Node: GUID Types39638
-Node: How to use GUIDs40573
-Node: GUIDs and GnuCash Entities43878
-Node: The GUID Generator45248
-Node: Numeric Library46315
-Node: Standard Numeric Arguments48102
-Node: Creating Numeric Objects52763
-Node: Basic Arithmetic Operations53398
-Node: Numeric Comparisons and Predicates55867
-Node: Numeric Denominator Conversion57495
-Node: Numeric Floating Point Conversion58491
-Node: Numeric String Conversion59087
-Node: Numeric Error Handling59714
-Node: Numeric Example60760
-Node: Key-Value Pair Frames62433
-Node: Key-Value Policy63558
-Node: kvp_frame65386
-Node: kvp_value68812
-Node: kvp_list71439
-Node: Events72915
-Node: Event API73414
-Node: Commodities75167
-Node: General Commodity API76829
-Node: Commodity Getters77702
-Node: Commodity Setters78769
-Node: Commodity Tables79651
-Node: General Commodity Table API80096
-Node: Commodity Table Access API80815
-Node: Commodity Table Modification API82670
-Node: Prices84113
-Node: Price Implementation Details85365
-Node: General Price API86758
-Node: Price Getters87801
-Node: Price Setters88691
-Node: Price Databases89991
-Node: Price Lists90296
-Node: General Price Database API91225
-Node: Splits92237
-Node: General Split API94109
-Node: Split Getters95420
-Node: Split Setters98766
-Node: Transactions100833
-Node: General Transaction API103103
-Node: Transaction Getters105796
-Node: Transaction Setters107314
-Node: Accounts108683
-Node: Account Types110916
-Node: General Account API112227
-Node: Account Type API114174
-Node: Account Getters115578
-Node: Account Tax API120879
-Node: Account Groups122415
-Node: General Account Group API123171
-Node: Account Group Account API124813
-Node: GNCBooks126999
-Node: GNCBook API128028
-Node: Scrub131857
-Node: Component Manager131953
-Node: Component Manager Introduction133255
-Node: Refresh Mechanism135428
-Node: CM Initialization and Shutdown137720
-Node: Refresh Handlers138246
-Node: Close Handlers142014
-Node: Registering and Unregistering Components142732
-Node: Watching Engine Objects144555
-Node: Controlling Refreshes145662
-Node: Finding Components147104
-Node: Iterating over Components148497
-Node: Register149590
-Node: Cells150785
-Node: BasicCell151907
-Node: Cellblocks153052
-Node: Table153728
-Node: Split Register155503
-Node: Reports156826
-Node: Creating a Report157715
-Node: User Preferences159338
-Node: Option Databases160513
-Node: Option Types161318
-Node: Option Creation163214
-Node: Option Values170574
-Node: Function Index171269
-Node: Data Type Index201405
-Node: Concept Index203531
+Node: Top867
+Node: GNU Free Documentation License3231
+Node: Introduction21932
+Node: Top Level23719
+Node: Engine30893
+Node: Engine Introduction32372
+Node: Using and Extending the Engine API35574
+Ref: Using and Extending the Engine API-Footnote-136796
+Node: Globally Unique Identifiers36902
+Node: When to use GUIDs38890
+Node: GUID Types39640
+Node: How to use GUIDs40575
+Node: GUIDs and GnuCash Entities43880
+Node: The GUID Generator45250
+Node: Numeric Library46317
+Node: Standard Numeric Arguments48104
+Node: Creating Numeric Objects52765
+Node: Basic Arithmetic Operations53400
+Node: Numeric Comparisons and Predicates55869
+Node: Numeric Denominator Conversion57497
+Node: Numeric Floating Point Conversion58493
+Node: Numeric String Conversion59089
+Node: Numeric Error Handling59716
+Node: Numeric Example60762
+Node: Key-Value Pair Frames62435
+Node: Key-Value Policy63560
+Node: kvp_frame65388
+Node: kvp_value68814
+Node: kvp_list71441
+Node: Events72917
+Node: Event API73416
+Node: Commodities75169
+Node: General Commodity API76831
+Node: Commodity Getters77704
+Node: Commodity Setters78771
+Node: Commodity Tables79653
+Node: General Commodity Table API80098
+Node: Commodity Table Access API80817
+Node: Commodity Table Modification API82672
+Node: Prices84115
+Node: Price Implementation Details85367
+Node: General Price API86760
+Node: Price Getters87803
+Node: Price Setters88693
+Node: Price Databases89993
+Node: Price Lists90298
+Node: General Price Database API91227
+Node: Splits92239
+Node: General Split API94111
+Node: Split Getters95422
+Node: Split Setters98768
+Node: Transactions100835
+Node: General Transaction API103105
+Node: Transaction Getters105798
+Node: Transaction Setters107316
+Node: Accounts108685
+Node: Account Types110918
+Node: General Account API112229
+Node: Account Type API114176
+Node: Account Getters115580
+Node: Account Tax API120881
+Node: Account Groups122417
+Node: General Account Group API123173
+Node: Account Group Account API124815
+Node: GNCBooks127001
+Node: GNCBook API128030
+Node: Scrub131859
+Node: Component Manager131955
+Node: Component Manager Introduction133257
+Node: Refresh Mechanism135430
+Node: CM Initialization and Shutdown137722
+Node: Refresh Handlers138248
+Node: Close Handlers142016
+Node: Registering and Unregistering Components142734
+Node: Watching Engine Objects144557
+Node: Controlling Refreshes145664
+Node: Finding Components147106
+Node: Iterating over Components148499
+Node: Register149592
+Node: Cells150787
+Node: BasicCell151909
+Node: Cellblocks153054
+Node: Table153730
+Node: Split Register155505
+Node: Reports156828
+Node: Creating a Report157717
+Node: User Preferences159340
+Node: Option Databases160515
+Node: Option Types161320
+Node: Option Creation163216
+Node: Option Values170576
+Node: Function Index171271
+Node: Data Type Index201407
+Node: Concept Index203533
 
 End Tag Table

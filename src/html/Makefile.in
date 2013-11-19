@@ -273,7 +273,6 @@ GTK_MAC_LIBS = @GTK_MAC_LIBS@
 GUILE = @GUILE@
 GUILE_CFLAGS = @GUILE_CFLAGS@
 GUILE_CONFIG = @GUILE_CONFIG@
-GUILE_INCS = @GUILE_INCS@
 GUILE_LIBS = @GUILE_LIBS@
 GUILE_TOOLS = @GUILE_TOOLS@
 GWENGUI_GTK2_CFLAGS = @GWENGUI_GTK2_CFLAGS@
@@ -446,7 +445,7 @@ AM_CPPFLAGS = -I${top_srcdir}/src/core-utils \
 	-I${top_srcdir}/src/gnome-utils -I${top_srcdir}/src/app-utils \
 	-I${top_srcdir}/src -I${top_builddir}/src \
 	-I${top_srcdir}/lib/libc ${QOF_CFLAGS} ${GLIB_CFLAGS} \
-	${GUILE_INCS} ${GTK_CFLAGS} ${GNOME_CFLAGS} ${WEBKIT_CFLAGS} \
+	${GUILE_CFLAGS} ${GTK_CFLAGS} ${GNOME_CFLAGS} ${WEBKIT_CFLAGS} \
 	-DG_LOG_DOMAIN=\"gnc.html\"
 libgncmod_html_la_SOURCES = \
   gncmod-html.c \

@@ -279,7 +279,6 @@ GTK_MAC_LIBS = @GTK_MAC_LIBS@
 GUILE = @GUILE@
 GUILE_CFLAGS = @GUILE_CFLAGS@
 GUILE_CONFIG = @GUILE_CONFIG@
-GUILE_INCS = @GUILE_INCS@
 GUILE_LIBS = @GUILE_LIBS@
 GUILE_TOOLS = @GUILE_TOOLS@
 GWENGUI_GTK2_CFLAGS = @GWENGUI_GTK2_CFLAGS@
@@ -451,7 +450,7 @@ AM_CPPFLAGS = -I${top_srcdir}/src -I${top_builddir}/src \
 	-I${top_srcdir}/src/gnome-utils -I${top_srcdir}/src/gnome \
 	-I${top_srcdir}/src/html \
 	-I${top_srcdir}/src/report/report-system \
-	-I${top_srcdir}/src/libqof/qof ${GUILE_INCS} ${GTK_CFLAGS} \
+	-I${top_srcdir}/src/libqof/qof ${GUILE_CFLAGS} ${GTK_CFLAGS} \
 	${GLIB_CFLAGS} -DG_LOG_DOMAIN=\"gnc.report.gui\"
 libgncmod_report_gnome_la_SOURCES = \
   swig-report-gnome.c \

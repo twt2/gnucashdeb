@@ -198,7 +198,7 @@ TESTS_ENVIRONMENT = \
   GNC_TEST_FILES=test-files/xml2 \
   SRCDIR=${srcdir} \
   GNC_BUILDDIR=`\cd ${top_builddir} && pwd` \
-  $(shell ${top_srcdir}/src/gnc-test-env --no-exports ${GNC_TEST_DEPS})
+  $(shell ${top_builddir}/src/gnc-test-env --no-exports ${GNC_TEST_DEPS})
 
 check_LTLIBRARIES = libgnc-test-file-stuff.la
 
@@ -247,7 +247,7 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/libqof/qof \
   ${LIBXML2_CFLAGS} \
   ${GLIB_CFLAGS} \
-  ${GUILE_INCS}
+  ${GUILE_CFLAGS}
 
 EXTRA_DIST = \
   grab-types.pl \

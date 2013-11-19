@@ -274,7 +274,6 @@ GTK_MAC_LIBS = @GTK_MAC_LIBS@
 GUILE = @GUILE@
 GUILE_CFLAGS = @GUILE_CFLAGS@
 GUILE_CONFIG = @GUILE_CONFIG@
-GUILE_INCS = @GUILE_INCS@
 GUILE_LIBS = @GUILE_LIBS@
 GUILE_TOOLS = @GUILE_TOOLS@
 GWENGUI_GTK2_CFLAGS = @GWENGUI_GTK2_CFLAGS@
@@ -460,7 +459,7 @@ libgncmod_report_system_la_LIBADD = \
 
 AM_CPPFLAGS = -I${top_srcdir}/src -I${top_srcdir}/src/core-utils \
 	-I${top_srcdir}/src/gnc-module -I${top_srcdir}/src/app-utils \
-	${GLIB_CFLAGS} ${GTK_CFLAGS} ${GUILE_INCS} \
+	${GLIB_CFLAGS} ${GTK_CFLAGS} ${GUILE_CFLAGS} \
 	-DG_LOG_DOMAIN=\"gnc.report.core\"
 gncscmdir = ${GNC_SHAREDIR}/scm
 gncscm_DATA = \

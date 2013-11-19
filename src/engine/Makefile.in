@@ -56,7 +56,8 @@ host_triplet = @host@
 subdir = src/engine
 DIST_COMMON = README $(gncinclude_HEADERS) $(noinst_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(top_srcdir)/depcomp $(top_srcdir)/mkinstalldirs
+	$(srcdir)/iso-currencies-to-c.in $(top_srcdir)/depcomp \
+	$(top_srcdir)/mkinstalldirs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/macros/ac_pkg_swig.m4 \
 	$(top_srcdir)/macros/ac_python_devel.m4 \
@@ -74,7 +75,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = iso-currencies-to-c
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -281,7 +282,6 @@ GTK_MAC_LIBS = @GTK_MAC_LIBS@
 GUILE = @GUILE@
 GUILE_CFLAGS = @GUILE_CFLAGS@
 GUILE_CONFIG = @GUILE_CONFIG@
-GUILE_INCS = @GUILE_INCS@
 GUILE_LIBS = @GUILE_LIBS@
 GUILE_TOOLS = @GUILE_TOOLS@
 GWENGUI_GTK2_CFLAGS = @GWENGUI_GTK2_CFLAGS@
@@ -450,7 +450,7 @@ pkglib_LTLIBRARIES = libgncmod-engine.la
 AM_CPPFLAGS = -I${top_srcdir}/lib/libc -I${top_srcdir}/src/core-utils \
 	-I${top_srcdir}/src -I${top_builddir}/src \
 	-I${top_srcdir}/src/gnc-module -I${top_srcdir}/src/libqof/qof \
-	${GLIB_CFLAGS} ${GUILE_INCS} -DG_LOG_DOMAIN=\"gnc.engine\"
+	${GLIB_CFLAGS} ${GUILE_CFLAGS} -DG_LOG_DOMAIN=\"gnc.engine\"
 libgncmod_engine_la_SOURCES = \
   Account.c \
   Recurrence.c \
@@ -655,6 +655,8 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+iso-currencies-to-c: $(top_builddir)/config.status $(srcdir)/iso-currencies-to-c.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-pkglibLTLIBRARIES: $(pkglib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
 	@list='$(pkglib_LTLIBRARIES)'; test -n "$(pkglibdir)" || list=; \
@@ -1171,8 +1173,8 @@ uninstall-am: uninstall-gncincludeHEADERS uninstall-gncmodDATA \
 @BUILDING_FROM_SCM_TRUE@	-I${top_srcdir}/src/libqof/qof -I${top_srcdir}/src -o $@ $<
 
 iso-4217-currencies.c: iso-4217-currencies.scm iso-currencies-to-c
-	-chmod u+x ${srcdir}/iso-currencies-to-c
-	${srcdir}/iso-currencies-to-c "${srcdir}"
+	-chmod u+x ./iso-currencies-to-c
+	./iso-currencies-to-c "${srcdir}"
 
 clean-local:
 	rm -rf gnucash

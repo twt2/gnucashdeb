@@ -288,7 +288,6 @@ GTK_MAC_LIBS = @GTK_MAC_LIBS@
 GUILE = @GUILE@
 GUILE_CFLAGS = @GUILE_CFLAGS@
 GUILE_CONFIG = @GUILE_CONFIG@
-GUILE_INCS = @GUILE_INCS@
 GUILE_LIBS = @GUILE_LIBS@
 GUILE_TOOLS = @GUILE_TOOLS@
 GWENGUI_GTK2_CFLAGS = @GWENGUI_GTK2_CFLAGS@
@@ -465,7 +464,7 @@ AM_CPPFLAGS = -I${top_srcdir}/src -I${top_builddir}/src \
 	-I${top_srcdir}/src/register/register-gnome \
 	-I${top_srcdir}/src/register/ledger-core \
 	-I${top_srcdir}/src/libqof/qof ${GTK_CFLAGS} ${GLIB_CFLAGS} \
-	${GUILE_INCS} -DG_LOG_DOMAIN=\"gnc.business.gnome\"
+	${GUILE_CFLAGS} -DG_LOG_DOMAIN=\"gnc.business.gnome\"
 libgncmod_business_gnome_la_SOURCES = \
   business-options-gnome.c \
   business-urls.c \
