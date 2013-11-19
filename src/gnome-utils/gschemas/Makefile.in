@@ -51,6 +51,8 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = src/gnome-utils/gschemas
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+	$(srcdir)/org.gnucash.history.gschema.xml.in.in \
+	$(srcdir)/org.gnucash.warnings.gschema.xml.in.in \
 	$(top_srcdir)/mkinstalldirs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/macros/ac_pkg_swig.m4 \
@@ -69,7 +71,8 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = org.gnucash.history.gschema.xml.in \
+	org.gnucash.warnings.gschema.xml.in
 CONFIG_CLEAN_VPATH_FILES =
 SOURCES =
 DIST_SOURCES =
@@ -168,7 +171,6 @@ GTK_MAC_LIBS = @GTK_MAC_LIBS@
 GUILE = @GUILE@
 GUILE_CFLAGS = @GUILE_CFLAGS@
 GUILE_CONFIG = @GUILE_CONFIG@
-GUILE_INCS = @GUILE_INCS@
 GUILE_LIBS = @GUILE_LIBS@
 GUILE_TOOLS = @GUILE_TOOLS@
 GWENGUI_GTK2_CFLAGS = @GWENGUI_GTK2_CFLAGS@
@@ -337,7 +339,6 @@ gschema_in_files = \
   org.gnucash.warnings.gschema.xml.in
 
 gsettings_SCHEMAS = $(gschema_in_files:.gschema.xml.in=.gschema.xml)
-EXTRA_DIST = $(gschema_in_files)
 CLEANFILES = $(gsettings_SCHEMAS)
 all: all-am
 
@@ -372,6 +373,10 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+org.gnucash.history.gschema.xml.in: $(top_builddir)/config.status $(srcdir)/org.gnucash.history.gschema.xml.in.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+org.gnucash.warnings.gschema.xml.in: $(top_builddir)/config.status $(srcdir)/org.gnucash.warnings.gschema.xml.in.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -532,8 +537,6 @@ uninstall-am:
 	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am
 
 @INTLTOOL_XML_NOMERGE_RULE@
-
-#GLIB_COMPILE_SCHEMAS = glib-compile-schemas --allow-any-name
 
 @GSETTINGS_RULES@
 

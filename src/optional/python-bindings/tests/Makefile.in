@@ -172,7 +172,6 @@ GTK_MAC_LIBS = @GTK_MAC_LIBS@
 GUILE = @GUILE@
 GUILE_CFLAGS = @GUILE_CFLAGS@
 GUILE_CONFIG = @GUILE_CONFIG@
-GUILE_INCS = @GUILE_INCS@
 GUILE_LIBS = @GUILE_LIBS@
 GUILE_TOOLS = @GUILE_TOOLS@
 GWENGUI_GTK2_CFLAGS = @GWENGUI_GTK2_CFLAGS@
@@ -336,18 +335,36 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+GNC_TEST_DEPS = --gnc-module-dir ${top_builddir}/src/engine \
+  --gnc-module-dir ${top_builddir}/src/app-utils \
+  --guile-load-dir ${top_builddir}/src/core-utils \
+  --guile-load-dir ${top_builddir}/src/gnc-module \
+  --guile-load-dir ${top_builddir}/src/engine \
+  --guile-load-dir ${top_builddir}/src/scm \
+  --guile-load-dir ${top_builddir}/src/app-utils \
+  --library-dir    ${top_builddir}/src/libqof/qof \
+  --library-dir    ${top_builddir}/src/core-utils \
+  --library-dir    ${top_builddir}/src/gnc-module \
+  --library-dir    ${top_builddir}/src/engine \
+  --library-dir    ${top_builddir}/src/backend/xml \
+  --library-dir    ${top_builddir}/src/backend/sql \
+  --library-dir    ${top_builddir}/src/app-utils
+
 TESTS_ENVIRONMENT = \
   GNC_BUILDDIR=`\cd ${top_builddir} && pwd` \
+  PYTHON=${PYTHON} \
   PYTHONPATH=$(PYTHONPATH):$(top_builddir)/src/optional/python-bindings \
   PYTHONPATH=$$PYTHONPATH:$(top_builddir)/src/optional/python-bindings/.libs \
+  PYTHONPATH=$(PYTHONPATH):$(top_srcdir)/src/optional/python-bindings/tests \
   PYTHONPATH=$$PYTHONPATH:$(top_builddir)/src/test-core/ \
   PYTHONPATH=$$PYTHONPATH:$(top_srcdir)/src/test-core/ \
   PYTHONPATH=$$PYTHONPATH:$(top_builddir)/src/test-core/.libs \
-  $(top_builddir)/src/bin/overrides/gnucash-build-env $(PYTHON)
+  $(shell $(top_builddir)/src/gnc-test-env --no-exports ${GNC_TEST_DEPS})
 
+CLEANFILES = runTests.py
 TESTS = runTests.py
 EXTRA_DIST = \
-  runTests.py \
+  runTests.py.in \
   test_account.py \
   test_book.py \
   test_split.py \
@@ -552,6 +569,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -640,6 +658,13 @@ uninstall-am:
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	uninstall uninstall-am
 
+
+runTests.py: runTests.py.in ${top_builddir}/config.status Makefile
+	rm -f $@.tmp
+	sed < $< > $@.tmp \
+	    -e 's#@-PYTHON-@#${PYTHON}#'
+	mv $@.tmp $@
+	chmod u+x $@
 
 clean-local:
 	rm -f translog.*

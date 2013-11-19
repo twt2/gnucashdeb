@@ -268,7 +268,6 @@ GTK_MAC_LIBS = @GTK_MAC_LIBS@
 GUILE = @GUILE@
 GUILE_CFLAGS = @GUILE_CFLAGS@
 GUILE_CONFIG = @GUILE_CONFIG@
-GUILE_INCS = @GUILE_INCS@
 GUILE_LIBS = @GUILE_LIBS@
 GUILE_TOOLS = @GUILE_TOOLS@
 GWENGUI_GTK2_CFLAGS = @GWENGUI_GTK2_CFLAGS@
@@ -446,7 +445,7 @@ libgncmod_locale_reports_us_la_LIBADD = \
   ${GLIB_LIBS} 
 
 AM_CPPFLAGS = -I${top_srcdir}/src -I${top_srcdir}/src/gnc-module \
-	${GUILE_INCS} ${GLIB_CFLAGS} \
+	${GUILE_CFLAGS} ${GLIB_CFLAGS} \
 	-DG_LOG_DOMAIN=\"gnc.report.locale.us\"
 gncscmmoddir = ${GNC_SHAREDIR}/guile-modules/gnucash/report/locale-specific
 gncscmmod_DATA = us.scm de_DE.scm

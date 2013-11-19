@@ -332,7 +332,6 @@ GTK_MAC_LIBS = @GTK_MAC_LIBS@
 GUILE = @GUILE@
 GUILE_CFLAGS = @GUILE_CFLAGS@
 GUILE_CONFIG = @GUILE_CONFIG@
-GUILE_INCS = @GUILE_INCS@
 GUILE_LIBS = @GUILE_LIBS@
 GUILE_TOOLS = @GUILE_TOOLS@
 GWENGUI_GTK2_CFLAGS = @GWENGUI_GTK2_CFLAGS@
@@ -504,8 +503,8 @@ AM_CPPFLAGS = -Wno-error=deprecated-declarations \
 	-I${top_srcdir}/src/app-utils/calculation \
 	-I${top_srcdir}/src/core-utils -I${top_srcdir}/src/engine \
 	-I${top_srcdir}/src/libqof/qof -I${top_srcdir}/src/backend/xml \
-	${GUILE_INCS} ${PYTHON_CPPFLAGS} ${GLIB_CFLAGS} ${GTK_CFLAGS} \
-	${LIBXML2_CFLAGS} ${LIBXSLT_CFLAGS} \
+	${GUILE_CFLAGS} ${PYTHON_CPPFLAGS} ${GLIB_CFLAGS} \
+	${GTK_CFLAGS} ${LIBXML2_CFLAGS} ${LIBXSLT_CFLAGS} \
 	-DG_LOG_DOMAIN=\"gnc.app-utils\"
 libgncmod_app_utils_la_SOURCES = calculation/expression_parser.c \
 	calculation/fin.c swig-app-utils-guile.c business-helpers.c \

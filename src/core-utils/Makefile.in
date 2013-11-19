@@ -278,7 +278,6 @@ GTK_MAC_LIBS = @GTK_MAC_LIBS@
 GUILE = @GUILE@
 GUILE_CFLAGS = @GUILE_CFLAGS@
 GUILE_CONFIG = @GUILE_CONFIG@
-GUILE_INCS = @GUILE_INCS@
 GUILE_LIBS = @GUILE_LIBS@
 GUILE_TOOLS = @GUILE_TOOLS@
 GWENGUI_GTK2_CFLAGS = @GWENGUI_GTK2_CFLAGS@
@@ -481,7 +480,7 @@ noinst_HEADERS = \
   gnc-path.h \
   gnc-uri-utils.h
 
-AM_CPPFLAGS = ${GUILE_INCS} ${GLIB_CFLAGS} ${GTK_MAC_CFLAGS} \
+AM_CPPFLAGS = ${GUILE_CFLAGS} ${GLIB_CFLAGS} ${GTK_MAC_CFLAGS} \
 	${QOF_CFLAGS} -I${top_srcdir}/src/libqof/qof \
 	-I${top_builddir}/src -I${top_srcdir}/src \
 	-DG_LOG_DOMAIN=\"gnc.core-utils\"

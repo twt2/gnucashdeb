@@ -199,7 +199,6 @@ GTK_MAC_LIBS = @GTK_MAC_LIBS@
 GUILE = @GUILE@
 GUILE_CFLAGS = @GUILE_CFLAGS@
 GUILE_CONFIG = @GUILE_CONFIG@
-GUILE_INCS = @GUILE_INCS@
 GUILE_LIBS = @GUILE_LIBS@
 GUILE_TOOLS = @GUILE_TOOLS@
 GWENGUI_GTK2_CFLAGS = @GWENGUI_GTK2_CFLAGS@
@@ -369,7 +368,7 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/test-core \
   -I${top_srcdir}/src/libqof/qof \
   -I${top_srcdir}/src/gnc-module \
-  ${GUILE_INCS} \
+  ${GUILE_CFLAGS} \
   ${GLIB_CFLAGS}
 
 LDADD = \
@@ -411,8 +410,9 @@ GNC_TEST_DEPS = --gnc-module-dir ${top_builddir}/src/engine \
 
 TESTS_ENVIRONMENT = \
   GUILE_WARN_DEPRECATED=no \
+  GUILE="${GUILE}" \
   GNC_BUILDDIR=`\cd ${top_builddir} && pwd` \
-  $(shell ${top_srcdir}/src/gnc-test-env --no-exports ${GNC_TEST_DEPS})
+  $(shell ${top_builddir}/src/gnc-test-env --no-exports ${GNC_TEST_DEPS})
 
 SCM_TEST_HELPERS = test-extras.scm
 EXTRA_DIST = \
@@ -821,7 +821,7 @@ uninstall-am:
 
 
 $(SCM_TESTS): %: $(srcdir)/%.scm Makefile .scm-links
-	echo 'guile --debug -l $(srcdir)/$*.scm -c "(exit (run-test))"' > $@
+	echo '${GUILE} --debug -l $(srcdir)/$*.scm -c "(exit (run-test))"' > $@
 	chmod a+x $@
 
 testit:

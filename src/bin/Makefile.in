@@ -277,7 +277,6 @@ GTK_MAC_LIBS = @GTK_MAC_LIBS@
 GUILE = @GUILE@
 GUILE_CFLAGS = @GUILE_CFLAGS@
 GUILE_CONFIG = @GUILE_CONFIG@
-GUILE_INCS = @GUILE_INCS@
 GUILE_LIBS = @GUILE_LIBS@
 GUILE_TOOLS = @GUILE_TOOLS@
 GWENGUI_GTK2_CFLAGS = @GWENGUI_GTK2_CFLAGS@
@@ -452,8 +451,8 @@ AM_CPPFLAGS = -I${top_builddir} ${GLIB_CFLAGS} ${GNOME_CFLAGS} \
 	-I${top_srcdir}/src/app-utils -I${top_srcdir}/src/gnome-utils \
 	-I${top_srcdir}/src/engine -I${top_srcdir}/src/gnome \
 	-I${top_builddir}/src -I${top_srcdir}/src/gnc-module \
-	-I${top_srcdir}/src/libqof/qof ${GUILE_INCS} ${GTK_MAC_CFLAGS} \
-	-DG_LOG_DOMAIN=\"gnc.bin\"
+	-I${top_srcdir}/src/libqof/qof ${GUILE_CFLAGS} \
+	${GTK_MAC_CFLAGS} -DG_LOG_DOMAIN=\"gnc.bin\"
 SUFFIXES = .rc
 config_DATA = environment
 configdir = ${GNC_CONFIGDIR}

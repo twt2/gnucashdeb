@@ -1125,6 +1125,10 @@ def xaccTransSetDescription(*args):
   """xaccTransSetDescription(Transaction * trans, char const * desc)"""
   return _gnucash_core_c.xaccTransSetDescription(*args)
 
+def xaccTransSetAssociation(*args):
+  """xaccTransSetAssociation(Transaction * trans, char const * assoc)"""
+  return _gnucash_core_c.xaccTransSetAssociation(*args)
+
 def xaccTransSetNotes(*args):
   """xaccTransSetNotes(Transaction * trans, char const * notes)"""
   return _gnucash_core_c.xaccTransSetNotes(*args)
@@ -1136,6 +1140,10 @@ def xaccTransGetNum(*args):
 def xaccTransGetDescription(*args):
   """xaccTransGetDescription(Transaction const * trans) -> char const *"""
   return _gnucash_core_c.xaccTransGetDescription(*args)
+
+def xaccTransGetAssociation(*args):
+  """xaccTransGetAssociation(Transaction const * trans) -> char const *"""
+  return _gnucash_core_c.xaccTransGetAssociation(*args)
 
 def xaccTransGetNotes(*args):
   """xaccTransGetNotes(Transaction const * trans) -> char const *"""
@@ -1361,6 +1369,7 @@ TRANS_IMBALANCE = _gnucash_core_c.TRANS_IMBALANCE
 TRANS_IS_BALANCED = _gnucash_core_c.TRANS_IS_BALANCED
 TRANS_IS_CLOSING = _gnucash_core_c.TRANS_IS_CLOSING
 TRANS_NOTES = _gnucash_core_c.TRANS_NOTES
+TRANS_ASSOCIATION = _gnucash_core_c.TRANS_ASSOCIATION
 TRANS_TYPE = _gnucash_core_c.TRANS_TYPE
 TRANS_VOID_STATUS = _gnucash_core_c.TRANS_VOID_STATUS
 TRANS_VOID_REASON = _gnucash_core_c.TRANS_VOID_REASON
@@ -3682,6 +3691,10 @@ def gncBillRemoveEntry(*args):
 def gncInvoiceSortEntries(*args):
   """gncInvoiceSortEntries(GncInvoice * invoice)"""
   return _gnucash_core_c.gncInvoiceSortEntries(*args)
+
+def gncInvoiceRemoveEntries(*args):
+  """gncInvoiceRemoveEntries(GncInvoice * invoice)"""
+  return _gnucash_core_c.gncInvoiceRemoveEntries(*args)
 
 def gncInvoiceGetID(*args):
   """gncInvoiceGetID(GncInvoice const * invoice) -> char const *"""

@@ -275,7 +275,6 @@ GTK_MAC_LIBS = @GTK_MAC_LIBS@
 GUILE = @GUILE@
 GUILE_CFLAGS = @GUILE_CFLAGS@
 GUILE_CONFIG = @GUILE_CONFIG@
-GUILE_INCS = @GUILE_INCS@
 GUILE_LIBS = @GUILE_LIBS@
 GUILE_TOOLS = @GUILE_TOOLS@
 GWENGUI_GTK2_CFLAGS = @GWENGUI_GTK2_CFLAGS@
@@ -493,7 +492,7 @@ gncinclude_HEADERS = \
 AM_CPPFLAGS = -I${top_srcdir}/src -I${top_srcdir}/src/engine \
 	-I${top_srcdir}/src/core-utils -I${top_srcdir}/src/app-utils \
 	-I${top_srcdir}/src/gnc-module -I${top_srcdir}/src/gnome-utils \
-	-I${top_srcdir}/src/libqof/qof ${GUILE_INCS} ${GTK_CFLAGS} \
+	-I${top_srcdir}/src/libqof/qof ${GUILE_CFLAGS} ${GTK_CFLAGS} \
 	${GLIB_CFLAGS} -DG_LOG_DOMAIN=\"gnc.register.core\"
 CLEANFILES = $(BUILT_SOURCES)
 all: all-recursive
