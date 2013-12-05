@@ -223,7 +223,9 @@ am_test_xml_account_OBJECTS = sixtp-dom-parsers.$(OBJEXT) \
 	gnc-recurrence-xml-v2.$(OBJEXT) gnc-freqspec-xml-v2.$(OBJEXT) \
 	gnc-transaction-xml-v2.$(OBJEXT) \
 	gnc-commodity-xml-v2.$(OBJEXT) gnc-book-xml-v2.$(OBJEXT) \
-	gnc-pricedb-xml-v2.$(OBJEXT) test-xml-account.$(OBJEXT)
+	gnc-pricedb-xml-v2.$(OBJEXT) gnc-budget-xml-v2.$(OBJEXT) \
+	io-gncxml-v2.$(OBJEXT) io-utils.$(OBJEXT) \
+	test-xml-account.$(OBJEXT)
 test_xml_account_OBJECTS = $(am_test_xml_account_OBJECTS)
 test_xml_account_LDADD = $(LDADD)
 test_xml_account_DEPENDENCIES =  \
@@ -244,7 +246,9 @@ am_test_xml_commodity_OBJECTS = sixtp-dom-parsers.$(OBJEXT) \
 	gnc-recurrence-xml-v2.$(OBJEXT) gnc-freqspec-xml-v2.$(OBJEXT) \
 	gnc-transaction-xml-v2.$(OBJEXT) \
 	gnc-commodity-xml-v2.$(OBJEXT) gnc-book-xml-v2.$(OBJEXT) \
-	gnc-pricedb-xml-v2.$(OBJEXT) test-xml-commodity.$(OBJEXT)
+	gnc-pricedb-xml-v2.$(OBJEXT) gnc-budget-xml-v2.$(OBJEXT) \
+	io-gncxml-v2.$(OBJEXT) io-utils.$(OBJEXT) \
+	test-xml-commodity.$(OBJEXT)
 test_xml_commodity_OBJECTS = $(am_test_xml_commodity_OBJECTS)
 test_xml_commodity_LDADD = $(LDADD)
 test_xml_commodity_DEPENDENCIES =  \
@@ -265,7 +269,9 @@ am_test_xml_pricedb_OBJECTS = sixtp-dom-parsers.$(OBJEXT) \
 	gnc-recurrence-xml-v2.$(OBJEXT) gnc-freqspec-xml-v2.$(OBJEXT) \
 	gnc-transaction-xml-v2.$(OBJEXT) \
 	gnc-commodity-xml-v2.$(OBJEXT) gnc-book-xml-v2.$(OBJEXT) \
-	gnc-pricedb-xml-v2.$(OBJEXT) test-xml-pricedb.$(OBJEXT)
+	gnc-pricedb-xml-v2.$(OBJEXT) gnc-budget-xml-v2.$(OBJEXT) \
+	io-gncxml-v2.$(OBJEXT) io-utils.$(OBJEXT) \
+	test-xml-pricedb.$(OBJEXT)
 test_xml_pricedb_OBJECTS = $(am_test_xml_pricedb_OBJECTS)
 test_xml_pricedb_LDADD = $(LDADD)
 test_xml_pricedb_DEPENDENCIES =  \
@@ -737,6 +743,9 @@ test_xml_account_SOURCES = \
   ${top_srcdir}/src/backend/xml/gnc-commodity-xml-v2.c \
   ${top_srcdir}/src/backend/xml/gnc-book-xml-v2.c \
   ${top_srcdir}/src/backend/xml/gnc-pricedb-xml-v2.c \
+  ${top_srcdir}/src/backend/xml/gnc-budget-xml-v2.c \
+  ${top_srcdir}/src/backend/xml/io-gncxml-v2.c \
+  ${top_srcdir}/src/backend/xml/io-utils.c \
   test-xml-account.c
 
 test_xml_commodity_SOURCES = \
@@ -756,6 +765,9 @@ test_xml_commodity_SOURCES = \
   ${top_srcdir}/src/backend/xml/gnc-commodity-xml-v2.c \
   ${top_srcdir}/src/backend/xml/gnc-book-xml-v2.c \
   ${top_srcdir}/src/backend/xml/gnc-pricedb-xml-v2.c \
+  ${top_srcdir}/src/backend/xml/gnc-budget-xml-v2.c \
+  ${top_srcdir}/src/backend/xml/io-gncxml-v2.c \
+  ${top_srcdir}/src/backend/xml/io-utils.c \
   test-xml-commodity.c
 
 test_xml_pricedb_SOURCES = \
@@ -775,6 +787,9 @@ test_xml_pricedb_SOURCES = \
   ${top_srcdir}/src/backend/xml/gnc-commodity-xml-v2.c \
   ${top_srcdir}/src/backend/xml/gnc-book-xml-v2.c \
   ${top_srcdir}/src/backend/xml/gnc-pricedb-xml-v2.c \
+  ${top_srcdir}/src/backend/xml/gnc-budget-xml-v2.c \
+  ${top_srcdir}/src/backend/xml/io-gncxml-v2.c \
+  ${top_srcdir}/src/backend/xml/io-utils.c \
   test-xml-pricedb.c
 
 test_xml_transaction_SOURCES = \

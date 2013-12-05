@@ -15,7 +15,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "â\x82£");
+    gnc_commodity_set_default_symbol(c, "â\x82£");
   }
 
   {
@@ -34,7 +34,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "â\x82§");
+    gnc_commodity_set_default_symbol(c, "â\x82§");
   }
 
   {
@@ -53,7 +53,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Dhs");
+    gnc_commodity_set_default_symbol(c, "Dhs");
   }
 
   {
@@ -72,7 +72,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -91,7 +91,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -110,7 +110,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -129,7 +129,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Õ¤Ö\x80.");
+    gnc_commodity_set_default_symbol(c, "Õ¤Ö\x80.");
   }
 
   {
@@ -148,7 +148,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "NAÆ\x92");
+    gnc_commodity_set_default_symbol(c, "NAÆ\x92");
   }
 
   {
@@ -167,7 +167,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Kz");
+    gnc_commodity_set_default_symbol(c, "Kz");
   }
 
   {
@@ -186,7 +186,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -205,7 +205,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -224,7 +224,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -243,7 +243,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -262,7 +262,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Ã¶S");
+    gnc_commodity_set_default_symbol(c, "Ã¶S");
   }
 
   {
@@ -281,7 +281,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "$");
+    gnc_commodity_set_default_symbol(c, "$");
   }
 
   {
@@ -300,7 +300,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Afl.");
+    gnc_commodity_set_default_symbol(c, "Afl.");
   }
 
   {
@@ -319,7 +319,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -338,7 +338,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "m");
+    gnc_commodity_set_default_symbol(c, "m");
   }
 
   {
@@ -357,7 +357,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -376,7 +376,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "KM");
+    gnc_commodity_set_default_symbol(c, "KM");
   }
 
   {
@@ -395,7 +395,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Bds$");
+    gnc_commodity_set_default_symbol(c, "Bds$");
   }
 
   {
@@ -414,7 +414,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "à§³");
+    gnc_commodity_set_default_symbol(c, "à§³");
   }
 
   {
@@ -433,7 +433,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "fr.");
+    gnc_commodity_set_default_symbol(c, "fr.");
   }
 
   {
@@ -452,7 +452,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -471,7 +471,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Ð»Ð²");
+    gnc_commodity_set_default_symbol(c, "Ð»Ð²");
   }
 
   {
@@ -490,7 +490,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "BD");
+    gnc_commodity_set_default_symbol(c, "BD");
   }
 
   {
@@ -509,7 +509,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "FBu");
+    gnc_commodity_set_default_symbol(c, "FBu");
   }
 
   {
@@ -528,7 +528,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "BD$");
+    gnc_commodity_set_default_symbol(c, "BD$");
   }
 
   {
@@ -547,7 +547,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "B$");
+    gnc_commodity_set_default_symbol(c, "B$");
   }
 
   {
@@ -566,7 +566,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Bs.");
+    gnc_commodity_set_default_symbol(c, "Bs.");
   }
 
   {
@@ -585,7 +585,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -604,7 +604,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -623,7 +623,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "R$");
+    gnc_commodity_set_default_symbol(c, "R$");
   }
 
   {
@@ -642,7 +642,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -661,7 +661,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "B$");
+    gnc_commodity_set_default_symbol(c, "B$");
   }
 
   {
@@ -680,7 +680,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Nu.");
+    gnc_commodity_set_default_symbol(c, "Nu.");
   }
 
   {
@@ -699,7 +699,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "P");
+    gnc_commodity_set_default_symbol(c, "P");
   }
 
   {
@@ -718,7 +718,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -737,7 +737,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Br");
+    gnc_commodity_set_default_symbol(c, "Br");
   }
 
   {
@@ -756,7 +756,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "BZ$");
+    gnc_commodity_set_default_symbol(c, "BZ$");
   }
 
   {
@@ -775,7 +775,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "C$");
+    gnc_commodity_set_default_symbol(c, "C$");
   }
 
   {
@@ -794,7 +794,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "FC");
+    gnc_commodity_set_default_symbol(c, "FC");
   }
 
   {
@@ -813,7 +813,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -832,7 +832,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "SFr.");
+    gnc_commodity_set_default_symbol(c, "SFr.");
   }
 
   {
@@ -851,7 +851,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -870,7 +870,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -889,7 +889,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "$");
+    gnc_commodity_set_default_symbol(c, "$");
   }
 
   {
@@ -908,7 +908,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "å\x85\x83");
+    gnc_commodity_set_default_symbol(c, "å\x85\x83");
   }
 
   {
@@ -927,7 +927,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "$");
+    gnc_commodity_set_default_symbol(c, "$");
   }
 
   {
@@ -946,7 +946,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -965,7 +965,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "â\x82¡");
+    gnc_commodity_set_default_symbol(c, "â\x82¡");
   }
 
   {
@@ -984,7 +984,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "$MN");
+    gnc_commodity_set_default_symbol(c, "$MN");
   }
 
   {
@@ -1003,7 +1003,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "CUC$");
+    gnc_commodity_set_default_symbol(c, "CUC$");
   }
 
   {
@@ -1022,7 +1022,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Esc");
+    gnc_commodity_set_default_symbol(c, "Esc");
   }
 
   {
@@ -1041,7 +1041,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Â£");
+    gnc_commodity_set_default_symbol(c, "Â£");
   }
 
   {
@@ -1060,7 +1060,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "KÄ\x8d");
+    gnc_commodity_set_default_symbol(c, "KÄ\x8d");
   }
 
   {
@@ -1079,7 +1079,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "DM");
+    gnc_commodity_set_default_symbol(c, "DM");
   }
 
   {
@@ -1098,7 +1098,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Fdj");
+    gnc_commodity_set_default_symbol(c, "Fdj");
   }
 
   {
@@ -1117,7 +1117,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "kr");
+    gnc_commodity_set_default_symbol(c, "kr");
   }
 
   {
@@ -1136,7 +1136,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "RD$");
+    gnc_commodity_set_default_symbol(c, "RD$");
   }
 
   {
@@ -1155,7 +1155,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "DA");
+    gnc_commodity_set_default_symbol(c, "DA");
   }
 
   {
@@ -1174,7 +1174,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "S/.");
+    gnc_commodity_set_default_symbol(c, "S/.");
   }
 
   {
@@ -1193,7 +1193,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "kr");
+    gnc_commodity_set_default_symbol(c, "kr");
   }
 
   {
@@ -1212,7 +1212,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Â£E");
+    gnc_commodity_set_default_symbol(c, "Â£E");
   }
 
   {
@@ -1231,7 +1231,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Nfa");
+    gnc_commodity_set_default_symbol(c, "Nfa");
   }
 
   {
@@ -1250,7 +1250,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "â\x82§");
+    gnc_commodity_set_default_symbol(c, "â\x82§");
   }
 
   {
@@ -1269,7 +1269,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Br");
+    gnc_commodity_set_default_symbol(c, "Br");
   }
 
   {
@@ -1288,7 +1288,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "â\x82¬");
+    gnc_commodity_set_default_symbol(c, "â\x82¬");
   }
 
   {
@@ -1307,7 +1307,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "mk");
+    gnc_commodity_set_default_symbol(c, "mk");
   }
 
   {
@@ -1326,7 +1326,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "FJ$");
+    gnc_commodity_set_default_symbol(c, "FJ$");
   }
 
   {
@@ -1345,7 +1345,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "FKÂ£");
+    gnc_commodity_set_default_symbol(c, "FKÂ£");
   }
 
   {
@@ -1364,7 +1364,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "â\x82£");
+    gnc_commodity_set_default_symbol(c, "â\x82£");
   }
 
   {
@@ -1383,7 +1383,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Â£");
+    gnc_commodity_set_default_symbol(c, "Â£");
   }
 
   {
@@ -1402,7 +1402,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -1421,7 +1421,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -1440,7 +1440,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "GHâ\x82µ");
+    gnc_commodity_set_default_symbol(c, "GHâ\x82µ");
   }
 
   {
@@ -1459,7 +1459,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Â£");
+    gnc_commodity_set_default_symbol(c, "Â£");
   }
 
   {
@@ -1478,7 +1478,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "D");
+    gnc_commodity_set_default_symbol(c, "D");
   }
 
   {
@@ -1497,7 +1497,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "FG");
+    gnc_commodity_set_default_symbol(c, "FG");
   }
 
   {
@@ -1516,7 +1516,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Î”Ï\x81.");
+    gnc_commodity_set_default_symbol(c, "Î”Ï\x81.");
   }
 
   {
@@ -1535,7 +1535,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Q");
+    gnc_commodity_set_default_symbol(c, "Q");
   }
 
   {
@@ -1554,7 +1554,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -1573,7 +1573,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "G$");
+    gnc_commodity_set_default_symbol(c, "G$");
   }
 
   {
@@ -1592,7 +1592,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "HK$");
+    gnc_commodity_set_default_symbol(c, "HK$");
   }
 
   {
@@ -1611,7 +1611,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "L");
+    gnc_commodity_set_default_symbol(c, "L");
   }
 
   {
@@ -1630,7 +1630,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "kn");
+    gnc_commodity_set_default_symbol(c, "kn");
   }
 
   {
@@ -1649,7 +1649,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "G");
+    gnc_commodity_set_default_symbol(c, "G");
   }
 
   {
@@ -1668,7 +1668,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Ft");
+    gnc_commodity_set_default_symbol(c, "Ft");
   }
 
   {
@@ -1687,7 +1687,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Rp");
+    gnc_commodity_set_default_symbol(c, "Rp");
   }
 
   {
@@ -1706,7 +1706,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Â£");
+    gnc_commodity_set_default_symbol(c, "Â£");
   }
 
   {
@@ -1725,7 +1725,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "â\x82ª");
+    gnc_commodity_set_default_symbol(c, "â\x82ª");
   }
 
   {
@@ -1744,7 +1744,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "à¤°à¥\x82");
+    gnc_commodity_set_default_symbol(c, "à¤°à¥\x82");
   }
 
   {
@@ -1763,7 +1763,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Ø¹.Ø¯");
+    gnc_commodity_set_default_symbol(c, "Ø¹.Ø¯");
   }
 
   {
@@ -1782,7 +1782,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "ï·¼ï·¼");
+    gnc_commodity_set_default_symbol(c, "ï·¼ï·¼");
   }
 
   {
@@ -1801,7 +1801,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "kr");
+    gnc_commodity_set_default_symbol(c, "kr");
   }
 
   {
@@ -1820,7 +1820,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "â\x82¤");
+    gnc_commodity_set_default_symbol(c, "â\x82¤");
   }
 
   {
@@ -1839,7 +1839,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "J$");
+    gnc_commodity_set_default_symbol(c, "J$");
   }
 
   {
@@ -1858,7 +1858,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "JD");
+    gnc_commodity_set_default_symbol(c, "JD");
   }
 
   {
@@ -1877,7 +1877,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Â¥");
+    gnc_commodity_set_default_symbol(c, "Â¥");
   }
 
   {
@@ -1896,7 +1896,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Ksh");
+    gnc_commodity_set_default_symbol(c, "Ksh");
   }
 
   {
@@ -1915,7 +1915,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -1934,7 +1934,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -1953,7 +1953,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "FC");
+    gnc_commodity_set_default_symbol(c, "FC");
   }
 
   {
@@ -1972,7 +1972,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "â\x82©");
+    gnc_commodity_set_default_symbol(c, "â\x82©");
   }
 
   {
@@ -1991,7 +1991,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "â\x82©");
+    gnc_commodity_set_default_symbol(c, "â\x82©");
   }
 
   {
@@ -2010,7 +2010,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Ø¯.Ù\x83");
+    gnc_commodity_set_default_symbol(c, "Ø¯.Ù\x83");
   }
 
   {
@@ -2029,7 +2029,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "CI$");
+    gnc_commodity_set_default_symbol(c, "CI$");
   }
 
   {
@@ -2048,7 +2048,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "â\x82¸");
+    gnc_commodity_set_default_symbol(c, "â\x82¸");
   }
 
   {
@@ -2067,7 +2067,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "â\x82­");
+    gnc_commodity_set_default_symbol(c, "â\x82­");
   }
 
   {
@@ -2086,7 +2086,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Ù\x84.Ù\x84");
+    gnc_commodity_set_default_symbol(c, "Ù\x84.Ù\x84");
   }
 
   {
@@ -2105,7 +2105,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "â\x82¨");
+    gnc_commodity_set_default_symbol(c, "â\x82¨");
   }
 
   {
@@ -2124,7 +2124,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "L$");
+    gnc_commodity_set_default_symbol(c, "L$");
   }
 
   {
@@ -2143,7 +2143,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "M");
+    gnc_commodity_set_default_symbol(c, "M");
   }
 
   {
@@ -2162,7 +2162,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Lt");
+    gnc_commodity_set_default_symbol(c, "Lt");
   }
 
   {
@@ -2181,7 +2181,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Flux");
+    gnc_commodity_set_default_symbol(c, "Flux");
   }
 
   {
@@ -2200,7 +2200,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Ls");
+    gnc_commodity_set_default_symbol(c, "Ls");
   }
 
   {
@@ -2219,7 +2219,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Ù\x84.Ø¯");
+    gnc_commodity_set_default_symbol(c, "Ù\x84.Ø¯");
   }
 
   {
@@ -2238,7 +2238,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Ø¯.Ù\x85");
+    gnc_commodity_set_default_symbol(c, "Ø¯.Ù\x85");
   }
 
   {
@@ -2257,7 +2257,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -2276,7 +2276,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -2295,7 +2295,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -2314,7 +2314,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Ð´ÐµÐ½");
+    gnc_commodity_set_default_symbol(c, "Ð´ÐµÐ½");
   }
 
   {
@@ -2333,7 +2333,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -2352,7 +2352,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "K");
+    gnc_commodity_set_default_symbol(c, "K");
   }
 
   {
@@ -2371,7 +2371,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "â\x82®");
+    gnc_commodity_set_default_symbol(c, "â\x82®");
   }
 
   {
@@ -2390,7 +2390,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "MOP$");
+    gnc_commodity_set_default_symbol(c, "MOP$");
   }
 
   {
@@ -2409,7 +2409,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "UM");
+    gnc_commodity_set_default_symbol(c, "UM");
   }
 
   {
@@ -2428,7 +2428,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Lm");
+    gnc_commodity_set_default_symbol(c, "Lm");
   }
 
   {
@@ -2447,7 +2447,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "R");
+    gnc_commodity_set_default_symbol(c, "R");
   }
 
   {
@@ -2466,7 +2466,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, ".Þ\x83");
+    gnc_commodity_set_default_symbol(c, ".Þ\x83");
   }
 
   {
@@ -2485,7 +2485,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "MK");
+    gnc_commodity_set_default_symbol(c, "MK");
   }
 
   {
@@ -2504,7 +2504,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Mex$");
+    gnc_commodity_set_default_symbol(c, "Mex$");
   }
 
   {
@@ -2523,7 +2523,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -2542,7 +2542,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "RM");
+    gnc_commodity_set_default_symbol(c, "RM");
   }
 
   {
@@ -2561,7 +2561,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -2580,7 +2580,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "MTn");
+    gnc_commodity_set_default_symbol(c, "MTn");
   }
 
   {
@@ -2599,7 +2599,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "N$");
+    gnc_commodity_set_default_symbol(c, "N$");
   }
 
   {
@@ -2618,7 +2618,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "â\x82¦");
+    gnc_commodity_set_default_symbol(c, "â\x82¦");
   }
 
   {
@@ -2637,7 +2637,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -2656,7 +2656,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "C$");
+    gnc_commodity_set_default_symbol(c, "C$");
   }
 
   {
@@ -2675,7 +2675,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -2694,7 +2694,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "kr");
+    gnc_commodity_set_default_symbol(c, "kr");
   }
 
   {
@@ -2713,7 +2713,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "â\x82¨");
+    gnc_commodity_set_default_symbol(c, "â\x82¨");
   }
 
   {
@@ -2732,7 +2732,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "NZ$");
+    gnc_commodity_set_default_symbol(c, "NZ$");
   }
 
   {
@@ -2751,7 +2751,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Ø±.Ø¹.");
+    gnc_commodity_set_default_symbol(c, "Ø±.Ø¹.");
   }
 
   {
@@ -2770,7 +2770,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "à¸¿");
+    gnc_commodity_set_default_symbol(c, "à¸¿");
   }
 
   {
@@ -2789,7 +2789,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "S/.");
+    gnc_commodity_set_default_symbol(c, "S/.");
   }
 
   {
@@ -2808,7 +2808,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "K");
+    gnc_commodity_set_default_symbol(c, "K");
   }
 
   {
@@ -2827,7 +2827,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "â\x82±");
+    gnc_commodity_set_default_symbol(c, "â\x82±");
   }
 
   {
@@ -2846,7 +2846,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Rs");
+    gnc_commodity_set_default_symbol(c, "Rs");
   }
 
   {
@@ -2865,7 +2865,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "zÅ\x82");
+    gnc_commodity_set_default_symbol(c, "zÅ\x82");
   }
 
   {
@@ -2884,7 +2884,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "$");
+    gnc_commodity_set_default_symbol(c, "$");
   }
 
   {
@@ -2903,7 +2903,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "â\x82²");
+    gnc_commodity_set_default_symbol(c, "â\x82²");
   }
 
   {
@@ -2922,7 +2922,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Ø±.Ù\x82");
+    gnc_commodity_set_default_symbol(c, "Ø±.Ù\x82");
   }
 
   {
@@ -2941,7 +2941,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -2960,7 +2960,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -2979,7 +2979,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -2998,7 +2998,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Ñ\x80Ñ\x83Ð±");
+    gnc_commodity_set_default_symbol(c, "Ñ\x80Ñ\x83Ð±");
   }
 
   {
@@ -3017,7 +3017,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "RF");
+    gnc_commodity_set_default_symbol(c, "RF");
   }
 
   {
@@ -3036,7 +3036,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Ø±.Ø³");
+    gnc_commodity_set_default_symbol(c, "Ø±.Ø³");
   }
 
   {
@@ -3055,7 +3055,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "SI$");
+    gnc_commodity_set_default_symbol(c, "SI$");
   }
 
   {
@@ -3074,7 +3074,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "SR");
+    gnc_commodity_set_default_symbol(c, "SR");
   }
 
   {
@@ -3093,7 +3093,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -3112,7 +3112,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -3131,7 +3131,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -3150,7 +3150,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "kr");
+    gnc_commodity_set_default_symbol(c, "kr");
   }
 
   {
@@ -3169,7 +3169,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "S$");
+    gnc_commodity_set_default_symbol(c, "S$");
   }
 
   {
@@ -3188,7 +3188,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Â£");
+    gnc_commodity_set_default_symbol(c, "Â£");
   }
 
   {
@@ -3207,7 +3207,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -3226,7 +3226,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -3245,7 +3245,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Le");
+    gnc_commodity_set_default_symbol(c, "Le");
   }
 
   {
@@ -3264,7 +3264,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "SoSh");
+    gnc_commodity_set_default_symbol(c, "SoSh");
   }
 
   {
@@ -3283,7 +3283,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "$");
+    gnc_commodity_set_default_symbol(c, "$");
   }
 
   {
@@ -3302,7 +3302,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -3321,7 +3321,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Db");
+    gnc_commodity_set_default_symbol(c, "Db");
   }
 
   {
@@ -3340,7 +3340,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -3359,7 +3359,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -3378,7 +3378,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "L");
+    gnc_commodity_set_default_symbol(c, "L");
   }
 
   {
@@ -3397,7 +3397,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "à¸¿");
+    gnc_commodity_set_default_symbol(c, "à¸¿");
   }
 
   {
@@ -3416,7 +3416,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -3435,7 +3435,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -3454,7 +3454,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -3473,7 +3473,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "m");
+    gnc_commodity_set_default_symbol(c, "m");
   }
 
   {
@@ -3492,7 +3492,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Ø¯.Øª");
+    gnc_commodity_set_default_symbol(c, "Ø¯.Øª");
   }
 
   {
@@ -3511,7 +3511,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "T$");
+    gnc_commodity_set_default_symbol(c, "T$");
   }
 
   {
@@ -3530,7 +3530,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "â\x82¤");
+    gnc_commodity_set_default_symbol(c, "â\x82¤");
   }
 
   {
@@ -3549,7 +3549,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "TT$");
+    gnc_commodity_set_default_symbol(c, "TT$");
   }
 
   {
@@ -3568,7 +3568,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "NT$");
+    gnc_commodity_set_default_symbol(c, "NT$");
   }
 
   {
@@ -3587,7 +3587,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "/");
+    gnc_commodity_set_default_symbol(c, "/");
   }
 
   {
@@ -3606,7 +3606,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "â\x82´");
+    gnc_commodity_set_default_symbol(c, "â\x82´");
   }
 
   {
@@ -3625,7 +3625,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "USh");
+    gnc_commodity_set_default_symbol(c, "USh");
   }
 
   {
@@ -3644,7 +3644,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "$");
+    gnc_commodity_set_default_symbol(c, "$");
   }
 
   {
@@ -3663,7 +3663,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "$n");
+    gnc_commodity_set_default_symbol(c, "$n");
   }
 
   {
@@ -3682,7 +3682,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "$s");
+    gnc_commodity_set_default_symbol(c, "$s");
   }
 
   {
@@ -3701,7 +3701,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "UI");
+    gnc_commodity_set_default_symbol(c, "UI");
   }
 
   {
@@ -3720,7 +3720,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "$U");
+    gnc_commodity_set_default_symbol(c, "$U");
   }
 
   {
@@ -3739,7 +3739,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "som");
+    gnc_commodity_set_default_symbol(c, "som");
   }
 
   {
@@ -3758,7 +3758,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -3777,7 +3777,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Bs.");
+    gnc_commodity_set_default_symbol(c, "Bs.");
   }
 
   {
@@ -3796,7 +3796,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "â\x82«");
+    gnc_commodity_set_default_symbol(c, "â\x82«");
   }
 
   {
@@ -3815,7 +3815,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Vt");
+    gnc_commodity_set_default_symbol(c, "Vt");
   }
 
   {
@@ -3834,7 +3834,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "WS$");
+    gnc_commodity_set_default_symbol(c, "WS$");
   }
 
   {
@@ -3853,7 +3853,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Rl");
+    gnc_commodity_set_default_symbol(c, "Rl");
   }
 
   {
@@ -3872,7 +3872,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -3891,7 +3891,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "R");
+    gnc_commodity_set_default_symbol(c, "R");
   }
 
   {
@@ -3910,7 +3910,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "ZK");
+    gnc_commodity_set_default_symbol(c, "ZK");
   }
 
   {
@@ -3929,7 +3929,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "ZK");
+    gnc_commodity_set_default_symbol(c, "ZK");
   }
 
   {
@@ -3948,7 +3948,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -3967,7 +3967,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "Z.$");
+    gnc_commodity_set_default_symbol(c, "Z.$");
   }
 
   {
@@ -3986,7 +3986,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -4005,7 +4005,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "EC$");
+    gnc_commodity_set_default_symbol(c, "EC$");
   }
 
   {
@@ -4024,7 +4024,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -4043,7 +4043,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -4062,7 +4062,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -4081,7 +4081,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -4100,7 +4100,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -4119,7 +4119,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -4138,7 +4138,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -4157,7 +4157,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -4176,7 +4176,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -4195,7 +4195,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
 
   {
@@ -4214,5 +4214,5 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_user_symbol(c, "");
+    gnc_commodity_set_default_symbol(c, "");
   }
