@@ -1032,6 +1032,12 @@ environment: environment.in ${top_builddir}/config.status Makefile
 		echo "# and gsettings schemas are found." >> $@.tmp; \
 		echo "XDG_DATA_DIRS=$(datadir);{XDG_DATA_DIRS};${GNC_SYSTEM_XDG_DATA_DIRS}" >> $@.tmp; \
 	fi
+@WITH_PYTHON_TRUE@	if [ "${PYTHON_SITE_PKG}" != "${pyexecdir}" ]; \
+@WITH_PYTHON_TRUE@	then \
+@WITH_PYTHON_TRUE@		echo  >> $@.tmp; \
+@WITH_PYTHON_TRUE@		echo "# Define PYTHONPATH for non default installation path." >> $@.tmp; \
+@WITH_PYTHON_TRUE@		echo "PYTHONPATH=${pyexecdir};{PYTHONPATH}" >> $@.tmp; \
+@WITH_PYTHON_TRUE@	fi
 	mv $@.tmp $@
 
 @PLATFORM_WIN32_FALSE@${gnc_common_scripts}: generate-gnc-script ${top_builddir}/config.status

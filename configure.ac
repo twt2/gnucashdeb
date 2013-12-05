@@ -20,7 +20,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 # Autoconf initialization
 AC_PREREQ(2.60)
-AC_INIT([GnuCash], [2.5.8], [gnucash-devel@gnucash.org])
+AC_INIT([GnuCash], [2.5.9], [gnucash-devel@gnucash.org])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_SRCDIR(src/engine/Transaction.h)
 
@@ -331,6 +331,7 @@ update to latest  darwin])
     ;;
   darwin*)
     platform=darwin
+    AC_DEFINE(PLATFORM_OSX,1,[Running on OSX, either X11 or Quartz])
     AC_MSG_RESULT($platform)
     AC_MSG_CHECKING(For GDK-Quartz)
     platform=osx
@@ -962,7 +963,7 @@ then
   AC_SUBST(GDK_PIXBUF_LIBS)
 
    # checks for goffice
-  PKG_CHECK_MODULES(GOFFICE, libgoffice-0.8 >= 0.7.0, [goffice=1], [AC_MSG_ERROR([Cannot find libgoffice.>= 0.5.1])])
+  PKG_CHECK_MODULES(GOFFICE, libgoffice-0.8 >= 0.7.0, [goffice=1], [AC_MSG_ERROR([Cannot find libgoffice.>= 0.7.0])])
   AS_SCRUB_INCLUDE(GOFFICE_CFLAGS)
   AC_SUBST(GOFFICE_CFLAGS)
   AC_SUBST(GOFFICE_LIBS)

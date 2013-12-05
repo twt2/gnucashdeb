@@ -2167,7 +2167,7 @@ _("One Year.")
 /* src/report/report-system/options-utilities.scm */
 _("All")
 /* src/report/report-system/options-utilities.scm */
-_("All accounts.")
+_("All accounts")
 /* src/report/report-system/options-utilities.scm */
 _("Top-level.")
 /* src/report/report-system/options-utilities.scm */
@@ -2221,39 +2221,39 @@ _("Choose the marker for each data point.")
 /* src/report/report-system/options-utilities.scm */
 _("Diamond")
 /* src/report/report-system/options-utilities.scm */
-_("Hollow diamond.")
+_("Hollow diamond")
 /* src/report/report-system/options-utilities.scm */
 _("Circle")
 /* src/report/report-system/options-utilities.scm */
-_("Hollow circle.")
+_("Hollow circle")
 /* src/report/report-system/options-utilities.scm */
 _("Square")
 /* src/report/report-system/options-utilities.scm */
-_("Hollow square.")
+_("Hollow square")
 /* src/report/report-system/options-utilities.scm */
 _("Cross")
 /* src/report/report-system/options-utilities.scm */
-_("Cross.")
+_("Cross")
 /* src/report/report-system/options-utilities.scm */
 _("Plus")
 /* src/report/report-system/options-utilities.scm */
-_("Plus.")
+_("Plus")
 /* src/report/report-system/options-utilities.scm */
 _("Dash")
 /* src/report/report-system/options-utilities.scm */
-_("Dash.")
+_("Dash")
 /* src/report/report-system/options-utilities.scm */
 _("Filled diamond")
 /* src/report/report-system/options-utilities.scm */
-_("Diamond filled with color.")
+_("Diamond filled with color")
 /* src/report/report-system/options-utilities.scm */
 _("Filled circle")
 /* src/report/report-system/options-utilities.scm */
-_("Circle filled with color.")
+_("Circle filled with color")
 /* src/report/report-system/options-utilities.scm */
 _("Filled square")
 /* src/report/report-system/options-utilities.scm */
-_("Square filled with color.")
+_("Square filled with color")
 /* src/report/report-system/options-utilities.scm */
 _("Choose the method for sorting accounts.")
 /* src/report/report-system/options-utilities.scm */

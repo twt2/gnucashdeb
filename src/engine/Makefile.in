@@ -113,19 +113,47 @@ libgncmod_engine_la_DEPENDENCIES = ../gnc-module/libgnc-module.la \
 	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) ${top_builddir}/lib/libc/libc-missing.la
-am_libgncmod_engine_la_OBJECTS = Account.lo Recurrence.lo Query.lo \
-	SchedXaction.lo SX-book.lo SX-ttinfo.lo Scrub.lo Scrub2.lo \
-	Scrub3.lo Split.lo TransLog.lo Transaction.lo cap-gains.lo \
-	cashobjects.lo gnc-budget.lo gnc-commodity.lo gnc-engine.lo \
-	gnc-event.lo gnc-hooks.lo gnc-lot.lo gnc-pricedb.lo \
-	gnc-session.lo gncmod-engine.lo swig-engine.lo kvp-scm.lo \
-	engine-helpers.lo glib-helpers.lo policy.lo gncBusGuile.lo \
-	gncBusiness.lo gncAddress.lo gncBillTerm.lo gncCustomer.lo \
-	gncEmployee.lo gncEntry.lo gncInvoice.lo gncJob.lo gncOrder.lo \
-	gncOwner.lo gncTaxTable.lo gncIDSearch.lo gncVendor.lo
+am_libgncmod_engine_la_OBJECTS = libgncmod_engine_la-Account.lo \
+	libgncmod_engine_la-Recurrence.lo libgncmod_engine_la-Query.lo \
+	libgncmod_engine_la-SchedXaction.lo \
+	libgncmod_engine_la-SX-book.lo \
+	libgncmod_engine_la-SX-ttinfo.lo libgncmod_engine_la-Scrub.lo \
+	libgncmod_engine_la-Scrub2.lo libgncmod_engine_la-Scrub3.lo \
+	libgncmod_engine_la-Split.lo libgncmod_engine_la-TransLog.lo \
+	libgncmod_engine_la-Transaction.lo \
+	libgncmod_engine_la-cap-gains.lo \
+	libgncmod_engine_la-cashobjects.lo \
+	libgncmod_engine_la-gnc-budget.lo \
+	libgncmod_engine_la-gnc-commodity.lo \
+	libgncmod_engine_la-gnc-engine.lo \
+	libgncmod_engine_la-gnc-event.lo \
+	libgncmod_engine_la-gnc-hooks.lo \
+	libgncmod_engine_la-gnc-lot.lo \
+	libgncmod_engine_la-gnc-pricedb.lo \
+	libgncmod_engine_la-gnc-session.lo \
+	libgncmod_engine_la-gncmod-engine.lo \
+	libgncmod_engine_la-swig-engine.lo \
+	libgncmod_engine_la-kvp-scm.lo \
+	libgncmod_engine_la-engine-helpers.lo \
+	libgncmod_engine_la-glib-helpers.lo \
+	libgncmod_engine_la-policy.lo \
+	libgncmod_engine_la-gncBusGuile.lo \
+	libgncmod_engine_la-gncBusiness.lo \
+	libgncmod_engine_la-gncAddress.lo \
+	libgncmod_engine_la-gncBillTerm.lo \
+	libgncmod_engine_la-gncCustomer.lo \
+	libgncmod_engine_la-gncEmployee.lo \
+	libgncmod_engine_la-gncEntry.lo \
+	libgncmod_engine_la-gncInvoice.lo \
+	libgncmod_engine_la-gncJob.lo libgncmod_engine_la-gncOrder.lo \
+	libgncmod_engine_la-gncOwner.lo \
+	libgncmod_engine_la-gncTaxTable.lo \
+	libgncmod_engine_la-gncIDSearch.lo \
+	libgncmod_engine_la-gncVendor.lo
 libgncmod_engine_la_OBJECTS = $(am_libgncmod_engine_la_OBJECTS)
 libgncmod_engine_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(libgncmod_engine_la_CFLAGS) $(CFLAGS) \
 	$(libgncmod_engine_la_LDFLAGS) $(LDFLAGS) -o $@
 SCRIPTS = $(noinst_SCRIPTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -567,6 +595,7 @@ noinst_HEADERS = \
 
 noinst_SCRIPTS = iso-currencies-to-c
 libgncmod_engine_la_LDFLAGS = -avoid-version
+libgncmod_engine_la_CFLAGS = -Wno-invalid-source-encoding
 libgncmod_engine_la_LIBADD = \
   ../gnc-module/libgnc-module.la \
   ../core-utils/libgnc-core-utils.la \
@@ -700,49 +729,49 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Account.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Query.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Recurrence.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SX-book.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SX-ttinfo.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SchedXaction.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Scrub.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Scrub2.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Scrub3.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Split.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TransLog.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Transaction.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cap-gains.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cashobjects.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/engine-helpers.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glib-helpers.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-budget.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-commodity.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-engine.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-event.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-hooks.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-lot.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-pricedb.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-session.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gncAddress.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gncBillTerm.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gncBusGuile.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gncBusiness.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gncCustomer.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gncEmployee.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gncEntry.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gncIDSearch.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gncInvoice.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gncJob.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gncOrder.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gncOwner.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gncTaxTable.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gncVendor.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gncmod-engine.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/iso-4217-currencies.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kvp-scm.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/policy.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swig-engine.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-Account.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-Query.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-Recurrence.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-SX-book.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-SX-ttinfo.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-SchedXaction.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-Scrub.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-Scrub2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-Scrub3.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-Split.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-TransLog.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-Transaction.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-cap-gains.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-cashobjects.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-engine-helpers.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-glib-helpers.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gnc-budget.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gnc-commodity.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gnc-engine.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gnc-event.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gnc-hooks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gnc-lot.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gnc-pricedb.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gnc-session.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gncAddress.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gncBillTerm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gncBusGuile.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gncBusiness.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gncCustomer.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gncEmployee.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gncEntry.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gncIDSearch.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gncInvoice.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gncJob.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gncOrder.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gncOwner.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gncTaxTable.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gncVendor.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-gncmod-engine.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-iso-4217-currencies.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-kvp-scm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-policy.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgncmod_engine_la-swig-engine.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -764,6 +793,307 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
+libgncmod_engine_la-Account.lo: Account.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-Account.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-Account.Tpo -c -o libgncmod_engine_la-Account.lo `test -f 'Account.c' || echo '$(srcdir)/'`Account.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-Account.Tpo $(DEPDIR)/libgncmod_engine_la-Account.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='Account.c' object='libgncmod_engine_la-Account.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-Account.lo `test -f 'Account.c' || echo '$(srcdir)/'`Account.c
+
+libgncmod_engine_la-Recurrence.lo: Recurrence.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-Recurrence.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-Recurrence.Tpo -c -o libgncmod_engine_la-Recurrence.lo `test -f 'Recurrence.c' || echo '$(srcdir)/'`Recurrence.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-Recurrence.Tpo $(DEPDIR)/libgncmod_engine_la-Recurrence.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='Recurrence.c' object='libgncmod_engine_la-Recurrence.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-Recurrence.lo `test -f 'Recurrence.c' || echo '$(srcdir)/'`Recurrence.c
+
+libgncmod_engine_la-Query.lo: Query.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-Query.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-Query.Tpo -c -o libgncmod_engine_la-Query.lo `test -f 'Query.c' || echo '$(srcdir)/'`Query.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-Query.Tpo $(DEPDIR)/libgncmod_engine_la-Query.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='Query.c' object='libgncmod_engine_la-Query.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-Query.lo `test -f 'Query.c' || echo '$(srcdir)/'`Query.c
+
+libgncmod_engine_la-SchedXaction.lo: SchedXaction.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-SchedXaction.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-SchedXaction.Tpo -c -o libgncmod_engine_la-SchedXaction.lo `test -f 'SchedXaction.c' || echo '$(srcdir)/'`SchedXaction.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-SchedXaction.Tpo $(DEPDIR)/libgncmod_engine_la-SchedXaction.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='SchedXaction.c' object='libgncmod_engine_la-SchedXaction.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-SchedXaction.lo `test -f 'SchedXaction.c' || echo '$(srcdir)/'`SchedXaction.c
+
+libgncmod_engine_la-SX-book.lo: SX-book.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-SX-book.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-SX-book.Tpo -c -o libgncmod_engine_la-SX-book.lo `test -f 'SX-book.c' || echo '$(srcdir)/'`SX-book.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-SX-book.Tpo $(DEPDIR)/libgncmod_engine_la-SX-book.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='SX-book.c' object='libgncmod_engine_la-SX-book.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-SX-book.lo `test -f 'SX-book.c' || echo '$(srcdir)/'`SX-book.c
+
+libgncmod_engine_la-SX-ttinfo.lo: SX-ttinfo.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-SX-ttinfo.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-SX-ttinfo.Tpo -c -o libgncmod_engine_la-SX-ttinfo.lo `test -f 'SX-ttinfo.c' || echo '$(srcdir)/'`SX-ttinfo.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-SX-ttinfo.Tpo $(DEPDIR)/libgncmod_engine_la-SX-ttinfo.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='SX-ttinfo.c' object='libgncmod_engine_la-SX-ttinfo.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-SX-ttinfo.lo `test -f 'SX-ttinfo.c' || echo '$(srcdir)/'`SX-ttinfo.c
+
+libgncmod_engine_la-Scrub.lo: Scrub.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-Scrub.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-Scrub.Tpo -c -o libgncmod_engine_la-Scrub.lo `test -f 'Scrub.c' || echo '$(srcdir)/'`Scrub.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-Scrub.Tpo $(DEPDIR)/libgncmod_engine_la-Scrub.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='Scrub.c' object='libgncmod_engine_la-Scrub.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-Scrub.lo `test -f 'Scrub.c' || echo '$(srcdir)/'`Scrub.c
+
+libgncmod_engine_la-Scrub2.lo: Scrub2.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-Scrub2.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-Scrub2.Tpo -c -o libgncmod_engine_la-Scrub2.lo `test -f 'Scrub2.c' || echo '$(srcdir)/'`Scrub2.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-Scrub2.Tpo $(DEPDIR)/libgncmod_engine_la-Scrub2.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='Scrub2.c' object='libgncmod_engine_la-Scrub2.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-Scrub2.lo `test -f 'Scrub2.c' || echo '$(srcdir)/'`Scrub2.c
+
+libgncmod_engine_la-Scrub3.lo: Scrub3.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-Scrub3.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-Scrub3.Tpo -c -o libgncmod_engine_la-Scrub3.lo `test -f 'Scrub3.c' || echo '$(srcdir)/'`Scrub3.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-Scrub3.Tpo $(DEPDIR)/libgncmod_engine_la-Scrub3.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='Scrub3.c' object='libgncmod_engine_la-Scrub3.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-Scrub3.lo `test -f 'Scrub3.c' || echo '$(srcdir)/'`Scrub3.c
+
+libgncmod_engine_la-Split.lo: Split.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-Split.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-Split.Tpo -c -o libgncmod_engine_la-Split.lo `test -f 'Split.c' || echo '$(srcdir)/'`Split.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-Split.Tpo $(DEPDIR)/libgncmod_engine_la-Split.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='Split.c' object='libgncmod_engine_la-Split.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-Split.lo `test -f 'Split.c' || echo '$(srcdir)/'`Split.c
+
+libgncmod_engine_la-TransLog.lo: TransLog.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-TransLog.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-TransLog.Tpo -c -o libgncmod_engine_la-TransLog.lo `test -f 'TransLog.c' || echo '$(srcdir)/'`TransLog.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-TransLog.Tpo $(DEPDIR)/libgncmod_engine_la-TransLog.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='TransLog.c' object='libgncmod_engine_la-TransLog.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-TransLog.lo `test -f 'TransLog.c' || echo '$(srcdir)/'`TransLog.c
+
+libgncmod_engine_la-Transaction.lo: Transaction.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-Transaction.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-Transaction.Tpo -c -o libgncmod_engine_la-Transaction.lo `test -f 'Transaction.c' || echo '$(srcdir)/'`Transaction.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-Transaction.Tpo $(DEPDIR)/libgncmod_engine_la-Transaction.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='Transaction.c' object='libgncmod_engine_la-Transaction.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-Transaction.lo `test -f 'Transaction.c' || echo '$(srcdir)/'`Transaction.c
+
+libgncmod_engine_la-cap-gains.lo: cap-gains.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-cap-gains.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-cap-gains.Tpo -c -o libgncmod_engine_la-cap-gains.lo `test -f 'cap-gains.c' || echo '$(srcdir)/'`cap-gains.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-cap-gains.Tpo $(DEPDIR)/libgncmod_engine_la-cap-gains.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='cap-gains.c' object='libgncmod_engine_la-cap-gains.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-cap-gains.lo `test -f 'cap-gains.c' || echo '$(srcdir)/'`cap-gains.c
+
+libgncmod_engine_la-cashobjects.lo: cashobjects.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-cashobjects.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-cashobjects.Tpo -c -o libgncmod_engine_la-cashobjects.lo `test -f 'cashobjects.c' || echo '$(srcdir)/'`cashobjects.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-cashobjects.Tpo $(DEPDIR)/libgncmod_engine_la-cashobjects.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='cashobjects.c' object='libgncmod_engine_la-cashobjects.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-cashobjects.lo `test -f 'cashobjects.c' || echo '$(srcdir)/'`cashobjects.c
+
+libgncmod_engine_la-gnc-budget.lo: gnc-budget.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gnc-budget.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gnc-budget.Tpo -c -o libgncmod_engine_la-gnc-budget.lo `test -f 'gnc-budget.c' || echo '$(srcdir)/'`gnc-budget.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gnc-budget.Tpo $(DEPDIR)/libgncmod_engine_la-gnc-budget.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnc-budget.c' object='libgncmod_engine_la-gnc-budget.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gnc-budget.lo `test -f 'gnc-budget.c' || echo '$(srcdir)/'`gnc-budget.c
+
+libgncmod_engine_la-gnc-commodity.lo: gnc-commodity.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gnc-commodity.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gnc-commodity.Tpo -c -o libgncmod_engine_la-gnc-commodity.lo `test -f 'gnc-commodity.c' || echo '$(srcdir)/'`gnc-commodity.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gnc-commodity.Tpo $(DEPDIR)/libgncmod_engine_la-gnc-commodity.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnc-commodity.c' object='libgncmod_engine_la-gnc-commodity.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gnc-commodity.lo `test -f 'gnc-commodity.c' || echo '$(srcdir)/'`gnc-commodity.c
+
+libgncmod_engine_la-gnc-engine.lo: gnc-engine.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gnc-engine.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gnc-engine.Tpo -c -o libgncmod_engine_la-gnc-engine.lo `test -f 'gnc-engine.c' || echo '$(srcdir)/'`gnc-engine.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gnc-engine.Tpo $(DEPDIR)/libgncmod_engine_la-gnc-engine.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnc-engine.c' object='libgncmod_engine_la-gnc-engine.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gnc-engine.lo `test -f 'gnc-engine.c' || echo '$(srcdir)/'`gnc-engine.c
+
+libgncmod_engine_la-gnc-event.lo: gnc-event.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gnc-event.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gnc-event.Tpo -c -o libgncmod_engine_la-gnc-event.lo `test -f 'gnc-event.c' || echo '$(srcdir)/'`gnc-event.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gnc-event.Tpo $(DEPDIR)/libgncmod_engine_la-gnc-event.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnc-event.c' object='libgncmod_engine_la-gnc-event.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gnc-event.lo `test -f 'gnc-event.c' || echo '$(srcdir)/'`gnc-event.c
+
+libgncmod_engine_la-gnc-hooks.lo: gnc-hooks.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gnc-hooks.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gnc-hooks.Tpo -c -o libgncmod_engine_la-gnc-hooks.lo `test -f 'gnc-hooks.c' || echo '$(srcdir)/'`gnc-hooks.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gnc-hooks.Tpo $(DEPDIR)/libgncmod_engine_la-gnc-hooks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnc-hooks.c' object='libgncmod_engine_la-gnc-hooks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gnc-hooks.lo `test -f 'gnc-hooks.c' || echo '$(srcdir)/'`gnc-hooks.c
+
+libgncmod_engine_la-gnc-lot.lo: gnc-lot.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gnc-lot.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gnc-lot.Tpo -c -o libgncmod_engine_la-gnc-lot.lo `test -f 'gnc-lot.c' || echo '$(srcdir)/'`gnc-lot.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gnc-lot.Tpo $(DEPDIR)/libgncmod_engine_la-gnc-lot.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnc-lot.c' object='libgncmod_engine_la-gnc-lot.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gnc-lot.lo `test -f 'gnc-lot.c' || echo '$(srcdir)/'`gnc-lot.c
+
+libgncmod_engine_la-gnc-pricedb.lo: gnc-pricedb.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gnc-pricedb.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gnc-pricedb.Tpo -c -o libgncmod_engine_la-gnc-pricedb.lo `test -f 'gnc-pricedb.c' || echo '$(srcdir)/'`gnc-pricedb.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gnc-pricedb.Tpo $(DEPDIR)/libgncmod_engine_la-gnc-pricedb.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnc-pricedb.c' object='libgncmod_engine_la-gnc-pricedb.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gnc-pricedb.lo `test -f 'gnc-pricedb.c' || echo '$(srcdir)/'`gnc-pricedb.c
+
+libgncmod_engine_la-gnc-session.lo: gnc-session.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gnc-session.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gnc-session.Tpo -c -o libgncmod_engine_la-gnc-session.lo `test -f 'gnc-session.c' || echo '$(srcdir)/'`gnc-session.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gnc-session.Tpo $(DEPDIR)/libgncmod_engine_la-gnc-session.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnc-session.c' object='libgncmod_engine_la-gnc-session.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gnc-session.lo `test -f 'gnc-session.c' || echo '$(srcdir)/'`gnc-session.c
+
+libgncmod_engine_la-gncmod-engine.lo: gncmod-engine.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gncmod-engine.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gncmod-engine.Tpo -c -o libgncmod_engine_la-gncmod-engine.lo `test -f 'gncmod-engine.c' || echo '$(srcdir)/'`gncmod-engine.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gncmod-engine.Tpo $(DEPDIR)/libgncmod_engine_la-gncmod-engine.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gncmod-engine.c' object='libgncmod_engine_la-gncmod-engine.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gncmod-engine.lo `test -f 'gncmod-engine.c' || echo '$(srcdir)/'`gncmod-engine.c
+
+libgncmod_engine_la-swig-engine.lo: swig-engine.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-swig-engine.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-swig-engine.Tpo -c -o libgncmod_engine_la-swig-engine.lo `test -f 'swig-engine.c' || echo '$(srcdir)/'`swig-engine.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-swig-engine.Tpo $(DEPDIR)/libgncmod_engine_la-swig-engine.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='swig-engine.c' object='libgncmod_engine_la-swig-engine.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-swig-engine.lo `test -f 'swig-engine.c' || echo '$(srcdir)/'`swig-engine.c
+
+libgncmod_engine_la-kvp-scm.lo: kvp-scm.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-kvp-scm.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-kvp-scm.Tpo -c -o libgncmod_engine_la-kvp-scm.lo `test -f 'kvp-scm.c' || echo '$(srcdir)/'`kvp-scm.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-kvp-scm.Tpo $(DEPDIR)/libgncmod_engine_la-kvp-scm.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='kvp-scm.c' object='libgncmod_engine_la-kvp-scm.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-kvp-scm.lo `test -f 'kvp-scm.c' || echo '$(srcdir)/'`kvp-scm.c
+
+libgncmod_engine_la-engine-helpers.lo: engine-helpers.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-engine-helpers.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-engine-helpers.Tpo -c -o libgncmod_engine_la-engine-helpers.lo `test -f 'engine-helpers.c' || echo '$(srcdir)/'`engine-helpers.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-engine-helpers.Tpo $(DEPDIR)/libgncmod_engine_la-engine-helpers.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='engine-helpers.c' object='libgncmod_engine_la-engine-helpers.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-engine-helpers.lo `test -f 'engine-helpers.c' || echo '$(srcdir)/'`engine-helpers.c
+
+libgncmod_engine_la-glib-helpers.lo: glib-helpers.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-glib-helpers.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-glib-helpers.Tpo -c -o libgncmod_engine_la-glib-helpers.lo `test -f 'glib-helpers.c' || echo '$(srcdir)/'`glib-helpers.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-glib-helpers.Tpo $(DEPDIR)/libgncmod_engine_la-glib-helpers.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='glib-helpers.c' object='libgncmod_engine_la-glib-helpers.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-glib-helpers.lo `test -f 'glib-helpers.c' || echo '$(srcdir)/'`glib-helpers.c
+
+libgncmod_engine_la-policy.lo: policy.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-policy.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-policy.Tpo -c -o libgncmod_engine_la-policy.lo `test -f 'policy.c' || echo '$(srcdir)/'`policy.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-policy.Tpo $(DEPDIR)/libgncmod_engine_la-policy.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='policy.c' object='libgncmod_engine_la-policy.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-policy.lo `test -f 'policy.c' || echo '$(srcdir)/'`policy.c
+
+libgncmod_engine_la-gncBusGuile.lo: gncBusGuile.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gncBusGuile.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gncBusGuile.Tpo -c -o libgncmod_engine_la-gncBusGuile.lo `test -f 'gncBusGuile.c' || echo '$(srcdir)/'`gncBusGuile.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gncBusGuile.Tpo $(DEPDIR)/libgncmod_engine_la-gncBusGuile.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gncBusGuile.c' object='libgncmod_engine_la-gncBusGuile.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gncBusGuile.lo `test -f 'gncBusGuile.c' || echo '$(srcdir)/'`gncBusGuile.c
+
+libgncmod_engine_la-gncBusiness.lo: gncBusiness.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gncBusiness.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gncBusiness.Tpo -c -o libgncmod_engine_la-gncBusiness.lo `test -f 'gncBusiness.c' || echo '$(srcdir)/'`gncBusiness.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gncBusiness.Tpo $(DEPDIR)/libgncmod_engine_la-gncBusiness.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gncBusiness.c' object='libgncmod_engine_la-gncBusiness.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gncBusiness.lo `test -f 'gncBusiness.c' || echo '$(srcdir)/'`gncBusiness.c
+
+libgncmod_engine_la-gncAddress.lo: gncAddress.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gncAddress.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gncAddress.Tpo -c -o libgncmod_engine_la-gncAddress.lo `test -f 'gncAddress.c' || echo '$(srcdir)/'`gncAddress.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gncAddress.Tpo $(DEPDIR)/libgncmod_engine_la-gncAddress.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gncAddress.c' object='libgncmod_engine_la-gncAddress.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gncAddress.lo `test -f 'gncAddress.c' || echo '$(srcdir)/'`gncAddress.c
+
+libgncmod_engine_la-gncBillTerm.lo: gncBillTerm.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gncBillTerm.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gncBillTerm.Tpo -c -o libgncmod_engine_la-gncBillTerm.lo `test -f 'gncBillTerm.c' || echo '$(srcdir)/'`gncBillTerm.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gncBillTerm.Tpo $(DEPDIR)/libgncmod_engine_la-gncBillTerm.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gncBillTerm.c' object='libgncmod_engine_la-gncBillTerm.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gncBillTerm.lo `test -f 'gncBillTerm.c' || echo '$(srcdir)/'`gncBillTerm.c
+
+libgncmod_engine_la-gncCustomer.lo: gncCustomer.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gncCustomer.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gncCustomer.Tpo -c -o libgncmod_engine_la-gncCustomer.lo `test -f 'gncCustomer.c' || echo '$(srcdir)/'`gncCustomer.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gncCustomer.Tpo $(DEPDIR)/libgncmod_engine_la-gncCustomer.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gncCustomer.c' object='libgncmod_engine_la-gncCustomer.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gncCustomer.lo `test -f 'gncCustomer.c' || echo '$(srcdir)/'`gncCustomer.c
+
+libgncmod_engine_la-gncEmployee.lo: gncEmployee.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gncEmployee.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gncEmployee.Tpo -c -o libgncmod_engine_la-gncEmployee.lo `test -f 'gncEmployee.c' || echo '$(srcdir)/'`gncEmployee.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gncEmployee.Tpo $(DEPDIR)/libgncmod_engine_la-gncEmployee.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gncEmployee.c' object='libgncmod_engine_la-gncEmployee.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gncEmployee.lo `test -f 'gncEmployee.c' || echo '$(srcdir)/'`gncEmployee.c
+
+libgncmod_engine_la-gncEntry.lo: gncEntry.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gncEntry.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gncEntry.Tpo -c -o libgncmod_engine_la-gncEntry.lo `test -f 'gncEntry.c' || echo '$(srcdir)/'`gncEntry.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gncEntry.Tpo $(DEPDIR)/libgncmod_engine_la-gncEntry.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gncEntry.c' object='libgncmod_engine_la-gncEntry.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gncEntry.lo `test -f 'gncEntry.c' || echo '$(srcdir)/'`gncEntry.c
+
+libgncmod_engine_la-gncInvoice.lo: gncInvoice.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gncInvoice.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gncInvoice.Tpo -c -o libgncmod_engine_la-gncInvoice.lo `test -f 'gncInvoice.c' || echo '$(srcdir)/'`gncInvoice.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gncInvoice.Tpo $(DEPDIR)/libgncmod_engine_la-gncInvoice.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gncInvoice.c' object='libgncmod_engine_la-gncInvoice.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gncInvoice.lo `test -f 'gncInvoice.c' || echo '$(srcdir)/'`gncInvoice.c
+
+libgncmod_engine_la-gncJob.lo: gncJob.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gncJob.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gncJob.Tpo -c -o libgncmod_engine_la-gncJob.lo `test -f 'gncJob.c' || echo '$(srcdir)/'`gncJob.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gncJob.Tpo $(DEPDIR)/libgncmod_engine_la-gncJob.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gncJob.c' object='libgncmod_engine_la-gncJob.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gncJob.lo `test -f 'gncJob.c' || echo '$(srcdir)/'`gncJob.c
+
+libgncmod_engine_la-gncOrder.lo: gncOrder.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gncOrder.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gncOrder.Tpo -c -o libgncmod_engine_la-gncOrder.lo `test -f 'gncOrder.c' || echo '$(srcdir)/'`gncOrder.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gncOrder.Tpo $(DEPDIR)/libgncmod_engine_la-gncOrder.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gncOrder.c' object='libgncmod_engine_la-gncOrder.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gncOrder.lo `test -f 'gncOrder.c' || echo '$(srcdir)/'`gncOrder.c
+
+libgncmod_engine_la-gncOwner.lo: gncOwner.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gncOwner.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gncOwner.Tpo -c -o libgncmod_engine_la-gncOwner.lo `test -f 'gncOwner.c' || echo '$(srcdir)/'`gncOwner.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gncOwner.Tpo $(DEPDIR)/libgncmod_engine_la-gncOwner.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gncOwner.c' object='libgncmod_engine_la-gncOwner.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gncOwner.lo `test -f 'gncOwner.c' || echo '$(srcdir)/'`gncOwner.c
+
+libgncmod_engine_la-gncTaxTable.lo: gncTaxTable.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gncTaxTable.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gncTaxTable.Tpo -c -o libgncmod_engine_la-gncTaxTable.lo `test -f 'gncTaxTable.c' || echo '$(srcdir)/'`gncTaxTable.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gncTaxTable.Tpo $(DEPDIR)/libgncmod_engine_la-gncTaxTable.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gncTaxTable.c' object='libgncmod_engine_la-gncTaxTable.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gncTaxTable.lo `test -f 'gncTaxTable.c' || echo '$(srcdir)/'`gncTaxTable.c
+
+libgncmod_engine_la-gncIDSearch.lo: gncIDSearch.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gncIDSearch.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gncIDSearch.Tpo -c -o libgncmod_engine_la-gncIDSearch.lo `test -f 'gncIDSearch.c' || echo '$(srcdir)/'`gncIDSearch.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gncIDSearch.Tpo $(DEPDIR)/libgncmod_engine_la-gncIDSearch.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gncIDSearch.c' object='libgncmod_engine_la-gncIDSearch.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gncIDSearch.lo `test -f 'gncIDSearch.c' || echo '$(srcdir)/'`gncIDSearch.c
+
+libgncmod_engine_la-gncVendor.lo: gncVendor.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-gncVendor.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-gncVendor.Tpo -c -o libgncmod_engine_la-gncVendor.lo `test -f 'gncVendor.c' || echo '$(srcdir)/'`gncVendor.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-gncVendor.Tpo $(DEPDIR)/libgncmod_engine_la-gncVendor.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gncVendor.c' object='libgncmod_engine_la-gncVendor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-gncVendor.lo `test -f 'gncVendor.c' || echo '$(srcdir)/'`gncVendor.c
+
+libgncmod_engine_la-iso-4217-currencies.lo: iso-4217-currencies.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -MT libgncmod_engine_la-iso-4217-currencies.lo -MD -MP -MF $(DEPDIR)/libgncmod_engine_la-iso-4217-currencies.Tpo -c -o libgncmod_engine_la-iso-4217-currencies.lo `test -f 'iso-4217-currencies.c' || echo '$(srcdir)/'`iso-4217-currencies.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libgncmod_engine_la-iso-4217-currencies.Tpo $(DEPDIR)/libgncmod_engine_la-iso-4217-currencies.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='iso-4217-currencies.c' object='libgncmod_engine_la-iso-4217-currencies.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgncmod_engine_la_CFLAGS) $(CFLAGS) -c -o libgncmod_engine_la-iso-4217-currencies.lo `test -f 'iso-4217-currencies.c' || echo '$(srcdir)/'`iso-4217-currencies.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

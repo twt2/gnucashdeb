@@ -87,9 +87,7 @@
 (use-modules (ice-9 rdelim))      ; for read-line
 (cond-expand
   (guile-2
-    (eval-when
-      (compile load eval) 
-      (use-modules (ice-9 local-eval))))  ; for the-environment
+      (use-modules (ice-9 local-eval)))  ; for the-environment
   (else ))
 (use-modules (gnucash printf))
 (use-modules (gnucash app-utils)) ; for _
@@ -156,7 +154,7 @@
 
   ;; recursively process input stream
   (define (loop inp needle other code? line)
-    (if (eq? line "")
+    (if (equal? line "")
       (set! line (read-line inp 'concat)))
     (if (not (eof-object? line)) 
       (let ((match (regexp-exec needle line)))
