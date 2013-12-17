@@ -1249,6 +1249,9 @@ static swig_module_info swig_module = {swig_types, 9, 0, 0, 0, 0};
 #include <window-report.h>
 #include <dialog-custom-report.h>
 
+
+#include "guile-mappings.h"
+
 SCM scm_init_sw_report_gnome_module (void);
 
 static SCM

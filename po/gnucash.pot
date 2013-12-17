@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-30 19:26-0800\n"
+"POT-Creation-Date: 2013-12-15 09:31-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -152,7 +152,7 @@ msgstr ""
 msgid "Opening Balances"
 msgstr ""
 
-#. src/import-export/qif-import/qif-dialog-utils.scm
+#. src/import-export/qif-imp/qif-dialog-utils.scm
 #. src/report/business-reports/balsheet-eg.eguile.scm
 #. src/report/standard-reports/balance-sheet.scm
 #: ../src/app-utils/gnc-ui-util.c:672 ../intl-scm/guile-strings.c:334
@@ -161,7 +161,7 @@ msgstr ""
 msgid "Retained Earnings"
 msgstr ""
 
-#. src/import-export/qif-import/qif-dialog-utils.scm
+#. src/import-export/qif-imp/qif-dialog-utils.scm
 #. src/report/standard-reports/balance-sheet.scm
 #. src/report/standard-reports/budget-balance-sheet.scm
 #: ../src/app-utils/gnc-ui-util.c:744 ../src/engine/Account.c:3950
@@ -185,7 +185,7 @@ msgstr ""
 #: ../src/app-utils/guile-util.c:906
 #: ../src/business/business-gnome/gtkbuilder/dialog-payment.glade.h:8
 #: ../src/gnome/gnc-plugin-page-register2.c:2466
-#: ../src/gnome/gnc-plugin-page-register.c:2623
+#: ../src/gnome/gnc-plugin-page-register.c:2630
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3199
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3204
 #: ../src/register/ledger-core/split-register.c:2252
@@ -201,7 +201,7 @@ msgstr ""
 #: ../src/app-utils/guile-util.c:937
 #: ../src/business/business-gnome/gtkbuilder/dialog-payment.glade.h:9
 #: ../src/gnome/gnc-plugin-page-register2.c:2463
-#: ../src/gnome/gnc-plugin-page-register.c:2619
+#: ../src/gnome/gnc-plugin-page-register.c:2626
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2898
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2917
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2935
@@ -223,35 +223,35 @@ msgid ""
 "%s"
 msgstr ""
 
-#: ../src/bin/gnucash-bin.c:93
+#: ../src/bin/gnucash-bin.c:94
 msgid "Show GnuCash version"
 msgstr ""
 
-#: ../src/bin/gnucash-bin.c:98
+#: ../src/bin/gnucash-bin.c:99
 msgid "Enable debugging mode: increasing logging to provide deep detail."
 msgstr ""
 
-#: ../src/bin/gnucash-bin.c:103
+#: ../src/bin/gnucash-bin.c:104
 msgid "Enable extra/development/debugging features."
 msgstr ""
 
-#: ../src/bin/gnucash-bin.c:108
+#: ../src/bin/gnucash-bin.c:109
 msgid ""
 "Log level overrides, of the form \"log.ger.path={debug,info,warn,crit,"
 "error}\""
 msgstr ""
 
-#: ../src/bin/gnucash-bin.c:114
+#: ../src/bin/gnucash-bin.c:115
 msgid ""
 "File to log into; defaults to \"/tmp/gnucash.trace\"; can be \"stderr\" or "
 "\"stdout\"."
 msgstr ""
 
-#: ../src/bin/gnucash-bin.c:120
+#: ../src/bin/gnucash-bin.c:121
 msgid "Do not load the last file opened"
 msgstr ""
 
-#: ../src/bin/gnucash-bin.c:124
+#: ../src/bin/gnucash-bin.c:125
 msgid ""
 "Set the prefix for gsettings schemas for gsettings queries. This can be "
 "useful to have a different settings tree while debugging."
@@ -259,63 +259,63 @@ msgstr ""
 
 #. Translators: Argument description for autohelp; see
 #. http://developer.gnome.org/doc/API/2.0/glib/glib-Commandline-option-parser.html
-#: ../src/bin/gnucash-bin.c:127
+#: ../src/bin/gnucash-bin.c:128
 msgid "GSETTINGSPREFIX"
 msgstr ""
 
-#: ../src/bin/gnucash-bin.c:131
+#: ../src/bin/gnucash-bin.c:132
 msgid "Add price quotes to given GnuCash datafile"
 msgstr ""
 
 #. Translators: Argument description for autohelp; see
 #. http://developer.gnome.org/doc/API/2.0/glib/glib-Commandline-option-parser.html
-#: ../src/bin/gnucash-bin.c:134
+#: ../src/bin/gnucash-bin.c:135
 msgid "FILE"
 msgstr ""
 
-#: ../src/bin/gnucash-bin.c:138
+#: ../src/bin/gnucash-bin.c:139
 msgid ""
 "Regular expression determining which namespace commodities will be retrieved"
 msgstr ""
 
 #. Translators: Argument description for autohelp; see
 #. http://developer.gnome.org/doc/API/2.0/glib/glib-Commandline-option-parser.html
-#: ../src/bin/gnucash-bin.c:141
+#: ../src/bin/gnucash-bin.c:142
 msgid "REGEXP"
 msgstr ""
 
-#: ../src/bin/gnucash-bin.c:144
+#: ../src/bin/gnucash-bin.c:145
 msgid "[datafile]"
 msgstr ""
 
-#: ../src/bin/gnucash-bin.c:154
+#: ../src/bin/gnucash-bin.c:155
 msgid "This is a development version. It may or may not work."
 msgstr ""
 
-#: ../src/bin/gnucash-bin.c:155
+#: ../src/bin/gnucash-bin.c:156
 msgid "Report bugs and other problems to gnucash-devel@gnucash.org"
 msgstr ""
 
-#: ../src/bin/gnucash-bin.c:156
+#: ../src/bin/gnucash-bin.c:157
 msgid "You can also lookup and file bug reports at http://bugzilla.gnome.org"
 msgstr ""
 
-#: ../src/bin/gnucash-bin.c:157
+#: ../src/bin/gnucash-bin.c:158
 msgid "To find the last stable version, please refer to http://www.gnucash.org"
 msgstr ""
 
-#: ../src/bin/gnucash-bin.c:523
+#: ../src/bin/gnucash-bin.c:346
 msgid "- GnuCash personal and small business finance management"
 msgstr ""
 
-#: ../src/bin/gnucash-bin.c:529 ../src/bin/gnucash-bin.c:888
+#: ../src/bin/gnucash-bin.c:352 ../src/bin/gnucash-bin.c:711
 #, c-format
 msgid ""
 "%s\n"
 "Run '%s --help' to see a full list of available command line options.\n"
 msgstr ""
 
-#: ../src/bin/gnucash-bin.c:542
+#: ../src/bin/gnucash-bin.c:365
 #, c-format
 msgid "GnuCash %s development version"
 msgstr ""
@@ -329,14 +329,14 @@ msgstr ""
 #. 2nd %s is the scm type (svn/svk/git/bzr);
 #. 3rd %s is the scm revision number;
 #. 4th %s is the build date
-#: ../src/bin/gnucash-bin.c:548 ../src/gnome-utils/gnc-main-window.c:4369
+#: ../src/bin/gnucash-bin.c:371 ../src/gnome-utils/gnc-main-window.c:4393
 #, c-format
 msgid ""
 "%s\n"
 "This copy was built from %s rev %s on %s."
 msgstr ""
 
-#: ../src/bin/gnucash-bin.c:554
+#: ../src/bin/gnucash-bin.c:377
 #, c-format
 msgid "GnuCash %s"
 msgstr ""
@@ -344,27 +344,27 @@ msgstr ""
 #. Translators: 1st %s is a fixed message, which is translated independently;
 #. 2nd %s is the scm (svn/svk/git/bzr) revision number;
 #. 3rd %s is the build date
-#: ../src/bin/gnucash-bin.c:559 ../src/gnome-utils/gnc-main-window.c:4376
+#: ../src/bin/gnucash-bin.c:382 ../src/gnome-utils/gnc-main-window.c:4400
 #, c-format
 msgid ""
 "%s\n"
 "This copy was built from rev %s on %s."
 msgstr ""
 
-#: ../src/bin/gnucash-bin.c:660
+#: ../src/bin/gnucash-bin.c:483
 msgid "No quotes retrieved. Finance::Quote isn't installed properly.\n"
 msgstr ""
 
 #. Install Price Quote Sources
-#: ../src/bin/gnucash-bin.c:743
+#: ../src/bin/gnucash-bin.c:566
 msgid "Checking Finance::Quote..."
 msgstr ""
 
-#: ../src/bin/gnucash-bin.c:751
+#: ../src/bin/gnucash-bin.c:574
 msgid "Loading data..."
 msgstr ""
 
-#: ../src/bin/gnucash-bin.c:889
+#: ../src/bin/gnucash-bin.c:712
 msgid ""
 "Error: could not initialize graphical user interface and option add-price-"
 "quotes was not set."
@@ -372,8 +372,8 @@ msgstr ""
 
 #: ../src/business/business-gnome/business-gnome-utils.c:73
 #: ../src/business/business-gnome/business-gnome-utils.c:260
-#: ../src/business/business-gnome/dialog-invoice.c:1318
-#: ../src/business/business-gnome/dialog-invoice.c:1396
+#: ../src/business/business-gnome/dialog-invoice.c:1306
+#: ../src/business/business-gnome/dialog-invoice.c:1384
 #: ../src/gnome-utils/gnc-general-select.c:214
 msgid "Select..."
 msgstr ""
@@ -391,11 +391,11 @@ msgstr ""
 #. src/report/business-reports/job-report.scm
 #. src/report/business-reports/owner-report.scm
 #: ../src/business/business-gnome/business-gnome-utils.c:219
-#: ../src/business/business-gnome/dialog-invoice.c:2333
-#: ../src/business/business-gnome/dialog-invoice.c:2509
-#: ../src/business/business-gnome/dialog-invoice.c:2510
-#: ../src/business/business-gnome/dialog-invoice.c:3151
-#: ../src/engine/gncInvoice.c:954
+#: ../src/business/business-gnome/dialog-invoice.c:2321
+#: ../src/business/business-gnome/dialog-invoice.c:2497
+#: ../src/business/business-gnome/dialog-invoice.c:2498
+#: ../src/business/business-gnome/dialog-invoice.c:3139
+#: ../src/engine/gncInvoice.c:971
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3098
 #: ../src/plugins/bi_import/gtkbuilder/dialog-bi-import-gui.glade.h:3
 #: ../intl-scm/guile-strings.c:300 ../intl-scm/guile-strings.c:722
@@ -406,9 +406,9 @@ msgid "Bill"
 msgstr ""
 
 #: ../src/business/business-gnome/business-gnome-utils.c:222
-#: ../src/business/business-gnome/dialog-invoice.c:2338
-#: ../src/business/business-gnome/dialog-invoice.c:2516
-#: ../src/business/business-gnome/dialog-invoice.c:2517
+#: ../src/business/business-gnome/dialog-invoice.c:2326
+#: ../src/business/business-gnome/dialog-invoice.c:2504
+#: ../src/business/business-gnome/dialog-invoice.c:2505
 msgid "Voucher"
 msgstr ""
 
@@ -423,10 +423,10 @@ msgstr ""
 #. src/report/business-reports/taxinvoice.scm
 #. src/report/standard-reports/register.scm
 #: ../src/business/business-gnome/business-gnome-utils.c:225
-#: ../src/business/business-gnome/dialog-invoice.c:3163
+#: ../src/business/business-gnome/dialog-invoice.c:3151
 #: ../src/business/business-gnome/gnc-plugin-page-invoice.c:383
 #: ../src/business/business-gnome/gtkbuilder/dialog-invoice.glade.h:1
-#: ../src/engine/gncInvoice.c:952
+#: ../src/engine/gncInvoice.c:969
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2932
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3173
 #: ../src/plugins/bi_import/gtkbuilder/dialog-bi-import-gui.glade.h:5
@@ -446,7 +446,7 @@ msgstr ""
 #: ../src/business/business-gnome/business-gnome-utils.c:448
 #: ../src/engine/Recurrence.c:478 ../src/engine/Recurrence.c:668
 #: ../src/gnome-utils/gtkbuilder/gnc-frequency.glade.h:4
-#: ../src/import-export/csv-import/gnc-csv-model.c:44
+#: ../src/import-export/csv-imp/gnc-csv-model.c:44
 #: ../intl-scm/guile-strings.c:4502 ../intl-scm/guile-strings.c:4528
 #: ../intl-scm/guile-strings.c:4584 ../intl-scm/guile-strings.c:4644
 #: ../intl-scm/guile-strings.c:4770 ../intl-scm/guile-strings.c:4786
@@ -628,10 +628,10 @@ msgstr ""
 
 #: ../src/business/business-gnome/dialog-customer.c:907
 #: ../src/business/business-gnome/dialog-employee.c:712
-#: ../src/business/business-gnome/dialog-invoice.c:2917
-#: ../src/business/business-gnome/dialog-invoice.c:2926
-#: ../src/business/business-gnome/dialog-invoice.c:2937
-#: ../src/business/business-gnome/dialog-invoice.c:3190
+#: ../src/business/business-gnome/dialog-invoice.c:2905
+#: ../src/business/business-gnome/dialog-invoice.c:2914
+#: ../src/business/business-gnome/dialog-invoice.c:2925
+#: ../src/business/business-gnome/dialog-invoice.c:3178
 #: ../src/business/business-gnome/dialog-job.c:549
 #: ../src/business/business-gnome/gtkbuilder/dialog-payment.glade.h:1
 msgid "Process Payment"
@@ -666,8 +666,8 @@ msgstr ""
 #. src/report/business-reports/aging.scm
 #. src/report/business-reports/owner-report.scm
 #: ../src/business/business-gnome/dialog-customer.c:932
-#: ../src/business/business-gnome/dialog-invoice.c:3062
-#: ../src/business/business-gnome/dialog-invoice.c:3203
+#: ../src/business/business-gnome/dialog-invoice.c:3050
+#: ../src/business/business-gnome/dialog-invoice.c:3191
 #: ../src/business/business-gnome/dialog-job.c:575
 #: ../src/business/business-gnome/dialog-order.c:885
 #: ../src/business/business-gnome/dialog-vendor.c:735
@@ -733,7 +733,7 @@ msgid "Employee Username"
 msgstr ""
 
 #: ../src/business/business-gnome/dialog-employee.c:725
-#: ../src/business/business-gnome/dialog-invoice.c:3042
+#: ../src/business/business-gnome/dialog-invoice.c:3030
 msgid "Employee Name"
 msgstr ""
 
@@ -785,9 +785,9 @@ msgstr ""
 #. src/report/business-reports/owner-report.scm
 #. src/report/business-reports/taxinvoice.eguile.scm
 #: ../src/business/business-gnome/dialog-invoice.c:691
-#: ../src/business/business-gnome/dialog-invoice.c:2971
-#: ../src/business/business-gnome/dialog-invoice.c:3005
-#: ../src/business/business-gnome/dialog-invoice.c:3039
+#: ../src/business/business-gnome/dialog-invoice.c:2959
+#: ../src/business/business-gnome/dialog-invoice.c:2993
+#: ../src/business/business-gnome/dialog-invoice.c:3027
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2836
 #: ../src/register/ledger-core/split-register-model.c:203
 #: ../intl-scm/guile-strings.c:488 ../intl-scm/guile-strings.c:848
@@ -812,7 +812,7 @@ msgstr ""
 msgid "Accumulate Splits?"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:786
+#: ../src/business/business-gnome/dialog-invoice.c:787
 msgid "The Invoice must have at least one Entry."
 msgstr ""
 
@@ -827,28 +827,28 @@ msgid ""
 "currency. You will be asked a conversion rate for each."
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:959
+#: ../src/business/business-gnome/dialog-invoice.c:947
 msgid "The post action was canceled because not all exchange rates were given."
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:1228
+#: ../src/business/business-gnome/dialog-invoice.c:1216
 #: ../src/gnome/window-reconcile2.c:1142 ../src/gnome/window-reconcile.c:1142
 msgid "Total:"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:1234
+#: ../src/business/business-gnome/dialog-invoice.c:1222
 msgid "Subtotal:"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:1235
+#: ../src/business/business-gnome/dialog-invoice.c:1223
 msgid "Tax:"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:1239
+#: ../src/business/business-gnome/dialog-invoice.c:1227
 msgid "Total Cash:"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:1240
+#: ../src/business/business-gnome/dialog-invoice.c:1228
 msgid "Total Charge:"
 msgstr ""
 
@@ -856,10 +856,10 @@ msgstr ""
 #. src/report/business-reports/easy-invoice.scm
 #. src/report/business-reports/fancy-invoice.scm
 #. src/report/business-reports/invoice.scm
-#: ../src/business/business-gnome/dialog-invoice.c:1709
+#: ../src/business/business-gnome/dialog-invoice.c:1697
 #: ../src/business/business-gnome/dialog-payment.c:908
 #: ../src/business/business-gnome/gtkbuilder/dialog-invoice.glade.h:22
-#: ../src/engine/gncInvoice.c:960 ../intl-scm/guile-strings.c:938
+#: ../src/engine/gncInvoice.c:977 ../intl-scm/guile-strings.c:938
 #: ../intl-scm/guile-strings.c:940 ../intl-scm/guile-strings.c:942
 #: ../intl-scm/guile-strings.c:1148 ../intl-scm/guile-strings.c:1150
 #: ../intl-scm/guile-strings.c:1152 ../intl-scm/guile-strings.c:1330
@@ -867,141 +867,141 @@ msgstr ""
 msgid "Credit Note"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:1897
-#: ../src/business/business-gnome/dialog-invoice.c:1916
-#: ../src/business/business-gnome/dialog-invoice.c:1935
+#: ../src/business/business-gnome/dialog-invoice.c:1885
+#: ../src/business/business-gnome/dialog-invoice.c:1904
+#: ../src/business/business-gnome/dialog-invoice.c:1923
 msgid "New Credit Note"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:1898
+#: ../src/business/business-gnome/dialog-invoice.c:1886
 #: ../src/business/business-gnome/gnc-plugin-page-owner-tree.c:275
 #: ../src/business/business-gnome/gtkbuilder/dialog-invoice.glade.h:21
 #: ../src/gnome-search/dialog-search.c:1037
 msgid "New Invoice"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:1903
-#: ../src/business/business-gnome/dialog-invoice.c:1922
-#: ../src/business/business-gnome/dialog-invoice.c:1941
+#: ../src/business/business-gnome/dialog-invoice.c:1891
+#: ../src/business/business-gnome/dialog-invoice.c:1910
+#: ../src/business/business-gnome/dialog-invoice.c:1929
 msgid "Edit Credit Note"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:1904
+#: ../src/business/business-gnome/dialog-invoice.c:1892
 msgid "Edit Invoice"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:1907
-#: ../src/business/business-gnome/dialog-invoice.c:1926
-#: ../src/business/business-gnome/dialog-invoice.c:1945
+#: ../src/business/business-gnome/dialog-invoice.c:1895
+#: ../src/business/business-gnome/dialog-invoice.c:1914
+#: ../src/business/business-gnome/dialog-invoice.c:1933
 msgid "View Credit Note"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:1908
+#: ../src/business/business-gnome/dialog-invoice.c:1896
 msgid "View Invoice"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:1917
+#: ../src/business/business-gnome/dialog-invoice.c:1905
 #: ../src/business/business-gnome/gnc-plugin-page-owner-tree.c:274
 #: ../src/gnome-search/dialog-search.c:1021
 msgid "New Bill"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:1923
+#: ../src/business/business-gnome/dialog-invoice.c:1911
 msgid "Edit Bill"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:1927
+#: ../src/business/business-gnome/dialog-invoice.c:1915
 msgid "View Bill"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:1936
+#: ../src/business/business-gnome/dialog-invoice.c:1924
 #: ../src/gnome-search/dialog-search.c:1033
 msgid "New Expense Voucher"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:1942
+#: ../src/business/business-gnome/dialog-invoice.c:1930
 msgid "Edit Expense Voucher"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:1946
+#: ../src/business/business-gnome/dialog-invoice.c:1934
 msgid "View Expense Voucher"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2332
-#: ../src/business/business-gnome/dialog-invoice.c:2508
+#: ../src/business/business-gnome/dialog-invoice.c:2320
+#: ../src/business/business-gnome/dialog-invoice.c:2496
 msgid "Bill Information"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2334
-#: ../src/business/business-gnome/dialog-invoice.c:2511
-#: ../src/business/business-gnome/dialog-invoice.c:3012
+#: ../src/business/business-gnome/dialog-invoice.c:2322
+#: ../src/business/business-gnome/dialog-invoice.c:2499
+#: ../src/business/business-gnome/dialog-invoice.c:3000
 msgid "Bill ID"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2337
-#: ../src/business/business-gnome/dialog-invoice.c:2515
+#: ../src/business/business-gnome/dialog-invoice.c:2325
+#: ../src/business/business-gnome/dialog-invoice.c:2503
 msgid "Voucher Information"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2339
-#: ../src/business/business-gnome/dialog-invoice.c:2518
-#: ../src/business/business-gnome/dialog-invoice.c:3046
+#: ../src/business/business-gnome/dialog-invoice.c:2327
+#: ../src/business/business-gnome/dialog-invoice.c:2506
+#: ../src/business/business-gnome/dialog-invoice.c:3034
 msgid "Voucher ID"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2815
+#: ../src/business/business-gnome/dialog-invoice.c:2803
 msgid "Date of duplicated entries"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2850
+#: ../src/business/business-gnome/dialog-invoice.c:2838
 msgid "Do you really want to post these invoices?"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2916
+#: ../src/business/business-gnome/dialog-invoice.c:2904
 msgid "View/Edit Invoice"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2918
-#: ../src/business/business-gnome/dialog-invoice.c:2927
-#: ../src/business/business-gnome/dialog-invoice.c:2938
+#: ../src/business/business-gnome/dialog-invoice.c:2906
+#: ../src/business/business-gnome/dialog-invoice.c:2915
+#: ../src/business/business-gnome/dialog-invoice.c:2926
 #: ../src/business/business-gnome/gnc-plugin-page-invoice.c:261
 #: ../src/gnome/gnc-plugin-page-register2.c:480
 #: ../src/gnome/gnc-plugin-page-register.c:482
 msgid "Duplicate"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2919
-#: ../src/business/business-gnome/dialog-invoice.c:2928
-#: ../src/business/business-gnome/dialog-invoice.c:2939
+#: ../src/business/business-gnome/dialog-invoice.c:2907
+#: ../src/business/business-gnome/dialog-invoice.c:2916
+#: ../src/business/business-gnome/dialog-invoice.c:2927
 #: ../src/business/business-gnome/gnc-plugin-page-invoice.c:265
 msgid "Post"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2920
-#: ../src/business/business-gnome/dialog-invoice.c:2929
-#: ../src/business/business-gnome/dialog-invoice.c:2940
+#: ../src/business/business-gnome/dialog-invoice.c:2908
+#: ../src/business/business-gnome/dialog-invoice.c:2917
+#: ../src/business/business-gnome/dialog-invoice.c:2928
 msgid "Printable Report"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2925
-#: ../src/business/business-gnome/dialog-invoice.c:3189
+#: ../src/business/business-gnome/dialog-invoice.c:2913
+#: ../src/business/business-gnome/dialog-invoice.c:3177
 msgid "View/Edit Bill"
 msgstr ""
 
 #. Translators: The terms 'Voucher' and 'Expense Voucher' are used
 #. interchangeably in gnucash and mean the same thing.
-#: ../src/business/business-gnome/dialog-invoice.c:2936
+#: ../src/business/business-gnome/dialog-invoice.c:2924
 msgid "View/Edit Voucher"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2950
+#: ../src/business/business-gnome/dialog-invoice.c:2938
 msgid "Invoice Owner"
 msgstr ""
 
 #. src/report/business-reports/easy-invoice.scm
 #. src/report/business-reports/fancy-invoice.scm
 #. src/report/business-reports/invoice.scm
-#: ../src/business/business-gnome/dialog-invoice.c:2953
+#: ../src/business/business-gnome/dialog-invoice.c:2941
 #: ../intl-scm/guile-strings.c:890 ../intl-scm/guile-strings.c:1072
 #: ../intl-scm/guile-strings.c:1282
 msgid "Invoice Notes"
@@ -1010,10 +1010,10 @@ msgstr ""
 #. src/report/business-reports/easy-invoice.scm
 #. src/report/business-reports/fancy-invoice.scm
 #. src/report/business-reports/invoice.scm
-#: ../src/business/business-gnome/dialog-invoice.c:2956
-#: ../src/business/business-gnome/dialog-invoice.c:2990
-#: ../src/business/business-gnome/dialog-invoice.c:3024
-#: ../src/business/business-gnome/dialog-invoice.c:3053
+#: ../src/business/business-gnome/dialog-invoice.c:2944
+#: ../src/business/business-gnome/dialog-invoice.c:2978
+#: ../src/business/business-gnome/dialog-invoice.c:3012
+#: ../src/business/business-gnome/dialog-invoice.c:3041
 #: ../src/business/business-gnome/dialog-job.c:562
 #: ../src/business/business-gnome/dialog-job.c:573
 #: ../src/business/business-gnome/dialog-order.c:883
@@ -1024,60 +1024,60 @@ msgstr ""
 msgid "Billing ID"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2959
-#: ../src/business/business-gnome/dialog-invoice.c:2993
-#: ../src/business/business-gnome/dialog-invoice.c:3027
+#: ../src/business/business-gnome/dialog-invoice.c:2947
+#: ../src/business/business-gnome/dialog-invoice.c:2981
+#: ../src/business/business-gnome/dialog-invoice.c:3015
 msgid "Is Paid?"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2962
-#: ../src/business/business-gnome/dialog-invoice.c:2996
-#: ../src/business/business-gnome/dialog-invoice.c:3030
+#: ../src/business/business-gnome/dialog-invoice.c:2950
+#: ../src/business/business-gnome/dialog-invoice.c:2984
+#: ../src/business/business-gnome/dialog-invoice.c:3018
 #: ../src/business/business-gnome/gtkbuilder/dialog-invoice.glade.h:5
-#: ../src/gnome/dialog-find-transactions2.c:122
-#: ../src/gnome/dialog-find-transactions.c:121
+#: ../src/gnome/dialog-find-transactions2.c:125
+#: ../src/gnome/dialog-find-transactions.c:124
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2820
 msgid "Date Posted"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2965
-#: ../src/business/business-gnome/dialog-invoice.c:2999
-#: ../src/business/business-gnome/dialog-invoice.c:3033
+#: ../src/business/business-gnome/dialog-invoice.c:2953
+#: ../src/business/business-gnome/dialog-invoice.c:2987
+#: ../src/business/business-gnome/dialog-invoice.c:3021
 msgid "Is Posted?"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2968
-#: ../src/business/business-gnome/dialog-invoice.c:3002
-#: ../src/business/business-gnome/dialog-invoice.c:3036
+#: ../src/business/business-gnome/dialog-invoice.c:2956
+#: ../src/business/business-gnome/dialog-invoice.c:2990
+#: ../src/business/business-gnome/dialog-invoice.c:3024
 #: ../src/business/business-gnome/dialog-order.c:872
 #: ../src/business/business-gnome/gtkbuilder/dialog-invoice.glade.h:4
 #: ../src/business/business-gnome/gtkbuilder/dialog-order.glade.h:3
 msgid "Date Opened"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2974
-#: ../src/business/business-gnome/dialog-invoice.c:3008
+#: ../src/business/business-gnome/dialog-invoice.c:2962
+#: ../src/business/business-gnome/dialog-invoice.c:2996
 msgid "Company Name "
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2978
+#: ../src/business/business-gnome/dialog-invoice.c:2966
 #: ../src/business/business-gnome/gtkbuilder/dialog-invoice.glade.h:3
 msgid "Invoice ID"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2984
+#: ../src/business/business-gnome/dialog-invoice.c:2972
 msgid "Bill Owner"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2987
+#: ../src/business/business-gnome/dialog-invoice.c:2975
 msgid "Bill Notes"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3018
+#: ../src/business/business-gnome/dialog-invoice.c:3006
 msgid "Voucher Owner"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3021
+#: ../src/business/business-gnome/dialog-invoice.c:3009
 msgid "Voucher Notes"
 msgstr ""
 
@@ -1086,7 +1086,7 @@ msgstr ""
 #. src/report/business-reports/owner-report.scm
 #. src/report/standard-reports/account-summary.scm
 #. src/report/standard-reports/sx-summary.scm
-#: ../src/business/business-gnome/dialog-invoice.c:3055
+#: ../src/business/business-gnome/dialog-invoice.c:3043
 #: ../src/business/business-gnome/gtkbuilder/dialog-invoice.glade.h:2
 #: ../src/business/business-gnome/gtkbuilder/dialog-payment.glade.h:7
 #: ../src/gnome/dialog-lot-viewer.c:824 ../src/gnome/dialog-tax-info.c:1189
@@ -1094,7 +1094,7 @@ msgstr ""
 #: ../src/gnome-utils/gnc-tree-view-owner.c:403
 #: ../src/gnome-utils/gnc-tree-view-price.c:449
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2972
-#: ../src/import-export/csv-export/csv-transactions-export.c:347
+#: ../src/import-export/csv-exp/csv-transactions-export.c:347
 #: ../src/register/ledger-core/split-register-model.c:318
 #: ../intl-scm/guile-strings.c:664 ../intl-scm/guile-strings.c:1366
 #: ../intl-scm/guile-strings.c:1478 ../intl-scm/guile-strings.c:2566
@@ -1102,23 +1102,23 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3057
+#: ../src/business/business-gnome/dialog-invoice.c:3045
 #: ../src/register/ledger-core/split-register-model.c:272
 msgid "Paid"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3060
+#: ../src/business/business-gnome/dialog-invoice.c:3048
 msgid "Posted"
 msgstr ""
 
 #. src/report/business-reports/easy-invoice.scm
-#: ../src/business/business-gnome/dialog-invoice.c:3065
-#: ../src/business/business-gnome/dialog-invoice.c:3205
+#: ../src/business/business-gnome/dialog-invoice.c:3053
+#: ../src/business/business-gnome/dialog-invoice.c:3193
 #: ../intl-scm/guile-strings.c:948
 msgid "Due"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3067
+#: ../src/business/business-gnome/dialog-invoice.c:3055
 #: ../src/business/business-gnome/dialog-order.c:890
 #: ../src/gnome/dialog-lot-viewer.c:830
 msgid "Opened"
@@ -1128,11 +1128,11 @@ msgstr ""
 #. src/report/standard-reports/general-ledger.scm
 #. src/report/standard-reports/register.scm
 #. src/report/standard-reports/transaction.scm
-#: ../src/business/business-gnome/dialog-invoice.c:3069
+#: ../src/business/business-gnome/dialog-invoice.c:3057
 #: ../src/business/business-gnome/dialog-order.c:892
 #: ../src/business/business-gnome/gtkbuilder/dialog-payment.glade.h:19
 #: ../src/gnome/dialog-lot-viewer.c:907 ../src/gnome/reconcile-view.c:250
-#: ../src/import-export/csv-import/gnc-csv-model.c:46
+#: ../src/import-export/csv-imp/gnc-csv-model.c:46
 #: ../src/register/ledger-core/split-register-model.c:218
 #: ../src/register/ledger-core/split-register-model.c:238
 #: ../intl-scm/guile-strings.c:3552 ../intl-scm/guile-strings.c:3580
@@ -1142,30 +1142,30 @@ msgstr ""
 msgid "Num"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3150
+#: ../src/business/business-gnome/dialog-invoice.c:3138
 msgid "Find Bill"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3156
+#: ../src/business/business-gnome/dialog-invoice.c:3144
 msgid "Find Expense Voucher"
 msgstr ""
 
 #. src/report/business-reports/easy-invoice.scm
 #. src/report/business-reports/fancy-invoice.scm
 #. src/report/business-reports/invoice.scm
-#: ../src/business/business-gnome/dialog-invoice.c:3157
+#: ../src/business/business-gnome/dialog-invoice.c:3145
 #: ../intl-scm/guile-strings.c:936 ../intl-scm/guile-strings.c:1146
 #: ../intl-scm/guile-strings.c:1328
 msgid "Expense Voucher"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3162
+#: ../src/business/business-gnome/dialog-invoice.c:3150
 msgid "Find Invoice"
 msgstr ""
 
 #. Translators: This abbreviation is the column heading for
 #. the condition "Is this invoice a Credit Note?"
-#: ../src/business/business-gnome/dialog-invoice.c:3199
+#: ../src/business/business-gnome/dialog-invoice.c:3187
 msgid "CN?"
 msgstr ""
 
@@ -1177,16 +1177,16 @@ msgstr ""
 #. src/report/standard-reports/general-ledger.scm
 #. src/report/standard-reports/register.scm
 #. src/report/standard-reports/transaction.scm
-#: ../src/business/business-gnome/dialog-invoice.c:3201
+#: ../src/business/business-gnome/dialog-invoice.c:3189
 #: ../src/gnome/dialog-lot-viewer.c:919 ../src/gnome/reconcile-view.c:243
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2992
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3004
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:34
+#: ../src/import-export/aqb/dialog-ab.glade.h:34
 #: ../src/import-export/import-main-matcher.c:484
 #: ../src/import-export/import-match-picker.c:345
 #: ../src/import-export/import-match-picker.c:385
-#: ../src/import-export/qif-import/assistant-qif-import.c:3480
-#: ../src/import-export/qif-import/assistant-qif-import.c:3517
+#: ../src/import-export/qif-imp/assistant-qif-import.c:3482
+#: ../src/import-export/qif-imp/assistant-qif-import.c:3519
 #: ../intl-scm/guile-strings.c:668 ../intl-scm/guile-strings.c:1370
 #: ../intl-scm/guile-strings.c:1486 ../intl-scm/guile-strings.c:2268
 #: ../intl-scm/guile-strings.c:3562 ../intl-scm/guile-strings.c:3602
@@ -1199,14 +1199,14 @@ msgstr ""
 
 #. Translators: %d is the number of bills due. This is a
 #. ngettext(3) message.
-#: ../src/business/business-gnome/dialog-invoice.c:3255
+#: ../src/business/business-gnome/dialog-invoice.c:3243
 #, c-format
 msgid "The following bill is due:"
 msgid_plural "The following %d bills are due:"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3260
+#: ../src/business/business-gnome/dialog-invoice.c:3248
 msgid "Due Bills Reminder"
 msgstr ""
 
@@ -1725,7 +1725,7 @@ msgstr ""
 #. Add the Cancel button for the matcher
 #: ../src/business/business-gnome/gnc-plugin-page-invoice.c:156
 #: ../src/gnome/window-reconcile2.c:2166 ../src/gnome/window-reconcile.c:2166
-#: ../src/import-export/csv-import/assistant-csv-trans-import.c:1424
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.c:1424
 msgid "_Cancel"
 msgstr ""
 
@@ -2077,11 +2077,11 @@ msgstr ""
 #: ../src/gnome/gschemas/org.gnucash.dialogs.reconcile.gschema.xml.in.in.h:9
 #: ../src/gnome/gschemas/org.gnucash.dialogs.sxs.gschema.xml.in.in.h:1
 #: ../src/gnome/gschemas/org.gnucash.dialogs.totd.gschema.xml.in.in.h:2
-#: ../src/import-export/aqbanking/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:1
-#: ../src/import-export/csv-export/gschemas/org.gnucash.dialogs.export.csv.gschema.xml.in.in.h:1
-#: ../src/import-export/csv-import/gschemas/org.gnucash.dialogs.import.csv.gschema.xml.in.in.h:1
+#: ../src/import-export/aqb/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:1
+#: ../src/import-export/csv-exp/gschemas/org.gnucash.dialogs.export.csv.gschema.xml.in.in.h:1
+#: ../src/import-export/csv-imp/gschemas/org.gnucash.dialogs.import.csv.gschema.xml.in.in.h:1
 #: ../src/import-export/gschemas/org.gnucash.dialogs.import.generic.gschema.xml.in.in.h:17
-#: ../src/import-export/qif-import/gschemas/org.gnucash.dialogs.import.qif.gschema.xml.in.in.h:4
+#: ../src/import-export/qif-imp/gschemas/org.gnucash.dialogs.import.qif.gschema.xml.in.in.h:4
 msgid "Last window position and size"
 msgstr ""
 
@@ -2092,11 +2092,11 @@ msgstr ""
 #: ../src/gnome/gschemas/org.gnucash.dialogs.reconcile.gschema.xml.in.in.h:10
 #: ../src/gnome/gschemas/org.gnucash.dialogs.sxs.gschema.xml.in.in.h:2
 #: ../src/gnome/gschemas/org.gnucash.dialogs.totd.gschema.xml.in.in.h:3
-#: ../src/import-export/aqbanking/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:2
-#: ../src/import-export/csv-export/gschemas/org.gnucash.dialogs.export.csv.gschema.xml.in.in.h:2
-#: ../src/import-export/csv-import/gschemas/org.gnucash.dialogs.import.csv.gschema.xml.in.in.h:2
+#: ../src/import-export/aqb/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:2
+#: ../src/import-export/csv-exp/gschemas/org.gnucash.dialogs.export.csv.gschema.xml.in.in.h:2
+#: ../src/import-export/csv-imp/gschemas/org.gnucash.dialogs.import.csv.gschema.xml.in.in.h:2
 #: ../src/import-export/gschemas/org.gnucash.dialogs.import.generic.gschema.xml.in.in.h:18
-#: ../src/import-export/qif-import/gschemas/org.gnucash.dialogs.import.qif.gschema.xml.in.in.h:5
+#: ../src/import-export/qif-imp/gschemas/org.gnucash.dialogs.import.qif.gschema.xml.in.in.h:5
 msgid ""
 "This setting describes the size and position of the window when it was last "
 "closed. The numbers are the X and Y coordinates of the top left corner of "
@@ -2245,7 +2245,7 @@ msgstr ""
 #: ../src/business/business-gnome/gtkbuilder/business-prefs.glade.h:5
 #: ../src/gnome/gtkbuilder/dialog-sx.glade.h:3
 #: ../src/import-export/dialog-import.glade.h:1
-#: ../src/import-export/qif-import/dialog-account-picker.glade.h:1
+#: ../src/import-export/qif-imp/dialog-account-picker.glade.h:1
 msgid "Preferences"
 msgstr ""
 
@@ -2486,20 +2486,20 @@ msgstr ""
 #: ../src/business/business-gnome/gtkbuilder/dialog-choose-owner.glade.h:2
 #: ../src/business/business-gnome/gtkbuilder/dialog-date-close.glade.h:5
 #: ../src/business/business-ledger/gncEntryLedgerModel.c:75
-#: ../src/gnome/dialog-find-transactions2.c:137
-#: ../src/gnome/dialog-find-transactions.c:136
+#: ../src/gnome/dialog-find-transactions2.c:140
+#: ../src/gnome/dialog-find-transactions.c:139
 #: ../src/gnome/dialog-lot-viewer.c:913 ../src/gnome/dialog-tax-info.c:1352
 #: ../src/gnome/reconcile-view.c:247
 #: ../src/gnome-utils/gnc-tree-model-budget.c:102
 #: ../src/gnome-utils/gnc-tree-view-account.c:749
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2912
-#: ../src/import-export/csv-export/csv-transactions-export.c:345
-#: ../src/import-export/csv-import/gnc-csv-model.c:47
+#: ../src/import-export/csv-exp/csv-transactions-export.c:345
+#: ../src/import-export/csv-imp/gnc-csv-model.c:47
 #: ../src/import-export/import-main-matcher.c:485
 #: ../src/import-export/import-match-picker.c:346
 #: ../src/import-export/import-match-picker.c:386
-#: ../src/import-export/qif-import/assistant-qif-import.c:3471
-#: ../src/import-export/qif-import/assistant-qif-import.c:3508
+#: ../src/import-export/qif-imp/assistant-qif-import.c:3473
+#: ../src/import-export/qif-imp/assistant-qif-import.c:3510
 #: ../src/register/ledger-core/split-register-model.c:258
 #: ../intl-scm/guile-strings.c:666 ../intl-scm/guile-strings.c:756
 #: ../intl-scm/guile-strings.c:788 ../intl-scm/guile-strings.c:962
@@ -2589,13 +2589,13 @@ msgstr ""
 #: ../src/business/business-gnome/gtkbuilder/dialog-invoice.glade.h:14
 #: ../src/business/business-gnome/gtkbuilder/dialog-order.glade.h:9
 #: ../src/business/business-gnome/gtkbuilder/dialog-vendor.glade.h:13
-#: ../src/gnome/dialog-find-transactions2.c:125
-#: ../src/gnome/dialog-find-transactions.c:124
+#: ../src/gnome/dialog-find-transactions2.c:128
+#: ../src/gnome/dialog-find-transactions.c:127
 #: ../src/gnome-utils/gnc-tree-view-account.c:885
 #: ../src/gnome-utils/gnc-tree-view-owner.c:475
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2914
-#: ../src/import-export/csv-export/csv-transactions-export.c:345
-#: ../src/import-export/csv-import/gnc-csv-model.c:48
+#: ../src/import-export/csv-exp/csv-transactions-export.c:345
+#: ../src/import-export/csv-imp/gnc-csv-model.c:48
 #: ../src/register/ledger-core/split-register-model.c:430
 #: ../intl-scm/guile-strings.c:596 ../intl-scm/guile-strings.c:1656
 #: ../intl-scm/guile-strings.c:2574 ../intl-scm/guile-strings.c:4318
@@ -2690,8 +2690,8 @@ msgid "question"
 msgstr ""
 
 #: ../src/business/business-gnome/gtkbuilder/dialog-date-close.glade.h:8
-#: ../src/import-export/csv-import/assistant-csv-account-import.glade.h:26
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:45
+#: ../src/import-export/csv-imp/assistant-csv-account-import.glade.h:26
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:45
 msgid "label"
 msgstr ""
 
@@ -2924,13 +2924,13 @@ msgstr ""
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register.glade.h:17
 #: ../src/gnome/reconcile-view.c:254
 #: ../src/gnome-utils/gnc-tree-view-price.c:437
-#: ../src/import-export/csv-export/csv-transactions-export.c:343
-#: ../src/import-export/csv-import/gnc-csv-model.c:45
+#: ../src/import-export/csv-exp/csv-transactions-export.c:343
+#: ../src/import-export/csv-imp/gnc-csv-model.c:45
 #: ../src/import-export/import-main-matcher.c:481
 #: ../src/import-export/import-match-picker.c:344
 #: ../src/import-export/import-match-picker.c:384
-#: ../src/import-export/qif-import/assistant-qif-import.c:3463
-#: ../src/import-export/qif-import/assistant-qif-import.c:3500
+#: ../src/import-export/qif-imp/assistant-qif-import.c:3465
+#: ../src/import-export/qif-imp/assistant-qif-import.c:3502
 #: ../src/register/ledger-core/split-register-model.c:196
 #: ../intl-scm/guile-strings.c:660 ../intl-scm/guile-strings.c:754
 #: ../intl-scm/guile-strings.c:782 ../intl-scm/guile-strings.c:946
@@ -2951,18 +2951,18 @@ msgstr ""
 
 #. src/report/standard-reports/transaction.scm
 #: ../src/business/business-gnome/gtkbuilder/dialog-payment.glade.h:6
-#: ../src/gnome/dialog-find-transactions2.c:133
-#: ../src/gnome/dialog-find-transactions2.c:152
-#: ../src/gnome/dialog-find-transactions2.c:160
-#: ../src/gnome/dialog-find-transactions.c:132
-#: ../src/gnome/dialog-find-transactions.c:151
-#: ../src/gnome/dialog-find-transactions.c:159
-#: ../src/gnome/gnc-plugin-page-register.c:1830
+#: ../src/gnome/dialog-find-transactions2.c:136
+#: ../src/gnome/dialog-find-transactions2.c:155
+#: ../src/gnome/dialog-find-transactions2.c:163
+#: ../src/gnome/dialog-find-transactions.c:135
+#: ../src/gnome/dialog-find-transactions.c:154
+#: ../src/gnome/dialog-find-transactions.c:162
+#: ../src/gnome/gnc-plugin-page-register.c:1837
 #: ../src/gnome-search/dialog-search.c:860
 #: ../src/gnome-search/dialog-search.c:868
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2865
 #: ../src/gnome-utils/gtkbuilder/gnc-date-format.glade.h:6
-#: ../src/import-export/csv-export/csv-transactions-export.c:344
+#: ../src/import-export/csv-exp/csv-transactions-export.c:344
 #: ../intl-scm/guile-strings.c:4628
 msgid "Number"
 msgstr ""
@@ -3021,14 +3021,14 @@ msgstr ""
 #. src/report/standard-reports/register.scm
 #. src/report/standard-reports/transaction.scm
 #: ../src/business/business-gnome/gtkbuilder/dialog-payment.glade.h:20
-#: ../src/gnome/dialog-find-transactions2.c:135
-#: ../src/gnome/dialog-find-transactions.c:134
+#: ../src/gnome/dialog-find-transactions2.c:138
+#: ../src/gnome/dialog-find-transactions.c:137
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2885
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2887
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2896
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2898
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2916
-#: ../src/import-export/csv-export/csv-transactions-export.c:346
+#: ../src/import-export/csv-exp/csv-transactions-export.c:346
 #: ../src/import-export/import-main-matcher.c:486
 #: ../src/import-export/import-match-picker.c:347
 #: ../src/import-export/import-match-picker.c:387
@@ -3308,20 +3308,20 @@ msgstr ""
 #. src/report/business-reports/fancy-invoice.scm
 #. src/report/business-reports/invoice.scm
 #: ../src/business/business-ledger/gncEntryLedgerModel.c:65
-#: ../src/gnome/dialog-find-transactions2.c:129
-#: ../src/gnome/dialog-find-transactions2.c:150
-#: ../src/gnome/dialog-find-transactions2.c:158
-#: ../src/gnome/dialog-find-transactions.c:128
-#: ../src/gnome/dialog-find-transactions.c:149
-#: ../src/gnome/dialog-find-transactions.c:157
-#: ../src/gnome/gnc-plugin-page-register.c:1831
+#: ../src/gnome/dialog-find-transactions2.c:132
+#: ../src/gnome/dialog-find-transactions2.c:153
+#: ../src/gnome/dialog-find-transactions2.c:161
+#: ../src/gnome/dialog-find-transactions.c:131
+#: ../src/gnome/dialog-find-transactions.c:152
+#: ../src/gnome/dialog-find-transactions.c:160
+#: ../src/gnome/gnc-plugin-page-register.c:1838
 #: ../src/gnome-search/dialog-search.c:858
 #: ../src/gnome-search/dialog-search.c:866
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2849
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2851
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2869
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2871
-#: ../src/import-export/csv-export/csv-transactions-export.c:348
+#: ../src/import-export/csv-exp/csv-transactions-export.c:348
 #: ../src/register/ledger-core/split-register-model.c:290
 #: ../intl-scm/guile-strings.c:1000 ../intl-scm/guile-strings.c:1210
 msgid "Action"
@@ -3579,8 +3579,7 @@ msgid ""
 msgstr ""
 
 #. src/report/report-system/report-utilities.scm
-#: ../src/engine/Account.c:3940
-#: ../src/import-export/aqbanking/gnc-ab-utils.c:460
+#: ../src/engine/Account.c:3940 ../src/import-export/aqb/gnc-ab-utils.c:460
 #: ../intl-scm/guile-strings.c:2338
 msgid "Bank"
 msgstr ""
@@ -3612,7 +3611,7 @@ msgid "Currency"
 msgstr ""
 
 #. src/app-utils/prefs.scm
-#. src/import-export/qif-import/qif-dialog-utils.scm
+#. src/import-export/qif-imp/qif-dialog-utils.scm
 #. src/report/report-system/report-utilities.scm
 #. src/report/standard-reports/advanced-portfolio.scm
 #. src/report/standard-reports/net-barchart.scm
@@ -3636,7 +3635,7 @@ msgstr ""
 #. src/report/business-reports/customer-summary.scm
 #. src/report/standard-reports/net-barchart.scm
 #. src/report/standard-reports/net-linechart.scm
-#: ../src/engine/Account.c:3949 ../src/engine/gncInvoice.c:956
+#: ../src/engine/Account.c:3949 ../src/engine/gncInvoice.c:973
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3161
 #: ../intl-scm/guile-strings.c:268 ../intl-scm/guile-strings.c:708
 #: ../intl-scm/guile-strings.c:742 ../intl-scm/guile-strings.c:3810
@@ -3683,15 +3682,15 @@ msgid "Unnamed Budget"
 msgstr ""
 
 #. Set memo.
-#: ../src/engine/gncInvoice.c:1492
+#: ../src/engine/gncInvoice.c:1569
 msgid "Extra to Charge Card"
 msgstr ""
 
-#: ../src/engine/gncInvoice.c:1532
+#: ../src/engine/gncInvoice.c:1609
 msgid "Generated from an invoice. Try unposting the invoice."
 msgstr ""
 
-#: ../src/engine/gncInvoice.c:1965
+#: ../src/engine/gncInvoice.c:2042
 msgid " (posted)"
 msgstr ""
 
@@ -3845,12 +3844,12 @@ msgid ""
 "Split"
 msgstr ""
 
-#: ../src/engine/Transaction.c:2400
+#: ../src/engine/Transaction.c:2401
 msgid "Voided transaction"
 msgstr ""
 
 #. Dirtying taken care of by SetReadOnly
-#: ../src/engine/Transaction.c:2411
+#: ../src/engine/Transaction.c:2412
 msgid "Transaction Voided"
 msgstr ""
 
@@ -3921,7 +3920,7 @@ msgid "Selected"
 msgstr ""
 
 #: ../src/gnome/assistant-hierarchy.c:409
-#: ../src/gnome-utils/gnc-tree-view-account.c:2174
+#: ../src/gnome-utils/gnc-tree-view-account.c:2183
 msgid "Account Types"
 msgstr ""
 
@@ -4018,7 +4017,7 @@ msgstr ""
 msgid "Principal"
 msgstr ""
 
-#. src/import-export/qif-import/qif-dialog-utils.scm
+#. src/import-export/qif-imp/qif-dialog-utils.scm
 #: ../src/gnome/assistant-loan.c:1843 ../src/gnome/assistant-loan.c:3031
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2882
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2919
@@ -4067,11 +4066,11 @@ msgstr ""
 #: ../src/gnome/dialog-find-transactions2.c:108
 #: ../src/gnome/dialog-find-transactions.c:107
 #: ../src/gnome-utils/gnc-icons.c:18
-#: ../src/import-export/aqbanking/gnc-ab-utils.c:458
-#: ../src/import-export/csv-import/gnc-csv-model.c:49
+#: ../src/import-export/aqb/gnc-ab-utils.c:458
+#: ../src/import-export/csv-imp/gnc-csv-model.c:49
 #: ../src/import-export/import-main-matcher.c:482
 #: ../src/import-export/import-match-picker.c:343
-#: ../src/import-export/qif-import/dialog-account-picker.c:369
+#: ../src/import-export/qif-imp/dialog-account-picker.c:369
 #: ../src/register/ledger-core/split-register-model.c:297
 #: ../intl-scm/guile-strings.c:1356 ../intl-scm/guile-strings.c:1470
 #: ../intl-scm/guile-strings.c:2650 ../intl-scm/guile-strings.c:3044
@@ -4096,8 +4095,8 @@ msgstr ""
 #. src/report/standard-reports/register.scm
 #. src/report/standard-reports/transaction.scm
 #: ../src/gnome/assistant-stock-split.c:586
-#: ../src/gnome/dialog-find-transactions2.c:118
-#: ../src/gnome/dialog-find-transactions.c:117
+#: ../src/gnome/dialog-find-transactions2.c:121
+#: ../src/gnome/dialog-find-transactions.c:120
 #: ../src/register/ledger-core/split-register-model.c:360
 #: ../intl-scm/guile-strings.c:2658 ../intl-scm/guile-strings.c:3558
 #: ../intl-scm/guile-strings.c:3598 ../intl-scm/guile-strings.c:4076
@@ -4165,25 +4164,36 @@ msgstr ""
 msgid "Balanced"
 msgstr ""
 
+#. src/report/report-system/html-acct-table.scm
+#. src/report/standard-reports/equity-statement.scm
+#. src/report/standard-reports/income-statement.scm
+#. src/report/standard-reports/trial-balance.scm
 #: ../src/gnome/dialog-find-transactions2.c:114
 #: ../src/gnome/dialog-find-transactions.c:113
+#: ../intl-scm/guile-strings.c:2044 ../intl-scm/guile-strings.c:3512
+#: ../intl-scm/guile-strings.c:3736 ../intl-scm/guile-strings.c:4934
+msgid "Closing Entries"
+msgstr ""
+
+#: ../src/gnome/dialog-find-transactions2.c:117
+#: ../src/gnome/dialog-find-transactions.c:116
 #: ../src/gnome/gnc-plugin-page-register2.c:484
 #: ../src/gnome/gnc-plugin-page-register.c:486
 #: ../src/gnome/window-reconcile2.c:1315 ../src/gnome/window-reconcile.c:1315
-#: ../src/import-export/csv-export/csv-transactions-export.c:349
+#: ../src/import-export/csv-exp/csv-transactions-export.c:349
 msgid "Reconcile"
 msgstr ""
 
-#: ../src/gnome/dialog-find-transactions2.c:116
-#: ../src/gnome/dialog-find-transactions.c:115
+#: ../src/gnome/dialog-find-transactions2.c:119
+#: ../src/gnome/dialog-find-transactions.c:118
 msgid "Share Price"
 msgstr ""
 
 #. src/report/standard-reports/advanced-portfolio.scm
 #. src/report/standard-reports/portfolio.scm
 #. src/report/standard-reports/register.scm
-#: ../src/gnome/dialog-find-transactions2.c:120
-#: ../src/gnome/dialog-find-transactions.c:119
+#: ../src/gnome/dialog-find-transactions2.c:123
+#: ../src/gnome/dialog-find-transactions.c:122
 #: ../src/gnome/dialog-lot-viewer.c:925
 #: ../src/gnome/dialog-sx-since-last-run.c:981
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2982
@@ -4194,40 +4204,40 @@ msgid "Value"
 msgstr ""
 
 #. src/report/standard-reports/transaction.scm
-#: ../src/gnome/dialog-find-transactions2.c:128
-#: ../src/gnome/dialog-find-transactions2.c:151
-#: ../src/gnome/dialog-find-transactions2.c:157
-#: ../src/gnome/dialog-find-transactions.c:127
-#: ../src/gnome/dialog-find-transactions.c:150
-#: ../src/gnome/dialog-find-transactions.c:156
-#: ../src/gnome/gnc-plugin-page-register.c:1826
-#: ../src/gnome/gnc-plugin-page-register.c:3080
+#: ../src/gnome/dialog-find-transactions2.c:131
+#: ../src/gnome/dialog-find-transactions2.c:154
+#: ../src/gnome/dialog-find-transactions2.c:160
+#: ../src/gnome/dialog-find-transactions.c:130
+#: ../src/gnome/dialog-find-transactions.c:153
+#: ../src/gnome/dialog-find-transactions.c:159
+#: ../src/gnome/gnc-plugin-page-register.c:1833
+#: ../src/gnome/gnc-plugin-page-register.c:3104
 #: ../src/gnome-search/dialog-search.c:859
 #: ../src/gnome-search/dialog-search.c:865
-#: ../src/import-export/csv-export/csv-transactions-export.c:348
+#: ../src/import-export/csv-exp/csv-transactions-export.c:348
 #: ../intl-scm/guile-strings.c:4572
 msgid "Number/Action"
 msgstr ""
 
 #. src/report/standard-reports/transaction.scm
-#: ../src/gnome/dialog-find-transactions2.c:132
-#: ../src/gnome/dialog-find-transactions2.c:153
-#: ../src/gnome/dialog-find-transactions2.c:159
-#: ../src/gnome/dialog-find-transactions.c:131
-#: ../src/gnome/dialog-find-transactions.c:152
-#: ../src/gnome/dialog-find-transactions.c:158
-#: ../src/gnome/gnc-plugin-page-register.c:1825
-#: ../src/gnome/gnc-plugin-page-register.c:3079
+#: ../src/gnome/dialog-find-transactions2.c:135
+#: ../src/gnome/dialog-find-transactions2.c:156
+#: ../src/gnome/dialog-find-transactions2.c:162
+#: ../src/gnome/dialog-find-transactions.c:134
+#: ../src/gnome/dialog-find-transactions.c:155
+#: ../src/gnome/dialog-find-transactions.c:161
+#: ../src/gnome/gnc-plugin-page-register.c:1832
+#: ../src/gnome/gnc-plugin-page-register.c:3103
 #: ../src/gnome-search/dialog-search.c:861
 #: ../src/gnome-search/dialog-search.c:867
-#: ../src/import-export/csv-export/csv-transactions-export.c:344
+#: ../src/import-export/csv-exp/csv-transactions-export.c:344
 #: ../intl-scm/guile-strings.c:4576
 msgid "Transaction Number"
 msgstr ""
 
 #. FIXME: All this does is leak.
-#: ../src/gnome/dialog-find-transactions2.c:204
-#: ../src/gnome/dialog-find-transactions.c:203
+#: ../src/gnome/dialog-find-transactions2.c:207
+#: ../src/gnome/dialog-find-transactions.c:206
 #: ../src/gnome-search/dialog-search.c:1415
 msgid "Find Transaction"
 msgstr ""
@@ -4261,7 +4271,7 @@ msgstr ""
 #: ../src/gnome-utils/gnc-tree-view-owner.c:459
 #: ../src/gnome-utils/gnc-tree-view-owner.c:467
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3212
-#: ../src/import-export/csv-import/gnc-csv-model.c:52
+#: ../src/import-export/csv-imp/gnc-csv-model.c:52
 #: ../src/register/ledger-core/split-register-model.c:283
 #: ../src/register/ledger-core/split-register-model.c:423
 #: ../intl-scm/guile-strings.c:682 ../intl-scm/guile-strings.c:1380
@@ -4311,13 +4321,13 @@ msgstr ""
 msgid "You must enter a valid amount."
 msgstr ""
 
-#: ../src/gnome/dialog-print-check2.c:818
-#: ../src/gnome/dialog-print-check.c:818
+#: ../src/gnome/dialog-print-check2.c:821
+#: ../src/gnome/dialog-print-check.c:821
 msgid "Cannot save check format file."
 msgstr ""
 
-#: ../src/gnome/dialog-print-check2.c:1506
-#: ../src/gnome/dialog-print-check.c:1506
+#: ../src/gnome/dialog-print-check2.c:1509
+#: ../src/gnome/dialog-print-check.c:1509
 msgid "There is a duplicate check format file."
 msgstr ""
 
@@ -4326,8 +4336,8 @@ msgstr ""
 #. * is the filename of that format; %3$s the type of
 #. * the other check format; and %4$s the filename of
 #. * that other format.
-#: ../src/gnome/dialog-print-check2.c:1514
-#: ../src/gnome/dialog-print-check.c:1514
+#: ../src/gnome/dialog-print-check2.c:1517
+#: ../src/gnome/dialog-print-check.c:1517
 #, c-format
 msgid ""
 "The GUIDs in the %s check format file '%s' and the %s check format file '%s' "
@@ -4337,33 +4347,33 @@ msgstr ""
 #. Translators: This is a directory name. It may be presented to
 #. * the user to indicate that some data file was defined by the
 #. * gnucash application.
-#: ../src/gnome/dialog-print-check2.c:1555
-#: ../src/gnome/dialog-print-check.c:1555
+#: ../src/gnome/dialog-print-check2.c:1558
+#: ../src/gnome/dialog-print-check.c:1558
 msgid "application"
 msgstr ""
 
 #. Translators: This is a directory name. It may be presented to
 #. * the user to indicate that some data file was defined by a
 #. * user herself.
-#: ../src/gnome/dialog-print-check2.c:1563
-#: ../src/gnome/dialog-print-check.c:1563
+#: ../src/gnome/dialog-print-check2.c:1566
+#: ../src/gnome/dialog-print-check.c:1566
 msgid "user"
 msgstr ""
 
-#: ../src/gnome/dialog-print-check2.c:1587
-#: ../src/gnome/dialog-print-check2.c:2559
-#: ../src/gnome/dialog-print-check.c:1587
-#: ../src/gnome/dialog-print-check.c:2559
+#: ../src/gnome/dialog-print-check2.c:1590
+#: ../src/gnome/dialog-print-check2.c:2562
+#: ../src/gnome/dialog-print-check.c:1590
+#: ../src/gnome/dialog-print-check.c:2562
 #: ../src/gnome/gtkbuilder/assistant-loan.glade.h:59
 #: ../src/gnome/gtkbuilder/dialog-print-check.glade.h:40
 #: ../src/gnome-utils/gtkbuilder/gnc-date-format.glade.h:20
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:10
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:28
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:10
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:28
 msgid "Custom"
 msgstr ""
 
-#: ../src/gnome/dialog-print-check2.c:2551
-#: ../src/gnome/dialog-print-check.c:2551
+#: ../src/gnome/dialog-print-check2.c:2554
+#: ../src/gnome/dialog-print-check.c:2554
 #: ../src/gnome/gtkbuilder/dialog-print-check.glade.h:37
 #: ../src/gnome-utils/gtkbuilder/dialog-preferences.glade.h:184
 msgid "Top"
@@ -4586,7 +4596,7 @@ msgstr ""
 msgid "Form"
 msgstr ""
 
-#. src/import-export/qif-import/qif-dialog-utils.scm
+#. src/import-export/qif-imp/qif-dialog-utils.scm
 #. src/report/report-system/report-utilities.scm
 #. src/report/standard-reports/budget-income-statement.scm
 #. src/report/standard-reports/income-statement.scm
@@ -5577,13 +5587,13 @@ msgstr ""
 #. Translators: %s is the name
 #. of the tab page
 #: ../src/gnome/gnc-plugin-page-register2.c:1613
-#: ../src/gnome/gnc-plugin-page-register.c:1536
+#: ../src/gnome/gnc-plugin-page-register.c:1543
 #, c-format
 msgid "Save changes to %s?"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:1617
-#: ../src/gnome/gnc-plugin-page-register.c:1540
+#: ../src/gnome/gnc-plugin-page-register.c:1547
 msgid ""
 "This register has pending changes to a transaction. Would you like to save "
 "the changes to this transaction, discard the transaction, or cancel the "
@@ -5591,12 +5601,12 @@ msgid ""
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:1620
-#: ../src/gnome/gnc-plugin-page-register.c:1543
+#: ../src/gnome/gnc-plugin-page-register.c:1550
 msgid "_Discard Transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:1624
-#: ../src/gnome/gnc-plugin-page-register.c:1547
+#: ../src/gnome/gnc-plugin-page-register.c:1554
 msgid "_Save Transaction"
 msgstr ""
 
@@ -5605,12 +5615,12 @@ msgstr ""
 #: ../src/gnome/gnc-plugin-page-register2.c:1700
 #: ../src/gnome/gnc-plugin-page-register2.c:1723
 #: ../src/gnome/gnc-plugin-page-register2.c:1773
-#: ../src/gnome/gnc-plugin-page-register.c:1579
-#: ../src/gnome/gnc-plugin-page-register.c:1614
-#: ../src/gnome/gnc-plugin-page-register.c:1626
-#: ../src/gnome/gnc-plugin-page-register.c:1649
-#: ../src/gnome/gnc-plugin-page-register.c:1699
-#: ../src/gnome/gnc-plugin-page-register.c:1743
+#: ../src/gnome/gnc-plugin-page-register.c:1586
+#: ../src/gnome/gnc-plugin-page-register.c:1621
+#: ../src/gnome/gnc-plugin-page-register.c:1633
+#: ../src/gnome/gnc-plugin-page-register.c:1656
+#: ../src/gnome/gnc-plugin-page-register.c:1706
+#: ../src/gnome/gnc-plugin-page-register.c:1750
 msgid "unknown"
 msgstr ""
 
@@ -5618,23 +5628,23 @@ msgstr ""
 #: ../src/gnome/gnc-plugin-page-register2.c:1674
 #: ../src/gnome/gnc-plugin-page-register2.c:2395
 #: ../src/gnome/gnc-plugin-page-register.c:757
-#: ../src/gnome/gnc-plugin-page-register.c:1600
-#: ../src/gnome/gnc-plugin-page-register.c:2555
+#: ../src/gnome/gnc-plugin-page-register.c:1607
+#: ../src/gnome/gnc-plugin-page-register.c:2562
 #: ../intl-scm/guile-strings.c:3568
 msgid "General Ledger"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:1676
 #: ../src/gnome/gnc-plugin-page-register2.c:2401
-#: ../src/gnome/gnc-plugin-page-register.c:1602
-#: ../src/gnome/gnc-plugin-page-register.c:2561
+#: ../src/gnome/gnc-plugin-page-register.c:1609
+#: ../src/gnome/gnc-plugin-page-register.c:2568
 msgid "Portfolio"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:1678
 #: ../src/gnome/gnc-plugin-page-register2.c:2407
-#: ../src/gnome/gnc-plugin-page-register.c:1604
-#: ../src/gnome/gnc-plugin-page-register.c:2567
+#: ../src/gnome/gnc-plugin-page-register.c:1611
+#: ../src/gnome/gnc-plugin-page-register.c:2574
 msgid "Search Results"
 msgstr ""
 
@@ -5643,19 +5653,19 @@ msgid "General Ledger Report"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:2403
-#: ../src/gnome/gnc-plugin-page-register.c:2563
+#: ../src/gnome/gnc-plugin-page-register.c:2570
 msgid "Portfolio Report"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:2409
-#: ../src/gnome/gnc-plugin-page-register.c:2569
+#: ../src/gnome/gnc-plugin-page-register.c:2576
 msgid "Search Results Report"
 msgstr ""
 
 #. src/report/standard-reports/general-journal.scm
 #. src/report/standard-reports/register.scm
 #: ../src/gnome/gnc-plugin-page-register2.c:2413
-#: ../src/gnome/gnc-plugin-page-register.c:2573
+#: ../src/gnome/gnc-plugin-page-register.c:2580
 #: ../src/gnome-utils/gtkbuilder/dialog-preferences.glade.h:134
 #: ../intl-scm/guile-strings.c:3542 ../intl-scm/guile-strings.c:4212
 msgid "Register"
@@ -5668,42 +5678,42 @@ msgid "Register Report"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:2431
-#: ../src/gnome/gnc-plugin-page-register.c:2591
+#: ../src/gnome/gnc-plugin-page-register.c:2598
 msgid "and subaccounts"
 msgstr ""
 
-#: ../src/gnome/gnc-plugin-page-register2.c:2613
-#: ../src/gnome/gnc-plugin-page-register.c:2737
+#: ../src/gnome/gnc-plugin-page-register2.c:2630
+#: ../src/gnome/gnc-plugin-page-register.c:2761
 msgid "Print checks from multiple accounts?"
 msgstr ""
 
-#: ../src/gnome/gnc-plugin-page-register2.c:2615
-#: ../src/gnome/gnc-plugin-page-register.c:2739
+#: ../src/gnome/gnc-plugin-page-register2.c:2632
+#: ../src/gnome/gnc-plugin-page-register.c:2763
 msgid ""
 "This search result contains splits from more than one account. Do you want "
 "to print the checks even though they are not all from the same account?"
 msgstr ""
 
-#: ../src/gnome/gnc-plugin-page-register2.c:2626
-#: ../src/gnome/gnc-plugin-page-register.c:2750
+#: ../src/gnome/gnc-plugin-page-register2.c:2643
+#: ../src/gnome/gnc-plugin-page-register.c:2774
 msgid "_Print checks"
 msgstr ""
 
-#: ../src/gnome/gnc-plugin-page-register2.c:2645
-#: ../src/gnome/gnc-plugin-page-register.c:2769
+#: ../src/gnome/gnc-plugin-page-register2.c:2662
+#: ../src/gnome/gnc-plugin-page-register.c:2793
 msgid ""
 "You can only print checks from a bank account register or search results."
 msgstr ""
 
-#: ../src/gnome/gnc-plugin-page-register2.c:2837
-#: ../src/gnome/gnc-plugin-page-register.c:2929
+#: ../src/gnome/gnc-plugin-page-register2.c:2854
+#: ../src/gnome/gnc-plugin-page-register.c:2953
 msgid "You cannot void a transaction with reconciled or cleared splits."
 msgstr ""
 
 #. Translators: The %s is the name of the plugin page
-#: ../src/gnome/gnc-plugin-page-register2.c:2981
-#: ../src/gnome/gnc-plugin-page-register.c:3128
-#: ../src/gnome-utils/gnc-tree-view-account.c:2136
+#: ../src/gnome/gnc-plugin-page-register2.c:2998
+#: ../src/gnome/gnc-plugin-page-register.c:3152
+#: ../src/gnome-utils/gnc-tree-view-account.c:2145
 #: ../src/gnome-utils/gnc-tree-view-owner.c:1185
 #, c-format
 msgid "Filter %s by..."
@@ -5761,20 +5771,20 @@ msgid ""
 msgstr ""
 
 #. src/report/standard-reports/transaction.scm
-#: ../src/gnome/gnc-plugin-page-register.c:2557
-#: ../src/gnome/gnc-plugin-page-register.c:2575
+#: ../src/gnome/gnc-plugin-page-register.c:2564
+#: ../src/gnome/gnc-plugin-page-register.c:2582
 #: ../intl-scm/guile-strings.c:4320
 msgid "Transaction Report"
 msgstr ""
 
-#: ../src/gnome/gnc-plugin-page-register.c:3000
+#: ../src/gnome/gnc-plugin-page-register.c:3024
 #: ../src/gnome/gnc-split-reg.c:882
 #: ../src/gnome-utils/gnc-tree-control-split-reg.c:1123
 msgid "A reversing entry has already been created for this transaction."
 msgstr ""
 
 #. Translations: The %s is the name of the plugin page
-#: ../src/gnome/gnc-plugin-page-register.c:3051
+#: ../src/gnome/gnc-plugin-page-register.c:3075
 #, c-format
 msgid "Sort %s by..."
 msgstr ""
@@ -6232,20 +6242,20 @@ msgid ""
 msgstr ""
 
 #: ../src/gnome/gschemas/org.gnucash.dialogs.gschema.xml.in.in.h:6
-#: ../src/import-export/aqbanking/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:17
-#: ../src/import-export/csv-export/gschemas/org.gnucash.dialogs.export.csv.gschema.xml.in.in.h:3
-#: ../src/import-export/csv-import/gschemas/org.gnucash.dialogs.import.csv.gschema.xml.in.in.h:3
+#: ../src/import-export/aqb/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:17
+#: ../src/import-export/csv-exp/gschemas/org.gnucash.dialogs.export.csv.gschema.xml.in.in.h:3
+#: ../src/import-export/csv-imp/gschemas/org.gnucash.dialogs.import.csv.gschema.xml.in.in.h:3
 #: ../src/import-export/ofx/gschemas/org.gnucash.dialogs.import.ofx.gschema.xml.in.in.h:1
-#: ../src/import-export/qif-import/gschemas/org.gnucash.dialogs.import.qif.gschema.xml.in.in.h:6
+#: ../src/import-export/qif-imp/gschemas/org.gnucash.dialogs.import.qif.gschema.xml.in.in.h:6
 msgid "Last pathname used"
 msgstr ""
 
 #: ../src/gnome/gschemas/org.gnucash.dialogs.gschema.xml.in.in.h:7
-#: ../src/import-export/aqbanking/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:18
-#: ../src/import-export/csv-export/gschemas/org.gnucash.dialogs.export.csv.gschema.xml.in.in.h:4
-#: ../src/import-export/csv-import/gschemas/org.gnucash.dialogs.import.csv.gschema.xml.in.in.h:4
+#: ../src/import-export/aqb/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:18
+#: ../src/import-export/csv-exp/gschemas/org.gnucash.dialogs.export.csv.gschema.xml.in.in.h:4
+#: ../src/import-export/csv-imp/gschemas/org.gnucash.dialogs.import.csv.gschema.xml.in.in.h:4
 #: ../src/import-export/ofx/gschemas/org.gnucash.dialogs.import.ofx.gschema.xml.in.in.h:2
-#: ../src/import-export/qif-import/gschemas/org.gnucash.dialogs.import.qif.gschema.xml.in.in.h:7
+#: ../src/import-export/qif-imp/gschemas/org.gnucash.dialogs.import.qif.gschema.xml.in.in.h:7
 msgid ""
 "This field contains the last pathname used by this window. It will be used "
 "as the initial filename/pathname the next time this window is opened."
@@ -7222,7 +7232,7 @@ msgid ""
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:7
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:58
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:58
 msgid "<b>Book Options</b>"
 msgstr ""
 
@@ -8401,42 +8411,42 @@ msgid "Click to change Tax Name and/or Tax Type."
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/dialog-tax-info.glade.h:6
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:14
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:14
 msgid "<b>_Accounts</b>"
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/dialog-tax-info.glade.h:7
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:15
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:15
 msgid "_Income"
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/dialog-tax-info.glade.h:8
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:16
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:16
 msgid "_Expense"
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/dialog-tax-info.glade.h:9
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:17
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:17
 msgid "_Asset"
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/dialog-tax-info.glade.h:10
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:18
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:18
 msgid "_Liability/Equity"
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/dialog-tax-info.glade.h:11
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:19
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:19
 msgid "Accounts Selected:"
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/dialog-tax-info.glade.h:12
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:20
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:20
 msgid "0"
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/dialog-tax-info.glade.h:13
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:21
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:21
 msgid "_Select Subaccounts"
 msgstr ""
 
@@ -8540,61 +8550,61 @@ msgstr ""
 
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register2.glade.h:6
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register.glade.h:7
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:23
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:23
 msgid "Show _All"
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register2.glade.h:7
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register.glade.h:8
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:24
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:24
 msgid "Select Range:"
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register2.glade.h:8
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register.glade.h:9
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:25
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:25
 msgid "Start:"
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register2.glade.h:9
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register.glade.h:10
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:26
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:26
 msgid "_Earliest"
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register2.glade.h:10
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register.glade.h:11
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:27
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:27
 msgid "Choo_se Date:"
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register2.glade.h:11
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register.glade.h:12
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:28
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:28
 msgid "Toda_y"
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register2.glade.h:12
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register.glade.h:13
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:29
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:29
 msgid "_Latest"
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register2.glade.h:13
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register.glade.h:14
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:30
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:30
 msgid "End:"
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register2.glade.h:14
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register.glade.h:15
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:31
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:31
 msgid "C_hoose Date:"
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register2.glade.h:15
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register.glade.h:16
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:32
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:32
 msgid "_Today"
 msgstr ""
 
@@ -8605,7 +8615,7 @@ msgstr ""
 
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register2.glade.h:18
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register.glade.h:19
-#: ../src/import-export/qif-import/dialog-account-picker.glade.h:5
+#: ../src/import-export/qif-imp/dialog-account-picker.glade.h:5
 msgid "_Reconciled"
 msgstr ""
 
@@ -9027,7 +9037,7 @@ msgid "You need to enter some search text."
 msgstr ""
 
 #: ../src/gnome-search/search-string.c:220
-#: ../src/import-export/csv-import/csv-account-import.c:90
+#: ../src/import-export/csv-imp/csv-account-import.c:90
 #: ../src/plugins/bi_import/dialog-bi-import.c:122
 #: ../src/plugins/customer_import/dialog-customer-import.c:103
 #, c-format
@@ -9994,7 +10004,7 @@ msgstr ""
 msgid "Save changes to the file?"
 msgstr ""
 
-#: ../src/gnome-utils/gnc-file.c:586 ../src/gnome-utils/gnc-main-window.c:1226
+#: ../src/gnome-utils/gnc-file.c:586 ../src/gnome-utils/gnc-main-window.c:1249
 #, c-format
 msgid "If you don't save, changes from the past %d minute will be discarded."
 msgid_plural ""
@@ -10046,7 +10056,7 @@ msgid "Re-saving user data..."
 msgstr ""
 
 #: ../src/gnome-utils/gnc-file.c:1183 ../src/gnome-utils/gnc-file.c:1424
-#: ../src/import-export/csv-export/assistant-csv-export.c:124
+#: ../src/import-export/csv-exp/assistant-csv-export.c:124
 #: ../src/report/report-gnome/gnc-plugin-page-report.c:1449
 #, c-format
 msgid "The file %s already exists. Are you sure you want to overwrite it?"
@@ -10160,7 +10170,7 @@ msgstr ""
 #: ../src/gnome-utils/gnc-main-window.c:265
 #: ../src/gnome/window-reconcile2.c:2145 ../src/gnome/window-reconcile2.c:2226
 #: ../src/gnome/window-reconcile.c:2145 ../src/gnome/window-reconcile.c:2226
-#: ../src/import-export/csv-import/assistant-csv-trans-import.c:1482
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.c:1482
 msgid "_Help"
 msgstr ""
 
@@ -10346,79 +10356,83 @@ msgstr ""
 msgid "Window _0"
 msgstr ""
 
-#: ../src/gnome-utils/gnc-main-window.c:1181
+#: ../src/gnome-utils/gnc-main-window.c:1204
 #, c-format
 msgid "Save changes to file %s before closing?"
 msgstr ""
 
-#: ../src/gnome-utils/gnc-main-window.c:1184
+#: ../src/gnome-utils/gnc-main-window.c:1207
 #, c-format
 msgid ""
 "If you don't save, changes from the past %d hours and %d minutes will be "
 "discarded."
 msgstr ""
 
-#: ../src/gnome-utils/gnc-main-window.c:1186
+#: ../src/gnome-utils/gnc-main-window.c:1209
 #, c-format
 msgid ""
 "If you don't save, changes from the past %d days and %d hours will be "
 "discarded."
 msgstr ""
 
-#: ../src/gnome-utils/gnc-main-window.c:1194
+#: ../src/gnome-utils/gnc-main-window.c:1217
 msgid "<unknown>"
 msgstr ""
 
-#: ../src/gnome-utils/gnc-main-window.c:1231
+#: ../src/gnome-utils/gnc-main-window.c:1254
 msgid "Close _Without Saving"
 msgstr ""
 
 #. Translators: This string is shown in the window title if this
 #. document is, well, read-only.
-#: ../src/gnome-utils/gnc-main-window.c:1469
+#: ../src/gnome-utils/gnc-main-window.c:1492
 msgid "(read-only)"
 msgstr ""
 
-#: ../src/gnome-utils/gnc-main-window.c:1477
+#: ../src/gnome-utils/gnc-main-window.c:1500
 msgid "Unsaved Book"
 msgstr ""
 
-#: ../src/gnome-utils/gnc-main-window.c:1643
+#: ../src/gnome-utils/gnc-main-window.c:1666
 msgid "Last modified on %a, %b %e, %Y at %I:%M%P"
 msgstr ""
 
-#: ../src/gnome-utils/gnc-main-window.c:1644
+#: ../src/gnome-utils/gnc-main-window.c:1667
 msgid "Last modified on %a, %b %e, %Y at %H:%M"
 msgstr ""
 
 #. g_warning("got time %ld, str=%s\n", mtime, time_string);
 #. Translators: This message appears in the status bar after opening the file.
-#: ../src/gnome-utils/gnc-main-window.c:1650
+#: ../src/gnome-utils/gnc-main-window.c:1673
 #, c-format
 msgid "File %s opened. %s"
 msgstr ""
 
-#: ../src/gnome-utils/gnc-main-window.c:2679
+#: ../src/gnome-utils/gnc-main-window.c:2702
 msgid "Unable to save to database."
 msgstr ""
 
-#: ../src/gnome-utils/gnc-main-window.c:2681
+#: ../src/gnome-utils/gnc-main-window.c:2704
 msgid "Unable to save to database: Book is marked read-only."
 msgstr ""
 
-#: ../src/gnome-utils/gnc-main-window.c:3984
+#: ../src/gnome-utils/gnc-main-window.c:4007
 msgid "Book Options"
 msgstr ""
 
-#: ../src/gnome-utils/gnc-main-window.c:4352
+#: ../src/gnome-utils/gnc-main-window.c:4376
 msgid "The GnuCash personal finance manager. The GNU way to manage your money!"
 msgstr ""
 
-#: ../src/gnome-utils/gnc-main-window.c:4354
+#: ../src/gnome-utils/gnc-main-window.c:4378
 msgid "© 1997-2013 Contributors"
 msgstr ""
 
-#: ../src/gnome-utils/gnc-main-window.c:4388
+#. Translators: the following string will be shown in Help->About->Credits
+#. * Enter your name or that of your team and an email contact for feedback.
+#. * The string can have multiple rows, so you can also add a list of
+#. * contributors.
+#: ../src/gnome-utils/gnc-main-window.c:4416
 msgid "translator_credits"
 msgstr ""
 
@@ -10994,7 +11008,7 @@ msgstr ""
 #. src/report/standard-reports/transaction.scm
 #. src/report/standard-reports/trial-balance.scm
 #: ../src/gnome-utils/gnc-tree-view-account.c:718
-#: ../src/import-export/csv-export/csv-transactions-export.c:343
+#: ../src/import-export/csv-exp/csv-transactions-export.c:343
 #: ../intl-scm/guile-strings.c:1892 ../intl-scm/guile-strings.c:3586
 #: ../intl-scm/guile-strings.c:4376 ../intl-scm/guile-strings.c:4532
 #: ../intl-scm/guile-strings.c:4588 ../intl-scm/guile-strings.c:4716
@@ -11087,38 +11101,38 @@ msgid "Column letter for 'Placeholder'|P"
 msgstr ""
 
 #. Translators: %s is a currency mnemonic.
-#: ../src/gnome-utils/gnc-tree-view-account.c:1692
+#: ../src/gnome-utils/gnc-tree-view-account.c:1701
 #, c-format
 msgid "Present (%s)"
 msgstr ""
 
 #. Translators: %s is a currency mnemonic.
-#: ../src/gnome-utils/gnc-tree-view-account.c:1695
+#: ../src/gnome-utils/gnc-tree-view-account.c:1704
 #: ../src/gnome-utils/gnc-tree-view-owner.c:928
 #, c-format
 msgid "Balance (%s)"
 msgstr ""
 
 #. Translators: %s is a currency mnemonic.
-#: ../src/gnome-utils/gnc-tree-view-account.c:1698
+#: ../src/gnome-utils/gnc-tree-view-account.c:1707
 #, c-format
 msgid "Cleared (%s)"
 msgstr ""
 
 #. Translators: %s is a currency mnemonic.
-#: ../src/gnome-utils/gnc-tree-view-account.c:1701
+#: ../src/gnome-utils/gnc-tree-view-account.c:1710
 #, c-format
 msgid "Reconciled (%s)"
 msgstr ""
 
 #. Translators: %s is a currency mnemonic.
-#: ../src/gnome-utils/gnc-tree-view-account.c:1704
+#: ../src/gnome-utils/gnc-tree-view-account.c:1713
 #, c-format
 msgid "Future Minimum (%s)"
 msgstr ""
 
 #. Translators: %s is a currency mnemonic.
-#: ../src/gnome-utils/gnc-tree-view-account.c:1707
+#: ../src/gnome-utils/gnc-tree-view-account.c:1716
 #, c-format
 msgid "Total (%s)"
 msgstr ""
@@ -11304,7 +11318,7 @@ msgstr ""
 
 #. src/app-utils/prefs.scm
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3048
-#: ../src/import-export/csv-import/gnc-csv-model.c:51
+#: ../src/import-export/csv-imp/gnc-csv-model.c:51
 #: ../intl-scm/guile-strings.c:280
 msgid "Withdrawal"
 msgstr ""
@@ -11329,7 +11343,7 @@ msgstr ""
 
 #. src/app-utils/prefs.scm
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3133
-#: ../src/import-export/csv-import/gnc-csv-model.c:50
+#: ../src/import-export/csv-imp/gnc-csv-model.c:50
 #: ../intl-scm/guile-strings.c:250
 msgid "Deposit"
 msgstr ""
@@ -12829,7 +12843,7 @@ msgstr ""
 
 #: ../src/gnome-utils/gtkbuilder/dialog-preferences.glade.h:203
 #: ../src/gnome-utils/gtkbuilder/gnc-date-format.glade.h:19
-#: ../src/import-export/csv-import/gnc-csv-model.c:38
+#: ../src/import-export/csv-imp/gnc-csv-model.c:38
 msgid "Locale"
 msgstr ""
 
@@ -12991,7 +13005,7 @@ msgid "_Password:"
 msgstr ""
 
 #: ../src/gnome-utils/gtkbuilder/gnc-date-format.glade.h:1
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:19
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:19
 msgid "Date Format"
 msgstr ""
 
@@ -13694,7 +13708,7 @@ msgstr ""
 msgid "Export to PDF File"
 msgstr ""
 
-#: ../src/import-export/aqbanking/assistant-ab-initial.c:373
+#: ../src/import-export/aqb/assistant-ab-initial.c:373
 #, c-format
 msgid ""
 "The external program \"AqBanking Setup Wizard\" has not been found. \n"
@@ -13704,7 +13718,7 @@ msgid ""
 "may require installing additional packages."
 msgstr ""
 
-#: ../src/import-export/aqbanking/assistant-ab-initial.c:530
+#: ../src/import-export/aqb/assistant-ab-initial.c:530
 msgid ""
 "The external program \"AqBanking Setup Wizard\" failed to run successfully "
 "because the additional software \"Qt\" was not found. Please install the "
@@ -13719,42 +13733,42 @@ msgid ""
 "\" to cancel the Online Banking setup."
 msgstr ""
 
-#: ../src/import-export/aqbanking/assistant-ab-initial.c:551
+#: ../src/import-export/aqb/assistant-ab-initial.c:551
 msgid ""
 "The external program \"AqBanking Setup Wizard\" failed to run successfully. "
 "Online Banking can only be setup if this wizard has run successfully. Please "
 "try running the \"AqBanking Setup Wizard\" again."
 msgstr ""
 
-#: ../src/import-export/aqbanking/assistant-ab-initial.c:582
+#: ../src/import-export/aqb/assistant-ab-initial.c:582
 #, c-format
 msgid "%s at %s (code %s)"
 msgstr ""
 
-#: ../src/import-export/aqbanking/assistant-ab-initial.c:587
+#: ../src/import-export/aqb/assistant-ab-initial.c:587
 #, c-format
 msgid "%s at bank code %s"
 msgstr ""
 
-#: ../src/import-export/aqbanking/assistant-ab-initial.c:880
+#: ../src/import-export/aqb/assistant-ab-initial.c:880
 msgid "Online Banking Account Name"
 msgstr ""
 
-#: ../src/import-export/aqbanking/assistant-ab-initial.c:885
+#: ../src/import-export/aqb/assistant-ab-initial.c:885
 msgid "GnuCash Account Name"
 msgstr ""
 
-#: ../src/import-export/aqbanking/assistant-ab-initial.c:891
-#: ../src/import-export/qif-import/assistant-qif-import.c:546
-#: ../src/import-export/qif-import/dialog-account-picker.c:379
+#: ../src/import-export/aqb/assistant-ab-initial.c:891
+#: ../src/import-export/qif-imp/assistant-qif-import.c:546
+#: ../src/import-export/qif-imp/dialog-account-picker.c:379
 msgid "New?"
 msgstr ""
 
-#: ../src/import-export/aqbanking/assistant-ab-initial.glade.h:1
+#: ../src/import-export/aqb/assistant-ab-initial.glade.h:1
 msgid "AqBanking Initial Assistant"
 msgstr ""
 
-#: ../src/import-export/aqbanking/assistant-ab-initial.glade.h:2
+#: ../src/import-export/aqb/assistant-ab-initial.glade.h:2
 msgid ""
 "\n"
 "This assistant helps you setting up your Online Banking connection with your "
@@ -13781,37 +13795,37 @@ msgid ""
 "now.\n"
 msgstr ""
 
-#: ../src/import-export/aqbanking/assistant-ab-initial.glade.h:18
+#: ../src/import-export/aqb/assistant-ab-initial.glade.h:18
 msgid "Initial Online Banking Setup"
 msgstr ""
 
-#: ../src/import-export/aqbanking/assistant-ab-initial.glade.h:19
+#: ../src/import-export/aqb/assistant-ab-initial.glade.h:19
 msgid ""
 "The Setup of your Online Banking connection is handled by the external "
 "program \"AqBanking Setup Wizard\". Please press the button below to start "
 "this program."
 msgstr ""
 
-#: ../src/import-export/aqbanking/assistant-ab-initial.glade.h:20
+#: ../src/import-export/aqb/assistant-ab-initial.glade.h:20
 msgid "_Start AqBanking Wizard"
 msgstr ""
 
-#: ../src/import-export/aqbanking/assistant-ab-initial.glade.h:21
+#: ../src/import-export/aqb/assistant-ab-initial.glade.h:21
 msgid "Start Online Banking Wizard"
 msgstr ""
 
-#: ../src/import-export/aqbanking/assistant-ab-initial.glade.h:22
+#: ../src/import-export/aqb/assistant-ab-initial.glade.h:22
 msgid ""
 "Double Click on the line of an Online Banking account name if you want to "
 "match it to a GnuCash account. Click \"Forward\" when all desired accounts "
 "are matching."
 msgstr ""
 
-#: ../src/import-export/aqbanking/assistant-ab-initial.glade.h:23
+#: ../src/import-export/aqb/assistant-ab-initial.glade.h:23
 msgid "Match Online accounts with GnuCash accounts"
 msgstr ""
 
-#: ../src/import-export/aqbanking/assistant-ab-initial.glade.h:24
+#: ../src/import-export/aqb/assistant-ab-initial.glade.h:24
 msgid ""
 "The setup for matching Online Banking accounts to GnuCash accounts is now "
 "finished. You can now invoke Online Banking actions on those accounts.\n"
@@ -13822,215 +13836,215 @@ msgid ""
 "Press \"Apply\" now."
 msgstr ""
 
-#: ../src/import-export/aqbanking/assistant-ab-initial.glade.h:29
+#: ../src/import-export/aqb/assistant-ab-initial.glade.h:29
 msgid "Online Banking Setup Finished"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:1
+#: ../src/import-export/aqb/dialog-ab.glade.h:1
 msgid "Online Banking Connection Window"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:2
+#: ../src/import-export/aqb/dialog-ab.glade.h:2
 msgid "<b>Progress</b>"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:3
+#: ../src/import-export/aqb/dialog-ab.glade.h:3
 msgid "Current Job"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:4
+#: ../src/import-export/aqb/dialog-ab.glade.h:4
 msgid "Progress"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:5
+#: ../src/import-export/aqb/dialog-ab.glade.h:5
 msgid "Current Action"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:6
+#: ../src/import-export/aqb/dialog-ab.glade.h:6
 msgid "<b>Log Messages</b>"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:7
+#: ../src/import-export/aqb/dialog-ab.glade.h:7
 msgid "Close when finished"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:8
+#: ../src/import-export/aqb/dialog-ab.glade.h:8
 msgid "Get Transactions Online"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:9
+#: ../src/import-export/aqb/dialog-ab.glade.h:9
 msgid "Date range of transactions to retrieve:"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:10
+#: ../src/import-export/aqb/dialog-ab.glade.h:10
 msgid "<b>From</b>"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:11
+#: ../src/import-export/aqb/dialog-ab.glade.h:11
 msgid "_Earliest possible date"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:12
+#: ../src/import-export/aqb/dialog-ab.glade.h:12
 msgid "_Last retrieval date"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:13
+#: ../src/import-export/aqb/dialog-ab.glade.h:13
 msgid "E_nter date:"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:14
+#: ../src/import-export/aqb/dialog-ab.glade.h:14
 msgid "<b>To</b>"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:15
+#: ../src/import-export/aqb/dialog-ab.glade.h:15
 msgid "_Now"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:16
+#: ../src/import-export/aqb/dialog-ab.glade.h:16
 msgid "Ente_r date:"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:17
+#: ../src/import-export/aqb/dialog-ab.glade.h:17
 msgid "Enter Password"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:18
+#: ../src/import-export/aqb/dialog-ab.glade.h:18
 msgid "Enter your password"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:19
+#: ../src/import-export/aqb/dialog-ab.glade.h:19
 msgid "Password:"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:20
+#: ../src/import-export/aqb/dialog-ab.glade.h:20
 msgid "Confirm Password:"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:21
+#: ../src/import-export/aqb/dialog-ab.glade.h:21
 msgid "Remember _PIN"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:22
+#: ../src/import-export/aqb/dialog-ab.glade.h:22
 msgid "<b>Online Banking</b>"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:23
+#: ../src/import-export/aqb/dialog-ab.glade.h:23
 msgid "_Close log window when finished"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:24
+#: ../src/import-export/aqb/dialog-ab.glade.h:24
 msgid "_Verbose debug messages"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:25
+#: ../src/import-export/aqb/dialog-ab.glade.h:25
 msgid "Name for new template"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:26
+#: ../src/import-export/aqb/dialog-ab.glade.h:26
 msgid "Enter name for new template:"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:27
+#: ../src/import-export/aqb/dialog-ab.glade.h:27
 msgid "Online Transaction"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:28
+#: ../src/import-export/aqb/dialog-ab.glade.h:28
 msgid "Enter an Online Transaction"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:29
+#: ../src/import-export/aqb/dialog-ab.glade.h:29
 msgid "Recipient Account Number"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:30
+#: ../src/import-export/aqb/dialog-ab.glade.h:30
 msgid "Recipient Bank Code"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:31
+#: ../src/import-export/aqb/dialog-ab.glade.h:31
 msgid "Recipient Name"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:32
+#: ../src/import-export/aqb/dialog-ab.glade.h:32
 msgid "at Bank"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:33
+#: ../src/import-export/aqb/dialog-ab.glade.h:33
 msgid "(filled in automatically)"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:35
+#: ../src/import-export/aqb/dialog-ab.glade.h:35
 msgid "Payment Purpose (only for recipient)"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:36
+#: ../src/import-export/aqb/dialog-ab.glade.h:36
 msgid "Payment Purpose continued"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:37
+#: ../src/import-export/aqb/dialog-ab.glade.h:37
 msgid "Originator Name"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:38
+#: ../src/import-export/aqb/dialog-ab.glade.h:38
 msgid "something"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:39
+#: ../src/import-export/aqb/dialog-ab.glade.h:39
 msgid "Originator Account Number"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:40
+#: ../src/import-export/aqb/dialog-ab.glade.h:40
 msgid "Bank Code"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:41
+#: ../src/import-export/aqb/dialog-ab.glade.h:41
 msgid "Add the current online transaction as a new transaction template"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:42
+#: ../src/import-export/aqb/dialog-ab.glade.h:42
 msgid "Add current"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:43
+#: ../src/import-export/aqb/dialog-ab.glade.h:43
 msgid "Move the selected transaction template one row up"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:44
+#: ../src/import-export/aqb/dialog-ab.glade.h:44
 msgid "Move the selected transaction template one row down"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:45
+#: ../src/import-export/aqb/dialog-ab.glade.h:45
 msgid "Sort the list of transaction templates alphabetically"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:46
+#: ../src/import-export/aqb/dialog-ab.glade.h:46
 msgid "Sort"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:47
+#: ../src/import-export/aqb/dialog-ab.glade.h:47
 msgid "Delete the currently selected transaction template"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:48
+#: ../src/import-export/aqb/dialog-ab.glade.h:48
 msgid "Templates"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:49
+#: ../src/import-export/aqb/dialog-ab.glade.h:49
 msgid "Execute later (unimpl.)"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:50
+#: ../src/import-export/aqb/dialog-ab.glade.h:50
 msgid "Execute this online transaction now"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab.glade.h:51
+#: ../src/import-export/aqb/dialog-ab.glade.h:51
 msgid "Execute Now"
 msgstr ""
 
 #. Conversion was erroneous, so don't use the string
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:280
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:979
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:982
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:988
+#: ../src/import-export/aqb/dialog-ab-trans.c:280
+#: ../src/import-export/aqb/dialog-ab-trans.c:979
+#: ../src/import-export/aqb/dialog-ab-trans.c:982
+#: ../src/import-export/aqb/dialog-ab-trans.c:988
 msgid "(unknown)"
 msgstr ""
 
@@ -14044,51 +14058,51 @@ msgstr ""
 #. * country, you may safely ignore strings
 #. * from the import-export/hbci
 #. * subdirectory.
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:359
+#: ../src/import-export/aqb/dialog-ab-trans.c:359
 msgid "Enter an Online Direct Debit Note"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:362
+#: ../src/import-export/aqb/dialog-ab-trans.c:362
 msgid "Debited Account Owner"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:364
+#: ../src/import-export/aqb/dialog-ab-trans.c:364
 msgid "Debited Account Number"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:366
+#: ../src/import-export/aqb/dialog-ab-trans.c:366
 msgid "Debited Account Bank Code"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:369
+#: ../src/import-export/aqb/dialog-ab-trans.c:369
 msgid "Credited Account Owner"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:371
+#: ../src/import-export/aqb/dialog-ab-trans.c:371
 msgid "Credited Account Number"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:373
+#: ../src/import-export/aqb/dialog-ab-trans.c:373
 msgid "Credited Account Bank Code"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:387
+#: ../src/import-export/aqb/dialog-ab-trans.c:387
 msgid "Recipient IBAN (International Account Number)"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:389
+#: ../src/import-export/aqb/dialog-ab-trans.c:389
 msgid "Recipient BIC (Bank Code)"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:393
+#: ../src/import-export/aqb/dialog-ab-trans.c:393
 msgid "Debited IBAN (International Account Number)"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:395
+#: ../src/import-export/aqb/dialog-ab-trans.c:395
 msgid "Debited BIC (Bank Code)"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:477
+#: ../src/import-export/aqb/dialog-ab-trans.c:477
 #, c-format
 msgid ""
 "The internal check of the destination account number '%s' at the specified "
@@ -14096,7 +14110,7 @@ msgid ""
 "an error."
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:549
+#: ../src/import-export/aqb/dialog-ab-trans.c:549
 #, c-format
 msgid ""
 "Your local bank account does not yet have the SEPA account information "
@@ -14106,59 +14120,59 @@ msgid ""
 "follows: aqhbci-tool4 getaccsepa -b %s -a %s"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:564
+#: ../src/import-export/aqb/dialog-ab-trans.c:564
 msgid ""
 "You did not enter a recipient name. A recipient name is required for an "
 "online transfer.\n"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:584
+#: ../src/import-export/aqb/dialog-ab-trans.c:584
 msgid ""
 "You did not enter a recipient account. A recipient account is required for "
 "an online transfer.\n"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:600
+#: ../src/import-export/aqb/dialog-ab-trans.c:600
 msgid ""
 "You did not enter a recipient bank. A recipient bank is required for an "
 "online transfer.\n"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:618
+#: ../src/import-export/aqb/dialog-ab-trans.c:618
 msgid ""
 "The amount is zero or the amount field could not be interpreted correctly. "
 "You might have mixed up decimal point and comma, compared to your locale "
 "settings. This does not result in a valid online transfer job."
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:635
+#: ../src/import-export/aqb/dialog-ab-trans.c:635
 msgid ""
 "You did not enter any transaction purpose. A purpose is required for an "
 "online transfer.\n"
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:1078
+#: ../src/import-export/aqb/dialog-ab-trans.c:1078
 msgid ""
 "A template with the given name already exists. Please enter another name."
 msgstr ""
 
-#: ../src/import-export/aqbanking/dialog-ab-trans.c:1213
+#: ../src/import-export/aqb/dialog-ab-trans.c:1213
 #, c-format
 msgid "Do you really want to delete the template with the name \"%s\"?"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-getbalance.c:83
-#: ../src/import-export/aqbanking/gnc-ab-gettrans.c:137
-#: ../src/import-export/aqbanking/gnc-ab-transfer.c:117
+#: ../src/import-export/aqb/gnc-ab-getbalance.c:83
+#: ../src/import-export/aqb/gnc-ab-gettrans.c:137
+#: ../src/import-export/aqb/gnc-ab-transfer.c:117
 msgid "No valid online banking account assigned."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-getbalance.c:97
+#: ../src/import-export/aqb/gnc-ab-getbalance.c:97
 msgid "Online action \"Get Balance\" not available for this account."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-getbalance.c:130
-#: ../src/import-export/aqbanking/gnc-ab-gettrans.c:195
+#: ../src/import-export/aqb/gnc-ab-getbalance.c:130
+#: ../src/import-export/aqb/gnc-ab-gettrans.c:195
 #, c-format
 msgid ""
 "Error on executing job.\n"
@@ -14166,23 +14180,23 @@ msgid ""
 "Status: %s - %s"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-gettrans.c:160
+#: ../src/import-export/aqb/gnc-ab-gettrans.c:160
 msgid "Online action \"Get Transactions\" not available for this account."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-gettrans.c:213
+#: ../src/import-export/aqb/gnc-ab-gettrans.c:213
 msgid ""
 "The Online Banking import returned no transactions for the selected time "
 "period."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-transfer.c:61
+#: ../src/import-export/aqb/gnc-ab-transfer.c:61
 msgid ""
 "You have changed the list of online transfer templates, but you cancelled "
 "the transfer dialog. Do you nevertheless want to store the changes?"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-transfer.c:186
+#: ../src/import-export/aqb/gnc-ab-transfer.c:186
 msgid ""
 "The backend found an error during the preparation of the job. It is not "
 "possible to execute this job. \n"
@@ -14194,27 +14208,27 @@ msgid ""
 "Do you want to enter the job again?"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-transfer.c:208
+#: ../src/import-export/aqb/gnc-ab-transfer.c:208
 msgid "Online Banking Direct Debit Note"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-transfer.c:213
+#: ../src/import-export/aqb/gnc-ab-transfer.c:213
 msgid "Online Banking Bank-Internal Transfer"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-transfer.c:218
+#: ../src/import-export/aqb/gnc-ab-transfer.c:218
 msgid "Online Banking European (SEPA) Transfer"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-transfer.c:223
+#: ../src/import-export/aqb/gnc-ab-transfer.c:223
 msgid "Online Banking European (SEPA) Debit Note"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-transfer.c:229
+#: ../src/import-export/aqb/gnc-ab-transfer.c:229
 msgid "Online Banking Transaction"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-transfer.c:294
+#: ../src/import-export/aqb/gnc-ab-transfer.c:294
 msgid ""
 "An error occurred while executing the job. Please check the log window for "
 "the exact error message.\n"
@@ -14222,13 +14236,12 @@ msgid ""
 "Do you want to enter the job again?"
 msgstr ""
 
-#. src/import-export/qif-import/qif-dialog-utils.scm
-#: ../src/import-export/aqbanking/gnc-ab-utils.c:409
-#: ../intl-scm/guile-strings.c:348
+#. src/import-export/qif-imp/qif-dialog-utils.scm
+#: ../src/import-export/aqb/gnc-ab-utils.c:409 ../intl-scm/guile-strings.c:348
 msgid "Unspecified"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-utils.c:662
+#: ../src/import-export/aqb/gnc-ab-utils.c:662
 msgid ""
 "The backend found an error during the preparation of the job. It is not "
 "possible to execute this job. \n"
@@ -14240,19 +14253,19 @@ msgid ""
 "Do you want to enter the job again?"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-utils.c:754
+#: ../src/import-export/aqb/gnc-ab-utils.c:754
 msgid ""
 "The bank has sent transaction information in its response.\n"
 "Do you want to import it?"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-utils.c:781
+#: ../src/import-export/aqb/gnc-ab-utils.c:781
 msgid ""
 "No Online Banking account found for this gnucash account. These transactions "
 "will not be executed by Online Banking."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-utils.c:858
+#: ../src/import-export/aqb/gnc-ab-utils.c:858
 msgid ""
 "The bank has sent balance information in its response.\n"
 "Do you want to import it?"
@@ -14265,7 +14278,7 @@ msgstr ""
 #. * (Switzerland). If none of these techniques are available
 #. * in your country, you may safely ignore strings from the
 #. * import-export/hbci subdirectory.
-#: ../src/import-export/aqbanking/gnc-ab-utils.c:946
+#: ../src/import-export/aqb/gnc-ab-utils.c:946
 msgid ""
 "The downloaded Online Banking Balance was zero.\n"
 "\n"
@@ -14276,47 +14289,47 @@ msgid ""
 "Banking Balance."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-utils.c:963
+#: ../src/import-export/aqb/gnc-ab-utils.c:963
 #, c-format
 msgid ""
 "Result of Online Banking job: \n"
 "Account booked balance is %s"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-utils.c:969
+#: ../src/import-export/aqb/gnc-ab-utils.c:969
 #, c-format
 msgid "For your information: This account also has a noted balance of %s\n"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-utils.c:976
+#: ../src/import-export/aqb/gnc-ab-utils.c:976
 msgid ""
 "The booked balance is identical to the current reconciled balance of the "
 "account."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-ab-utils.c:991
+#: ../src/import-export/aqb/gnc-ab-utils.c:991
 msgid "Reconcile account now?"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-file-aqb-import.c:94
+#: ../src/import-export/aqb/gnc-file-aqb-import.c:94
 msgid "Select a file to import"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-file-aqb-import.c:140
+#: ../src/import-export/aqb/gnc-file-aqb-import.c:140
 msgid "Import module for DTAUS import not found."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-file-aqb-import.c:293
+#: ../src/import-export/aqb/gnc-file-aqb-import.c:293
 #, c-format
 msgid "Job %d status %d - %s: %s \n"
 msgstr ""
 
 #. indicate that additional failures exist
-#: ../src/import-export/aqbanking/gnc-file-aqb-import.c:304
+#: ../src/import-export/aqb/gnc-file-aqb-import.c:304
 msgid "...\n"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-file-aqb-import.c:318
+#: ../src/import-export/aqb/gnc-file-aqb-import.c:318
 #, c-format
 msgid ""
 "An error occurred while executing jobs: %d of %d failed. Please check the "
@@ -14325,11 +14338,11 @@ msgid ""
 "%s"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-file-aqb-import.c:328
+#: ../src/import-export/aqb/gnc-file-aqb-import.c:328
 msgid "No jobs to be send."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-file-aqb-import.c:334
+#: ../src/import-export/aqb/gnc-file-aqb-import.c:334
 #, c-format
 msgid ""
 "The job was executed successfully, but as a precaution please check the log "
@@ -14340,208 +14353,208 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../src/import-export/aqbanking/gnc-gwen-gui.c:1069
+#: ../src/import-export/aqb/gnc-gwen-gui.c:1069
 #, c-format
 msgid ""
 "The PIN needs to be at least %d characters \n"
 "long. Do you want to try again?"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-gwen-gui.c:1565
+#: ../src/import-export/aqb/gnc-gwen-gui.c:1565
 msgid ""
 "The Online Banking job is still running; are you sure you want to cancel?"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gncmod-aqbanking.c:79
+#: ../src/import-export/aqb/gncmod-aqbanking.c:79
 #: ../src/import-export/gncmod-generic-import.c:59
-#: ../src/import-export/qif-import/gnc-plugin-qif-import.c:162
+#: ../src/import-export/qif-imp/gnc-plugin-qif-import.c:162
 msgid "Online Banking"
 msgstr ""
 
 #. Menus
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:94
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:94
 msgid "_Online Actions"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:98
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:98
 msgid "_Online Banking Setup..."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:99
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:99
 msgid ""
 "Initial setup of Online Banking access (HBCI, or OFX DirectConnect, using "
 "AqBanking)"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:103
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:103
 msgid "Get _Balance"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:104
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:104
 msgid "Get the account balance online through Online Banking"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:108
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:108
 msgid "Get _Transactions..."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:109
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:109
 msgid "Get the transactions online through Online Banking"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:113
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:113
 msgid "_Issue Transaction..."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:114
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:114
 msgid "Issue a new transaction online through Online Banking"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:118
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:118
 msgid "_Issue SEPA Transaction..."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:119
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:119
 msgid ""
 "Issue a new international European (SEPA) transaction online through Online "
 "Banking"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:123
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:123
 msgid "I_nternal Transaction..."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:124
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:124
 msgid "Issue a new bank-internal transaction online through Online Banking"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:128
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:128
 msgid "_Direct Debit..."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:129
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:129
 msgid "Issue a new direct debit note online through Online Banking"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:133
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:133
 msgid "_Issue SEPA Direct Debit..."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:134
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:134
 msgid ""
 "Issue a new international European (SEPA) direct debit note online through "
 "Online Banking"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:140
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:140
 msgid "Import _MT940"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:141
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:141
 msgid "Import a MT940 file into GnuCash"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:145
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:145
 msgid "Import MT94_2"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:146
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:146
 msgid "Import a MT942 file into GnuCash"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:150
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:150
 msgid "Import _DTAUS"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:151
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:151
 msgid "Import a DTAUS file into GnuCash"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:163
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:163
 msgid "Import DTAUS and _send..."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:164
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:164
 msgid ""
 "Import a DTAUS file into GnuCash and send the transfers online through "
 "Online Banking"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:174
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:174
 msgid "Show _log window"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gnc-plugin-aqbanking.c:175
+#: ../src/import-export/aqb/gnc-plugin-aqbanking.c:175
 msgid "Show the online banking log window."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:3
+#: ../src/import-export/aqb/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:3
 msgid "Close window when finished"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:4
+#: ../src/import-export/aqb/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:4
 msgid ""
 "If active, the window will be closed automatically when you finish the HBCI/"
 "AqBanking import process. Otherwise it will stay open."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:5
+#: ../src/import-export/aqb/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:5
 msgid "Remember the PIN in memory"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:6
+#: ../src/import-export/aqb/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:6
 msgid ""
 "If active, the PIN for HBCI/AqBanking actions will be remembered in memory "
 "during a session. Otherwise it will have to be entered again each time "
 "during a session when it is needed."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:7
+#: ../src/import-export/aqb/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:7
 msgid "Verbose HBCI debug messages"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:8
+#: ../src/import-export/aqb/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:8
 msgid "Enables verbose debug messages for HBCI/AqBanking Online Banking."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:9
+#: ../src/import-export/aqb/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:9
 msgid "DTAUS import data format"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:10
+#: ../src/import-export/aqb/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:10
 msgid ""
 "This setting specifies the data format when importing DTAUS files. The "
 "AqBanking library offers various import formats (called \"profiles\") of "
 "which you can choose one here."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:11
+#: ../src/import-export/aqb/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:11
 msgid "CSV import data format"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:12
+#: ../src/import-export/aqb/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:12
 msgid ""
 "This setting specifies the data format when importing CSV files. The "
 "AqBanking library offers various import formats (called \"profiles\") of "
 "which you can choose one here."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:13
+#: ../src/import-export/aqb/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:13
 msgid "SWIFT MT940 import data format"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:14
+#: ../src/import-export/aqb/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:14
 msgid ""
 "This setting specifies the data format when importing SWIFT MT940 files. The "
 "AqBanking library offers various import formats (called \"profiles\") of "
 "which you can choose one here."
 msgstr ""
 
-#: ../src/import-export/aqbanking/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:15
+#: ../src/import-export/aqb/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:15
 msgid "SWIFT MT942 import data format"
 msgstr ""
 
-#: ../src/import-export/aqbanking/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:16
+#: ../src/import-export/aqb/gschemas/org.gnucash.dialogs.import.hbci.gschema.xml.in.in.h:16
 msgid ""
 "This setting specifies the data format when importing SWIFT MT942 files. The "
 "AqBanking library offers various import formats (called \"profiles\") of "
@@ -14549,7 +14562,7 @@ msgid ""
 msgstr ""
 
 #. Translators: %s is the file name string.
-#: ../src/import-export/csv-export/assistant-csv-export.c:80
+#: ../src/import-export/csv-exp/assistant-csv-export.c:80
 #, c-format
 msgid ""
 "The account tree will be exported to the file '%s' when you click 'Apply'.\n"
@@ -14559,7 +14572,7 @@ msgid ""
 msgstr ""
 
 #. Translators: %s is the file name string and %u the number of accounts.
-#: ../src/import-export/csv-export/assistant-csv-export.c:86
+#: ../src/import-export/csv-exp/assistant-csv-export.c:86
 #, c-format
 msgid ""
 "When you click 'Apply', the transactions will be exported to the file '%s' "
@@ -14569,7 +14582,7 @@ msgid ""
 "'Cancel' to Abort Export.\n"
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.c:92
+#: ../src/import-export/csv-exp/assistant-csv-export.c:92
 msgid ""
 "This assistant will help you export the Account Tree to a file.\n"
 "\n"
@@ -14577,7 +14590,7 @@ msgid ""
 "proceed or 'Cancel' to Abort Export.\n"
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.c:97
+#: ../src/import-export/csv-exp/assistant-csv-export.c:97
 msgid ""
 "This assistant will help you export the Transactions to a file.\n"
 "\n"
@@ -14585,7 +14598,7 @@ msgid ""
 "proceed or 'Cancel' to Abort Export.\n"
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.c:750
+#: ../src/import-export/csv-exp/assistant-csv-export.c:750
 msgid ""
 "There was a problem with the export, this could be due to lack of space, "
 "permissions or unable to access folder. Check the trace file for further "
@@ -14593,196 +14606,196 @@ msgid ""
 "You may need to enable debugging.\n"
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.c:754
+#: ../src/import-export/csv-exp/assistant-csv-export.c:754
 msgid "File exported successfully!\n"
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:1
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:1
 msgid "CSV Export Assistant"
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:2
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:2
 msgid ""
 "\n"
 "Select the type of Export required and the separator that will be used.\n"
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:5
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:5
 msgid "Quotes"
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:6
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:6
 msgid "Use Quotes"
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:7
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:24
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:7
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:24
 msgid "Comma (,)"
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:8
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:25
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:8
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:25
 msgid "Colon (:)"
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:9
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:26
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:9
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:26
 msgid "Semicolon (;)"
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:11
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:29
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:11
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:29
 msgid "Separators"
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:12
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:12
 msgid "Choose Export Settings"
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:13
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:13
 msgid "Select the accounts to be exported and date range if required."
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:22
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:22
 msgid "<b>_Dates</b>"
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:33
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:34
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:33
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:34
 msgid "Account Selection"
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:34
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:34
 msgid ""
 "\n"
 "Enter file name and location for the Export...\n"
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:37
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:37
 msgid "Choose File Name for Export"
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:38
-#: ../src/import-export/csv-import/assistant-csv-account-import.glade.h:23
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:38
+#: ../src/import-export/csv-imp/assistant-csv-account-import.glade.h:23
 msgid ""
 "Press Apply to create export file.\n"
 "Cancel to abort."
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:40
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:40
 msgid "Export Now..."
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:41
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:41
 msgid "Summary"
 msgstr ""
 
-#: ../src/import-export/csv-export/assistant-csv-export.glade.h:42
+#: ../src/import-export/csv-exp/assistant-csv-export.glade.h:42
 msgid "Export Summary"
 msgstr ""
 
-#: ../src/import-export/csv-export/csv-transactions-export.c:346
+#: ../src/import-export/csv-exp/csv-transactions-export.c:346
 msgid "Category"
 msgstr ""
 
-#: ../src/import-export/csv-export/csv-transactions-export.c:350
+#: ../src/import-export/csv-exp/csv-transactions-export.c:350
 msgid "To With Sym"
 msgstr ""
 
-#: ../src/import-export/csv-export/csv-transactions-export.c:350
+#: ../src/import-export/csv-exp/csv-transactions-export.c:350
 msgid "From With Sym"
 msgstr ""
 
-#: ../src/import-export/csv-export/csv-transactions-export.c:351
+#: ../src/import-export/csv-exp/csv-transactions-export.c:351
 msgid "To Num."
 msgstr ""
 
-#: ../src/import-export/csv-export/csv-transactions-export.c:351
+#: ../src/import-export/csv-exp/csv-transactions-export.c:351
 msgid "From Num."
 msgstr ""
 
-#: ../src/import-export/csv-export/csv-transactions-export.c:352
+#: ../src/import-export/csv-exp/csv-transactions-export.c:352
 msgid "To Rate/Price"
 msgstr ""
 
-#: ../src/import-export/csv-export/csv-transactions-export.c:352
+#: ../src/import-export/csv-exp/csv-transactions-export.c:352
 msgid "From Rate/Price"
 msgstr ""
 
 #. Header string
-#: ../src/import-export/csv-export/csv-tree-export.c:112
+#: ../src/import-export/csv-exp/csv-tree-export.c:112
 msgid "type"
 msgstr ""
 
-#: ../src/import-export/csv-export/csv-tree-export.c:112
+#: ../src/import-export/csv-exp/csv-tree-export.c:112
 msgid "full_name"
 msgstr ""
 
-#: ../src/import-export/csv-export/csv-tree-export.c:113
+#: ../src/import-export/csv-exp/csv-tree-export.c:113
 msgid "name"
 msgstr ""
 
-#: ../src/import-export/csv-export/csv-tree-export.c:113
+#: ../src/import-export/csv-exp/csv-tree-export.c:113
 msgid "code"
 msgstr ""
 
-#: ../src/import-export/csv-export/csv-tree-export.c:114
+#: ../src/import-export/csv-exp/csv-tree-export.c:114
 msgid "description"
 msgstr ""
 
-#: ../src/import-export/csv-export/csv-tree-export.c:114
+#: ../src/import-export/csv-exp/csv-tree-export.c:114
 msgid "color"
 msgstr ""
 
-#: ../src/import-export/csv-export/csv-tree-export.c:114
+#: ../src/import-export/csv-exp/csv-tree-export.c:114
 msgid "notes"
 msgstr ""
 
-#: ../src/import-export/csv-export/csv-tree-export.c:115
+#: ../src/import-export/csv-exp/csv-tree-export.c:115
 msgid "commoditym"
 msgstr ""
 
-#: ../src/import-export/csv-export/csv-tree-export.c:115
+#: ../src/import-export/csv-exp/csv-tree-export.c:115
 msgid "commodityn"
 msgstr ""
 
-#: ../src/import-export/csv-export/csv-tree-export.c:116
+#: ../src/import-export/csv-exp/csv-tree-export.c:116
 msgid "hidden"
 msgstr ""
 
-#: ../src/import-export/csv-export/csv-tree-export.c:116
+#: ../src/import-export/csv-exp/csv-tree-export.c:116
 msgid "tax"
 msgstr ""
 
-#: ../src/import-export/csv-export/csv-tree-export.c:116
+#: ../src/import-export/csv-exp/csv-tree-export.c:116
 msgid "place_holder"
 msgstr ""
 
-#: ../src/import-export/csv-export/gnc-plugin-csv-export.c:47
+#: ../src/import-export/csv-exp/gnc-plugin-csv-export.c:47
 msgid "Export Account T_ree to CSV..."
 msgstr ""
 
-#: ../src/import-export/csv-export/gnc-plugin-csv-export.c:48
+#: ../src/import-export/csv-exp/gnc-plugin-csv-export.c:48
 msgid "Export the Account Tree to a CSV file"
 msgstr ""
 
-#: ../src/import-export/csv-export/gnc-plugin-csv-export.c:52
+#: ../src/import-export/csv-exp/gnc-plugin-csv-export.c:52
 msgid "Export _Transactions to CSV..."
 msgstr ""
 
-#: ../src/import-export/csv-export/gnc-plugin-csv-export.c:53
+#: ../src/import-export/csv-exp/gnc-plugin-csv-export.c:53
 msgid "Export the Transactions to a CSV file"
 msgstr ""
 
-#: ../src/import-export/csv-export/gschemas/org.gnucash.dialogs.export.csv.gschema.xml.in.in.h:5
+#: ../src/import-export/csv-exp/gschemas/org.gnucash.dialogs.export.csv.gschema.xml.in.in.h:5
 msgid "Window geometry"
 msgstr ""
 
-#: ../src/import-export/csv-export/gschemas/org.gnucash.dialogs.export.csv.gschema.xml.in.in.h:6
+#: ../src/import-export/csv-exp/gschemas/org.gnucash.dialogs.export.csv.gschema.xml.in.in.h:6
 msgid "The position of paned window when it was last closed."
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.c:71
+#: ../src/import-export/csv-imp/assistant-csv-account-import.c:71
 #, c-format
 msgid ""
 "The accounts will be imported from the file '%s' when you click 'Apply'.\n"
@@ -14791,7 +14804,7 @@ msgid ""
 "'Cancel' to Abort Import.\n"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.c:76
+#: ../src/import-export/csv-imp/assistant-csv-account-import.c:76
 #, c-format
 msgid ""
 "The accounts will be imported from the file '%s' when you click 'Apply'.\n"
@@ -14805,19 +14818,19 @@ msgid ""
 "will not be shown.\n"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.c:150
+#: ../src/import-export/csv-imp/assistant-csv-account-import.c:150
 #: ../src/plugins/bi_import/dialog-bi-import-gui.c:219
 #: ../src/plugins/customer_import/dialog-customer-import-gui.c:205
 msgid "The input file can not be opened."
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.c:242
+#: ../src/import-export/csv-imp/assistant-csv-account-import.c:242
 #: ../src/plugins/bi_import/dialog-bi-import-gui.c:334
 #: ../src/plugins/customer_import/dialog-customer-import-gui.c:319
 msgid "Adjust regular expression used for import"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.c:242
+#: ../src/import-export/csv-imp/assistant-csv-account-import.c:242
 #: ../src/plugins/bi_import/dialog-bi-import-gui.c:334
 #: ../src/plugins/customer_import/dialog-customer-import-gui.c:319
 msgid ""
@@ -14825,7 +14838,7 @@ msgid ""
 "to your needs.\n"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.c:447
+#: ../src/import-export/csv-imp/assistant-csv-account-import.c:447
 #, c-format
 msgid ""
 "Import completed but with errors!\n"
@@ -14835,7 +14848,7 @@ msgid ""
 "See below for errors..."
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.c:455
+#: ../src/import-export/csv-imp/assistant-csv-account-import.c:455
 #, c-format
 msgid ""
 "Import completed successfully!\n"
@@ -14843,11 +14856,11 @@ msgid ""
 "The number of Accounts added was %u and updated was %u.\n"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.glade.h:1
+#: ../src/import-export/csv-imp/assistant-csv-account-import.glade.h:1
 msgid "CSV Import Assistant"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.glade.h:2
+#: ../src/import-export/csv-imp/assistant-csv-account-import.glade.h:2
 msgid ""
 "\n"
 "This assistant will help you import Accounts from a file.\n"
@@ -14861,109 +14874,109 @@ msgid ""
 "Click on 'Forward' to proceed or 'Cancel' to Abort Import.\n"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.glade.h:9
+#: ../src/import-export/csv-imp/assistant-csv-account-import.glade.h:9
 msgid "Import Account Assistant"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.glade.h:10
+#: ../src/import-export/csv-imp/assistant-csv-account-import.glade.h:10
 msgid ""
 "\n"
 "Enter file name and location for the Import...\n"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.glade.h:13
+#: ../src/import-export/csv-imp/assistant-csv-account-import.glade.h:13
 msgid "Choose File to Import"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.glade.h:14
+#: ../src/import-export/csv-imp/assistant-csv-account-import.glade.h:14
 msgid "Number of rows for the Header"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.glade.h:15
+#: ../src/import-export/csv-imp/assistant-csv-account-import.glade.h:15
 msgid "Semicolon Separated"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.glade.h:16
+#: ../src/import-export/csv-imp/assistant-csv-account-import.glade.h:16
 msgid "Semicolon Separated with Quotes"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.glade.h:17
+#: ../src/import-export/csv-imp/assistant-csv-account-import.glade.h:17
 msgid "Comma Separated"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.glade.h:18
+#: ../src/import-export/csv-imp/assistant-csv-account-import.glade.h:18
 msgid "Comma Separated with Quotes"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.glade.h:19
+#: ../src/import-export/csv-imp/assistant-csv-account-import.glade.h:19
 msgid "Custom regular Expression"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.glade.h:20
+#: ../src/import-export/csv-imp/assistant-csv-account-import.glade.h:20
 msgid "Select Separator Type"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.glade.h:21
+#: ../src/import-export/csv-imp/assistant-csv-account-import.glade.h:21
 msgid "Preview"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.glade.h:22
+#: ../src/import-export/csv-imp/assistant-csv-account-import.glade.h:22
 msgid "Import Account Preview, first 10 rows only"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.glade.h:25
+#: ../src/import-export/csv-imp/assistant-csv-account-import.glade.h:25
 msgid "Import Accounts Now"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-account-import.glade.h:27
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:47
+#: ../src/import-export/csv-imp/assistant-csv-account-import.glade.h:27
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:47
 msgid "Import Summary"
 msgstr ""
 
 #. If it fails, change back to the old encoding.
-#: ../src/import-export/csv-import/assistant-csv-trans-import.c:502
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.c:502
 msgid "Invalid encoding selected"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.c:577
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.c:577
 msgid "Merge with column on _left"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.c:581
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.c:581
 msgid "Merge with column on _right"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.c:586
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.c:586
 msgid "_Split this column"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.c:591
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.c:591
 msgid "_Widen this column"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.c:595
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.c:595
 msgid "_Narrow this column"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.c:1336
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.c:1336
 msgid ""
 "The rows displayed below had errors which are in the last column. You can "
 "attempt to correct them by changing the configuration."
 msgstr ""
 
 #. Set check button label
-#: ../src/import-export/csv-import/assistant-csv-trans-import.c:1345
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.c:1345
 msgid "Skip Errors"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.c:1377
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.c:1377
 #, c-format
 msgid ""
 "There are problems with the import settings!\n"
 "The date format could be wrong or there are not enough columns set..."
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.c:1388
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.c:1388
 #, c-format
 msgid ""
 "To Change the account, double click on the required account, click Forward "
@@ -14971,20 +14984,20 @@ msgid ""
 msgstr ""
 
 #. A list of the transactions we create
-#: ../src/import-export/csv-import/assistant-csv-trans-import.c:1471
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.c:1471
 msgid "Double click on rows to change, then click on Apply to Import"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.c:1519
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.c:1519
 #, c-format
 msgid "The transactions were imported from the file '%s'."
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:1
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:1
 msgid "CSV Transaction Import"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:2
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:2
 msgid ""
 "This assistant will help you import a delimited file containing a list of "
 "transactions.\n"
@@ -15001,77 +15014,77 @@ msgid ""
 "you have some header text or multiple accounts in the same file."
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:9
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:9
 msgid "Transaction Import Assistant"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:10
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:10
 msgid ""
 "\n"
 "Select location and file name for the Import, then click 'OK'...\n"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:13
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:13
 msgid "Select File for Import"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:14
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:14
 msgid "Start import on row "
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:15
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:15
 msgid " and stop on row "
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:16
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:16
 msgid "Data type: "
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:17
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:17
 msgid "Separated"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:18
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:18
 msgid "Fixed-Width"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:20
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:20
 msgid "Currency format"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:21
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:21
 msgid "Encoding: "
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:22
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:22
 msgid "Space"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:23
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:23
 msgid "Tab"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:27
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:27
 msgid "Hyphen (-)"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:30
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:30
 msgid "Select the type of each column below."
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:31
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:31
 msgid "Step over Account Page if Setup"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:32
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:32
 msgid "Preview Settings"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:33
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:33
 msgid "Error text."
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:35
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:35
 msgid ""
 "On the following page you will be able to associate each transaction to a "
 "category.\n"
@@ -15090,94 +15103,94 @@ msgid ""
 "More information can be displayed by using the help button."
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:44
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:44
 msgid "Transaction Information"
 msgstr ""
 
-#: ../src/import-export/csv-import/assistant-csv-trans-import.glade.h:46
+#: ../src/import-export/csv-imp/assistant-csv-trans-import.glade.h:46
 msgid "Match Transactions"
 msgstr ""
 
-#: ../src/import-export/csv-import/csv-account-import.c:239
+#: ../src/import-export/csv-imp/csv-account-import.c:239
 #, c-format
 msgid "Row %u, path to account %s not found, added as top level\n"
 msgstr ""
 
-#: ../src/import-export/csv-import/csv-account-import.c:289
+#: ../src/import-export/csv-imp/csv-account-import.c:289
 #, c-format
 msgid "Row %u, commodity %s / %s not found\n"
 msgstr ""
 
-#: ../src/import-export/csv-import/csv-account-import.c:298
+#: ../src/import-export/csv-imp/csv-account-import.c:298
 #, c-format
 msgid "Row %u, account %s not in %s\n"
 msgstr ""
 
-#: ../src/import-export/csv-import/gnc-csv-model.c:30
+#: ../src/import-export/csv-imp/gnc-csv-model.c:30
 msgid "y-m-d"
 msgstr ""
 
-#: ../src/import-export/csv-import/gnc-csv-model.c:31
+#: ../src/import-export/csv-imp/gnc-csv-model.c:31
 msgid "d-m-y"
 msgstr ""
 
-#: ../src/import-export/csv-import/gnc-csv-model.c:32
+#: ../src/import-export/csv-imp/gnc-csv-model.c:32
 msgid "m-d-y"
 msgstr ""
 
-#: ../src/import-export/csv-import/gnc-csv-model.c:33
+#: ../src/import-export/csv-imp/gnc-csv-model.c:33
 msgid "d-m"
 msgstr ""
 
-#: ../src/import-export/csv-import/gnc-csv-model.c:34
+#: ../src/import-export/csv-imp/gnc-csv-model.c:34
 msgid "m-d"
 msgstr ""
 
-#: ../src/import-export/csv-import/gnc-csv-model.c:39
+#: ../src/import-export/csv-imp/gnc-csv-model.c:39
 #: ../src/import-export/import-format-dialog.c:62
 msgid "Period: 123,456.78"
 msgstr ""
 
-#: ../src/import-export/csv-import/gnc-csv-model.c:40
+#: ../src/import-export/csv-imp/gnc-csv-model.c:40
 #: ../src/import-export/import-format-dialog.c:70
 msgid "Comma: 123.456,78"
 msgstr ""
 
-#: ../src/import-export/csv-import/gnc-csv-model.c:455
+#: ../src/import-export/csv-imp/gnc-csv-model.c:455
 msgid "File opening failed."
 msgstr ""
 
-#: ../src/import-export/csv-import/gnc-csv-model.c:470
-#: ../src/import-export/csv-import/gnc-csv-model.c:478
+#: ../src/import-export/csv-imp/gnc-csv-model.c:470
+#: ../src/import-export/csv-imp/gnc-csv-model.c:478
 msgid "Unknown encoding."
 msgstr ""
 
-#: ../src/import-export/csv-import/gnc-csv-model.c:800
+#: ../src/import-export/csv-imp/gnc-csv-model.c:800
 msgid "No date column."
 msgstr ""
 
-#: ../src/import-export/csv-import/gnc-csv-model.c:801
+#: ../src/import-export/csv-imp/gnc-csv-model.c:801
 msgid "No balance, deposit, or withdrawal column."
 msgstr ""
 
-#: ../src/import-export/csv-import/gnc-csv-model.c:1095
+#: ../src/import-export/csv-imp/gnc-csv-model.c:1095
 #, c-format
 msgid "%s column could not be understood."
 msgstr ""
 
-#: ../src/import-export/csv-import/gnc-plugin-csv-import.c:48
+#: ../src/import-export/csv-imp/gnc-plugin-csv-import.c:48
 msgid "Import _Accounts from CSV..."
 msgstr ""
 
-#: ../src/import-export/csv-import/gnc-plugin-csv-import.c:49
+#: ../src/import-export/csv-imp/gnc-plugin-csv-import.c:49
 msgid "Import Accounts from a CSV file"
 msgstr ""
 
-#: ../src/import-export/csv-import/gnc-plugin-csv-import.c:53
+#: ../src/import-export/csv-imp/gnc-plugin-csv-import.c:53
 msgid "Import _Transactions from CSV..."
 msgstr ""
 
-#: ../src/import-export/csv-import/gnc-plugin-csv-import.c:54
+#: ../src/import-export/csv-imp/gnc-plugin-csv-import.c:54
 msgid "Import Transactions from a CSV file"
 msgstr ""
 
@@ -15281,7 +15294,7 @@ msgid ""
 msgstr ""
 
 #: ../src/import-export/dialog-import.glade.h:19
-#: ../src/import-export/qif-import/dialog-account-picker.glade.h:12
+#: ../src/import-export/qif-imp/dialog-account-picker.glade.h:12
 msgid "Select Account"
 msgstr ""
 
@@ -15670,95 +15683,95 @@ msgstr ""
 msgid "Process an OFX/QFX response file"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:532
+#: ../src/import-export/qif-imp/assistant-qif-import.c:532
 msgid "GnuCash account name"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:834
-#: ../src/import-export/qif-import/assistant-qif-import.c:2646
+#: ../src/import-export/qif-imp/assistant-qif-import.c:834
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2648
 msgid "Enter a name or short description, such as \"Red Hat Stock\"."
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:836
-#: ../src/import-export/qif-import/assistant-qif-import.c:2653
+#: ../src/import-export/qif-imp/assistant-qif-import.c:836
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2655
 msgid ""
 "Enter the ticker symbol or other well known abbreviation, such as \"RHT\". "
 "If there isn't one, or you don't know it, create your own."
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:839
-#: ../src/import-export/qif-import/assistant-qif-import.c:2661
+#: ../src/import-export/qif-imp/assistant-qif-import.c:839
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2663
 msgid ""
 "Select the exchange on which the symbol is traded, or select the type of "
 "investment (such as FUND for mutual funds.) If you don't see your exchange "
 "or an appropriate investment type, you can enter a new one."
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:864
+#: ../src/import-export/qif-imp/assistant-qif-import.c:864
 msgid "Enter information about"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:880
+#: ../src/import-export/qif-imp/assistant-qif-import.c:880
 msgid "_Name or description:"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:900
+#: ../src/import-export/qif-imp/assistant-qif-import.c:900
 msgid "_Ticker symbol or other abbreviation:"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:925
+#: ../src/import-export/qif-imp/assistant-qif-import.c:925
 msgid "_Exchange or abbreviation type:"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:1124
-#: ../src/import-export/qif-import/assistant-qif-import.c:3083
+#: ../src/import-export/qif-imp/assistant-qif-import.c:1124
+#: ../src/import-export/qif-imp/assistant-qif-import.c:3085
 msgid "(split)"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:1510
+#: ../src/import-export/qif-imp/assistant-qif-import.c:1510
 msgid "Please select a file to load."
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:1513
+#: ../src/import-export/qif-imp/assistant-qif-import.c:1513
 msgid "File not found or read permission denied. Please select another file."
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:1524
+#: ../src/import-export/qif-imp/assistant-qif-import.c:1524
 msgid "That QIF file is already loaded. Please select another file."
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:1582
+#: ../src/import-export/qif-imp/assistant-qif-import.c:1582
 msgid "Select QIF File"
 msgstr ""
 
 #. Swap the button label between pause and resume.
-#: ../src/import-export/qif-import/assistant-qif-import.c:1645
-#: ../src/import-export/qif-import/assistant-qif-import.c:1649
-#: ../src/import-export/qif-import/assistant-qif-import.c:2754
-#: ../src/import-export/qif-import/assistant-qif-import.c:2758
+#: ../src/import-export/qif-imp/assistant-qif-import.c:1645
+#: ../src/import-export/qif-imp/assistant-qif-import.c:1649
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2756
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2760
 msgid "_Resume"
 msgstr ""
 
 #. Inform the user.
-#: ../src/import-export/qif-import/assistant-qif-import.c:1734
-#: ../src/import-export/qif-import/assistant-qif-import.c:1804
-#: ../src/import-export/qif-import/assistant-qif-import.c:2840
+#: ../src/import-export/qif-imp/assistant-qif-import.c:1734
+#: ../src/import-export/qif-imp/assistant-qif-import.c:1804
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2842
 msgid "Canceled"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:1748
-#: ../src/import-export/qif-import/assistant-qif-import.c:1752
+#: ../src/import-export/qif-imp/assistant-qif-import.c:1748
+#: ../src/import-export/qif-imp/assistant-qif-import.c:1752
 msgid "An error occurred while loading the QIF file."
 msgstr ""
 
 #. Inform the user.
-#: ../src/import-export/qif-import/assistant-qif-import.c:1749
-#: ../src/import-export/qif-import/assistant-qif-import.c:1767
-#: ../src/import-export/qif-import/assistant-qif-import.c:1823
-#: ../src/import-export/qif-import/assistant-qif-import.c:1879
-#: ../src/import-export/qif-import/assistant-qif-import.c:2860
-#: ../src/import-export/qif-import/assistant-qif-import.c:2881
-#: ../src/import-export/qif-import/assistant-qif-import.c:2928
+#: ../src/import-export/qif-imp/assistant-qif-import.c:1749
+#: ../src/import-export/qif-imp/assistant-qif-import.c:1767
+#: ../src/import-export/qif-imp/assistant-qif-import.c:1823
+#: ../src/import-export/qif-imp/assistant-qif-import.c:1879
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2862
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2883
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2930
 msgid "Failed"
 msgstr ""
 
@@ -15766,108 +15779,108 @@ msgstr ""
 #. Remove any converted data.
 #. An error occurred during duplicate checking.
 #. Remove any converted data.
-#: ../src/import-export/qif-import/assistant-qif-import.c:1800
-#: ../src/import-export/qif-import/assistant-qif-import.c:1817
-#: ../src/import-export/qif-import/assistant-qif-import.c:2836
-#: ../src/import-export/qif-import/assistant-qif-import.c:2854
-#: ../src/import-export/qif-import/assistant-qif-import.c:2877
-#: ../src/import-export/qif-import/assistant-qif-import.c:2922
+#: ../src/import-export/qif-imp/assistant-qif-import.c:1800
+#: ../src/import-export/qif-imp/assistant-qif-import.c:1817
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2838
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2856
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2879
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2924
 msgid "Cleaning up"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:1822
-#: ../src/import-export/qif-import/assistant-qif-import.c:1826
+#: ../src/import-export/qif-imp/assistant-qif-import.c:1822
+#: ../src/import-export/qif-imp/assistant-qif-import.c:1826
 msgid "A bug was detected while parsing the QIF file."
 msgstr ""
 
 #. The file was loaded successfully.
-#: ../src/import-export/qif-import/assistant-qif-import.c:1898
+#: ../src/import-export/qif-imp/assistant-qif-import.c:1898
 msgid "Loading completed"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:1929
+#: ../src/import-export/qif-imp/assistant-qif-import.c:1929
 msgid ""
 "When you press the Start Button, GnuCash will load your QIF file. If there "
 "are no errors or warnings, you will automatically proceed to the next step. "
 "Otherwise, the details will be shown below for your review."
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:2494
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:60
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2494
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:60
 msgid "Choose the QIF file currency and select Book Options"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:2501
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2501
 msgid "Choose the QIF file currency"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:2681
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2683
 msgid "You must enter an existing national currency or enter a different type."
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:2859
-#: ../src/import-export/qif-import/assistant-qif-import.c:2863
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2861
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2865
 msgid "A bug was detected while converting the QIF data."
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:2913
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2915
 msgid "Canceling"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:2927
-#: ../src/import-export/qif-import/assistant-qif-import.c:2931
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2929
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2933
 msgid "A bug was detected while detecting duplicates."
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:2950
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2952
 msgid "Conversion completed"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:2982
+#: ../src/import-export/qif-imp/assistant-qif-import.c:2984
 msgid ""
 "When you press the Start Button, GnuCash will import your QIF data. If there "
 "are no errors or warnings, you will automatically proceed to the next step. "
 "Otherwise, the details will be shown below for your review."
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:3178
+#: ../src/import-export/qif-imp/assistant-qif-import.c:3180
 msgid "GnuCash was unable to save your mapping preferences."
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:3211
+#: ../src/import-export/qif-imp/assistant-qif-import.c:3213
 #, c-format
 msgid "There was a problem with the import."
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:3213
+#: ../src/import-export/qif-imp/assistant-qif-import.c:3215
 #, c-format
 msgid "QIF Import Completed."
 msgstr ""
 
 #. Set up the QIF account to GnuCash account matcher.
-#: ../src/import-export/qif-import/assistant-qif-import.c:3438
+#: ../src/import-export/qif-imp/assistant-qif-import.c:3440
 msgid "QIF account name"
 msgstr ""
 
 #. Set up the QIF category to GnuCash account matcher.
-#: ../src/import-export/qif-import/assistant-qif-import.c:3444
+#: ../src/import-export/qif-imp/assistant-qif-import.c:3446
 msgid "QIF category name"
 msgstr ""
 
 #. Set up the QIF payee/memo to GnuCash account matcher.
-#: ../src/import-export/qif-import/assistant-qif-import.c:3450
+#: ../src/import-export/qif-imp/assistant-qif-import.c:3452
 msgid "QIF payee/memo"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.c:3525
+#: ../src/import-export/qif-imp/assistant-qif-import.c:3527
 msgid "Match?"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:1
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:1
 msgid "QIF Import Assistant"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:2
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:2
 msgid ""
 "GnuCash can import financial data from QIF (Quicken Interchange Format) "
 "files written by Quicken/QuickBooks, MS Money, Moneydance, and many other "
@@ -15880,11 +15893,11 @@ msgid ""
 "process. "
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:7
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:7
 msgid "Import QIF files"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:8
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:8
 msgid ""
 "Please select a file to load. When you click \"Forward\", the file will be "
 "loaded and analyzed. You may need to answer some questions about the account"
@@ -15894,23 +15907,23 @@ msgid ""
 "worry if your data is in multiple files. \n"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:12
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:12
 msgid "_Select..."
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:13
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:13
 msgid "Select a QIF file to load"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:14
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:14
 msgid "_Start"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:15
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:15
 msgid "Load QIF files"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:16
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:16
 msgid ""
 "The QIF file format does not specify which order the day, month, and year "
 "components of a date are printed. In most cases, it is possible to "
@@ -15923,15 +15936,15 @@ msgid ""
 "QIF files are likely to be \"m-d-y\" or month-day-year. \n"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:20
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:20
 msgid "Click \"Back\" to cancel the loading of this file and choose another."
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:21
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:21
 msgid "Set a date format for this QIF file"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:22
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:22
 msgid ""
 "The QIF file that you just loaded appears to contain transactions for just "
 "one account, but the file does not specify a name for that account. \n"
@@ -15941,15 +15954,15 @@ msgid ""
 "that program.\n"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:26
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:26
 msgid "Account name:"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:27
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:27
 msgid "Set the default QIF account name"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:28
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:28
 msgid ""
 "Click \"Load another file\" if you have more data to import at this time. Do "
 "this if you have saved your accounts to separate QIF files.\n"
@@ -15958,19 +15971,19 @@ msgid ""
 "QIF import process. "
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:31
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:31
 msgid "_Unload selected file"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:32
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:32
 msgid "_Load another file"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:33
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:33
 msgid "QIF files you have loaded"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:34
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:34
 msgid ""
 "On the next page, the accounts in your QIF files and any stocks or mutual "
 "funds you own will be matched with GnuCash accounts. If a GnuCash account "
@@ -15988,27 +16001,27 @@ msgid ""
 "alone.\n"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:38
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:38
 msgid "Accounts and stock holdings"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:39
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:39
 msgid "_Select the matchings you want to change:"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:40
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:40
 msgid "Matchings selected:"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:41
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:41
 msgid "Change GnuCash _Account..."
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:42
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:42
 msgid "Match QIF accounts with GnuCash accounts"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:43
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:43
 msgid ""
 "GnuCash uses separate Income and Expense accounts rather than categories to "
 "classify your transactions. Each of the categories in your QIF file will be "
@@ -16023,15 +16036,15 @@ msgid ""
 "safely within GnuCash."
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:48
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:48
 msgid "Income and Expense categories"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:49
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:49
 msgid "Match QIF categories with GnuCash accounts"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:50
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:50
 msgid ""
 "QIF files downloaded from banks and other financial institutions may not "
 "have information about Accounts and Categories which would allow them to be "
@@ -16043,25 +16056,25 @@ msgid ""
 "you select a different account, it will be remembered for future QIF files. "
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:53
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:53
 msgid "Payees and memos"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:54
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:54
 msgid "Match payees/memos to GnuCash accounts"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:55
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:55
 msgid ""
 "The QIF importer cannot currently handle multi-currency QIF files. All the "
 "accounts you are importing must be denominated in the same currency.\n"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:57
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:57
 msgid "_Select the currency to use for all imported transactions:"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:59
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:59
 msgid ""
 "Since you are creating a new file, you will next see a dialog for setting "
 "book options. These can affect how GnuCash imports transactions. If you come "
@@ -16070,7 +16083,7 @@ msgid ""
 "You can access it directly from the menu via File->Properties."
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:61
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:61
 msgid ""
 "In the following pages you will be asked to provide information about "
 "stocks, mutual funds, and other investments that appear in the QIF file(s) "
@@ -16088,19 +16101,19 @@ msgid ""
 "appropriate, you can enter a new one."
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:66
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:66
 msgid "Tradable commodities"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:67
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:67
 msgid "_Start Import"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:68
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:68
 msgid "QIF Import"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:69
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:69
 msgid ""
 "\n"
 "If you are importing a QIF file from a bank or other financial institution, "
@@ -16116,23 +16129,23 @@ msgid ""
 "Click \"Forward\" to review the possible matches."
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:75
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:75
 msgid "Match existing transactions"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:76
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:76
 msgid "_Imported transactions needing review:"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:77
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:77
 msgid "_Possible matches for the selected transaction:"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:78
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:78
 msgid "Select possible duplicates"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:79
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:79
 msgid ""
 "Click \"Apply\" to import data from the staging area and update your GnuCash "
 "accounts. The account and category matching information you have entered "
@@ -16146,93 +16159,93 @@ msgid ""
 "Click \"Cancel\" to abort the QIF import process."
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:84
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:84
 msgid "Update your GnuCash accounts"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:85
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:85
 msgid "Summary Text"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:86
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:86
 msgid "Qif Import Summary"
 msgstr ""
 
-#: ../src/import-export/qif-import/assistant-qif-import.glade.h:87
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:87
 #: ../src/report/report-gnome/dialog-report.glade.h:21
 msgid "Dummy"
 msgstr ""
 
-#: ../src/import-export/qif-import/dialog-account-picker.c:219
+#: ../src/import-export/qif-imp/dialog-account-picker.c:219
 msgid "Enter a name for the account"
 msgstr ""
 
-#: ../src/import-export/qif-import/dialog-account-picker.glade.h:2
+#: ../src/import-export/qif-imp/dialog-account-picker.glade.h:2
 msgid "<b>QIF Import</b>"
 msgstr ""
 
-#: ../src/import-export/qif-import/dialog-account-picker.glade.h:3
+#: ../src/import-export/qif-imp/dialog-account-picker.glade.h:3
 msgid "_Show documentation"
 msgstr ""
 
-#: ../src/import-export/qif-import/dialog-account-picker.glade.h:4
-#: ../src/import-export/qif-import/gschemas/org.gnucash.dialogs.import.qif.gschema.xml.in.in.h:9
+#: ../src/import-export/qif-imp/dialog-account-picker.glade.h:4
+#: ../src/import-export/qif-imp/gschemas/org.gnucash.dialogs.import.qif.gschema.xml.in.in.h:9
 msgid "Show some documentation-only pages in QIF Import assistant."
 msgstr ""
 
-#: ../src/import-export/qif-import/dialog-account-picker.glade.h:6
-#: ../src/import-export/qif-import/gschemas/org.gnucash.dialogs.import.qif.gschema.xml.in.in.h:3
+#: ../src/import-export/qif-imp/dialog-account-picker.glade.h:6
+#: ../src/import-export/qif-imp/gschemas/org.gnucash.dialogs.import.qif.gschema.xml.in.in.h:3
 msgid ""
 "When the status is not specified in a QIF file, the transactions are marked "
 "as reconciled."
 msgstr ""
 
-#: ../src/import-export/qif-import/dialog-account-picker.glade.h:7
+#: ../src/import-export/qif-imp/dialog-account-picker.glade.h:7
 msgid "_Cleared"
 msgstr ""
 
-#: ../src/import-export/qif-import/dialog-account-picker.glade.h:8
+#: ../src/import-export/qif-imp/dialog-account-picker.glade.h:8
 msgid ""
 "When the status is not specified in a QIF file, the transactions are marked "
 "as cleared."
 msgstr ""
 
-#: ../src/import-export/qif-import/dialog-account-picker.glade.h:9
+#: ../src/import-export/qif-imp/dialog-account-picker.glade.h:9
 msgid "_Not cleared"
 msgstr ""
 
-#: ../src/import-export/qif-import/dialog-account-picker.glade.h:10
+#: ../src/import-export/qif-imp/dialog-account-picker.glade.h:10
 msgid ""
 "When the status is not specified in a QIF file, the transactions are marked "
 "as not cleared."
 msgstr ""
 
-#: ../src/import-export/qif-import/dialog-account-picker.glade.h:11
+#: ../src/import-export/qif-imp/dialog-account-picker.glade.h:11
 msgid ""
 "Default transaction status (overridden by the status given by the QIF file)"
 msgstr ""
 
-#: ../src/import-export/qif-import/dialog-account-picker.glade.h:13
+#: ../src/import-export/qif-imp/dialog-account-picker.glade.h:13
 msgid "_Select or add a GnuCash account:"
 msgstr ""
 
-#: ../src/import-export/qif-import/gnc-plugin-qif-import.c:47
+#: ../src/import-export/qif-imp/gnc-plugin-qif-import.c:47
 msgid "Import _QIF..."
 msgstr ""
 
-#: ../src/import-export/qif-import/gnc-plugin-qif-import.c:48
+#: ../src/import-export/qif-imp/gnc-plugin-qif-import.c:48
 msgid "Import a Quicken QIF file"
 msgstr ""
 
-#: ../src/import-export/qif-import/gschemas/org.gnucash.dialogs.import.qif.gschema.xml.in.in.h:1
+#: ../src/import-export/qif-imp/gschemas/org.gnucash.dialogs.import.qif.gschema.xml.in.in.h:1
 msgid "Default QIF transaction status"
 msgstr ""
 
-#: ../src/import-export/qif-import/gschemas/org.gnucash.dialogs.import.qif.gschema.xml.in.in.h:2
+#: ../src/import-export/qif-imp/gschemas/org.gnucash.dialogs.import.qif.gschema.xml.in.in.h:2
 msgid "Default status for QIF transaction when not specified in QIF file."
 msgstr ""
 
-#: ../src/import-export/qif-import/gschemas/org.gnucash.dialogs.import.qif.gschema.xml.in.in.h:8
+#: ../src/import-export/qif-imp/gschemas/org.gnucash.dialogs.import.qif.gschema.xml.in.in.h:8
 msgid "Show documentation"
 msgstr ""
 
@@ -16620,8 +16633,7 @@ msgstr ""
 
 #: ../src/register/ledger-core/split-register-model.c:1018
 msgid ""
-"Enter a transaction reference, that will be common to all entry lines "
-"(splits)"
+"Enter a transaction reference that will be common to all entry lines (splits)"
 msgstr ""
 
 #: ../src/register/ledger-core/split-register-model.c:1221
@@ -17620,256 +17632,256 @@ msgstr ""
 msgid "One Year Ahead."
 msgstr ""
 
-#. src/import-export/qif-import/qif-dialog-utils.scm
+#. src/import-export/qif-imp/qif-dialog-utils.scm
 #: ../intl-scm/guile-strings.c:310
 msgid "Dividends"
 msgstr ""
 
-#. src/import-export/qif-import/qif-dialog-utils.scm
+#. src/import-export/qif-imp/qif-dialog-utils.scm
 #: ../intl-scm/guile-strings.c:318
 msgid "Cap Return"
 msgstr ""
 
-#. src/import-export/qif-import/qif-dialog-utils.scm
+#. src/import-export/qif-imp/qif-dialog-utils.scm
 #: ../intl-scm/guile-strings.c:322
 msgid "Cap. gain (long)"
 msgstr ""
 
-#. src/import-export/qif-import/qif-dialog-utils.scm
+#. src/import-export/qif-imp/qif-dialog-utils.scm
 #: ../intl-scm/guile-strings.c:326
 msgid "Cap. gain (mid)"
 msgstr ""
 
-#. src/import-export/qif-import/qif-dialog-utils.scm
+#. src/import-export/qif-imp/qif-dialog-utils.scm
 #: ../intl-scm/guile-strings.c:330
 msgid "Cap. gain (short)"
 msgstr ""
 
-#. src/import-export/qif-import/qif-dialog-utils.scm
+#. src/import-export/qif-imp/qif-dialog-utils.scm
 #: ../intl-scm/guile-strings.c:342
 msgid "Commissions"
 msgstr ""
 
-#. src/import-export/qif-import/qif-dialog-utils.scm
+#. src/import-export/qif-imp/qif-dialog-utils.scm
 #: ../intl-scm/guile-strings.c:346
 msgid "Margin Interest"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:350 ../intl-scm/guile-strings.c:352
 msgid "Line"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:354
 msgid "Read aborted."
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:356
 msgid "Reading"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:358
 msgid "Some characters have been discarded."
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:360 ../intl-scm/guile-strings.c:364
 msgid "Converted to: "
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:362
 msgid "Some characters have been converted according to your locale."
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:366
 msgid "Ignoring unknown option"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:368
 msgid "Date required."
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:370
 msgid "Discarding this transaction."
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:372
 msgid "Ignoring class line"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:374
 msgid "Ignoring category line"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:376
 msgid "Ignoring security line"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:378
 msgid "File does not appear to be in QIF format"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:380
 msgid "Transaction date"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:382
 msgid "Transaction amount"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:384
 msgid "Share price"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:386
 msgid "Share quantity"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:388
 msgid "Investment action"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:390
 msgid "Reconciliation status"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:392
 msgid "Commission"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:394
 msgid "Account type"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:396
 msgid "Tax class"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:398
 msgid "Category budget amount"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:400
 msgid "Account budget amount"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:402
 msgid "Credit limit"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:404
 msgid "Parsing categories"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:406
 msgid "Parsing accounts"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:408
 msgid "Parsing transactions"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:410
 msgid "Unrecognized or inconsistent format."
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:412
 msgid "Parsing failed."
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:414
 msgid "Parse ambiguity between formats"
 msgstr ""
 
-#. src/import-export/qif-import/qif-file.scm
+#. src/import-export/qif-imp/qif-file.scm
 #: ../intl-scm/guile-strings.c:416
 #, c-format
 msgid "Value '%s' could be %s or %s."
 msgstr ""
 
-#. src/import-export/qif-import/qif-merge-groups.scm
+#. src/import-export/qif-imp/qif-merge-groups.scm
 #: ../intl-scm/guile-strings.c:418
 msgid "Finding duplicate transactions"
 msgstr ""
 
-#. src/import-export/qif-import/qif-parse.scm
+#. src/import-export/qif-imp/qif-parse.scm
 #: ../intl-scm/guile-strings.c:420
 #, c-format
 msgid "Unrecognized account type '%s'. Defaulting to Bank."
 msgstr ""
 
-#. src/import-export/qif-import/qif-parse.scm
+#. src/import-export/qif-imp/qif-parse.scm
 #: ../intl-scm/guile-strings.c:422
 #, c-format
 msgid "Unrecognized action '%s'."
 msgstr ""
 
-#. src/import-export/qif-import/qif-parse.scm
+#. src/import-export/qif-imp/qif-parse.scm
 #: ../intl-scm/guile-strings.c:424
 #, c-format
 msgid "Unrecognized status '%s'. Defaulting to uncleared."
 msgstr ""
 
-#. src/import-export/qif-import/qif-to-gnc.scm
+#. src/import-export/qif-imp/qif-to-gnc.scm
 #: ../intl-scm/guile-strings.c:426
 msgid "QIF import: Name conflict with another account."
 msgstr ""
 
-#. src/import-export/qif-import/qif-to-gnc.scm
+#. src/import-export/qif-imp/qif-to-gnc.scm
 #: ../intl-scm/guile-strings.c:428
 msgid "Preparing to convert your QIF data"
 msgstr ""
 
-#. src/import-export/qif-import/qif-to-gnc.scm
+#. src/import-export/qif-imp/qif-to-gnc.scm
 #: ../intl-scm/guile-strings.c:430
 msgid "Creating accounts"
 msgstr ""
 
-#. src/import-export/qif-import/qif-to-gnc.scm
+#. src/import-export/qif-imp/qif-to-gnc.scm
 #: ../intl-scm/guile-strings.c:432
 msgid "Matching transfers between accounts"
 msgstr ""
 
-#. src/import-export/qif-import/qif-to-gnc.scm
+#. src/import-export/qif-imp/qif-to-gnc.scm
 #: ../intl-scm/guile-strings.c:434
 msgid "Converting"
 msgstr ""
 
-#. src/import-export/qif-import/qif-to-gnc.scm
+#. src/import-export/qif-imp/qif-to-gnc.scm
 #: ../intl-scm/guile-strings.c:436
 msgid "Missing transaction date."
 msgstr ""
 
-#. src/import-export/qif-import/qif-to-gnc.scm
+#. src/import-export/qif-imp/qif-to-gnc.scm
 #: ../intl-scm/guile-strings.c:438
 msgid "Dates earlier than 1970 are not supported."
 msgstr ""
@@ -20199,15 +20211,6 @@ msgstr ""
 #: ../intl-scm/guile-strings.c:2042
 #, c-format
 msgid "Template file \"%s\" can not be read"
-msgstr ""
-
-#. src/report/report-system/html-acct-table.scm
-#. src/report/standard-reports/equity-statement.scm
-#. src/report/standard-reports/income-statement.scm
-#. src/report/standard-reports/trial-balance.scm
-#: ../intl-scm/guile-strings.c:2044 ../intl-scm/guile-strings.c:3512
-#: ../intl-scm/guile-strings.c:3736 ../intl-scm/guile-strings.c:4934
-msgid "Closing Entries"
 msgstr ""
 
 #. src/report/report-system/html-acct-table.scm
@@ -24724,12 +24727,12 @@ msgstr ""
 
 #. src/report/utility-reports/welcome-to-gnucash.scm
 #: ../intl-scm/guile-strings.c:5842
-msgid "Welcome to GnuCash 2.4!"
+msgid "Welcome to GnuCash ~a !"
 msgstr ""
 
 #. src/report/utility-reports/welcome-to-gnucash.scm
 #: ../intl-scm/guile-strings.c:5844
-msgid "GnuCash 2.4 has lots of nice features. Here are a few."
+msgid "GnuCash ~a has lots of nice features. Here are a few."
 msgstr ""
 
 #. src/scm/price-quotes.scm

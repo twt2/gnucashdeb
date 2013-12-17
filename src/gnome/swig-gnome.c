@@ -1250,6 +1250,8 @@ static swig_module_info swig_module = {swig_types, 14, 0, 0, 0, 0};
 #include <config.h>
 #include <gtk/gtk.h>
 #include <dialog-progress.h>
+
+
 #include "guile-mappings.h"
 
 SCM scm_init_sw_gnome_module (void);

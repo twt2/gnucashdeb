@@ -1246,6 +1246,8 @@ static swig_module_info swig_module = {swig_types, 9, 0, 0, 0, 0};
 #include "unittest-support.h"
 
 
+#include "guile-mappings.h"
+
 SCM scm_init_unittest_support_module (void);
 
 static int gswig_const_G_LOG_FLAG_RECURSION = G_LOG_FLAG_RECURSION;
@@ -1379,7 +1381,7 @@ _wrap_TestErrorStruct_log_domain_get (SCM s_0)
   {
     gswig_result = SCM_UNSPECIFIED;
     if (result) {
-      gswig_result = scm_from_locale_string((const char *)result);
+      gswig_result = scm_from_utf8_string((const char *)result);
     }
     if (!result || !scm_is_true(gswig_result)) {
       gswig_result = scm_c_make_string(0, SCM_UNDEFINED);
@@ -1443,7 +1445,7 @@ _wrap_TestErrorStruct_msg_get (SCM s_0)
   {
     gswig_result = SCM_UNSPECIFIED;
     if (result) {
-      gswig_result = scm_from_locale_string((const char *)result);
+      gswig_result = scm_from_utf8_string((const char *)result);
     }
     if (!result || !scm_is_true(gswig_result)) {
       gswig_result = scm_c_make_string(0, SCM_UNDEFINED);

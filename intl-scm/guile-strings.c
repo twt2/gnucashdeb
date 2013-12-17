@@ -304,137 +304,137 @@ _("Payment")
 _("Increase")
 /* src/app-utils/prefs.scm */
 _("Increase")
-/* src/import-export/qif-import/qif-dialog-utils.scm */
+/* src/import-export/qif-imp/qif-dialog-utils.scm */
 _("Income")
-/* src/import-export/qif-import/qif-dialog-utils.scm */
+/* src/import-export/qif-imp/qif-dialog-utils.scm */
 _("Dividends")
-/* src/import-export/qif-import/qif-dialog-utils.scm */
+/* src/import-export/qif-imp/qif-dialog-utils.scm */
 _("Income")
-/* src/import-export/qif-import/qif-dialog-utils.scm */
+/* src/import-export/qif-imp/qif-dialog-utils.scm */
 _("Interest")
-/* src/import-export/qif-import/qif-dialog-utils.scm */
+/* src/import-export/qif-imp/qif-dialog-utils.scm */
 _("Income")
-/* src/import-export/qif-import/qif-dialog-utils.scm */
+/* src/import-export/qif-imp/qif-dialog-utils.scm */
 _("Cap Return")
-/* src/import-export/qif-import/qif-dialog-utils.scm */
+/* src/import-export/qif-imp/qif-dialog-utils.scm */
 _("Income")
-/* src/import-export/qif-import/qif-dialog-utils.scm */
+/* src/import-export/qif-imp/qif-dialog-utils.scm */
 _("Cap. gain (long)")
-/* src/import-export/qif-import/qif-dialog-utils.scm */
+/* src/import-export/qif-imp/qif-dialog-utils.scm */
 _("Income")
-/* src/import-export/qif-import/qif-dialog-utils.scm */
+/* src/import-export/qif-imp/qif-dialog-utils.scm */
 _("Cap. gain (mid)")
-/* src/import-export/qif-import/qif-dialog-utils.scm */
+/* src/import-export/qif-imp/qif-dialog-utils.scm */
 _("Income")
-/* src/import-export/qif-import/qif-dialog-utils.scm */
+/* src/import-export/qif-imp/qif-dialog-utils.scm */
 _("Cap. gain (short)")
-/* src/import-export/qif-import/qif-dialog-utils.scm */
+/* src/import-export/qif-imp/qif-dialog-utils.scm */
 _("Equity")
-/* src/import-export/qif-import/qif-dialog-utils.scm */
+/* src/import-export/qif-imp/qif-dialog-utils.scm */
 _("Retained Earnings")
-/* src/import-export/qif-import/qif-dialog-utils.scm */
+/* src/import-export/qif-imp/qif-dialog-utils.scm */
 _("Equity")
-/* src/import-export/qif-import/qif-dialog-utils.scm */
+/* src/import-export/qif-imp/qif-dialog-utils.scm */
 _("Retained Earnings")
-/* src/import-export/qif-import/qif-dialog-utils.scm */
+/* src/import-export/qif-imp/qif-dialog-utils.scm */
 _("Expenses")
-/* src/import-export/qif-import/qif-dialog-utils.scm */
+/* src/import-export/qif-imp/qif-dialog-utils.scm */
 _("Commissions")
-/* src/import-export/qif-import/qif-dialog-utils.scm */
+/* src/import-export/qif-imp/qif-dialog-utils.scm */
 _("Expenses")
-/* src/import-export/qif-import/qif-dialog-utils.scm */
+/* src/import-export/qif-imp/qif-dialog-utils.scm */
 _("Margin Interest")
-/* src/import-export/qif-import/qif-dialog-utils.scm */
+/* src/import-export/qif-imp/qif-dialog-utils.scm */
 _("Unspecified")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Line")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Line")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Read aborted.")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Reading")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Some characters have been discarded.")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Converted to: ")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Some characters have been converted according to your locale.")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Converted to: ")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Ignoring unknown option")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Date required.")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Discarding this transaction.")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Ignoring class line")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Ignoring category line")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Ignoring security line")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("File does not appear to be in QIF format")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Transaction date")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Transaction amount")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Share price")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Share quantity")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Investment action")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Reconciliation status")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Commission")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Account type")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Tax class")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Category budget amount")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Account budget amount")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Credit limit")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Parsing categories")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Parsing accounts")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Parsing transactions")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Unrecognized or inconsistent format.")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Parsing failed.")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Parse ambiguity between formats")
-/* src/import-export/qif-import/qif-file.scm */
+/* src/import-export/qif-imp/qif-file.scm */
 _("Value '%s' could be %s or %s.")
-/* src/import-export/qif-import/qif-merge-groups.scm */
+/* src/import-export/qif-imp/qif-merge-groups.scm */
 _("Finding duplicate transactions")
-/* src/import-export/qif-import/qif-parse.scm */
+/* src/import-export/qif-imp/qif-parse.scm */
 _("Unrecognized account type '%s'. Defaulting to Bank.")
-/* src/import-export/qif-import/qif-parse.scm */
+/* src/import-export/qif-imp/qif-parse.scm */
 _("Unrecognized action '%s'.")
-/* src/import-export/qif-import/qif-parse.scm */
+/* src/import-export/qif-imp/qif-parse.scm */
 _("Unrecognized status '%s'. Defaulting to uncleared.")
-/* src/import-export/qif-import/qif-to-gnc.scm */
+/* src/import-export/qif-imp/qif-to-gnc.scm */
 _("QIF import: Name conflict with another account.")
-/* src/import-export/qif-import/qif-to-gnc.scm */
+/* src/import-export/qif-imp/qif-to-gnc.scm */
 _("Preparing to convert your QIF data")
-/* src/import-export/qif-import/qif-to-gnc.scm */
+/* src/import-export/qif-imp/qif-to-gnc.scm */
 _("Creating accounts")
-/* src/import-export/qif-import/qif-to-gnc.scm */
+/* src/import-export/qif-imp/qif-to-gnc.scm */
 _("Matching transfers between accounts")
-/* src/import-export/qif-import/qif-to-gnc.scm */
+/* src/import-export/qif-imp/qif-to-gnc.scm */
 _("Converting")
-/* src/import-export/qif-import/qif-to-gnc.scm */
+/* src/import-export/qif-imp/qif-to-gnc.scm */
 _("Missing transaction date.")
-/* src/import-export/qif-import/qif-to-gnc.scm */
+/* src/import-export/qif-imp/qif-to-gnc.scm */
 _("Dates earlier than 1970 are not supported.")
 /* src/report/business-reports/aging.scm */
 _("To")
@@ -5839,9 +5839,9 @@ _("Custom Multicolumn Report")
 /* src/report/utility-reports/welcome-to-gnucash.scm */
 _("Welcome to GnuCash")
 /* src/report/utility-reports/welcome-to-gnucash.scm */
-_("Welcome to GnuCash 2.4!")
+_("Welcome to GnuCash ~a !")
 /* src/report/utility-reports/welcome-to-gnucash.scm */
-_("GnuCash 2.4 has lots of nice features. Here are a few.")
+_("GnuCash ~a has lots of nice features. Here are a few.")
 /* src/report/utility-reports/welcome-to-gnucash.scm */
 _("Welcome to GnuCash")
 /* src/scm/price-quotes.scm */

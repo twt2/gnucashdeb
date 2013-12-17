@@ -20014,6 +20014,35 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_pwr64(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  gint64 arg1 ;
+  int arg2 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  gint64 result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:pwr64",&obj0,&obj1)) SWIG_fail;
+  {
+    arg1 = (gint64)PyInt_AsLong(obj0);
+  }
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "pwr64" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  result = pwr64(arg1,arg2);
+  {
+    resultobj = PyInt_FromLong(result);
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_gnc_commodity_get_type(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GType result;
@@ -32296,6 +32325,28 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_gncInvoiceGetForeignCurrencies(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GncInvoice *arg1 = (GncInvoice *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  GHashTable *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:gncInvoiceGetForeignCurrencies",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__gncInvoice, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncInvoiceGetForeignCurrencies" "', argument " "1"" of type '" "GncInvoice const *""'"); 
+  }
+  arg1 = (GncInvoice *)(argp1);
+  result = (GHashTable *)gncInvoiceGetForeignCurrencies((struct _gncInvoice const *)arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GHashTable, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_gncInvoicePostToAccount(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GncInvoice *arg1 = (GncInvoice *) 0 ;
@@ -40541,6 +40592,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gnc_numeric_reduce", _wrap_gnc_numeric_reduce, METH_VARARGS, (char *)"gnc_numeric_reduce(_gnc_numeric n) -> _gnc_numeric"},
 	 { (char *)"gnc_numeric_to_decimal", _wrap_gnc_numeric_to_decimal, METH_VARARGS, (char *)"gnc_numeric_to_decimal(_gnc_numeric a, guint8 * max_decimal_places) -> gboolean"},
 	 { (char *)"gnc_numeric_get_type", _wrap_gnc_numeric_get_type, METH_VARARGS, (char *)"gnc_numeric_get_type() -> GType"},
+	 { (char *)"pwr64", _wrap_pwr64, METH_VARARGS, (char *)"pwr64(gint64 op, int exp) -> gint64"},
 	 { (char *)"gnc_commodity_get_type", _wrap_gnc_commodity_get_type, METH_VARARGS, (char *)"gnc_commodity_get_type() -> GType"},
 	 { (char *)"gnc_commodity_namespace_get_type", _wrap_gnc_commodity_namespace_get_type, METH_VARARGS, (char *)"gnc_commodity_namespace_get_type() -> GType"},
 	 { (char *)"gnc_quote_source_fq_installed", _wrap_gnc_quote_source_fq_installed, METH_VARARGS, (char *)"gnc_quote_source_fq_installed() -> gboolean"},
@@ -40897,6 +40949,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gncInvoiceGetEntries", _wrap_gncInvoiceGetEntries, METH_VARARGS, (char *)"gncInvoiceGetEntries(GncInvoice * invoice) -> EntryList *"},
 	 { (char *)"gncInvoiceGetPrice", _wrap_gncInvoiceGetPrice, METH_VARARGS, (char *)"gncInvoiceGetPrice(GncInvoice * invoice, gnc_commodity * commodity) -> GNCPrice *"},
 	 { (char *)"gncInvoiceAmountPositive", _wrap_gncInvoiceAmountPositive, METH_VARARGS, (char *)"gncInvoiceAmountPositive(GncInvoice const * invoice) -> gboolean"},
+	 { (char *)"gncInvoiceGetForeignCurrencies", _wrap_gncInvoiceGetForeignCurrencies, METH_VARARGS, (char *)"gncInvoiceGetForeignCurrencies(GncInvoice const * invoice) -> GHashTable *"},
 	 { (char *)"gncInvoicePostToAccount", _wrap_gncInvoicePostToAccount, METH_VARARGS, (char *)"\n"
 		"gncInvoicePostToAccount(GncInvoice * invoice, Account * acc, Timespec * posted_date, Timespec * due_date, \n"
 		"    char const * memo, gboolean accumulatesplits, gboolean autopay) -> Transaction *\n"
@@ -42661,6 +42714,7 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, "PRICE_TYPE",SWIG_FromCharPtr("price-type"));
   SWIG_Python_SetConstant(d, "PRICE_VALUE",SWIG_FromCharPtr("price-value"));
   
+  gnc_environment_setup();
   qof_log_init();
   qof_init();
   qof_query_init();

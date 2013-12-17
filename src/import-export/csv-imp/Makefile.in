@@ -52,15 +52,15 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@OS_WIN32_TRUE@am__append_1 = -export-symbols-regex .*
-subdir = src/import-export/aqbanking
+subdir = src/import-export/csv-imp
 DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(top_srcdir)/depcomp \
 	$(top_srcdir)/mkinstalldirs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/macros/ac_pkg_swig.m4 \
-	$(top_srcdir)/macros/ac_python_devel.m4 \
-	$(top_srcdir)/macros/as-scrub-include.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/macros/as-scrub-include.m4 \
+	$(top_srcdir)/macros/ax_pkg_swig.m4 \
+	$(top_srcdir)/macros/ax_python_devel.m4 \
+	$(top_srcdir)/macros/ax_swig_python.m4 \
 	$(top_srcdir)/macros/binreloc.m4 \
 	$(top_srcdir)/macros/compiler-flags.m4 \
 	$(top_srcdir)/macros/legacy_macros.m4 \
@@ -107,27 +107,26 @@ am__installdirs = "$(DESTDIR)$(pkglibdir)" \
 	"$(DESTDIR)$(gtkbuilderdir)" "$(DESTDIR)$(uidir)"
 LTLIBRARIES = $(pkglib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libgncmod_aqbanking_la_DEPENDENCIES =  \
+libgncmod_csv_import_la_DEPENDENCIES =  \
 	${top_builddir}/src/import-export/libgncmod-generic-import.la \
-	${top_builddir}/src/gnome/libgnc-gnome.la \
 	${top_builddir}/src/gnome-utils/libgncmod-gnome-utils.la \
 	${top_builddir}/src/app-utils/libgncmod-app-utils.la \
 	${top_builddir}/src/engine/libgncmod-engine.la \
 	${top_builddir}/src/core-utils/libgnc-core-utils.la \
 	${top_builddir}/src/gnc-module/libgnc-module.la \
+	${top_builddir}/lib/stf/libgnc-stf.la \
+	${top_builddir}/lib/libc/libc-missing.la \
 	${top_builddir}/src/libqof/qof/libgnc-qof.la \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
-am_libgncmod_aqbanking_la_OBJECTS = dialog-ab-trans.lo \
-	dialog-ab-daterange.lo assistant-ab-initial.lo \
-	gnc-ab-getbalance.lo gnc-ab-gettrans.lo gnc-ab-kvp.lo \
-	gnc-ab-trans-templ.lo gnc-ab-transfer.lo gnc-ab-utils.lo \
-	gnc-file-aqb-import.lo gnc-gwen-gui.lo gnc-plugin-aqbanking.lo \
-	gncmod-aqbanking.lo
-libgncmod_aqbanking_la_OBJECTS = $(am_libgncmod_aqbanking_la_OBJECTS)
-libgncmod_aqbanking_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+am_libgncmod_csv_import_la_OBJECTS = gncmod-csv-import.lo \
+	assistant-csv-account-import.lo assistant-csv-trans-import.lo \
+	gnc-plugin-csv-import.lo csv-account-import.lo \
+	gnc-csv-model.lo gnc-csv-gnumeric-popup.lo
+libgncmod_csv_import_la_OBJECTS =  \
+	$(am_libgncmod_csv_import_la_OBJECTS)
+libgncmod_csv_import_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(libgncmod_aqbanking_la_LDFLAGS) $(LDFLAGS) -o $@
+	$(libgncmod_csv_import_la_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -141,8 +140,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libgncmod_aqbanking_la_SOURCES)
-DIST_SOURCES = $(libgncmod_aqbanking_la_SOURCES)
+SOURCES = $(libgncmod_csv_import_la_SOURCES)
+DIST_SOURCES = $(libgncmod_csv_import_la_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-dvi-recursive install-exec-recursive \
@@ -203,6 +202,8 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+AX_SWIG_PYTHON_CPPFLAGS = @AX_SWIG_PYTHON_CPPFLAGS@
+AX_SWIG_PYTHON_OPT = @AX_SWIG_PYTHON_OPT@
 BINRELOC_CFLAGS = @BINRELOC_CFLAGS@
 BINRELOC_LIBS = @BINRELOC_LIBS@
 CATALOGS = @CATALOGS@
@@ -351,6 +352,7 @@ PO_IN_DATADIR_TRUE = @PO_IN_DATADIR_TRUE@
 PYTHON = @PYTHON@
 PYTHON_CPPFLAGS = @PYTHON_CPPFLAGS@
 PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
+PYTHON_EXTRA_LDFLAGS = @PYTHON_EXTRA_LDFLAGS@
 PYTHON_EXTRA_LIBS = @PYTHON_EXTRA_LIBS@
 PYTHON_LDFLAGS = @PYTHON_LDFLAGS@
 PYTHON_PLATFORM = @PYTHON_PLATFORM@
@@ -368,8 +370,7 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 SWIG = @SWIG@
-SWIG_PYTHON_CPPFLAGS = @SWIG_PYTHON_CPPFLAGS@
-SWIG_PYTHON_OPT = @SWIG_PYTHON_OPT@
+SWIG_LIB = @SWIG_LIB@
 TEST_MYSQL_URL = @TEST_MYSQL_URL@
 TEST_PGSQL_URL = @TEST_PGSQL_URL@
 USE_NLS = @USE_NLS@
@@ -444,71 +445,56 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = . gschemas
-pkglib_LTLIBRARIES = libgncmod-aqbanking.la
-libgncmod_aqbanking_la_SOURCES = \
-  dialog-ab-trans.c \
-  dialog-ab-daterange.c \
-  assistant-ab-initial.c \
-  gnc-ab-getbalance.c \
-  gnc-ab-gettrans.c \
-  gnc-ab-kvp.c \
-  gnc-ab-trans-templ.c \
-  gnc-ab-transfer.c \
-  gnc-ab-utils.c \
-  gnc-file-aqb-import.c \
-  gnc-gwen-gui.c \
-  gnc-plugin-aqbanking.c \
-  gncmod-aqbanking.c
+pkglib_LTLIBRARIES = libgncmod-csv-import.la
+libgncmod_csv_import_la_SOURCES = \
+  gncmod-csv-import.c \
+  assistant-csv-account-import.c \
+  assistant-csv-trans-import.c \
+  gnc-plugin-csv-import.c \
+  csv-account-import.c \
+  gnc-csv-model.c \
+  gnc-csv-gnumeric-popup.c
 
 noinst_HEADERS = \
-  dialog-ab-trans.h \
-  dialog-ab-daterange.h \
-  assistant-ab-initial.h \
-  gnc-ab-getbalance.h \
-  gnc-ab-gettrans.h \
-  gnc-ab-kvp.h \
-  gnc-ab-trans-templ.h \
-  gnc-ab-transfer.h \
-  gnc-ab-utils.h \
-  gnc-file-aqb-import.h \
-  gnc-gwen-gui.h \
-  gnc-plugin-aqbanking.h
+  assistant-csv-account-import.h \
+  assistant-csv-trans-import.h \
+  gnc-plugin-csv-import.h \
+  csv-account-import.h \
+  gnc-csv-model.h \
+  gnc-csv-gnumeric-popup.h
 
-libgncmod_aqbanking_la_LDFLAGS = -avoid-version $(am__append_1)
-libgncmod_aqbanking_la_LIBADD = \
+libgncmod_csv_import_la_LDFLAGS = -avoid-version
+libgncmod_csv_import_la_LIBADD = \
   ${top_builddir}/src/import-export/libgncmod-generic-import.la \
-  ${top_builddir}/src/gnome/libgnc-gnome.la \
   ${top_builddir}/src/gnome-utils/libgncmod-gnome-utils.la \
   ${top_builddir}/src/app-utils/libgncmod-app-utils.la \
   ${top_builddir}/src/engine/libgncmod-engine.la \
   ${top_builddir}/src/core-utils/libgnc-core-utils.la \
   ${top_builddir}/src/gnc-module/libgnc-module.la \
+  ${top_builddir}/lib/stf/libgnc-stf.la \
+  ${top_builddir}/lib/libc/libc-missing.la \
   ${top_builddir}/src/libqof/qof/libgnc-qof.la \
-  ${GTK_LIBS} \
-  ${GLIB_LIBS} \
-  ${GWENGUI_GTK2_LIBS} \
-  ${AQBANKING_LIBS}
+  ${GOFFICE_LIBS} \
+  ${GLIB_LIBS}
 
-AM_CPPFLAGS = -I${top_srcdir}/src -I${top_srcdir}/src/import-export \
-	-I${top_srcdir}/src/gnome \
-	-I${top_srcdir}/src/register/ledger-core \
-	-I${top_srcdir}/src/register/register-gnome \
-	-I${top_srcdir}/src/register/register-core \
-	-I${top_srcdir}/src/gnome-utils -I${top_srcdir}/src/app-utils \
-	-I${top_srcdir}/src/engine -I${top_srcdir}/src/core-utils \
-	-I${top_srcdir}/src/gnc-module -I${top_srcdir}/src/libqof/qof \
-	${GTK_CFLAGS} ${GLIB_CFLAGS} ${AQBANKING_CFLAGS} \
-	-DG_LOG_DOMAIN=\"gnc.import.aqbanking\"
+AM_CPPFLAGS = -I${top_srcdir}/src -I${top_srcdir}/src/core-utils \
+	-I${top_srcdir}/src/engine -I${top_srcdir}/src/gnc-module \
+	-I${top_srcdir}/src/app-utils -I${top_srcdir}/src/gnome \
+	-I${top_srcdir}/src/gnome-utils \
+	-I${top_srcdir}/src/import-export \
+	-I${top_srcdir}/src/libqof/qof -I${top_srcdir}/lib/libc \
+	-I${top_srcdir}/lib ${GUILE_CFLAGS} ${GLIB_CFLAGS} \
+	$(GOFFICE_CFLAGS) -DG_LOG_DOMAIN=\"gnc.import.csv\"
 uidir = $(GNC_UI_DIR)
 ui_DATA = \
-  gnc-plugin-aqbanking-ui.xml
+	gnc-plugin-csv-import-ui.xml
 
-gtkbuilderdir = $(GNC_GTKBUILDER_DIR)
+gtkbuilderdir = ${GNC_GTKBUILDER_DIR}
 gtkbuilder_DATA = \
-  assistant-ab-initial.glade \
-  dialog-ab.glade
+	assistant-csv-account-import.glade \
+	assistant-csv-trans-import.glade
 
-EXTRA_DIST = ${ui_DATA} ${gtkbuilder_DATA} migratable-prefs-aqbanking.xml
+EXTRA_DIST = $(ui_DATA) $(gtkbuilder_DATA)
 all: all-recursive
 
 .SUFFIXES:
@@ -522,9 +508,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/import-export/aqbanking/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/import-export/csv-imp/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/import-export/aqbanking/Makefile
+	  $(AUTOMAKE) --gnu src/import-export/csv-imp/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -577,8 +563,8 @@ clean-pkglibLTLIBRARIES:
 	  echo rm -f $${locs}; \
 	  rm -f $${locs}; \
 	}
-libgncmod-aqbanking.la: $(libgncmod_aqbanking_la_OBJECTS) $(libgncmod_aqbanking_la_DEPENDENCIES) $(EXTRA_libgncmod_aqbanking_la_DEPENDENCIES) 
-	$(libgncmod_aqbanking_la_LINK) -rpath $(pkglibdir) $(libgncmod_aqbanking_la_OBJECTS) $(libgncmod_aqbanking_la_LIBADD) $(LIBS)
+libgncmod-csv-import.la: $(libgncmod_csv_import_la_OBJECTS) $(libgncmod_csv_import_la_DEPENDENCIES) $(EXTRA_libgncmod_csv_import_la_DEPENDENCIES) 
+	$(libgncmod_csv_import_la_LINK) -rpath $(pkglibdir) $(libgncmod_csv_import_la_OBJECTS) $(libgncmod_csv_import_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -586,19 +572,13 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/assistant-ab-initial.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-ab-daterange.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-ab-trans.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-ab-getbalance.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-ab-gettrans.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-ab-kvp.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-ab-trans-templ.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-ab-transfer.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-ab-utils.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-file-aqb-import.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-gwen-gui.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-plugin-aqbanking.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gncmod-aqbanking.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/assistant-csv-account-import.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/assistant-csv-trans-import.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/csv-account-import.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-csv-gnumeric-popup.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-csv-model.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-plugin-csv-import.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gncmod-csv-import.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
