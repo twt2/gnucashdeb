@@ -40,9 +40,7 @@ override_dh_auto_install:
 
 override_dh_install:
 	convert src/pixmaps/gnucash-icon-32x32.png debian/gnucash-icon-32x32.xpm
-	# generate man pages
-	find debian/tmp/usr/bin/ -type f -executable -execdir \
-		sh -c 'pod2man -s1 --stderr --utf8 {} "../../{}.1"; [ -s "../../{}.1" ] || rm "../../{}.1"' \;
+	pod2man -s1 --stderr --utf8 debian/tmp/usr/bin/gnc-fq-check debian/tmp/gnc-fq-check.1
 	find debian/tmp/usr/lib -name \*.la -exec rm -v \{\} \;
 	dh_install
 
