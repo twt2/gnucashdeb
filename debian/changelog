@@ -1,3 +1,10 @@
+gnucash (1:2.5.10-1) experimental; urgency=medium
+
+  * Imported Upstream version 2.5.10
+  * Stop generating manpages for gnc-fq-{dump,helper}, they are in the tarball.
+
+ -- Sébastien Villemot <sebastien@debian.org>  Tue, 17 Dec 2013 21:12:30 +0100
+
 gnucash (1:2.5.9-1) experimental; urgency=medium
 
   * New upstream development release.
