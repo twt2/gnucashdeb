@@ -1744,7 +1744,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_default_symbol(c, "рд░ре\x82");
+    gnc_commodity_set_default_symbol(c, "т\x82╣");
   }
 
   {

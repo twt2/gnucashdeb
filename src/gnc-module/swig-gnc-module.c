@@ -1242,6 +1242,9 @@ static swig_module_info swig_module = {swig_types, 8, 0, 0, 0, 0};
 
 #include <gnc-module.h>
 
+
+#include "guile-mappings.h"
+
 SCM scm_init_sw_gnc_module_module (void);
 
 static SCM

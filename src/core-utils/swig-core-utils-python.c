@@ -2969,12 +2969,15 @@ static swig_module_info swig_module = {swig_types, 11, 0, 0, 0, 0};
 #define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
 
 
+#include <config.h>
+#include <gnc-environment.h>
 #include <gnc-glib-utils.h>
 #include <gnc-prefs.h>
 #include <gnc-path.h>
 #include <gnc-filepath-utils.h>
 #include <gnc-locale-utils.h>
 #include <glib.h>
+const gchar *gnc_version(void);
 
 
 #if PY_VERSION_HEX >= 0x03000000
@@ -3341,9 +3344,25 @@ SWIG_AsVal_unsigned_SS_int (PyObject * obj, unsigned int *val)
 
   #define SWIG_From_double   PyFloat_FromDouble 
 
+
+const gchar *gnc_version(void)
+{ return VERSION; }
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+SWIGINTERN PyObject *_wrap_gnc_environment_setup(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  
+  if (!PyArg_ParseTuple(args,(char *)":gnc_environment_setup")) SWIG_fail;
+  gnc_environment_setup();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_gnc_prefs_get_namespace_regexp(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   gchar *result = 0 ;
@@ -3631,6 +3650,38 @@ SWIGINTERN PyObject *_wrap_gnc_prefs_get_long_version(PyObject *SWIGUNUSEDPARM(s
   if (!PyArg_ParseTuple(args,(char *)":gnc_prefs_get_long_version")) SWIG_fail;
   result = (guint)gnc_prefs_get_long_version();
   resultobj = SWIG_From_unsigned_SS_int((unsigned int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gnc_prefs_is_set_up(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  gboolean result;
+  
+  if (!PyArg_ParseTuple(args,(char *)":gnc_prefs_is_set_up")) SWIG_fail;
+  result = gnc_prefs_is_set_up();
+  {
+    if (result == TRUE)
+    {
+      resultobj = Py_True;
+      Py_INCREF(resultobj);
+    }
+    else if (result == FALSE)
+    {
+      resultobj = Py_False;
+      Py_INCREF(resultobj);
+    }
+    else
+    {
+      PyErr_SetString(
+        PyExc_ValueError,
+        "function returning gboolean returned a value that wasn't "
+        "TRUE or FALSE.");
+      return NULL;
+    }
+  }
   return resultobj;
 fail:
   return NULL;
@@ -4521,6 +4572,21 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_gnc_version(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  gchar *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":gnc_version")) SWIG_fail;
+  result = (gchar *)gnc_version();
+  {
+    resultobj = PyString_FromString(result);
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_gnc_path_get_bindir(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   gchar *result = 0 ;
@@ -4781,6 +4847,7 @@ fail:
 
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
+	 { (char *)"gnc_environment_setup", _wrap_gnc_environment_setup, METH_VARARGS, NULL},
 	 { (char *)"gnc_prefs_get_namespace_regexp", _wrap_gnc_prefs_get_namespace_regexp, METH_VARARGS, NULL},
 	 { (char *)"gnc_prefs_set_namespace_regexp", _wrap_gnc_prefs_set_namespace_regexp, METH_VARARGS, NULL},
 	 { (char *)"gnc_prefs_is_debugging_enabled", _wrap_gnc_prefs_is_debugging_enabled, METH_VARARGS, NULL},
@@ -4794,6 +4861,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gnc_prefs_get_file_retention_days", _wrap_gnc_prefs_get_file_retention_days, METH_VARARGS, NULL},
 	 { (char *)"gnc_prefs_set_file_retention_days", _wrap_gnc_prefs_set_file_retention_days, METH_VARARGS, NULL},
 	 { (char *)"gnc_prefs_get_long_version", _wrap_gnc_prefs_get_long_version, METH_VARARGS, NULL},
+	 { (char *)"gnc_prefs_is_set_up", _wrap_gnc_prefs_is_set_up, METH_VARARGS, NULL},
 	 { (char *)"gnc_prefs_register_cb", _wrap_gnc_prefs_register_cb, METH_VARARGS, NULL},
 	 { (char *)"gnc_prefs_remove_cb_by_func", _wrap_gnc_prefs_remove_cb_by_func, METH_VARARGS, NULL},
 	 { (char *)"gnc_prefs_remove_cb_by_id", _wrap_gnc_prefs_remove_cb_by_id, METH_VARARGS, NULL},
@@ -4818,6 +4886,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gnc_prefs_set_value", _wrap_gnc_prefs_set_value, METH_VARARGS, NULL},
 	 { (char *)"gnc_prefs_reset", _wrap_gnc_prefs_reset, METH_VARARGS, NULL},
 	 { (char *)"gnc_prefs_reset_group", _wrap_gnc_prefs_reset_group, METH_VARARGS, NULL},
+	 { (char *)"gnc_version", _wrap_gnc_version, METH_VARARGS, NULL},
 	 { (char *)"gnc_path_get_bindir", _wrap_gnc_path_get_bindir, METH_VARARGS, NULL},
 	 { (char *)"gnc_path_get_stdreportsdir", _wrap_gnc_path_get_stdreportsdir, METH_VARARGS, NULL},
 	 { (char *)"gnc_path_find_localized_html_file", _wrap_gnc_path_find_localized_html_file, METH_VARARGS, NULL},

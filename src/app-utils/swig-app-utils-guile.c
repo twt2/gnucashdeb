@@ -1255,7 +1255,6 @@ static swig_module_info swig_module = {swig_types, 20, 0, 0, 0, 0};
 /* Includes the header in the wrapper code */
 #include <config.h>
 #include <option-util.h>
-#include <guile-mappings.h>
 #include <gnc-euro.h>
 #include <gnc-exp-parser.h>
 #include <gnc-ui-util.h>
@@ -1270,6 +1269,8 @@ static swig_module_info swig_module = {swig_types, 20, 0, 0, 0, 0};
 
 #include "engine-helpers-guile.h"
 
+
+#include "guile-mappings.h"
 
 SCM scm_init_sw_app_utils_module (void);
 
@@ -1324,7 +1325,7 @@ _wrap_gnc_get_current_book_tax_name ()
   {
     gswig_result = SCM_UNSPECIFIED;
     if (result) {
-      gswig_result = scm_from_locale_string((const char *)result);
+      gswig_result = scm_from_utf8_string((const char *)result);
     }
     if (!result || !scm_is_true(gswig_result)) {
       gswig_result = scm_c_make_string(0, SCM_UNDEFINED);
@@ -1348,7 +1349,7 @@ _wrap_gnc_get_current_book_tax_type ()
   {
     gswig_result = SCM_UNSPECIFIED;
     if (result) {
-      gswig_result = scm_from_locale_string((const char *)result);
+      gswig_result = scm_from_utf8_string((const char *)result);
     }
     if (!result || !scm_is_true(gswig_result)) {
       gswig_result = scm_c_make_string(0, SCM_UNDEFINED);
@@ -1396,7 +1397,7 @@ _wrap_gnc_gettext_helper (SCM s_0)
   {
     gswig_result = SCM_UNSPECIFIED;
     if (result) {
-      gswig_result = scm_from_locale_string((const char *)result);
+      gswig_result = scm_from_utf8_string((const char *)result);
     }
     if (!result || !scm_is_true(gswig_result)) {
       gswig_result = scm_c_make_string(0, SCM_UNDEFINED);
@@ -1694,7 +1695,7 @@ _wrap_xaccPrintAmount (SCM s_0, SCM s_1)
   {
     gswig_result = SCM_UNSPECIFIED;
     if (result) {
-      gswig_result = scm_from_locale_string((const char *)result);
+      gswig_result = scm_from_utf8_string((const char *)result);
     }
     if (!result || !scm_is_true(gswig_result)) {
       gswig_result = scm_c_make_string(0, SCM_UNDEFINED);
@@ -1724,7 +1725,7 @@ _wrap_number_to_words (SCM s_0, SCM s_1)
   {
     gswig_result = SCM_UNSPECIFIED;
     if (result) {
-      gswig_result = scm_from_locale_string((const char *)result);
+      gswig_result = scm_from_utf8_string((const char *)result);
     }
     if (!result || !scm_is_true(gswig_result)) {
       gswig_result = scm_c_make_string(0, SCM_UNDEFINED);
@@ -1756,7 +1757,7 @@ _wrap_printable_value (SCM s_0, SCM s_1)
   {
     gswig_result = SCM_UNSPECIFIED;
     if (result) {
-      gswig_result = scm_from_locale_string((const char *)result);
+      gswig_result = scm_from_utf8_string((const char *)result);
     }
     if (!result || !scm_is_true(gswig_result)) {
       gswig_result = scm_c_make_string(0, SCM_UNDEFINED);

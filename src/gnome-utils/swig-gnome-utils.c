@@ -1264,6 +1264,9 @@ static swig_module_info swig_module = {swig_types, 13, 0, 0, 0, 0};
 #include <gnc-splash.h>
 #include <dialog-tax-table.h>
 
+
+#include "guile-mappings.h"
+
 SCM scm_init_sw_gnome_utils_module (void);
 
 static SCM

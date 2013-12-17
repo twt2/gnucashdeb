@@ -1252,6 +1252,9 @@ static swig_module_info swig_module = {swig_types, 7, 0, 0, 0, 0};
 #include <gnc-gui-query.h>
 #include <gnc-html.h>
 
+
+#include "guile-mappings.h"
+
 SCM scm_init_sw_gnc_html_module(void);
 
 static char *gswig_const_URL_TYPE_FILE = "file";
@@ -1524,7 +1527,7 @@ _wrap_gnc_build_url (SCM s_0, SCM s_1, SCM s_2)
   {
     gswig_result = SCM_UNSPECIFIED;
     if (result) {
-      gswig_result = scm_from_locale_string((const char *)result);
+      gswig_result = scm_from_utf8_string((const char *)result);
     }
     if (!result || !scm_is_true(gswig_result)) {
       gswig_result = scm_c_make_string(0, SCM_UNDEFINED);

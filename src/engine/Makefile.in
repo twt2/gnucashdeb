@@ -59,9 +59,10 @@ DIST_COMMON = README $(gncinclude_HEADERS) $(noinst_HEADERS) \
 	$(srcdir)/iso-currencies-to-c.in $(top_srcdir)/depcomp \
 	$(top_srcdir)/mkinstalldirs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/macros/ac_pkg_swig.m4 \
-	$(top_srcdir)/macros/ac_python_devel.m4 \
-	$(top_srcdir)/macros/as-scrub-include.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/macros/as-scrub-include.m4 \
+	$(top_srcdir)/macros/ax_pkg_swig.m4 \
+	$(top_srcdir)/macros/ax_python_devel.m4 \
+	$(top_srcdir)/macros/ax_swig_python.m4 \
 	$(top_srcdir)/macros/binreloc.m4 \
 	$(top_srcdir)/macros/compiler-flags.m4 \
 	$(top_srcdir)/macros/legacy_macros.m4 \
@@ -233,6 +234,8 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+AX_SWIG_PYTHON_CPPFLAGS = @AX_SWIG_PYTHON_CPPFLAGS@
+AX_SWIG_PYTHON_OPT = @AX_SWIG_PYTHON_OPT@
 BINRELOC_CFLAGS = @BINRELOC_CFLAGS@
 BINRELOC_LIBS = @BINRELOC_LIBS@
 CATALOGS = @CATALOGS@
@@ -381,6 +384,7 @@ PO_IN_DATADIR_TRUE = @PO_IN_DATADIR_TRUE@
 PYTHON = @PYTHON@
 PYTHON_CPPFLAGS = @PYTHON_CPPFLAGS@
 PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
+PYTHON_EXTRA_LDFLAGS = @PYTHON_EXTRA_LDFLAGS@
 PYTHON_EXTRA_LIBS = @PYTHON_EXTRA_LIBS@
 PYTHON_LDFLAGS = @PYTHON_LDFLAGS@
 PYTHON_PLATFORM = @PYTHON_PLATFORM@
@@ -398,8 +402,7 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 SWIG = @SWIG@
-SWIG_PYTHON_CPPFLAGS = @SWIG_PYTHON_CPPFLAGS@
-SWIG_PYTHON_OPT = @SWIG_PYTHON_OPT@
+SWIG_LIB = @SWIG_LIB@
 TEST_MYSQL_URL = @TEST_MYSQL_URL@
 TEST_PGSQL_URL = @TEST_PGSQL_URL@
 USE_NLS = @USE_NLS@
@@ -595,7 +598,7 @@ noinst_HEADERS = \
 
 noinst_SCRIPTS = iso-currencies-to-c
 libgncmod_engine_la_LDFLAGS = -avoid-version
-libgncmod_engine_la_CFLAGS = -Wno-invalid-source-encoding
+@CLANG_TRUE@libgncmod_engine_la_CFLAGS = -Wno-invalid-source-encoding
 libgncmod_engine_la_LIBADD = \
   ../gnc-module/libgnc-module.la \
   ../core-utils/libgnc-core-utils.la \
@@ -1501,6 +1504,9 @@ uninstall-am: uninstall-gncincludeHEADERS uninstall-gncmodDATA \
 @BUILDING_FROM_SCM_TRUE@               $(gncinclude_HEADERS) $(noinst_HEADERS)
 @BUILDING_FROM_SCM_TRUE@	$(SWIG) -guile $(SWIG_ARGS) -Linkage module \
 @BUILDING_FROM_SCM_TRUE@	-I${top_srcdir}/src/libqof/qof -I${top_srcdir}/src -o $@ $<
+@BUILDING_FROM_SCM_TRUE@@GNC_HAVE_GUILE_2_TRUE@	if ! `grep "define scm_from_utf8_string" $@ > /dev/null 2>&1`; then \
+@BUILDING_FROM_SCM_TRUE@@GNC_HAVE_GUILE_2_TRUE@	  patch $@ $(top_srcdir)/src/swig-utf8.patch; \
+@BUILDING_FROM_SCM_TRUE@@GNC_HAVE_GUILE_2_TRUE@	fi
 
 iso-4217-currencies.c: iso-4217-currencies.scm iso-currencies-to-c
 	-chmod u+x ./iso-currencies-to-c

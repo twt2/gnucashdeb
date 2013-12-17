@@ -49,14 +49,15 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/import-export/aqbanking/gschemas
+subdir = src/import-export/csv-imp/gschemas
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/org.gnucash.dialogs.import.hbci.gschema.xml.in.in \
+	$(srcdir)/org.gnucash.dialogs.import.csv.gschema.xml.in.in \
 	$(top_srcdir)/mkinstalldirs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/macros/ac_pkg_swig.m4 \
-	$(top_srcdir)/macros/ac_python_devel.m4 \
-	$(top_srcdir)/macros/as-scrub-include.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/macros/as-scrub-include.m4 \
+	$(top_srcdir)/macros/ax_pkg_swig.m4 \
+	$(top_srcdir)/macros/ax_python_devel.m4 \
+	$(top_srcdir)/macros/ax_swig_python.m4 \
 	$(top_srcdir)/macros/binreloc.m4 \
 	$(top_srcdir)/macros/compiler-flags.m4 \
 	$(top_srcdir)/macros/legacy_macros.m4 \
@@ -70,7 +71,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES = org.gnucash.dialogs.import.hbci.gschema.xml.in
+CONFIG_CLEAN_FILES = org.gnucash.dialogs.import.csv.gschema.xml.in
 CONFIG_CLEAN_VPATH_FILES =
 SOURCES =
 DIST_SOURCES =
@@ -92,6 +93,8 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+AX_SWIG_PYTHON_CPPFLAGS = @AX_SWIG_PYTHON_CPPFLAGS@
+AX_SWIG_PYTHON_OPT = @AX_SWIG_PYTHON_OPT@
 BINRELOC_CFLAGS = @BINRELOC_CFLAGS@
 BINRELOC_LIBS = @BINRELOC_LIBS@
 CATALOGS = @CATALOGS@
@@ -240,6 +243,7 @@ PO_IN_DATADIR_TRUE = @PO_IN_DATADIR_TRUE@
 PYTHON = @PYTHON@
 PYTHON_CPPFLAGS = @PYTHON_CPPFLAGS@
 PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
+PYTHON_EXTRA_LDFLAGS = @PYTHON_EXTRA_LDFLAGS@
 PYTHON_EXTRA_LIBS = @PYTHON_EXTRA_LIBS@
 PYTHON_LDFLAGS = @PYTHON_LDFLAGS@
 PYTHON_PLATFORM = @PYTHON_PLATFORM@
@@ -257,8 +261,7 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 SWIG = @SWIG@
-SWIG_PYTHON_CPPFLAGS = @SWIG_PYTHON_CPPFLAGS@
-SWIG_PYTHON_OPT = @SWIG_PYTHON_OPT@
+SWIG_LIB = @SWIG_LIB@
 TEST_MYSQL_URL = @TEST_MYSQL_URL@
 TEST_PGSQL_URL = @TEST_PGSQL_URL@
 USE_NLS = @USE_NLS@
@@ -333,7 +336,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 gschema_in_files = \
-  org.gnucash.dialogs.import.hbci.gschema.xml.in
+  org.gnucash.dialogs.import.csv.gschema.xml.in
 
 gsettings_SCHEMAS = $(gschema_in_files:.gschema.xml.in=.gschema.xml)
 CLEANFILES = $(gsettings_SCHEMAS)
@@ -349,9 +352,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/import-export/aqbanking/gschemas/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/import-export/csv-imp/gschemas/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/import-export/aqbanking/gschemas/Makefile
+	  $(AUTOMAKE) --gnu src/import-export/csv-imp/gschemas/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -370,7 +373,7 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-org.gnucash.dialogs.import.hbci.gschema.xml.in: $(top_builddir)/config.status $(srcdir)/org.gnucash.dialogs.import.hbci.gschema.xml.in.in
+org.gnucash.dialogs.import.csv.gschema.xml.in: $(top_builddir)/config.status $(srcdir)/org.gnucash.dialogs.import.csv.gschema.xml.in.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 mostlyclean-libtool:

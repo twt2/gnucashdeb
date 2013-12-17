@@ -57,9 +57,10 @@ DIST_COMMON = $(gncinclude_HEADERS) $(noinst_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/depcomp $(top_srcdir)/mkinstalldirs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/macros/ac_pkg_swig.m4 \
-	$(top_srcdir)/macros/ac_python_devel.m4 \
-	$(top_srcdir)/macros/as-scrub-include.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/macros/as-scrub-include.m4 \
+	$(top_srcdir)/macros/ax_pkg_swig.m4 \
+	$(top_srcdir)/macros/ax_python_devel.m4 \
+	$(top_srcdir)/macros/ax_swig_python.m4 \
 	$(top_srcdir)/macros/binreloc.m4 \
 	$(top_srcdir)/macros/compiler-flags.m4 \
 	$(top_srcdir)/macros/legacy_macros.m4 \
@@ -161,8 +162,8 @@ AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
 	distdir
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = . gschemas qif qif-import ofx aqbanking log-replay test \
-	csv-import csv-export
+DIST_SUBDIRS = . gschemas qif qif-imp ofx aqb log-replay test csv-imp \
+	csv-exp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 am__relativize = \
   dir0=`pwd`; \
@@ -201,6 +202,8 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+AX_SWIG_PYTHON_CPPFLAGS = @AX_SWIG_PYTHON_CPPFLAGS@
+AX_SWIG_PYTHON_OPT = @AX_SWIG_PYTHON_OPT@
 BINRELOC_CFLAGS = @BINRELOC_CFLAGS@
 BINRELOC_LIBS = @BINRELOC_LIBS@
 CATALOGS = @CATALOGS@
@@ -349,6 +352,7 @@ PO_IN_DATADIR_TRUE = @PO_IN_DATADIR_TRUE@
 PYTHON = @PYTHON@
 PYTHON_CPPFLAGS = @PYTHON_CPPFLAGS@
 PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
+PYTHON_EXTRA_LDFLAGS = @PYTHON_EXTRA_LDFLAGS@
 PYTHON_EXTRA_LIBS = @PYTHON_EXTRA_LIBS@
 PYTHON_LDFLAGS = @PYTHON_LDFLAGS@
 PYTHON_PLATFORM = @PYTHON_PLATFORM@
@@ -366,8 +370,7 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 SWIG = @SWIG@
-SWIG_PYTHON_CPPFLAGS = @SWIG_PYTHON_CPPFLAGS@
-SWIG_PYTHON_OPT = @SWIG_PYTHON_OPT@
+SWIG_LIB = @SWIG_LIB@
 TEST_MYSQL_URL = @TEST_MYSQL_URL@
 TEST_PGSQL_URL = @TEST_PGSQL_URL@
 USE_NLS = @USE_NLS@
@@ -442,9 +445,9 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 @WITH_OFX_TRUE@OFX_DIR = ofx
-@WITH_AQBANKING_TRUE@AQBANKING_DIR = aqbanking
-SUBDIRS = . gschemas qif qif-import \
-	${OFX_DIR} ${AQBANKING_DIR} log-replay test csv-import csv-export
+@WITH_AQBANKING_TRUE@AQBANKING_DIR = aqb
+SUBDIRS = . gschemas qif qif-imp \
+	${OFX_DIR} ${AQBANKING_DIR} log-replay test csv-imp csv-exp
 
 pkglib_LTLIBRARIES = libgncmod-generic-import.la
 libgncmod_generic_import_la_SOURCES = \

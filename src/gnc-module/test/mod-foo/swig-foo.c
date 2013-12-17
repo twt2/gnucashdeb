@@ -1235,6 +1235,9 @@ static swig_module_info swig_module = {swig_types, 1, 0, 0, 0, 0};
 
 #include <foo.h>
 
+
+#include "guile-mappings.h"
+
 SCM scm_init_sw_foo_module (void);
 
 static SCM

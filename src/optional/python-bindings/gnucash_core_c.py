@@ -2322,6 +2322,10 @@ def gnc_numeric_get_type():
   """gnc_numeric_get_type() -> GType"""
   return _gnucash_core_c.gnc_numeric_get_type()
 
+def pwr64(*args):
+  """pwr64(gint64 op, int exp) -> gint64"""
+  return _gnucash_core_c.pwr64(*args)
+
 def gnc_commodity_get_type():
   """gnc_commodity_get_type() -> GType"""
   return _gnucash_core_c.gnc_commodity_get_type()
@@ -3803,6 +3807,10 @@ def gncInvoiceGetPrice(*args):
 def gncInvoiceAmountPositive(*args):
   """gncInvoiceAmountPositive(GncInvoice const * invoice) -> gboolean"""
   return _gnucash_core_c.gncInvoiceAmountPositive(*args)
+
+def gncInvoiceGetForeignCurrencies(*args):
+  """gncInvoiceGetForeignCurrencies(GncInvoice const * invoice) -> GHashTable *"""
+  return _gnucash_core_c.gncInvoiceGetForeignCurrencies(*args)
 
 def gncInvoicePostToAccount(*args):
   """

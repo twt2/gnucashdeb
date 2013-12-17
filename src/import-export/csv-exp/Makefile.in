@@ -52,14 +52,15 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = src/import-export/csv-import
+subdir = src/import-export/csv-exp
 DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(top_srcdir)/depcomp \
 	$(top_srcdir)/mkinstalldirs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/macros/ac_pkg_swig.m4 \
-	$(top_srcdir)/macros/ac_python_devel.m4 \
-	$(top_srcdir)/macros/as-scrub-include.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/macros/as-scrub-include.m4 \
+	$(top_srcdir)/macros/ax_pkg_swig.m4 \
+	$(top_srcdir)/macros/ax_python_devel.m4 \
+	$(top_srcdir)/macros/ax_swig_python.m4 \
 	$(top_srcdir)/macros/binreloc.m4 \
 	$(top_srcdir)/macros/compiler-flags.m4 \
 	$(top_srcdir)/macros/legacy_macros.m4 \
@@ -106,7 +107,7 @@ am__installdirs = "$(DESTDIR)$(pkglibdir)" \
 	"$(DESTDIR)$(gtkbuilderdir)" "$(DESTDIR)$(uidir)"
 LTLIBRARIES = $(pkglib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libgncmod_csv_import_la_DEPENDENCIES =  \
+libgncmod_csv_export_la_DEPENDENCIES =  \
 	${top_builddir}/src/import-export/libgncmod-generic-import.la \
 	${top_builddir}/src/gnome-utils/libgncmod-gnome-utils.la \
 	${top_builddir}/src/app-utils/libgncmod-app-utils.la \
@@ -117,15 +118,14 @@ libgncmod_csv_import_la_DEPENDENCIES =  \
 	${top_builddir}/lib/libc/libc-missing.la \
 	${top_builddir}/src/libqof/qof/libgnc-qof.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
-am_libgncmod_csv_import_la_OBJECTS = gncmod-csv-import.lo \
-	assistant-csv-account-import.lo assistant-csv-trans-import.lo \
-	gnc-plugin-csv-import.lo csv-account-import.lo \
-	gnc-csv-model.lo gnc-csv-gnumeric-popup.lo
-libgncmod_csv_import_la_OBJECTS =  \
-	$(am_libgncmod_csv_import_la_OBJECTS)
-libgncmod_csv_import_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+am_libgncmod_csv_export_la_OBJECTS = gncmod-csv-export.lo \
+	gnc-plugin-csv-export.lo assistant-csv-export.lo \
+	csv-tree-export.lo csv-transactions-export.lo
+libgncmod_csv_export_la_OBJECTS =  \
+	$(am_libgncmod_csv_export_la_OBJECTS)
+libgncmod_csv_export_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(libgncmod_csv_import_la_LDFLAGS) $(LDFLAGS) -o $@
+	$(libgncmod_csv_export_la_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -139,8 +139,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libgncmod_csv_import_la_SOURCES)
-DIST_SOURCES = $(libgncmod_csv_import_la_SOURCES)
+SOURCES = $(libgncmod_csv_export_la_SOURCES)
+DIST_SOURCES = $(libgncmod_csv_export_la_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-dvi-recursive install-exec-recursive \
@@ -201,6 +201,8 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+AX_SWIG_PYTHON_CPPFLAGS = @AX_SWIG_PYTHON_CPPFLAGS@
+AX_SWIG_PYTHON_OPT = @AX_SWIG_PYTHON_OPT@
 BINRELOC_CFLAGS = @BINRELOC_CFLAGS@
 BINRELOC_LIBS = @BINRELOC_LIBS@
 CATALOGS = @CATALOGS@
@@ -349,6 +351,7 @@ PO_IN_DATADIR_TRUE = @PO_IN_DATADIR_TRUE@
 PYTHON = @PYTHON@
 PYTHON_CPPFLAGS = @PYTHON_CPPFLAGS@
 PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
+PYTHON_EXTRA_LDFLAGS = @PYTHON_EXTRA_LDFLAGS@
 PYTHON_EXTRA_LIBS = @PYTHON_EXTRA_LIBS@
 PYTHON_LDFLAGS = @PYTHON_LDFLAGS@
 PYTHON_PLATFORM = @PYTHON_PLATFORM@
@@ -366,8 +369,7 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 SWIG = @SWIG@
-SWIG_PYTHON_CPPFLAGS = @SWIG_PYTHON_CPPFLAGS@
-SWIG_PYTHON_OPT = @SWIG_PYTHON_OPT@
+SWIG_LIB = @SWIG_LIB@
 TEST_MYSQL_URL = @TEST_MYSQL_URL@
 TEST_PGSQL_URL = @TEST_PGSQL_URL@
 USE_NLS = @USE_NLS@
@@ -442,26 +444,22 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = . gschemas
-pkglib_LTLIBRARIES = libgncmod-csv-import.la
-libgncmod_csv_import_la_SOURCES = \
-  gncmod-csv-import.c \
-  assistant-csv-account-import.c \
-  assistant-csv-trans-import.c \
-  gnc-plugin-csv-import.c \
-  csv-account-import.c \
-  gnc-csv-model.c \
-  gnc-csv-gnumeric-popup.c
+pkglib_LTLIBRARIES = libgncmod-csv-export.la
+libgncmod_csv_export_la_SOURCES = \
+  gncmod-csv-export.c \
+  gnc-plugin-csv-export.c \
+  assistant-csv-export.c \
+  csv-tree-export.c \
+  csv-transactions-export.c
 
 noinst_HEADERS = \
-  assistant-csv-account-import.h \
-  assistant-csv-trans-import.h \
-  gnc-plugin-csv-import.h \
-  csv-account-import.h \
-  gnc-csv-model.h \
-  gnc-csv-gnumeric-popup.h
+  gnc-plugin-csv-export.h \
+  assistant-csv-export.h \
+  csv-tree-export.h \
+  csv-transactions-export.h
 
-libgncmod_csv_import_la_LDFLAGS = -avoid-version
-libgncmod_csv_import_la_LIBADD = \
+libgncmod_csv_export_la_LDFLAGS = -avoid-version
+libgncmod_csv_export_la_LIBADD = \
   ${top_builddir}/src/import-export/libgncmod-generic-import.la \
   ${top_builddir}/src/gnome-utils/libgncmod-gnome-utils.la \
   ${top_builddir}/src/app-utils/libgncmod-app-utils.la \
@@ -481,15 +479,14 @@ AM_CPPFLAGS = -I${top_srcdir}/src -I${top_srcdir}/src/core-utils \
 	-I${top_srcdir}/src/import-export \
 	-I${top_srcdir}/src/libqof/qof -I${top_srcdir}/lib/libc \
 	-I${top_srcdir}/lib ${GUILE_CFLAGS} ${GLIB_CFLAGS} \
-	$(GOFFICE_CFLAGS) -DG_LOG_DOMAIN=\"gnc.import.csv\"
+	$(GOFFICE_CFLAGS) -DG_LOG_DOMAIN=\"gnc.export.csv\"
 uidir = $(GNC_UI_DIR)
 ui_DATA = \
-	gnc-plugin-csv-import-ui.xml
+	gnc-plugin-csv-export-ui.xml
 
 gtkbuilderdir = ${GNC_GTKBUILDER_DIR}
 gtkbuilder_DATA = \
-	assistant-csv-account-import.glade \
-	assistant-csv-trans-import.glade
+	assistant-csv-export.glade
 
 EXTRA_DIST = $(ui_DATA) $(gtkbuilder_DATA)
 all: all-recursive
@@ -505,9 +502,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/import-export/csv-import/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/import-export/csv-exp/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/import-export/csv-import/Makefile
+	  $(AUTOMAKE) --gnu src/import-export/csv-exp/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -560,8 +557,8 @@ clean-pkglibLTLIBRARIES:
 	  echo rm -f $${locs}; \
 	  rm -f $${locs}; \
 	}
-libgncmod-csv-import.la: $(libgncmod_csv_import_la_OBJECTS) $(libgncmod_csv_import_la_DEPENDENCIES) $(EXTRA_libgncmod_csv_import_la_DEPENDENCIES) 
-	$(libgncmod_csv_import_la_LINK) -rpath $(pkglibdir) $(libgncmod_csv_import_la_OBJECTS) $(libgncmod_csv_import_la_LIBADD) $(LIBS)
+libgncmod-csv-export.la: $(libgncmod_csv_export_la_OBJECTS) $(libgncmod_csv_export_la_DEPENDENCIES) $(EXTRA_libgncmod_csv_export_la_DEPENDENCIES) 
+	$(libgncmod_csv_export_la_LINK) -rpath $(pkglibdir) $(libgncmod_csv_export_la_OBJECTS) $(libgncmod_csv_export_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -569,13 +566,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/assistant-csv-account-import.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/assistant-csv-trans-import.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/csv-account-import.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-csv-gnumeric-popup.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-csv-model.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-plugin-csv-import.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gncmod-csv-import.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/assistant-csv-export.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/csv-transactions-export.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/csv-tree-export.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-plugin-csv-export.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gncmod-csv-export.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
