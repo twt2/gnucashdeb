@@ -62,6 +62,7 @@ am__aclocal_m4_deps = $(top_srcdir)/macros/as-scrub-include.m4 \
 	$(top_srcdir)/macros/ax_swig_python.m4 \
 	$(top_srcdir)/macros/binreloc.m4 \
 	$(top_srcdir)/macros/compiler-flags.m4 \
+	$(top_srcdir)/macros/intltool.m4 \
 	$(top_srcdir)/macros/legacy_macros.m4 \
 	$(top_srcdir)/macros/libtool.m4 \
 	$(top_srcdir)/macros/ltoptions.m4 \
@@ -120,10 +121,10 @@ am_libgnc_backend_xml_utils_la_OBJECTS = gnc-account-xml-v2.lo \
 	gnc-pricedb-xml-v2.lo gnc-recurrence-xml-v2.lo \
 	gnc-schedxaction-xml-v2.lo gnc-tax-table-xml-v2.lo \
 	gnc-transaction-xml-v2.lo gnc-vendor-xml-v2.lo \
-	io-example-account.lo io-gncxml-gen.lo io-gncxml-v1.lo \
-	io-gncxml-v2.lo io-utils.lo sixtp-dom-generators.lo \
-	sixtp-dom-parsers.lo sixtp-stack.lo sixtp-to-dom-parser.lo \
-	sixtp-utils.lo sixtp.lo
+	gnc-xml-helper.lo io-example-account.lo io-gncxml-gen.lo \
+	io-gncxml-v1.lo io-gncxml-v2.lo io-utils.lo \
+	sixtp-dom-generators.lo sixtp-dom-parsers.lo sixtp-stack.lo \
+	sixtp-to-dom-parser.lo sixtp-utils.lo sixtp.lo
 libgnc_backend_xml_utils_la_OBJECTS =  \
 	$(am_libgnc_backend_xml_utils_la_OBJECTS)
 libgncmod_backend_xml_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
@@ -489,6 +490,7 @@ libgnc_backend_xml_utils_la_SOURCES = \
   gnc-tax-table-xml-v2.c \
   gnc-transaction-xml-v2.c \
   gnc-vendor-xml-v2.c \
+  gnc-xml-helper.c \
   io-example-account.c \
   io-gncxml-gen.c \
   io-gncxml-v1.c \
@@ -685,6 +687,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-tax-table-xml-v2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-transaction-xml-v2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-vendor-xml-v2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-xml-helper.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/io-example-account.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/io-gncxml-gen.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/io-gncxml-v1.Plo@am__quote@

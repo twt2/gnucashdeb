@@ -63,6 +63,7 @@ am__aclocal_m4_deps = $(top_srcdir)/macros/as-scrub-include.m4 \
 	$(top_srcdir)/macros/ax_swig_python.m4 \
 	$(top_srcdir)/macros/binreloc.m4 \
 	$(top_srcdir)/macros/compiler-flags.m4 \
+	$(top_srcdir)/macros/intltool.m4 \
 	$(top_srcdir)/macros/legacy_macros.m4 \
 	$(top_srcdir)/macros/libtool.m4 \
 	$(top_srcdir)/macros/ltoptions.m4 \
@@ -465,6 +466,8 @@ EXTRA_DIST = \
   macros/binreloc.m4 \
   macros/compiler-flags.m4 \
   macros/ax_pkg_swig.m4 \
+  macros/ax_python_devel.m4 \
+  macros/ax_swig_python.m4 \
   macros/legacy_macros.m4 \
   po/gnucash.pot \
   po/POTFILES.in \

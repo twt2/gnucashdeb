@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-12-15 09:31-0800\n"
+"POT-Creation-Date: 2013-12-28 11:48-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -166,7 +166,7 @@ msgstr ""
 #. src/report/standard-reports/budget-balance-sheet.scm
 #: ../src/app-utils/gnc-ui-util.c:744 ../src/engine/Account.c:3950
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2959
-#: ../src/register/ledger-core/split-register.c:2433
+#: ../src/register/ledger-core/split-register.c:2492
 #: ../intl-scm/guile-strings.c:332 ../intl-scm/guile-strings.c:336
 #: ../intl-scm/guile-strings.c:2868 ../intl-scm/guile-strings.c:2996
 msgid "Equity"
@@ -188,7 +188,7 @@ msgstr ""
 #: ../src/gnome/gnc-plugin-page-register.c:2630
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3199
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3204
-#: ../src/register/ledger-core/split-register.c:2252
+#: ../src/register/ledger-core/split-register.c:2311
 #: ../intl-scm/guile-strings.c:3544 ../intl-scm/guile-strings.c:4092
 #: ../intl-scm/guile-strings.c:4460 ../intl-scm/guile-strings.c:4952
 msgid "Debit"
@@ -207,10 +207,10 @@ msgstr ""
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2935
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3118
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3123
-#: ../src/register/ledger-core/split-register.c:2275
-#: ../src/register/ledger-core/split-register.c:2372
-#: ../src/register/ledger-core/split-register.c:2391
-#: ../src/register/ledger-core/split-register.c:2409
+#: ../src/register/ledger-core/split-register.c:2334
+#: ../src/register/ledger-core/split-register.c:2431
+#: ../src/register/ledger-core/split-register.c:2450
+#: ../src/register/ledger-core/split-register.c:2468
 #: ../intl-scm/guile-strings.c:3546 ../intl-scm/guile-strings.c:4094
 #: ../intl-scm/guile-strings.c:4462 ../intl-scm/guile-strings.c:4954
 msgid "Credit"
@@ -430,7 +430,7 @@ msgstr ""
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2932
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3173
 #: ../src/plugins/bi_import/gtkbuilder/dialog-bi-import-gui.glade.h:5
-#: ../src/register/ledger-core/split-register.c:2406
+#: ../src/register/ledger-core/split-register.c:2465
 #: ../src/report/report-gnome/gnc-plugin-page-report.c:1691
 #: ../intl-scm/guile-strings.c:272 ../intl-scm/guile-strings.c:720
 #: ../intl-scm/guile-strings.c:932 ../intl-scm/guile-strings.c:1142
@@ -1836,8 +1836,8 @@ msgstr ""
 #: ../src/business/business-gnome/gnc-plugin-page-invoice.c:213
 #: ../src/gnome-utils/gnc-tree-util-split-reg.c:1163
 #: ../src/gnome-utils/gnc-tree-util-split-reg.c:1165
-#: ../src/register/ledger-core/split-register.c:2064
-#: ../src/register/ledger-core/split-register.c:2066
+#: ../src/register/ledger-core/split-register.c:1934
+#: ../src/register/ledger-core/split-register.c:1937
 msgid "_Price"
 msgstr ""
 
@@ -3003,10 +3003,10 @@ msgstr ""
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2944
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3093
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3179
-#: ../src/register/ledger-core/split-register.c:2361
-#: ../src/register/ledger-core/split-register.c:2402
-#: ../src/register/ledger-core/split-register.c:2407
-#: ../src/register/ledger-core/split-register.c:2418
+#: ../src/register/ledger-core/split-register.c:2420
+#: ../src/register/ledger-core/split-register.c:2461
+#: ../src/register/ledger-core/split-register.c:2466
+#: ../src/register/ledger-core/split-register.c:2477
 #: ../intl-scm/guile-strings.c:254 ../intl-scm/guile-strings.c:270
 #: ../intl-scm/guile-strings.c:302 ../intl-scm/guile-strings.c:684
 #: ../intl-scm/guile-strings.c:686
@@ -3291,7 +3291,7 @@ msgstr ""
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2886
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3070
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3156
-#: ../src/register/ledger-core/split-register.c:2360
+#: ../src/register/ledger-core/split-register.c:2419
 #: ../intl-scm/guile-strings.c:266 ../intl-scm/guile-strings.c:284
 #: ../intl-scm/guile-strings.c:4208
 msgid "Charge"
@@ -3410,6 +3410,12 @@ msgstr ""
 
 #: ../src/business/business-ledger/gncEntryLedgerModel.c:570
 msgid "Enter the type of Entry"
+msgstr ""
+
+#: ../src/business/business-ledger/gncEntryLedgerModel.c:594
+#: ../src/gnome-utils/gnc-tree-util-split-reg.c:460
+#: ../src/register/ledger-core/split-register-model.c:922
+msgid "%A %d %B %Y"
 msgstr ""
 
 #: ../src/business/business-ledger/gncEntryLedgerModel.c:606
@@ -3620,7 +3626,7 @@ msgstr ""
 #: ../src/gnome/gnc-budget-view.c:353
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2975
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3076
-#: ../src/register/ledger-core/split-register.c:2449
+#: ../src/register/ledger-core/split-register.c:2508
 #: ../intl-scm/guile-strings.c:296 ../intl-scm/guile-strings.c:308
 #: ../intl-scm/guile-strings.c:312 ../intl-scm/guile-strings.c:316
 #: ../intl-scm/guile-strings.c:320 ../intl-scm/guile-strings.c:324
@@ -3915,11 +3921,11 @@ msgstr ""
 msgid "Closing Date:"
 msgstr ""
 
-#: ../src/gnome/assistant-hierarchy.c:397
+#: ../src/gnome/assistant-hierarchy.c:402
 msgid "Selected"
 msgstr ""
 
-#: ../src/gnome/assistant-hierarchy.c:409
+#: ../src/gnome/assistant-hierarchy.c:414
 #: ../src/gnome-utils/gnc-tree-view-account.c:2183
 msgid "Account Types"
 msgstr ""
@@ -3953,6 +3959,12 @@ msgstr ""
 
 #: ../src/gnome/assistant-hierarchy.c:972
 msgid "Use Existing"
+msgstr ""
+
+#: ../src/gnome/assistant-hierarchy.c:1131
+#: ../src/gnome/assistant-hierarchy.c:1142
+#: ../src/gnome-utils/dialog-utils.c:586
+msgid "New Book Options"
 msgstr ""
 
 #. { name, default txn memo, throughEscrowP, specSrcAcctP }
@@ -4003,7 +4015,7 @@ msgstr ""
 
 #: ../src/gnome/assistant-loan.c:913
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2926
-#: ../src/register/ledger-core/split-register.c:2400
+#: ../src/register/ledger-core/split-register.c:2459
 msgid "Loan"
 msgstr ""
 
@@ -4025,12 +4037,12 @@ msgstr ""
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2934
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2943
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2970
-#: ../src/register/ledger-core/split-register.c:2356
-#: ../src/register/ledger-core/split-register.c:2393
-#: ../src/register/ledger-core/split-register.c:2401
-#: ../src/register/ledger-core/split-register.c:2408
-#: ../src/register/ledger-core/split-register.c:2417
-#: ../src/register/ledger-core/split-register.c:2444
+#: ../src/register/ledger-core/split-register.c:2415
+#: ../src/register/ledger-core/split-register.c:2452
+#: ../src/register/ledger-core/split-register.c:2460
+#: ../src/register/ledger-core/split-register.c:2467
+#: ../src/register/ledger-core/split-register.c:2476
+#: ../src/register/ledger-core/split-register.c:2503
 #: ../intl-scm/guile-strings.c:314
 msgid "Interest"
 msgstr ""
@@ -4044,7 +4056,7 @@ msgstr ""
 #. Translators: This string has a disambiguation prefix
 #: ../src/gnome/assistant-stock-split.c:380
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2979
-#: ../src/register/ledger-core/split-register.c:2453
+#: ../src/register/ledger-core/split-register.c:2512
 msgid "Action Column|Split"
 msgstr ""
 
@@ -5550,7 +5562,7 @@ msgstr ""
 #: ../src/gnome/gnc-plugin-page-register2.c:476
 #: ../src/gnome/gnc-plugin-page-register.c:478
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2900
-#: ../src/register/ledger-core/split-register.c:2374
+#: ../src/register/ledger-core/split-register.c:2433
 #: ../src/register/ledger-core/split-register-layout.c:687
 #: ../src/register/ledger-core/split-register-model.c:304
 #: ../intl-scm/guile-strings.c:4074
@@ -7232,25 +7244,10 @@ msgid ""
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:7
-#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:58
-msgid "<b>Book Options</b>"
-msgstr ""
-
-#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:8
-msgid ""
-"Since you are creating a new file, you will next see a dialog for setting "
-"book options. These can affect how GnuCash transactions are handled later, "
-"during account setup. If you come back to this page without cancelling and "
-"starting over, the dialog for setting book options will not be shown a "
-"second time when you go forward. You can access it directly from the menu "
-"via File->Properties."
-msgstr ""
-
-#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:9
 msgid "Choose Currency"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:10
+#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:8
 msgid ""
 "\n"
 "Select categories that correspond to the ways that you will use GnuCash. "
@@ -7259,30 +7256,30 @@ msgid ""
 "accounts by hand later."
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:12
+#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:10
 msgid "<b>Categories</b>"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:13
+#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:11
 #: ../src/gnome-utils/gtkbuilder/dialog-account.glade.h:50
 #: ../src/gnome-utils/gtkbuilder/dialog-reset-warnings.glade.h:3
 msgid "_Select All"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:14
+#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:12
 #: ../src/gnome-utils/gtkbuilder/dialog-account.glade.h:51
 msgid "C_lear All"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:15
+#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:13
 msgid "<b>Category Description</b>"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:16
+#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:14
 msgid "Choose accounts to create"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:17
+#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:15
 msgid ""
 "\n"
 "If you would like to change an account's name, click on the row containing "
@@ -7301,11 +7298,11 @@ msgid ""
 "opening balance.\n"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:26
+#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:24
 msgid "Setup selected accounts"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:27
+#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:25
 msgid ""
 "Press `Apply' to create your new accounts. You will then be able to save "
 "them to a file or database.\n"
@@ -7315,7 +7312,7 @@ msgid ""
 "Press `Cancel' to close this dialog without creating any new accounts."
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:32
+#: ../src/gnome/gtkbuilder/assistant-hierarchy.glade.h:30
 msgid "Finish Account Setup"
 msgstr ""
 
@@ -9509,23 +9506,23 @@ msgstr ""
 msgid "Reset all values to their defaults."
 msgstr ""
 
-#: ../src/gnome-utils/dialog-options.c:1431
+#: ../src/gnome-utils/dialog-options.c:1450
 msgid "Page"
 msgstr ""
 
-#: ../src/gnome-utils/dialog-options.c:2046
+#: ../src/gnome-utils/dialog-options.c:2065
 msgid "Clear"
 msgstr ""
 
-#: ../src/gnome-utils/dialog-options.c:2047
+#: ../src/gnome-utils/dialog-options.c:2066
 msgid "Clear any selected image file."
 msgstr ""
 
-#: ../src/gnome-utils/dialog-options.c:2049
+#: ../src/gnome-utils/dialog-options.c:2068
 msgid "Select image"
 msgstr ""
 
-#: ../src/gnome-utils/dialog-options.c:2051
+#: ../src/gnome-utils/dialog-options.c:2070
 msgid "Select an image file."
 msgstr ""
 
@@ -9645,10 +9642,6 @@ msgstr ""
 
 #: ../src/gnome-utils/dialog-utils.c:547
 msgid "Don't tell me again this _session."
-msgstr ""
-
-#: ../src/gnome-utils/dialog-utils.c:586
-msgid "New Book Options"
 msgstr ""
 
 #. create the button.
@@ -10711,40 +10704,40 @@ msgstr ""
 #. Translators: This string has a context prefix; the translation
 #. must only contain the part after the | character.
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2879
-#: ../src/register/ledger-core/split-register.c:2353
+#: ../src/register/ledger-core/split-register.c:2412
 msgid "Action Column|Deposit"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2880
-#: ../src/register/ledger-core/split-register.c:2354
+#: ../src/register/ledger-core/split-register.c:2413
 msgid "Withdraw"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2881
-#: ../src/register/ledger-core/split-register.c:2355
+#: ../src/register/ledger-core/split-register.c:2414
 msgid "Check"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2883
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2914
-#: ../src/register/ledger-core/split-register.c:2357
-#: ../src/register/ledger-core/split-register.c:2388
+#: ../src/register/ledger-core/split-register.c:2416
+#: ../src/register/ledger-core/split-register.c:2447
 msgid "ATM Deposit"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2884
-#: ../src/register/ledger-core/split-register.c:2358
-#: ../src/register/ledger-core/split-register.c:2389
+#: ../src/register/ledger-core/split-register.c:2417
+#: ../src/register/ledger-core/split-register.c:2448
 msgid "ATM Draw"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2885
-#: ../src/register/ledger-core/split-register.c:2359
+#: ../src/register/ledger-core/split-register.c:2418
 msgid "Teller"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2888
-#: ../src/register/ledger-core/split-register.c:2362
+#: ../src/register/ledger-core/split-register.c:2421
 msgid "Receipt"
 msgstr ""
 
@@ -10756,11 +10749,11 @@ msgstr ""
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2983
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3065
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3143
-#: ../src/register/ledger-core/split-register.c:2363
-#: ../src/register/ledger-core/split-register.c:2377
-#: ../src/register/ledger-core/split-register.c:2413
-#: ../src/register/ledger-core/split-register.c:2424
-#: ../src/register/ledger-core/split-register.c:2457
+#: ../src/register/ledger-core/split-register.c:2422
+#: ../src/register/ledger-core/split-register.c:2436
+#: ../src/register/ledger-core/split-register.c:2472
+#: ../src/register/ledger-core/split-register.c:2483
+#: ../src/register/ledger-core/split-register.c:2516
 #: ../intl-scm/guile-strings.c:256 ../intl-scm/guile-strings.c:288
 #: ../intl-scm/guile-strings.c:304 ../intl-scm/guile-strings.c:306
 msgid "Increase"
@@ -10774,11 +10767,11 @@ msgstr ""
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2984
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3058
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3150
-#: ../src/register/ledger-core/split-register.c:2364
-#: ../src/register/ledger-core/split-register.c:2378
-#: ../src/register/ledger-core/split-register.c:2414
-#: ../src/register/ledger-core/split-register.c:2425
-#: ../src/register/ledger-core/split-register.c:2458
+#: ../src/register/ledger-core/split-register.c:2423
+#: ../src/register/ledger-core/split-register.c:2437
+#: ../src/register/ledger-core/split-register.c:2473
+#: ../src/register/ledger-core/split-register.c:2484
+#: ../src/register/ledger-core/split-register.c:2517
 #: ../intl-scm/guile-strings.c:258 ../intl-scm/guile-strings.c:274
 #: ../intl-scm/guile-strings.c:276 ../intl-scm/guile-strings.c:286
 msgid "Decrease"
@@ -10786,39 +10779,39 @@ msgstr ""
 
 #. Action: Point Of Sale
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2892
-#: ../src/register/ledger-core/split-register.c:2366
+#: ../src/register/ledger-core/split-register.c:2425
 msgid "POS"
 msgstr ""
 
 #. src/report/business-reports/taxinvoice.eguile.scm
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2893
 #: ../src/gnome-utils/gnc-tree-view-owner.c:444
-#: ../src/register/ledger-core/split-register.c:2367
+#: ../src/register/ledger-core/split-register.c:2426
 #: ../intl-scm/guile-strings.c:1624
 msgid "Phone"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2894
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2920
-#: ../src/register/ledger-core/split-register.c:2368
-#: ../src/register/ledger-core/split-register.c:2394
+#: ../src/register/ledger-core/split-register.c:2427
+#: ../src/register/ledger-core/split-register.c:2453
 msgid "Online"
 msgstr ""
 
 #. Action: Automatic Deposit
 #. Action: Automatic Deposit ?!?
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2896
-#: ../src/register/ledger-core/split-register.c:2370
+#: ../src/register/ledger-core/split-register.c:2429
 msgid "AutoDep"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2897
-#: ../src/register/ledger-core/split-register.c:2371
+#: ../src/register/ledger-core/split-register.c:2430
 msgid "Wire"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2899
-#: ../src/register/ledger-core/split-register.c:2373
+#: ../src/register/ledger-core/split-register.c:2432
 msgid "Direct Debit"
 msgstr ""
 
@@ -10833,14 +10826,14 @@ msgstr ""
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2964
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2985
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3168
-#: ../src/register/ledger-core/split-register.c:2379
-#: ../src/register/ledger-core/split-register.c:2383
-#: ../src/register/ledger-core/split-register.c:2390
-#: ../src/register/ledger-core/split-register.c:2398
-#: ../src/register/ledger-core/split-register.c:2415
-#: ../src/register/ledger-core/split-register.c:2426
-#: ../src/register/ledger-core/split-register.c:2431
-#: ../src/register/ledger-core/split-register.c:2459
+#: ../src/register/ledger-core/split-register.c:2438
+#: ../src/register/ledger-core/split-register.c:2442
+#: ../src/register/ledger-core/split-register.c:2449
+#: ../src/register/ledger-core/split-register.c:2457
+#: ../src/register/ledger-core/split-register.c:2474
+#: ../src/register/ledger-core/split-register.c:2485
+#: ../src/register/ledger-core/split-register.c:2490
+#: ../src/register/ledger-core/split-register.c:2518
 #: ../intl-scm/guile-strings.c:260 ../intl-scm/guile-strings.c:262
 #: ../intl-scm/guile-strings.c:264
 msgid "Buy"
@@ -10857,14 +10850,14 @@ msgstr ""
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2965
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2986
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3088
-#: ../src/register/ledger-core/split-register.c:2380
-#: ../src/register/ledger-core/split-register.c:2384
-#: ../src/register/ledger-core/split-register.c:2395
-#: ../src/register/ledger-core/split-register.c:2399
-#: ../src/register/ledger-core/split-register.c:2416
-#: ../src/register/ledger-core/split-register.c:2427
-#: ../src/register/ledger-core/split-register.c:2432
-#: ../src/register/ledger-core/split-register.c:2460
+#: ../src/register/ledger-core/split-register.c:2439
+#: ../src/register/ledger-core/split-register.c:2443
+#: ../src/register/ledger-core/split-register.c:2454
+#: ../src/register/ledger-core/split-register.c:2458
+#: ../src/register/ledger-core/split-register.c:2475
+#: ../src/register/ledger-core/split-register.c:2486
+#: ../src/register/ledger-core/split-register.c:2491
+#: ../src/register/ledger-core/split-register.c:2519
 #: ../intl-scm/guile-strings.c:290 ../intl-scm/guile-strings.c:292
 #: ../intl-scm/guile-strings.c:294
 msgid "Sell"
@@ -10873,9 +10866,9 @@ msgstr ""
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2911
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2918
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2967
-#: ../src/register/ledger-core/split-register.c:2385
-#: ../src/register/ledger-core/split-register.c:2392
-#: ../src/register/ledger-core/split-register.c:2441
+#: ../src/register/ledger-core/split-register.c:2444
+#: ../src/register/ledger-core/split-register.c:2451
+#: ../src/register/ledger-core/split-register.c:2500
 msgid "Fee"
 msgstr ""
 
@@ -10886,13 +10879,13 @@ msgstr ""
 #. src/app-utils/prefs.scm
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2945
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3081
-#: ../src/register/ledger-core/split-register.c:2419
+#: ../src/register/ledger-core/split-register.c:2478
 #: ../intl-scm/guile-strings.c:298
 msgid "Rebate"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2946
-#: ../src/register/ledger-core/split-register.c:2420
+#: ../src/register/ledger-core/split-register.c:2479
 msgid "Paycheck"
 msgstr ""
 
@@ -10909,7 +10902,7 @@ msgstr ""
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2966
 #: ../src/gnome-utils/gnc-tree-view-price.c:455
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3036
-#: ../src/register/ledger-core/split-register.c:2440
+#: ../src/register/ledger-core/split-register.c:2499
 #: ../src/register/ledger-core/split-register-model.c:348
 #: ../intl-scm/guile-strings.c:806 ../intl-scm/guile-strings.c:1012
 #: ../intl-scm/guile-strings.c:1222 ../intl-scm/guile-strings.c:2660
@@ -10923,25 +10916,25 @@ msgstr ""
 
 #. Action: Dividend
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2969
-#: ../src/register/ledger-core/split-register.c:2443
+#: ../src/register/ledger-core/split-register.c:2502
 msgid "Dividend"
 msgstr ""
 
 #. Action: Long Term Capital Gains
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2972
-#: ../src/register/ledger-core/split-register.c:2446
+#: ../src/register/ledger-core/split-register.c:2505
 msgid "LTCG"
 msgstr ""
 
 #. Action: Short Term Capital Gains
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2974
-#: ../src/register/ledger-core/split-register.c:2448
+#: ../src/register/ledger-core/split-register.c:2507
 msgid "STCG"
 msgstr ""
 
 #. Action: Distribution
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2977
-#: ../src/register/ledger-core/split-register.c:2451
+#: ../src/register/ledger-core/split-register.c:2510
 msgid "Dist"
 msgstr ""
 
@@ -10964,12 +10957,12 @@ msgid ""
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-util-split-reg.c:1148
-#: ../src/register/ledger-core/split-register.c:2049
+#: ../src/register/ledger-core/split-register.c:1920
 msgid "Recalculate Transaction"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-util-split-reg.c:1149
-#: ../src/register/ledger-core/split-register.c:2050
+#: ../src/register/ledger-core/split-register.c:1921
 msgid ""
 "The values entered for this transaction are inconsistent. Which value would "
 "you like to have recalculated?"
@@ -10977,29 +10970,29 @@ msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-util-split-reg.c:1156
 #: ../src/gnome-utils/gnc-tree-util-split-reg.c:1158
-#: ../src/register/ledger-core/split-register.c:2057
-#: ../src/register/ledger-core/split-register.c:2059
+#: ../src/register/ledger-core/split-register.c:1927
+#: ../src/register/ledger-core/split-register.c:1930
 msgid "_Shares"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-util-split-reg.c:1156
 #: ../src/gnome-utils/gnc-tree-util-split-reg.c:1163
 #: ../src/gnome-utils/gnc-tree-util-split-reg.c:1170
-#: ../src/register/ledger-core/split-register.c:2057
-#: ../src/register/ledger-core/split-register.c:2064
-#: ../src/register/ledger-core/split-register.c:2071
+#: ../src/register/ledger-core/split-register.c:1928
+#: ../src/register/ledger-core/split-register.c:1935
+#: ../src/register/ledger-core/split-register.c:1942
 msgid "Changed"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-util-split-reg.c:1170
 #: ../src/gnome-utils/gnc-tree-util-split-reg.c:1172
-#: ../src/register/ledger-core/split-register.c:2071
-#: ../src/register/ledger-core/split-register.c:2073
+#: ../src/register/ledger-core/split-register.c:1941
+#: ../src/register/ledger-core/split-register.c:1944
 msgid "_Value"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-util-split-reg.c:1192
-#: ../src/register/ledger-core/split-register.c:2082
+#: ../src/register/ledger-core/split-register.c:1953
 msgid "_Recalculate"
 msgstr ""
 
@@ -15625,7 +15618,7 @@ msgstr ""
 #. name. It MUST NOT contain the
 #. character ':' anywhere in it or
 #. in any translations.
-#: ../src/import-export/ofx/gnc-ofx-import.c:534
+#: ../src/import-export/ofx/gnc-ofx-import.c:563
 #, c-format
 msgid "Stock account for security \"%s\""
 msgstr ""
@@ -15634,44 +15627,44 @@ msgstr ""
 #. name. It MUST NOT contain the
 #. character ':' anywhere in it or
 #. in any translations.
-#: ../src/import-export/ofx/gnc-ofx-import.c:696
+#: ../src/import-export/ofx/gnc-ofx-import.c:729
 #, c-format
 msgid "Income account for security \"%s\""
 msgstr ""
 
-#: ../src/import-export/ofx/gnc-ofx-import.c:809
+#: ../src/import-export/ofx/gnc-ofx-import.c:842
 msgid "Unknown OFX account"
 msgstr ""
 
-#: ../src/import-export/ofx/gnc-ofx-import.c:832
+#: ../src/import-export/ofx/gnc-ofx-import.c:865
 msgid "Unknown OFX checking account"
 msgstr ""
 
-#: ../src/import-export/ofx/gnc-ofx-import.c:836
+#: ../src/import-export/ofx/gnc-ofx-import.c:869
 msgid "Unknown OFX savings account"
 msgstr ""
 
-#: ../src/import-export/ofx/gnc-ofx-import.c:840
+#: ../src/import-export/ofx/gnc-ofx-import.c:873
 msgid "Unknown OFX money market account"
 msgstr ""
 
-#: ../src/import-export/ofx/gnc-ofx-import.c:844
+#: ../src/import-export/ofx/gnc-ofx-import.c:877
 msgid "Unknown OFX credit line account"
 msgstr ""
 
-#: ../src/import-export/ofx/gnc-ofx-import.c:848
+#: ../src/import-export/ofx/gnc-ofx-import.c:881
 msgid "Unknown OFX CMA account"
 msgstr ""
 
-#: ../src/import-export/ofx/gnc-ofx-import.c:852
+#: ../src/import-export/ofx/gnc-ofx-import.c:885
 msgid "Unknown OFX credit card account"
 msgstr ""
 
-#: ../src/import-export/ofx/gnc-ofx-import.c:856
+#: ../src/import-export/ofx/gnc-ofx-import.c:889
 msgid "Unknown OFX investment account"
 msgstr ""
 
-#: ../src/import-export/ofx/gnc-ofx-import.c:938
+#: ../src/import-export/ofx/gnc-ofx-import.c:972
 msgid "Select an OFX/QFX file to process"
 msgstr ""
 
@@ -16074,6 +16067,10 @@ msgstr ""
 msgid "_Select the currency to use for all imported transactions:"
 msgstr ""
 
+#: ../src/import-export/qif-imp/assistant-qif-import.glade.h:58
+msgid "<b>Book Options</b>"
+msgstr ""
+
 #: ../src/import-export/qif-imp/assistant-qif-import.glade.h:59
 msgid ""
 "Since you are creating a new file, you will next see a dialog for setting "
@@ -16464,6 +16461,15 @@ msgstr ""
 msgid "<b>3. Preview</b>"
 msgstr ""
 
+#. Menu Items
+#: ../src/plugins/example/gnc-plugin.example.c:50
+msgid "example description..."
+msgstr ""
+
+#: ../src/plugins/example/gnc-plugin.example.c:51
+msgid "example tooltip"
+msgstr ""
+
 #: ../src/register/ledger-core/split-register.c:184
 msgid ""
 "This transaction is already being edited in another register. Please finish "
@@ -16698,8 +16704,10 @@ msgstr ""
 msgid "Delete preconfigured report"
 msgstr ""
 
+#. src/report/report-gnome/report-gnome.scm
 #: ../src/report/report-gnome/dialog-custom-report.glade.h:1
-msgid "Preconfigured reports"
+#: ../intl-scm/guile-strings.c:2032
+msgid "Preconfigured Reports"
 msgstr ""
 
 #: ../src/report/report-gnome/dialog-custom-report.glade.h:2
@@ -16851,8 +16859,8 @@ msgstr ""
 
 #: ../src/report/report-gnome/gnc-plugin-page-report.c:1038
 msgid ""
-"Add the current report's configuration to the `Custom Reports' menu. The "
-"report will be saved in the file ~/.gnucash/saved-reports-2.4. "
+"Add the current report's configuration to the `Preconfigured Reports' menu. "
+"The report will be saved in the file ~/.gnucash/saved-reports-2.4. "
 msgstr ""
 
 #: ../src/report/report-gnome/gnc-plugin-page-report.c:1043
@@ -20183,13 +20191,8 @@ msgid "Display the %s report"
 msgstr ""
 
 #. src/report/report-gnome/report-gnome.scm
-#: ../intl-scm/guile-strings.c:2032
-msgid "Custom Reports"
-msgstr ""
-
-#. src/report/report-gnome/report-gnome.scm
 #: ../intl-scm/guile-strings.c:2034
-msgid "Manage and run custom reports"
+msgid "Manage and run preconfigured reports"
 msgstr ""
 
 #. src/report/report-gnome/report-gnome.scm
