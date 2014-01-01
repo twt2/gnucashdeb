@@ -2029,9 +2029,9 @@ _("Report")
 /* src/report/report-gnome/report-gnome.scm */
 _("Display the %s report")
 /* src/report/report-gnome/report-gnome.scm */
-_("Custom Reports")
+_("Preconfigured Reports")
 /* src/report/report-gnome/report-gnome.scm */
-_("Manage and run custom reports")
+_("Manage and run preconfigured reports")
 /* src/report/report-gnome/report-gnome.scm */
 _("Welcome Sample Report")
 /* src/report/report-gnome/report-gnome.scm */

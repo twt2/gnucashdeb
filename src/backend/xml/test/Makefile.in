@@ -75,6 +75,7 @@ am__aclocal_m4_deps = $(top_srcdir)/macros/as-scrub-include.m4 \
 	$(top_srcdir)/macros/ax_swig_python.m4 \
 	$(top_srcdir)/macros/binreloc.m4 \
 	$(top_srcdir)/macros/compiler-flags.m4 \
+	$(top_srcdir)/macros/intltool.m4 \
 	$(top_srcdir)/macros/legacy_macros.m4 \
 	$(top_srcdir)/macros/libtool.m4 \
 	$(top_srcdir)/macros/ltoptions.m4 \
@@ -96,7 +97,8 @@ libgnc_test_file_stuff_la_OBJECTS =  \
 am_test_date_converting_OBJECTS = sixtp-dom-parsers.$(OBJEXT) \
 	sixtp-dom-generators.$(OBJEXT) sixtp-utils.$(OBJEXT) \
 	sixtp.$(OBJEXT) sixtp-stack.$(OBJEXT) \
-	sixtp-to-dom-parser.$(OBJEXT) test-date-converting.$(OBJEXT)
+	sixtp-to-dom-parser.$(OBJEXT) gnc-xml-helper.$(OBJEXT) \
+	test-date-converting.$(OBJEXT)
 test_date_converting_OBJECTS = $(am_test_date_converting_OBJECTS)
 test_date_converting_LDADD = $(LDADD)
 am__DEPENDENCIES_1 =
@@ -112,7 +114,8 @@ test_date_converting_DEPENDENCIES =  \
 am_test_dom_converters1_OBJECTS = sixtp-dom-parsers.$(OBJEXT) \
 	sixtp-dom-generators.$(OBJEXT) sixtp-utils.$(OBJEXT) \
 	sixtp.$(OBJEXT) sixtp-stack.$(OBJEXT) \
-	sixtp-to-dom-parser.$(OBJEXT) test-dom-converters1.$(OBJEXT)
+	sixtp-to-dom-parser.$(OBJEXT) gnc-xml-helper.$(OBJEXT) \
+	test-dom-converters1.$(OBJEXT)
 test_dom_converters1_OBJECTS = $(am_test_dom_converters1_OBJECTS)
 test_dom_converters1_LDADD = $(LDADD)
 test_dom_converters1_DEPENDENCIES =  \
@@ -127,7 +130,8 @@ test_dom_converters1_DEPENDENCIES =  \
 am_test_kvp_frames_OBJECTS = sixtp-dom-parsers.$(OBJEXT) \
 	sixtp-dom-generators.$(OBJEXT) sixtp-utils.$(OBJEXT) \
 	sixtp.$(OBJEXT) sixtp-stack.$(OBJEXT) \
-	sixtp-to-dom-parser.$(OBJEXT) test-kvp-frames.$(OBJEXT)
+	sixtp-to-dom-parser.$(OBJEXT) gnc-xml-helper.$(OBJEXT) \
+	test-kvp-frames.$(OBJEXT)
 test_kvp_frames_OBJECTS = $(am_test_kvp_frames_OBJECTS)
 test_kvp_frames_LDADD = $(LDADD)
 test_kvp_frames_DEPENDENCIES =  \
@@ -162,7 +166,7 @@ am_test_load_example_account_OBJECTS = sixtp-dom-parsers.$(OBJEXT) \
 	gnc-schedxaction-xml-v2.$(OBJEXT) \
 	gnc-freqspec-xml-v2.$(OBJEXT) gnc-transaction-xml-v2.$(OBJEXT) \
 	gnc-commodity-xml-v2.$(OBJEXT) gnc-book-xml-v2.$(OBJEXT) \
-	gnc-pricedb-xml-v2.$(OBJEXT) \
+	gnc-pricedb-xml-v2.$(OBJEXT) gnc-xml-helper.$(OBJEXT) \
 	test-load-example-account.$(OBJEXT)
 test_load_example_account_OBJECTS =  \
 	$(am_test_load_example_account_OBJECTS)
@@ -203,7 +207,8 @@ test_save_in_lang_DEPENDENCIES =  \
 am_test_string_converters_OBJECTS = sixtp-dom-parsers.$(OBJEXT) \
 	sixtp-dom-generators.$(OBJEXT) sixtp-utils.$(OBJEXT) \
 	sixtp.$(OBJEXT) sixtp-stack.$(OBJEXT) \
-	sixtp-to-dom-parser.$(OBJEXT) test-string-converters.$(OBJEXT)
+	sixtp-to-dom-parser.$(OBJEXT) gnc-xml-helper.$(OBJEXT) \
+	test-string-converters.$(OBJEXT)
 test_string_converters_OBJECTS = $(am_test_string_converters_OBJECTS)
 test_string_converters_LDADD = $(LDADD)
 test_string_converters_DEPENDENCIES =  \
@@ -226,7 +231,7 @@ am_test_xml_account_OBJECTS = sixtp-dom-parsers.$(OBJEXT) \
 	gnc-commodity-xml-v2.$(OBJEXT) gnc-book-xml-v2.$(OBJEXT) \
 	gnc-pricedb-xml-v2.$(OBJEXT) gnc-budget-xml-v2.$(OBJEXT) \
 	io-gncxml-v2.$(OBJEXT) io-utils.$(OBJEXT) \
-	test-xml-account.$(OBJEXT)
+	gnc-xml-helper.$(OBJEXT) test-xml-account.$(OBJEXT)
 test_xml_account_OBJECTS = $(am_test_xml_account_OBJECTS)
 test_xml_account_LDADD = $(LDADD)
 test_xml_account_DEPENDENCIES =  \
@@ -249,7 +254,7 @@ am_test_xml_commodity_OBJECTS = sixtp-dom-parsers.$(OBJEXT) \
 	gnc-commodity-xml-v2.$(OBJEXT) gnc-book-xml-v2.$(OBJEXT) \
 	gnc-pricedb-xml-v2.$(OBJEXT) gnc-budget-xml-v2.$(OBJEXT) \
 	io-gncxml-v2.$(OBJEXT) io-utils.$(OBJEXT) \
-	test-xml-commodity.$(OBJEXT)
+	gnc-xml-helper.$(OBJEXT) test-xml-commodity.$(OBJEXT)
 test_xml_commodity_OBJECTS = $(am_test_xml_commodity_OBJECTS)
 test_xml_commodity_LDADD = $(LDADD)
 test_xml_commodity_DEPENDENCIES =  \
@@ -272,7 +277,7 @@ am_test_xml_pricedb_OBJECTS = sixtp-dom-parsers.$(OBJEXT) \
 	gnc-commodity-xml-v2.$(OBJEXT) gnc-book-xml-v2.$(OBJEXT) \
 	gnc-pricedb-xml-v2.$(OBJEXT) gnc-budget-xml-v2.$(OBJEXT) \
 	io-gncxml-v2.$(OBJEXT) io-utils.$(OBJEXT) \
-	test-xml-pricedb.$(OBJEXT)
+	gnc-xml-helper.$(OBJEXT) test-xml-pricedb.$(OBJEXT)
 test_xml_pricedb_OBJECTS = $(am_test_xml_pricedb_OBJECTS)
 test_xml_pricedb_LDADD = $(LDADD)
 test_xml_pricedb_DEPENDENCIES =  \
@@ -294,7 +299,8 @@ am_test_xml_transaction_OBJECTS = sixtp-dom-parsers.$(OBJEXT) \
 	gnc-transaction-xml-v2.$(OBJEXT) \
 	gnc-commodity-xml-v2.$(OBJEXT) gnc-book-xml-v2.$(OBJEXT) \
 	gnc-pricedb-xml-v2.$(OBJEXT) io-gncxml-v2.$(OBJEXT) \
-	io-utils.$(OBJEXT) test-xml-transaction.$(OBJEXT)
+	io-utils.$(OBJEXT) gnc-xml-helper.$(OBJEXT) \
+	test-xml-transaction.$(OBJEXT)
 test_xml_transaction_OBJECTS = $(am_test_xml_transaction_OBJECTS)
 test_xml_transaction_LDADD = $(LDADD)
 test_xml_transaction_DEPENDENCIES =  \
@@ -317,7 +323,7 @@ am_test_xml2_is_file_OBJECTS = sixtp-dom-parsers.$(OBJEXT) \
 	gnc-commodity-xml-v2.$(OBJEXT) gnc-book-xml-v2.$(OBJEXT) \
 	gnc-pricedb-xml-v2.$(OBJEXT) io-gncxml-gen.$(OBJEXT) \
 	io-gncxml-v2.$(OBJEXT) io-utils.$(OBJEXT) \
-	test-xml2-is-file.$(OBJEXT)
+	gnc-xml-helper.$(OBJEXT) test-xml2-is-file.$(OBJEXT)
 test_xml2_is_file_OBJECTS = $(am_test_xml2_is_file_OBJECTS)
 test_xml2_is_file_LDADD = $(LDADD)
 test_xml2_is_file_DEPENDENCIES =  \
@@ -673,6 +679,7 @@ test_date_converting_SOURCES = \
   ${top_srcdir}/src/backend/xml/sixtp.c \
   ${top_srcdir}/src/backend/xml/sixtp-stack.c \
   ${top_srcdir}/src/backend/xml/sixtp-to-dom-parser.c \
+  ${top_srcdir}/src/backend/xml/gnc-xml-helper.c \
   test-date-converting.c
 
 test_dom_converters1_SOURCES = \
@@ -682,6 +689,7 @@ test_dom_converters1_SOURCES = \
   ${top_srcdir}/src/backend/xml/sixtp.c \
   ${top_srcdir}/src/backend/xml/sixtp-stack.c \
   ${top_srcdir}/src/backend/xml/sixtp-to-dom-parser.c \
+  ${top_srcdir}/src/backend/xml/gnc-xml-helper.c \
   test-dom-converters1.c
 
 test_kvp_frames_SOURCES = \
@@ -691,6 +699,7 @@ test_kvp_frames_SOURCES = \
   ${top_srcdir}/src/backend/xml/sixtp.c \
   ${top_srcdir}/src/backend/xml/sixtp-stack.c \
   ${top_srcdir}/src/backend/xml/sixtp-to-dom-parser.c \
+  ${top_srcdir}/src/backend/xml/gnc-xml-helper.c \
   test-kvp-frames.c
 
 
@@ -718,6 +727,7 @@ test_load_example_account_SOURCES = \
   ${top_srcdir}/src/backend/xml/gnc-commodity-xml-v2.c \
   ${top_srcdir}/src/backend/xml/gnc-book-xml-v2.c \
   ${top_srcdir}/src/backend/xml/gnc-pricedb-xml-v2.c \
+  ${top_srcdir}/src/backend/xml/gnc-xml-helper.c \
   test-load-example-account.c
 
 test_string_converters_SOURCES = \
@@ -727,6 +737,7 @@ test_string_converters_SOURCES = \
   ${top_srcdir}/src/backend/xml/sixtp.c \
   ${top_srcdir}/src/backend/xml/sixtp-stack.c \
   ${top_srcdir}/src/backend/xml/sixtp-to-dom-parser.c \
+  ${top_srcdir}/src/backend/xml/gnc-xml-helper.c \
   test-string-converters.c
 
 test_xml_account_SOURCES = \
@@ -749,6 +760,7 @@ test_xml_account_SOURCES = \
   ${top_srcdir}/src/backend/xml/gnc-budget-xml-v2.c \
   ${top_srcdir}/src/backend/xml/io-gncxml-v2.c \
   ${top_srcdir}/src/backend/xml/io-utils.c \
+  ${top_srcdir}/src/backend/xml/gnc-xml-helper.c \
   test-xml-account.c
 
 test_xml_commodity_SOURCES = \
@@ -771,6 +783,7 @@ test_xml_commodity_SOURCES = \
   ${top_srcdir}/src/backend/xml/gnc-budget-xml-v2.c \
   ${top_srcdir}/src/backend/xml/io-gncxml-v2.c \
   ${top_srcdir}/src/backend/xml/io-utils.c \
+  ${top_srcdir}/src/backend/xml/gnc-xml-helper.c \
   test-xml-commodity.c
 
 test_xml_pricedb_SOURCES = \
@@ -793,6 +806,7 @@ test_xml_pricedb_SOURCES = \
   ${top_srcdir}/src/backend/xml/gnc-budget-xml-v2.c \
   ${top_srcdir}/src/backend/xml/io-gncxml-v2.c \
   ${top_srcdir}/src/backend/xml/io-utils.c \
+  ${top_srcdir}/src/backend/xml/gnc-xml-helper.c \
   test-xml-pricedb.c
 
 test_xml_transaction_SOURCES = \
@@ -815,6 +829,7 @@ test_xml_transaction_SOURCES = \
   ${top_srcdir}/src/backend/xml/gnc-pricedb-xml-v2.c \
   ${top_srcdir}/src/backend/xml/io-gncxml-v2.c \
   ${top_srcdir}/src/backend/xml/io-utils.c \
+  ${top_srcdir}/src/backend/xml/gnc-xml-helper.c \
   test-xml-transaction.c
 
 test_xml2_is_file_SOURCES = \
@@ -837,6 +852,7 @@ test_xml2_is_file_SOURCES = \
   ${top_srcdir}/src/backend/xml/io-gncxml-gen.c \
   ${top_srcdir}/src/backend/xml/io-gncxml-v2.c \
   ${top_srcdir}/src/backend/xml/io-utils.c \
+  ${top_srcdir}/src/backend/xml/gnc-xml-helper.c \
   test-xml2-is-file.c
 
 GNC_TEST_DEPS = \
@@ -1002,6 +1018,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-recurrence-xml-v2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-schedxaction-xml-v2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-transaction-xml-v2.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnc-xml-helper.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/io-example-account.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/io-gncxml-gen.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/io-gncxml-v2.Po@am__quote@
@@ -1131,6 +1148,20 @@ sixtp-to-dom-parser.obj: ${top_srcdir}/src/backend/xml/sixtp-to-dom-parser.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='${top_srcdir}/src/backend/xml/sixtp-to-dom-parser.c' object='sixtp-to-dom-parser.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sixtp-to-dom-parser.obj `if test -f '${top_srcdir}/src/backend/xml/sixtp-to-dom-parser.c'; then $(CYGPATH_W) '${top_srcdir}/src/backend/xml/sixtp-to-dom-parser.c'; else $(CYGPATH_W) '$(srcdir)/${top_srcdir}/src/backend/xml/sixtp-to-dom-parser.c'; fi`
+
+gnc-xml-helper.o: ${top_srcdir}/src/backend/xml/gnc-xml-helper.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gnc-xml-helper.o -MD -MP -MF $(DEPDIR)/gnc-xml-helper.Tpo -c -o gnc-xml-helper.o `test -f '${top_srcdir}/src/backend/xml/gnc-xml-helper.c' || echo '$(srcdir)/'`${top_srcdir}/src/backend/xml/gnc-xml-helper.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/gnc-xml-helper.Tpo $(DEPDIR)/gnc-xml-helper.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='${top_srcdir}/src/backend/xml/gnc-xml-helper.c' object='gnc-xml-helper.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gnc-xml-helper.o `test -f '${top_srcdir}/src/backend/xml/gnc-xml-helper.c' || echo '$(srcdir)/'`${top_srcdir}/src/backend/xml/gnc-xml-helper.c
+
+gnc-xml-helper.obj: ${top_srcdir}/src/backend/xml/gnc-xml-helper.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT gnc-xml-helper.obj -MD -MP -MF $(DEPDIR)/gnc-xml-helper.Tpo -c -o gnc-xml-helper.obj `if test -f '${top_srcdir}/src/backend/xml/gnc-xml-helper.c'; then $(CYGPATH_W) '${top_srcdir}/src/backend/xml/gnc-xml-helper.c'; else $(CYGPATH_W) '$(srcdir)/${top_srcdir}/src/backend/xml/gnc-xml-helper.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/gnc-xml-helper.Tpo $(DEPDIR)/gnc-xml-helper.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='${top_srcdir}/src/backend/xml/gnc-xml-helper.c' object='gnc-xml-helper.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o gnc-xml-helper.obj `if test -f '${top_srcdir}/src/backend/xml/gnc-xml-helper.c'; then $(CYGPATH_W) '${top_srcdir}/src/backend/xml/gnc-xml-helper.c'; else $(CYGPATH_W) '$(srcdir)/${top_srcdir}/src/backend/xml/gnc-xml-helper.c'; fi`
 
 io-example-account.o: ${top_srcdir}/src/backend/xml/io-example-account.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT io-example-account.o -MD -MP -MF $(DEPDIR)/io-example-account.Tpo -c -o io-example-account.o `test -f '${top_srcdir}/src/backend/xml/io-example-account.c' || echo '$(srcdir)/'`${top_srcdir}/src/backend/xml/io-example-account.c
