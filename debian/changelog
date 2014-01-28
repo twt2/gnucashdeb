@@ -1,3 +1,13 @@
+gnucash (1:2.6.1-1) unstable; urgency=medium
+
+  * New upstream release.
+    + tarball now includes the source of minified javascript file
+      src/report/jqplot/jquery.min.js. (Closes: #736434)
+    + column widths of the list of accounts are now correctly remembered.
+      (Closes: #734148)
+
+ -- Sébastien Villemot <sebastien@debian.org>  Tue, 28 Jan 2014 20:17:00 +0100
+
 gnucash (1:2.6.0-1) unstable; urgency=medium
 
   * New upstream stable release.
