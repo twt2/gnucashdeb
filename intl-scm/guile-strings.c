@@ -2468,8 +2468,6 @@ _("Other")
 _("%s to %s")
 /* src/report/standard-reports/account-piecharts.scm */
 _("Balance at %s")
-/* src/report/standard-reports/account-piecharts.scm */
-_("and")
 /* src/report/standard-reports/account-summary.scm */
 _("Account Summary")
 /* src/report/standard-reports/account-summary.scm */
@@ -2609,10 +2607,6 @@ _("Nearest in time")
 /* src/report/standard-reports/advanced-portfolio.scm */
 _("The price recorded nearest in time to the report date.")
 /* src/report/standard-reports/advanced-portfolio.scm */
-_("Most recent to report")
-/* src/report/standard-reports/advanced-portfolio.scm */
-_("The most recent recorded price before report date.")
-/* src/report/standard-reports/advanced-portfolio.scm */
 _("Basis calculation method.")
 /* src/report/standard-reports/advanced-portfolio.scm */
 _("Average")
@@ -2623,9 +2617,9 @@ _("FIFO")
 /* src/report/standard-reports/advanced-portfolio.scm */
 _("Use first-in first-out method for basis.")
 /* src/report/standard-reports/advanced-portfolio.scm */
-_("FILO")
+_("LIFO")
 /* src/report/standard-reports/advanced-portfolio.scm */
-_("Use first-in last-out method for basis.")
+_("Use last-in first-out method for basis.")
 /* src/report/standard-reports/advanced-portfolio.scm */
 _("Prefer use of price editor pricing over transactions, where applicable.")
 /* src/report/standard-reports/advanced-portfolio.scm */
@@ -2686,6 +2680,8 @@ _("Rate of Return")
 _("* this commodity data was built using transaction pricing instead of the price list.")
 /* src/report/standard-reports/advanced-portfolio.scm */
 _("If you are in a multi-currency situation, the exchanges may not be correct.")
+/* src/report/standard-reports/advanced-portfolio.scm */
+_("** this commodity has no price and a price of 1 has been used.")
 /* src/report/standard-reports/average-balance.scm */
 _("Average Balance")
 /* src/report/standard-reports/average-balance.scm */
@@ -3385,11 +3381,7 @@ _("Balances %s to %s")
 /* src/report/standard-reports/category-barchart.scm */
 _("Other")
 /* src/report/standard-reports/category-barchart.scm */
-_("and")
-/* src/report/standard-reports/category-barchart.scm */
 _("Date")
-/* src/report/standard-reports/category-barchart.scm */
-_("and")
 /* src/report/standard-reports/category-barchart.scm */
 _("Grand Total")
 /* src/report/standard-reports/daily-reports.scm */

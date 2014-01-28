@@ -1,10 +1,370 @@
+2014-01-25 John Ralls 
+
+	* Release 2.6.1 (HEAD, trunk)
+
+2014-01-25 John Ralls 
+
+	* Fix handling of gnucash.appdata.xml
+
+2014-01-25 John Ralls 
+
+	* Revert "Prevent gnc-commodity from marking the book dirty at file-load." (trunk, origin/trunk, origin/master, origin/HEAD, master)
+
+2014-01-25 Geert Janssens 
+
+	* Add some debug output to help in debugging locale problems
+
+2014-01-25 Geert Janssens 
+
+	* Bug 677489 - Critical error reported when initializing an Invoice
+
+2014-01-25 Mike Alexander 
+
+	* Handle stocks that become worthless in the Advanced Portfolio report
+
+2014-01-25 John Ralls 
+
+	* Bug 721954 - Multiple Scheduled Transaction Editors
+
+2014-01-25 John Ralls 
+
+	* Ship src/report/jqplot/jquery.js in the tarball.
+
+2014-01-24 John Ralls 
+
+	* Bug 721770 - "Choose accounts to create" has no effect
+
+2014-01-24 John Ralls 
+
+	* Ensure that cell is pointed to the right cell when retrieving the price
+
+2014-01-24 Cristian Marchi 
+
+	* Make Gnome appdata file translatable (or try to...).
+
+2014-01-24 Geert Janssens 
+
+	* Drop some unused variables
+
+2014-01-24 Geert Janssens 
+
+	* Drop old ampersand subsitution in a couple of reports
+
+2014-01-24 Geert Janssens 
+
+	* Escape labels for jqplot charts
+
+2014-01-24 Geert Janssens 
+
+	* Fix make distcheck on systems that do have swig >= 2.0.10
+
+2014-01-24 Geert Janssens 
+
+	* Change double-click behaviour on account hierarchy
+
+2014-01-24 Mike Evans 
+
+	* Posting an invoice doesn't un-hide some widgets.
+
+2014-01-23 John Ralls 
+
+	* Prevent crashing due to unsupported locale settings
+
+2014-01-23 Christian Stimming 
+
+	* Cutecash: Fix aqbanking directory name change.
+
+2014-01-23 Derek Atkins 
+
+	* Update r23747 -- require 2.0.10 for guile2 builds, but allow older versions for guile 1.8 builds.  However if we don't have guile 2.0.10 then don't allow "make dist" to run.  This also means we wont patch the guile files unless we find swig 2.0.10.
+
+2014-01-23 Geert Janssens 
+
+	* Require swig 2.0.10 when building from svn/git
+
+2014-01-22 Mike Alexander 
+
+	* Fix unitialized variable error in r23740. Thanks to Herbert Thoma for the patch.
+
+2014-01-22 Cristian Marchi 
+
+	* Fix a typo.
+
+2014-01-22 Cristian Marchi 
+
+	* Update French translation. Patch provided by Sébastien Villemot.
+
+2014-01-22 Geert Janssens 
+
+	* Win32: don't apply swig patch on this platform
+
+2014-01-22 Geert Janssens 
+
+	* Bug 721211 - Reconciliation checkboxes fail to sync for split transactions across sub-accounts
+
+2014-01-22 Geert Janssens 
+
+	* Bug 721306 - Account hierarchy column widths are reset when restarting a second time without changing the widths
+
+2014-01-22 John Ralls 
+
+	* Bug 722123 - Zero price entry added to price database on stock purchase
+
+2014-01-22 John Ralls 
+
+	* Bug 721464 - Program won’t open the website link
+
+2014-01-21 Christian Stimming 
+
+	* Updated German translation, by Mechtilde Stehmann.
+
+2014-01-21 Cristian Marchi 
+
+	* Small update for the Italian translation.
+
+2014-01-21 Cristian Marchi 
+
+	* Update Danish translation from the translation project.
+
+2014-01-21 Cristian Marchi 
+
+	* Update Catalan translation from the translation project.
+
+2014-01-21 Mike Alexander 
+
+	* Fix r23732.  By the time we get to inner_main it's too late to call gnc_prefs_init. By then the main window has been created so it doesn't get hooked into the prefs system. One symptom of this is that the "tab position" pref doesn't affect that window.
+
+2014-01-20 John Ralls 
+
+	* Prevent gnc-commodity from marking the book dirty at file-load.
+
+2014-01-20 John Ralls 
+
+	* Bug 721966 - --add-price-quotes ignoring compress files preference
+
+2014-01-20 John Ralls 
+
+	* Bug 721913 - Fetch Rate crashes application
+
+2014-01-20 John Ralls 
+
+	* Fix typo from r23726
+
+2014-01-20 Mike Alexander 
+
+	* Advanced Portfolio: Tweak the rounding a bit more for bug #553020. Also fixed some debugging messages.
+
+2014-01-20 Mike Alexander 
+
+	* Fix rounding problems in conversions.  Fixes bug #454827.
+
+2014-01-20 John Ralls 
+
+	* Extract function check_readonly_threshold
+
+2014-01-20 John Ralls 
+
+	* Protect GDateTime from getting an out-of-range year at creation.
+
+2014-01-19 Mike Alexander 
+
+	* Advanced Portfolio: Use the correct function to get today's date.
+
+2014-01-19 Mike Alexander 
+
+	* Advanced Portfolio: Don't leak prices.
+
+2014-01-19 Mike Alexander 
+
+	* Advanced Portfolio: Don't print footnotes if the account that needs them isn't included.
+
+2014-01-19 John Ralls 
+
+	* Fix configure's use of gnc-scm-info for out-of-tree builds.
+
+2014-01-19 John Ralls 
+
+	* Replace pow(10, foo) with array dereference
+
+2014-01-19 Geert Janssens 
+
+	* Win32: update swig to 2.0.11 to fix the build after commit 23702
+
+2014-01-19 Mike Alexander 
+
+	* Advanced Portfolio: Remove the "latest before" price source. It's not implemented and could easily be added back if it ever is implemented. This will break any saved report using this price source, but they are broken already.
+
+2014-01-19 Mike Alexander 
+
+	* Advanced Portfolio: Try harder to find a price and use the one it claims to be using.
+
+2014-01-19 Mike Alexander 
+
+	* Advanced Portfolio: Fix realized gain calculation and handling of brockerage fees.
+
+2014-01-19 Mike Alexander 
+
+	* Advanced Portfolio: Fix the basis calculations.
+
+2014-01-19 Mike Alexander 
+
+	* Advanced Portfolio: Use the more common LIFO name for the basis method.
+
+2014-01-19 Mike Alexander 
+
+	* Advanced Portfolio: Fix a bug in the code that detects a spin-off.
+
+2014-01-19 Mike Alexander 
+
+	* Advanced Portfolio: Eliminate all overflow problems.
+
+2014-01-19 Mike Alexander 
+
+	* Advanced Portfolio: Add some more debugging output.
+
+2014-01-19 Mike Alexander 
+
+	* Make various reports work with the "average cost" price source. THe Portfolio report crashed and several othsrs used "nearest" instead.
+
+2014-01-19 Mike Alexander 
+
+	* Don't leak prices in the (non-advanced) portfolio report.
+
+2014-01-19 Mike Alexander 
+
+	* Remove the max_count test in gnc_plugin_page_report_name_changed. This limits the total number of times it can be called per invocation of GnuCash for no obvious reason.
+
+2014-01-18 John Ralls 
+
+	* Ensure struct tm is zeroed before passing it to gnc_tm_get_today_start
+
+2014-01-18 John Ralls 
+
+	* Bug 721791 - Segmentation fault when correcting invalid date
+
+2014-01-18 Cristian Marchi 
+
+	* Bug 605991 Help button on New and Edit Job dialogs brings up wrong help page. With this patch I linked almost all business features to corresponding help pages. For features not yet documented, the button will open the initial chapter of the business section.
+
+2014-01-18 Cristian Marchi 
+
+	* Update Catalan translation, copied from the Translation Project.
+
+2014-01-18 Cristian Marchi 
+
+	* Update Italian translation.
+
+2014-01-18 Geert Janssens 
+
+	* Bug 721600 - Segmentation fault on startup if report Income/Expense Chart was opened since last running
+
+2014-01-17 John Ralls 
+
+	* Bug 722035 - Missing space in the Spanish translation of msgid "Total For "
+
+2014-01-17 John Ralls 
+
+	* Bug 721576 - Gnucash can not work with files, that have russian symbols in path.
+
+2014-01-16 John Ralls 
+
+	* Bug 555182 - Security Type template hidden
+
+2014-01-15 Christian Stimming 
+
+	* Update cmake/cutecash build, adding the recently newly introduced file
+
+2014-01-13 John Ralls 
+
+	* Bug 721290 - SX Editor: Pressing "Enter" too soon hides transaction
+
+2014-01-13 John Ralls 
+
+	* Extract function update_info.
+
+2014-01-13 John Ralls 
+
+	* Extract function change_account_separator.
+
+2014-01-13 John Ralls 
+
+	* Extract function create_blank_split.
+
+2014-01-13 John Ralls 
+
+	* Bug 555182 - Security Type template hidden
+
+2014-01-12 Christian Stimming 
+
+	* Fix build for aqbanking with version number > 5.2.0
+
+2014-01-12 Christian Stimming 
+
+	* Win32 build: Update aqbanking to most recent version 5.3.0
+
+2014-01-12 Christian Stimming 
+
+	* Win32 build: Remove support for aqbanking < 5.x because 5.x has been released since 2010 by now.
+
+2014-01-11 J. Alex Aycinena 
+
+	* Update txf.scm for 2013 US Income Tax for,/schedule changes
+
+2014-01-10 John Ralls 
+
+	* Bug 721667 - Accelerator key map loaded from one file and saved
+
+2014-01-10 Mike Evans 
+
+	* Bug 721929 - Importing a customer list causes a crash.
+
+2014-01-10 Mike Evans 
+
+	* Split long line.
+
+2014-01-09 John Ralls 
+
+	* Bug 721608 - Supported Platforms list in 2.6.0 README.txt
+
+2014-01-08 Cristian Marchi 
+
+	* Bug #721607 and #721608: fix GnuCash version numbers and remove/update links.
+
+2014-01-07 Christian Stimming 
+
+	* Win32 build: Update libofx version to use latest bugfixes there
+
+2014-01-05 John Ralls 
+
+	* Bug 721251 - Incorrect Transaction Dates
+
+2014-01-02 Christian Stimming 
+
+	* Win32: Update gwenhywfar/aqbanking/gnutls with recent versions.
+
+2014-01-02 Christian Stimming 
+
+	* Update aqbanking code for latest aqbanking development.
+
+2014-01-02 Christian Stimming 
+
+	* For aqbanking, take into account the actual purpose line length that is given from aqbanking.
+
+2014-01-02 Mike Evans 
+
+	* Fix issue with Python bindings.
+
+2013-12-31 John Ralls 
+
+	* Bug 721260 - Crash on startup: gnucash cannot handle default locale
+
+2013-12-31 John Ralls 
+
+	* Fix another broken build
+
 2013-12-28 John Ralls 
 
-	* Tag 2.6.0 (HEAD, 2.6.0)
-
-2013-12-28 John Ralls 
-
-	* Release 2.6.0 (origin/trunk, origin/HEAD)
+	* Release 2.6.0
 
 2013-12-28 John Ralls 
 
@@ -436,7 +796,7 @@
 
 2013-11-30 Mike Evans 
 
-	* Bug 710871 - Python site-packages not found when not installed to default location using --prefix
+	* Bug 710871 - Python site-packages not found when not installed to default location using --prefix (master)
 
 2013-11-30 John Ralls 
 
