@@ -1,3 +1,10 @@
+gnucash (1:2.6.1-2) unstable; urgency=medium
+
+  * libdbd-multiarch.patch: new patch.
+    Fixes FTBFS following multiarchification of libdbi-drivers.
+
+ -- Sébastien Villemot <sebastien@debian.org>  Sun, 09 Feb 2014 16:20:56 +0100
+
 gnucash (1:2.6.1-1) unstable; urgency=medium
 
   * New upstream release.
