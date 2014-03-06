@@ -671,6 +671,10 @@ _("Show Lines with All Zeros")
 /* src/report/business-reports/customer-summary.scm */
 _("Show the table lines with customers which did not have any transactions in the reporting period, hence would show all zeros in the columns.")
 /* src/report/business-reports/customer-summary.scm */
+_("Show Inactive Customers")
+/* src/report/business-reports/customer-summary.scm */
+_("Include customers that have been marked inactive.")
+/* src/report/business-reports/customer-summary.scm */
 _("Sort Column")
 /* src/report/business-reports/customer-summary.scm */
 _("Choose the column by which the result table is sorted.")
@@ -2591,7 +2595,7 @@ _("Basis calculation method")
 /* src/report/standard-reports/advanced-portfolio.scm */
 _("Set preference for price list data")
 /* src/report/standard-reports/advanced-portfolio.scm */
-_("Ignore brokerage fees when calculating returns")
+_("How to report brokerage fees")
 /* src/report/standard-reports/advanced-portfolio.scm */
 _("Date")
 /* src/report/standard-reports/advanced-portfolio.scm */
@@ -2623,7 +2627,19 @@ _("Use last-in first-out method for basis.")
 /* src/report/standard-reports/advanced-portfolio.scm */
 _("Prefer use of price editor pricing over transactions, where applicable.")
 /* src/report/standard-reports/advanced-portfolio.scm */
-_("Ignore brokerage fees when calculating returns.")
+_("How to report commissions and other brokerage fees.")
+/* src/report/standard-reports/advanced-portfolio.scm */
+_("Include in basis")
+/* src/report/standard-reports/advanced-portfolio.scm */
+_("Include brokerage fees in the basis for the asset.")
+/* src/report/standard-reports/advanced-portfolio.scm */
+_("Include in gain")
+/* src/report/standard-reports/advanced-portfolio.scm */
+_("Include brokerage fees in the gain and loss but not in the basis.")
+/* src/report/standard-reports/advanced-portfolio.scm */
+_("Ignore")
+/* src/report/standard-reports/advanced-portfolio.scm */
+_("Ignore brokerage fees entirely.")
 /* src/report/standard-reports/advanced-portfolio.scm */
 _("Display the ticker symbols.")
 /* src/report/standard-reports/advanced-portfolio.scm */

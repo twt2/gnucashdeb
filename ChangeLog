@@ -1,14 +1,258 @@
-2014-01-25 John Ralls 
+2014-03-01 John Ralls 
 
-	* Release 2.6.1 (HEAD, trunk)
+	* Bug 723216 - Cannot change the accounting period using the pop-up calendar (HEAD, origin/trunk, origin/master, origin/HEAD, master)
 
-2014-01-25 John Ralls 
+2014-02-28 John Ralls 
+
+	* Fix SX Editor not being able to change the Repeat type from "Until".
+
+2014-02-27 Geert Janssens 
+
+	* Some code refactoring to avoid duplication
+
+2014-02-27 Geert Janssens 
+
+	* Improve function names and comments to reduce ambibuity
+
+2014-02-27 Geert Janssens 
+
+	* Whitespace cleanup
+
+2014-02-27 Geert Janssens 
+
+	* Bug 724753 - Saved Multicolumn Report Error
+
+2014-02-26 Jeremy King 
+
+	* Bug 725131 - Adding Payments to Fancy Invoice
+
+2014-02-23 Robert Fewell 
+
+	* Bug 721472 - Fix Reconcile description column.
+
+2014-02-23 John Ralls 
+
+	* Revert "Bug 721822 - GnuCash 2.6.0 loads data file much slower than 2.4.x"
+
+2014-02-23 Mike Alexander 
+
+	* Fix compilation errors.
+
+2014-02-22 John Ralls 
+
+	* Bug 721822 - GnuCash 2.6.0 loads data file much slower than 2.4.x
+
+2014-02-22 John Ralls 
+
+	* Bug 722123 - Zero price entry added to price database on stock purchase
+
+2014-02-22 Mike Alexander 
+
+	* Fix still more overflow problems.
+
+2014-02-22 Geert Janssens 
+
+	* Bug 497831 - Can't change the date of a transaction with certain locales
+
+2014-02-22 John Ralls 
+
+	* Bug 724211 - Can't select march 6 date on register
+
+2014-02-21 Geert Janssens 
+
+	* Fix GLib assert on windows when entering a date in dst
+
+2014-02-20 Mike Alexander 
+
+	* Minor optimization.
+
+2014-02-20 Mike Alexander 
+
+	* Add XCode project for debugging.
+
+2014-02-19 Mike Alexander 
+
+	* Count money used in a spin-off as money out of the stock account.
+
+2014-02-19 Mike Alexander 
+
+	* Exclude income transfered to an asset account and back again from money in.
+
+2014-02-18 Mike Alexander 
+
+	* Remove the "ignore parent or sibling" option entirely. It is unlikely to come back and interferes with other changes I want to make.
+
+2014-02-19 Geert Janssens 
+
+	* Restructure dbd driver search path determination
+
+2014-02-19 Mike Alexander 
+
+	* Fix an uninitialized variable error.
+
+2014-02-18 Geert Janssens 
+
+	* Fix compilation error on Windows
+
+2014-02-18 Geert Janssens 
+
+	* Bug 724578 - Problems clearing incompletely paid invoices
+
+2014-02-17 Geert Janssens 
+
+	* Rework payment dialog to better guide the user
+
+2014-02-17 Geert Janssens 
+
+	* Fix 'Assign As Payment' feature
+
+2014-02-09 Sébastien Villemot 
+
+	* Fix detection of DBD modules for multiarch setups.
+
+2014-02-17 Geert Janssens 
+
+	* Remove obsolete, unused gsettings schema
+
+2014-02-17 John Ralls 
+
+	* Bug 722903 - Poor performance of account hierarchy, budgets, reconcile window,...
+
+2014-02-16 Geert Janssens 
+
+	* Add note for the new Swedish account file
+
+2014-02-16 Geert Janssens 
+
+	* Bug 724426 - Errors in account plan
+
+2014-02-16 Geert Janssens 
+
+	* Bug 724427 - New account plan for Sweden
+
+2014-02-16 John Ralls 
+
+	* Rename README.svn to README.git and revise
+
+2014-02-16 Mike Alexander 
+
+	* Got some parens in the wrong place.
+
+2014-02-15 Mike Alexander 
+
+	* Improve calculations of income and money in to the share account. Remove the "ignore siblings and parent" option since it isn't needed now.
+
+2014-02-15 Geert Janssens 
+
+	* Bug 721677 - Customer Summary does not include inactive customers
+
+2014-02-15 Geert Janssens 
+
+	* Harmonize whitespace
+
+2014-02-13 Mike Alexander 
+
+	* Fix reported problems in the Advanced Portfolio report.
+
+2014-02-11 Mike Alexander 
+
+	* Fix some comments.
+
+2014-02-09 Mike Evans 
+
+	* Bug 723644.
+
+2014-02-08 Cristian Marchi 
+
+	* Update Italian translation.
+
+2014-02-05 Derek Atkins 
+
+	* remove DOT_FONTNAME setting; FreeSans isn't included anymore, and we don't even use "dot"
+
+2014-02-04 Christian Stimming 
+
+	* Online transfer with SEPA: Verification with charset needs more work later.
+
+2014-02-04 Derek Atkins 
+
+	* Remove the 'SYMBOL_CACHE_SIZE' parameter (required for version 1.8.6)
+
+2014-02-04 Derek Atkins 
+
+	* Upgrade doxygen config to 1.8.3.1
+
+2014-02-03 Cristian Marchi 
+
+	* Update Catalan translation from the Translation Project.
+
+2014-02-03 Cristian Marchi 
+
+	* Test git.
+
+2014-02-03 Christian Stimming 
+
+	* Win32: Reduce threshold to display the "few random bits" warning.
+
+2014-02-02 Christian Stimming 
+
+	* Online transfer with SEPA: Add verification against allowed charset
+
+2014-02-01 Cristian Marchi 
+
+	* Link to help button in New Employee window the new employees section in GnuCash help.
+
+2014-01-31 Christian Stimming 
+
+	* Bug #723373: Don't create any sx in the since-last-run dialog if this is a read-only file.
+
+2014-01-30 John Ralls 
+
+	* One more type="guid" fix.
+
+2014-01-30 John Ralls 
+
+	* Replace type="guid" with type="new" in gnucash-xea files
+
+2014-01-29 Mike Alexander 
+
+	* Remove src/engine/GNCId.h, it isn't needed anymore.
+
+2014-01-27 Mike Evans 
+
+	* Fix comment and trailing whitespace.
+
+2014-01-27 Mike Evans 
+
+	* Bug 723051 Implement gncCustomerNextID in Python bindings.
+
+2014-01-27 Geert Janssens 
+
+	* Document the need for a gsettings backend
+
+2014-01-26 Geert Janssens 
+
+	* Win32: update daily_build.bat rules
+
+2014-01-26 Geert Janssens 
+
+	* Win32 tag builds: use existing download directory instead of copying it
+
+2014-01-26 Geert Janssens 
+
+	* Python bindings: open init file in read mode, not read-write
+
+2014-01-26 John Ralls 
+
+	* Release 2.6.1
+
+2014-01-26 John Ralls 
 
 	* Fix handling of gnucash.appdata.xml
 
 2014-01-25 John Ralls 
 
-	* Revert "Prevent gnc-commodity from marking the book dirty at file-load." (trunk, origin/trunk, origin/master, origin/HEAD, master)
+	* Revert "Prevent gnc-commodity from marking the book dirty at file-load."
 
 2014-01-25 Geert Janssens 
 
@@ -796,7 +1040,7 @@
 
 2013-11-30 Mike Evans 
 
-	* Bug 710871 - Python site-packages not found when not installed to default location using --prefix (master)
+	* Bug 710871 - Python site-packages not found when not installed to default location using --prefix
 
 2013-11-30 John Ralls 
 
