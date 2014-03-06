@@ -1,3 +1,10 @@
+gnucash (1:2.6.2-1) unstable; urgency=medium
+
+  * Imported Upstream version 2.6.2
+  * libdbd-multiarch.patch: remove patch, applied upstream.
+
+ -- Sébastien Villemot <sebastien@debian.org>  Thu, 06 Mar 2014 22:51:01 +0100
+
 gnucash (1:2.6.1-2) unstable; urgency=medium
 
   * libdbd-multiarch.patch: new patch.
