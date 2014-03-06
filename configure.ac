@@ -20,7 +20,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 # Autoconf initialization
 AC_PREREQ(2.60)
-AC_INIT([GnuCash], [2.6.1], [gnucash-devel@gnucash.org])
+AC_INIT([GnuCash], [2.6.2], [gnucash-devel@gnucash.org])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_SRCDIR(src/engine/Transaction.h)
 AC_CONFIG_MACRO_DIR([macros])
@@ -604,7 +604,14 @@ then
       [[GNC_DBD_DIR="$with_dbi_dbd_dir"
        EXTRA_SEARCH_LIBS=$GNC_DBD_DIR]],
       [[GNC_DBD_DIR=""
-       EXTRA_SEARCH_LIBS="/usr/lib/dbd:/usr/lib64/dbd:${libdir}/dbd"]]
+        # pkg-config is new in libdbi 0.9. Use it if avaiable
+        # Otherwise fall back to our previous hard coded values
+        pkg-config --exists dbi
+        if test $? -eq 0; then
+          EXTRA_SEARCH_LIBS="$(pkg-config --variable=libdir dbi)/dbd"
+        else
+          EXTRA_SEARCH_LIBS="/usr/lib/dbd:/usr/lib64/dbd:${libdir}/dbd"
+        fi]]
        )
     case $host_os in
        win32*|mingw*)

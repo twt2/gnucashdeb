@@ -103,52 +103,91 @@ static QofLogModule log_module = QOF_MOD_ENGINE;
 static GTimeZone*
 gnc_g_time_zone_new_local (void)
 {
+    static GTimeZone* tz = NULL;
+    if (tz)
+        return tz;
 #ifndef G_OS_WIN32
-    return g_time_zone_new_local();
+    tz = g_time_zone_new_local();
+    return tz;
 #else
-    TIME_ZONE_INFORMATION tzinfo;
-    gint64 dst = GetTimeZoneInformation (&tzinfo);
-    gint bias = tzinfo.Bias + tzinfo.StandardBias;
-    gint hours = -bias / 60; // 60 minutes per hour
-    gint minutes = (bias < 0 ? -bias : bias) % 60;
-    gchar *tzstr = g_strdup_printf ("%+03d:%02d", hours, minutes);
-    GTimeZone *tz = g_time_zone_new(tzstr);
-    g_free (tzstr);
+    {
+        TIME_ZONE_INFORMATION tzinfo;
+        gint64 dst = GetTimeZoneInformation (&tzinfo);
+        gint bias = tzinfo.Bias + tzinfo.StandardBias;
+        gint hours = -bias / 60; // 60 minutes per hour
+        gint minutes = (bias < 0 ? -bias : bias) % 60;
+        gchar *tzstr = g_strdup_printf ("%+03d:%02d", hours, minutes);
+        tz = g_time_zone_new(tzstr);
+        g_free (tzstr);
+    }
     return tz;
 #endif
 }
 
 #ifdef G_OS_WIN32
+/* Obtain the actual date of a transition in the specified year. The
+   SYSTEMTIME is overloaded for this purpose, so that wMonth contains
+   the month of the transition, wDayOfWeek contains the weekday (0-6,
+   Sunday to Saturday) of the transition, and wDay contains the
+   occurrence of that day in the month: e.g. wMonth = 3, wDayOfWeek =
+   0, and wDay = 5 means the fifth (or the last, if there are only 4
+   that year) Sunday of March. wHour has the time in the previous
+   state that the shift takes place.
+   See TIME_ZONE_INFORMATION at http://msdn.microsoft.com for more detail.
+ */
+static void
+dst_systemtime_to_gdate (SYSTEMTIME stime, GDate *gdate, gint year)
+{
+  guint32 wkday, days;
+  /* We must convert between GDate's weekdays, where 0 is a bad day
+     and 7 is Sunday and SYSTEMTIME's, where 0 is a Sunday.
+   */
+  static const int gdate_sunday = 7;
+  static const int week_length = 7;
+
+  g_date_clear (gdate, 1);
+  g_date_set_dmy (gdate, 1, stime.wMonth, year);
+  wkday = g_date_get_weekday (gdate) % gdate_sunday;
+
+  days = week_length * stime.wDay + stime.wDayOfWeek - wkday;
+  while (days > g_date_get_days_in_month (stime.wMonth, year))
+    days -= week_length;
+  g_date_add_days (gdate, days);
+  wkday = g_date_get_weekday (gdate) % gdate_sunday;
+  if (wkday < stime.wDayOfWeek)
+    g_date_add_days (gdate, stime.wDayOfWeek - wkday);
+  else
+    g_date_subtract_days (gdate, wkday - stime.wDayOfWeek);
+  return;
+}
+
 static gboolean
 win32_in_dst (GDateTime *date, TIME_ZONE_INFORMATION *tzinfo)
 {
-    guint year, month, day;
-    SYSTEMTIME *std, *dlt;
+    gint year, month, day;
+    GDate std, dlt, gdate;
+
 
     if (tzinfo == NULL || tzinfo->StandardDate.wMonth == 0)
       return FALSE;
-
-    year = g_date_time_get_year (date);
-    month = g_date_time_get_month (date);
-    day = g_date_time_get_day_of_month (date);
-
-    std = &(tzinfo->StandardDate);
-    dlt = &(tzinfo->DaylightDate);
-
-    if (std->wMonth < dlt->wMonth)
-    {
-         if ((month > dlt->wMonth || month < std->wMonth) ||
-	     (month == dlt->wMonth && day > dlt->wDay) ||
-	     (month == std->wMonth && day < std->wDay))
-	     return TRUE;
-    }
-    else
-    {
-         if ((month > dlt->wMonth && month < std->wMonth) ||
-	     (month == dlt->wMonth && day > dlt->wDay) ||
-	     (month == std->wMonth && day < std->wDay))
-	     return TRUE;
-    }
+    g_date_time_get_ymd (date, &year, &month, &day);
+    g_date_clear (&gdate, 1);
+    g_date_set_dmy (&gdate, day, month, year);
+    dst_systemtime_to_gdate (tzinfo->StandardDate, &std, year);
+    dst_systemtime_to_gdate (tzinfo->DaylightDate, &dlt, year);
+    /* In the southern hemisphere, where DST ends in spring and begins in fall, we look for the date being before std or after dlt; in the northern hemisphere we look for them to be between dlt and std.
+     */
+    if ((g_date_compare (&std, &dlt) < 0 &&
+	 (g_date_compare (&gdate, &std) < 0 ||
+	  g_date_compare (&gdate, &dlt) > 0)) ||
+	 (g_date_compare (&std, &dlt) > 0 &&
+	 g_date_compare (&gdate, &std) < 0 &&
+	 g_date_compare (&gdate, &dlt) > 0) ||
+	(g_date_compare (&gdate, &std) == 0 &&
+	 g_date_time_get_hour (date) < tzinfo->StandardDate.wHour) ||
+	(g_date_compare (&gdate, &dlt) == 0 &&
+	 g_date_time_get_hour (date) >= tzinfo->DaylightDate.wHour))
+      return TRUE;
     return FALSE;
 }
 #endif
@@ -164,7 +203,6 @@ gnc_g_time_zone_adjust_for_dst (GTimeZone* tz, GDateTime *date)
     g_return_val_if_fail (date != NULL, NULL);
     if (dst > 0 && win32_in_dst (date, &tzinfo))
     {
-        g_time_zone_unref (tz);
 	bias = tzinfo.Bias + tzinfo.DaylightBias;
 	hours = -bias / 60; // 60 minutes per hour
 	minutes = (bias < 0 ? -bias : bias) % 60;
@@ -178,9 +216,6 @@ gnc_g_time_zone_adjust_for_dst (GTimeZone* tz, GDateTime *date)
 static GDateTime*
 gnc_g_date_time_new_local (gint year, gint month, gint day, gint hour, gint minute, gdouble seconds)
 {
-#ifndef G_OS_WIN32
-    return g_date_time_new_local (year, month, day, hour, minute, seconds);
-#else
     GTimeZone *tz = gnc_g_time_zone_new_local();
     GDateTime *gdt = g_date_time_new (tz, year, month, day,
 				      hour, minute, seconds);
@@ -196,9 +231,7 @@ gnc_g_date_time_new_local (gint year, gint month, gint day, gint hour, gint minu
  */
     seconds += 5e-10;
     gdt =  g_date_time_new (tz, year, month, day, hour, minute, seconds);
-    g_time_zone_unref (tz);
     return gdt;
-#endif
 }
 
 static GDateTime*
@@ -211,61 +244,50 @@ gnc_g_date_time_adjust_for_dst (GDateTime *gdt, GTimeZone *tz)
     tz = gnc_g_time_zone_adjust_for_dst (tz, ngdt);
     gdt = g_date_time_to_timezone (ngdt, tz);
     g_date_time_unref (ngdt);
-    g_time_zone_unref (tz);
     return gdt;
 }
 
 GDateTime*
 gnc_g_date_time_new_from_unix_local (time64 time)
 {
-#ifndef G_OS_WIN32
-    return g_date_time_new_from_unix_local (time);
-#else
     GTimeZone *tz = gnc_g_time_zone_new_local ();
     GDateTime *gdt = g_date_time_new_from_unix_utc (time);
-    if (!gdt)
-      return gdt;
-    return gnc_g_date_time_adjust_for_dst (gdt, tz);
-#endif
+    if (gdt)
+	gdt = gnc_g_date_time_adjust_for_dst (gdt, tz);
+    return gdt;
 }
 
 static GDateTime*
 gnc_g_date_time_new_from_timeval_local (const GTimeVal* tv)
 {
-#ifndef G_OS_WIN32
-    return g_date_time_new_from_timeval_local (tv);
-#else
     GTimeZone *tz = gnc_g_time_zone_new_local ();
     GDateTime *gdt = g_date_time_new_from_timeval_utc (tv);
-    if (!gdt)
-	return gdt;
-    return gnc_g_date_time_adjust_for_dst (gdt, tz);
-#endif
+    if (gdt)
+	gdt = gnc_g_date_time_adjust_for_dst (gdt, tz);
+    return gdt;
 }
 
 static GDateTime*
 gnc_g_date_time_new_now_local (void)
 {
-#ifndef G_OS_WIN32
-    return g_date_time_new_now_local ();
-#else
     GTimeZone *tz = gnc_g_time_zone_new_local ();
-    GDateTime *gdt = g_date_time_new_now_local ();
-    if (!gdt)
-	return gdt;
-    return gnc_g_date_time_adjust_for_dst (gdt, tz);
-#endif
+    GDateTime *gdt = g_date_time_new_now_utc ();
+    if (gdt)
+	gdt = gnc_g_date_time_adjust_for_dst (gdt, tz);
+    return gdt;
+
 }
 
 static GDateTime*
 gnc_g_date_time_to_local (GDateTime* gdt)
 {
-#ifndef G_OS_WIN32
-    return g_date_time_to_local (gdt);
-#else
-    GTimeZone *tz = gnc_g_time_zone_new_local ();
-    return gnc_g_date_time_adjust_for_dst (g_date_time_to_utc (gdt), tz);
-#endif
+    GTimeZone *tz = NULL;
+    if (gdt)
+    {
+	tz = gnc_g_time_zone_new_local ();
+	gdt = gnc_g_date_time_adjust_for_dst (g_date_time_to_utc (gdt), tz);
+    }
+    return gdt;
 }
 
 typedef struct
@@ -1099,10 +1121,30 @@ qof_scan_date_internal (const char *buff, int *day, int *month, int *year,
         if (buff[0] != '\0')
         {
             struct tm thetime;
+            gchar *format = g_strdup (GNC_D_FMT);
+            gchar *stripped_format = g_strdup (GNC_D_FMT);
+            gint counter = 0, stripped_counter = 0;
+
+            /* strptime can't handle the - format modifier
+             * let's strip it out of the format before using it
+             */
+            while (format[counter] != '\0')
+            {
+                stripped_format[stripped_counter] = format[counter];
+                if ((format[counter] == '%') && (format[counter+1] == '-'))
+                    counter++;  // skip - format modifier
+
+                counter++;
+                stripped_counter++;
+            }
+            stripped_format[stripped_counter] = '\0';
+            g_free (format);
+
 
             /* Parse time string. */
             memset(&thetime, -1, sizeof(struct tm));
-            strptime (buff, GNC_D_FMT, &thetime);
+            strptime (buff, stripped_format, &thetime);
+            g_free (stripped_format);
 
             if (third_field)
             {
@@ -1488,7 +1530,6 @@ gnc_iso8601_to_timespec_gmt(const char *str)
 	second += 5e-10;
 	gdt = g_date_time_new (tz, year, month, day, hour, minute, second);
         secs = g_date_time_to_unix (gdt);
-	g_time_zone_unref (tz);
     }
     else /* No zone info, assume UTC */
     {
