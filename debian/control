@@ -33,7 +33,8 @@ Architecture: any
 Depends: gnucash-common (= ${source:Version}), ${shlibs:Depends},
   ${misc:Depends}, ${perl:Depends}, guile-2.0,
   libfinance-quote-perl, libwww-perl, libhtml-tree-perl,
-  libhtml-tableextract-perl, libcrypt-ssleay-perl, libdate-manip-perl
+  libhtml-tableextract-perl, libcrypt-ssleay-perl, libdate-manip-perl,
+  libaqbanking34-plugins
 Suggests: libdbd-mysql, libdbd-pgsql, libdbd-sqlite3
 Recommends: gnucash-docs, yelp
 Breaks: gnucash-common (<< 1:2.4.8-1~)
