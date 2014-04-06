@@ -7,7 +7,7 @@ Standards-Version: 3.9.5
 Build-Depends: debhelper (>= 9), intltool, pkg-config, dh-autoreconf,
  guile-2.0-dev,
  imagemagick,
- libaqbanking34-dev,
+ libaqbanking34-dev (>= 5.3.5beta-2~),
  libdbi-dev,
  libdbd-sqlite3,
  libglib2.0-dev (>= 2.26),
@@ -31,10 +31,9 @@ Vcs-Git: git://anonscm.debian.org/pkg-gnucash/gnucash.git
 Package: gnucash
 Architecture: any
 Depends: gnucash-common (= ${source:Version}), ${shlibs:Depends},
-  ${misc:Depends}, ${perl:Depends}, guile-2.0,
+  ${aqbanking:Depends}, ${misc:Depends}, ${perl:Depends}, guile-2.0,
   libfinance-quote-perl, libwww-perl, libhtml-tree-perl,
-  libhtml-tableextract-perl, libcrypt-ssleay-perl, libdate-manip-perl,
-  libaqbanking34-plugins
+  libhtml-tableextract-perl, libcrypt-ssleay-perl, libdate-manip-perl
 Suggests: libdbd-mysql, libdbd-pgsql, libdbd-sqlite3
 Recommends: gnucash-docs, yelp
 Breaks: gnucash-common (<< 1:2.4.8-1~)

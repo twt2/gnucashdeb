@@ -10,7 +10,7 @@ export BUILDING_FROM_SVN=$(if $(wildcard autogen.sh),yes,no)
 LDFLAGS+= -Wl,--as-needed
 
 %:
-	dh $@ --parallel --with python2,autoreconf
+	dh $@ --parallel --with python2,autoreconf,aqbanking
 
 override_dh_auto_clean:
 	find . -type l -exec rm -v \{\} \;
