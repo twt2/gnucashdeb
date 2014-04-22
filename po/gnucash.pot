@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-01 18:21-0800\n"
+"POT-Creation-Date: 2014-03-29 16:54-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1795,7 +1795,7 @@ msgid "Cancel the current entry"
 msgstr ""
 
 #: ../../po/../src/business/business-gnome/gnc-plugin-page-invoice.c:161
-#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:157
+#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:158
 #: ../../po/../src/gnome/window-reconcile2.c:2208
 #: ../../po/../src/gnome/window-reconcile.c:2208
 msgid "_Delete"
@@ -4589,7 +4589,7 @@ msgstr ""
 
 #: ../../po/../src/gnome/dialog-sx-editor2.c:166
 #: ../../po/../src/gnome/dialog-sx-editor.c:167
-#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:145
+#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:146
 #: ../src/gnome/gtkbuilder/dialog-price.glade.h:17
 #: ../../po/../src/gnome-utils/gnc-main-window.c:261
 #: ../../po/../src/gnome/window-reconcile2.c:2203
@@ -4713,8 +4713,8 @@ msgstr ""
 
 #: ../../po/../src/gnome/dialog-sx-editor2.c:1784
 #: ../../po/../src/gnome/dialog-sx-editor.c:1791
-#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:242
-#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:248
+#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:243
+#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:249
 msgid "Scheduled Transactions"
 msgstr ""
 
@@ -4848,7 +4848,7 @@ msgstr ""
 #. src/report/standard-reports/budget-flow.scm
 #. src/report/standard-reports/portfolio.scm
 #: ../../po/../src/gnome/gnc-budget-view.c:359
-#: ../../po/../src/gnome/gnc-budget-view.c:1074
+#: ../../po/../src/gnome/gnc-budget-view.c:1070
 #: ../../po/../src/gnome-utils/gnc-tree-view-account.c:844
 #: ../../po/../intl-scm/guile-strings.c:508
 #: ../../po/../intl-scm/guile-strings.c:510
@@ -6041,48 +6041,48 @@ msgstr ""
 msgid "Sort %s by..."
 msgstr ""
 
-#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:131
+#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:132
 msgid "_Scheduled"
 msgstr ""
 
-#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:133
+#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:134
 msgid "_New"
 msgstr ""
 
-#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:134
+#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:135
 msgid "Create a new scheduled transaction"
 msgstr ""
 
-#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:139
+#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:140
 msgid "_New 2"
 msgstr ""
 
-#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:140
+#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:141
 msgid "Create a new scheduled transaction 2"
 msgstr ""
 
-#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:146
+#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:147
 msgid "Edit the selected scheduled transaction"
 msgstr ""
 
-#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:151
+#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:152
 msgid "_Edit 2"
 msgstr ""
 
-#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:152
+#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:153
 msgid "Edit the selected scheduled transaction 2"
 msgstr ""
 
-#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:158
+#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:159
 msgid "Delete the selected scheduled transaction"
 msgstr ""
 
-#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:381
+#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:382
 #, c-format
 msgid "Transactions"
 msgstr ""
 
-#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:443
+#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:444
 #, c-format
 msgid "Upcoming Transactions"
 msgstr ""
@@ -6091,7 +6091,7 @@ msgstr ""
 #. multiple SXs be deleted as well? Ideally, the number of
 #. to-be-deleted SXs should be mentioned here; see
 #. dialog-sx-since-last-run.c:807
-#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:763
+#: ../../po/../src/gnome/gnc-plugin-page-sx-list.c:766
 msgid "Do you really want to delete this scheduled transaction?"
 msgstr ""
 
@@ -12745,7 +12745,7 @@ msgid "How many days to keep old log/backup files."
 msgstr ""
 
 #: ../src/gnome-utils/gtkbuilder/dialog-preferences.glade.h:68
-msgid "_Retain log files:"
+msgid "_Retain log/backup files:"
 msgstr ""
 
 #: ../src/gnome-utils/gtkbuilder/dialog-preferences.glade.h:69
@@ -14421,10 +14421,10 @@ msgid "Execute Now"
 msgstr ""
 
 #. Conversion was erroneous, so don't use the string
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:285
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:1028
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:1031
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:1037
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:289
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:1057
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:1060
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:1066
 msgid "(unknown)"
 msgstr ""
 
@@ -14438,51 +14438,77 @@ msgstr ""
 #. * country, you may safely ignore strings
 #. * from the import-export/hbci
 #. * subdirectory.
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:364
-msgid "Enter an Online Direct Debit Note"
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:366
+msgid "Enter a SEPA Online Transfer"
 msgstr ""
 
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:367
-msgid "Debited Account Owner"
-msgstr ""
-
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:369
-msgid "Debited Account Number"
-msgstr ""
-
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:371
-msgid "Debited Account Bank Code"
-msgstr ""
-
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:374
-msgid "Credited Account Owner"
-msgstr ""
-
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:376
-msgid "Credited Account Number"
-msgstr ""
-
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:378
-msgid "Credited Account Bank Code"
-msgstr ""
-
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:392
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:368
 msgid "Recipient IBAN (International Account Number)"
 msgstr ""
 
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:394
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:370
 msgid "Recipient BIC (Bank Code)"
 msgstr ""
 
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:398
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:373
+msgid "Originator IBAN (International Account Number)"
+msgstr ""
+
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:375
+msgid "Originator BIC (Bank Code)"
+msgstr ""
+
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:380
+msgid "Enter an Online Direct Debit Note"
+msgstr ""
+
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:383
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:402
+msgid "Debited Account Owner"
+msgstr ""
+
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:385
+msgid "Debited Account Number"
+msgstr ""
+
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:387
+msgid "Debited Account Bank Code"
+msgstr ""
+
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:390
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:409
+msgid "Credited Account Owner"
+msgstr ""
+
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:392
+msgid "Credited Account Number"
+msgstr ""
+
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:394
+msgid "Credited Account Bank Code"
+msgstr ""
+
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:399
+msgid "Enter a SEPA Online Direct Debit Note"
+msgstr ""
+
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:404
 msgid "Debited IBAN (International Account Number)"
 msgstr ""
 
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:400
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:406
 msgid "Debited BIC (Bank Code)"
 msgstr ""
 
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:482
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:411
+msgid "Credited IBAN (International Account Number)"
+msgstr ""
+
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:413
+msgid "Credited BIC (Bank Code)"
+msgstr ""
+
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:511
 #, c-format
 msgid ""
 "The internal check of the destination account number '%s' at the specified "
@@ -14490,7 +14516,7 @@ msgid ""
 "an error."
 msgstr ""
 
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:554
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:583
 #, c-format
 msgid ""
 "Your local bank account does not yet have the SEPA account information "
@@ -14500,38 +14526,38 @@ msgid ""
 "follows: aqhbci-tool4 getaccsepa -b %s -a %s"
 msgstr ""
 
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:569
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:598
 msgid ""
 "You did not enter a recipient name. A recipient name is required for an "
 "online transfer.\n"
 msgstr ""
 
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:589
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:618
 msgid ""
 "You did not enter a recipient account. A recipient account is required for "
 "an online transfer.\n"
 msgstr ""
 
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:605
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:634
 msgid ""
 "You did not enter a recipient bank. A recipient bank is required for an "
 "online transfer.\n"
 msgstr ""
 
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:623
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:652
 msgid ""
 "The amount is zero or the amount field could not be interpreted correctly. "
 "You might have mixed up decimal point and comma, compared to your locale "
 "settings. This does not result in a valid online transfer job."
 msgstr ""
 
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:640
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:669
 msgid ""
 "You did not enter any transaction purpose. A purpose is required for an "
 "online transfer.\n"
 msgstr ""
 
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:662
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:691
 msgid ""
 "The text you entered contained at least one character that is invalid for a "
 "SEPA transaction. In SEPA, unfortunately only exactly the following "
@@ -14542,12 +14568,12 @@ msgid ""
 "the recipient or sender name nor in any purpose line."
 msgstr ""
 
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:1127
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:1156
 msgid ""
 "A template with the given name already exists. Please enter another name."
 msgstr ""
 
-#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:1262
+#: ../../po/../src/import-export/aqb/dialog-ab-trans.c:1291
 #, c-format
 msgid "Do you really want to delete the template with the name \"%s\"?"
 msgstr ""
@@ -15557,15 +15583,15 @@ msgstr ""
 msgid "Unknown encoding."
 msgstr ""
 
-#: ../../po/../src/import-export/csv-imp/gnc-csv-model.c:800
+#: ../../po/../src/import-export/csv-imp/gnc-csv-model.c:805
 msgid "No date column."
 msgstr ""
 
-#: ../../po/../src/import-export/csv-imp/gnc-csv-model.c:801
+#: ../../po/../src/import-export/csv-imp/gnc-csv-model.c:806
 msgid "No balance, deposit, or withdrawal column."
 msgstr ""
 
-#: ../../po/../src/import-export/csv-imp/gnc-csv-model.c:1095
+#: ../../po/../src/import-export/csv-imp/gnc-csv-model.c:1100
 #, c-format
 msgid "%s column could not be understood."
 msgstr ""
@@ -17075,42 +17101,58 @@ msgid "List"
 msgstr ""
 
 #: ../../po/../src/report/report-gnome/dialog-custom-report.c:412
-msgid "You must select a report to run."
+msgid "You must select a report configuration to load."
 msgstr ""
 
 #: ../../po/../src/report/report-gnome/dialog-custom-report.c:423
-msgid "You must select a report to delete."
+msgid "You must select a report configuration to delete."
 msgstr ""
 
 #: ../../po/../src/report/report-gnome/dialog-custom-report.c:432
-msgid "Unable to change report name."
+msgid "Unable to change report configuration name."
 msgstr ""
 
 #: ../../po/../src/report/report-gnome/dialog-custom-report.c:444
 msgid ""
-"A custom report with this name already exists, please choose another name."
+"A saved report configuration with this name already exists, please choose "
+"another name."
 msgstr ""
 
 #: ../../po/../src/report/report-gnome/dialog-custom-report.c:468
-msgid "Run preconfigured report"
+msgid "Load report configuration"
 msgstr ""
 
 #: ../../po/../src/report/report-gnome/dialog-custom-report.c:470
-msgid "Edit configuration name"
+msgid "Edit report configuration name"
 msgstr ""
 
 #: ../../po/../src/report/report-gnome/dialog-custom-report.c:472
-msgid "Delete preconfigured report"
+msgid "Delete report configuration"
 msgstr ""
 
 #. src/report/report-gnome/report-gnome.scm
 #: ../src/report/report-gnome/dialog-custom-report.glade.h:1
 #: ../../po/../intl-scm/guile-strings.c:2036
-msgid "Preconfigured Reports"
+msgid "Saved Report Configurations"
 msgstr ""
 
 #: ../src/report/report-gnome/dialog-custom-report.glade.h:2
-msgid "Exit the custom report dialog"
+msgid "Exit the saved report configurations dialog"
+msgstr ""
+
+#: ../src/report/report-gnome/dialog-custom-report.glade.h:3
+msgid ""
+"\n"
+"Currently you have no saved reports.\n"
+msgstr ""
+
+#: ../src/report/report-gnome/dialog-custom-report.glade.h:6
+msgid ""
+"Saved report configurations are created by first opening a report from the "
+"Reports menu,\n"
+"altering the report's options to your taste and then choosing \"Save Report "
+"Configuration\" from\n"
+"the Reports menu or tool bar."
 msgstr ""
 
 #: ../../po/../src/report/report-gnome/dialog-report-column-view.c:321
@@ -17244,7 +17286,7 @@ msgid "Export the current report as a PDF document"
 msgstr ""
 
 #: ../../po/../src/report/report-gnome/gnc-plugin-page-report.c:1031
-msgid "Save _Report"
+msgid "Save _Report Configuration"
 msgstr ""
 
 #: ../../po/../src/report/report-gnome/gnc-plugin-page-report.c:1032
@@ -17254,13 +17296,13 @@ msgid ""
 msgstr ""
 
 #: ../../po/../src/report/report-gnome/gnc-plugin-page-report.c:1037
-msgid "Save Report As..."
+msgid "Save Report Configuration As..."
 msgstr ""
 
 #: ../../po/../src/report/report-gnome/gnc-plugin-page-report.c:1038
 msgid ""
-"Add the current report's configuration to the `Preconfigured Reports' menu. "
-"The report will be saved in the file ~/.gnucash/saved-reports-2.4. "
+"Add the current report's configuration to the `Saved Report Configurations' "
+"menu. The report will be saved in the file ~/.gnucash/saved-reports-2.4. "
 msgstr ""
 
 #: ../../po/../src/report/report-gnome/gnc-plugin-page-report.c:1043
@@ -20913,7 +20955,7 @@ msgstr ""
 
 #. src/report/report-gnome/report-gnome.scm
 #: ../../po/../intl-scm/guile-strings.c:2038
-msgid "Manage and run preconfigured reports"
+msgid "Manage and run saved report configurations"
 msgstr ""
 
 #. src/report/report-gnome/report-gnome.scm
