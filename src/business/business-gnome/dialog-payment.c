@@ -154,6 +154,7 @@ void gnc_payment_acct_tree_row_activated_cb (GtkWidget *widget, GtkTreePath *pat
         GtkTreeViewColumn *column, PaymentWindow *pw);
 void gnc_payment_leave_amount_cb (GtkWidget *widget, GdkEventFocus *event,
                                   PaymentWindow *pw);
+void gnc_payment_window_fill_docs_list (PaymentWindow *pw);
 
 
 static void
@@ -161,6 +162,7 @@ gnc_payment_window_refresh_handler (GHashTable *changes, gpointer data)
 {
     PaymentWindow *pw = data;
 
+    gnc_payment_window_fill_docs_list (pw);
     pw->post_acct = gnc_account_select_combo_fill (pw->post_combo, pw->book, pw->acct_types, pw->acct_commodities);
 }
 
@@ -191,14 +193,6 @@ gnc_payment_window_check_payment (PaymentWindow *pw)
         goto update_cleanup;
     }
 
-    /* Verify at least one document is selected */
-    selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(pw->docs_list_tree_view));
-    if (!gtk_tree_selection_count_selected_rows (selection))
-    {
-        conflict_msg = _("You must select at least one document or pre-payment to process.");
-        goto update_cleanup;
-    }
-
     /* Test the total amount */
     amount_deb  = gnc_amount_edit_get_amount (GNC_AMOUNT_EDIT (pw->amount_debit_edit));
     amount_cred = gnc_amount_edit_get_amount (GNC_AMOUNT_EDIT (pw->amount_credit_edit));
@@ -207,7 +201,9 @@ gnc_payment_window_check_payment (PaymentWindow *pw)
                                       GNC_HOW_RND_ROUND_HALF_UP);
 
     if (gnc_numeric_check (pw->amount_tot) || gnc_numeric_zero_p (pw->amount_tot))
+    {
         enable_xfer_acct = FALSE;
+    }
     else
     {
         /* Verify the user has selected a transfer account */
@@ -330,6 +326,8 @@ gnc_payment_dialog_highlight_document (PaymentWindow *pw)
                 lot = (GNCLot *) g_value_get_pointer (&value);
                 g_value_unset (&value);
 
+                if (!lot)
+                    continue; /* Lot has been deleted behind our back... */
 
                 invoice = gncInvoiceGetInvoiceFromLot (lot);
                 if (!invoice)
@@ -346,7 +344,7 @@ gnc_payment_dialog_highlight_document (PaymentWindow *pw)
     }
 }
 
-static void
+void
 gnc_payment_window_fill_docs_list (PaymentWindow *pw)
 {
     GtkListStore *store;
@@ -786,6 +784,15 @@ gnc_payment_leave_amount_cb (GtkWidget *widget, GdkEventFocus *event,
     gnc_payment_window_check_payment (pw);
 }
 
+static gboolean AccountTypeOkForPayments (GNCAccountType type)
+{
+    if (xaccAccountIsAssetLiabType(type) ||
+        xaccAccountIsEquityType(type))
+        return TRUE;
+    else
+        return FALSE;
+}
+
 /* Select the list of accounts to show in the tree */
 static void
 gnc_payment_set_account_types (GncTreeViewAccount *tree)
@@ -796,19 +803,7 @@ gnc_payment_set_account_types (GncTreeViewAccount *tree)
     gnc_tree_view_account_get_view_info (tree, &avi);
 
     for (i = 0; i < NUM_ACCOUNT_TYPES; i++)
-        switch (i)
-        {
-        case ACCT_TYPE_BANK:
-        case ACCT_TYPE_CASH:
-        case ACCT_TYPE_CREDIT:
-        case ACCT_TYPE_ASSET:
-        case ACCT_TYPE_LIABILITY:
-            avi.include_type[i] = TRUE;
-            break;
-        default:
-            avi.include_type[i] = FALSE;
-            break;
-        }
+        avi.include_type[i] = AccountTypeOkForPayments (i);
 
     gnc_tree_view_account_set_view_info (tree, &avi);
 }
@@ -1119,37 +1114,13 @@ gnc_ui_payment_new (GncOwner *owner, QofBook *book)
 }
 
 // ////////////////////////////////////////////////////////////
-
-static gboolean isAssetLiabType(GNCAccountType t)
-{
-    switch (t)
-    {
-    case ACCT_TYPE_RECEIVABLE:
-    case ACCT_TYPE_PAYABLE:
-        return FALSE;
-    default:
-        return (xaccAccountTypesCompatible(ACCT_TYPE_ASSET, t)
-                || xaccAccountTypesCompatible(ACCT_TYPE_LIABILITY, t));
-    }
-}
-static gboolean isAPARType(GNCAccountType t)
-{
-    switch (t)
-    {
-    case ACCT_TYPE_RECEIVABLE:
-    case ACCT_TYPE_PAYABLE:
-        return TRUE;
-    default:
-        return FALSE;
-    }
-}
 static void increment_if_asset_account (gpointer data,
                                         gpointer user_data)
 {
     int *r = user_data;
     const Split *split = data;
     const Account *account = xaccSplitGetAccount(split);
-    if (isAssetLiabType(xaccAccountGetType(account)))
+    if (AccountTypeOkForPayments(xaccAccountGetType (account)))
         ++(*r);
 }
 static int countAssetAccounts(SplitList* slist)
@@ -1164,7 +1135,7 @@ static gint predicate_is_asset_account(gconstpointer a,
 {
     const Split *split = a;
     const Account *account = xaccSplitGetAccount(split);
-    if (isAssetLiabType(xaccAccountGetType(account)))
+    if (AccountTypeOkForPayments(xaccAccountGetType(account)))
         return 0;
     else
         return -1;
@@ -1174,7 +1145,7 @@ static gint predicate_is_apar_account(gconstpointer a,
 {
     const Split *split = a;
     const Account *account = xaccSplitGetAccount(split);
-    if (isAPARType(xaccAccountGetType(account)))
+    if (xaccAccountIsAPARType(xaccAccountGetType(account)))
         return 0;
     else
         return -1;

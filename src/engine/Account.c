@@ -951,6 +951,7 @@ gnc_account_create_root (QofBook *book)
     xaccAccountBeginEdit(root);
     rpriv->type = ACCT_TYPE_ROOT;
     CACHE_REPLACE(rpriv->accountName, "Root Account");
+    mark_account (root);
     xaccAccountCommitEdit(root);
     gnc_book_set_root_account(book, root);
     return root;
@@ -4034,6 +4035,42 @@ xaccAccountTypesValid(void)
               (1 << ACCT_TYPE_ROOT));      /* ROOT */
 
     return mask;
+}
+
+gboolean xaccAccountIsAssetLiabType(GNCAccountType t)
+{
+    switch (t)
+    {
+    case ACCT_TYPE_RECEIVABLE:
+    case ACCT_TYPE_PAYABLE:
+        return FALSE;
+    default:
+        return (xaccAccountTypesCompatible(ACCT_TYPE_ASSET, t)
+                || xaccAccountTypesCompatible(ACCT_TYPE_LIABILITY, t));
+    }
+}
+
+gboolean xaccAccountIsAPARType(GNCAccountType t)
+{
+    switch (t)
+    {
+    case ACCT_TYPE_RECEIVABLE:
+    case ACCT_TYPE_PAYABLE:
+        return TRUE;
+    default:
+        return FALSE;
+    }
+}
+
+gboolean xaccAccountIsEquityType(GNCAccountType t)
+{
+    switch (t)
+    {
+    case ACCT_TYPE_EQUITY:
+        return TRUE;
+    default:
+        return FALSE;
+    }
 }
 
 gboolean

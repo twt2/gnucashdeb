@@ -1529,7 +1529,9 @@ _("91+ days")
 /* src/report/business-reports/owner-report.scm */
 _("Balance")
 /* src/report/business-reports/owner-report.scm */
-_("Payment, thank you")
+_("Unknown")
+/* src/report/business-reports/owner-report.scm */
+_("Payment")
 /* src/report/business-reports/owner-report.scm */
 _("Unknown")
 /* src/report/business-reports/owner-report.scm */
@@ -1588,12 +1590,6 @@ _("Due date is leading.")
 _("Post Date")
 /* src/report/business-reports/owner-report.scm */
 _("Post date is leading.")
-/* src/report/business-reports/owner-report.scm */
-_("Invoice")
-/* src/report/business-reports/owner-report.scm */
-_("Bill")
-/* src/report/business-reports/owner-report.scm */
-_("Expense Report")
 /* src/report/business-reports/owner-report.scm */
 _("Report")
 /* src/report/business-reports/owner-report.scm */
@@ -1795,29 +1791,29 @@ _("Discount Rate")
 /* src/report/business-reports/taxinvoice.scm */
 _("Discount Amount")
 /* src/report/business-reports/taxinvoice.scm */
-_("Net Price")
+_("Net Price")
 /* src/report/business-reports/taxinvoice.scm */
 _("Tax Rate")
 /* src/report/business-reports/taxinvoice.scm */
 _("Tax Amount")
 /* src/report/business-reports/taxinvoice.scm */
-_("Total Price")
+_("Total Price")
 /* src/report/business-reports/taxinvoice.scm */
 _("Sub-total")
 /* src/report/business-reports/taxinvoice.scm */
-_("Amount Due")
+_("Amount Due")
 /* src/report/business-reports/taxinvoice.scm */
 _("Payment received, thank you")
 /* src/report/business-reports/taxinvoice.scm */
-_("Invoice number: ")
+_("Invoice number: ")
 /* src/report/business-reports/taxinvoice.scm */
 _("To: ")
 /* src/report/business-reports/taxinvoice.scm */
-_("Your ref: ")
+_("Your ref: ")
 /* src/report/business-reports/taxinvoice.scm */
-_("Job number: ")
+_("Job number: ")
 /* src/report/business-reports/taxinvoice.scm */
-_("Job name: ")
+_("Job name: ")
 /* src/report/business-reports/taxinvoice.scm */
 _("Notes added at end of invoice -- may contain HTML markup.")
 /* src/report/business-reports/taxinvoice.scm */
@@ -2334,8 +2330,6 @@ _("Select a stylesheet for the report.")
 _("Default")
 /* src/report/report-system/report.scm */
 _("stylesheet.")
-/* src/report/report-system/report.scm */
-_("Could not open the file %s. The error is: %s")
 /* src/report/report-system/report.scm */
 _("Some reports stored in a legacy format were found. This format is not supported anymore so these reports may not have been restored properly.")
 /* src/report/report-system/report-utilities.scm */
@@ -3277,9 +3271,13 @@ _("Show Exchange Rates")
 /* src/report/standard-reports/cash-flow.scm */
 _("Show Full Account Names")
 /* src/report/standard-reports/cash-flow.scm */
+_("Include Trading Accounts in report")
+/* src/report/standard-reports/cash-flow.scm */
 _("Show the exchange rates used.")
 /* src/report/standard-reports/cash-flow.scm */
 _("Show full account names (including parent accounts).")
+/* src/report/standard-reports/cash-flow.scm */
+_("Include transfers to and from Trading Accounts in the report.")
 /* src/report/standard-reports/cash-flow.scm */
 _("%s to %s")
 /* src/report/standard-reports/cash-flow.scm */

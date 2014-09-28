@@ -1516,7 +1516,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_default_symbol(c, "Î”Ï\x81.");
+    gnc_commodity_set_default_symbol(c, "Î\x94Ï\x81.");
   }
 
   {
@@ -2067,7 +2067,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_default_symbol(c, "â\x82­");
+    gnc_commodity_set_default_symbol(c, "â\x82\xad");
   }
 
   {
@@ -3743,7 +3743,7 @@
   }
 
   {
-    const char *fullname = "Venezuela BolÃ­var";
+    const char *fullname = "Venezuela BolÃ\xadvar";
     gnc_commodity *c = gnc_commodity_new(book,
 					 CUR_I18N(fullname),
                                          "ISO4217",
