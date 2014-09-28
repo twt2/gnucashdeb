@@ -1,3 +1,15 @@
+gnucash (1:2.6.4-1) unstable; urgency=medium
+
+  * Imported Upstream version 2.6.4
+    + Fixes formula parsing error with scheduled mortgage transactions.
+      (Closes: #748594)
+    + No longer crashes on exit when python-gnucash is installed.
+      (LP: #1312411)
+  * Add missing dependency of python-gnucash on python-gtk2.
+  * Bump Standards-Version to 3.9.6, no changes needed.
+
+ -- Sébastien Villemot <sebastien@debian.org>  Sun, 28 Sep 2014 11:28:11 +0200
+
 gnucash (1:2.6.3-1) unstable; urgency=medium
 
   * Imported Upstream version 2.6.3
