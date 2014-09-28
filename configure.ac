@@ -20,7 +20,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 # Autoconf initialization
 AC_PREREQ(2.60)
-AC_INIT([GnuCash], [2.6.3], [gnucash-devel@gnucash.org])
+AC_INIT([GnuCash], [2.6.4], [gnucash-devel@gnucash.org])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_SRCDIR(src/engine/Transaction.h)
 AC_CONFIG_MACRO_DIR([macros])
@@ -33,7 +33,15 @@ GNUCASH_NANO_VERSION=0
 #storage-compatible with the current version. See the comments in
 #src/backend/dbi/gnc-backend-dbi.c:gnc_dbi_load.
 GNUCASH_RESAVE_VERSION=19920
-# Initialize automake -- make sure we have at least version 1.9
+# Initialize automake -- make sure we have at least version 1.9 Note:
+# Automake 1.14 issues a ton of warnings about subdir-objects, which
+# will become the default in automake 2.0; unfortunately this option
+# is broken and prevents building without passing
+# --disable-dependency-tracking to configure, which make-distcheck
+# doesn't do. See
+# http://lists.gnu.org/archive/html/automake/2014-04/msg00002.html and
+# http://debbugs.gnu.org/cgi/bugreport.cgi?bug=13928 for details.
+# In the meantime the best option is to use Automake 1.13 or earlier.
 AM_INIT_AUTOMAKE([1.9 dist-bzip2])
 
 # Parse out the version number
@@ -83,7 +91,7 @@ AC_DEFINE_UNQUOTED(GNUCASH_LATEST_STABLE_SERIES, "$GNUCASH_LATEST_STABLE_SERIES"
     [Most recent stable GnuCash series])
 
 dnl Set of available languages.
-ALL_LINGUAS="ar bg ca cs da de el en_GB es_NI es eu fa fi fr he hu it ja ko lt lv nb ne nl pl pt_BR pt ro ru rw sk sv ta tr uk vi zh_CN zh_TW"
+ALL_LINGUAS="ar bg brx ca cs da de doi el en_GB es_NI es eu fa fi fr he hi hu it ja ko kok ks lt lv mr nb ne nl pl pt_BR pt ro ru rw sk sv ta te tr uk ur vi zh_CN zh_TW"
 
 GETTEXT_PACKAGE=gnucash
 AC_SUBST(GETTEXT_PACKAGE)
@@ -170,6 +178,8 @@ AC_CHECK_FUNCS(setenv,,[
 ])
 
 STRUCT_TM_GMTOFF_CHECK
+cflags_save=${CFLAGS}
+CFLAGS="${CFLAGS} -Wall -Werror"
 SCANF_LLD_CHECK
 if test x$am_cv_scanf_lld = "xno"; then
   SCANF_QD_CHECK
@@ -181,6 +191,7 @@ if test x$am_cv_scanf_lld = "xno"; then
     fi
   fi
 fi
+CFLAGS="${cflags_save}"
 
 # test whether we are building directly from svn/svk/git/bzr
 AC_MSG_CHECKING(if building from an scm managed directory)
@@ -334,6 +345,8 @@ AC_SUBST(SED)
 REGEX_LIBS=""
 
 AC_MSG_CHECKING(operating system)
+#NOUNDEF for use with mingw
+NOUNDEF=""
 case $host_os in
   rhapsody* | darwin[1567].*)
     AC_MSG_RESULT([darwin, but too old])
@@ -400,7 +413,10 @@ update to latest  darwin])
 
     # Adjust CFLAGS and LDFLAGS on Windows
     CFLAGS="${CFLAGS} -mms-bitfields"
-    LDFLAGS="${LDFLAGS} -no-undefined -mwindows"
+#   NOUNDEF will be added to ldflags for the makefiles but not the configures
+#   This fixes a problem with libtool and gcc 4.8
+    NOUNDEF="-no-undefined"
+    LDFLAGS="${LDFLAGS} -mwindows"
     ;;
 
   *)
@@ -436,7 +452,6 @@ AC_CHECK_FUNCS(gethostid link)
 
 # - check minimum version
 # - determine GUILE_CFLAGS and GUILE_LIBS
-# - test if guile module (www main) is present on the system
 # Note: systems that install both guile 1.8 and guile 2 use different
 #       names for the 1.8 and 2.0 autoconf macros to avoid conflicts.
 #       So the tests below will check for known macro names in the order
@@ -447,17 +462,14 @@ gnc_have_guile_www=no
 PKG_CHECK_MODULES(GUILE,
                   [guile-1.8 >= 1.8.5],
                   [m4_ifdef([GUILE1_8_PROGS],
-                            [ GUILE1_8_PROGS
-                              GUILE1_8_MODULE_AVAILABLE(gnc_have_guile_www,[(www main)]) ],
-                            [ GUILE_PROGS
-                              GUILE_MODULE_AVAILABLE(gnc_have_guile_www,[(www main)]) ])
+                            [ GUILE1_8_PROGS ],
+                            [ GUILE_PROGS ])
                   ], [
   PKG_CHECK_MODULES(GUILE,
                   [guile-2.0 >= 2.0.0],
                   [m4_ifdef([GUILE_PROGS],
                             [ GUILE_PROGS
-                              gnc_have_guile_2=yes
-                              GUILE_MODULE_AVAILABLE(gnc_have_guile_www,[(www main)]) ],
+                              gnc_have_guile_2=yes ],
                             [ AC_MSG_ERROR([ guile 2 is found on your system, but appears
     to export different autoconf macros than what we expected. Please report this as a bug
     in GnuCash, so we can fix this for your platform.]) ])
@@ -470,7 +482,6 @@ PKG_CHECK_MODULES(GUILE,
 ])
 
 AM_CONDITIONAL(GNC_HAVE_GUILE_2, test "${gnc_have_guile_2}" = yes)
-AM_CONDITIONAL(GNC_HAVE_GUILE_WWW, test "${gnc_have_guile_www}" = yes)
 
 
 ### --------------------------------------------------------------------------
@@ -1111,6 +1122,13 @@ then
       PKG_CHECK_MODULES(GNOME_KEYRING, gnome-keyring-1 >= "0.6",
           [AC_DEFINE(HAVE_GNOME_KEYRING,1,[System has gnome-keyring 0.6 or better])],
           [AC_DEFINE(HAVE_NO_KEYRING,1,[System has no suitable keyring service])])
+
+      PKG_CHECK_MODULES(LIBSECRET, libsecret-1 >= "0.18",
+          [AC_DEFINE(HAVE_LIBSECRET,1,[System has libsecret 0.18 or better])],
+          [AC_DEFINE(HAVE_NO_LIBSECRET,1,[System has no suitable libsecret service])])
+      AC_SUBST(LIBSECRET_CFLAGS)
+      AC_SUBST(LIBSECRET_LIBS)
+      ;;
   esac
 
   ### ----------------------------------------------------------------------
@@ -1208,7 +1226,7 @@ case $host_os in
     AC_LIBOBJ(strptime)
     ;;
   *)
-    AC_REPLACE_FUNCS(strptime localtime_r gmtime_r)
+    AC_REPLACE_FUNCS(strptime localtime_r gmtime_r strfmon)
     ;;
 esac
 
@@ -1303,18 +1321,24 @@ then
   # -Wdeclaration-after-statement in order to preserve source code
   # compatibility to gcc 2.95 and other compilers.
   GCC_VERSION=`${CC} -dumpversion`
-  if test "`echo ${GCC_VERSION} | cut -d. -f1`" -ge 3; then
-    # This is gcc >= 3.x.x
+  if test "`echo ${GCC_VERSION} | cut -d. -f1`" -eq 3; then
+    # This is gcc 3.x.x
     if test "`echo ${GCC_VERSION} | cut -d. -f2`" -ge 4; then
       # This is gcc >= 3.4.x
       warnFLAGS="${warnFLAGS} -Wdeclaration-after-statement"
-    else if test "`echo ${GCC_VERSION} | cut -d. -f1`" -ge 4; then
-           # This is gcc == 4.x.x
-           warnFLAGS="${warnFLAGS} -Wdeclaration-after-statement -Wno-pointer-sign"
-           # rpmbuild on FC4 forces this flag. Can't hurt to always compile with it.
-           warnFLAGS="${warnFLAGS} -D_FORTIFY_SOURCE=2"
-         fi
     fi
+  elif test "`echo ${GCC_VERSION} | cut -d. -f1`" -ge 4; then
+         # This is gcc >= 4.x.x
+         warnFLAGS="${warnFLAGS} -Wdeclaration-after-statement -Wno-pointer-sign"
+         # rpmbuild on FC4 forces this flag. Only add it when optimizing
+	 cflags_save="$CFLAGS"
+	 CFLAGS="$AM_CFLAGS $CFLAGS -Werror -D_FORTIFY_SOURCE=2"
+	 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <stdio.h>
+	 ]],
+	  [[ printf( "%s\n", "Hello World!");]])],
+            [warnFLAGS="${warnFLAGS} -D_FORTIFY_SOURCE=2"])
+	 CFLAGS="$cflags_save"
   fi
   CFLAGS="${warnFLAGS} ${CFLAGS}"
 else
@@ -1378,11 +1402,9 @@ AC_CONFIG_FILES(
   doc/examples/Makefile
   intl-scm/Makefile
   lib/Makefile
-  lib/guile-www/Makefile
   lib/libc/Makefile
   lib/stf/Makefile
   packaging/Makefile
-  packaging/win32/Makefile
   src/Makefile
   src/app-utils/Makefile
   src/app-utils/test/Makefile
@@ -1500,7 +1522,6 @@ AC_CONFIG_FILES(
   src/plugins/customer_import/gtkbuilder/Makefile
   src/plugins/customer_import/ui/Makefile
   dnl # non-makefiles
-  packaging/win32/gnucash.iss
   src/bin/gnucash.rc
   src/app-utils/migratable-prefs.xml
   src/engine/iso-currencies-to-c
@@ -1531,7 +1552,7 @@ AC_CONFIG_FILES(
 # A few files need extra actions at creation time
 AC_CONFIG_FILES([src/gnc-test-env], [chmod u+x src/gnc-test-env])
 AC_CONFIG_FILES([src/bin/overrides/gnucash-make-guids], [chmod u+x src/bin/overrides/gnucash-make-guids])
-
+LDFLAGS="${LDFLAGS} ${NOUNDEF}"
 AC_OUTPUT
 
 

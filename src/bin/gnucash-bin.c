@@ -46,6 +46,7 @@
 #include "gnc-prefs.h"
 #include "gnc-prefs-utils.h"
 #include "gnc-gsettings.h"
+#include "gnc-report.h"
 #include "gnc-main-window.h"
 #include "gnc-splash.h"
 #include "gnc-gnome-utils.h"
@@ -347,7 +348,7 @@ load_user_config(void)
     };
     static const gchar *saved_report_files[] =
     {
-        "saved-reports-2.4", "saved-reports-2.0", NULL
+        SAVED_REPORTS_FILE, SAVED_REPORTS_FILE_OLD_REV, NULL
     };
     static const gchar *stylesheet_files[] = { "stylesheets-2.0", NULL};
     static int is_user_config_loaded = FALSE;
@@ -761,7 +762,8 @@ main(int argc, char ** argv)
     if(!gtk_init_check (&argc, &argv))
     {
         g_printerr(_("%s\nRun '%s --help' to see a full list of available command line options.\n"),
-                   _("Error: could not initialize graphical user interface and option add-price-quotes was not set."),
+                   _("Error: could not initialize graphical user interface and option add-price-quotes was not set.\n"
+                     "       Perhaps you need to set the $DISPLAY environment variable ?"),
                    argv[0]);
         return 1;
     }

@@ -138,6 +138,9 @@
 /* Define to 1 if you have the `pthread' library (-lpthread). */
 #undef HAVE_LIBPTHREAD
 
+/* System has libsecret 0.18 or better */
+#undef HAVE_LIBSECRET
+
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
@@ -161,6 +164,9 @@
 
 /* System has no suitable keyring service */
 #undef HAVE_NO_KEYRING
+
+/* System has no suitable libsecret service */
+#undef HAVE_NO_LIBSECRET
 
 /* System has an OS X Key chain */
 #undef HAVE_OSX_KEYCHAIN
@@ -197,6 +203,9 @@
 
 /* Define to 1 if you have the `stpcpy' function. */
 #undef HAVE_STPCPY
+
+/* Define to 1 if you have the `strfmon' function. */
+#undef HAVE_STRFMON
 
 /* Define to 1 if you have the <strings.h> header file. */
 #undef HAVE_STRINGS_H

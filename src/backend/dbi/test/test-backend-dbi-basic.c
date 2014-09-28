@@ -34,6 +34,13 @@
 #include <gnc-prefs.h>
 #include <qofsession-p.h>
 
+#if LIBDBI_VERSION >= 900
+#define HAVE_LIBDBI_R 1
+static dbi_inst dbi_instance = NULL;
+#else
+#define HAVE_LIBDBI_R 0
+#endif
+
 static const gchar* suitename = "/backend/dbi";
 void test_suite_gnc_backend_dbi (void);
 
@@ -230,9 +237,17 @@ destroy_database (gchar* url)
     gnc_uri_get_components  (url, &protocol, &host, &portnum,
                              &username, &password, &dbname);
     if (g_strcmp0 (protocol, "postgres") == 0)
-        conn = dbi_conn_new (pgsql);
+        #if HAVE_LIBDBI_R
+        conn = dbi_conn_new_r( pgsql, dbi_instance );
+        #else
+        conn = dbi_conn_new( pgsql );
+        #endif
     else
+        #if HAVE_LIBDBI_R
+        conn = dbi_conn_new_r (protocol, dbi_instance);
+        #else
         conn = dbi_conn_new (protocol);
+        #endif
     port = g_strdup_printf ("%d", portnum);
     if (conn == NULL)
     {
@@ -281,7 +296,7 @@ static void
 teardown (Fixture *fixture, gconstpointer pData)
 {
     gchar *lockfile = g_strdup_printf ("%s/test-dbi.xml.LCK",
-                                       g_dirname (DBI_TEST_XML_FILENAME));
+                                       g_path_get_dirname (DBI_TEST_XML_FILENAME));
     gchar *msg = g_strdup_printf ("[xml_session_end()] Error on g_unlink(%s): 2: No such file or directory", lockfile);
     gchar *logdomain = "gnc.backend";
     guint loglevel = G_LOG_LEVEL_WARNING | G_LOG_FLAG_FATAL;
@@ -581,7 +596,14 @@ test_suite_gnc_backend_dbi (void)
 {
     dbi_driver driver = NULL;
     GList *drivers = NULL;
+    #if HAVE_LIBDBI_R
+    if (dbi_instance == NULL)
+      dbi_initialize_r (NULL, &dbi_instance);
+    while ((driver = dbi_driver_list_r (driver, dbi_instance)))
+    #else
+    dbi_initialize (NULL);
     while ((driver = dbi_driver_list (driver)))
+    #endif
     {
         drivers = g_list_prepend (drivers,
                                   (gchar*)dbi_driver_get_name (driver));
