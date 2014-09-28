@@ -3,7 +3,7 @@ Section: gnome
 Priority: optional
 Maintainer: Sébastien Villemot <sebastien@debian.org>
 Uploaders: Dmitry Smirnov <onlyjob@debian.org>
-Standards-Version: 3.9.5
+Standards-Version: 3.9.6
 Build-Depends: debhelper (>= 9), intltool, pkg-config, dh-autoreconf,
  guile-2.0-dev,
  imagemagick,
