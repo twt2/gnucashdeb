@@ -82,7 +82,7 @@ Description: common files for the financial-accounting software Gnucash
 Package: python-gnucash
 Section: python
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, python-gtk2
 Description: Gnucash interface for Python
  Gnucash provides accounting functions suitable for use by small businesses and
  individuals. It can track finances in multiple accounts, keeping running and
