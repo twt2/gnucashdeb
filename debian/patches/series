@@ -1,3 +1,5 @@
 hardening-fortify.patch
 crash-missing-comma.patch
 barchart.patch
+crash-reload-budget-report.patch
+crash-0000-00-00-date-mysql.patch

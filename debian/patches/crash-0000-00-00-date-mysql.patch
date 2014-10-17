@@ -1,0 +1,16 @@
+Description: Date of 0000-00-00 in MySQL backend crashes GnuCash 
+Origin: upstream, https://github.com/Gnucash/gnucash/commit/62b881523509a0c4ba011c4f7ef3aedc74d74113
+Bug: https://bugzilla.gnome.org/show_bug.cgi?id=736359
+Last-Update: 2014-10-17
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/src/engine/SchedXaction.c
++++ b/src/engine/SchedXaction.c
+@@ -659,6 +659,7 @@ xaccSchedXactionGetLastOccurDate(const S
+ void
+ xaccSchedXactionSetLastOccurDate(SchedXaction *sx, const GDate* new_last_occur)
+ {
++    g_return_if_fail (new_last_occur != NULL);
+     if (g_date_valid(&sx->last_date)
+             && g_date_compare(&sx->last_date, new_last_occur) == 0)
+         return;
