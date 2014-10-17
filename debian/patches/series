@@ -1,1 +1,2 @@
 hardening-fortify.patch
+crash-missing-comma.patch
