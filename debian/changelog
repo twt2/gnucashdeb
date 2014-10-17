@@ -1,3 +1,16 @@
+gnucash (1:2.6.4-2) unstable; urgency=medium
+
+  * crash-missing-comma.patch: new patch, fixes random crashes.
+    Thanks to Frédéric Brière for finding and fixing this issue.
+    (Closes: #764510)
+  * barchart.patch: new patch from upstream, fixes display problems in
+    barcharts. (Closes: #765412)
+  * More backports from upstream, fix various crashes:
+     + crash-0000-00-00-date-mysql.patch
+     + crash-reload-budget-report.patch
+
+ -- Sébastien Villemot <sebastien@debian.org>  Sat, 18 Oct 2014 00:03:06 +0200
+
 gnucash (1:2.6.4-1) unstable; urgency=medium
 
   * Imported Upstream version 2.6.4
