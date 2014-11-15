@@ -3,13 +3,30 @@ Origin: upstream,
         https://github.com/Gnucash/gnucash/commit/96289823e5a7b7904bf9e64fe94bcb1dbcb0c7ee
         https://github.com/Gnucash/gnucash/commit/6d0a3707e1f6cc0d8ca00a5a96fe0e9355bcbb61
         https://github.com/Gnucash/gnucash/commit/00b827dbf255d8c29c4c296e10a7baf4ee172cfe
+        https://github.com/Gnucash/gnucash/commit/3b21aacbc8476484f00a4558add9c198b0bdd306
 Bug: https://bugzilla.gnome.org/show_bug.cgi?id=737815
 Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=765412
-Last-Update: 2014-10-17
+            https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=767735
+Last-Update: 2014-11-15
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/src/report/report-system/html-barchart.scm
 +++ b/src/report/report-system/html-barchart.scm
+@@ -359,12 +359,12 @@
+                          (push "var d")
+                          (push series-index)
+                          (push " = [];\n")))
+-         (series-data-add (lambda (series-index date y)
++         (series-data-add (lambda (series-index x y)
+                          (push (string-append
+                                "  d"
+                                (number->string series-index)
+                                ".push(["
+-                               "\"" date "\""
++                               (number->string x)
+                                ", "
+                                (number->string y)
+                                "]);\n"))))
 @@ -386,7 +386,7 @@
              (push (gnc:html-js-include "jqplot/jquery.jqplot.js"))
              (push (gnc:html-js-include "jqplot/jqplot.barRenderer.js"))
@@ -19,15 +36,25 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
              (push (gnc:html-js-include "jqplot/jqplot.highlighter.js"))
              (push (gnc:html-js-include "jqplot/jqplot.canvasTextRenderer.js"))
              (push (gnc:html-js-include "jqplot/jqplot.canvasAxisTickRenderer.js"))
-@@ -421,7 +421,7 @@
-                     data)
-                   (series-data-end col (list-ref-safe (gnc:html-barchart-col-labels barchart) col))
-                   (if (< col (- cols 1))
--                      (loop (+ 1 col) 1)))))
-+                      (loop (+ 1 col) 0)))))
- 
- 
-             (push "var options = {
+@@ -406,15 +406,15 @@
+             (if (and data (list? data))
+               (let ((rows (length data))
+                     (cols 0))
+-                (let loop ((col 0) (rowcnt 0))
++                (let loop ((col 0) (rowcnt 1))
+                   (series-data-start col)
+                   (if (list? (car data))
+                       (begin 
+                         (set! cols (length (car data)))))    
+                   (for-each
+                     (lambda (row)
+-                      (if (< rowcnt rows)
+-                        (series-data-add col (list-ref (gnc:html-barchart-row-labels barchart) rowcnt)
++                      (if (<= rowcnt rows)
++                        (series-data-add col rowcnt
+                                        (ensure-numeric (list-ref-safe row col)))
+                       )
+                       (set! rowcnt (+ rowcnt 1)))
 @@ -445,7 +445,7 @@
                     },
                     axes: {
@@ -50,15 +77,25 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
                         zoom: true
                     }
                  };\n")
-@@ -495,12 +499,9 @@
-             (push "var plot = $.jqplot('")(push chart-id)(push"', data, options);
+@@ -489,6 +493,15 @@
+                 (push "  options.axes.yaxis.label = \"")
+                 (push y-label)
+                 (push "\";\n")))
++            (if (and (string? row-labels) (> (string-length row-labels) 0))
++              (begin 
++                (push "  options.axes.xaxis.ticks = [")
++                (for-each (lambda (val)
++                        (push "\"")
++                        (push val)
++                        (push "\","))
++                    (gnc:html-barchart-row-labels barchart))
++                (push "];\n")))
  
-   function formatTooltip(str, seriesIndex, pointIndex) {
--      if (options.axes.xaxis.ticks[pointIndex] !== undefined)
--          x = options.axes.xaxis.ticks[pointIndex];
--      else
--          x = pointIndex;
-+      x = data[seriesIndex][pointIndex][0];
+ 
+             (push "$.jqplot.config.enablePlugins = true;")
+@@ -500,7 +513,7 @@
+       else
+           x = pointIndex;
        y = data[seriesIndex][pointIndex][1].toFixed(2);
 -      return options.series[seriesIndex].label + ' ' + x + '<br><b>' + y + '</b>';
 +      return options.series[seriesIndex].label + '<br/>' + x + '<br/><b>' + y + '</b>';
