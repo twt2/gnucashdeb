@@ -1,3 +1,13 @@
+gnucash (1:2.6.6-1) UNRELEASED; urgency=low
+
+  * New upstream release [March 2015] (Closes: #764821).
+  * Removed backported patches.
+  * Removed unused lintian-overrides "binary-or-shlib-defines-rpath".
+  * Export LDFLAGS using DEB_LDFLAGS_MAINT_APPEND.
+  * Build with full hardening.
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Thu, 02 Apr 2015 16:55:33 +1100
+
 gnucash (1:2.6.4-3) unstable; urgency=medium
 
   * barchart.patch: incorporate upstream fix for stacked barchart graphs.
