@@ -659,6 +659,7 @@ xaccSchedXactionGetLastOccurDate(const SchedXaction *sx )
 void
 xaccSchedXactionSetLastOccurDate(SchedXaction *sx, const GDate* new_last_occur)
 {
+    g_return_if_fail (new_last_occur != NULL);
     if (g_date_valid(&sx->last_date)
             && g_date_compare(&sx->last_date, new_last_occur) == 0)
         return;
@@ -1150,8 +1151,11 @@ SXTmpStateData*
 gnc_sx_create_temporal_state(const SchedXaction *sx )
 {
     SXTmpStateData *toRet =
-        g_new0( SXTmpStateData, 1 );
-    toRet->last_date       = sx->last_date;
+	 g_new0( SXTmpStateData, 1 );
+    if (g_date_valid (&(sx->last_date)))
+	 toRet->last_date       = sx->last_date;
+    else
+	g_date_set_dmy (&(toRet->last_date), 1, 1, 1970);
     toRet->num_occur_rem   = sx->num_occurances_remain;
     toRet->num_inst   = sx->instance_num;
     return toRet;

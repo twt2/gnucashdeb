@@ -153,6 +153,9 @@
 /* Define to 1 if you have the `localtime_r' function. */
 #undef HAVE_LOCALTIME_R
 
+/* Define to 1 if you have the <ltdl.h> header file. */
+#undef HAVE_LTDL_H
+
 /* Define to 1 if you have the <mcheck.h> header file. */
 #undef HAVE_MCHECK_H
 
@@ -161,12 +164,6 @@
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
-
-/* System has no suitable keyring service */
-#undef HAVE_NO_KEYRING
-
-/* System has no suitable libsecret service */
-#undef HAVE_NO_LIBSECRET
 
 /* System has an OS X Key chain */
 #undef HAVE_OSX_KEYCHAIN

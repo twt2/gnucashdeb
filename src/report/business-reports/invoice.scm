@@ -27,10 +27,9 @@
 (use-modules (srfi srfi-1))
 (use-modules (gnucash printf))
 (use-modules (gnucash gnc-module))
+(use-modules (gnucash gettext))
 
 (gnc:module-load "gnucash/report/report-system" 0)
-(gnc:module-load "gnucash/app-utils" 0)
-
 (use-modules (gnucash report standard-reports))
 (use-modules (gnucash report business-reports))
 
@@ -330,7 +329,7 @@
    (gnc:make-text-option
     (N_ "Display") (N_ "Extra Notes")
      "u" (N_ "Extra notes to put on the invoice.")
-     (_ "Thank you for your patronage")))
+     (_ "Thank you for your patronage!")))
 
   (gnc:register-inv-option
    (gnc:make-string-option

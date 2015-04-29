@@ -252,7 +252,7 @@ test_book_get_counter( Fixture *fixture, gconstpointer pData )
     g_assert( g_strrstr( test_struct.msg, err_invalid_cnt ) != NULL );
     g_free( test_struct.msg );
 
-    counter = qof_book_get_counter( fixture->book, '\0' );
+    counter = qof_book_get_counter( fixture->book, NULL );
     g_assert_cmpint( counter, == , -1 );
     g_assert( g_strrstr( test_struct.msg, err_invalid_cnt ) != NULL );
     g_free( test_struct.msg );
@@ -289,7 +289,7 @@ test_book_get_counter_format ( Fixture *fixture, gconstpointer pData )
     g_free( test_struct.msg );
 
     g_test_message( "Testing counter format when counter name is empty string" );
-    r = qof_book_get_counter_format( fixture->book, '\0' );
+    r = qof_book_get_counter_format( fixture->book, NULL );
     g_assert_cmpstr( r, == , NULL );
     g_assert( g_strrstr( test_struct.msg, err_invalid_cnt ) != NULL );
     g_free( test_struct.msg );
@@ -331,7 +331,7 @@ test_book_increment_and_format_counter ( Fixture *fixture, gconstpointer pData )
     g_free( test_struct.msg );
 
     g_test_message( "Testing increment and format when counter name is empty string" );
-    r = qof_book_increment_and_format_counter( fixture->book, '\0' );
+    r = qof_book_increment_and_format_counter( fixture->book, NULL );
     g_assert_cmpstr( r, == , NULL );
     g_free( r );
     g_assert( g_strrstr( test_struct.msg, err_invalid_cnt ) != NULL );
@@ -611,7 +611,7 @@ test_book_foreach_collection( Fixture *fixture, gconstpointer pData )
     QofIdType my_type = "my_type", my_type2 = "my_type2";
     guint param = (guint) g_test_rand_int();
     /* GLib assertion messages which aren't filtered to make clang's output like gcc's */
-#ifdef __clang__
+#if defined(__clang__) && __clang_major__ < 6
 #define _func "void qof_book_foreach_collection(const QofBook *, QofCollectionForeachCB, gpointer)"
 #else
 #define _func "qof_book_foreach_collection"

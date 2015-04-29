@@ -1,15 +1,22 @@
 
-SUBDIRS = . doc lib src intl-scm packaging po accounts checks
+SUBDIRS = . doc lib src packaging po accounts checks
 
 GNC_CTAGS_FILE = @GNC_CTAGS_FILE@
 GNC_ETAGS_FILE = @GNC_ETAGS_FILE@
 
 noinst_DATA = make-gnucash-potfiles
 
+noinst_PROGRAMS    = gnc-guile
+gnc_guile_SOURCES = util/guile.c
+gnc_guile_CFLAGS  = ${GUILE_CFLAGS}
+gnc_guile_LDADD   = ${GUILE_LIBS}
+
 dist_doc_DATA = \
   AUTHORS \
   COPYING \
   ChangeLog \
+  ChangeLog.2014 \
+  ChangeLog.2013 \
   ChangeLog.2012 \
   ChangeLog.2011 \
   ChangeLog.2010 \
@@ -178,8 +185,6 @@ libtool: $(LIBTOOL_DEPS)
 
 .PHONY: pot
 pot: Makefile po/POTFILES.in
-	rm -f intl-scm/guile-strings.c
-	${MAKE} -C intl-scm
 	rm -f po/$(PACKAGE).pot
 	${MAKE} -C po $(PACKAGE).pot
 
@@ -189,10 +194,8 @@ $(srcdir)/po/POTFILES.in: make-gnucash-potfiles .potfiles
 
 # Creation rules so that po/gnucash.pot can always be created for
 # make dist.
-po/gnucash.pot: po/POTFILES.in intl-scm/guile-strings.c
+po/gnucash.pot: po/POTFILES.in
 	${MAKE} -C po gnucash.pot
-intl-scm/guile-strings.c:
-	${MAKE} -C intl-scm guile-strings.c
 
 .potfiles:
 
@@ -207,7 +210,7 @@ if BUILDING_FROM_SCM
 ChangeLog: NEWS
 	cd $(abs_srcdir) ; \
 	if test x$(SCM_TYPE) = xsvn ; then \
-	  $(SVN) log -v --xml -r HEAD:'{2013-01-01}' http://svn.gnucash.org/repo/gnucash | \
+	  $(SVN) log -v --xml -r HEAD:'{2015-01-01}' http://svn.gnucash.org/repo/gnucash | \
 	    $(XSLTPROC) --stringparam strip-prefix "gnucash/trunk" \
 	    --stringparam include-rev "yes" $(abs_srcdir)/macros/svn2cl.xsl - > $(abs_builddir)/$@ ; \
 	else \

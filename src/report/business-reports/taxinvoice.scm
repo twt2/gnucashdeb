@@ -30,9 +30,8 @@
   (else ))
 (use-modules (gnucash main))
 (use-modules (gnucash gnc-module))
-(use-modules (gnucash app-utils))
+(use-modules (gnucash gettext))
 (gnc:module-load "gnucash/report/report-system" 0)
-(gnc:module-load "gnucash/app-utils" 0)
 (gnc:module-load "gnucash/html" 0)
 (gnc:module-load "gnucash/engine" 0)
 
@@ -161,7 +160,7 @@
       "a" "" (lambda () '()) 
       #f))        ;customers-only)) ;-- see above
 
-(add-option (gnc:make-currency-option		gnc:pagename-general	optname-report-currency		"b" "" (N_ "")))
+(add-option (gnc:make-currency-option		gnc:pagename-general	optname-report-currency		"b" "" ""))
 
   ;; Elements page options
 (add-option (gnc:make-simple-boolean-option	elementspage	optname-col-date		"a" (N_ "Display the date?") #t))
@@ -241,7 +240,7 @@
   (add-option (gnc:make-text-option
                 notespage optname-extra-notes "a"
                 (_ "Notes added at end of invoice -- may contain HTML markup.") 
-                "Thank you for your patronage."))
+                (_ "Thank you for your patronage!")))
                 ;(N_ "(Development version -- don't rely on the numbers on this report without double-checking them.<br>Change the 'Extra Notes' option to get rid of this message)")))
 
   (add-option (gnc:make-text-option	notespage optname-extra-css "b"
