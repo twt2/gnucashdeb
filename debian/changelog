@@ -1,4 +1,4 @@
-gnucash (1:2.6.6-1) UNRELEASED; urgency=low
+gnucash (1:2.6.6-1) unstable; urgency=low
 
   [ Dmitry Smirnov ]
   * New upstream release [March 2015] (Closes: #764821).
@@ -6,11 +6,13 @@ gnucash (1:2.6.6-1) UNRELEASED; urgency=low
   * Removed unused lintian-overrides "binary-or-shlib-defines-rpath".
   * Export LDFLAGS using DEB_LDFLAGS_MAINT_APPEND.
   * Build with full hardening.
+  * Updated Vcs-Browser URL.
+  * Added "debian/gbp.conf".
 
   [ Sébastien Villemot ]
   * Hand over maintenance to Dmitry Smirnov.
 
- -- Dmitry Smirnov <onlyjob@debian.org>  Thu, 02 Apr 2015 16:55:33 +1100
+ -- Dmitry Smirnov <onlyjob@debian.org>  Wed, 29 Apr 2015 11:04:49 +1000
 
 gnucash (1:2.6.4-3) unstable; urgency=medium
 
