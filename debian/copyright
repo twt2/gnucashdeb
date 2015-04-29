@@ -212,13 +212,6 @@ Copyright: not applicable
 License: public-domain
  This code is in the public domain.
 
-Files: packaging/win32/pi.sh
-Copyright: Earnie Boyd <earnie@users.sf.net>
-License: GPL-2+
-Comment: 
- This file is a part of msysDVLPR, see
- http://sourceforge.net/projects/mingw/files/Other/Unsupported/MSYS/msysDVLPR/msysDVLPR-1.0.0-alpha-1.tar.gz/download
-
 Files: po/Makefile.in.in
 Copyright: 1995-1997 Ulrich Drepper <drepper@gnu.ai.mit.edu>
            2004-2008 Rodney Dawes <dobey.pwns@gmail.com>
