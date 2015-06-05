@@ -6,7 +6,7 @@ Standards-Version: 3.9.6
 Build-Depends: debhelper (>= 9), intltool, pkg-config, dh-autoreconf, dh-python,
  guile-2.0-dev,
  imagemagick,
- libaqbanking34-dev (>= 5.3.5beta-2~),
+ libaqbanking-dev (>= 5.6.0beta),
  libdbi-dev,
  libdbd-sqlite3,
  libglib2.0-dev (>= 2.26),
