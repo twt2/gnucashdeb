@@ -1,3 +1,14 @@
+gnucash (1:2.6.6-2) unstable; urgency=medium
+
+  * Update for soname bump in libaqbanking (Closes: #787868).
+    Thanks, Micha Lenk.
+  * Build-Depends:
+    - libaqbanking34-dev (>= 5.3.5beta-2~)
+    + libaqbanking-dev (>= 5.6.0beta)
+    + dh-python
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Sat, 06 Jun 2015 07:48:53 +1000
+
 gnucash (1:2.6.6-1) unstable; urgency=low
 
   [ Dmitry Smirnov ]
