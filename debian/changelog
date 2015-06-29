@@ -1,3 +1,9 @@
+gnucash (1:2.6.7-1) unstable; urgency=medium
+
+  * New upstream release [June 2015].
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Mon, 29 Jun 2015 18:54:13 +1000
+
 gnucash (1:2.6.6-2) unstable; urgency=medium
 
   * Update for soname bump in libaqbanking (Closes: #787868).
