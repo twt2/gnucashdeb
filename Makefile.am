@@ -89,7 +89,7 @@ EXTRA_DIST = \
   intltool-extract.in \
   intltool-merge.in \
   intltool-update.in \
-  util/gnc-scm-info
+  util/gnc-vcs-info
 
 ## We borrow guile's convention and use @-...-@ as the substitution
 ## brackets here, instead of the usual @...@.  This prevents autoconf
@@ -201,7 +201,7 @@ po/gnucash.pot: po/POTFILES.in
 
 SVN = svn
 
-if BUILDING_FROM_SCM
+if BUILDING_FROM_VCS
 # This rule will generate a ChangeLog of gnucash/trunk commits, plus
 # all additional branches that are added in
 # ./macros/svn2cl.xsl. (FIXME: Is the dependency on NEWS really a good
@@ -209,12 +209,12 @@ if BUILDING_FROM_SCM
 # change, so this should fit just fine.)
 ChangeLog: NEWS
 	cd $(abs_srcdir) ; \
-	if test x$(SCM_TYPE) = xsvn ; then \
+	if test x$(VCS_TYPE) = xsvn ; then \
 	  $(SVN) log -v --xml -r HEAD:'{2015-01-01}' http://svn.gnucash.org/repo/gnucash | \
 	    $(XSLTPROC) --stringparam strip-prefix "gnucash/trunk" \
 	    --stringparam include-rev "yes" $(abs_srcdir)/macros/svn2cl.xsl - > $(abs_builddir)/$@ ; \
 	else \
-	  if test x$(SCM_TYPE) = xgit ; then \
+	  if test x$(VCS_TYPE) = xgit ; then \
 	    "$(GIT_CMD)" log --format="%ad %aN %n%n%x09* %s%d%n" --date=short --since=2013-01-01 > $(abs_builddir)/$@ ; \
 	  else \
 	    touch $(abs_builddir)/$@ ; \

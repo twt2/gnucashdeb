@@ -20,7 +20,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 # Autoconf initialization
 AC_PREREQ(2.60)
-AC_INIT([GnuCash], [2.6.6], [gnucash-devel@gnucash.org])
+AC_INIT([GnuCash], [2.6.7], [gnucash-devel@gnucash.org])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_SRCDIR(src/engine/Transaction.h)
 AC_CONFIG_MACRO_DIR([macros])
@@ -91,7 +91,7 @@ AC_DEFINE_UNQUOTED(GNUCASH_LATEST_STABLE_SERIES, "$GNUCASH_LATEST_STABLE_SERIES"
     [Most recent stable GnuCash series])
 
 dnl Set of available languages.
-ALL_LINGUAS="ar as bg brx ca cs da de doi el en_GB es_NI es eu fa fi fr gu he hi hu it ja kn ko kok kok@latin ks lt lv mai mni mni@bengali mr nb ne nl pl pt_BR pt ro ru rw sk sv ta te tr uk ur vi zh_CN zh_TW"
+ALL_LINGUAS="ar as bg brx ca cs da de doi el en_GB es_NI es eu fa fi fr gu he hi hu it ja kn ko kok kok@latin ks lt lv mai mni mni@bengali mr nb ne nl pl pt_BR pt ro ru rw sk sr sv ta te tr uk ur vi zh_CN zh_TW"
 
 GETTEXT_PACKAGE=gnucash
 AC_SUBST(GETTEXT_PACKAGE)
@@ -172,6 +172,8 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS(limits.h sys/time.h sys/times.h sys/wait.h pow.h)
 oldcflags="$CFLAGS"
 CFLAGS=
+oldldflags="$LDFLAGS"
+LDFLAGS=
 AC_CHECK_FUNCS(stpcpy memcpy timegm towupper)
 AC_CHECK_FUNCS(setenv,,[
   AC_CHECK_FUNCS(putenv,,[
@@ -179,6 +181,7 @@ AC_CHECK_FUNCS(setenv,,[
   ])
 ])
 CFLAGS="$oldcflags"
+LDFLAGS="$oldldflags"
 STRUCT_TM_GMTOFF_CHECK
 cflags_save=${CFLAGS}
 CFLAGS="${CFLAGS} -Wall -Werror"
@@ -197,13 +200,13 @@ CFLAGS="${cflags_save}"
 
 # test whether we are building directly from svn/svk/git/bzr
 AC_MSG_CHECKING(if building from an scm managed directory)
-"$srcdir/util/gnc-scm-info" -r "$srcdir" >/dev/null 2>&1
-if test $? = 0 -o "x${BUILDING_FROM_SCM}" = "xyes" ; then
-  BUILDING_FROM_SCM=yes
-  SCM_TYPE=$("$srcdir/util/gnc-scm-info" -t "$srcdir")
-  AC_MSG_RESULT($SCM_TYPE)
+"$srcdir/util/gnc-vcs-info" -r "$srcdir" >/dev/null 2>&1
+if test $? = 0 -o "x${BUILDING_FROM_VCS}" = "xyes" ; then
+  BUILDING_FROM_VCS=yes
+  VCS_TYPE=$("$srcdir/util/gnc-vcs-info" -t "$srcdir")
+  AC_MSG_RESULT($VCS_TYPE)
 
-  if test "x${SCM_TYPE}" = "xgit"; then
+  if test "x${VCS_TYPE}" = "xgit"; then
     AC_MSG_CHECKING(git command to use due to detected git repo)
     # The windows build uses environment variable $GIT_CMD to invoke git (adding git
     # to the PATH in Windows results in a build failure).
@@ -215,33 +218,33 @@ if test $? = 0 -o "x${BUILDING_FROM_SCM}" = "xyes" ; then
   fi
 else
   AC_MSG_RESULT(no)
-  BUILDING_FROM_SCM=no
-  SCM_TYPE=
+  BUILDING_FROM_VCS=no
+  VCS_TYPE=
 
-  # Make sure we've got swig-runtime.h and gnc-scm-info.h
+  # Make sure we've got swig-runtime.h and gnc-vcs-info.h
   AC_CHECK_FILE(${srcdir}/src/swig-runtime.h, [],
     [AC_MSG_ERROR([
 
 It looks like you are NOT building from Subversion, svk, git or bzr
 but I cannot find swig-runtime.h.  Check your PATH and make sure
-we can find gnc-scm-info in your PATH!
+we can find gnc-vcs-info in your PATH!
 Either that or contact gnucash-devel@gnucash.org because
 the tarball you downloaded is broken.
 
     ])])
-  AC_CHECK_FILE(${srcdir}/src/core-utils/gnc-scm-info.h, [],
+  AC_CHECK_FILE(${srcdir}/src/core-utils/gnc-vcs-info.h, [],
     [AC_MSG_ERROR([
 
 It looks like you are NOT building from Subversion, svk, git or bzr
-but I cannot find gnc-scm-info.h.  Check your PATH and make sure
-we can find gnc-scm-info in your PATH!
+but I cannot find gnc-vcs-info.h.  Check your PATH and make sure
+we can find gnc-vcs-info in your PATH!
 Either that or contact gnucash-devel@gnucash.org because
 the tarball you downloaded is broken.
 
     ])])
 fi
-AM_CONDITIONAL(BUILDING_FROM_SCM, test "x$BUILDING_FROM_SCM" = "xyes")
-AC_SUBST(SCM_TYPE)
+AM_CONDITIONAL(BUILDING_FROM_VCS, test "x$BUILDING_FROM_VCS" = "xyes")
+AC_SUBST(VCS_TYPE)
 AC_SUBST(GIT_CMD)
 
 # Build dir adjustments
@@ -366,7 +369,7 @@ update to latest  darwin])
       platform=darwin/quartz
       AC_MSG_RESULT(yes)
       AC_DEFINE(GDK_QUARTZ,,[Using GDK Quartz (not X11)])
-      PKG_CHECK_MODULES([GTK_MAC], gtk-mac-integration,
+      PKG_CHECK_MODULES([GTK_MAC], gtk-mac-integration-gtk2,
                         [_gtk_mac=yes], [_gtk_mac=no])
       if test "x$_gtk_mac" = xyes; then
         GTK_MAC_LIBS="${GTK_MAC_LIBS} -lobjc -framework Cocoa"
@@ -494,7 +497,7 @@ the intltool-ltdl development packages ?])])
 # with that tarball so we have to prepare the tarball for guile 2
 # compatibility.
 #
-if test "${BUILDING_FROM_SCM}" = yes
+if test "${BUILDING_FROM_VCS}" = yes
 then
     AX_PKG_SWIG(2.0.10, [gnc_have_swig_2_0_10=yes], [gnc_have_swig_2_0_10=no])
 
@@ -503,7 +506,7 @@ then
         if test "${gnc_have_swig_2_0_10}" = no
         then
             AC_MSG_ERROR([
-    You are building from ${SCM_TYPE} but swig was not found or too old.
+    You are building from ${VCS_TYPE} but swig was not found or too old.
     To build gnucash you need at least swig version 2.0.10.
             ])
         fi
@@ -512,7 +515,7 @@ then
         then
             AX_PKG_SWIG(1.3.31, [],
                 [AC_MSG_ERROR([
-    You are building from ${SCM_TYPE} but swig was not found or too old.
+    You are building from ${VCS_TYPE} but swig was not found or too old.
     To build gnucash with guile 1.8 you need at least swig version 1.3.31.
             ])])
         fi
@@ -617,7 +620,7 @@ then
         if test $? -eq 0; then
           EXTRA_SEARCH_LIBS="$(pkg-config --variable=libdir dbi)/dbd"
         else
-          EXTRA_SEARCH_LIBS="/usr/lib/dbd:/usr/lib64/dbd:${libdir}/dbd:$(prefix)/lib/dbd"
+          EXTRA_SEARCH_LIBS="/usr/lib/dbd:/usr/lib64/dbd:${libdir}/dbd:${prefix}/lib/dbd"
         fi]]
        )
     case $host_os in
@@ -633,12 +636,14 @@ then
 	 export LIBS="$lt_cv_dlopen_libs $LIBS"
 	 ;;
       esac
-      export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$EXTRA_SEARCH_LIBS"
-      AC_MSG_CHECKING([Looking for at least one supported DBD module])
-      AC_RUN_IFELSE([AC_LANG_PROGRAM([$LDINC],
+    old_ld_library_path="$LD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$EXTRA_SEARCH_LIBS"
+    AC_MSG_NOTICE([Search Path $LD_LIBRARY_PATH])
+    AC_MSG_CHECKING([Looking for at least one supported DBD module])
+    AC_RUN_IFELSE([AC_LANG_PROGRAM([$LDINC],
 				     [[if (!$lt_cv_dlopen("libdbdsqlite3.$LDEXT"$LDFUNCARGS)) return -1;
 				     ]])],AC_MSG_RESULT([SQLite3]),
-      	AC_RUN_IFELSE([AC_LANG_PROGRAM([$LDINC],
+    	AC_RUN_IFELSE([AC_LANG_PROGRAM([$LDINC],
 				     [[if (!$lt_cv_dlopen("libdbdmysql.$LDEXT"$LDFUNCARGS)) return -1;
 					]])],AC_MSG_RESULT([MySql]),
 	  AC_RUN_IFELSE([AC_LANG_PROGRAM([$LDINC],
@@ -661,6 +666,7 @@ to the configure argument list and run it again.
     LIBDBI_LIBS=-ldbi
     _COMPONENTS="$_COMPONENTS dbi"
     LIBS=$saved_libs
+    export LD_LIBRARY_PATH="$old_ld_library_path"
   else
     AC_MSG_ERROR([
 
@@ -1304,7 +1310,7 @@ then
   #warnFLAGS="${warnFLAGS} -Werror-implicit-function-declaration" # In -Wall
 
   # error-on-warning should not be active in (stable) release tarballs
-  if test "x$BUILDING_FROM_SCM" = "xyes"
+  if test "x$BUILDING_FROM_VCS" = "xyes"
   then
     # This code is from svn/svk/git/bzr, so enable error-on-warning
     error_on_warning_as_default="yes"
