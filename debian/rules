@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 
 # Uncomment this to turn on verbose mode.
-export DH_VERBOSE=1
+#export DH_VERBOSE=1
 
 # Hack for Gnucash build system
 export BUILDING_FROM_SVN=$(if $(wildcard autogen.sh),yes,no)
