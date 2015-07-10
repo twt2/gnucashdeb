@@ -1,3 +1,15 @@
+gnucash (1:2.6.7-2) unstable; urgency=medium
+
+  * Run post-build tests:
+    + Added "debian/clean".
+    + Build-Depends += "locales-all".
+    + New "disable-broken-tests.patch".
+    + source/options/extend-diff-ignore for .gml2 files.
+  * rules: commented "export DH_VERBOSE=1" to reduce DH verbosity.
+  * python-gnucash: droped unused lintian-overrides.
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Fri, 10 Jul 2015 17:40:47 +1000
+
 gnucash (1:2.6.7-1) unstable; urgency=medium
 
   * New upstream release [June 2015].
