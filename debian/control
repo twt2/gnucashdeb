@@ -22,6 +22,8 @@ Build-Depends: debhelper (>= 9), intltool, pkg-config, dh-autoreconf, dh-python,
  python-dev,
  xsltproc,
  zlib1g-dev
+## Needed by tests:
+ ,locales-all
 Build-Conflicts: guile-1.8
 Homepage: http://www.gnucash.org/
 Vcs-Browser: http://anonscm.debian.org/cgit/pkg-gnucash/gnucash.git
