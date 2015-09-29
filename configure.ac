@@ -20,7 +20,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 # Autoconf initialization
 AC_PREREQ(2.60)
-AC_INIT([GnuCash], [2.6.7], [gnucash-devel@gnucash.org])
+AC_INIT([GnuCash], [2.6.8], [gnucash-devel@gnucash.org])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_SRCDIR(src/engine/Transaction.h)
 AC_CONFIG_MACRO_DIR([macros])
@@ -91,7 +91,13 @@ AC_DEFINE_UNQUOTED(GNUCASH_LATEST_STABLE_SERIES, "$GNUCASH_LATEST_STABLE_SERIES"
     [Most recent stable GnuCash series])
 
 dnl Set of available languages.
-ALL_LINGUAS="ar as bg brx ca cs da de doi el en_GB es_NI es eu fa fi fr gu he hi hu it ja kn ko kok kok@latin ks lt lv mai mni mni@bengali mr nb ne nl pl pt_BR pt ro ru rw sk sr sv ta te tr uk ur vi zh_CN zh_TW"
+TP_LINGUAS="az ca cs da eu fa ja nl pt rw sk sr sv tr uk zh_CN"
+dnl already marked as external at TP:
+GC_LINGUAS="ar bg de el en_GB es fi fr gu he hi hu it kn ko lt lv mr nb ne pl pt_BR ro ru ta te ur vi zh_TW "
+dnl not marked or no TP team:
+NEW_LINGUAS="as brx doi es_NI kok kok@latin ks mai mni mni@bengali"
+
+ALL_LINGUAS="$TP_LINGUAS $GC_LINGUAS $NEW_LINGUAS"
 
 GETTEXT_PACKAGE=gnucash
 AC_SUBST(GETTEXT_PACKAGE)
@@ -254,18 +260,6 @@ AM_CONDITIONAL(GNUCASH_SEPARATE_BUILDDIR, test "x${srcdir}" != "x.")
 AM_BINRELOC
 
 ### --------------------------------------------------------------------------
-### See if we have pkg-config
-
-AC_PATH_PROG(PKG_CONFIG,pkg-config)
-if test "x$PKG_CONFIG" = x; then
-  # @*%&$ Ximian programmers renamed this application
-  AC_PATH_PROG(PKG_CONFIG,pkgconfig)
-  if test "x$PKG_CONFIG" = x; then
-    AC_MSG_ERROR([Could not find the pkg-config (or pkgconfig) program.],)
-  fi
-fi
-
-### --------------------------------------------------------------------------
 ### Glib checks.
 
 # We require glib >= 2.28, released together with gtk-2.24;
@@ -323,6 +317,9 @@ AC_TRY_RUN([
 ])
 CFLAGS="$GNC_OLDCFLAGS"
 LDFLAGS="$GNC_OLDLDFLAGS"
+dnl First remove any existing -std= setting from CFLAGS then add the one we want.
+CFLAGS=`echo ${CFLAGS} | sed -E -e "s,-std=[[a-z0-9]]+,,g"`
+CFLAGS="${CFLAGS} -std=gnu99"
 
 # Gnucash replaced dlopen/dlsym by the g_module functions; dlsym
 # is needed optionally in one place for BSD linkers, though.

@@ -1,6 +1,6 @@
 
-(define gnc:version "2.6.7")
+(define gnc:version "2.6.8")
 
 ;; Automatically generated defaults (don't use these directly --
 ;; they're used during actual initialization elsewhere)
-(define gnc:_install-doc-path_ '("/opt/share"))
+(define gnc:_install-doc-path_ '("/opt/gnucash/share"))

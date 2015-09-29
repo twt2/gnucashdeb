@@ -1255,95 +1255,96 @@ static swig_guile_clientdata _swig_guile_clientdata_gncAccountValue = { NULL, SC
 #define SWIGTYPE_p_GncTaxIncluded swig_types[26]
 #define SWIGTYPE_p_KvpFrame swig_types[27]
 #define SWIGTYPE_p_KvpValue swig_types[28]
-#define SWIGTYPE_p_QofBook swig_types[29]
-#define SWIGTYPE_p_QofCharMatch swig_types[30]
-#define SWIGTYPE_p_QofCollection swig_types[31]
-#define SWIGTYPE_p_QofDateMatch swig_types[32]
-#define SWIGTYPE_p_QofGuidMatch swig_types[33]
-#define SWIGTYPE_p_QofIdType swig_types[34]
-#define SWIGTYPE_p_QofIdTypeConst swig_types[35]
-#define SWIGTYPE_p_QofInstance swig_types[36]
-#define SWIGTYPE_p_QofInstanceClass swig_types[37]
-#define SWIGTYPE_p_QofNumericMatch swig_types[38]
-#define SWIGTYPE_p_QofParam swig_types[39]
-#define SWIGTYPE_p_QofQueryCompare swig_types[40]
-#define SWIGTYPE_p_QofQueryOp swig_types[41]
-#define SWIGTYPE_p_QofSession swig_types[42]
-#define SWIGTYPE_p_QofStringMatch swig_types[43]
-#define SWIGTYPE_p_QofType swig_types[44]
-#define SWIGTYPE_p_QuoteSourceType swig_types[45]
-#define SWIGTYPE_p_Recurrence swig_types[46]
-#define SWIGTYPE_p_Split swig_types[47]
-#define SWIGTYPE_p_SplitList swig_types[48]
-#define SWIGTYPE_p_Timespec swig_types[49]
-#define SWIGTYPE_p_Transaction swig_types[50]
-#define SWIGTYPE_p_TransactionCallback swig_types[51]
-#define SWIGTYPE_p__GncBudgetClass swig_types[52]
-#define SWIGTYPE_p__GncCommodityClass swig_types[53]
-#define SWIGTYPE_p__GncCommodityNamespaceClass swig_types[54]
-#define SWIGTYPE_p__GncPriceClass swig_types[55]
-#define SWIGTYPE_p__GncPriceDBClass swig_types[56]
-#define SWIGTYPE_p__QofQuery swig_types[57]
-#define SWIGTYPE_p__QofQueryPredData swig_types[58]
-#define SWIGTYPE_p__SplitClass swig_types[59]
-#define SWIGTYPE_p__TransactionClass swig_types[60]
-#define SWIGTYPE_p__gncAccountValue swig_types[61]
-#define SWIGTYPE_p__gncAddress swig_types[62]
-#define SWIGTYPE_p__gncAddressClass swig_types[63]
-#define SWIGTYPE_p__gncBillTerm swig_types[64]
-#define SWIGTYPE_p__gncBillTermClass swig_types[65]
-#define SWIGTYPE_p__gncCustomer swig_types[66]
-#define SWIGTYPE_p__gncCustomerClass swig_types[67]
-#define SWIGTYPE_p__gncEmployee swig_types[68]
-#define SWIGTYPE_p__gncEmployeeClass swig_types[69]
-#define SWIGTYPE_p__gncEntry swig_types[70]
-#define SWIGTYPE_p__gncEntryClass swig_types[71]
-#define SWIGTYPE_p__gncInvoice swig_types[72]
-#define SWIGTYPE_p__gncInvoiceClass swig_types[73]
-#define SWIGTYPE_p__gncJob swig_types[74]
-#define SWIGTYPE_p__gncJobClass swig_types[75]
-#define SWIGTYPE_p__gncOrder swig_types[76]
-#define SWIGTYPE_p__gncOrderClass swig_types[77]
-#define SWIGTYPE_p__gncOwner swig_types[78]
-#define SWIGTYPE_p__gncTaxTable swig_types[79]
-#define SWIGTYPE_p__gncTaxTableClass swig_types[80]
-#define SWIGTYPE_p__gncTaxTableEntry swig_types[81]
-#define SWIGTYPE_p__gncVendor swig_types[82]
-#define SWIGTYPE_p__gncVendorClass swig_types[83]
-#define SWIGTYPE_p__gnc_monetary swig_types[84]
-#define SWIGTYPE_p__gnc_numeric swig_types[85]
-#define SWIGTYPE_p_budget_s swig_types[86]
-#define SWIGTYPE_p_char swig_types[87]
-#define SWIGTYPE_p_cleared_match_t swig_types[88]
-#define SWIGTYPE_p_double swig_types[89]
-#define SWIGTYPE_p_f_p_Account_p_void__p_void swig_types[90]
-#define SWIGTYPE_p_f_p_Account_p_void__void swig_types[91]
-#define SWIGTYPE_p_f_p_GNCLot_p_void__gboolean swig_types[92]
-#define SWIGTYPE_p_f_p_GNCLot_p_void__p_void swig_types[93]
-#define SWIGTYPE_p_f_p_GNCPrice_p_void__gboolean swig_types[94]
-#define SWIGTYPE_p_f_p_gnc_commodity_p_void__gboolean swig_types[95]
-#define SWIGTYPE_p_f_p_void_p_void__void swig_types[96]
-#define SWIGTYPE_p_float swig_types[97]
-#define SWIGTYPE_p_gboolean swig_types[98]
-#define SWIGTYPE_p_gint32 swig_types[99]
-#define SWIGTYPE_p_gint64 swig_types[100]
-#define SWIGTYPE_p_gnc_commodity swig_types[101]
-#define SWIGTYPE_p_gnc_commodity_namespace swig_types[102]
-#define SWIGTYPE_p_gnc_commodity_table swig_types[103]
-#define SWIGTYPE_p_gnc_price_db_s swig_types[104]
-#define SWIGTYPE_p_gnc_price_lookup_s swig_types[105]
-#define SWIGTYPE_p_gnc_quote_source swig_types[106]
-#define SWIGTYPE_p_guint32 swig_types[107]
-#define SWIGTYPE_p_guint8 swig_types[108]
-#define SWIGTYPE_p_gunichar swig_types[109]
-#define SWIGTYPE_p_int swig_types[110]
-#define SWIGTYPE_p_p_GList swig_types[111]
-#define SWIGTYPE_p_query_txn_match_t swig_types[112]
-#define SWIGTYPE_p_unsigned_int swig_types[113]
-#define SWIGTYPE_p_unsigned_long swig_types[114]
-#define SWIGTYPE_p_void swig_types[115]
-static swig_type_info *swig_types[117];
-static swig_module_info swig_module = {swig_types, 116, 0, 0, 0, 0};
+#define SWIGTYPE_p_PriceSource swig_types[29]
+#define SWIGTYPE_p_QofBook swig_types[30]
+#define SWIGTYPE_p_QofCharMatch swig_types[31]
+#define SWIGTYPE_p_QofCollection swig_types[32]
+#define SWIGTYPE_p_QofDateMatch swig_types[33]
+#define SWIGTYPE_p_QofGuidMatch swig_types[34]
+#define SWIGTYPE_p_QofIdType swig_types[35]
+#define SWIGTYPE_p_QofIdTypeConst swig_types[36]
+#define SWIGTYPE_p_QofInstance swig_types[37]
+#define SWIGTYPE_p_QofInstanceClass swig_types[38]
+#define SWIGTYPE_p_QofNumericMatch swig_types[39]
+#define SWIGTYPE_p_QofParam swig_types[40]
+#define SWIGTYPE_p_QofQueryCompare swig_types[41]
+#define SWIGTYPE_p_QofQueryOp swig_types[42]
+#define SWIGTYPE_p_QofSession swig_types[43]
+#define SWIGTYPE_p_QofStringMatch swig_types[44]
+#define SWIGTYPE_p_QofType swig_types[45]
+#define SWIGTYPE_p_QuoteSourceType swig_types[46]
+#define SWIGTYPE_p_Recurrence swig_types[47]
+#define SWIGTYPE_p_Split swig_types[48]
+#define SWIGTYPE_p_SplitList swig_types[49]
+#define SWIGTYPE_p_Timespec swig_types[50]
+#define SWIGTYPE_p_Transaction swig_types[51]
+#define SWIGTYPE_p_TransactionCallback swig_types[52]
+#define SWIGTYPE_p__GncBudgetClass swig_types[53]
+#define SWIGTYPE_p__GncCommodityClass swig_types[54]
+#define SWIGTYPE_p__GncCommodityNamespaceClass swig_types[55]
+#define SWIGTYPE_p__GncPriceClass swig_types[56]
+#define SWIGTYPE_p__GncPriceDBClass swig_types[57]
+#define SWIGTYPE_p__QofQuery swig_types[58]
+#define SWIGTYPE_p__QofQueryPredData swig_types[59]
+#define SWIGTYPE_p__SplitClass swig_types[60]
+#define SWIGTYPE_p__TransactionClass swig_types[61]
+#define SWIGTYPE_p__gncAccountValue swig_types[62]
+#define SWIGTYPE_p__gncAddress swig_types[63]
+#define SWIGTYPE_p__gncAddressClass swig_types[64]
+#define SWIGTYPE_p__gncBillTerm swig_types[65]
+#define SWIGTYPE_p__gncBillTermClass swig_types[66]
+#define SWIGTYPE_p__gncCustomer swig_types[67]
+#define SWIGTYPE_p__gncCustomerClass swig_types[68]
+#define SWIGTYPE_p__gncEmployee swig_types[69]
+#define SWIGTYPE_p__gncEmployeeClass swig_types[70]
+#define SWIGTYPE_p__gncEntry swig_types[71]
+#define SWIGTYPE_p__gncEntryClass swig_types[72]
+#define SWIGTYPE_p__gncInvoice swig_types[73]
+#define SWIGTYPE_p__gncInvoiceClass swig_types[74]
+#define SWIGTYPE_p__gncJob swig_types[75]
+#define SWIGTYPE_p__gncJobClass swig_types[76]
+#define SWIGTYPE_p__gncOrder swig_types[77]
+#define SWIGTYPE_p__gncOrderClass swig_types[78]
+#define SWIGTYPE_p__gncOwner swig_types[79]
+#define SWIGTYPE_p__gncTaxTable swig_types[80]
+#define SWIGTYPE_p__gncTaxTableClass swig_types[81]
+#define SWIGTYPE_p__gncTaxTableEntry swig_types[82]
+#define SWIGTYPE_p__gncVendor swig_types[83]
+#define SWIGTYPE_p__gncVendorClass swig_types[84]
+#define SWIGTYPE_p__gnc_monetary swig_types[85]
+#define SWIGTYPE_p__gnc_numeric swig_types[86]
+#define SWIGTYPE_p_budget_s swig_types[87]
+#define SWIGTYPE_p_char swig_types[88]
+#define SWIGTYPE_p_cleared_match_t swig_types[89]
+#define SWIGTYPE_p_double swig_types[90]
+#define SWIGTYPE_p_f_p_Account_p_void__p_void swig_types[91]
+#define SWIGTYPE_p_f_p_Account_p_void__void swig_types[92]
+#define SWIGTYPE_p_f_p_GNCLot_p_void__gboolean swig_types[93]
+#define SWIGTYPE_p_f_p_GNCLot_p_void__p_void swig_types[94]
+#define SWIGTYPE_p_f_p_GNCPrice_p_void__gboolean swig_types[95]
+#define SWIGTYPE_p_f_p_gnc_commodity_p_void__gboolean swig_types[96]
+#define SWIGTYPE_p_f_p_void_p_void__void swig_types[97]
+#define SWIGTYPE_p_float swig_types[98]
+#define SWIGTYPE_p_gboolean swig_types[99]
+#define SWIGTYPE_p_gint32 swig_types[100]
+#define SWIGTYPE_p_gint64 swig_types[101]
+#define SWIGTYPE_p_gnc_commodity swig_types[102]
+#define SWIGTYPE_p_gnc_commodity_namespace swig_types[103]
+#define SWIGTYPE_p_gnc_commodity_table swig_types[104]
+#define SWIGTYPE_p_gnc_price_db_s swig_types[105]
+#define SWIGTYPE_p_gnc_price_lookup_s swig_types[106]
+#define SWIGTYPE_p_gnc_quote_source swig_types[107]
+#define SWIGTYPE_p_guint32 swig_types[108]
+#define SWIGTYPE_p_guint8 swig_types[109]
+#define SWIGTYPE_p_gunichar swig_types[110]
+#define SWIGTYPE_p_int swig_types[111]
+#define SWIGTYPE_p_p_GList swig_types[112]
+#define SWIGTYPE_p_query_txn_match_t swig_types[113]
+#define SWIGTYPE_p_unsigned_int swig_types[114]
+#define SWIGTYPE_p_unsigned_long swig_types[115]
+#define SWIGTYPE_p_void swig_types[116]
+static swig_type_info *swig_types[118];
+static swig_module_info swig_module = {swig_types, 117, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1499,6 +1500,19 @@ static const GncGUID * gncBudgetGetGUID(GncBudget *x)
 
   static QofIdType QOF_ID_BOOK_SCM (void) { return QOF_ID_BOOK; }
 
+static int gswig_const_PRICE_SOURCE_EDIT_DLG = PRICE_SOURCE_EDIT_DLG;
+static int gswig_const_PRICE_SOURCE_FQ = PRICE_SOURCE_FQ;
+static int gswig_const_PRICE_SOURCE_USER_PRICE = PRICE_SOURCE_USER_PRICE;
+static int gswig_const_PRICE_SOURCE_XFER_DLG_VAL = PRICE_SOURCE_XFER_DLG_VAL;
+static int gswig_const_PRICE_SOURCE_SPLIT_REG = PRICE_SOURCE_SPLIT_REG;
+static int gswig_const_PRICE_SOURCE_STOCK_SPLIT = PRICE_SOURCE_STOCK_SPLIT;
+static int gswig_const_PRICE_SOURCE_INVOICE = PRICE_SOURCE_INVOICE;
+static int gswig_const_PRICE_SOURCE_INVALID = PRICE_SOURCE_INVALID;
+static char *gswig_const_PRICE_TYPE_LAST = "last";
+static char *gswig_const_PRICE_TYPE_UNK = "unknown";
+static char *gswig_const_PRICE_TYPE_TRN = "transaction";
+static int gswig_const_CURRENCY_DENOM = 10000;
+static int gswig_const_COMMODITY_DENOM_MULT = 10000;
 static char *gswig_const_PRICE_COMMODITY = "price-commodity";
 static char *gswig_const_PRICE_CURRENCY = "price-currency";
 static char *gswig_const_PRICE_DATE = "price-date";
@@ -12264,6 +12278,171 @@ _wrap_gnc_pricedb_get_type ()
 
 
 static SCM
+_wrap_PRICE_SOURCE_EDIT_DLG(SCM s_0)
+{
+#define FUNC_NAME "PRICE-SOURCE-EDIT-DLG"
+  SCM gswig_result;
+  
+  {
+    gswig_result = scm_from_long(gswig_const_PRICE_SOURCE_EDIT_DLG);
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_PRICE_SOURCE_FQ(SCM s_0)
+{
+#define FUNC_NAME "PRICE-SOURCE-FQ"
+  SCM gswig_result;
+  
+  {
+    gswig_result = scm_from_long(gswig_const_PRICE_SOURCE_FQ);
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_PRICE_SOURCE_USER_PRICE(SCM s_0)
+{
+#define FUNC_NAME "PRICE-SOURCE-USER-PRICE"
+  SCM gswig_result;
+  
+  {
+    gswig_result = scm_from_long(gswig_const_PRICE_SOURCE_USER_PRICE);
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_PRICE_SOURCE_XFER_DLG_VAL(SCM s_0)
+{
+#define FUNC_NAME "PRICE-SOURCE-XFER-DLG-VAL"
+  SCM gswig_result;
+  
+  {
+    gswig_result = scm_from_long(gswig_const_PRICE_SOURCE_XFER_DLG_VAL);
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_PRICE_SOURCE_SPLIT_REG(SCM s_0)
+{
+#define FUNC_NAME "PRICE-SOURCE-SPLIT-REG"
+  SCM gswig_result;
+  
+  {
+    gswig_result = scm_from_long(gswig_const_PRICE_SOURCE_SPLIT_REG);
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_PRICE_SOURCE_STOCK_SPLIT(SCM s_0)
+{
+#define FUNC_NAME "PRICE-SOURCE-STOCK-SPLIT"
+  SCM gswig_result;
+  
+  {
+    gswig_result = scm_from_long(gswig_const_PRICE_SOURCE_STOCK_SPLIT);
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_PRICE_SOURCE_INVOICE(SCM s_0)
+{
+#define FUNC_NAME "PRICE-SOURCE-INVOICE"
+  SCM gswig_result;
+  
+  {
+    gswig_result = scm_from_long(gswig_const_PRICE_SOURCE_INVOICE);
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_PRICE_SOURCE_INVALID(SCM s_0)
+{
+#define FUNC_NAME "PRICE-SOURCE-INVALID"
+  SCM gswig_result;
+  
+  {
+    gswig_result = scm_from_long(gswig_const_PRICE_SOURCE_INVALID);
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_PRICE_TYPE_LAST(SCM s_0)
+{
+#define FUNC_NAME "PRICE-TYPE-LAST"
+  SCM gswig_result;
+  
+  {
+    gswig_result = SWIG_str02scm(gswig_const_PRICE_TYPE_LAST);
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_PRICE_TYPE_UNK(SCM s_0)
+{
+#define FUNC_NAME "PRICE-TYPE-UNK"
+  SCM gswig_result;
+  
+  {
+    gswig_result = SWIG_str02scm(gswig_const_PRICE_TYPE_UNK);
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_PRICE_TYPE_TRN(SCM s_0)
+{
+#define FUNC_NAME "PRICE-TYPE-TRN"
+  SCM gswig_result;
+  
+  {
+    gswig_result = SWIG_str02scm(gswig_const_PRICE_TYPE_TRN);
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
 _wrap_gnc_price_create (SCM s_0)
 {
 #define FUNC_NAME "gnc-price-create"
@@ -12471,6 +12650,30 @@ _wrap_gnc_price_set_source (SCM s_0, SCM s_1)
 {
 #define FUNC_NAME "gnc-price-set-source"
   GNCPrice *arg1 = (GNCPrice *) 0 ;
+  PriceSource arg2 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  
+  {
+    arg1 = (GNCPrice *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_GNCPrice, 1, 0);
+  }
+  {
+    arg2 = (PriceSource) scm_to_int(s_1); 
+  }
+  gnc_price_set_source(arg1,arg2);
+  gswig_result = SCM_UNSPECIFIED;
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_price_set_source_string (SCM s_0, SCM s_1)
+{
+#define FUNC_NAME "gnc-price-set-source-string"
+  GNCPrice *arg1 = (GNCPrice *) 0 ;
   char *arg2 = (char *) 0 ;
   int must_free2 = 0 ;
   SCM gswig_result;
@@ -12483,7 +12686,7 @@ _wrap_gnc_price_set_source (SCM s_0, SCM s_1)
     arg2 = (char *)SWIG_scm2str(s_1);
     must_free2 = 1;
   }
-  gnc_price_set_source(arg1,(char const *)arg2);
+  gnc_price_set_source_string(arg1,(char const *)arg2);
   gswig_result = SCM_UNSPECIFIED;
   
   if (must_free2 && arg2) SWIG_free(arg2);
@@ -12643,12 +12846,35 @@ _wrap_gnc_price_get_source (SCM s_0)
   GNCPrice *arg1 = (GNCPrice *) 0 ;
   SCM gswig_result;
   SWIGUNUSED int gswig_list_p = 0;
+  PriceSource result;
+  
+  {
+    arg1 = (GNCPrice *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_GNCPrice, 1, 0);
+  }
+  result = (PriceSource)gnc_price_get_source((GNCPrice const *)arg1);
+  {
+    gswig_result = scm_from_long(result); 
+  }
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_price_get_source_string (SCM s_0)
+{
+#define FUNC_NAME "gnc-price-get-source-string"
+  GNCPrice *arg1 = (GNCPrice *) 0 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
   char *result = 0 ;
   
   {
     arg1 = (GNCPrice *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_GNCPrice, 1, 0);
   }
-  result = (char *)gnc_price_get_source((GNCPrice const *)arg1);
+  result = (char *)gnc_price_get_source_string((GNCPrice const *)arg1);
   {
     gswig_result = SCM_UNSPECIFIED;
     if (result) {
@@ -12764,6 +12990,36 @@ _wrap_gnc_price_print (SCM s_0, SCM s_1, SCM s_2)
   gswig_result = SCM_UNSPECIFIED;
   
   
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_CURRENCY_DENOM(SCM s_0)
+{
+#define FUNC_NAME "CURRENCY-DENOM"
+  SCM gswig_result;
+  
+  {
+    gswig_result = scm_from_long(gswig_const_CURRENCY_DENOM);
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_COMMODITY_DENOM_MULT(SCM s_0)
+{
+#define FUNC_NAME "COMMODITY-DENOM-MULT"
+  SCM gswig_result;
+  
+  {
+    gswig_result = scm_from_long(gswig_const_COMMODITY_DENOM_MULT);
+  }
   
   return gswig_result;
 #undef FUNC_NAME
@@ -18365,6 +18621,24 @@ _wrap_gnc_numeric_to_decimal (SCM s_0, SCM s_1)
   gswig_result = result ? SCM_BOOL_T : SCM_BOOL_F;
   
   
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_numeric_invert (SCM s_0)
+{
+#define FUNC_NAME "gnc-numeric-invert"
+  gnc_numeric arg1 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  gnc_numeric result;
+  
+  arg1 = gnc_scm_to_numeric(s_0);
+  result = gnc_numeric_invert(arg1);
+  gswig_result = gnc_numeric_to_scm(result);
   
   return gswig_result;
 #undef FUNC_NAME
@@ -35699,6 +35973,7 @@ static swig_type_info _swigt__p_GncOwnerType = {"_p_GncOwnerType", "enum GncOwne
 static swig_type_info _swigt__p_GncTaxIncluded = {"_p_GncTaxIncluded", "enum GncTaxIncluded *|GncTaxIncluded *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_KvpFrame = {"_p_KvpFrame", "KvpFrame *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_KvpValue = {"_p_KvpValue", "KvpValue *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_PriceSource = {"_p_PriceSource", "enum PriceSource *|PriceSource *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_QofBook = {"_p_QofBook", "QofBook *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_QofCharMatch = {"_p_QofCharMatch", "enum QofCharMatch *|QofCharMatch *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_QofCollection = {"_p_QofCollection", "QofCollection *", 0, 0, (void*)0, 0};
@@ -35817,6 +36092,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_GncTaxIncluded,
   &_swigt__p_KvpFrame,
   &_swigt__p_KvpValue,
+  &_swigt__p_PriceSource,
   &_swigt__p_QofBook,
   &_swigt__p_QofCharMatch,
   &_swigt__p_QofCollection,
@@ -35935,6 +36211,7 @@ static swig_cast_info _swigc__p_GncOwnerType[] = {  {&_swigt__p_GncOwnerType, 0,
 static swig_cast_info _swigc__p_GncTaxIncluded[] = {  {&_swigt__p_GncTaxIncluded, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_KvpFrame[] = {  {&_swigt__p_KvpFrame, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_KvpValue[] = {  {&_swigt__p_KvpValue, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_PriceSource[] = {  {&_swigt__p_PriceSource, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_QofBook[] = {  {&_swigt__p_QofBook, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_QofCharMatch[] = {  {&_swigt__p_QofCharMatch, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_QofCollection[] = {  {&_swigt__p_QofCollection, 0, 0, 0},{0, 0, 0, 0}};
@@ -36053,6 +36330,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_GncTaxIncluded,
   _swigc__p_KvpFrame,
   _swigc__p_KvpValue,
+  _swigc__p_PriceSource,
   _swigc__p_QofBook,
   _swigc__p_QofCharMatch,
   _swigc__p_QofCollection,
@@ -36849,6 +37127,17 @@ SWIG_init(void)
   scm_c_define_gsubr("gnc-book-to-scm", 1, 0, 0, (swig_guile_proc) _wrap_gnc_book_to_scm);
   scm_c_define_gsubr("gnc-price-get-type", 0, 0, 0, (swig_guile_proc) _wrap_gnc_price_get_type);
   scm_c_define_gsubr("gnc-pricedb-get-type", 0, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_get_type);
+  scm_c_define_gsubr("PRICE-SOURCE-EDIT-DLG", 0, 0, 0, (swig_guile_proc) _wrap_PRICE_SOURCE_EDIT_DLG);
+  scm_c_define_gsubr("PRICE-SOURCE-FQ", 0, 0, 0, (swig_guile_proc) _wrap_PRICE_SOURCE_FQ);
+  scm_c_define_gsubr("PRICE-SOURCE-USER-PRICE", 0, 0, 0, (swig_guile_proc) _wrap_PRICE_SOURCE_USER_PRICE);
+  scm_c_define_gsubr("PRICE-SOURCE-XFER-DLG-VAL", 0, 0, 0, (swig_guile_proc) _wrap_PRICE_SOURCE_XFER_DLG_VAL);
+  scm_c_define_gsubr("PRICE-SOURCE-SPLIT-REG", 0, 0, 0, (swig_guile_proc) _wrap_PRICE_SOURCE_SPLIT_REG);
+  scm_c_define_gsubr("PRICE-SOURCE-STOCK-SPLIT", 0, 0, 0, (swig_guile_proc) _wrap_PRICE_SOURCE_STOCK_SPLIT);
+  scm_c_define_gsubr("PRICE-SOURCE-INVOICE", 0, 0, 0, (swig_guile_proc) _wrap_PRICE_SOURCE_INVOICE);
+  scm_c_define_gsubr("PRICE-SOURCE-INVALID", 0, 0, 0, (swig_guile_proc) _wrap_PRICE_SOURCE_INVALID);
+  scm_c_define_gsubr("PRICE-TYPE-LAST", 0, 0, 0, (swig_guile_proc) _wrap_PRICE_TYPE_LAST);
+  scm_c_define_gsubr("PRICE-TYPE-UNK", 0, 0, 0, (swig_guile_proc) _wrap_PRICE_TYPE_UNK);
+  scm_c_define_gsubr("PRICE-TYPE-TRN", 0, 0, 0, (swig_guile_proc) _wrap_PRICE_TYPE_TRN);
   scm_c_define_gsubr("gnc-price-create", 1, 0, 0, (swig_guile_proc) _wrap_gnc_price_create);
   scm_c_define_gsubr("gnc-price-clone", 2, 0, 0, (swig_guile_proc) _wrap_gnc_price_clone);
   scm_c_define_gsubr("gnc-price-ref", 1, 0, 0, (swig_guile_proc) _wrap_gnc_price_ref);
@@ -36859,6 +37148,7 @@ SWIG_init(void)
   scm_c_define_gsubr("gnc-price-set-currency", 2, 0, 0, (swig_guile_proc) _wrap_gnc_price_set_currency);
   scm_c_define_gsubr("gnc-price-set-time", 2, 0, 0, (swig_guile_proc) _wrap_gnc_price_set_time);
   scm_c_define_gsubr("gnc-price-set-source", 2, 0, 0, (swig_guile_proc) _wrap_gnc_price_set_source);
+  scm_c_define_gsubr("gnc-price-set-source-string", 2, 0, 0, (swig_guile_proc) _wrap_gnc_price_set_source_string);
   scm_c_define_gsubr("gnc-price-set-typestr", 2, 0, 0, (swig_guile_proc) _wrap_gnc_price_set_typestr);
   scm_c_define_gsubr("gnc-price-set-value", 2, 0, 0, (swig_guile_proc) _wrap_gnc_price_set_value);
   scm_c_define_gsubr("gnc-price-lookup", 2, 0, 0, (swig_guile_proc) _wrap_gnc_price_lookup);
@@ -36866,10 +37156,13 @@ SWIG_init(void)
   scm_c_define_gsubr("gnc-price-get-currency", 1, 0, 0, (swig_guile_proc) _wrap_gnc_price_get_currency);
   scm_c_define_gsubr("gnc-price-get-time", 1, 0, 0, (swig_guile_proc) _wrap_gnc_price_get_time);
   scm_c_define_gsubr("gnc-price-get-source", 1, 0, 0, (swig_guile_proc) _wrap_gnc_price_get_source);
+  scm_c_define_gsubr("gnc-price-get-source-string", 1, 0, 0, (swig_guile_proc) _wrap_gnc_price_get_source_string);
   scm_c_define_gsubr("gnc-price-get-typestr", 1, 0, 0, (swig_guile_proc) _wrap_gnc_price_get_typestr);
   scm_c_define_gsubr("gnc-price-get-value", 1, 0, 0, (swig_guile_proc) _wrap_gnc_price_get_value);
   scm_c_define_gsubr("gnc-price-equal", 2, 0, 0, (swig_guile_proc) _wrap_gnc_price_equal);
   scm_c_define_gsubr("gnc-price-print", 3, 0, 0, (swig_guile_proc) _wrap_gnc_price_print);
+  scm_c_define_gsubr("CURRENCY-DENOM", 0, 0, 0, (swig_guile_proc) _wrap_CURRENCY_DENOM);
+  scm_c_define_gsubr("COMMODITY-DENOM-MULT", 0, 0, 0, (swig_guile_proc) _wrap_COMMODITY_DENOM_MULT);
   scm_c_define_gsubr("gnc-price-list-insert", 3, 0, 0, (swig_guile_proc) _wrap_gnc_price_list_insert);
   scm_c_define_gsubr("gnc-price-list-remove", 2, 0, 0, (swig_guile_proc) _wrap_gnc_price_list_remove);
   scm_c_define_gsubr("gnc-price-list-destroy", 1, 0, 0, (swig_guile_proc) _wrap_gnc_price_list_destroy);
@@ -37113,6 +37406,7 @@ SWIG_init(void)
   scm_c_define_gsubr("gnc-numeric-convert", 3, 0, 0, (swig_guile_proc) _wrap_gnc_numeric_convert);
   scm_c_define_gsubr("gnc-numeric-reduce", 1, 0, 0, (swig_guile_proc) _wrap_gnc_numeric_reduce);
   scm_c_define_gsubr("gnc-numeric-to-decimal", 2, 0, 0, (swig_guile_proc) _wrap_gnc_numeric_to_decimal);
+  scm_c_define_gsubr("gnc-numeric-invert", 1, 0, 0, (swig_guile_proc) _wrap_gnc_numeric_invert);
   scm_c_define_gsubr("gnc-numeric-get-type", 0, 0, 0, (swig_guile_proc) _wrap_gnc_numeric_get_type);
   scm_c_define_gsubr("pwr64", 2, 0, 0, (swig_guile_proc) _wrap_pwr64);
   scm_c_define_gsubr("timespecCanonicalDayTime", 1, 0, 0, (swig_guile_proc) _wrap_timespecCanonicalDayTime);
@@ -37389,6 +37683,15 @@ SWIG_init(void)
     snprintf(tmp, 100, "(set! %s (%s))", ("GNC-HOW-RND-ROUND-HALF-UP"), ("GNC-HOW-RND-ROUND-HALF-UP"));       scm_c_eval_string(tmp);;
     snprintf(tmp, 100, "(set! %s (%s))", ("GNC-HOW-RND-ROUND"), ("GNC-HOW-RND-ROUND"));       scm_c_eval_string(tmp);;
     snprintf(tmp, 100, "(set! %s (%s))", ("GNC-HOW-RND-NEVER"), ("GNC-HOW-RND-NEVER"));       scm_c_eval_string(tmp);;
+    
+    snprintf(tmp, 100, "(set! %s (%s))", ("PRICE-SOURCE-EDIT-DLG"), ("PRICE-SOURCE-EDIT-DLG"));       scm_c_eval_string(tmp);;
+    snprintf(tmp, 100, "(set! %s (%s))", ("PRICE-SOURCE-FQ"), ("PRICE-SOURCE-FQ"));       scm_c_eval_string(tmp);;
+    snprintf(tmp, 100, "(set! %s (%s))", ("PRICE-SOURCE-USER-PRICE"), ("PRICE-SOURCE-USER-PRICE"));       scm_c_eval_string(tmp);;
+    snprintf(tmp, 100, "(set! %s (%s))", ("PRICE-SOURCE-XFER-DLG-VAL"), ("PRICE-SOURCE-XFER-DLG-VAL"));       scm_c_eval_string(tmp);;
+    snprintf(tmp, 100, "(set! %s (%s))", ("PRICE-SOURCE-SPLIT-REG"), ("PRICE-SOURCE-SPLIT-REG"));       scm_c_eval_string(tmp);;
+    snprintf(tmp, 100, "(set! %s (%s))", ("PRICE-SOURCE-STOCK-SPLIT"), ("PRICE-SOURCE-STOCK-SPLIT"));       scm_c_eval_string(tmp);;
+    snprintf(tmp, 100, "(set! %s (%s))", ("PRICE-SOURCE-INVOICE"), ("PRICE-SOURCE-INVOICE"));       scm_c_eval_string(tmp);;
+    snprintf(tmp, 100, "(set! %s (%s))", ("PRICE-SOURCE-INVALID"), ("PRICE-SOURCE-INVALID"));       scm_c_eval_string(tmp);;
     
     
   }
@@ -38064,7 +38367,7 @@ SWIG_init(void)
 static void SWIG_init_helper(void *data)
 {
 SWIG_init();
-scm_c_export("gncSplitGetGUID", "gncTransGetGUID", "gncAccountGetGUID", "gnc-split-get-type", "CREC", "YREC", "FREC", "NREC", "VREC", "xaccSplitConvertAmount", "xaccMallocSplit", "xaccSplitReinit", "xaccSplitDestroy", "xaccSplitCopyOnto", "xaccSplitGetBook", "xaccSplitGetAccount", "xaccSplitSetAccount", "xaccSplitGetParent", "xaccSplitSetParent", "xaccSplitGetLot", "xaccSplitSetLot", "xaccSplitGetSlots", "xaccSplitSetSlots-nc", "xaccSplitSetMemo", "xaccSplitGetMemo", "xaccSplitSetAction", "xaccSplitGetAction", "xaccSplitSetReconcile", "xaccSplitGetReconcile", "xaccSplitSetDateReconciledSecs", "xaccSplitSetDateReconciledTS", "xaccSplitGetDateReconciledTS", "xaccSplitRetDateReconciledTS", "xaccSplitGetDateReconciled", "xaccSplitSetAmount", "xaccSplitGetAmount", "xaccSplitSetValue", "xaccSplitGetValue", "xaccSplitSetSharePriceAndAmount", "xaccSplitGetSharePrice", "xaccSplitSetBaseValue", "xaccSplitGetBaseValue", "xaccSplitGetBalance", "xaccSplitGetClearedBalance", "xaccSplitGetReconciledBalance", "xaccSplitEqual", "xaccSplitLookup", "xaccSplitListGetUniqueTransactions", "xaccSplitGetOtherSplit", "xaccSplitGetType", "xaccSplitMakeStockSplit", "xaccSplitOrder", "xaccSplitOrderDateOnly", "xaccSplitCompareAccountFullNames", "xaccSplitCompareAccountCodes", "xaccSplitCompareOtherAccountFullNames", "xaccSplitCompareOtherAccountCodes", "xaccSplitGetCorrAccountFullName", "xaccSplitGetCorrAccountName", "xaccSplitGetCorrAccountCode", "xaccSplitSetSharePrice", "xaccSplitVoidFormerAmount", "xaccSplitVoidFormerValue", "SPLIT-KVP", "SPLIT-DATE-RECONCILED", "SPLIT-BALANCE", "SPLIT-CLEARED-BALANCE", "SPLIT-RECONCILED-BALANCE", "SPLIT-MEMO", "SPLIT-ACTION", "SPLIT-RECONCILE", "SPLIT-AMOUNT", "SPLIT-SHARE-PRICE", "SPLIT-VALUE", "SPLIT-TYPE", "SPLIT-VOIDED-AMOUNT", "SPLIT-VOIDED-VALUE", "SPLIT-LOT", "SPLIT-TRANS", "SPLIT-ACCOUNT", "SPLIT-ACCOUNT-GUID", "SPLIT-ACCT-FULLNAME", "SPLIT-CORR-ACCT-NAME", "SPLIT-CORR-ACCT-CODE", "gnc-account-get-children", "gnc-account-get-children-sorted", "gnc-account-get-descendants", "gnc-account-get-descendants-sorted", "AccountClass-parent-class-set", "AccountClass-parent-class-get", "new-AccountClass", "delete-AccountClass", "gnc-account-get-type", "ACCT-TYPE-INVALID", "ACCT-TYPE-NONE", "ACCT-TYPE-BANK", "ACCT-TYPE-CASH", "ACCT-TYPE-CREDIT", "ACCT-TYPE-ASSET", "ACCT-TYPE-LIABILITY", "ACCT-TYPE-STOCK", "ACCT-TYPE-MUTUAL", "ACCT-TYPE-CURRENCY", "ACCT-TYPE-INCOME", "ACCT-TYPE-EXPENSE", "ACCT-TYPE-EQUITY", "ACCT-TYPE-RECEIVABLE", "ACCT-TYPE-PAYABLE", "ACCT-TYPE-ROOT", "ACCT-TYPE-TRADING", "NUM-ACCOUNT-TYPES", "ACCT-TYPE-CHECKING", "ACCT-TYPE-SAVINGS", "ACCT-TYPE-MONEYMRKT", "ACCT-TYPE-CREDITLINE", "ACCT-TYPE-LAST", "xaccMallocAccount", "gnc-account-create-root", "xaccCloneAccount", "xaccAccountBeginEdit", "xaccAccountCommitEdit", "xaccAccountDestroy", "xaccAccountEqual", "xaccAccountOrder", "gnc-get-account-separator-string", "gnc-get-account-separator", "gnc-set-account-separator", "gnc-book-get-root-account", "gnc-book-set-root-account", "xaccAccountLookup", "gnc-account-name-violations-errmsg", "gnc-account-list-name-violations", "gnc-account-get-book", "xaccAccountSetType", "xaccAccountSetName", "xaccAccountSetCode", "xaccAccountSetDescription", "xaccAccountSetColor", "xaccAccountSetFilter", "xaccAccountSetSortOrder", "xaccAccountSetNotes", "xaccAccountSetLastNum", "gnc-account-set-policy", "xaccAccountGetType", "xaccAccountIsPriced", "gnc-account-set-start-balance", "gnc-account-set-start-cleared-balance", "gnc-account-set-start-reconciled-balance", "gnc-account-set-balance-dirty", "gnc-account-set-sort-dirty", "gnc-account-insert-split", "gnc-account-remove-split", "xaccAccountGetName", "xaccAccountGetCode", "xaccAccountGetDescription", "xaccAccountGetColor", "xaccAccountGetFilter", "xaccAccountGetSortOrder", "xaccAccountGetNotes", "xaccAccountGetLastNum", "gnc-account-get-policy", "xaccAccountRecomputeBalance", "xaccAccountSortSplits", "gnc-account-get-full-name", "dxaccAccountSetPriceSrc", "dxaccAccountGetPriceSrc", "xaccAccountGetAutoInterestXfer", "xaccAccountSetAutoInterestXfer", "xaccAccountSetCommodity", "xaccAccountGetCommodity", "gnc-account-get-currency-or-parent", "xaccAccountGetCommoditySCU", "xaccAccountGetCommoditySCUi", "xaccAccountSetCommoditySCU", "xaccAccountSetNonStdSCU", "xaccAccountGetNonStdSCU", "xaccAccountGetBalance", "xaccAccountGetClearedBalance", "xaccAccountGetReconciledBalance", "xaccAccountGetPresentBalance", "xaccAccountGetProjectedMinimumBalance", "xaccAccountGetBalanceAsOfDate", "xaccAccountConvertBalanceToCurrency", "xaccAccountConvertBalanceToCurrencyAsOfDate", "xaccAccountGetBalanceInCurrency", "xaccAccountGetClearedBalanceInCurrency", "xaccAccountGetReconciledBalanceInCurrency", "xaccAccountGetPresentBalanceInCurrency", "xaccAccountGetProjectedMinimumBalanceInCurrency", "xaccAccountGetBalanceAsOfDateInCurrency", "xaccAccountGetBalanceChangeForPeriod", "gnc-account-append-child", "gnc-account-remove-child", "gnc-account-get-parent", "gnc-account-get-root", "gnc-account-is-root", "gnc-account-n-children", "gnc-account-child-index", "gnc-account-nth-child", "gnc-account-n-descendants", "gnc-account-get-current-depth", "gnc-account-get-tree-depth", "gnc-account-foreach-child", "gnc-account-foreach-descendant", "gnc-account-foreach-descendant-until", "gnc-account-join-children", "gnc-account-merge-children", "xaccAccountSetReconcileChildrenStatus", "xaccAccountGetReconcileChildrenStatus", "xaccAccountHasAncestor", "gnc-account-lookup-by-name", "gnc-account-lookup-by-full-name", "gnc-account-lookup-by-code", "xaccAccountTypeEnumAsString", "xaccAccountStringToType", "xaccAccountStringToEnum", "xaccAccountGetTypeStr", "xaccParentAccountTypesCompatibleWith", "xaccAccountTypesCompatible", "xaccAccountTypesValid", "xaccAccountIsAssetLiabType", "xaccAccountIsAPARType", "xaccAccountIsEquityType", "xaccAccountGetSplitList", "xaccAccountMoveAllSplits", "xaccAccountForEachTransaction", "xaccAccountFindTransByDesc", "xaccAccountFindSplitByDesc", "xaccAccountInsertLot", "xaccAccountRemoveLot", "xaccAccountGetLotList", "xaccAccountForEachLot", "xaccAccountFindOpenLots", "xaccAccountGetReconcileLastDate", "xaccAccountSetReconcileLastDate", "xaccAccountGetReconcileLastInterval", "xaccAccountSetReconcileLastInterval", "xaccAccountGetReconcilePostponeDate", "xaccAccountSetReconcilePostponeDate", "xaccAccountGetReconcilePostponeBalance", "xaccAccountSetReconcilePostponeBalance", "xaccAccountClearReconcilePostpone", "PLACEHOLDER-NONE", "PLACEHOLDER-THIS", "PLACEHOLDER-CHILD", "xaccAccountGetPlaceholder", "xaccAccountSetPlaceholder", "xaccAccountGetDescendantPlaceholder", "xaccAccountGetHidden", "xaccAccountSetHidden", "xaccAccountIsHidden", "xaccAccountGetTaxRelated", "xaccAccountSetTaxRelated", "xaccAccountGetTaxUSCode", "xaccAccountSetTaxUSCode", "xaccAccountGetTaxUSPayerNameSource", "xaccAccountSetTaxUSPayerNameSource", "xaccAccountGetTaxUSCopyNumber", "xaccAccountSetTaxUSCopyNumber", "xaccAccountSetMark", "xaccClearMark", "xaccClearMarkDown", "gnc-account-tree-begin-staged-transaction-traversals", "xaccSplitsBeginStagedTransactionTraversals", "xaccAccountBeginStagedTransactionTraversals", "xaccTransactionTraverse", "xaccAccountStagedTransactionTraversal", "gnc-account-tree-staged-transaction-traversal", "xaccAccountTreeForEachTransaction", "DxaccAccountSetCurrency", "DxaccAccountGetCurrency", "dxaccAccountSetQuoteTZ", "dxaccAccountGetQuoteTZ", "ACCOUNT-KVP", "ACCOUNT-NAME-", "ACCOUNT-CODE-", "ACCOUNT-DESCRIPTION-", "ACCOUNT-COLOR-", "ACCOUNT-FILTER-", "ACCOUNT-SORT-ORDER-", "ACCOUNT-NOTES-", "ACCOUNT-BALANCE-", "ACCOUNT-CLEARED-", "ACCOUNT-RECONCILED-", "ACCOUNT-PRESENT-", "ACCOUNT-FUTURE-MINIMUM-", "ACCOUNT-TAX-RELATED", "ACCOUNT-TYPE-", "ACCOUNT-SCU", "ACCOUNT-NSCU", "ACCOUNT-PARENT", "ACCOUNT-MATCH-ALL-TYPE", "gnc-transaction-get-type", "TXN-TYPE-NONE", "TXN-TYPE-INVOICE", "TXN-TYPE-PAYMENT", "TXN-TYPE-LINK", "xaccMallocTransaction", "xaccTransDestroy", "xaccTransClone", "xaccTransEqual", "xaccTransBeginEdit", "xaccTransCommitEdit", "xaccTransRollbackEdit", "xaccTransIsOpen", "xaccTransLookup", "xaccTransCopyToClipBoard", "xaccTransCopyOnto", "xaccTransCopyFromClipBoard", "xaccTransFindSplitByAccount", "xaccTransScrubGains", "gnc-book-count-transactions", "xaccTransUseTradingAccounts", "xaccTransSortSplits", "xaccTransSetTxnType", "xaccTransGetTxnType", "xaccTransSetNum", "xaccTransSetDescription", "xaccTransSetAssociation", "xaccTransSetNotes", "xaccTransGetNum", "xaccTransGetDescription", "xaccTransGetAssociation", "xaccTransGetNotes", "xaccTransSetIsClosingTxn", "xaccTransGetIsClosingTxn", "xaccTransGetSplit", "xaccTransGetSplitIndex", "xaccTransGetSplitList", "xaccTransStillHasSplit", "xaccTransSetReadOnly", "xaccTransClearReadOnly", "xaccTransGetReadOnly", "xaccTransIsReadonlyByPostedDate", "xaccTransInFutureByPostedDate", "xaccTransCountSplits", "xaccTransHasReconciledSplits", "xaccTransHasReconciledSplitsByAccount", "xaccTransHasSplitsInState", "xaccTransHasSplitsInStateByAccount", "xaccTransGetCurrency", "xaccTransSetCurrency", "xaccTransGetImbalanceValue", "xaccTransGetImbalance", "xaccTransIsBalanced", "xaccTransGetAccountValue", "xaccTransGetAccountAmount", "xaccTransGetRateForCommodity", "xaccTransGetAccountConvRate", "xaccTransGetAccountBalance", "xaccTransOrder", "xaccTransOrder-num-action", "xaccTransSetDate", "xaccTransSetDatePostedGDate", "xaccTransSetDatePostedSecs", "xaccTransSetDatePostedSecsNormalized", "xaccTransSetDatePostedTS", "xaccTransSetDateEnteredSecs", "xaccTransSetDateEnteredTS", "xaccTransSetDateDueTS", "xaccTransGetDate", "xaccTransGetDatePostedTS", "xaccTransRetDatePostedTS", "xaccTransGetDatePostedGDate", "xaccTransGetDateEntered", "xaccTransGetDateEnteredTS", "xaccTransRetDateEnteredTS", "xaccTransRetDateDueTS", "xaccTransGetDateDueTS", "xaccTransVoid", "xaccTransUnvoid", "xaccTransReverse", "xaccTransGetReversedBy", "xaccTransGetVoidStatus", "xaccTransGetVoidReason", "xaccTransGetVoidTime", "TRANS-KVP", "TRANS-NUM", "TRANS-DESCRIPTION", "TRANS-DATE-ENTERED", "TRANS-DATE-POSTED", "TRANS-DATE-DUE", "TRANS-IMBALANCE", "TRANS-IS-BALANCED", "TRANS-IS-CLOSING", "TRANS-NOTES", "TRANS-ASSOCIATION", "TRANS-TYPE", "TRANS-VOID-STATUS", "TRANS-VOID-REASON", "TRANS-VOID-TIME", "TRANS-SPLITLIST", "RECONCILED-MATCH-TYPE", "GncLotClass-parent-class-set", "GncLotClass-parent-class-get", "new-GncLotClass", "delete-GncLotClass", "gnc-lot-get-type", "gnc-lot-new", "gnc-lot-destroy", "gnc-lot-lookup", "gnc-lot-get-book", "gnc-lot-begin-edit", "gnc-lot-commit-edit", "gnc-lot-add-split", "gnc-lot-remove-split", "gnc-lot-get-split-list", "gnc-lot-count-splits", "gnc-lot-get-account", "gnc-lot-set-account", "gnc-lot-get-balance", "gnc-lot-get-balance-before", "gnc-lot-is-closed", "gnc-lot-get-earliest-split", "gnc-lot-get-latest-split", "gnc-lot-set-closed-unknown", "gnc-lot-get-title", "gnc-lot-get-notes", "gnc-lot-set-title", "gnc-lot-set-notes", "gnc-lot-get-slots", "gnc-lot-make-default", "LOT-IS-CLOSED", "LOT-BALANCE", "LOT-TITLE", "LOT-NOTES", "gncPriceGetGUID", "gncBudgetGetGUID", "QOF-ID-BOOK-SCM", "gnc-transaction-get-date-posted", "gnc-transaction-get-date-entered", "gnc-split-get-date-reconciled", "gnc-transaction-set-date", "gnc-get-num-action", "gnc-get-action-num", "gnc-set-num-action", "gnc-book-option-num-field-source-change", "gnc-book-option-register-cb", "gnc-book-option-remove-cb", "gnc-timespec2timepair", "gnc-timepair2timespec", "gnc-timepair-to-GDate", "gnc-timepair-p", "gnc-guid2scm", "gnc-scm2guid", "gnc-guid-p", "gnc-query-scm2path", "gnc-query2scm", "gnc-scm2query", "gnc-gh-gint64-p", "gnc-numeric-to-scm", "gnc-scm-to-numeric", "gnc-numeric-p", "gnc-scm-to-commodity", "gnc-commodity-to-scm", "gnc-book-to-scm", "gnc-price-get-type", "gnc-pricedb-get-type", "gnc-price-create", "gnc-price-clone", "gnc-price-ref", "gnc-price-unref", "gnc-price-begin-edit", "gnc-price-commit-edit", "gnc-price-set-commodity", "gnc-price-set-currency", "gnc-price-set-time", "gnc-price-set-source", "gnc-price-set-typestr", "gnc-price-set-value", "gnc-price-lookup", "gnc-price-get-commodity", "gnc-price-get-currency", "gnc-price-get-time", "gnc-price-get-source", "gnc-price-get-typestr", "gnc-price-get-value", "gnc-price-equal", "gnc-price-print", "gnc-price-list-insert", "gnc-price-list-remove", "gnc-price-list-destroy", "gnc-price-list-equal", "gnc-pricedb-get-db", "gnc-collection-get-pricedb", "gnc-pricedb-destroy", "gnc-pricedb-begin-edit", "gnc-pricedb-commit-edit", "gnc-pricedb-set-bulk-update", "gnc-pricedb-add-price", "gnc-pricedb-remove-price", "gnc-pricedb-remove-old-prices", "gnc-pricedb-lookup-latest", "gnc-pricedb-lookup-latest-any-currency", "gnc-pricedb-has-prices", "gnc-pricedb-get-prices", "gnc-pricedb-lookup-at-time", "gnc-pricedb-lookup-day", "gnc-pricedb-lookup-nearest-in-time", "gnc-pricedb-lookup-nearest-in-time-any-currency", "gnc-pricedb-lookup-latest-before", "gnc-pricedb-lookup-latest-before-any-currency", "gnc-pricedb-convert-balance-latest-price", "gnc-pricedb-convert-balance-nearest-price", "gnc-pricedb-foreach-price", "gnc-pricedb-get-num-prices", "gnc-pricedb-equal", "gnc-pricedb-print-contents", "PRICE-COMMODITY", "PRICE-CURRENCY", "PRICE-DATE", "PRICE-SOURCE", "PRICE-TYPE", "PRICE-VALUE", "qof-session-new", "qof-session-get-book", "qof-book-kvp-changed", "qof-session-get-url", "gnc-default-strftime-date-format", "gnc-print-date", "guid-new-return", "qof-query-create-for-splits", "qof-query-run", "qof-query-last-run", "qof-query-run-subquery", "QUERY-TXN-MATCH-ALL", "QUERY-TXN-MATCH-ANY", "xaccQueryGetSplitsUniqueTrans", "xaccQueryGetTransactions", "xaccQueryGetLots", "xaccQueryAddAccountMatch", "xaccQueryAddAccountGUIDMatch", "xaccQueryAddSingleAccountMatch", "xaccQueryAddStringMatch", "xaccQueryAddDescriptionMatch", "xaccQueryAddNumberMatch", "xaccQueryAddActionMatch", "xaccQueryAddMemoMatch", "xaccQueryAddValueMatch", "xaccQueryAddSharePriceMatch", "xaccQueryAddSharesMatch", "xaccQueryAddBalanceMatch", "xaccQueryAddNumericMatch", "xaccQueryAddDateMatch", "xaccQueryAddDateMatchTS", "xaccQueryAddDateMatchTT", "xaccQueryGetDateMatchTS", "xaccQueryGetDateMatchTT", "xaccQueryAddClosingTransMatch", "CLEARED-NONE", "CLEARED-NO", "CLEARED-CLEARED", "CLEARED-RECONCILED", "CLEARED-FROZEN", "CLEARED-VOIDED", "CLEARED-ALL", "xaccQueryAddClearedMatch", "xaccQueryAddGUIDMatch", "xaccQueryAddKVPMatch", "xaccQueryGetEarliestDateFound", "xaccQueryGetLatestDateFound", "QOF-MOD-QUERY", "QOF-QUERY-AND", "QOF-QUERY-OR", "QOF-QUERY-NAND", "QOF-QUERY-NOR", "QOF-QUERY-XOR", "QUERY-DEFAULT-SORT", "QOF-PARAM-BOOK", "QOF-PARAM-GUID", "QOF-PARAM-KVP", "QOF-PARAM-ACTIVE", "QOF-PARAM-VERSION", "qof-query-init", "qof-query-shutdown", "qof-query-build-param-list", "qof-query-create", "qof-query-create-for", "qof-query-destroy", "qof-query-search-for", "qof-query-set-book", "qof-query-add-term", "qof-query-add-guid-match", "qof-query-add-guid-list-match", "qof-query-add-boolean-match", "qof-query-clear", "qof-query-purge-terms", "qof-query-has-terms", "qof-query-num-terms", "qof-query-has-term-type", "qof-query-get-term-type", "qof-query-copy", "qof-query-invert", "qof-query-merge", "qof-query-merge-in-place", "qof-query-set-sort-order", "qof-query-set-sort-options", "qof-query-set-sort-increasing", "qof-query-set-max-results", "qof-query-equal", "qof-query-print", "qof-query-get-search-for", "qof-query-get-books", "QOF-COMPARE-LT", "QOF-COMPARE-LTE", "QOF-COMPARE-EQUAL", "QOF-COMPARE-GT", "QOF-COMPARE-GTE", "QOF-COMPARE-NEQ", "QOF-STRING-MATCH-NORMAL", "QOF-STRING-MATCH-CASEINSENSITIVE", "QOF-DATE-MATCH-NORMAL", "QOF-DATE-MATCH-DAY", "QOF-NUMERIC-MATCH-DEBIT", "QOF-NUMERIC-MATCH-CREDIT", "QOF-NUMERIC-MATCH-ANY", "QOF-GUID-MATCH-ANY", "QOF-GUID-MATCH-NONE", "QOF-GUID-MATCH-NULL", "QOF-GUID-MATCH-ALL", "QOF-GUID-MATCH-LIST-ANY", "QOF-CHAR-MATCH-ANY", "QOF-CHAR-MATCH-NONE", "-QofQueryPredData-type-name-set", "-QofQueryPredData-type-name-get", "-QofQueryPredData-how-set", "-QofQueryPredData-how-get", "new--QofQueryPredData", "delete--QofQueryPredData", "qof-query-string-predicate", "qof-query-date-predicate", "qof-query-numeric-predicate", "qof-query-guid-predicate", "qof-query-int32-predicate", "qof-query-int64-predicate", "qof-query-double-predicate", "qof-query-boolean-predicate", "qof-query-char-predicate", "qof-query-collect-predicate", "qof-query-choice-predicate", "qof-query-kvp-predicate", "qof-query-kvp-predicate-path", "qof-query-core-predicate-copy", "qof-query-core-predicate-free", "qof-query-date-predicate-get-date", "qof-query-core-to-string", "qof-string-number-compare-func", "KVP-OPTION-PATH", "OPTION-SECTION-ACCOUNTS", "OPTION-NAME-TRADING-ACCOUNTS", "OPTION-NAME-AUTO-READONLY-DAYS", "OPTION-NAME-NUM-FIELD-SOURCE", "OPTION-SECTION-BUDGETING", "OPTION-NAME-DEFAULT-BUDGET", "qof-book-use-trading-accounts", "qof-book-uses-autoreadonly", "qof-book-get-num-days-autoreadonly", "qof-book-get-autoreadonly-gdate", "qof-book-use-split-action-for-num-field", "qof-book-shutting-down", "qof-book-session-not-saved", "qof-book-get-slots", "-gnc-numeric-num-set", "-gnc-numeric-num-get", "-gnc-numeric-denom-set", "-gnc-numeric-denom-get", "new--gnc-numeric", "delete--gnc-numeric", "GNC-NUMERIC-RND-MASK", "GNC-NUMERIC-DENOM-MASK", "GNC-NUMERIC-SIGFIGS-MASK", "GNC-HOW-RND-FLOOR", "GNC-HOW-RND-CEIL", "GNC-HOW-RND-TRUNC", "GNC-HOW-RND-PROMOTE", "GNC-HOW-RND-ROUND-HALF-DOWN", "GNC-HOW-RND-ROUND-HALF-UP", "GNC-HOW-RND-ROUND", "GNC-HOW-RND-NEVER", "GNC-HOW-DENOM-EXACT", "GNC-HOW-DENOM-REDUCE", "GNC-HOW-DENOM-LCD", "GNC-HOW-DENOM-FIXED", "GNC-HOW-DENOM-SIGFIG", "gnc-numeric-create", "gnc-numeric-zero", "double-to-gnc-numeric", "string-to-gnc-numeric", "gnc-numeric-error", "gnc-numeric-errorCode-to-string", "gnc-numeric-num", "gnc-numeric-denom", "gnc-numeric-to-double", "gnc-numeric-to-string", "gnc-num-dbg-to-string", "gnc-numeric-check", "gnc-numeric-compare", "gnc-numeric-zero-p", "gnc-numeric-negative-p", "gnc-numeric-positive-p", "gnc-numeric-eq", "gnc-numeric-equal", "gnc-numeric-same", "gnc-numeric-add", "gnc-numeric-sub", "gnc-numeric-mul", "gnc-numeric-div", "gnc-numeric-neg", "gnc-numeric-abs", "gnc-numeric-add-fixed", "gnc-numeric-sub-fixed", "gnc-numeric-add-with-error", "gnc-numeric-sub-with-error", "gnc-numeric-mul-with-error", "gnc-numeric-div-with-error", "gnc-numeric-convert", "gnc-numeric-reduce", "gnc-numeric-to-decimal", "gnc-numeric-get-type", "pwr64", "timespecCanonicalDayTime", "gnc-budget-get-type", "GNC-BUDGET-MAX-NUM-PERIODS-DIGITS", "gnc-budget-register", "gnc-budget-new", "gnc-budget-destroy", "gnc-budget-begin-edit", "gnc-budget-commit-edit", "gnc-budget-clone", "gnc-budget-get-guid", "gnc-budget-set-name", "gnc-budget-get-name", "gnc-budget-set-description", "gnc-budget-get-description", "gnc-budget-set-num-periods", "gnc-budget-get-num-periods", "gnc-budget-set-recurrence", "gnc-budget-get-recurrence", "gnc-budget-get-period-start-date", "gnc-budget-get-period-end-date", "gnc-budget-set-account-period-value", "gnc-budget-unset-account-period-value", "gnc-budget-is-account-period-value-set", "gnc-budget-get-account-period-value", "gnc-budget-get-account-period-actual-value", "gnc-budget-get-default", "gnc-budget-lookup", "gnc-quote-source-set-fq-installed", "gnc-commodity-get-type", "gnc-commodity-namespace-get-type", "GNC-COMMODITY-TABLE", "GNC-COMMODITY-NS-LEGACY", "GNC-COMMODITY-NS-ISO", "GNC-COMMODITY-NS-CURRENCY", "GNC-COMMODITY-NS-NASDAQ", "GNC-COMMODITY-NS-NYSE", "GNC-COMMODITY-NS-EUREX", "GNC-COMMODITY-NS-MUTUAL", "GNC-COMMODITY-NS-AMEX", "GNC-COMMODITY-NS-ASX", "SOURCE-SINGLE", "SOURCE-MULTI", "SOURCE-UNKNOWN", "SOURCE-MAX", "SOURCE-CURRENCY", "gnc-quote-source-fq-installed", "gnc-quote-source-num-entries", "gnc-quote-source-add-new", "gnc-quote-source-lookup-by-internal", "gnc-quote-source-lookup-by-ti", "gnc-quote-source-get-supported", "gnc-quote-source-get-type", "gnc-quote-source-get-index", "gnc-quote-source-get-user-name", "gnc-quote-source-get-internal-name", "gnc-commodity-new", "gnc-commodity-destroy", "gnc-commodity-copy", "gnc-commodity-clone", "gnc-commodity-get-mnemonic", "gnc-commodity-get-namespace", "gnc-commodity-get-namespace-compat", "gnc-commodity-get-namespace-ds", "gnc-commodity-get-fullname", "gnc-commodity-get-printname", "gnc-commodity-get-cusip", "gnc-commodity-get-unique-name", "gnc-commodity-get-fraction", "gnc-commodity-get-quote-flag", "gnc-commodity-get-quote-source", "gnc-commodity-get-default-quote-source", "gnc-commodity-get-quote-tz", "gnc-commodity-get-user-symbol", "gnc-commodity-get-default-symbol", "gnc-commodity-get-nice-symbol", "gnc-commodity-set-mnemonic", "gnc-commodity-set-namespace", "gnc-commodity-set-fullname", "gnc-commodity-set-cusip", "gnc-commodity-set-fraction", "gnc-commodity-user-set-quote-flag", "gnc-commodity-set-quote-flag", "gnc-commodity-set-quote-source", "gnc-commodity-set-quote-tz", "gnc-commodity-set-user-symbol", "gnc-commodity-increment-usage-count", "gnc-commodity-decrement-usage-count", "gnc-commodity-equiv", "gnc-commodity-equal", "gnc-commodity-compare", "gnc-commodity-compare-void", "gnc-commodity-namespace-is-iso", "gnc-commodity-is-iso", "gnc-commodity-is-currency", "gnc-commodity-table-get-table", "gnc-commodity-table-lookup", "gnc-commodity-table-lookup-unique", "gnc-commodity-table-find-full", "gnc-commodity-find-commodity-by-guid", "gnc-commodity-table-insert", "gnc-commodity-table-remove", "gnc-commodity-table-add-default-data", "gnc-commodity-namespace-get-name", "gnc-commodity-namespace-get-commodity-list", "gnc-commodity-table-has-namespace", "gnc-commodity-table-get-namespaces", "gnc-commodity-table-get-namespaces-list", "gnc-commodity-table-add-namespace", "gnc-commodity-table-find-namespace", "gnc-commodity-table-delete-namespace", "gnc-commodity-table-get-size", "gnc-commodity-table-get-commodities", "gnc-commodity-table-foreach-commodity", "gnc-commodity-table-new", "gnc-commodity-table-destroy", "gnc-commodity-obtain-twin", "gnc-commodity-table-register", "gnc-commodity-begin-edit", "gnc-commodity-commit-edit", "-gnc-monetary-commodity-set", "-gnc-monetary-commodity-get", "-gnc-monetary-value-set", "-gnc-monetary-value-get", "new--gnc-monetary", "delete--gnc-monetary", "gnc-monetary-create", "gnc-monetary-commodity", "gnc-monetary-value", "gnc-monetary-list-add-monetary", "gnc-monetary-list-add-value", "gnc-monetary-list-delete-zeros", "gnc-monetary-list-free", "gnc-hook-add-scm-dangler", "gnc-hook-run", "gnc-hook-create", "gnc-hook-add-dangler", "gnc-hook-remove-dangler", "gnc-hooks-init", "HOOK-STARTUP", "HOOK-SHUTDOWN", "HOOK-UI-STARTUP", "HOOK-UI-POST-STARTUP", "HOOK-UI-SHUTDOWN", "HOOK-NEW-BOOK", "HOOK-REPORT", "HOOK-CURRENCY-CHANGED", "HOOK-SAVE-OPTIONS", "HOOK-ADD-EXTENSION", "HOOK-BOOK-OPENED", "HOOK-BOOK-CLOSED", "HOOK-BOOK-SAVED", "gnc-book-get-template-root", "gnc-kvp-frame-delete-at-path", "kvp-frame-set-slot-path-gslist", "kvp-frame-get-slot-path-gslist", "gncTaxTableReturnGUID", "gncInvoiceReturnGUID", "gncJobReturnGUID", "gncVendorReturnGUID", "gncCustomerReturnGUID", "gncEmployeeReturnGUID", "gncTaxTableLookupFlip", "gncInvoiceLookupFlip", "gncJobLookupFlip", "gncVendorLookupFlip", "gncCustomerLookupFlip", "gncEmployeeLookupFlip", "GNC-ADDRESS-MODULE-NAME", "GNC-ID-ADDRESS", "gnc-address-get-type", "gncAddressCreate", "gncAddressDestroy", "gncAddressBeginEdit", "gncAddressCommitEdit", "gncAddressSetName", "gncAddressSetAddr1", "gncAddressSetAddr2", "gncAddressSetAddr3", "gncAddressSetAddr4", "gncAddressSetPhone", "gncAddressSetFax", "gncAddressSetEmail", "gncAddressClearDirty", "gncAddressGetName", "gncAddressGetAddr1", "gncAddressGetAddr2", "gncAddressGetAddr3", "gncAddressGetAddr4", "gncAddressGetPhone", "gncAddressGetFax", "gncAddressGetEmail", "gncAddressIsDirty", "gncAddressCompare", "gncAddressEqual", "ADDRESS-NAME", "ADDRESS-ONE", "ADDRESS-TWO", "ADDRESS-THREE", "ADDRESS-FOUR", "ADDRESS-PHONE", "ADDRESS-FAX", "ADDRESS-EMAIL", "ADDRESS-OWNER", "GNC-ID-BILLTERM", "gnc-billterm-get-type", "GNC-BILLTERM-NAME", "GNC-BILLTERM-DESC", "GNC-BILLTERM-DUEDAYS", "GNC-BILLTERM-DISCDAYS", "GNC-BILLTERM-CUTOFF", "GNC-BILLTERM-TYPE", "GNC-BILLTERM-DISCOUNT", "GNC-BILLTERM-REFCOUNT", "GNC-TERM-TYPE-DAYS", "GNC-TERM-TYPE-PROXIMO", "gncBillTermCreate", "gncBillTermDestroy", "gncBillTermIncRef", "gncBillTermDecRef", "gncBillTermChanged", "gncBillTermBeginEdit", "gncBillTermCommitEdit", "gncBillTermSetName", "gncBillTermSetDescription", "gncBillTermSetType", "gncBillTermSetDueDays", "gncBillTermSetDiscountDays", "gncBillTermSetDiscount", "gncBillTermSetCutoff", "gncBillTermLookup", "gncBillTermLookupByName", "gncBillTermGetTerms", "gncBillTermGetName", "gncBillTermGetDescription", "gncBillTermGetType", "gncBillTermGetDueDays", "gncBillTermGetDiscountDays", "gncBillTermGetDiscount", "gncBillTermGetCutoff", "gncBillTermIsDirty", "gncBillTermGetParent", "gncBillTermReturnChild", "gncBillTermGetRefcount", "gncBillTermCompare", "gncBillTermEqual", "gncBillTermIsFamily", "gncBillTermComputeDueDate", "GNC-BILLTERM-MODULE-NAME", "gncBusinessGetList", "gncBusinessGetOwnerList", "GNC-ID-CUSTOMER", "gnc-customer-get-type", "gncCustomerCreate", "gncCustomerDestroy", "gncCustomerBeginEdit", "gncCustomerCommitEdit", "gncCustomerSetID", "gncCustomerSetName", "gncCustomerSetNotes", "gncCustomerSetTerms", "gncCustomerSetTaxIncluded", "gncCustomerSetActive", "gncCustomerSetDiscount", "gncCustomerSetCredit", "gncCustomerSetCurrency", "gncCustomerSetTaxTableOverride", "gncCustomerSetTaxTable", "gncCustomerAddJob", "gncCustomerRemoveJob", "gncCustomerLookup", "gncCustomerGetID", "gncCustomerGetName", "gncCustomerGetAddr", "gncCustomerGetShipAddr", "gncCustomerGetNotes", "gncCustomerGetTerms", "gncCustomerGetTaxIncluded", "gncCustomerGetActive", "gncCustomerGetDiscount", "gncCustomerGetCredit", "gncCustomerGetCurrency", "gncCustomerGetTaxTableOverride", "gncCustomerGetTaxTable", "gncCustomerCompare", "CUSTOMER-ID", "CUSTOMER-NAME", "CUSTOMER-ADDR", "CUSTOMER-SHIPADDR", "CUSTOMER-NOTES", "CUSTOMER-DISCOUNT", "CUSTOMER-CREDIT", "CUSTOMER-TT-OVER", "CUSTOMER-TAX-INC", "CUSTOMER-TERMS", "CUSTOMER-ACTIVE", "CUSTOMER-SLOTS", "gncCustomerEqual", "gncCustomerGetJoblist", "gncCustomerIsDirty", "GNC-ID-EMPLOYEE", "gnc-employee-get-type", "gncEmployeeCreate", "gncEmployeeDestroy", "gncEmployeeBeginEdit", "gncEmployeeCommitEdit", "gncEmployeeCompare", "gncEmployeeSetID", "gncEmployeeSetUsername", "gncEmployeeSetName", "gncEmployeeSetLanguage", "gncEmployeeSetAcl", "gncEmployeeSetWorkday", "gncEmployeeSetRate", "gncEmployeeSetCurrency", "gncEmployeeSetActive", "gncEmployeeSetCCard", "qofEmployeeSetAddr", "gncEmployeeGetBook", "gncEmployeeGetID", "gncEmployeeGetUsername", "gncEmployeeGetName", "gncEmployeeGetAddr", "gncEmployeeGetLanguage", "gncEmployeeGetAcl", "gncEmployeeGetWorkday", "gncEmployeeGetRate", "gncEmployeeGetCurrency", "gncEmployeeGetActive", "gncEmployeeGetCCard", "gncEmployeeLookup", "EMPLOYEE-ID", "EMPLOYEE-USERNAME", "EMPLOYEE-NAME", "EMPLOYEE-ADDR", "EMPLOYEE-LANGUAGE", "EMPLOYEE-ACL", "EMPLOYEE-WORKDAY", "EMPLOYEE-RATE", "EMPLOYEE-CC", "gncEmployeeEqual", "gncEmployeeIsDirty", "GNC-PAYMENT-CASH", "GNC-PAYMENT-CARD", "GNC-DISC-PRETAX", "GNC-DISC-SAMETIME", "GNC-DISC-POSTTAX", "GNC-ID-ENTRY", "gnc-entry-get-type", "gncEntryDiscountHowToString", "gncEntryDiscountStringToHow", "gncEntryPaymentTypeToString", "gncEntryPaymentStringToType", "gncEntryCreate", "gncEntryDestroy", "gncEntrySetDateGDate", "gncEntrySetDate", "gncEntrySetDateEntered", "gncEntrySetDescription", "gncEntrySetAction", "gncEntrySetNotes", "gncEntrySetQuantity", "gncEntrySetDocQuantity", "gncEntrySetInvAccount", "gncEntrySetInvPrice", "gncEntrySetInvTaxable", "gncEntrySetInvTaxIncluded", "gncEntrySetInvTaxTable", "gncEntrySetInvDiscount", "gncEntrySetInvDiscountType", "gncEntrySetInvDiscountHow", "qofEntrySetInvDiscType", "qofEntrySetInvDiscHow", "gncEntrySetBillAccount", "gncEntrySetBillPrice", "gncEntrySetBillTaxable", "gncEntrySetBillTaxIncluded", "gncEntrySetBillTaxTable", "gncEntrySetBillable", "gncEntrySetBillTo", "gncEntrySetBillPayment", "gncEntryGetDateGDate", "gncEntryGetDate", "gncEntryGetDateEntered", "gncEntryGetDescription", "gncEntryGetAction", "gncEntryGetNotes", "gncEntryGetQuantity", "gncEntryGetDocQuantity", "gncEntryGetInvAccount", "gncEntryGetInvPrice", "gncEntryGetInvDiscount", "gncEntryGetInvDiscountType", "gncEntryGetInvDiscountHow", "qofEntryGetInvDiscType", "qofEntryGetInvDiscHow", "gncEntryGetInvTaxable", "gncEntryGetInvTaxIncluded", "gncEntryGetInvTaxTable", "gncEntryGetBillAccount", "gncEntryGetBillPrice", "gncEntryGetBillTaxable", "gncEntryGetBillTaxIncluded", "gncEntryGetBillTaxTable", "gncEntryGetBillable", "gncEntryGetBillTo", "gncEntryGetBillPayment", "gncEntryCopy", "gncEntryGetDocValue", "gncEntryGetDocTaxValue", "gncEntryGetDocTaxValues", "gncEntryGetDocDiscountValue", "gncEntryGetBalValue", "gncEntryGetBalTaxValue", "gncEntryGetBalTaxValues", "gncEntryGetBalDiscountValue", "gncEntryComputeValue", "gncEntryGetOrder", "gncEntryGetInvoice", "gncEntryGetBill", "gncEntryLookup", "gncEntryIsOpen", "gncEntryBeginEdit", "gncEntryCommitEdit", "gncEntryCompare", "ENTRY-DATE", "ENTRY-DATE-ENTERED", "ENTRY-DESC", "ENTRY-ACTION", "ENTRY-NOTES", "ENTRY-QTY", "ENTRY-IPRICE", "ENTRY-IACCT", "ENTRY-BACCT", "ENTRY-BPRICE", "ENTRY-BILLABLE", "ENTRY-BILLTO", "ENTRY-ORDER", "ENTRY-INVOICE", "ENTRY-BILL", "ENTRY-INV-DISC-TYPE", "ENTRY-INV-DISC-HOW", "ENTRY-INV-TAXABLE", "ENTRY-BILL-TAXABLE", "ENTRY-INV-TAX-INC", "ENTRY-BILL-TAX-INC", "ENTRY-INV-DISCOUNT", "ENTRY-BILL-PAY-TYPE", "GNC-ID-INVOICE", "GNC-INVOICE-UNDEFINED", "GNC-INVOICE-CUST-INVOICE", "GNC-INVOICE-VEND-INVOICE", "GNC-INVOICE-EMPL-INVOICE", "GNC-INVOICE-CUST-CREDIT-NOTE", "GNC-INVOICE-VEND-CREDIT-NOTE", "GNC-INVOICE-EMPL-CREDIT-NOTE", "GNC-INVOICE-NUM-TYPES", "gnc-invoice-get-type", "gncInvoiceCreate", "gncInvoiceDestroy", "gncInvoiceCopy", "gncInvoiceSetID", "gncInvoiceSetOwner", "gncInvoiceSetDateOpenedGDate", "gncInvoiceSetDateOpened", "gncInvoiceSetDatePosted", "gncInvoiceSetTerms", "gncInvoiceSetBillingID", "gncInvoiceSetNotes", "gncInvoiceSetCurrency", "gncInvoiceSetActive", "gncInvoiceSetIsCreditNote", "gncInvoiceSetBillTo", "gncInvoiceSetToChargeAmount", "gncInvoiceAddEntry", "gncInvoiceRemoveEntry", "gncInvoiceAddPrice", "gncBillAddEntry", "gncBillRemoveEntry", "gncInvoiceSortEntries", "gncInvoiceRemoveEntries", "gncInvoiceGetID", "gncInvoiceGetOwner", "gncInvoiceGetDateOpened", "gncInvoiceGetDatePosted", "gncInvoiceGetDateDue", "gncInvoiceGetTerms", "gncInvoiceGetBillingID", "gncInvoiceGetNotes", "gncInvoiceGetOwnerType", "gncInvoiceGetTypeListForOwnerType", "gncInvoiceGetType", "gncInvoiceGetTypeString", "gncInvoiceGetCurrency", "gncInvoiceGetBillTo", "gncInvoiceGetToChargeAmount", "gncInvoiceGetActive", "gncInvoiceGetIsCreditNote", "gncInvoiceGetPostedLot", "gncInvoiceGetPostedTxn", "gncInvoiceGetPostedAcc", "gncInvoiceGetTotal", "gncInvoiceGetTotalOf", "gncInvoiceGetTotalSubtotal", "gncInvoiceGetTotalTax", "gncInvoiceGetEntries", "gncInvoiceGetPrice", "gncInvoiceAmountPositive", "gncInvoiceGetForeignCurrencies", "gncInvoicePostToAccount", "gncInvoiceUnpost", "gncInvoiceAutoApplyPayments", "gncInvoiceApplyPayment", "gncInvoiceGetInvoiceFromTxn", "gncInvoiceGetInvoiceFromLot", "gncInvoiceLookup", "gncInvoiceBeginEdit", "gncInvoiceCommitEdit", "gncInvoiceCompare", "gncInvoiceIsPosted", "gncInvoiceIsPaid", "INVOICE-ID", "INVOICE-OWNER", "INVOICE-OPENED", "INVOICE-POSTED", "INVOICE-DUE", "INVOICE-IS-POSTED", "INVOICE-IS-PAID", "INVOICE-TERMS", "INVOICE-BILLINGID", "INVOICE-NOTES", "INVOICE-ACC", "INVOICE-POST-TXN", "INVOICE-POST-LOT", "INVOICE-IS-CN", "INVOICE-TYPE", "INVOICE-TYPE-STRING", "INVOICE-BILLTO", "INVOICE-ENTRIES", "INVOICE-JOB", "INVOICE-FROM-LOT", "INVOICE-FROM-TXN", "gncInvoiceGetBook", "gncInvoiceEqual", "GNC-ID-JOB", "gnc-job-get-type", "gncJobCreate", "gncJobDestroy", "gncJobSetID", "gncJobSetName", "gncJobSetReference", "gncJobSetOwner", "gncJobSetActive", "gncJobBeginEdit", "gncJobCommitEdit", "gncJobGetID", "gncJobGetName", "gncJobGetReference", "gncJobGetOwner", "gncJobGetActive", "gncJobLookup", "gncJobCompare", "gncJobEqual", "JOB-ID", "JOB-NAME", "JOB-REFERENCE", "JOB-OWNER", "Q-JOB-OWNER", "JOB-ACTIVE", "GNC-ID-ORDER", "gnc-order-get-type", "gncOrderCreate", "gncOrderDestroy", "gncOrderSetID", "gncOrderSetOwner", "gncOrderSetDateOpened", "gncOrderSetDateClosed", "gncOrderSetNotes", "gncOrderSetReference", "gncOrderSetActive", "gncOrderAddEntry", "gncOrderRemoveEntry", "gncOrderGetID", "gncOrderGetOwner", "gncOrderGetDateOpened", "gncOrderGetDateClosed", "gncOrderGetNotes", "gncOrderGetReference", "gncOrderGetActive", "gncOrderGetEntries", "gncOrderBeginEdit", "gncOrderCommitEdit", "gncOrderCompare", "gncOrderIsClosed", "gncOrderLookup", "ORDER-ID", "ORDER-REFERENCE", "ORDER-OWNER", "ORDER-OPENED", "ORDER-CLOSED", "ORDER-IS-CLOSED", "ORDER-NOTES", "GNC-ID-OWNER", "GNC-OWNER-NONE", "GNC-OWNER-UNDEFINED", "GNC-OWNER-CUSTOMER", "GNC-OWNER-JOB", "GNC-OWNER-VENDOR", "GNC-OWNER-EMPLOYEE", "qofOwnerGetType", "qofOwnerGetOwner", "qofOwnerSetEntity", "GNC-IS-OWNER", "gncOwnerTypeToQofIdType", "gncOwnerRegister", "gncOwnerInitUndefined", "gncOwnerInitCustomer", "gncOwnerInitJob", "gncOwnerInitVendor", "gncOwnerInitEmployee", "gncOwnerGetType", "gncOwnerIsValid", "gncOwnerGetUndefined", "gncOwnerGetCustomer", "gncOwnerGetJob", "gncOwnerGetVendor", "gncOwnerGetEmployee", "gncOwnerGetID", "gncOwnerGetName", "gncOwnerGetAddr", "gncOwnerGetActive", "gncOwnerGetCurrency", "gncOwnerSetActive", "gncOwnerCopy", "gncOwnerEqual", "gncOwnerGCompareFunc", "gncOwnerCompare", "gncOwnerGetGUID", "gncOwnerReturnGUID", "gncOwnerGetEndOwner", "gncOwnerGetEndGUID", "gncOwnerAttachToLot", "gncOwnerLotMatchOwnerFunc", "gncOwnerLotsSortFunc", "gncOwnerGetOwnerFromLot", "gncOwnerGetOwnerFromTypeGuid", "gncOwnerGetSlots", "gncOwnerCreatePaymentLot", "gncOwnerAutoApplyPaymentsWithLots", "gncOwnerApplyPayment", "gncOwnerFindOffsettingSplit", "gncOwnerReduceSplitTo", "gncOwnerSetLotLinkMemo", "gncOwnerGetAccountTypesList", "gncOwnerGetCommoditiesList", "gncOwnerGetBalanceInCurrency", "OWNER-TYPE", "OWNER-TYPE-STRING", "OWNER-CUSTOMER", "OWNER-JOB", "OWNER-VENDOR", "OWNER-EMPLOYEE", "OWNER-PARENT", "OWNER-PARENTG", "OWNER-NAME", "OWNER-FROM-LOT", "gncOwnerNew", "gncOwnerFree", "gncOwnerBeginEdit", "gncOwnerDestroy", "GNC-ID-TAXTABLE", "gnc-taxtable-get-type", "GNC-AMT-TYPE-VALUE", "GNC-AMT-TYPE-PERCENT", "GNC-TAXINCLUDED-YES", "GNC-TAXINCLUDED-NO", "GNC-TAXINCLUDED-USEGLOBAL", "gncAmountTypeToString", "gncAmountStringToType", "gncTaxIncludedTypeToString", "gncTaxIncludedStringToType", "gncTaxTableCreate", "gncTaxTableDestroy", "gncTaxTableEntryCreate", "gncTaxTableEntryDestroy", "gncTaxTableSetName", "gncTaxTableIncRef", "gncTaxTableDecRef", "gncTaxTableEntrySetAccount", "gncTaxTableEntrySetType", "gncTaxTableEntrySetAmount", "gncTaxTableAddEntry", "gncTaxTableRemoveEntry", "gncTaxTableChanged", "gncTaxTableBeginEdit", "gncTaxTableCommitEdit", "gncTaxTableEqual", "gncTaxTableLookup", "gncTaxTableLookupByName", "gncTaxTableGetTables", "gncTaxTableGetName", "gncTaxTableGetParent", "gncTaxTableReturnChild", "gncTaxTableGetEntries", "gncTaxTableGetRefcount", "gncTaxTableLastModified", "gncTaxTableEntryGetAccount", "gncTaxTableEntryGetType", "gncTaxTableEntryGetAmount", "gncTaxTableCompare", "gncTaxTableEntryCompare", "gncTaxTableEntryEqual", "-gncAccountValue-account-set", "-gncAccountValue-account-get", "-gncAccountValue-value-set", "-gncAccountValue-value-get", "new--gncAccountValue", "delete--gncAccountValue", "gncAccountValueAdd", "gncAccountValueAddList", "gncAccountValueTotal", "gncAccountValueDestroy", "GNC-TT-NAME", "GNC-TT-REFCOUNT", "GNC-ID-VENDOR", "gnc-vendor-get-type", "gncVendorCreate", "gncVendorDestroy", "gncVendorSetID", "gncVendorSetName", "gncVendorSetNotes", "gncVendorSetTerms", "gncVendorSetTaxIncluded", "gncVendorSetCurrency", "gncVendorSetActive", "gncVendorSetTaxTableOverride", "gncVendorSetTaxTable", "gncVendorAddJob", "gncVendorRemoveJob", "gncVendorBeginEdit", "gncVendorCommitEdit", "gncVendorGetID", "gncVendorGetName", "gncVendorGetAddr", "gncVendorGetNotes", "gncVendorGetTerms", "gncVendorGetTaxIncluded", "gncVendorGetCurrency", "gncVendorGetActive", "gncVendorGetTaxTableOverride", "gncVendorGetTaxTable", "gncVendorCompare", "gncVendorLookup", "VENDOR-ID", "VENDOR-NAME", "VENDOR-ADDR", "VENDOR-NOTES", "VENDOR-TERMS", "VENDOR-TAX-INC", "VENDOR-ACTIVE", "VENDOR-TAX-OVERRIDE", "VENDOR-TAX-TABLE", "gncVendorEqual", "gncVendorIsDirty", "gnc-scm-to-account-value-ptr", "gnc-account-value-ptr-to-scm", "URL-TYPE-CUSTOMER", "URL-TYPE-VENDOR", "URL-TYPE-EMPLOYEE", "URL-TYPE-JOB", "URL-TYPE-INVOICE", "URL-TYPE-OWNERREPORT", "qof-query-create-for-invoices", "qof-query-run-for-invoices", NULL);
+scm_c_export("gncSplitGetGUID", "gncTransGetGUID", "gncAccountGetGUID", "gnc-split-get-type", "CREC", "YREC", "FREC", "NREC", "VREC", "xaccSplitConvertAmount", "xaccMallocSplit", "xaccSplitReinit", "xaccSplitDestroy", "xaccSplitCopyOnto", "xaccSplitGetBook", "xaccSplitGetAccount", "xaccSplitSetAccount", "xaccSplitGetParent", "xaccSplitSetParent", "xaccSplitGetLot", "xaccSplitSetLot", "xaccSplitGetSlots", "xaccSplitSetSlots-nc", "xaccSplitSetMemo", "xaccSplitGetMemo", "xaccSplitSetAction", "xaccSplitGetAction", "xaccSplitSetReconcile", "xaccSplitGetReconcile", "xaccSplitSetDateReconciledSecs", "xaccSplitSetDateReconciledTS", "xaccSplitGetDateReconciledTS", "xaccSplitRetDateReconciledTS", "xaccSplitGetDateReconciled", "xaccSplitSetAmount", "xaccSplitGetAmount", "xaccSplitSetValue", "xaccSplitGetValue", "xaccSplitSetSharePriceAndAmount", "xaccSplitGetSharePrice", "xaccSplitSetBaseValue", "xaccSplitGetBaseValue", "xaccSplitGetBalance", "xaccSplitGetClearedBalance", "xaccSplitGetReconciledBalance", "xaccSplitEqual", "xaccSplitLookup", "xaccSplitListGetUniqueTransactions", "xaccSplitGetOtherSplit", "xaccSplitGetType", "xaccSplitMakeStockSplit", "xaccSplitOrder", "xaccSplitOrderDateOnly", "xaccSplitCompareAccountFullNames", "xaccSplitCompareAccountCodes", "xaccSplitCompareOtherAccountFullNames", "xaccSplitCompareOtherAccountCodes", "xaccSplitGetCorrAccountFullName", "xaccSplitGetCorrAccountName", "xaccSplitGetCorrAccountCode", "xaccSplitSetSharePrice", "xaccSplitVoidFormerAmount", "xaccSplitVoidFormerValue", "SPLIT-KVP", "SPLIT-DATE-RECONCILED", "SPLIT-BALANCE", "SPLIT-CLEARED-BALANCE", "SPLIT-RECONCILED-BALANCE", "SPLIT-MEMO", "SPLIT-ACTION", "SPLIT-RECONCILE", "SPLIT-AMOUNT", "SPLIT-SHARE-PRICE", "SPLIT-VALUE", "SPLIT-TYPE", "SPLIT-VOIDED-AMOUNT", "SPLIT-VOIDED-VALUE", "SPLIT-LOT", "SPLIT-TRANS", "SPLIT-ACCOUNT", "SPLIT-ACCOUNT-GUID", "SPLIT-ACCT-FULLNAME", "SPLIT-CORR-ACCT-NAME", "SPLIT-CORR-ACCT-CODE", "gnc-account-get-children", "gnc-account-get-children-sorted", "gnc-account-get-descendants", "gnc-account-get-descendants-sorted", "AccountClass-parent-class-set", "AccountClass-parent-class-get", "new-AccountClass", "delete-AccountClass", "gnc-account-get-type", "ACCT-TYPE-INVALID", "ACCT-TYPE-NONE", "ACCT-TYPE-BANK", "ACCT-TYPE-CASH", "ACCT-TYPE-CREDIT", "ACCT-TYPE-ASSET", "ACCT-TYPE-LIABILITY", "ACCT-TYPE-STOCK", "ACCT-TYPE-MUTUAL", "ACCT-TYPE-CURRENCY", "ACCT-TYPE-INCOME", "ACCT-TYPE-EXPENSE", "ACCT-TYPE-EQUITY", "ACCT-TYPE-RECEIVABLE", "ACCT-TYPE-PAYABLE", "ACCT-TYPE-ROOT", "ACCT-TYPE-TRADING", "NUM-ACCOUNT-TYPES", "ACCT-TYPE-CHECKING", "ACCT-TYPE-SAVINGS", "ACCT-TYPE-MONEYMRKT", "ACCT-TYPE-CREDITLINE", "ACCT-TYPE-LAST", "xaccMallocAccount", "gnc-account-create-root", "xaccCloneAccount", "xaccAccountBeginEdit", "xaccAccountCommitEdit", "xaccAccountDestroy", "xaccAccountEqual", "xaccAccountOrder", "gnc-get-account-separator-string", "gnc-get-account-separator", "gnc-set-account-separator", "gnc-book-get-root-account", "gnc-book-set-root-account", "xaccAccountLookup", "gnc-account-name-violations-errmsg", "gnc-account-list-name-violations", "gnc-account-get-book", "xaccAccountSetType", "xaccAccountSetName", "xaccAccountSetCode", "xaccAccountSetDescription", "xaccAccountSetColor", "xaccAccountSetFilter", "xaccAccountSetSortOrder", "xaccAccountSetNotes", "xaccAccountSetLastNum", "gnc-account-set-policy", "xaccAccountGetType", "xaccAccountIsPriced", "gnc-account-set-start-balance", "gnc-account-set-start-cleared-balance", "gnc-account-set-start-reconciled-balance", "gnc-account-set-balance-dirty", "gnc-account-set-sort-dirty", "gnc-account-insert-split", "gnc-account-remove-split", "xaccAccountGetName", "xaccAccountGetCode", "xaccAccountGetDescription", "xaccAccountGetColor", "xaccAccountGetFilter", "xaccAccountGetSortOrder", "xaccAccountGetNotes", "xaccAccountGetLastNum", "gnc-account-get-policy", "xaccAccountRecomputeBalance", "xaccAccountSortSplits", "gnc-account-get-full-name", "dxaccAccountSetPriceSrc", "dxaccAccountGetPriceSrc", "xaccAccountGetAutoInterestXfer", "xaccAccountSetAutoInterestXfer", "xaccAccountSetCommodity", "xaccAccountGetCommodity", "gnc-account-get-currency-or-parent", "xaccAccountGetCommoditySCU", "xaccAccountGetCommoditySCUi", "xaccAccountSetCommoditySCU", "xaccAccountSetNonStdSCU", "xaccAccountGetNonStdSCU", "xaccAccountGetBalance", "xaccAccountGetClearedBalance", "xaccAccountGetReconciledBalance", "xaccAccountGetPresentBalance", "xaccAccountGetProjectedMinimumBalance", "xaccAccountGetBalanceAsOfDate", "xaccAccountConvertBalanceToCurrency", "xaccAccountConvertBalanceToCurrencyAsOfDate", "xaccAccountGetBalanceInCurrency", "xaccAccountGetClearedBalanceInCurrency", "xaccAccountGetReconciledBalanceInCurrency", "xaccAccountGetPresentBalanceInCurrency", "xaccAccountGetProjectedMinimumBalanceInCurrency", "xaccAccountGetBalanceAsOfDateInCurrency", "xaccAccountGetBalanceChangeForPeriod", "gnc-account-append-child", "gnc-account-remove-child", "gnc-account-get-parent", "gnc-account-get-root", "gnc-account-is-root", "gnc-account-n-children", "gnc-account-child-index", "gnc-account-nth-child", "gnc-account-n-descendants", "gnc-account-get-current-depth", "gnc-account-get-tree-depth", "gnc-account-foreach-child", "gnc-account-foreach-descendant", "gnc-account-foreach-descendant-until", "gnc-account-join-children", "gnc-account-merge-children", "xaccAccountSetReconcileChildrenStatus", "xaccAccountGetReconcileChildrenStatus", "xaccAccountHasAncestor", "gnc-account-lookup-by-name", "gnc-account-lookup-by-full-name", "gnc-account-lookup-by-code", "xaccAccountTypeEnumAsString", "xaccAccountStringToType", "xaccAccountStringToEnum", "xaccAccountGetTypeStr", "xaccParentAccountTypesCompatibleWith", "xaccAccountTypesCompatible", "xaccAccountTypesValid", "xaccAccountIsAssetLiabType", "xaccAccountIsAPARType", "xaccAccountIsEquityType", "xaccAccountGetSplitList", "xaccAccountMoveAllSplits", "xaccAccountForEachTransaction", "xaccAccountFindTransByDesc", "xaccAccountFindSplitByDesc", "xaccAccountInsertLot", "xaccAccountRemoveLot", "xaccAccountGetLotList", "xaccAccountForEachLot", "xaccAccountFindOpenLots", "xaccAccountGetReconcileLastDate", "xaccAccountSetReconcileLastDate", "xaccAccountGetReconcileLastInterval", "xaccAccountSetReconcileLastInterval", "xaccAccountGetReconcilePostponeDate", "xaccAccountSetReconcilePostponeDate", "xaccAccountGetReconcilePostponeBalance", "xaccAccountSetReconcilePostponeBalance", "xaccAccountClearReconcilePostpone", "PLACEHOLDER-NONE", "PLACEHOLDER-THIS", "PLACEHOLDER-CHILD", "xaccAccountGetPlaceholder", "xaccAccountSetPlaceholder", "xaccAccountGetDescendantPlaceholder", "xaccAccountGetHidden", "xaccAccountSetHidden", "xaccAccountIsHidden", "xaccAccountGetTaxRelated", "xaccAccountSetTaxRelated", "xaccAccountGetTaxUSCode", "xaccAccountSetTaxUSCode", "xaccAccountGetTaxUSPayerNameSource", "xaccAccountSetTaxUSPayerNameSource", "xaccAccountGetTaxUSCopyNumber", "xaccAccountSetTaxUSCopyNumber", "xaccAccountSetMark", "xaccClearMark", "xaccClearMarkDown", "gnc-account-tree-begin-staged-transaction-traversals", "xaccSplitsBeginStagedTransactionTraversals", "xaccAccountBeginStagedTransactionTraversals", "xaccTransactionTraverse", "xaccAccountStagedTransactionTraversal", "gnc-account-tree-staged-transaction-traversal", "xaccAccountTreeForEachTransaction", "DxaccAccountSetCurrency", "DxaccAccountGetCurrency", "dxaccAccountSetQuoteTZ", "dxaccAccountGetQuoteTZ", "ACCOUNT-KVP", "ACCOUNT-NAME-", "ACCOUNT-CODE-", "ACCOUNT-DESCRIPTION-", "ACCOUNT-COLOR-", "ACCOUNT-FILTER-", "ACCOUNT-SORT-ORDER-", "ACCOUNT-NOTES-", "ACCOUNT-BALANCE-", "ACCOUNT-CLEARED-", "ACCOUNT-RECONCILED-", "ACCOUNT-PRESENT-", "ACCOUNT-FUTURE-MINIMUM-", "ACCOUNT-TAX-RELATED", "ACCOUNT-TYPE-", "ACCOUNT-SCU", "ACCOUNT-NSCU", "ACCOUNT-PARENT", "ACCOUNT-MATCH-ALL-TYPE", "gnc-transaction-get-type", "TXN-TYPE-NONE", "TXN-TYPE-INVOICE", "TXN-TYPE-PAYMENT", "TXN-TYPE-LINK", "xaccMallocTransaction", "xaccTransDestroy", "xaccTransClone", "xaccTransEqual", "xaccTransBeginEdit", "xaccTransCommitEdit", "xaccTransRollbackEdit", "xaccTransIsOpen", "xaccTransLookup", "xaccTransCopyToClipBoard", "xaccTransCopyOnto", "xaccTransCopyFromClipBoard", "xaccTransFindSplitByAccount", "xaccTransScrubGains", "gnc-book-count-transactions", "xaccTransUseTradingAccounts", "xaccTransSortSplits", "xaccTransSetTxnType", "xaccTransGetTxnType", "xaccTransSetNum", "xaccTransSetDescription", "xaccTransSetAssociation", "xaccTransSetNotes", "xaccTransGetNum", "xaccTransGetDescription", "xaccTransGetAssociation", "xaccTransGetNotes", "xaccTransSetIsClosingTxn", "xaccTransGetIsClosingTxn", "xaccTransGetSplit", "xaccTransGetSplitIndex", "xaccTransGetSplitList", "xaccTransStillHasSplit", "xaccTransSetReadOnly", "xaccTransClearReadOnly", "xaccTransGetReadOnly", "xaccTransIsReadonlyByPostedDate", "xaccTransInFutureByPostedDate", "xaccTransCountSplits", "xaccTransHasReconciledSplits", "xaccTransHasReconciledSplitsByAccount", "xaccTransHasSplitsInState", "xaccTransHasSplitsInStateByAccount", "xaccTransGetCurrency", "xaccTransSetCurrency", "xaccTransGetImbalanceValue", "xaccTransGetImbalance", "xaccTransIsBalanced", "xaccTransGetAccountValue", "xaccTransGetAccountAmount", "xaccTransGetRateForCommodity", "xaccTransGetAccountConvRate", "xaccTransGetAccountBalance", "xaccTransOrder", "xaccTransOrder-num-action", "xaccTransSetDate", "xaccTransSetDatePostedGDate", "xaccTransSetDatePostedSecs", "xaccTransSetDatePostedSecsNormalized", "xaccTransSetDatePostedTS", "xaccTransSetDateEnteredSecs", "xaccTransSetDateEnteredTS", "xaccTransSetDateDueTS", "xaccTransGetDate", "xaccTransGetDatePostedTS", "xaccTransRetDatePostedTS", "xaccTransGetDatePostedGDate", "xaccTransGetDateEntered", "xaccTransGetDateEnteredTS", "xaccTransRetDateEnteredTS", "xaccTransRetDateDueTS", "xaccTransGetDateDueTS", "xaccTransVoid", "xaccTransUnvoid", "xaccTransReverse", "xaccTransGetReversedBy", "xaccTransGetVoidStatus", "xaccTransGetVoidReason", "xaccTransGetVoidTime", "TRANS-KVP", "TRANS-NUM", "TRANS-DESCRIPTION", "TRANS-DATE-ENTERED", "TRANS-DATE-POSTED", "TRANS-DATE-DUE", "TRANS-IMBALANCE", "TRANS-IS-BALANCED", "TRANS-IS-CLOSING", "TRANS-NOTES", "TRANS-ASSOCIATION", "TRANS-TYPE", "TRANS-VOID-STATUS", "TRANS-VOID-REASON", "TRANS-VOID-TIME", "TRANS-SPLITLIST", "RECONCILED-MATCH-TYPE", "GncLotClass-parent-class-set", "GncLotClass-parent-class-get", "new-GncLotClass", "delete-GncLotClass", "gnc-lot-get-type", "gnc-lot-new", "gnc-lot-destroy", "gnc-lot-lookup", "gnc-lot-get-book", "gnc-lot-begin-edit", "gnc-lot-commit-edit", "gnc-lot-add-split", "gnc-lot-remove-split", "gnc-lot-get-split-list", "gnc-lot-count-splits", "gnc-lot-get-account", "gnc-lot-set-account", "gnc-lot-get-balance", "gnc-lot-get-balance-before", "gnc-lot-is-closed", "gnc-lot-get-earliest-split", "gnc-lot-get-latest-split", "gnc-lot-set-closed-unknown", "gnc-lot-get-title", "gnc-lot-get-notes", "gnc-lot-set-title", "gnc-lot-set-notes", "gnc-lot-get-slots", "gnc-lot-make-default", "LOT-IS-CLOSED", "LOT-BALANCE", "LOT-TITLE", "LOT-NOTES", "gncPriceGetGUID", "gncBudgetGetGUID", "QOF-ID-BOOK-SCM", "gnc-transaction-get-date-posted", "gnc-transaction-get-date-entered", "gnc-split-get-date-reconciled", "gnc-transaction-set-date", "gnc-get-num-action", "gnc-get-action-num", "gnc-set-num-action", "gnc-book-option-num-field-source-change", "gnc-book-option-register-cb", "gnc-book-option-remove-cb", "gnc-timespec2timepair", "gnc-timepair2timespec", "gnc-timepair-to-GDate", "gnc-timepair-p", "gnc-guid2scm", "gnc-scm2guid", "gnc-guid-p", "gnc-query-scm2path", "gnc-query2scm", "gnc-scm2query", "gnc-gh-gint64-p", "gnc-numeric-to-scm", "gnc-scm-to-numeric", "gnc-numeric-p", "gnc-scm-to-commodity", "gnc-commodity-to-scm", "gnc-book-to-scm", "gnc-price-get-type", "gnc-pricedb-get-type", "PRICE-SOURCE-EDIT-DLG", "PRICE-SOURCE-FQ", "PRICE-SOURCE-USER-PRICE", "PRICE-SOURCE-XFER-DLG-VAL", "PRICE-SOURCE-SPLIT-REG", "PRICE-SOURCE-STOCK-SPLIT", "PRICE-SOURCE-INVOICE", "PRICE-SOURCE-INVALID", "PRICE-TYPE-LAST", "PRICE-TYPE-UNK", "PRICE-TYPE-TRN", "gnc-price-create", "gnc-price-clone", "gnc-price-ref", "gnc-price-unref", "gnc-price-begin-edit", "gnc-price-commit-edit", "gnc-price-set-commodity", "gnc-price-set-currency", "gnc-price-set-time", "gnc-price-set-source", "gnc-price-set-source-string", "gnc-price-set-typestr", "gnc-price-set-value", "gnc-price-lookup", "gnc-price-get-commodity", "gnc-price-get-currency", "gnc-price-get-time", "gnc-price-get-source", "gnc-price-get-source-string", "gnc-price-get-typestr", "gnc-price-get-value", "gnc-price-equal", "gnc-price-print", "CURRENCY-DENOM", "COMMODITY-DENOM-MULT", "gnc-price-list-insert", "gnc-price-list-remove", "gnc-price-list-destroy", "gnc-price-list-equal", "gnc-pricedb-get-db", "gnc-collection-get-pricedb", "gnc-pricedb-destroy", "gnc-pricedb-begin-edit", "gnc-pricedb-commit-edit", "gnc-pricedb-set-bulk-update", "gnc-pricedb-add-price", "gnc-pricedb-remove-price", "gnc-pricedb-remove-old-prices", "gnc-pricedb-lookup-latest", "gnc-pricedb-lookup-latest-any-currency", "gnc-pricedb-has-prices", "gnc-pricedb-get-prices", "gnc-pricedb-lookup-at-time", "gnc-pricedb-lookup-day", "gnc-pricedb-lookup-nearest-in-time", "gnc-pricedb-lookup-nearest-in-time-any-currency", "gnc-pricedb-lookup-latest-before", "gnc-pricedb-lookup-latest-before-any-currency", "gnc-pricedb-convert-balance-latest-price", "gnc-pricedb-convert-balance-nearest-price", "gnc-pricedb-foreach-price", "gnc-pricedb-get-num-prices", "gnc-pricedb-equal", "gnc-pricedb-print-contents", "PRICE-COMMODITY", "PRICE-CURRENCY", "PRICE-DATE", "PRICE-SOURCE", "PRICE-TYPE", "PRICE-VALUE", "qof-session-new", "qof-session-get-book", "qof-book-kvp-changed", "qof-session-get-url", "gnc-default-strftime-date-format", "gnc-print-date", "guid-new-return", "qof-query-create-for-splits", "qof-query-run", "qof-query-last-run", "qof-query-run-subquery", "QUERY-TXN-MATCH-ALL", "QUERY-TXN-MATCH-ANY", "xaccQueryGetSplitsUniqueTrans", "xaccQueryGetTransactions", "xaccQueryGetLots", "xaccQueryAddAccountMatch", "xaccQueryAddAccountGUIDMatch", "xaccQueryAddSingleAccountMatch", "xaccQueryAddStringMatch", "xaccQueryAddDescriptionMatch", "xaccQueryAddNumberMatch", "xaccQueryAddActionMatch", "xaccQueryAddMemoMatch", "xaccQueryAddValueMatch", "xaccQueryAddSharePriceMatch", "xaccQueryAddSharesMatch", "xaccQueryAddBalanceMatch", "xaccQueryAddNumericMatch", "xaccQueryAddDateMatch", "xaccQueryAddDateMatchTS", "xaccQueryAddDateMatchTT", "xaccQueryGetDateMatchTS", "xaccQueryGetDateMatchTT", "xaccQueryAddClosingTransMatch", "CLEARED-NONE", "CLEARED-NO", "CLEARED-CLEARED", "CLEARED-RECONCILED", "CLEARED-FROZEN", "CLEARED-VOIDED", "CLEARED-ALL", "xaccQueryAddClearedMatch", "xaccQueryAddGUIDMatch", "xaccQueryAddKVPMatch", "xaccQueryGetEarliestDateFound", "xaccQueryGetLatestDateFound", "QOF-MOD-QUERY", "QOF-QUERY-AND", "QOF-QUERY-OR", "QOF-QUERY-NAND", "QOF-QUERY-NOR", "QOF-QUERY-XOR", "QUERY-DEFAULT-SORT", "QOF-PARAM-BOOK", "QOF-PARAM-GUID", "QOF-PARAM-KVP", "QOF-PARAM-ACTIVE", "QOF-PARAM-VERSION", "qof-query-init", "qof-query-shutdown", "qof-query-build-param-list", "qof-query-create", "qof-query-create-for", "qof-query-destroy", "qof-query-search-for", "qof-query-set-book", "qof-query-add-term", "qof-query-add-guid-match", "qof-query-add-guid-list-match", "qof-query-add-boolean-match", "qof-query-clear", "qof-query-purge-terms", "qof-query-has-terms", "qof-query-num-terms", "qof-query-has-term-type", "qof-query-get-term-type", "qof-query-copy", "qof-query-invert", "qof-query-merge", "qof-query-merge-in-place", "qof-query-set-sort-order", "qof-query-set-sort-options", "qof-query-set-sort-increasing", "qof-query-set-max-results", "qof-query-equal", "qof-query-print", "qof-query-get-search-for", "qof-query-get-books", "QOF-COMPARE-LT", "QOF-COMPARE-LTE", "QOF-COMPARE-EQUAL", "QOF-COMPARE-GT", "QOF-COMPARE-GTE", "QOF-COMPARE-NEQ", "QOF-STRING-MATCH-NORMAL", "QOF-STRING-MATCH-CASEINSENSITIVE", "QOF-DATE-MATCH-NORMAL", "QOF-DATE-MATCH-DAY", "QOF-NUMERIC-MATCH-DEBIT", "QOF-NUMERIC-MATCH-CREDIT", "QOF-NUMERIC-MATCH-ANY", "QOF-GUID-MATCH-ANY", "QOF-GUID-MATCH-NONE", "QOF-GUID-MATCH-NULL", "QOF-GUID-MATCH-ALL", "QOF-GUID-MATCH-LIST-ANY", "QOF-CHAR-MATCH-ANY", "QOF-CHAR-MATCH-NONE", "-QofQueryPredData-type-name-set", "-QofQueryPredData-type-name-get", "-QofQueryPredData-how-set", "-QofQueryPredData-how-get", "new--QofQueryPredData", "delete--QofQueryPredData", "qof-query-string-predicate", "qof-query-date-predicate", "qof-query-numeric-predicate", "qof-query-guid-predicate", "qof-query-int32-predicate", "qof-query-int64-predicate", "qof-query-double-predicate", "qof-query-boolean-predicate", "qof-query-char-predicate", "qof-query-collect-predicate", "qof-query-choice-predicate", "qof-query-kvp-predicate", "qof-query-kvp-predicate-path", "qof-query-core-predicate-copy", "qof-query-core-predicate-free", "qof-query-date-predicate-get-date", "qof-query-core-to-string", "qof-string-number-compare-func", "KVP-OPTION-PATH", "OPTION-SECTION-ACCOUNTS", "OPTION-NAME-TRADING-ACCOUNTS", "OPTION-NAME-AUTO-READONLY-DAYS", "OPTION-NAME-NUM-FIELD-SOURCE", "OPTION-SECTION-BUDGETING", "OPTION-NAME-DEFAULT-BUDGET", "qof-book-use-trading-accounts", "qof-book-uses-autoreadonly", "qof-book-get-num-days-autoreadonly", "qof-book-get-autoreadonly-gdate", "qof-book-use-split-action-for-num-field", "qof-book-shutting-down", "qof-book-session-not-saved", "qof-book-get-slots", "-gnc-numeric-num-set", "-gnc-numeric-num-get", "-gnc-numeric-denom-set", "-gnc-numeric-denom-get", "new--gnc-numeric", "delete--gnc-numeric", "GNC-NUMERIC-RND-MASK", "GNC-NUMERIC-DENOM-MASK", "GNC-NUMERIC-SIGFIGS-MASK", "GNC-HOW-RND-FLOOR", "GNC-HOW-RND-CEIL", "GNC-HOW-RND-TRUNC", "GNC-HOW-RND-PROMOTE", "GNC-HOW-RND-ROUND-HALF-DOWN", "GNC-HOW-RND-ROUND-HALF-UP", "GNC-HOW-RND-ROUND", "GNC-HOW-RND-NEVER", "GNC-HOW-DENOM-EXACT", "GNC-HOW-DENOM-REDUCE", "GNC-HOW-DENOM-LCD", "GNC-HOW-DENOM-FIXED", "GNC-HOW-DENOM-SIGFIG", "gnc-numeric-create", "gnc-numeric-zero", "double-to-gnc-numeric", "string-to-gnc-numeric", "gnc-numeric-error", "gnc-numeric-errorCode-to-string", "gnc-numeric-num", "gnc-numeric-denom", "gnc-numeric-to-double", "gnc-numeric-to-string", "gnc-num-dbg-to-string", "gnc-numeric-check", "gnc-numeric-compare", "gnc-numeric-zero-p", "gnc-numeric-negative-p", "gnc-numeric-positive-p", "gnc-numeric-eq", "gnc-numeric-equal", "gnc-numeric-same", "gnc-numeric-add", "gnc-numeric-sub", "gnc-numeric-mul", "gnc-numeric-div", "gnc-numeric-neg", "gnc-numeric-abs", "gnc-numeric-add-fixed", "gnc-numeric-sub-fixed", "gnc-numeric-add-with-error", "gnc-numeric-sub-with-error", "gnc-numeric-mul-with-error", "gnc-numeric-div-with-error", "gnc-numeric-convert", "gnc-numeric-reduce", "gnc-numeric-to-decimal", "gnc-numeric-invert", "gnc-numeric-get-type", "pwr64", "timespecCanonicalDayTime", "gnc-budget-get-type", "GNC-BUDGET-MAX-NUM-PERIODS-DIGITS", "gnc-budget-register", "gnc-budget-new", "gnc-budget-destroy", "gnc-budget-begin-edit", "gnc-budget-commit-edit", "gnc-budget-clone", "gnc-budget-get-guid", "gnc-budget-set-name", "gnc-budget-get-name", "gnc-budget-set-description", "gnc-budget-get-description", "gnc-budget-set-num-periods", "gnc-budget-get-num-periods", "gnc-budget-set-recurrence", "gnc-budget-get-recurrence", "gnc-budget-get-period-start-date", "gnc-budget-get-period-end-date", "gnc-budget-set-account-period-value", "gnc-budget-unset-account-period-value", "gnc-budget-is-account-period-value-set", "gnc-budget-get-account-period-value", "gnc-budget-get-account-period-actual-value", "gnc-budget-get-default", "gnc-budget-lookup", "gnc-quote-source-set-fq-installed", "gnc-commodity-get-type", "gnc-commodity-namespace-get-type", "GNC-COMMODITY-TABLE", "GNC-COMMODITY-NS-LEGACY", "GNC-COMMODITY-NS-ISO", "GNC-COMMODITY-NS-CURRENCY", "GNC-COMMODITY-NS-NASDAQ", "GNC-COMMODITY-NS-NYSE", "GNC-COMMODITY-NS-EUREX", "GNC-COMMODITY-NS-MUTUAL", "GNC-COMMODITY-NS-AMEX", "GNC-COMMODITY-NS-ASX", "SOURCE-SINGLE", "SOURCE-MULTI", "SOURCE-UNKNOWN", "SOURCE-MAX", "SOURCE-CURRENCY", "gnc-quote-source-fq-installed", "gnc-quote-source-num-entries", "gnc-quote-source-add-new", "gnc-quote-source-lookup-by-internal", "gnc-quote-source-lookup-by-ti", "gnc-quote-source-get-supported", "gnc-quote-source-get-type", "gnc-quote-source-get-index", "gnc-quote-source-get-user-name", "gnc-quote-source-get-internal-name", "gnc-commodity-new", "gnc-commodity-destroy", "gnc-commodity-copy", "gnc-commodity-clone", "gnc-commodity-get-mnemonic", "gnc-commodity-get-namespace", "gnc-commodity-get-namespace-compat", "gnc-commodity-get-namespace-ds", "gnc-commodity-get-fullname", "gnc-commodity-get-printname", "gnc-commodity-get-cusip", "gnc-commodity-get-unique-name", "gnc-commodity-get-fraction", "gnc-commodity-get-quote-flag", "gnc-commodity-get-quote-source", "gnc-commodity-get-default-quote-source", "gnc-commodity-get-quote-tz", "gnc-commodity-get-user-symbol", "gnc-commodity-get-default-symbol", "gnc-commodity-get-nice-symbol", "gnc-commodity-set-mnemonic", "gnc-commodity-set-namespace", "gnc-commodity-set-fullname", "gnc-commodity-set-cusip", "gnc-commodity-set-fraction", "gnc-commodity-user-set-quote-flag", "gnc-commodity-set-quote-flag", "gnc-commodity-set-quote-source", "gnc-commodity-set-quote-tz", "gnc-commodity-set-user-symbol", "gnc-commodity-increment-usage-count", "gnc-commodity-decrement-usage-count", "gnc-commodity-equiv", "gnc-commodity-equal", "gnc-commodity-compare", "gnc-commodity-compare-void", "gnc-commodity-namespace-is-iso", "gnc-commodity-is-iso", "gnc-commodity-is-currency", "gnc-commodity-table-get-table", "gnc-commodity-table-lookup", "gnc-commodity-table-lookup-unique", "gnc-commodity-table-find-full", "gnc-commodity-find-commodity-by-guid", "gnc-commodity-table-insert", "gnc-commodity-table-remove", "gnc-commodity-table-add-default-data", "gnc-commodity-namespace-get-name", "gnc-commodity-namespace-get-commodity-list", "gnc-commodity-table-has-namespace", "gnc-commodity-table-get-namespaces", "gnc-commodity-table-get-namespaces-list", "gnc-commodity-table-add-namespace", "gnc-commodity-table-find-namespace", "gnc-commodity-table-delete-namespace", "gnc-commodity-table-get-size", "gnc-commodity-table-get-commodities", "gnc-commodity-table-foreach-commodity", "gnc-commodity-table-new", "gnc-commodity-table-destroy", "gnc-commodity-obtain-twin", "gnc-commodity-table-register", "gnc-commodity-begin-edit", "gnc-commodity-commit-edit", "-gnc-monetary-commodity-set", "-gnc-monetary-commodity-get", "-gnc-monetary-value-set", "-gnc-monetary-value-get", "new--gnc-monetary", "delete--gnc-monetary", "gnc-monetary-create", "gnc-monetary-commodity", "gnc-monetary-value", "gnc-monetary-list-add-monetary", "gnc-monetary-list-add-value", "gnc-monetary-list-delete-zeros", "gnc-monetary-list-free", "gnc-hook-add-scm-dangler", "gnc-hook-run", "gnc-hook-create", "gnc-hook-add-dangler", "gnc-hook-remove-dangler", "gnc-hooks-init", "HOOK-STARTUP", "HOOK-SHUTDOWN", "HOOK-UI-STARTUP", "HOOK-UI-POST-STARTUP", "HOOK-UI-SHUTDOWN", "HOOK-NEW-BOOK", "HOOK-REPORT", "HOOK-CURRENCY-CHANGED", "HOOK-SAVE-OPTIONS", "HOOK-ADD-EXTENSION", "HOOK-BOOK-OPENED", "HOOK-BOOK-CLOSED", "HOOK-BOOK-SAVED", "gnc-book-get-template-root", "gnc-kvp-frame-delete-at-path", "kvp-frame-set-slot-path-gslist", "kvp-frame-get-slot-path-gslist", "gncTaxTableReturnGUID", "gncInvoiceReturnGUID", "gncJobReturnGUID", "gncVendorReturnGUID", "gncCustomerReturnGUID", "gncEmployeeReturnGUID", "gncTaxTableLookupFlip", "gncInvoiceLookupFlip", "gncJobLookupFlip", "gncVendorLookupFlip", "gncCustomerLookupFlip", "gncEmployeeLookupFlip", "GNC-ADDRESS-MODULE-NAME", "GNC-ID-ADDRESS", "gnc-address-get-type", "gncAddressCreate", "gncAddressDestroy", "gncAddressBeginEdit", "gncAddressCommitEdit", "gncAddressSetName", "gncAddressSetAddr1", "gncAddressSetAddr2", "gncAddressSetAddr3", "gncAddressSetAddr4", "gncAddressSetPhone", "gncAddressSetFax", "gncAddressSetEmail", "gncAddressClearDirty", "gncAddressGetName", "gncAddressGetAddr1", "gncAddressGetAddr2", "gncAddressGetAddr3", "gncAddressGetAddr4", "gncAddressGetPhone", "gncAddressGetFax", "gncAddressGetEmail", "gncAddressIsDirty", "gncAddressCompare", "gncAddressEqual", "ADDRESS-NAME", "ADDRESS-ONE", "ADDRESS-TWO", "ADDRESS-THREE", "ADDRESS-FOUR", "ADDRESS-PHONE", "ADDRESS-FAX", "ADDRESS-EMAIL", "ADDRESS-OWNER", "GNC-ID-BILLTERM", "gnc-billterm-get-type", "GNC-BILLTERM-NAME", "GNC-BILLTERM-DESC", "GNC-BILLTERM-DUEDAYS", "GNC-BILLTERM-DISCDAYS", "GNC-BILLTERM-CUTOFF", "GNC-BILLTERM-TYPE", "GNC-BILLTERM-DISCOUNT", "GNC-BILLTERM-REFCOUNT", "GNC-TERM-TYPE-DAYS", "GNC-TERM-TYPE-PROXIMO", "gncBillTermCreate", "gncBillTermDestroy", "gncBillTermIncRef", "gncBillTermDecRef", "gncBillTermChanged", "gncBillTermBeginEdit", "gncBillTermCommitEdit", "gncBillTermSetName", "gncBillTermSetDescription", "gncBillTermSetType", "gncBillTermSetDueDays", "gncBillTermSetDiscountDays", "gncBillTermSetDiscount", "gncBillTermSetCutoff", "gncBillTermLookup", "gncBillTermLookupByName", "gncBillTermGetTerms", "gncBillTermGetName", "gncBillTermGetDescription", "gncBillTermGetType", "gncBillTermGetDueDays", "gncBillTermGetDiscountDays", "gncBillTermGetDiscount", "gncBillTermGetCutoff", "gncBillTermIsDirty", "gncBillTermGetParent", "gncBillTermReturnChild", "gncBillTermGetRefcount", "gncBillTermCompare", "gncBillTermEqual", "gncBillTermIsFamily", "gncBillTermComputeDueDate", "GNC-BILLTERM-MODULE-NAME", "gncBusinessGetList", "gncBusinessGetOwnerList", "GNC-ID-CUSTOMER", "gnc-customer-get-type", "gncCustomerCreate", "gncCustomerDestroy", "gncCustomerBeginEdit", "gncCustomerCommitEdit", "gncCustomerSetID", "gncCustomerSetName", "gncCustomerSetNotes", "gncCustomerSetTerms", "gncCustomerSetTaxIncluded", "gncCustomerSetActive", "gncCustomerSetDiscount", "gncCustomerSetCredit", "gncCustomerSetCurrency", "gncCustomerSetTaxTableOverride", "gncCustomerSetTaxTable", "gncCustomerAddJob", "gncCustomerRemoveJob", "gncCustomerLookup", "gncCustomerGetID", "gncCustomerGetName", "gncCustomerGetAddr", "gncCustomerGetShipAddr", "gncCustomerGetNotes", "gncCustomerGetTerms", "gncCustomerGetTaxIncluded", "gncCustomerGetActive", "gncCustomerGetDiscount", "gncCustomerGetCredit", "gncCustomerGetCurrency", "gncCustomerGetTaxTableOverride", "gncCustomerGetTaxTable", "gncCustomerCompare", "CUSTOMER-ID", "CUSTOMER-NAME", "CUSTOMER-ADDR", "CUSTOMER-SHIPADDR", "CUSTOMER-NOTES", "CUSTOMER-DISCOUNT", "CUSTOMER-CREDIT", "CUSTOMER-TT-OVER", "CUSTOMER-TAX-INC", "CUSTOMER-TERMS", "CUSTOMER-ACTIVE", "CUSTOMER-SLOTS", "gncCustomerEqual", "gncCustomerGetJoblist", "gncCustomerIsDirty", "GNC-ID-EMPLOYEE", "gnc-employee-get-type", "gncEmployeeCreate", "gncEmployeeDestroy", "gncEmployeeBeginEdit", "gncEmployeeCommitEdit", "gncEmployeeCompare", "gncEmployeeSetID", "gncEmployeeSetUsername", "gncEmployeeSetName", "gncEmployeeSetLanguage", "gncEmployeeSetAcl", "gncEmployeeSetWorkday", "gncEmployeeSetRate", "gncEmployeeSetCurrency", "gncEmployeeSetActive", "gncEmployeeSetCCard", "qofEmployeeSetAddr", "gncEmployeeGetBook", "gncEmployeeGetID", "gncEmployeeGetUsername", "gncEmployeeGetName", "gncEmployeeGetAddr", "gncEmployeeGetLanguage", "gncEmployeeGetAcl", "gncEmployeeGetWorkday", "gncEmployeeGetRate", "gncEmployeeGetCurrency", "gncEmployeeGetActive", "gncEmployeeGetCCard", "gncEmployeeLookup", "EMPLOYEE-ID", "EMPLOYEE-USERNAME", "EMPLOYEE-NAME", "EMPLOYEE-ADDR", "EMPLOYEE-LANGUAGE", "EMPLOYEE-ACL", "EMPLOYEE-WORKDAY", "EMPLOYEE-RATE", "EMPLOYEE-CC", "gncEmployeeEqual", "gncEmployeeIsDirty", "GNC-PAYMENT-CASH", "GNC-PAYMENT-CARD", "GNC-DISC-PRETAX", "GNC-DISC-SAMETIME", "GNC-DISC-POSTTAX", "GNC-ID-ENTRY", "gnc-entry-get-type", "gncEntryDiscountHowToString", "gncEntryDiscountStringToHow", "gncEntryPaymentTypeToString", "gncEntryPaymentStringToType", "gncEntryCreate", "gncEntryDestroy", "gncEntrySetDateGDate", "gncEntrySetDate", "gncEntrySetDateEntered", "gncEntrySetDescription", "gncEntrySetAction", "gncEntrySetNotes", "gncEntrySetQuantity", "gncEntrySetDocQuantity", "gncEntrySetInvAccount", "gncEntrySetInvPrice", "gncEntrySetInvTaxable", "gncEntrySetInvTaxIncluded", "gncEntrySetInvTaxTable", "gncEntrySetInvDiscount", "gncEntrySetInvDiscountType", "gncEntrySetInvDiscountHow", "qofEntrySetInvDiscType", "qofEntrySetInvDiscHow", "gncEntrySetBillAccount", "gncEntrySetBillPrice", "gncEntrySetBillTaxable", "gncEntrySetBillTaxIncluded", "gncEntrySetBillTaxTable", "gncEntrySetBillable", "gncEntrySetBillTo", "gncEntrySetBillPayment", "gncEntryGetDateGDate", "gncEntryGetDate", "gncEntryGetDateEntered", "gncEntryGetDescription", "gncEntryGetAction", "gncEntryGetNotes", "gncEntryGetQuantity", "gncEntryGetDocQuantity", "gncEntryGetInvAccount", "gncEntryGetInvPrice", "gncEntryGetInvDiscount", "gncEntryGetInvDiscountType", "gncEntryGetInvDiscountHow", "qofEntryGetInvDiscType", "qofEntryGetInvDiscHow", "gncEntryGetInvTaxable", "gncEntryGetInvTaxIncluded", "gncEntryGetInvTaxTable", "gncEntryGetBillAccount", "gncEntryGetBillPrice", "gncEntryGetBillTaxable", "gncEntryGetBillTaxIncluded", "gncEntryGetBillTaxTable", "gncEntryGetBillable", "gncEntryGetBillTo", "gncEntryGetBillPayment", "gncEntryCopy", "gncEntryGetDocValue", "gncEntryGetDocTaxValue", "gncEntryGetDocTaxValues", "gncEntryGetDocDiscountValue", "gncEntryGetBalValue", "gncEntryGetBalTaxValue", "gncEntryGetBalTaxValues", "gncEntryGetBalDiscountValue", "gncEntryComputeValue", "gncEntryGetOrder", "gncEntryGetInvoice", "gncEntryGetBill", "gncEntryLookup", "gncEntryIsOpen", "gncEntryBeginEdit", "gncEntryCommitEdit", "gncEntryCompare", "ENTRY-DATE", "ENTRY-DATE-ENTERED", "ENTRY-DESC", "ENTRY-ACTION", "ENTRY-NOTES", "ENTRY-QTY", "ENTRY-IPRICE", "ENTRY-IACCT", "ENTRY-BACCT", "ENTRY-BPRICE", "ENTRY-BILLABLE", "ENTRY-BILLTO", "ENTRY-ORDER", "ENTRY-INVOICE", "ENTRY-BILL", "ENTRY-INV-DISC-TYPE", "ENTRY-INV-DISC-HOW", "ENTRY-INV-TAXABLE", "ENTRY-BILL-TAXABLE", "ENTRY-INV-TAX-INC", "ENTRY-BILL-TAX-INC", "ENTRY-INV-DISCOUNT", "ENTRY-BILL-PAY-TYPE", "GNC-ID-INVOICE", "GNC-INVOICE-UNDEFINED", "GNC-INVOICE-CUST-INVOICE", "GNC-INVOICE-VEND-INVOICE", "GNC-INVOICE-EMPL-INVOICE", "GNC-INVOICE-CUST-CREDIT-NOTE", "GNC-INVOICE-VEND-CREDIT-NOTE", "GNC-INVOICE-EMPL-CREDIT-NOTE", "GNC-INVOICE-NUM-TYPES", "gnc-invoice-get-type", "gncInvoiceCreate", "gncInvoiceDestroy", "gncInvoiceCopy", "gncInvoiceSetID", "gncInvoiceSetOwner", "gncInvoiceSetDateOpenedGDate", "gncInvoiceSetDateOpened", "gncInvoiceSetDatePosted", "gncInvoiceSetTerms", "gncInvoiceSetBillingID", "gncInvoiceSetNotes", "gncInvoiceSetCurrency", "gncInvoiceSetActive", "gncInvoiceSetIsCreditNote", "gncInvoiceSetBillTo", "gncInvoiceSetToChargeAmount", "gncInvoiceAddEntry", "gncInvoiceRemoveEntry", "gncInvoiceAddPrice", "gncBillAddEntry", "gncBillRemoveEntry", "gncInvoiceSortEntries", "gncInvoiceRemoveEntries", "gncInvoiceGetID", "gncInvoiceGetOwner", "gncInvoiceGetDateOpened", "gncInvoiceGetDatePosted", "gncInvoiceGetDateDue", "gncInvoiceGetTerms", "gncInvoiceGetBillingID", "gncInvoiceGetNotes", "gncInvoiceGetOwnerType", "gncInvoiceGetTypeListForOwnerType", "gncInvoiceGetType", "gncInvoiceGetTypeString", "gncInvoiceGetCurrency", "gncInvoiceGetBillTo", "gncInvoiceGetToChargeAmount", "gncInvoiceGetActive", "gncInvoiceGetIsCreditNote", "gncInvoiceGetPostedLot", "gncInvoiceGetPostedTxn", "gncInvoiceGetPostedAcc", "gncInvoiceGetTotal", "gncInvoiceGetTotalOf", "gncInvoiceGetTotalSubtotal", "gncInvoiceGetTotalTax", "gncInvoiceGetEntries", "gncInvoiceGetPrice", "gncInvoiceAmountPositive", "gncInvoiceGetForeignCurrencies", "gncInvoicePostToAccount", "gncInvoiceUnpost", "gncInvoiceAutoApplyPayments", "gncInvoiceApplyPayment", "gncInvoiceGetInvoiceFromTxn", "gncInvoiceGetInvoiceFromLot", "gncInvoiceLookup", "gncInvoiceBeginEdit", "gncInvoiceCommitEdit", "gncInvoiceCompare", "gncInvoiceIsPosted", "gncInvoiceIsPaid", "INVOICE-ID", "INVOICE-OWNER", "INVOICE-OPENED", "INVOICE-POSTED", "INVOICE-DUE", "INVOICE-IS-POSTED", "INVOICE-IS-PAID", "INVOICE-TERMS", "INVOICE-BILLINGID", "INVOICE-NOTES", "INVOICE-ACC", "INVOICE-POST-TXN", "INVOICE-POST-LOT", "INVOICE-IS-CN", "INVOICE-TYPE", "INVOICE-TYPE-STRING", "INVOICE-BILLTO", "INVOICE-ENTRIES", "INVOICE-JOB", "INVOICE-FROM-LOT", "INVOICE-FROM-TXN", "gncInvoiceGetBook", "gncInvoiceEqual", "GNC-ID-JOB", "gnc-job-get-type", "gncJobCreate", "gncJobDestroy", "gncJobSetID", "gncJobSetName", "gncJobSetReference", "gncJobSetOwner", "gncJobSetActive", "gncJobBeginEdit", "gncJobCommitEdit", "gncJobGetID", "gncJobGetName", "gncJobGetReference", "gncJobGetOwner", "gncJobGetActive", "gncJobLookup", "gncJobCompare", "gncJobEqual", "JOB-ID", "JOB-NAME", "JOB-REFERENCE", "JOB-OWNER", "Q-JOB-OWNER", "JOB-ACTIVE", "GNC-ID-ORDER", "gnc-order-get-type", "gncOrderCreate", "gncOrderDestroy", "gncOrderSetID", "gncOrderSetOwner", "gncOrderSetDateOpened", "gncOrderSetDateClosed", "gncOrderSetNotes", "gncOrderSetReference", "gncOrderSetActive", "gncOrderAddEntry", "gncOrderRemoveEntry", "gncOrderGetID", "gncOrderGetOwner", "gncOrderGetDateOpened", "gncOrderGetDateClosed", "gncOrderGetNotes", "gncOrderGetReference", "gncOrderGetActive", "gncOrderGetEntries", "gncOrderBeginEdit", "gncOrderCommitEdit", "gncOrderCompare", "gncOrderIsClosed", "gncOrderLookup", "ORDER-ID", "ORDER-REFERENCE", "ORDER-OWNER", "ORDER-OPENED", "ORDER-CLOSED", "ORDER-IS-CLOSED", "ORDER-NOTES", "GNC-ID-OWNER", "GNC-OWNER-NONE", "GNC-OWNER-UNDEFINED", "GNC-OWNER-CUSTOMER", "GNC-OWNER-JOB", "GNC-OWNER-VENDOR", "GNC-OWNER-EMPLOYEE", "qofOwnerGetType", "qofOwnerGetOwner", "qofOwnerSetEntity", "GNC-IS-OWNER", "gncOwnerTypeToQofIdType", "gncOwnerRegister", "gncOwnerInitUndefined", "gncOwnerInitCustomer", "gncOwnerInitJob", "gncOwnerInitVendor", "gncOwnerInitEmployee", "gncOwnerGetType", "gncOwnerIsValid", "gncOwnerGetUndefined", "gncOwnerGetCustomer", "gncOwnerGetJob", "gncOwnerGetVendor", "gncOwnerGetEmployee", "gncOwnerGetID", "gncOwnerGetName", "gncOwnerGetAddr", "gncOwnerGetActive", "gncOwnerGetCurrency", "gncOwnerSetActive", "gncOwnerCopy", "gncOwnerEqual", "gncOwnerGCompareFunc", "gncOwnerCompare", "gncOwnerGetGUID", "gncOwnerReturnGUID", "gncOwnerGetEndOwner", "gncOwnerGetEndGUID", "gncOwnerAttachToLot", "gncOwnerLotMatchOwnerFunc", "gncOwnerLotsSortFunc", "gncOwnerGetOwnerFromLot", "gncOwnerGetOwnerFromTypeGuid", "gncOwnerGetSlots", "gncOwnerCreatePaymentLot", "gncOwnerAutoApplyPaymentsWithLots", "gncOwnerApplyPayment", "gncOwnerFindOffsettingSplit", "gncOwnerReduceSplitTo", "gncOwnerSetLotLinkMemo", "gncOwnerGetAccountTypesList", "gncOwnerGetCommoditiesList", "gncOwnerGetBalanceInCurrency", "OWNER-TYPE", "OWNER-TYPE-STRING", "OWNER-CUSTOMER", "OWNER-JOB", "OWNER-VENDOR", "OWNER-EMPLOYEE", "OWNER-PARENT", "OWNER-PARENTG", "OWNER-NAME", "OWNER-FROM-LOT", "gncOwnerNew", "gncOwnerFree", "gncOwnerBeginEdit", "gncOwnerDestroy", "GNC-ID-TAXTABLE", "gnc-taxtable-get-type", "GNC-AMT-TYPE-VALUE", "GNC-AMT-TYPE-PERCENT", "GNC-TAXINCLUDED-YES", "GNC-TAXINCLUDED-NO", "GNC-TAXINCLUDED-USEGLOBAL", "gncAmountTypeToString", "gncAmountStringToType", "gncTaxIncludedTypeToString", "gncTaxIncludedStringToType", "gncTaxTableCreate", "gncTaxTableDestroy", "gncTaxTableEntryCreate", "gncTaxTableEntryDestroy", "gncTaxTableSetName", "gncTaxTableIncRef", "gncTaxTableDecRef", "gncTaxTableEntrySetAccount", "gncTaxTableEntrySetType", "gncTaxTableEntrySetAmount", "gncTaxTableAddEntry", "gncTaxTableRemoveEntry", "gncTaxTableChanged", "gncTaxTableBeginEdit", "gncTaxTableCommitEdit", "gncTaxTableEqual", "gncTaxTableLookup", "gncTaxTableLookupByName", "gncTaxTableGetTables", "gncTaxTableGetName", "gncTaxTableGetParent", "gncTaxTableReturnChild", "gncTaxTableGetEntries", "gncTaxTableGetRefcount", "gncTaxTableLastModified", "gncTaxTableEntryGetAccount", "gncTaxTableEntryGetType", "gncTaxTableEntryGetAmount", "gncTaxTableCompare", "gncTaxTableEntryCompare", "gncTaxTableEntryEqual", "-gncAccountValue-account-set", "-gncAccountValue-account-get", "-gncAccountValue-value-set", "-gncAccountValue-value-get", "new--gncAccountValue", "delete--gncAccountValue", "gncAccountValueAdd", "gncAccountValueAddList", "gncAccountValueTotal", "gncAccountValueDestroy", "GNC-TT-NAME", "GNC-TT-REFCOUNT", "GNC-ID-VENDOR", "gnc-vendor-get-type", "gncVendorCreate", "gncVendorDestroy", "gncVendorSetID", "gncVendorSetName", "gncVendorSetNotes", "gncVendorSetTerms", "gncVendorSetTaxIncluded", "gncVendorSetCurrency", "gncVendorSetActive", "gncVendorSetTaxTableOverride", "gncVendorSetTaxTable", "gncVendorAddJob", "gncVendorRemoveJob", "gncVendorBeginEdit", "gncVendorCommitEdit", "gncVendorGetID", "gncVendorGetName", "gncVendorGetAddr", "gncVendorGetNotes", "gncVendorGetTerms", "gncVendorGetTaxIncluded", "gncVendorGetCurrency", "gncVendorGetActive", "gncVendorGetTaxTableOverride", "gncVendorGetTaxTable", "gncVendorCompare", "gncVendorLookup", "VENDOR-ID", "VENDOR-NAME", "VENDOR-ADDR", "VENDOR-NOTES", "VENDOR-TERMS", "VENDOR-TAX-INC", "VENDOR-ACTIVE", "VENDOR-TAX-OVERRIDE", "VENDOR-TAX-TABLE", "gncVendorEqual", "gncVendorIsDirty", "gnc-scm-to-account-value-ptr", "gnc-account-value-ptr-to-scm", "URL-TYPE-CUSTOMER", "URL-TYPE-VENDOR", "URL-TYPE-EMPLOYEE", "URL-TYPE-JOB", "URL-TYPE-INVOICE", "URL-TYPE-OWNERREPORT", "qof-query-create-for-invoices", "qof-query-run-for-invoices", NULL);
 }
 
 SCM

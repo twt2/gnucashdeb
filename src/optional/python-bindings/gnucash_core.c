@@ -2941,91 +2941,92 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 #define SWIGTYPE_p_KvpFrame swig_types[28]
 #define SWIGTYPE_p_KvpValue swig_types[29]
 #define SWIGTYPE_p_LotList swig_types[30]
-#define SWIGTYPE_p_QofBackendError swig_types[31]
-#define SWIGTYPE_p_QofBackendProvider_s swig_types[32]
-#define SWIGTYPE_p_QofBackend_s swig_types[33]
-#define SWIGTYPE_p_QofBook swig_types[34]
-#define SWIGTYPE_p_QofCharMatch swig_types[35]
-#define SWIGTYPE_p_QofCollection_s swig_types[36]
-#define SWIGTYPE_p_QofDateMatch swig_types[37]
-#define SWIGTYPE_p_QofGuidMatch swig_types[38]
-#define SWIGTYPE_p_QofInstance swig_types[39]
-#define SWIGTYPE_p_QofInstanceClass swig_types[40]
-#define SWIGTYPE_p_QofNumericMatch swig_types[41]
-#define SWIGTYPE_p_QofParam swig_types[42]
-#define SWIGTYPE_p_QofQueryCompare swig_types[43]
-#define SWIGTYPE_p_QofQueryOp swig_types[44]
-#define SWIGTYPE_p_QofStringMatch swig_types[45]
-#define SWIGTYPE_p_QofType swig_types[46]
-#define SWIGTYPE_p_QuoteSourceType swig_types[47]
-#define SWIGTYPE_p_Split swig_types[48]
-#define SWIGTYPE_p_SplitList swig_types[49]
-#define SWIGTYPE_p_Timespec swig_types[50]
-#define SWIGTYPE_p_Transaction swig_types[51]
-#define SWIGTYPE_p_TransactionCallback swig_types[52]
-#define SWIGTYPE_p__GncCommodityClass swig_types[53]
-#define SWIGTYPE_p__GncCommodityNamespaceClass swig_types[54]
-#define SWIGTYPE_p__GncPriceClass swig_types[55]
-#define SWIGTYPE_p__GncPriceDBClass swig_types[56]
-#define SWIGTYPE_p__QofQuery swig_types[57]
-#define SWIGTYPE_p__QofQueryPredData swig_types[58]
-#define SWIGTYPE_p__QofSession swig_types[59]
-#define SWIGTYPE_p__SplitClass swig_types[60]
-#define SWIGTYPE_p__TransactionClass swig_types[61]
-#define SWIGTYPE_p__gncAccountValue swig_types[62]
-#define SWIGTYPE_p__gncAddress swig_types[63]
-#define SWIGTYPE_p__gncAddressClass swig_types[64]
-#define SWIGTYPE_p__gncBillTerm swig_types[65]
-#define SWIGTYPE_p__gncBillTermClass swig_types[66]
-#define SWIGTYPE_p__gncCustomer swig_types[67]
-#define SWIGTYPE_p__gncCustomerClass swig_types[68]
-#define SWIGTYPE_p__gncEmployee swig_types[69]
-#define SWIGTYPE_p__gncEmployeeClass swig_types[70]
-#define SWIGTYPE_p__gncEntry swig_types[71]
-#define SWIGTYPE_p__gncEntryClass swig_types[72]
-#define SWIGTYPE_p__gncInvoice swig_types[73]
-#define SWIGTYPE_p__gncInvoiceClass swig_types[74]
-#define SWIGTYPE_p__gncJob swig_types[75]
-#define SWIGTYPE_p__gncJobClass swig_types[76]
-#define SWIGTYPE_p__gncOwner swig_types[77]
-#define SWIGTYPE_p__gncTaxTable swig_types[78]
-#define SWIGTYPE_p__gncTaxTableClass swig_types[79]
-#define SWIGTYPE_p__gncTaxTableEntry swig_types[80]
-#define SWIGTYPE_p__gncVendor swig_types[81]
-#define SWIGTYPE_p__gncVendorClass swig_types[82]
-#define SWIGTYPE_p__gnc_monetary swig_types[83]
-#define SWIGTYPE_p__gnc_numeric swig_types[84]
-#define SWIGTYPE_p_char swig_types[85]
-#define SWIGTYPE_p_double swig_types[86]
-#define SWIGTYPE_p_f_p_Account_p_void__p_void swig_types[87]
-#define SWIGTYPE_p_f_p_Account_p_void__void swig_types[88]
-#define SWIGTYPE_p_f_p_GNCLot_p_void__gboolean swig_types[89]
-#define SWIGTYPE_p_f_p_GNCLot_p_void__p_void swig_types[90]
-#define SWIGTYPE_p_f_p_GNCPrice_p_void__gboolean swig_types[91]
-#define SWIGTYPE_p_f_p_QofInstance_p_void__void swig_types[92]
-#define SWIGTYPE_p_f_p_gnc_commodity_p_void__gboolean swig_types[93]
-#define SWIGTYPE_p_f_p_q_const__char_double__void swig_types[94]
-#define SWIGTYPE_p_float swig_types[95]
-#define SWIGTYPE_p_gboolean swig_types[96]
-#define SWIGTYPE_p_gchar swig_types[97]
-#define SWIGTYPE_p_gconstpointer swig_types[98]
-#define SWIGTYPE_p_gint32 swig_types[99]
-#define SWIGTYPE_p_gint64 swig_types[100]
-#define SWIGTYPE_p_gnc_commodity swig_types[101]
-#define SWIGTYPE_p_gnc_commodity_namespace swig_types[102]
-#define SWIGTYPE_p_gnc_commodity_table swig_types[103]
-#define SWIGTYPE_p_gnc_price_db_s swig_types[104]
-#define SWIGTYPE_p_gnc_price_lookup_s swig_types[105]
-#define SWIGTYPE_p_gnc_quote_source swig_types[106]
-#define SWIGTYPE_p_guchar swig_types[107]
-#define SWIGTYPE_p_guint8 swig_types[108]
-#define SWIGTYPE_p_gunichar swig_types[109]
-#define SWIGTYPE_p_int swig_types[110]
-#define SWIGTYPE_p_p_GList swig_types[111]
-#define SWIGTYPE_p_unsigned_int swig_types[112]
-#define SWIGTYPE_p_void swig_types[113]
-static swig_type_info *swig_types[115];
-static swig_module_info swig_module = {swig_types, 114, 0, 0, 0, 0};
+#define SWIGTYPE_p_PriceSource swig_types[31]
+#define SWIGTYPE_p_QofBackendError swig_types[32]
+#define SWIGTYPE_p_QofBackendProvider_s swig_types[33]
+#define SWIGTYPE_p_QofBackend_s swig_types[34]
+#define SWIGTYPE_p_QofBook swig_types[35]
+#define SWIGTYPE_p_QofCharMatch swig_types[36]
+#define SWIGTYPE_p_QofCollection_s swig_types[37]
+#define SWIGTYPE_p_QofDateMatch swig_types[38]
+#define SWIGTYPE_p_QofGuidMatch swig_types[39]
+#define SWIGTYPE_p_QofInstance swig_types[40]
+#define SWIGTYPE_p_QofInstanceClass swig_types[41]
+#define SWIGTYPE_p_QofNumericMatch swig_types[42]
+#define SWIGTYPE_p_QofParam swig_types[43]
+#define SWIGTYPE_p_QofQueryCompare swig_types[44]
+#define SWIGTYPE_p_QofQueryOp swig_types[45]
+#define SWIGTYPE_p_QofStringMatch swig_types[46]
+#define SWIGTYPE_p_QofType swig_types[47]
+#define SWIGTYPE_p_QuoteSourceType swig_types[48]
+#define SWIGTYPE_p_Split swig_types[49]
+#define SWIGTYPE_p_SplitList swig_types[50]
+#define SWIGTYPE_p_Timespec swig_types[51]
+#define SWIGTYPE_p_Transaction swig_types[52]
+#define SWIGTYPE_p_TransactionCallback swig_types[53]
+#define SWIGTYPE_p__GncCommodityClass swig_types[54]
+#define SWIGTYPE_p__GncCommodityNamespaceClass swig_types[55]
+#define SWIGTYPE_p__GncPriceClass swig_types[56]
+#define SWIGTYPE_p__GncPriceDBClass swig_types[57]
+#define SWIGTYPE_p__QofQuery swig_types[58]
+#define SWIGTYPE_p__QofQueryPredData swig_types[59]
+#define SWIGTYPE_p__QofSession swig_types[60]
+#define SWIGTYPE_p__SplitClass swig_types[61]
+#define SWIGTYPE_p__TransactionClass swig_types[62]
+#define SWIGTYPE_p__gncAccountValue swig_types[63]
+#define SWIGTYPE_p__gncAddress swig_types[64]
+#define SWIGTYPE_p__gncAddressClass swig_types[65]
+#define SWIGTYPE_p__gncBillTerm swig_types[66]
+#define SWIGTYPE_p__gncBillTermClass swig_types[67]
+#define SWIGTYPE_p__gncCustomer swig_types[68]
+#define SWIGTYPE_p__gncCustomerClass swig_types[69]
+#define SWIGTYPE_p__gncEmployee swig_types[70]
+#define SWIGTYPE_p__gncEmployeeClass swig_types[71]
+#define SWIGTYPE_p__gncEntry swig_types[72]
+#define SWIGTYPE_p__gncEntryClass swig_types[73]
+#define SWIGTYPE_p__gncInvoice swig_types[74]
+#define SWIGTYPE_p__gncInvoiceClass swig_types[75]
+#define SWIGTYPE_p__gncJob swig_types[76]
+#define SWIGTYPE_p__gncJobClass swig_types[77]
+#define SWIGTYPE_p__gncOwner swig_types[78]
+#define SWIGTYPE_p__gncTaxTable swig_types[79]
+#define SWIGTYPE_p__gncTaxTableClass swig_types[80]
+#define SWIGTYPE_p__gncTaxTableEntry swig_types[81]
+#define SWIGTYPE_p__gncVendor swig_types[82]
+#define SWIGTYPE_p__gncVendorClass swig_types[83]
+#define SWIGTYPE_p__gnc_monetary swig_types[84]
+#define SWIGTYPE_p__gnc_numeric swig_types[85]
+#define SWIGTYPE_p_char swig_types[86]
+#define SWIGTYPE_p_double swig_types[87]
+#define SWIGTYPE_p_f_p_Account_p_void__p_void swig_types[88]
+#define SWIGTYPE_p_f_p_Account_p_void__void swig_types[89]
+#define SWIGTYPE_p_f_p_GNCLot_p_void__gboolean swig_types[90]
+#define SWIGTYPE_p_f_p_GNCLot_p_void__p_void swig_types[91]
+#define SWIGTYPE_p_f_p_GNCPrice_p_void__gboolean swig_types[92]
+#define SWIGTYPE_p_f_p_QofInstance_p_void__void swig_types[93]
+#define SWIGTYPE_p_f_p_gnc_commodity_p_void__gboolean swig_types[94]
+#define SWIGTYPE_p_f_p_q_const__char_double__void swig_types[95]
+#define SWIGTYPE_p_float swig_types[96]
+#define SWIGTYPE_p_gboolean swig_types[97]
+#define SWIGTYPE_p_gchar swig_types[98]
+#define SWIGTYPE_p_gconstpointer swig_types[99]
+#define SWIGTYPE_p_gint32 swig_types[100]
+#define SWIGTYPE_p_gint64 swig_types[101]
+#define SWIGTYPE_p_gnc_commodity swig_types[102]
+#define SWIGTYPE_p_gnc_commodity_namespace swig_types[103]
+#define SWIGTYPE_p_gnc_commodity_table swig_types[104]
+#define SWIGTYPE_p_gnc_price_db_s swig_types[105]
+#define SWIGTYPE_p_gnc_price_lookup_s swig_types[106]
+#define SWIGTYPE_p_gnc_quote_source swig_types[107]
+#define SWIGTYPE_p_guchar swig_types[108]
+#define SWIGTYPE_p_guint8 swig_types[109]
+#define SWIGTYPE_p_gunichar swig_types[110]
+#define SWIGTYPE_p_int swig_types[111]
+#define SWIGTYPE_p_p_GList swig_types[112]
+#define SWIGTYPE_p_unsigned_int swig_types[113]
+#define SWIGTYPE_p_void swig_types[114]
+static swig_type_info *swig_types[116];
+static swig_module_info swig_module = {swig_types, 115, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -14278,6 +14279,47 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_qof_backend_check_error(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  QofBackend *arg1 = (QofBackend *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  gboolean result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:qof_backend_check_error",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_QofBackend_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_backend_check_error" "', argument " "1"" of type '" "QofBackend *""'"); 
+  }
+  arg1 = (QofBackend *)(argp1);
+  result = qof_backend_check_error(arg1);
+  {
+    if (result == TRUE)
+    {
+      resultobj = Py_True;
+      Py_INCREF(resultobj);
+    }
+    else if (result == FALSE)
+    {
+      resultobj = Py_False;
+      Py_INCREF(resultobj);
+    }
+    else
+    {
+      PyErr_SetString(
+        PyExc_ValueError,
+        "function returning gboolean returned a value that wasn't "
+        "TRUE or FALSE.");
+      return NULL;
+    }
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_qof_load_backend_library(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   gchar *arg1 = (gchar *) 0 ;
@@ -20105,6 +20147,34 @@ SWIGINTERN PyObject *_wrap_gnc_numeric_to_decimal(PyObject *SWIGUNUSEDPARM(self)
       return NULL;
     }
   }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gnc_numeric_invert(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  gnc_numeric arg1 ;
+  void *argp1 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  gnc_numeric result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:gnc_numeric_invert",&obj0)) SWIG_fail;
+  {
+    res1 = SWIG_ConvertPtr(obj0, &argp1, SWIGTYPE_p__gnc_numeric,  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_numeric_invert" "', argument " "1"" of type '" "gnc_numeric""'"); 
+    }  
+    if (!argp1) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gnc_numeric_invert" "', argument " "1"" of type '" "gnc_numeric""'");
+    } else {
+      arg1 = *((gnc_numeric *)(argp1));
+    }
+  }
+  result = gnc_numeric_invert(arg1);
+  resultobj = SWIG_NewPointerObj((gnc_numeric *)memcpy((gnc_numeric *)malloc(sizeof(gnc_numeric)),&result,sizeof(gnc_numeric)), SWIGTYPE_p__gnc_numeric, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -38627,12 +38697,11 @@ fail:
 SWIGINTERN PyObject *_wrap_gnc_price_set_source(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GNCPrice *arg1 = (GNCPrice *) 0 ;
-  char *arg2 = (char *) 0 ;
+  PriceSource arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int res2 ;
-  char *buf2 = 0 ;
-  int alloc2 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
@@ -38642,12 +38711,43 @@ SWIGINTERN PyObject *_wrap_gnc_price_set_source(PyObject *SWIGUNUSEDPARM(self), 
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_price_set_source" "', argument " "1"" of type '" "GNCPrice *""'"); 
   }
   arg1 = (GNCPrice *)(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "gnc_price_set_source" "', argument " "2"" of type '" "PriceSource""'");
+  } 
+  arg2 = (PriceSource)(val2);
+  gnc_price_set_source(arg1,arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gnc_price_set_source_string(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GNCPrice *arg1 = (GNCPrice *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:gnc_price_set_source_string",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNCPrice, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_price_set_source_string" "', argument " "1"" of type '" "GNCPrice *""'"); 
+  }
+  arg1 = (GNCPrice *)(argp1);
   res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gnc_price_set_source" "', argument " "2"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gnc_price_set_source_string" "', argument " "2"" of type '" "char const *""'");
   }
   arg2 = (char *)(buf2);
-  gnc_price_set_source(arg1,(char const *)arg2);
+  gnc_price_set_source_string(arg1,(char const *)arg2);
   resultobj = SWIG_Py_Void();
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return resultobj;
@@ -38834,7 +38934,7 @@ SWIGINTERN PyObject *_wrap_gnc_price_get_source(PyObject *SWIGUNUSEDPARM(self), 
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  char *result = 0 ;
+  PriceSource result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:gnc_price_get_source",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNCPrice, 0 |  0 );
@@ -38842,7 +38942,29 @@ SWIGINTERN PyObject *_wrap_gnc_price_get_source(PyObject *SWIGUNUSEDPARM(self), 
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_price_get_source" "', argument " "1"" of type '" "GNCPrice const *""'"); 
   }
   arg1 = (GNCPrice *)(argp1);
-  result = (char *)gnc_price_get_source((GNCPrice const *)arg1);
+  result = (PriceSource)gnc_price_get_source((GNCPrice const *)arg1);
+  resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gnc_price_get_source_string(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GNCPrice *arg1 = (GNCPrice *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:gnc_price_get_source_string",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNCPrice, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_price_get_source_string" "', argument " "1"" of type '" "GNCPrice const *""'"); 
+  }
+  arg1 = (GNCPrice *)(argp1);
+  result = (char *)gnc_price_get_source_string((GNCPrice const *)arg1);
   resultobj = SWIG_FromCharPtr((const char *)result);
   return resultobj;
 fail:
@@ -40793,6 +40915,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"qof_backend_commit_exists", _wrap_qof_backend_commit_exists, METH_VARARGS, (char *)"qof_backend_commit_exists(QofBackend const * be) -> gboolean"},
 	 { (char *)"qof_backend_set_error", _wrap_qof_backend_set_error, METH_VARARGS, (char *)"qof_backend_set_error(QofBackend * be, QofBackendError err)"},
 	 { (char *)"qof_backend_get_error", _wrap_qof_backend_get_error, METH_VARARGS, (char *)"qof_backend_get_error(QofBackend * be) -> QofBackendError"},
+	 { (char *)"qof_backend_check_error", _wrap_qof_backend_check_error, METH_VARARGS, (char *)"qof_backend_check_error(QofBackend * be) -> gboolean"},
 	 { (char *)"qof_load_backend_library", _wrap_qof_load_backend_library, METH_VARARGS, (char *)"qof_load_backend_library(gchar const * directory, gchar const * module_name) -> gboolean"},
 	 { (char *)"qof_finalize_backend_libraries", _wrap_qof_finalize_backend_libraries, METH_VARARGS, (char *)"qof_finalize_backend_libraries()"},
 	 { (char *)"qof_book_get_backend", _wrap_qof_book_get_backend, METH_VARARGS, (char *)"qof_book_get_backend(QofBook const * book) -> QofBackend *"},
@@ -40974,6 +41097,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gnc_numeric_convert", _wrap_gnc_numeric_convert, METH_VARARGS, (char *)"gnc_numeric_convert(_gnc_numeric n, gint64 denom, gint how) -> _gnc_numeric"},
 	 { (char *)"gnc_numeric_reduce", _wrap_gnc_numeric_reduce, METH_VARARGS, (char *)"gnc_numeric_reduce(_gnc_numeric n) -> _gnc_numeric"},
 	 { (char *)"gnc_numeric_to_decimal", _wrap_gnc_numeric_to_decimal, METH_VARARGS, (char *)"gnc_numeric_to_decimal(_gnc_numeric a, guint8 * max_decimal_places) -> gboolean"},
+	 { (char *)"gnc_numeric_invert", _wrap_gnc_numeric_invert, METH_VARARGS, (char *)"gnc_numeric_invert(_gnc_numeric num) -> _gnc_numeric"},
 	 { (char *)"gnc_numeric_get_type", _wrap_gnc_numeric_get_type, METH_VARARGS, (char *)"gnc_numeric_get_type() -> GType"},
 	 { (char *)"pwr64", _wrap_pwr64, METH_VARARGS, (char *)"pwr64(gint64 op, int exp) -> gint64"},
 	 { (char *)"gnc_commodity_get_type", _wrap_gnc_commodity_get_type, METH_VARARGS, (char *)"gnc_commodity_get_type() -> GType"},
@@ -41529,14 +41653,16 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gnc_price_set_commodity", _wrap_gnc_price_set_commodity, METH_VARARGS, (char *)"gnc_price_set_commodity(GNCPrice * p, gnc_commodity * c)"},
 	 { (char *)"gnc_price_set_currency", _wrap_gnc_price_set_currency, METH_VARARGS, (char *)"gnc_price_set_currency(GNCPrice * p, gnc_commodity * c)"},
 	 { (char *)"gnc_price_set_time", _wrap_gnc_price_set_time, METH_VARARGS, (char *)"gnc_price_set_time(GNCPrice * p, Timespec t)"},
-	 { (char *)"gnc_price_set_source", _wrap_gnc_price_set_source, METH_VARARGS, (char *)"gnc_price_set_source(GNCPrice * p, char const * source)"},
+	 { (char *)"gnc_price_set_source", _wrap_gnc_price_set_source, METH_VARARGS, (char *)"gnc_price_set_source(GNCPrice * p, PriceSource source)"},
+	 { (char *)"gnc_price_set_source_string", _wrap_gnc_price_set_source_string, METH_VARARGS, (char *)"gnc_price_set_source_string(GNCPrice * p, char const * s)"},
 	 { (char *)"gnc_price_set_typestr", _wrap_gnc_price_set_typestr, METH_VARARGS, (char *)"gnc_price_set_typestr(GNCPrice * p, char const * type)"},
 	 { (char *)"gnc_price_set_value", _wrap_gnc_price_set_value, METH_VARARGS, (char *)"gnc_price_set_value(GNCPrice * p, _gnc_numeric value)"},
 	 { (char *)"gnc_price_lookup", _wrap_gnc_price_lookup, METH_VARARGS, (char *)"gnc_price_lookup(GncGUID guid, QofBook * book) -> GNCPrice *"},
 	 { (char *)"gnc_price_get_commodity", _wrap_gnc_price_get_commodity, METH_VARARGS, (char *)"gnc_price_get_commodity(GNCPrice const * p) -> gnc_commodity *"},
 	 { (char *)"gnc_price_get_currency", _wrap_gnc_price_get_currency, METH_VARARGS, (char *)"gnc_price_get_currency(GNCPrice const * p) -> gnc_commodity *"},
 	 { (char *)"gnc_price_get_time", _wrap_gnc_price_get_time, METH_VARARGS, (char *)"gnc_price_get_time(GNCPrice const * p) -> Timespec"},
-	 { (char *)"gnc_price_get_source", _wrap_gnc_price_get_source, METH_VARARGS, (char *)"gnc_price_get_source(GNCPrice const * p) -> char const *"},
+	 { (char *)"gnc_price_get_source", _wrap_gnc_price_get_source, METH_VARARGS, (char *)"gnc_price_get_source(GNCPrice const * p) -> PriceSource"},
+	 { (char *)"gnc_price_get_source_string", _wrap_gnc_price_get_source_string, METH_VARARGS, (char *)"gnc_price_get_source_string(GNCPrice const * p) -> char const *"},
 	 { (char *)"gnc_price_get_typestr", _wrap_gnc_price_get_typestr, METH_VARARGS, (char *)"gnc_price_get_typestr(GNCPrice const * p) -> char const *"},
 	 { (char *)"gnc_price_get_value", _wrap_gnc_price_get_value, METH_VARARGS, (char *)"gnc_price_get_value(GNCPrice const * p) -> _gnc_numeric"},
 	 { (char *)"gnc_price_equal", _wrap_gnc_price_equal, METH_VARARGS, (char *)"gnc_price_equal(GNCPrice const * p1, GNCPrice const * p2) -> gboolean"},
@@ -41616,6 +41742,7 @@ static swig_type_info _swigt__p_GncTaxIncluded = {"_p_GncTaxIncluded", "enum Gnc
 static swig_type_info _swigt__p_KvpFrame = {"_p_KvpFrame", "KvpFrame *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_KvpValue = {"_p_KvpValue", "KvpValue *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_LotList = {"_p_LotList", "LotList *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_PriceSource = {"_p_PriceSource", "enum PriceSource *|PriceSource *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_QofBackendError = {"_p_QofBackendError", "enum QofBackendError *|QofBackendError *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_QofBackendProvider_s = {"_p_QofBackendProvider_s", "QofBackendProvider *|struct QofBackendProvider_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_QofBackend_s = {"_p_QofBackend_s", "QofBackend *|struct QofBackend_s *", 0, 0, (void*)0, 0};
@@ -41732,6 +41859,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_KvpFrame,
   &_swigt__p_KvpValue,
   &_swigt__p_LotList,
+  &_swigt__p_PriceSource,
   &_swigt__p_QofBackendError,
   &_swigt__p_QofBackendProvider_s,
   &_swigt__p_QofBackend_s,
@@ -41848,6 +41976,7 @@ static swig_cast_info _swigc__p_GncTaxIncluded[] = {  {&_swigt__p_GncTaxIncluded
 static swig_cast_info _swigc__p_KvpFrame[] = {  {&_swigt__p_KvpFrame, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_KvpValue[] = {  {&_swigt__p_KvpValue, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_LotList[] = {  {&_swigt__p_LotList, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_PriceSource[] = {  {&_swigt__p_PriceSource, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_QofBackendError[] = {  {&_swigt__p_QofBackendError, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_QofBackendProvider_s[] = {  {&_swigt__p_QofBackendProvider_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_QofBackend_s[] = {  {&_swigt__p_QofBackend_s, 0, 0, 0},{0, 0, 0, 0}};
@@ -41964,6 +42093,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_KvpFrame,
   _swigc__p_KvpValue,
   _swigc__p_LotList,
+  _swigc__p_PriceSource,
   _swigc__p_QofBackendError,
   _swigc__p_QofBackendProvider_s,
   _swigc__p_QofBackend_s,
@@ -43099,6 +43229,19 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, "GNC_TAXINCLUDED_USEGLOBAL",SWIG_From_int((int)(GNC_TAXINCLUDED_USEGLOBAL)));
   SWIG_Python_SetConstant(d, "GNC_TT_NAME",SWIG_FromCharPtr("tax table name"));
   SWIG_Python_SetConstant(d, "GNC_TT_REFCOUNT",SWIG_FromCharPtr("reference count"));
+  SWIG_Python_SetConstant(d, "PRICE_SOURCE_EDIT_DLG",SWIG_From_int((int)(PRICE_SOURCE_EDIT_DLG)));
+  SWIG_Python_SetConstant(d, "PRICE_SOURCE_FQ",SWIG_From_int((int)(PRICE_SOURCE_FQ)));
+  SWIG_Python_SetConstant(d, "PRICE_SOURCE_USER_PRICE",SWIG_From_int((int)(PRICE_SOURCE_USER_PRICE)));
+  SWIG_Python_SetConstant(d, "PRICE_SOURCE_XFER_DLG_VAL",SWIG_From_int((int)(PRICE_SOURCE_XFER_DLG_VAL)));
+  SWIG_Python_SetConstant(d, "PRICE_SOURCE_SPLIT_REG",SWIG_From_int((int)(PRICE_SOURCE_SPLIT_REG)));
+  SWIG_Python_SetConstant(d, "PRICE_SOURCE_STOCK_SPLIT",SWIG_From_int((int)(PRICE_SOURCE_STOCK_SPLIT)));
+  SWIG_Python_SetConstant(d, "PRICE_SOURCE_INVOICE",SWIG_From_int((int)(PRICE_SOURCE_INVOICE)));
+  SWIG_Python_SetConstant(d, "PRICE_SOURCE_INVALID",SWIG_From_int((int)(PRICE_SOURCE_INVALID)));
+  SWIG_Python_SetConstant(d, "PRICE_TYPE_LAST",SWIG_FromCharPtr("last"));
+  SWIG_Python_SetConstant(d, "PRICE_TYPE_UNK",SWIG_FromCharPtr("unknown"));
+  SWIG_Python_SetConstant(d, "PRICE_TYPE_TRN",SWIG_FromCharPtr("transaction"));
+  SWIG_Python_SetConstant(d, "CURRENCY_DENOM",SWIG_From_int((int)(10000)));
+  SWIG_Python_SetConstant(d, "COMMODITY_DENOM_MULT",SWIG_From_int((int)(10000)));
   SWIG_Python_SetConstant(d, "PRICE_COMMODITY",SWIG_FromCharPtr("price-commodity"));
   SWIG_Python_SetConstant(d, "PRICE_CURRENCY",SWIG_FromCharPtr("price-currency"));
   SWIG_Python_SetConstant(d, "PRICE_DATE",SWIG_FromCharPtr("price-date"));

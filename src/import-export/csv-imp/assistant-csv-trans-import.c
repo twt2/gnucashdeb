@@ -38,7 +38,6 @@
 
 #include "gnc-component-manager.h"
 
-#include "assistant-utils.h"
 #include "assistant-csv-trans-import.h"
 
 #include "import-account-matcher.h"
@@ -963,8 +962,12 @@ static void header_button_press_handler (GtkWidget* button, GdkEventButton* even
 {
     /* col is the number of the column that was clicked, and offset is
        to correct for the indentation of button. */
-    int i, col = 0, offset = GTK_BIN(button)->child->allocation.x - button->allocation.x,
-           ncols = info->parse_data->column_types->len;
+    int i, offset;
+    GtkAllocation alloc;
+    int col = 0, ncols = info->parse_data->column_types->len;
+
+    gtk_widget_get_allocation (gtk_bin_get_child (GTK_BIN(button)), &alloc);
+    offset = alloc.x - alloc.x;
     /* Find the column that was clicked. */
     for (i = 0; i < ncols; i++)
     {
@@ -1614,7 +1617,7 @@ csv_import_trans_assistant_prepare (GtkAssistant *assistant, GtkWidget *page,
  * Assistant call back functions
  *******************************************************/
 static void
-csv_import_trans_assistant_destroy_cb (GtkObject *object, gpointer user_data)
+csv_import_trans_assistant_destroy_cb (GtkWidget *object, gpointer user_data)
 {
     CsvImportTrans *info = user_data;
     gnc_unregister_gui_component_by_data (ASSISTANT_CSV_IMPORT_TRANS_CM_CLASS, info);
@@ -1686,9 +1689,6 @@ csv_import_trans_assistant_create (CsvImportTrans *info)
     gnc_builder_add_from_file  (builder , "assistant-csv-trans-import.glade", "CSV Transaction Assistant");
     window = GTK_WIDGET(gtk_builder_get_object (builder, "CSV Transaction Assistant"));
     info->window = window;
-
-    /* Set the assistant colors */
-    gnc_assistant_set_colors (GTK_ASSISTANT (info->window));
 
     /* Load default settings */
     load_settings (info);

@@ -70,7 +70,7 @@
 #include "gnc-autosave.h"
 #include "print-session.h"
 #ifdef MAC_INTEGRATION
-#include <gtkmacintegration-gtk2/gtkosxapplication.h>
+#include <gtkmacintegration/gtkosxapplication.h>
 #endif
 #ifdef HAVE_SYS_STAT_H
 # include <sys/types.h>
@@ -1037,7 +1037,7 @@ gnc_main_window_save_window (GncMainWindow *window, GncMainWindowSaveData *data)
     /* Save the window coordinates, etc. */
     gtk_window_get_position(GTK_WINDOW(window), &coords[0], &coords[1]);
     gtk_window_get_size(GTK_WINDOW(window), &coords[2], &coords[3]);
-    maximized = (gdk_window_get_state((GTK_WIDGET(window))->window)
+    maximized = (gdk_window_get_state(gtk_widget_get_window ((GTK_WIDGET(window))))
                  & GDK_WINDOW_STATE_MAXIMIZED) != 0;
     g_key_file_set_integer_list(data->key_file, window_group,
                                 WINDOW_POSITION, &coords[0], 2);
@@ -2670,7 +2670,7 @@ gnc_main_window_new (void)
         gint width, height;
         gtk_window_get_size (GTK_WINDOW (old_window), &width, &height);
         gtk_window_resize (GTK_WINDOW (window), width, height);
-        if ((gdk_window_get_state((GTK_WIDGET(old_window))->window)
+        if ((gdk_window_get_state((gtk_widget_get_window (GTK_WIDGET(old_window))))
                 & GDK_WINDOW_STATE_MAXIMIZED) != 0)
         {
             gtk_window_maximize (GTK_WINDOW (window));
@@ -4377,7 +4377,7 @@ gnc_main_window_cmd_help_about (GtkAction *action, GncMainWindow *window)
     {
 	const gchar *fixed_message = _("The GnuCash personal finance manager. "
                                    "The GNU way to manage your money!");
-	const gchar *copyright = _("© 1997-2014 Contributors");
+	const gchar *copyright = _("© 1997-2015 Contributors");
 	gchar **authors = get_file_strsplit("AUTHORS");
 	gchar **documenters = get_file_strsplit("DOCUMENTERS");
 	gchar *license = get_file("LICENSE");

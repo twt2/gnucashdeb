@@ -1042,7 +1042,8 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am: uninstall-pkgpyexecDATA uninstall-pkgpyexecLTLIBRARIES
+uninstall-am: uninstall-local uninstall-pkgpyexecDATA \
+	uninstall-pkgpyexecLTLIBRARIES
 
 .MAKE: $(am__recursive_targets) check-am install-am install-strip
 
@@ -1060,8 +1061,8 @@ uninstall-am: uninstall-pkgpyexecDATA uninstall-pkgpyexecLTLIBRARIES
 	installdirs installdirs-am maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am uninstall-pkgpyexecDATA \
-	uninstall-pkgpyexecLTLIBRARIES
+	tags tags-am uninstall uninstall-am uninstall-local \
+	uninstall-pkgpyexecDATA uninstall-pkgpyexecLTLIBRARIES
 
 
 @BUILDING_FROM_VCS_TRUE@gnucash_core.c: $(SWIG_FILES) ${top_srcdir}/src/base-typemaps.i ${top_srcdir}/src/engine/engine-common.i $(_gnucash_core_c_includes)
@@ -1086,6 +1087,9 @@ uninstall-am: uninstall-pkgpyexecDATA uninstall-pkgpyexecLTLIBRARIES
 
 clean-local:
 	rm -rf gnucash
+
+uninstall-local:
+	rm -rf ${pkgpyexecdir}
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

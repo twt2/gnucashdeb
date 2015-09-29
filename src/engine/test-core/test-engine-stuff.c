@@ -656,6 +656,7 @@ void
 make_random_changes_to_price (QofBook *book, GNCPrice *p)
 {
     Timespec *ts;
+    PriceSource ps;
     char *string;
     gnc_commodity *c;
 
@@ -673,9 +674,9 @@ make_random_changes_to_price (QofBook *book, GNCPrice *p)
     gnc_price_set_time (p, *ts);
     g_free (ts);
 
-    string = get_random_string ();
-    gnc_price_set_source (p, string);
-    g_free (string);
+    ps = (PriceSource)get_random_int_in_range((int)PRICE_SOURCE_EDIT_DLG,
+                                              (int)PRICE_SOURCE_INVALID);
+    gnc_price_set_source (p, ps);
 
     string = get_random_string ();
     gnc_price_set_typestr (p, string);
@@ -714,7 +715,6 @@ gboolean
 make_random_pricedb (QofBook *book, GNCPriceDB *db)
 {
     int num_prices;
-    gboolean check;
 
     num_prices = get_random_int_in_range (1, 41);
     if (num_prices < 1) /* should be impossible */
@@ -736,11 +736,9 @@ make_random_pricedb (QofBook *book, GNCPriceDB *db)
             return FALSE;
         }
 
-        check = gnc_pricedb_add_price (db, p);
-        if (!check)
-        {
-            return check;
-        }
+        if (!gnc_pricedb_add_price (db, p))
+            /* probably the same date as another price, just try again. */
+            ++num_prices;
 
         gnc_price_unref (p);
     }
@@ -1380,7 +1378,7 @@ set_tran_random_string(Transaction* trn,
                        void(*func)(Transaction *act, const gchar*str))
 {
     gchar *tmp_str = get_random_string();
-    if (!trn || !(&trn->inst))
+    if (!trn)
     {
         return;
     }

@@ -151,11 +151,10 @@ libgncmod_gnome_utils_la_DEPENDENCIES =  \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 am_libgncmod_gnome_utils_la_OBJECTS = account-quickfill.lo \
-	assistant-utils.lo assistant-xml-encoding.lo cursors.lo \
-	dialog-account.lo dialog-book-close.lo dialog-commodity.lo \
-	dialog-dup-trans.lo dialog-file-access.lo \
-	dialog-object-references.lo dialog-options.lo \
-	dialog-preferences.lo dialog-query-view.lo \
+	assistant-xml-encoding.lo cursors.lo dialog-account.lo \
+	dialog-book-close.lo dialog-commodity.lo dialog-dup-trans.lo \
+	dialog-file-access.lo dialog-object-references.lo \
+	dialog-options.lo dialog-preferences.lo dialog-query-view.lo \
 	dialog-reset-warnings.lo dialog-tax-table.lo dialog-totd.lo \
 	dialog-transfer.lo dialog-userpass.lo dialog-utils.lo \
 	gnc-account-sel.lo gnc-amount-edit.lo gnc-autosave.lo \
@@ -573,7 +572,6 @@ AM_CPPFLAGS = -I${top_srcdir}/src/core-utils \
 	-DG_LOG_DOMAIN=\"gnc.gui\"
 libgncmod_gnome_utils_la_SOURCES = \
   account-quickfill.c \
-  assistant-utils.c \
   assistant-xml-encoding.c \
   cursors.c \
   dialog-account.c \
@@ -659,7 +657,6 @@ libgncmod_gnome_utils_la_SOURCES = \
 gncincludedir = ${GNC_INCLUDE_DIR}
 gncinclude_HEADERS = \
   account-quickfill.h \
-  assistant-utils.h \
   assistant-xml-encoding.h \
   dialog-account.h \
   dialog-book-close.h \
@@ -876,7 +873,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/account-quickfill.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/assistant-utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/assistant-xml-encoding.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cursors.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-account.Plo@am__quote@

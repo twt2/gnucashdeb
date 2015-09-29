@@ -1589,6 +1589,10 @@ def qof_backend_get_error(*args):
   """qof_backend_get_error(QofBackend * be) -> QofBackendError"""
   return _gnucash_core_c.qof_backend_get_error(*args)
 
+def qof_backend_check_error(*args):
+  """qof_backend_check_error(QofBackend * be) -> gboolean"""
+  return _gnucash_core_c.qof_backend_check_error(*args)
+
 def qof_load_backend_library(*args):
   """qof_load_backend_library(gchar const * directory, gchar const * module_name) -> gboolean"""
   return _gnucash_core_c.qof_load_backend_library(*args)
@@ -2331,6 +2335,10 @@ def gnc_numeric_reduce(*args):
 def gnc_numeric_to_decimal(*args):
   """gnc_numeric_to_decimal(_gnc_numeric a, guint8 * max_decimal_places) -> gboolean"""
   return _gnucash_core_c.gnc_numeric_to_decimal(*args)
+
+def gnc_numeric_invert(*args):
+  """gnc_numeric_invert(_gnc_numeric num) -> _gnc_numeric"""
+  return _gnucash_core_c.gnc_numeric_invert(*args)
 
 def gnc_numeric_get_type():
   """gnc_numeric_get_type() -> GType"""
@@ -4600,6 +4608,17 @@ def gnc_price_get_type():
 def gnc_pricedb_get_type():
   """gnc_pricedb_get_type() -> GType"""
   return _gnucash_core_c.gnc_pricedb_get_type()
+PRICE_SOURCE_EDIT_DLG = _gnucash_core_c.PRICE_SOURCE_EDIT_DLG
+PRICE_SOURCE_FQ = _gnucash_core_c.PRICE_SOURCE_FQ
+PRICE_SOURCE_USER_PRICE = _gnucash_core_c.PRICE_SOURCE_USER_PRICE
+PRICE_SOURCE_XFER_DLG_VAL = _gnucash_core_c.PRICE_SOURCE_XFER_DLG_VAL
+PRICE_SOURCE_SPLIT_REG = _gnucash_core_c.PRICE_SOURCE_SPLIT_REG
+PRICE_SOURCE_STOCK_SPLIT = _gnucash_core_c.PRICE_SOURCE_STOCK_SPLIT
+PRICE_SOURCE_INVOICE = _gnucash_core_c.PRICE_SOURCE_INVOICE
+PRICE_SOURCE_INVALID = _gnucash_core_c.PRICE_SOURCE_INVALID
+PRICE_TYPE_LAST = _gnucash_core_c.PRICE_TYPE_LAST
+PRICE_TYPE_UNK = _gnucash_core_c.PRICE_TYPE_UNK
+PRICE_TYPE_TRN = _gnucash_core_c.PRICE_TYPE_TRN
 
 def gnc_price_create(*args):
   """gnc_price_create(QofBook * book) -> GNCPrice *"""
@@ -4638,8 +4657,12 @@ def gnc_price_set_time(*args):
   return _gnucash_core_c.gnc_price_set_time(*args)
 
 def gnc_price_set_source(*args):
-  """gnc_price_set_source(GNCPrice * p, char const * source)"""
+  """gnc_price_set_source(GNCPrice * p, PriceSource source)"""
   return _gnucash_core_c.gnc_price_set_source(*args)
+
+def gnc_price_set_source_string(*args):
+  """gnc_price_set_source_string(GNCPrice * p, char const * s)"""
+  return _gnucash_core_c.gnc_price_set_source_string(*args)
 
 def gnc_price_set_typestr(*args):
   """gnc_price_set_typestr(GNCPrice * p, char const * type)"""
@@ -4666,8 +4689,12 @@ def gnc_price_get_time(*args):
   return _gnucash_core_c.gnc_price_get_time(*args)
 
 def gnc_price_get_source(*args):
-  """gnc_price_get_source(GNCPrice const * p) -> char const *"""
+  """gnc_price_get_source(GNCPrice const * p) -> PriceSource"""
   return _gnucash_core_c.gnc_price_get_source(*args)
+
+def gnc_price_get_source_string(*args):
+  """gnc_price_get_source_string(GNCPrice const * p) -> char const *"""
+  return _gnucash_core_c.gnc_price_get_source_string(*args)
 
 def gnc_price_get_typestr(*args):
   """gnc_price_get_typestr(GNCPrice const * p) -> char const *"""
@@ -4684,6 +4711,8 @@ def gnc_price_equal(*args):
 def gnc_price_print(*args):
   """gnc_price_print(GNCPrice * db, FILE * f, int indent)"""
   return _gnucash_core_c.gnc_price_print(*args)
+CURRENCY_DENOM = _gnucash_core_c.CURRENCY_DENOM
+COMMODITY_DENOM_MULT = _gnucash_core_c.COMMODITY_DENOM_MULT
 
 def gnc_price_list_insert(*args):
   """gnc_price_list_insert(PriceList ** prices, GNCPrice * p, gboolean check_dupl) -> gboolean"""
