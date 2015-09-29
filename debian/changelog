@@ -1,3 +1,13 @@
+gnucash (1:2.6.8-1) unstable; urgency=medium
+
+  * New upstream release [September 2015].
+  * Removed extend-diff-ignore for .gml2 files.
+  * Removed obsolete "disable-broken-tests.patch".
+  * Added new "fixtext.patch" to fix FTBFS in "unstable".
+  * Added source lintian-overrides for "jqplot.dateAxisRenderer.js".
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Tue, 29 Sep 2015 15:00:39 +1000
+
 gnucash (1:2.6.7-2) unstable; urgency=medium
 
   * Run post-build tests:

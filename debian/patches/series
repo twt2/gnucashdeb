@@ -1,2 +1,2 @@
-disable-broken-tests.patch
+fixtext.patch
 hardening-fortify.patch
