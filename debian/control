@@ -36,7 +36,9 @@ Depends: gnucash-common (= ${source:Version}), ${shlibs:Depends},
   libfinance-quote-perl, libwww-perl, libhtml-tree-perl,
   libhtml-tableextract-perl, libcrypt-ssleay-perl, libdate-manip-perl
 Suggests: libdbd-mysql, libdbd-pgsql, libdbd-sqlite3
-Recommends: gnucash-docs, yelp
+Recommends: gnucash-docs
+           ,python-gnucash
+           ,yelp
 Breaks: gnucash-common (<< 1:2.4.8-1~)
 Replaces: gnucash-common (<< 1:2.4.8-1~)
 Description: personal and small-business financial-accounting software
