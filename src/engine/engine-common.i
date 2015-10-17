@@ -18,24 +18,34 @@
  *                                                                  *
 \********************************************************************/
 
-#include <stdlib.h>
-#include <libguile.h>
-#include <gnc-module.h>
+%inline %{
+static const GncGUID * gncSplitGetGUID(Split *x)
+{ return qof_instance_get_guid(QOF_INSTANCE(x)); }
+static const GncGUID * gncTransGetGUID(Transaction *x)
+{ return qof_instance_get_guid(QOF_INSTANCE(x)); }
+static const GncGUID * gncAccountGetGUID(Account *x)
+{ return qof_instance_get_guid(QOF_INSTANCE(x)); }
+%}
 
-static void
-guile_main(void *closure, int argc, char ** argv)
-{
-    GNCModule mod;
-    gnc_module_system_init();
-    mod = gnc_module_load("gnucash/gnome-utils", 0);
+%typemap(newfree) AccountList * "g_list_free($1);"
+%typemap(newfree) SplitList * "g_list_free($1);"
+%typemap(newfree) TransList * "g_list_free($1);"
+%typemap(newfree) PriceList * "g_list_free($1);"
+%typemap(newfree) LotList * "g_list_free($1);"
+%typemap(newfree) CommodityList * "g_list_free($1);"
 
-    exit(mod == NULL);
-}
+%include <Split.h>
 
-int
-main(int argc, char ** argv)
-{
-    g_setenv ("GNC_UNINSTALLED", "1", TRUE);
-    scm_boot_guile(argc, argv, guile_main, NULL);
-    return 0;
-}
+AccountList * gnc_account_get_children (const Account *account);
+AccountList * gnc_account_get_children_sorted (const Account *account);
+AccountList * gnc_account_get_descendants (const Account *account);
+AccountList * gnc_account_get_descendants_sorted (const Account *account);
+%ignore gnc_account_get_children;
+%ignore gnc_account_get_children_sorted;
+%ignore gnc_account_get_descendants;
+%ignore gnc_account_get_descendants_sorted;
+%include <Account.h>
+
+%include <Transaction.h>
+
+%include <gnc-lot.h>

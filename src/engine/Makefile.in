@@ -553,7 +553,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = . test-core test 
+SUBDIRS = . test-core test
 pkglib_LTLIBRARIES = libgncmod-engine.la
 AM_CPPFLAGS = -I${top_srcdir}/lib/libc -I${top_srcdir}/src/core-utils \
 	-I${top_srcdir}/src -I${top_builddir}/src \
@@ -705,6 +705,7 @@ EXTRA_DIST = \
   kvp_doc.txt \
   SX-book-p.h \
   engine.i \
+  engine-common.i \
   business-core.i \
   ${gncscmmod_DATA} \
   ${gncscm_DATA}
@@ -1606,7 +1607,7 @@ uninstall-am: uninstall-gncincludeHEADERS uninstall-gncscmDATA \
 	uninstall-gncscmmodcacheDATA uninstall-pkglibLTLIBRARIES
 
 
-.scm-links: 
+.scm-links:
 	$(RM) -rf gnucash
 	mkdir -p  gnucash
 @GNUCASH_SEPARATE_BUILDDIR_TRUE@	for X in ${SCM_FILE_LINKS} ; do \
