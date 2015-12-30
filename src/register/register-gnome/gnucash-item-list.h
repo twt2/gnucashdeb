@@ -23,7 +23,6 @@
 #ifndef GNUCASH_ITEM_LIST_H
 #define GNUCASH_ITEM_LIST_H
 
-#include <libgnomecanvas/libgnomecanvas.h>
 
 #define GNC_TYPE_ITEM_LIST     (gnc_item_list_get_type ())
 #define GNC_ITEM_LIST(o)       (G_TYPE_CHECK_INSTANCE_CAST((o), GNC_TYPE_ITEM_LIST, GncItemList))
@@ -83,3 +82,8 @@ int gnc_item_list_autosize (GncItemList *item_list);
 #endif /* GNUCASH_ITEM_LIST_H */
 
 
+/*
+  Local Variables:
+  c-basic-offset: 8
+  End:
+*/

@@ -141,7 +141,6 @@ gnc_table_model_new (void)
     model->save_handlers = gnc_table_model_handler_hash_new ();
 
     model->read_only = FALSE;
-    model->dividing_row_upper = -1;
     model->dividing_row = -1;
 
     return model;

@@ -13,7 +13,7 @@ libgncmod_register_gnome_la_LIBADD = \
   ${top_builddir}/src/gnome-utils/libgncmod-gnome-utils.la \
   ${top_builddir}/src/libqof/qof/libgnc-qof.la \
   ${GLIB_LIBS} \
-  ${GNOMECANVAS_LIBS}
+  ${GNOME_LIBS}
 
 libgncmod_register_gnome_la_SOURCES = \
   gncmod-register-gnome.c \
@@ -45,7 +45,6 @@ noinst_HEADERS = \
   gnucash-item-list.h \
   gnucash-scrolled-window.h \
   gnucash-sheet.h \
-  gnucash-sheetP.h \
   gnucash-style.h \
   pricecell-gnome.h \
   quickfillcell-gnome.h \
@@ -61,8 +60,10 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/register/ledger-core \
   -I${top_srcdir}/src/register/register-core \
   -I${top_srcdir}/src/libqof/qof \
+  ${GUILE_INCS} \
+  ${GLADE_CFLAGS} \
   ${GLIB_CFLAGS} \
   ${GTK_XIM_FLAGS} \
-  ${GNOMECANVAS_CFLAGS}
+  ${GNOME_CFLAGS}
 
-AM_CPPFLAGS += -DG_LOG_DOMAIN=\"gnc.register.gnome\"
+INCLUDES = -DG_LOG_DOMAIN=\"gnc.register.gnome\"

@@ -37,7 +37,6 @@
 
 #include "gnc-component-manager.h"
 #include "gnc-ui.h"
-#include "gnome-utils/gnc-warnings.h"
 
 #include "gncEntry.h"
 #include "gncEntryLedger.h"
@@ -45,8 +44,6 @@
 #include "gncEntryLedgerLayout.h"
 #include "gncEntryLedgerModel.h"
 #include "gncEntryLedgerControl.h"
-
-static QofLogModule log_module = "Business Entry Ledger";
 
 /** Static Functions ***************************************************/
 
@@ -80,7 +77,7 @@ gnc_entry_ledger_get_blank_entry (GncEntryLedger *ledger)
 
 Account *
 gnc_entry_ledger_get_account_by_name (GncEntryLedger *ledger, BasicCell * bcell,
-                                      const char *name, gboolean *isnew)
+                                      const char *name, gboolean *new)
 {
     const char *placeholder = _("The account %s does not allow transactions.");
     const char *missing = _("The account %s does not exist. "
@@ -100,13 +97,13 @@ gnc_entry_ledger_get_account_by_name (GncEntryLedger *ledger, BasicCell * bcell,
             return NULL;
 
         /* No changes, as yet. */
-        *isnew = FALSE;
+        *new = FALSE;
 
         /* User said yes, they want to create a new account. */
         account_types = g_list_prepend (account_types, (gpointer)ACCT_TYPE_CREDIT);
         account_types = g_list_prepend (account_types, (gpointer)ACCT_TYPE_ASSET);
         account_types = g_list_prepend (account_types, (gpointer)ACCT_TYPE_LIABILITY);
-        if ( ledger->is_cust_doc )
+        if ( ledger->is_invoice )
             account_types = g_list_prepend (account_types, (gpointer)ACCT_TYPE_INCOME);
         else
             account_types = g_list_prepend (account_types, (gpointer)ACCT_TYPE_EXPENSE);
@@ -115,7 +112,7 @@ gnc_entry_ledger_get_account_by_name (GncEntryLedger *ledger, BasicCell * bcell,
         g_list_free ( account_types );
         if (!account)
             return NULL;
-        *isnew = TRUE;
+        *new = TRUE;
 
         /* Now have a new account. Update the cell with the name as created. */
         account_name = gnc_get_account_name_for_register (account);
@@ -164,7 +161,7 @@ GncTaxTable * gnc_entry_ledger_get_taxtable (GncEntryLedger *ledger,
 
     /* If it has not changed, pull in the table from the entry */
     entry = gnc_entry_ledger_get_current_entry (ledger);
-    if (ledger->is_cust_doc)
+    if (ledger->is_invoice)
         return gncEntryGetInvTaxTable (entry);
     else
         return gncEntryGetBillTaxTable (entry);
@@ -292,7 +289,7 @@ GncEntryLedger * gnc_entry_ledger_new (QofBook *book, GncEntryLedgerType type)
     ledger->type = type;
     ledger->book = book;
     ledger->traverse_to_new = TRUE;
-    ledger->prefs_group = NULL;
+    ledger->gconf_section = NULL;
 
     /* Orders and Invoices are "invoices" for lookups */
     switch (type)
@@ -301,43 +298,24 @@ GncEntryLedger * gnc_entry_ledger_new (QofBook *book, GncEntryLedgerType type)
     case GNCENTRY_ORDER_VIEWER:
     case GNCENTRY_INVOICE_ENTRY:
     case GNCENTRY_INVOICE_VIEWER:
-        ledger->is_cust_doc = TRUE;
-        ledger->is_credit_note = FALSE;
+        ledger->is_invoice = TRUE;
         break;
     case GNCENTRY_BILL_ENTRY:
     case GNCENTRY_BILL_VIEWER:
     case GNCENTRY_EXPVOUCHER_ENTRY:
     case GNCENTRY_EXPVOUCHER_VIEWER:
     case GNCENTRY_NUM_REGISTER_TYPES:
-        ledger->is_cust_doc = FALSE;
-        ledger->is_credit_note = FALSE;
+        ledger->is_invoice = FALSE;
         break;
-    case GNCENTRY_CUST_CREDIT_NOTE_ENTRY:
-    case GNCENTRY_CUST_CREDIT_NOTE_VIEWER:
-        ledger->is_cust_doc = TRUE;
-        ledger->is_credit_note = TRUE;
-        break;
-    case GNCENTRY_VEND_CREDIT_NOTE_ENTRY:
-    case GNCENTRY_VEND_CREDIT_NOTE_VIEWER:
-    case GNCENTRY_EMPL_CREDIT_NOTE_ENTRY:
-    case GNCENTRY_EMPL_CREDIT_NOTE_VIEWER:
-        ledger->is_cust_doc = FALSE;
-        ledger->is_credit_note = TRUE;
-        break;
-    default:
-	PWARN ("Bad GncEntryLedgerType");
-	g_free (ledger);
-	return NULL;
-	break;
     }
 
     ledger->blank_entry_guid = *guid_null();
     ledger->blank_entry_edited = FALSE;
 
     {
-        GDate *today = gnc_g_date_new_today();
-        ledger->last_date_entered = *today;
-        g_date_free(today);
+        Timespec ts = { 0, 0 };
+        ts.tv_sec = time (NULL);
+        ledger->last_date_entered = timespecCanonicalDayTime (ts);
     }
 
     {
@@ -386,10 +364,6 @@ GncEntryLedger * gnc_entry_ledger_new (QofBook *book, GncEntryLedgerType type)
 
     /* Initialize Display */
     gnc_entry_ledger_display_init (ledger);
-    if (qof_book_is_readonly(ledger->book))
-    {
-        gnc_entry_ledger_set_readonly(ledger, TRUE);
-    }
     return ledger;
 }
 
@@ -446,7 +420,7 @@ static void create_invoice_query (GncEntryLedger *ledger)
      *
      * 1. book AND
      * 2.   ( Entry->I-TYPE == ledger->invoice
-     * #if I-TYPE == Invoice/Cust Credit Note (entry only)
+     * #if I-TYPE == Invoice (entry only)
      *        OR
      * 3.     ( Entry->Invoice == NULL AND
      *          ( Entry->Billable == TRUE AND
@@ -470,18 +444,12 @@ static void create_invoice_query (GncEntryLedger *ledger)
     {
     case GNCENTRY_INVOICE_ENTRY:
     case GNCENTRY_INVOICE_VIEWER:
-    case GNCENTRY_CUST_CREDIT_NOTE_ENTRY:
-    case GNCENTRY_CUST_CREDIT_NOTE_VIEWER:
         type = ENTRY_INVOICE;
         break;
     case GNCENTRY_BILL_ENTRY:
     case GNCENTRY_BILL_VIEWER:
     case GNCENTRY_EXPVOUCHER_ENTRY:
     case GNCENTRY_EXPVOUCHER_VIEWER:
-    case GNCENTRY_VEND_CREDIT_NOTE_ENTRY:
-    case GNCENTRY_VEND_CREDIT_NOTE_VIEWER:
-    case GNCENTRY_EMPL_CREDIT_NOTE_ENTRY:
-    case GNCENTRY_EMPL_CREDIT_NOTE_VIEWER:
         type = ENTRY_BILL;
         break;
     default:
@@ -495,8 +463,7 @@ static void create_invoice_query (GncEntryLedger *ledger)
                               gncInvoiceGetGUID (ledger->invoice), QOF_QUERY_OR);
 
     /* Term 3 */
-    if ((ledger->type == GNCENTRY_INVOICE_ENTRY ||
-            ledger->type == GNCENTRY_CUST_CREDIT_NOTE_ENTRY) &&
+    if (ledger->type == GNCENTRY_INVOICE_ENTRY &&
             gncOwnerGetEndGUID (gncInvoiceGetOwner (ledger->invoice)) != NULL)
     {
 
@@ -566,7 +533,7 @@ void gnc_entry_ledger_set_default_invoice (GncEntryLedger *ledger,
      * to understand why.
      */
     if (gncInvoiceGetOwnerType (invoice) == GNC_OWNER_VENDOR)
-        ledger->last_date_entered = timespec_to_gdate(gncInvoiceGetDateOpened (invoice));
+        ledger->last_date_entered = gncInvoiceGetDateOpened (invoice);
 
     if (!ledger->query && invoice)
         create_invoice_query (ledger);
@@ -615,7 +582,6 @@ gboolean gnc_entry_ledger_find_entry (GncEntryLedger *ledger, GncEntry *entry,
 void gnc_entry_ledger_set_readonly (GncEntryLedger *ledger, gboolean readonly)
 {
     if (!ledger) return;
-    if (!readonly && qof_book_is_readonly(ledger->book)) return;
 
     /* reset the ledger type appropriately */
     if (readonly)
@@ -637,20 +603,8 @@ void gnc_entry_ledger_set_readonly (GncEntryLedger *ledger, gboolean readonly)
             ledger->type = GNCENTRY_EXPVOUCHER_VIEWER;
             create_invoice_query (ledger);
             break;
-        case GNCENTRY_CUST_CREDIT_NOTE_ENTRY:
-            ledger->type = GNCENTRY_CUST_CREDIT_NOTE_VIEWER;
-            create_invoice_query (ledger);
-            break;
-        case GNCENTRY_VEND_CREDIT_NOTE_ENTRY:
-            ledger->type = GNCENTRY_VEND_CREDIT_NOTE_VIEWER;
-            create_invoice_query (ledger);
-            break;
-        case GNCENTRY_EMPL_CREDIT_NOTE_ENTRY:
-            ledger->type = GNCENTRY_EMPL_CREDIT_NOTE_VIEWER;
-            create_invoice_query (ledger);
-            break;
         default:
-            return;        /* Nothing to do */
+            return;			/* Nothing to do */
         }
     }
     else
@@ -672,20 +626,8 @@ void gnc_entry_ledger_set_readonly (GncEntryLedger *ledger, gboolean readonly)
             ledger->type = GNCENTRY_EXPVOUCHER_ENTRY;
             create_invoice_query (ledger);
             break;
-        case GNCENTRY_CUST_CREDIT_NOTE_VIEWER:
-            ledger->type = GNCENTRY_CUST_CREDIT_NOTE_ENTRY;
-            create_invoice_query (ledger);
-            break;
-        case GNCENTRY_VEND_CREDIT_NOTE_VIEWER:
-            ledger->type = GNCENTRY_VEND_CREDIT_NOTE_ENTRY;
-            create_invoice_query (ledger);
-            break;
-        case GNCENTRY_EMPL_CREDIT_NOTE_VIEWER:
-            ledger->type = GNCENTRY_EMPL_CREDIT_NOTE_ENTRY;
-            create_invoice_query (ledger);
-            break;
         default:
-            return;        /* Nothing to do */
+            return;			/* Nothing to do */
         }
     }
 
@@ -918,7 +860,7 @@ gnc_entry_ledger_duplicate_current_entry (GncEntryLedger *ledger)
                                GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
                                _("_Record"), GTK_RESPONSE_ACCEPT,
                                NULL);
-        response = gnc_dialog_run(GTK_DIALOG(dialog), GNC_PREF_WARN_INV_ENTRY_DUP);
+        response = gnc_dialog_run(GTK_DIALOG(dialog), "invoice_entry_duplicated");
         gtk_widget_destroy(dialog);
 
         if (response != GTK_RESPONSE_ACCEPT)
@@ -939,8 +881,8 @@ gnc_entry_ledger_duplicate_current_entry (GncEntryLedger *ledger)
         GncEntry * new_entry;
 
         new_entry = gncEntryCreate (ledger->book);
-        gncEntryCopy (entry, new_entry, TRUE);
-        gncEntrySetDateGDate (new_entry, &ledger->last_date_entered);
+        gncEntryCopy (entry, new_entry);
+        gncEntrySetDate (new_entry, ledger->last_date_entered);
 
         /* We also must set a new DateEntered on the new entry
          * because otherwise the ordering is not deterministic */
@@ -964,12 +906,12 @@ gnc_entry_ledger_get_query (GncEntryLedger *ledger)
 }
 
 void
-gnc_entry_ledger_set_prefs_group (GncEntryLedger *ledger, const gchar *string)
+gnc_entry_ledger_set_gconf_section (GncEntryLedger *ledger, const gchar *string)
 {
     if (!ledger)
         return;
 
-    ledger->prefs_group = string;
+    ledger->gconf_section = string;
 }
 
 void gnc_entry_ledger_move_current_entry_updown (GncEntryLedger *ledger,
@@ -1017,26 +959,10 @@ void gnc_entry_ledger_move_current_entry_updown (GncEntryLedger *ledger,
      * up the current sort ordering from here, so I cowardly refuse to
      * tweak the EntryDate in this case. */
     {
-        Timespec t1, t2;
-        GDate d1 = gncEntryGetDateGDate(current),
-              d2 = gncEntryGetDateGDate(target);
-        if (g_date_compare(&d1, &d2) != 0)
-            return;
-
-        /* Special treatment if the equality doesn't hold if we access the
-        dates as timespec. See the comment in gncEntrySetDateGDate() for the
-        reason: Some code used the timespec at noon for the EntryDate, other
-        code used the timespec at the start of day. */
-        t1 = gncEntryGetDate(current);
-        t2 = gncEntryGetDate(target);
+        Timespec t1 = gncEntryGetDate(current),
+                 t2 = gncEntryGetDate(target);
         if (!timespec_equal(&t1, &t2))
-        {
-            /* Timespecs are not equal, even though the GDates were equal? Then
-            we set the GDates again. This will force the timespecs to be equal
-            as well. */
-            gncEntrySetDateGDate(current, &d1);
-            gncEntrySetDateGDate(target, &d2);
-        }
+            return;
     }
 
     /*g_warning("Ok, current desc='%s' target desc='%s'",

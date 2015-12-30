@@ -1,26 +1,27 @@
-/********************************************************************
- * gnc-date-format.c -- Date formator widget                        *
- *                       (GnuCash)                                  *
- * Copyright (C) 2003 Derek Atkins  <derek@ihtfp.com>               *
- *                                                                  *
- * This program is free software; you can redistribute it and/or    *
- * modify it under the terms of the GNU General Public License as   *
- * published by the Free Software Foundation; either version 2 of   *
- * the License, or (at your option) any later version.              *
- *                                                                  *
- * This program is distributed in the hope that it will be useful,  *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of   *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the    *
- * GNU General Public License for more details.                     *
- *                                                                  *
- * You should have received a copy of the GNU General Public License*
- * along with this program; if not, contact:                        *
- *                                                                  *
- * Free Software Foundation           Voice:  +1-617-542-5942       *
- * 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652       *
- * Boston, MA  02110-1301,  USA       gnu@gnu.org                   *
- ********************************************************************/
-
+/*
+ * gnc-date-format.c -- Date formator widget
+ *
+ * Copyright (C) 2003 Derek Atkins  <derek@ihtfp.com>
+ * All rights reserved.
+ *
+ * Gnucash is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public License
+ * as published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * Gnucash is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, contact:
+ *
+ * Free Software Foundation           Voice:  +1-617-542-5942
+ * 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652
+ * Boston, MA  02110-1301,  USA       gnu@gnu.org
+ *
+ */
 /*
   @NOTATION@
 */
@@ -39,7 +40,6 @@
 
 #include "gnc-date-format.h"
 #include "dialog-utils.h"
-#include "gnc-engine.h"
 
 #ifndef HAVE_LOCALTIME_R
 # include "localtime_r.h"
@@ -47,9 +47,6 @@
 
 /* Perhaps it's better just to use MAX_DATE_LENGTH defined in gnc-date.h */
 #define MAX_DATE_LEN 80
-
-/* This static indicates the debugging module that this .o belongs to.  */
-G_GNUC_UNUSED static QofLogModule log_module = GNC_MOD_GUI;
 
 enum
 {
@@ -63,7 +60,7 @@ struct _GNCDateFormatPriv
 {
     GtkWidget*	format_combobox;
 
-    GtkWidget*  label;
+    GtkWidget*    label;
 
     GtkWidget*	months_label;
     GtkWidget*	months_number;
@@ -84,11 +81,13 @@ struct _GNCDateFormatPriv
 
 static guint date_format_signals [LAST_SIGNAL] = { 0 };
 
+
 static void gnc_date_format_init         (GNCDateFormat      *gdf);
-static void gnc_date_format_class_init   (GNCDateFormatClass *klass);
+static void gnc_date_format_class_init   (GNCDateFormatClass *class);
 static void gnc_date_format_finalize     (GObject            *object);
 static void gnc_date_format_compute_format(GNCDateFormat *gdf);
 
+/* Used by glade_xml_signal_autoconnect_full */
 void gnc_ui_date_format_changed_cb(GtkWidget *unused, gpointer user_data);
 
 static GtkHBoxClass *parent_class;
@@ -96,7 +95,7 @@ static GtkHBoxClass *parent_class;
 /**
  * gnc_date_format_get_type:
  *
- * Returns the GType for the GNCDateFormat widget
+ * Returns the GtkType for the GNCDateFormat widget
  */
 GType
 gnc_date_format_get_type (void)
@@ -151,66 +150,65 @@ gnc_date_format_class_init (GNCDateFormatClass *klass)
                       0);
 }
 
-
 static void
 gnc_date_format_init (GNCDateFormat *gdf)
 {
     GNCDateFormatPriv *priv;
-    GtkBuilder *builder;
+    GladeXML *xml;
     GtkWidget *dialog, *table;
 
     g_return_if_fail(gdf);
     g_return_if_fail(GNC_IS_DATE_FORMAT(gdf));
 
     /* Open up the Glade and set the signals */
-    builder = gtk_builder_new();
-    gnc_builder_add_from_file (builder, "gnc-date-format.glade", "format-liststore");
-    gnc_builder_add_from_file (builder, "gnc-date-format.glade", "GNC Date Format");
-
-    gtk_builder_connect_signals_full (builder, gnc_builder_connect_full_func, gdf);
+    xml = gnc_glade_xml_new("gnc-date-format.glade", "GNC Date Format");
+    glade_xml_signal_autoconnect_full(xml, gnc_glade_autoconnect_full_func, gdf);
 
     /* pull in all the child widgets */
     priv =  GNC_DATE_FORMAT_GET_PRIVATE(gdf);
-    priv->label = GTK_WIDGET(gtk_builder_get_object (builder, "widget_label"));
-    priv->format_combobox = GTK_WIDGET(gtk_builder_get_object (builder, "format_combobox"));
+    priv->label = glade_xml_get_widget(xml, "widget_label");
+    priv->format_combobox = glade_xml_get_widget(xml, "format_combobox");
 
-    priv->months_label = GTK_WIDGET(gtk_builder_get_object (builder, "months_label"));
-    priv->months_number = GTK_WIDGET(gtk_builder_get_object (builder, "month_number_button"));
-    priv->months_abbrev = GTK_WIDGET(gtk_builder_get_object (builder, "month_abbrev_button"));
-    priv->months_name = GTK_WIDGET(gtk_builder_get_object (builder, "month_name_button"));
+    priv->months_label = glade_xml_get_widget(xml, "months_label");
+    priv->months_number = glade_xml_get_widget(xml, "month_number_button");
+    priv->months_abbrev = glade_xml_get_widget(xml, "month_abbrev_button");
+    priv->months_name = glade_xml_get_widget(xml, "month_name_button");
 
-    priv->years_label = GTK_WIDGET(gtk_builder_get_object (builder, "years_label"));
-    priv->years_button = GTK_WIDGET(gtk_builder_get_object (builder, "years_button"));
+    priv->years_label = glade_xml_get_widget(xml, "years_label");
+    priv->years_button = glade_xml_get_widget(xml, "years_button");
 
-    priv->custom_label = GTK_WIDGET(gtk_builder_get_object (builder, "format_label"));
-    priv->custom_entry = GTK_WIDGET(gtk_builder_get_object (builder, "format_entry"));
+    priv->custom_label = glade_xml_get_widget(xml, "format_label");
+    priv->custom_entry = glade_xml_get_widget(xml, "format_entry");
 
-    priv->sample_label = GTK_WIDGET(gtk_builder_get_object (builder, "sample_label"));
+    priv->sample_label = glade_xml_get_widget(xml, "sample_label");
 
     /* Set initial format to gnucash default */
     gnc_date_format_set_format(gdf, qof_date_format_get());
 
     /* pull in the dialog and table widgets and play the reconnect game */
-    dialog = GTK_WIDGET(gtk_builder_get_object (builder, "GNC Date Format"));
+    dialog = glade_xml_get_widget(xml, "GNC Date Format");
 
-    table = GTK_WIDGET(gtk_builder_get_object (builder, "date_format_table"));
+    table = glade_xml_get_widget(xml, "date_format_table");
     g_object_ref(G_OBJECT(table));
     gtk_container_remove(GTK_CONTAINER(dialog), table);
     gtk_container_add(GTK_CONTAINER(gdf), table);
     g_object_unref(G_OBJECT(table));
 
-    g_object_unref(G_OBJECT(builder));
-
     /* Destroy the now empty window */
     gtk_widget_destroy(dialog);
 }
 
-
 static void
 gnc_date_format_finalize (GObject *object)
 {
+    GNCDateFormat *gdf;
+    GNCDateFormatPriv *priv;
+
     g_return_if_fail(object != NULL);
     g_return_if_fail(GNC_IS_DATE_FORMAT(object));
+
+    gdf = GNC_DATE_FORMAT(object);
+    priv = GNC_DATE_FORMAT_GET_PRIVATE(gdf);
 
     if (G_OBJECT_CLASS(parent_class)->finalize)
         (* G_OBJECT_CLASS(parent_class)->finalize) (object);
@@ -231,7 +229,6 @@ gnc_date_format_new (void)
     return gnc_date_format_new_with_label (NULL);
 }
 
-
 GtkWidget *
 gnc_date_format_new_without_label (void)
 {
@@ -244,7 +241,6 @@ gnc_date_format_new_without_label (void)
 
     return widget;
 }
-
 
 /**
  * gnc_date_format_new_with_label:
@@ -271,7 +267,6 @@ gnc_date_format_new_with_label (const char *label)
     return GTK_WIDGET(gdf);
 }
 
-
 void
 gnc_date_format_set_format (GNCDateFormat *gdf, QofDateFormat format)
 {
@@ -285,7 +280,6 @@ gnc_date_format_set_format (GNCDateFormat *gdf, QofDateFormat format)
     gnc_date_format_compute_format(gdf);
 }
 
-
 QofDateFormat
 gnc_date_format_get_format (GNCDateFormat *gdf)
 {
@@ -297,7 +291,6 @@ gnc_date_format_get_format (GNCDateFormat *gdf)
     priv = GNC_DATE_FORMAT_GET_PRIVATE(gdf);
     return gtk_combo_box_get_active(GTK_COMBO_BOX(priv->format_combobox));
 }
-
 
 void
 gnc_date_format_set_months (GNCDateFormat *gdf, GNCDateMonthFormat months)
@@ -330,7 +323,6 @@ gnc_date_format_set_months (GNCDateFormat *gdf, GNCDateMonthFormat months)
     gnc_date_format_compute_format(gdf);
 }
 
-
 GNCDateMonthFormat
 gnc_date_format_get_months (GNCDateFormat *gdf)
 {
@@ -345,13 +337,12 @@ gnc_date_format_get_months (GNCDateFormat *gdf)
     if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(priv->months_abbrev)))
         return GNCDATE_MONTH_ABBREV;
     if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(priv->months_name)))
-        return GNCDATE_MONTH_NAME;
+        return GNCDATE_MONTH_ABBREV;
 
     /* We should never reach this point */
     g_assert(FALSE);
     return GNCDATE_MONTH_NUMBER;
 }
-
 
 void
 gnc_date_format_set_years (GNCDateFormat *gdf, gboolean include_century)
@@ -367,7 +358,6 @@ gnc_date_format_set_years (GNCDateFormat *gdf, gboolean include_century)
     gnc_date_format_compute_format(gdf);
 }
 
-
 gboolean
 gnc_date_format_get_years (GNCDateFormat *gdf)
 {
@@ -379,7 +369,6 @@ gnc_date_format_get_years (GNCDateFormat *gdf)
     priv = GNC_DATE_FORMAT_GET_PRIVATE(gdf);
     return gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(priv->years_button));
 }
-
 
 void
 gnc_date_format_set_custom (GNCDateFormat *gdf, const char *format)
@@ -397,7 +386,6 @@ gnc_date_format_set_custom (GNCDateFormat *gdf, const char *format)
     gnc_date_format_compute_format(gdf);
 }
 
-
 const char *
 gnc_date_format_get_custom (GNCDateFormat *gdf)
 {
@@ -410,7 +398,6 @@ gnc_date_format_get_custom (GNCDateFormat *gdf)
     return gtk_entry_get_text(GTK_ENTRY(priv->custom_entry));
 }
 
-
 void
 gnc_ui_date_format_changed_cb(GtkWidget *unused, gpointer user_data)
 {
@@ -418,7 +405,6 @@ gnc_ui_date_format_changed_cb(GtkWidget *unused, gpointer user_data)
 
     gnc_date_format_compute_format(gdf);
 }
-
 
 static void
 gnc_date_format_enable_month (GNCDateFormat *gdf, gboolean sensitive)
@@ -432,7 +418,6 @@ gnc_date_format_enable_month (GNCDateFormat *gdf, gboolean sensitive)
     gtk_widget_set_sensitive(priv->months_name, sensitive);
 }
 
-
 static void
 gnc_date_format_enable_year (GNCDateFormat *gdf, gboolean sensitive)
 {
@@ -442,7 +427,6 @@ gnc_date_format_enable_year (GNCDateFormat *gdf, gboolean sensitive)
     gtk_widget_set_sensitive(priv->years_label, sensitive);
     gtk_widget_set_sensitive(priv->years_button, sensitive);
 }
-
 
 static void
 gnc_date_format_enable_format (GNCDateFormat *gdf, gboolean sensitive)
@@ -454,7 +438,6 @@ gnc_date_format_enable_format (GNCDateFormat *gdf, gboolean sensitive)
     gtk_widget_set_sensitive(priv->custom_entry, sensitive);
 }
 
-
 void
 gnc_date_format_refresh (GNCDateFormat *gdf)
 {
@@ -463,7 +446,7 @@ gnc_date_format_refresh (GNCDateFormat *gdf)
     gboolean enable_year, enable_month, enable_custom, check_modifiers;
     static gchar *format, *c;
     gchar date_string[MAX_DATE_LEN];
-    time64 secs_now;
+    time_t secs_now;
     struct tm today;
 
     g_return_if_fail(gdf);
@@ -541,13 +524,12 @@ gnc_date_format_refresh (GNCDateFormat *gdf)
                                       0, 0, NULL, NULL, gdf);
 
     /* Visual feedback on what the date will look like. */
-    secs_now = gnc_time (NULL);
-    gnc_localtime_r (&secs_now, &today);
+    secs_now = time(NULL);
+    localtime_r(&secs_now, &today);
     qof_strftime(date_string, MAX_DATE_LEN, format, &today);
     gtk_label_set_text(GTK_LABEL(priv->sample_label), date_string);
     g_free(format);
 }
-
 
 static void
 gnc_date_format_compute_format(GNCDateFormat *gdf)

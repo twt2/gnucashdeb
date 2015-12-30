@@ -42,16 +42,12 @@
 #include "gnc-plugin-file-history.h"
 #include "gnc-window.h"
 #include "gnc-engine.h"
-#include "gnc-prefs.h"
+#include "gnc-gconf-utils.h"
 #include "gnc-uri-utils.h"
 
 static GObjectClass *parent_class = NULL;
 
 #define FILENAME_STRING "filename"
-#define MAX_HISTORY_FILES 10    /* May be any number up to 10 */
-#define GNC_PREFS_GROUP_HISTORY   "history"
-#define GNC_PREF_HISTORY_MAXFILES "maxfiles"
-#define HISTORY_STRING_FILE_N   "file%d"
 
 static void gnc_plugin_file_history_class_init (GncPluginFileHistoryClass *klass);
 static void gnc_plugin_file_history_init (GncPluginFileHistory *plugin);
@@ -113,35 +109,35 @@ typedef struct GncPluginFileHistoryPrivate
  *                     Other Functions                      *
  ************************************************************/
 
-/** Convert an array index into a preference name.
+/** Convert an array index into a gconf key string.
  *
  *  @param index An index number that can be used with the
  *  gnc_plugin_actions array.
  *
- *  @return The preference name associated with this array entry. It
+ *  @return The partial gconf key associated with this array entry. It
  *  is the callers responsibility to free this string when
  *  finished.  */
 static gchar *
-gnc_history_index_to_pref_name (guint index)
+gnc_history_gconf_index_to_key (guint index)
 {
     return g_strdup_printf(HISTORY_STRING_FILE_N, index);
 }
 
 
-/** Convert a preference name into an array index.  This function
+/** Convert a gconf key string into an array index.  This function
  *  uses sscanf to pull the number off the end of the key and convert
  *  it to an integer.
  *
- *  @param key The preference name.
+ *  @param key The last part of the gconf key.
  *
  *  @return An index number that can be used with the
  *  gnc_plugin_actions array. */
 static gint
-gnc_history_pref_name_to_index (const gchar *pref)
+gnc_history_gconf_key_to_index (const gchar *key)
 {
     gint index, result;
 
-    result = sscanf(pref, HISTORY_STRING_FILE_N, &index);
+    result = sscanf(key, HISTORY_STRING_FILE_N, &index);
     if (result != 1)
         return -1;
     if ((index < 0) || (index >= gnc_plugin_n_actions))
@@ -153,7 +149,7 @@ gnc_history_pref_name_to_index (const gchar *pref)
 /*  Add a file name to the front of the file "history list".  If the
  *  name already exist on the list, then it is moved from its current
  *  location to the front of the list.  The "list" is actually a
- *  sequence of up to ten preferences.
+ *  sequence of up to ten gconf keys.
  */
 void
 gnc_history_add_file (const char *newfile)
@@ -167,13 +163,13 @@ gnc_history_add_file (const char *newfile)
         return;
 
     /*
-     * Look for the filename in preferences.
+     * Look for the filename in gconf.
      */
     last = MAX_HISTORY_FILES - 1;
     for (i = 0; i < MAX_HISTORY_FILES; i++)
     {
-        from = gnc_history_index_to_pref_name(i);
-        filename = gnc_prefs_get_string(GNC_PREFS_GROUP_HISTORY, from);
+        from = gnc_history_gconf_index_to_key(i);
+        filename = gnc_gconf_get_string(HISTORY_STRING_SECTION, from, NULL);
         g_free(from);
 
         if (!filename)
@@ -191,21 +187,21 @@ gnc_history_add_file (const char *newfile)
     }
 
     /*
-     * Shuffle filenames upward through preferences.
+     * Shuffle filenames upward through gconf.
      */
-    to = gnc_history_index_to_pref_name(last);
+    to = gnc_history_gconf_index_to_key(last);
     for (i = last - 1; i >= 0; i--)
     {
-        from = gnc_history_index_to_pref_name(i);
-        filename = gnc_prefs_get_string(GNC_PREFS_GROUP_HISTORY, from);
+        from = gnc_history_gconf_index_to_key(i);
+        filename = gnc_gconf_get_string(HISTORY_STRING_SECTION, from, NULL);
         if (filename)
         {
-            gnc_prefs_set_string(GNC_PREFS_GROUP_HISTORY, to, filename);
+            gnc_gconf_set_string(HISTORY_STRING_SECTION, to, filename, NULL);
             g_free(filename);
         }
         else
         {
-            gnc_prefs_reset(GNC_PREFS_GROUP_HISTORY, to);
+            gnc_gconf_unset(HISTORY_STRING_SECTION, to, NULL);
         }
         g_free(to);
         to = from;
@@ -214,13 +210,13 @@ gnc_history_add_file (const char *newfile)
     /*
      * Store the new zero entry.
      */
-    gnc_prefs_set_string(GNC_PREFS_GROUP_HISTORY, to, newfile);
+    gnc_gconf_set_string(HISTORY_STRING_SECTION, to, newfile, NULL);
     g_free(to);
 }
 
 
-/** Remove all occurrences of a file name from the history list.  Move
- *  the other file names up in the list to fill the gaps.
+/** Remove all occurences of a file name from the history list.  Move
+ *  the other key values up in the list to fill the gaps.
  *
  *  @param oldfile The name of the file to remove from the list.
  */
@@ -237,22 +233,22 @@ gnc_history_remove_file (const char *oldfile)
 
     for (i = 0, j = 0; i < MAX_HISTORY_FILES; i++)
     {
-        from = gnc_history_index_to_pref_name(i);
-        filename = gnc_prefs_get_string(GNC_PREFS_GROUP_HISTORY, from);
+        from = gnc_history_gconf_index_to_key(i);
+        filename = gnc_gconf_get_string(HISTORY_STRING_SECTION, from, NULL);
 
         if (filename)
         {
             if (g_utf8_collate(oldfile, filename) == 0)
             {
-                gnc_prefs_reset(GNC_PREFS_GROUP_HISTORY, from);
+                gnc_gconf_unset(HISTORY_STRING_SECTION, from, NULL);
             }
             else
             {
                 if (i != j)
                 {
-                    to = gnc_history_index_to_pref_name(j);
-                    gnc_prefs_set_string(GNC_PREFS_GROUP_HISTORY, to, filename);
-                    gnc_prefs_reset(GNC_PREFS_GROUP_HISTORY, from);
+                    to = gnc_history_gconf_index_to_key(j);
+                    gnc_gconf_set_string(HISTORY_STRING_SECTION, to, filename, NULL);
+                    gnc_gconf_unset(HISTORY_STRING_SECTION, from, NULL);
                     g_free(to);
                 }
                 j++;
@@ -264,16 +260,16 @@ gnc_history_remove_file (const char *oldfile)
 
 /*  Retrieve the name of the file most recently accessed.  This is the
  *  name at the front of the list.  Since the "list" is actually a
- *  sequence of up to ten preference names, this is the value of the first preference.
+ *  sequence of up to ten gconf keys, this is the value of key zero.
  */
 char *
 gnc_history_get_last (void)
 {
-    char *filename, *pref;
+    char *filename, *key;
 
-    pref = gnc_history_index_to_pref_name(0);
-    filename = gnc_prefs_get_string(GNC_PREFS_GROUP_HISTORY, pref);
-    g_free(pref);
+    key = gnc_history_gconf_index_to_key(0);
+    filename = gnc_gconf_get_string(HISTORY_STRING_SECTION, key, NULL);
+    g_free(key);
 
     return filename;
 }
@@ -360,8 +356,9 @@ gnc_history_update_action (GncMainWindow *window,
     action_name = g_strdup_printf("RecentFile%dAction", index);
     action = gtk_action_group_get_action (action_group, action_name);
 
-    limit = gnc_prefs_get_int (GNC_PREFS_GROUP_HISTORY,
-                               GNC_PREF_HISTORY_MAXFILES);
+    limit = gnc_gconf_get_int (HISTORY_STRING_SECTION,
+                               HISTORY_STRING_MAXFILES,
+                               NULL);
 
     if (filename && (strlen(filename) > 0) && (index < limit))
     {
@@ -386,8 +383,8 @@ gnc_history_update_action (GncMainWindow *window,
 
 
 /** Update the file history menu for a window.  This function walks
- *  the list of all possible preference names for the file history and
- *  forces a read/menu update on each preference.  It should only be called
+ *  the list of all possible gconf keys for the file history and
+ *  forces a read/menu update on each key.  It should only be called
  *  once when the window is created.
  *
  *  @param window A pointer to the window whose file history menu
@@ -396,63 +393,146 @@ gnc_history_update_action (GncMainWindow *window,
 static void
 gnc_history_update_menus (GncMainWindow *window)
 {
-    gchar *filename, *pref;
+    gchar *filename, *key;
     guint i;
 
     ENTER("");
     for (i = 0; i < MAX_HISTORY_FILES; i++)
     {
-        pref = gnc_history_index_to_pref_name(i);
-        filename = gnc_prefs_get_string(GNC_PREFS_GROUP_HISTORY, pref);
+        key = gnc_history_gconf_index_to_key(i);
+        filename = gnc_gconf_get_string(HISTORY_STRING_SECTION, key, NULL);
         gnc_history_update_action(window, i, filename);
         g_free(filename);
-        g_free(pref);
+        g_free(key);
     }
     LEAVE("");
 }
 
 
-/** Update an entry in the file history menu because a preference
- *  changed.  This function is called whenever an item in the preferences
- *  history group is changed.  It is responsible for updating the
+/** Update an entry in the file history menu because a gconf entry
+ *  changed.  This function is called whenever an item in the gconf
+ *  history section is changed.  It is responsible for updating the
  *  menu item that corresponds to that key.
  *
- *  @param prefs Unused.
+ *  @param client A pointer to gconf client that noticed an entry
+ *  change.
  *
- *  @param pref The name of the preference that changed.
+ *  @param cnxn_id Unused.
  *
- *  @param user_data A pointer to the window that notice the preference change.
+ *  @param entry A pointer to gconf entry that changed.
+ *
+ *  @param user_data A pointer to the window that this gconf client is
+ *  associated with.
  */
 static void
-gnc_plugin_history_list_changed (gpointer prefs,
-                                 gchar *pref,
+gnc_plugin_history_list_changed (GConfClient *client,
+                                 guint cnxn_id,
+                                 GConfEntry *entry,
                                  gpointer user_data)
 {
     GncMainWindow *window;
-    const gchar *filename;
+    GConfValue *value;
+    const gchar *fullkey, *key, *filename;
     gint index;
 
     ENTER("");
     window = GNC_MAIN_WINDOW(user_data);
 
-    if (strcmp(pref, GNC_PREF_HISTORY_MAXFILES) == 0)
+    fullkey = gconf_entry_get_key(entry);
+    key = strrchr(fullkey, '/') + 1;
+    if (strcmp(key, HISTORY_STRING_MAXFILES) == 0)
     {
         gnc_history_update_menus (window);
         LEAVE("updated maxfiles");
         return;
     }
-    index = gnc_history_pref_name_to_index(pref);
+    index = gnc_history_gconf_key_to_index(key);
     if (index < 0)
     {
         LEAVE("bad index");
         return;
     }
 
-    filename = gnc_prefs_get_string (GNC_PREFS_GROUP_HISTORY, pref);
+    value = gconf_entry_get_value(entry);
+    if (!value)
+    {
+        LEAVE("No gconf value");
+        return;
+    }
+    filename = gconf_value_get_string(value);
     gnc_history_update_action (window, index, filename);
 
     gnc_main_window_actions_updated (window);
     LEAVE("");
+}
+
+
+/* This routine copies the gnucash 1.x file history list over to
+ * gnucash 2.0. */
+static void
+gnc_plugin_history_list_from_gnucash1 (void)
+{
+    GKeyFile *keyfile;
+    const gchar *home;
+    gchar *mdi_file, *value;
+    gchar **keys, **key, *new_key;
+    gint file_id, max;
+
+    /* First test if there are already files in the gconf file history.
+     * If so, then bail out now. */
+    value = gnc_gconf_get_string(HISTORY_STRING_SECTION, "file0", NULL);
+    if (value)
+    {
+        g_free(value);
+        return;
+    }
+
+    home = g_get_home_dir();
+    if (!home)
+        return;
+
+    /* Copy the old values from the gnucash 1.x/gnome1 settings file to
+     * the gnucash 2.x/gconf settings area.  */
+    mdi_file = g_build_filename(home, ".gnome", "GnuCash", (gchar *)NULL);
+    keyfile = gnc_key_file_load_from_file (mdi_file, FALSE, FALSE, NULL);
+    if (keyfile)
+    {
+        keys = g_key_file_get_keys(keyfile, GNOME1_HISTORY, NULL, NULL);
+        if (keys)
+        {
+            for (key = keys; *key; key++)
+            {
+                if (!strcmp(*key, GNOME1_MAXFILES))
+                {
+                    max = g_key_file_get_integer(keyfile, GNOME1_HISTORY,
+                                                 GNOME1_MAXFILES, NULL);
+                    printf("Found old maxfiles: %d\n", max);
+                    if ((max > 0) && (max < MAX_HISTORY_FILES))
+                        printf("Setting maxfiles: %d\n\n", max);
+                    gnc_gconf_set_int(HISTORY_STRING_SECTION, HISTORY_STRING_MAXFILES,
+                                      max, NULL);
+                    continue;
+                }
+
+                if (sscanf(*key, "File%d", &file_id) == 1)
+                {
+                    value = g_key_file_get_string(keyfile, GNOME1_HISTORY, *key, NULL);
+                    if (!value)
+                        continue;
+                    printf("Found old file %d: %s\n", file_id, value);
+                    new_key = g_strdup_printf(HISTORY_STRING_FILE_N, file_id);
+                    gnc_gconf_set_string (HISTORY_STRING_SECTION, new_key, value, NULL);
+                    printf("Setting %s: %s\n\n", new_key, value);
+                    g_free(new_key);
+                    g_free(value);
+                }
+            }
+            g_strfreev(keys);
+        }
+        g_key_file_free(keyfile);
+    }
+
+    g_free(mdi_file);
 }
 
 /************************************************************
@@ -515,7 +595,12 @@ gnc_plugin_file_history_class_init (GncPluginFileHistoryClass *klass)
     plugin_class->n_actions     = gnc_plugin_n_actions;
     plugin_class->ui_filename   = PLUGIN_UI_FILENAME;
 
+    plugin_class->gconf_section = HISTORY_STRING_SECTION;
+    plugin_class->gconf_notifications = gnc_plugin_history_list_changed;
+
     g_type_class_add_private(klass, sizeof(GncPluginFileHistoryPrivate));
+
+    gnc_plugin_history_list_from_gnucash1();
 }
 
 
@@ -532,9 +617,15 @@ gnc_plugin_file_history_init (GncPluginFileHistory *plugin)
 static void
 gnc_plugin_file_history_finalize (GObject *object)
 {
+    GncPluginFileHistory *plugin;
+    GncPluginFileHistoryPrivate *priv;
+
     g_return_if_fail (GNC_IS_PLUGIN_FILE_HISTORY (object));
 
     ENTER("plugin %p", object);
+    plugin = GNC_PLUGIN_FILE_HISTORY (object);
+    priv = GNC_PLUGIN_FILE_HISTORY_GET_PRIVATE (plugin);
+
     G_OBJECT_CLASS (parent_class)->finalize (object);
     LEAVE("");
 }
@@ -563,8 +654,8 @@ gnc_plugin_file_history_new (void)
  *  plugin menu items have been added to the menu structure.  Its job
  *  is to correctly initialize the file history menu.  It does this by
  *  first calling a function that initializes the menu to the current
- *  as maintained in the preferences database.  It will then
- *  listens for any changes to the history preferences, and will update
+ *  as maintained in gconf.  It then creates a gconf client that will
+ *  listens for any changes to the file history menu, and will update
  *  the menu when they are signaled.
  *
  *  @param plugin A pointer to the gnc-plugin object responsible for
@@ -579,8 +670,6 @@ gnc_plugin_file_history_add_to_window (GncPlugin *plugin,
                                        GncMainWindow *window,
                                        GQuark type)
 {
-    gnc_prefs_register_cb (GNC_PREFS_GROUP_HISTORY, NULL,
-                           gnc_plugin_history_list_changed, window);
     gnc_history_update_menus(window);
 }
 
@@ -589,8 +678,9 @@ gnc_plugin_file_history_add_to_window (GncPlugin *plugin,
  *  called as part of the destruction of a window.
  *
  *  @param plugin A pointer to the gnc-plugin object responsible for
- *  adding/removing the file history menu.  It stops listening for
- *  changes in the history preferences.
+ *  adding/removing the file history menu.  It stops the gconf
+ *  notifications for this window, and destroys the gconf client
+ *  object.
  *
  *  @param window A pointer the gnc-main-window that is being destroyed.
  *
@@ -601,8 +691,6 @@ gnc_plugin_file_history_remove_from_window (GncPlugin *plugin,
         GncMainWindow *window,
         GQuark type)
 {
-    gnc_prefs_remove_cb_by_func (GNC_PREFS_GROUP_HISTORY, NULL,
-                                 gnc_plugin_history_list_changed, window);
 }
 
 /************************************************************
@@ -637,7 +725,7 @@ gnc_plugin_file_history_cmd_open_file (GtkAction *action,
     filename = g_object_get_data(G_OBJECT(action), FILENAME_STRING);
     gnc_window_set_progressbar_window (GNC_WINDOW(data->window));
     /* also opens new account page */
-    gnc_file_open_file (filename, /*open_readonly*/ FALSE);
+    gnc_file_open_file (filename);
     gnc_window_set_progressbar_window (NULL);
 }
 

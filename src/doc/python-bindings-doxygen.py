@@ -17,15 +17,18 @@
 # @ingroup python_bindings
 
 
-## @defgroup python_bindings Python Bindings Module
+## @defgroup python_bindings
 #  Also have a look at the page @ref python_bindings_page.
 
-## @defgroup python_bindings_examples Python Bindings Examples Module
+## @defgroup python_bindings_examples
 #  @ingroup python_bindings
 #  The python-bindings come with quite a lot of example scripts.
 
 ##  @page python_bindings_page Python bindings
 #   Also have a look at group @ref python_bindings.
+#
+#   For the moment the python-bindings are only available via svn. They may be included
+#   in GnuCash 2.4.
 #
 #   They can be found in src/optional/python-bindings.
 #
@@ -66,8 +69,8 @@
 #   @li gnucash_core_c.py
 #
 #   If you have generated your own local doxygen documentation (by "make doc") after having compiled the python-bindings, doxygen
-#   will include SWIGs output-files.
-#   It's actually quite interesting to have a look at them through doxygen, because they contain all that you can
+#   will include SWIGs output-files. The official version at http://svn.gnucash.org/docs/HEAD/ does not include
+#   these files. It's actually quite interesting to have a look at them through doxygen, because they contain all that you can
 #   access from python.
 #
 #   This c-style-api is the bottom layer. It is a quite raw extract and close to the original source. Some more details are described further down.
@@ -128,5 +131,5 @@
 #   @li There is a page in the GnuCash wiki at http://wiki.gnucash.org/wiki/Python
 #   @li You may also have a look into the archives of gnucash-devel@gnucash.org. 
 #   @li On Bugzilla there is also some interesting talk regarding the development process. 
-#   @li Then you can use the abilities of svn to see the history of the code by @code svn log @endcode done in the directory of the python-bindings.
+#   @li Then you can use the abilitys of svn to see the history of the code by @code svn log @endcode done in the directory of the python-bindings.
 #

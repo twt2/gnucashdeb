@@ -26,7 +26,7 @@
 struct _GncHtmlPrivate
 {
     GtkWidget* parent;				/* window this html goes into */
-    GtkWidget* container;			/* parent of the webkit widget */
+    GtkWidget* container;			/* parent of the gtkhtml widget */
     gchar* current_link;			/* link under mouse pointer */
 
     URLType base_type;				/* base of URL (path - filename) */

@@ -22,12 +22,11 @@
 # @author Mark Jenkins, ParIT Worker Co-operative <mark@parit.ca>
 
 # Opens a GnuCash book file and adds an invoice to it for a particular
-# customer (by ID) with a specific ID and value 
-# Optionally also adds a payment for the invoice as well
+# customer (by GUID) with a specific ID and value 
 #
 # The account tree and tax tables are assumed to be the same as the ones
 # created in simple_business_create.py, but you can edit that to adapt
-# this to become an invoice importer for your own books
+# this to become an invoice imported for your own books
 #
 # Syntax:
 # gnucash-env python simple_invoice_insert.py \
@@ -87,18 +86,20 @@ def gnc_numeric_from_decimal(decimal_value):
 
 
 s = Session(argv[1], is_new=False)
+# this seems to make a difference in more complex cases
+s.save()
 
 book = s.book
 root = book.get_root_account()
 commod_table = book.get_table()
 CAD = commod_table.lookup('CURRENCY', 'CAD')
 
-my_customer = book.CustomerLookupByID(argv[2])
+my_customer = book.LookupByID(arg[2])
 assert( my_customer != None )
 assert( isinstance(my_customer, Customer) )
 
 assets = root.lookup_by_name("Assets")
-receivables = assets.lookup_by_name("Receivables")
+recievables = assets.lookup_by_name("Recievables")
 income = root.lookup_by_name("Income")
 
 invoice = Invoice(book, argv[3], CAD, my_customer )
@@ -113,8 +114,8 @@ invoice_entry.SetQuantity( GncNumeric(1) )
 invoice_entry.SetInvAccount(income)
 invoice_entry.SetInvPrice(invoice_value)
 
-invoice.PostToAccount(receivables, datetime.date.today(), datetime.date.today(),
-                      "", True, False)
+invoice.PostToAccount(recievables, datetime.date.today(), datetime.date.today(),
+                      "", True)
 
 s.save()
 s.end()

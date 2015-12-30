@@ -73,7 +73,7 @@ static QofLogModule log_module = GNC_MOD_BUSINESS;
 #define SET_STR(obj, member, str) { \
         char * tmp; \
         \
-        if (!g_strcmp0 (member, str)) return; \
+        if (!safe_strcmp (member, str)) return; \
         gncBillTermBeginEdit (obj); \
         tmp = CACHE_INSERT (str); \
         CACHE_REMOVE (member); \
@@ -302,6 +302,68 @@ static void gncBillTermFree (GncBillTerm *term)
     g_object_unref (term);
 }
 
+GncBillTerm *
+gncCloneBillTerm (GncBillTerm *from, QofBook *book)
+{
+    GList *node;
+    GncBillTerm *term;
+
+    if (!book || !from) return NULL;
+
+    term = g_object_new (GNC_TYPE_BILLTERM, NULL);
+    qof_instance_init_data(&term->inst, _GNC_MOD_NAME, book);
+    qof_instance_gemini (&term->inst, &from->inst);
+
+    term->name = CACHE_INSERT (from->name);
+    term->desc = CACHE_INSERT (from->desc);
+    term->type = from->type;
+    term->due_days = from->due_days;
+    term->disc_days = from->disc_days;
+    term->discount = from->discount;
+    term->cutoff = from->cutoff;
+    term->invisible = from->invisible;
+
+    term->refcount = 0;
+
+    /* Make copies of parents and children. Note that this can be
+     * a recursive copy ... treat as doubly-linked list. */
+    if (from->child)
+    {
+        term->child = gncBillTermObtainTwin (from->child, book);
+        term->child->parent = term;
+    }
+    if (from->parent)
+    {
+        term->parent = gncBillTermObtainTwin (from->parent, book);
+        term->parent->child = term;
+    }
+    for (node = g_list_last(from->children); node; node = node->next)
+    {
+        GncBillTerm *btrm = node->data;
+        btrm = gncBillTermObtainTwin (btrm, book);
+        btrm->parent = term;
+        term->children = g_list_prepend(term->children, btrm);
+    }
+
+    addObj (term);
+    qof_event_gen (&term->inst, QOF_EVENT_CREATE, NULL);
+    return term;
+}
+
+GncBillTerm *
+gncBillTermObtainTwin (GncBillTerm *from, QofBook *book)
+{
+    GncBillTerm *term;
+    if (!from) return NULL;
+
+    term = (GncBillTerm *) qof_instance_lookup_twin (QOF_INSTANCE(from), book);
+    if (!term)
+    {
+        term = gncCloneBillTerm (from, book);
+    }
+    return term;
+}
+
 /* ============================================================== */
 /* Set Functions */
 
@@ -404,7 +466,6 @@ void gncBillTermSetParent (GncBillTerm *term, GncBillTerm *parent)
     {
         gncBillTermMakeInvisible (term);
     }
-    mark_term (term);
     gncBillTermCommitEdit (term);
 }
 
@@ -413,7 +474,6 @@ void gncBillTermSetChild (GncBillTerm *term, GncBillTerm *child)
     if (!term) return;
     gncBillTermBeginEdit (term);
     term->child = child;
-    mark_term (term);
     gncBillTermCommitEdit (term);
 }
 
@@ -423,7 +483,6 @@ void gncBillTermIncRef (GncBillTerm *term)
     if (term->parent || term->invisible) return;        /* children dont need refcounts */
     gncBillTermBeginEdit (term);
     term->refcount++;
-    mark_term (term);
     gncBillTermCommitEdit (term);
 }
 
@@ -431,20 +490,16 @@ void gncBillTermDecRef (GncBillTerm *term)
 {
     if (!term) return;
     if (term->parent || term->invisible) return;        /* children dont need refcounts */
-    g_return_if_fail (term->refcount >= 1);
     gncBillTermBeginEdit (term);
     term->refcount--;
-    mark_term (term);
+    g_return_if_fail (term->refcount >= 0);
     gncBillTermCommitEdit (term);
 }
 
 void gncBillTermSetRefcount (GncBillTerm *term, gint64 refcount)
 {
     if (!term) return;
-    gncBillTermBeginEdit (term);
     term->refcount = refcount;
-    mark_term (term);
-    gncBillTermCommitEdit (term);
 }
 
 void gncBillTermMakeInvisible (GncBillTerm *term)
@@ -453,7 +508,6 @@ void gncBillTermMakeInvisible (GncBillTerm *term)
     gncBillTermBeginEdit (term);
     term->invisible = TRUE;
     remObj (term);
-    mark_term (term);
     gncBillTermCommitEdit (term);
 }
 
@@ -498,7 +552,7 @@ GncBillTerm *gncBillTermLookupByName (QofBook *book, const char *name)
     for ( ; list; list = list->next)
     {
         GncBillTerm *term = list->data;
-        if (!g_strcmp0 (term->name, name))
+        if (!safe_strcmp (term->name, name))
             return list->data;
     }
     return NULL;
@@ -586,7 +640,6 @@ static GncBillTerm *gncBillTermCopy (const GncBillTerm *term)
     t->discount = term->discount;
     t->cutoff = term->cutoff;
 
-    mark_term (t);
     gncBillTermCommitEdit(t);
 
     return t;
@@ -634,10 +687,10 @@ int gncBillTermCompare (const GncBillTerm *a, const GncBillTerm *b)
     if (!a) return -1;
     if (!b) return 1;
 
-    ret = g_strcmp0 (a->name, b->name);
+    ret = safe_strcmp (a->name, b->name);
     if (ret) return ret;
 
-    return g_strcmp0 (a->desc, b->desc);
+    return safe_strcmp (a->desc, b->desc);
 }
 
 gboolean gncBillTermEqual(const GncBillTerm *a, const GncBillTerm *b)
@@ -648,13 +701,13 @@ gboolean gncBillTermEqual(const GncBillTerm *a, const GncBillTerm *b)
     g_return_val_if_fail(GNC_IS_BILLTERM(a), FALSE);
     g_return_val_if_fail(GNC_IS_BILLTERM(b), FALSE);
 
-    if (g_strcmp0(a->name, b->name) != 0)
+    if (safe_strcmp(a->name, b->name) != 0)
     {
         PWARN("Names differ: %s vs %s", a->name, b->name);
         return FALSE;
     }
 
-    if (g_strcmp0(a->desc, b->desc) != 0)
+    if (safe_strcmp(a->desc, b->desc) != 0)
     {
         PWARN("Descriptions differ: %s vs %s", a->desc, b->desc);
         return FALSE;
@@ -702,14 +755,6 @@ gboolean gncBillTermEqual(const GncBillTerm *a, const GncBillTerm *b)
 //    GList *         children;    /* list of children for disconnection */
 
     return TRUE;
-}
-
-gboolean gncBillTermIsFamily (const GncBillTerm *a, const GncBillTerm *b)
-{
-    if (!gncBillTermCompare (a, b))
-        return TRUE;
-    else
-        return FALSE;
 }
 
 gboolean gncBillTermIsDirty (const GncBillTerm *term)
@@ -760,7 +805,7 @@ compute_monthyear (const GncBillTerm *term, Timespec post_date,
     gnc_timespec2dmy (post_date, &iday, &imonth, &iyear);
 
     if (cutoff <= 0)
-        cutoff += gnc_date_get_last_mday (imonth, iyear);
+        cutoff += gnc_timespec_last_mday (post_date);
 
     if (iday <= cutoff)
     {
@@ -807,7 +852,7 @@ compute_time (const GncBillTerm *term, Timespec post_date, int days)
         break;
     case GNC_TERM_TYPE_PROXIMO:
         compute_monthyear (term, post_date, &month, &year);
-        day = gnc_date_get_last_mday (month, year);
+        day = gnc_date_my_last_mday (month, year);
         if (days < day)
             day = days;
         res = gnc_dmy2timespec (day, month, year);
@@ -824,6 +869,16 @@ gncBillTermComputeDueDate (const GncBillTerm *term, Timespec post_date)
 
     return compute_time (term, post_date, term->due_days);
 }
+
+Timespec
+gncBillTermComputeDiscountDate (const GncBillTerm *term, Timespec post_date)
+{
+    Timespec res = post_date;
+    if (!term) return res;
+
+    return compute_time (term, post_date, term->disc_days);
+}
+
 /* Package-Private functions */
 
 static void _gncBillTermCreate (QofBook *book)

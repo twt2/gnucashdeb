@@ -270,7 +270,6 @@ ownerreportCB (const char *location, const char *label,
     }
     default:
         etype = "OTHER";
-        break;
     }
 
     if (owner.owner.undefined == NULL)

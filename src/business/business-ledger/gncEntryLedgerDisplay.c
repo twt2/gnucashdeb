@@ -28,7 +28,7 @@
 #include "gnc-ui-util.h"
 #include "gnc-component-manager.h"
 #include "gnc-event.h"
-#include "gnc-prefs.h"
+#include "gnc-gconf-utils.h"
 
 #include "gncEntry.h"
 #include "gncEntryLedger.h"
@@ -73,19 +73,19 @@ gnc_entry_ledger_refresh_internal (GncEntryLedger *ledger, GList *entries)
 }
 
 static void
-gnc_entry_ledger_pref_changed (gpointer prefs, gchar *pref, gpointer user_data)
+gnc_entry_ledger_gconf_changed (GConfEntry *entry, gpointer user_data)
 {
     GncEntryLedger *ledger = user_data;
 
-    g_return_if_fail (ledger && pref);
+    g_return_if_fail (ledger && entry && entry->key);
 
-    if (g_str_has_suffix (pref, GNC_PREF_ACCOUNT_SEPARATOR))
+    if (g_str_has_suffix (entry->key, KEY_ACCOUNT_SEPARATOR))
     {
         gnc_entry_ledger_display_refresh (ledger);
     }
     else
     {
-        g_warning ("gnc_entry_ledger_pref_changed: Unknown preference %s", pref);
+        g_warning ("gnc_entry_gconf_changed: Unknown gconf key %s", entry->key);
     }
 }
 
@@ -105,22 +105,16 @@ gnc_entry_ledger_set_watches (GncEntryLedger *ledger, GList *entries)
         break;
 
     case GNCENTRY_INVOICE_ENTRY:
-    case GNCENTRY_CUST_CREDIT_NOTE_ENTRY:
         /* Watch the invoice owner to see when items get added via orders */
         gnc_gui_component_watch_entity (ledger->component_id,
                                         gncOwnerGetGUID
                                         (gncInvoiceGetOwner (ledger->invoice)),
                                         QOF_EVENT_MODIFY);
     case GNCENTRY_INVOICE_VIEWER:
-    case GNCENTRY_CUST_CREDIT_NOTE_VIEWER:
     case GNCENTRY_BILL_ENTRY:
     case GNCENTRY_BILL_VIEWER:
     case GNCENTRY_EXPVOUCHER_ENTRY:
     case GNCENTRY_EXPVOUCHER_VIEWER:
-    case GNCENTRY_VEND_CREDIT_NOTE_ENTRY:
-    case GNCENTRY_VEND_CREDIT_NOTE_VIEWER:
-    case GNCENTRY_EMPL_CREDIT_NOTE_ENTRY:
-    case GNCENTRY_EMPL_CREDIT_NOTE_VIEWER:
         type = GNC_INVOICE_MODULE_NAME;
         break;
 
@@ -147,7 +141,7 @@ gnc_entry_ledger_set_watches (GncEntryLedger *ledger, GList *entries)
     /* For expense vouchers, watch the employee and refresh if it's changed */
     if (ledger->type == GNCENTRY_EXPVOUCHER_ENTRY)
     {
-        const GncOwner *owner = gncOwnerGetEndOwner (gncInvoiceGetOwner (ledger->invoice));
+        GncOwner *owner = gncOwnerGetEndOwner (gncInvoiceGetOwner (ledger->invoice));
         GncEmployee *employee = gncOwnerGetEmployee (owner);
 
         if (employee)
@@ -182,8 +176,8 @@ gnc_entry_ledger_display_init (GncEntryLedger *ledger)
     ledger->component_id = gnc_register_gui_component (ENTRYLEDGER_CLASS,
                            refresh_handler,
                            NULL, ledger);
-    gnc_prefs_register_cb (GNC_PREFS_GROUP_GENERAL, GNC_PREF_ACCOUNT_SEPARATOR,
-                           gnc_entry_ledger_pref_changed, ledger);
+    gnc_gconf_general_register_cb(KEY_ACCOUNT_SEPARATOR,
+                                  gnc_entry_ledger_gconf_changed, ledger);
 
     gnc_entry_ledger_display_refresh (ledger);
 }
@@ -194,8 +188,8 @@ gnc_entry_ledger_display_fini (GncEntryLedger *ledger)
     if (!ledger) return;
 
     gnc_unregister_gui_component (ledger->component_id);
-    gnc_prefs_remove_cb_by_func (GNC_PREFS_GROUP_GENERAL, GNC_PREF_ACCOUNT_SEPARATOR,
-                                 gnc_entry_ledger_pref_changed, ledger);
+    gnc_gconf_general_remove_cb(KEY_ACCOUNT_SEPARATOR,
+                                gnc_entry_ledger_gconf_changed, ledger);
 }
 
 void

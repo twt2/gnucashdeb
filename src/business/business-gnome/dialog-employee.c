@@ -50,7 +50,7 @@
 #define DIALOG_NEW_EMPLOYEE_CM_CLASS "dialog-new-employee"
 #define DIALOG_EDIT_EMPLOYEE_CM_CLASS "dialog-edit-employee"
 
-#define GNC_PREFS_GROUP_SEARCH "dialogs.business.employee-search"
+#define GCONF_SECTION_SEARCH "dialogs/business/employee_search"
 
 void gnc_employee_window_ok_cb (GtkWidget *widget, gpointer data);
 void gnc_employee_window_cancel_cb (GtkWidget *widget, gpointer data);
@@ -124,9 +124,6 @@ static void gnc_ui_to_employee (EmployeeWindow *ew, GncEmployee *employee)
     gnc_suspend_gui_refresh ();
 
     gncEmployeeBeginEdit (employee);
-
-    if (ew->dialog_type == NEW_EMPLOYEE)
-        qof_event_gen(QOF_INSTANCE(employee), QOF_EVENT_ADD, NULL);
 
     gncEmployeeSetID (employee, gtk_editable_get_chars
                       (GTK_EDITABLE (ew->id_entry), 0, -1));
@@ -205,7 +202,7 @@ static gboolean check_entry_nonempty (GtkWidget *dialog, GtkWidget *entry,
                                       const char * error_message)
 {
     const char *res = gtk_entry_get_text (GTK_ENTRY (entry));
-    if (g_strcmp0 (res, "") == 0)
+    if (safe_strcmp (res, "") == 0)
     {
         if (error_message)
             gnc_error_dialog (dialog, "%s", error_message);
@@ -242,7 +239,7 @@ gnc_employee_window_ok_cb (GtkWidget *widget, gpointer data)
     }
 
     /* Set the employee id if one has not been chosen */
-    if (g_strcmp0 (gtk_entry_get_text (GTK_ENTRY (ew->id_entry)), "") == 0)
+    if (safe_strcmp (gtk_entry_get_text (GTK_ENTRY (ew->id_entry)), "") == 0)
     {
         string = gncEmployeeNextID (ew->book);
         gtk_entry_set_text (GTK_ENTRY (ew->id_entry), string);
@@ -274,7 +271,7 @@ gnc_employee_window_cancel_cb (GtkWidget *widget, gpointer data)
 void
 gnc_employee_window_help_cb (GtkWidget *widget, gpointer data)
 {
-    gnc_gnome_help(HF_HELP, HL_USAGE_EMPLOYEE);
+    gnc_gnome_help(HF_HELP, HL_USAGE);
 }
 
 void
@@ -395,7 +392,7 @@ gnc_employee_new_window (QofBook *bookp,
                          GncEmployee *employee)
 {
     EmployeeWindow *ew;
-    GtkBuilder *builder;
+    GladeXML *xml;
     GtkWidget *hbox, *edit;
     gnc_commodity *currency;
     GNCPrintAmountInfo print_info;
@@ -434,34 +431,33 @@ gnc_employee_new_window (QofBook *bookp,
     ew->book = bookp;
 
     /* Find the dialog */
-    builder = gtk_builder_new();
-    gnc_builder_add_from_file (builder, "dialog-employee.glade", "Employee Dialog");
-    ew->dialog = GTK_WIDGET(gtk_builder_get_object (builder, "Employee Dialog"));
+    xml = gnc_glade_xml_new ("employee.glade", "Employee Dialog");
+    ew->dialog = glade_xml_get_widget (xml, "Employee Dialog");
 
     g_object_set_data (G_OBJECT (ew->dialog), "dialog_info", ew);
 
     /* Get entry points */
-    ew->id_entry = GTK_WIDGET(gtk_builder_get_object (builder, "id_entry"));
-    ew->username_entry = GTK_WIDGET(gtk_builder_get_object (builder, "username_entry"));
+    ew->id_entry = glade_xml_get_widget (xml, "id_entry");
+    ew->username_entry = glade_xml_get_widget (xml, "username_entry");
 
-    ew->name_entry = GTK_WIDGET(gtk_builder_get_object (builder, "name_entry"));
-    ew->addr1_entry = GTK_WIDGET(gtk_builder_get_object (builder, "addr1_entry"));
-    ew->addr2_entry = GTK_WIDGET(gtk_builder_get_object (builder, "addr2_entry"));
-    ew->addr3_entry = GTK_WIDGET(gtk_builder_get_object (builder, "addr3_entry"));
-    ew->addr4_entry = GTK_WIDGET(gtk_builder_get_object (builder, "addr4_entry"));
-    ew->phone_entry = GTK_WIDGET(gtk_builder_get_object (builder, "phone_entry"));
-    ew->fax_entry = GTK_WIDGET(gtk_builder_get_object (builder, "fax_entry"));
-    ew->email_entry = GTK_WIDGET(gtk_builder_get_object (builder, "email_entry"));
+    ew->name_entry = glade_xml_get_widget (xml, "name_entry");
+    ew->addr1_entry = glade_xml_get_widget (xml, "addr1_entry");
+    ew->addr2_entry = glade_xml_get_widget (xml, "addr2_entry");
+    ew->addr3_entry = glade_xml_get_widget (xml, "addr3_entry");
+    ew->addr4_entry = glade_xml_get_widget (xml, "addr4_entry");
+    ew->phone_entry = glade_xml_get_widget (xml, "phone_entry");
+    ew->fax_entry = glade_xml_get_widget (xml, "fax_entry");
+    ew->email_entry = glade_xml_get_widget (xml, "email_entry");
 
-    ew->language_entry = GTK_WIDGET(gtk_builder_get_object (builder, "language_entry"));
-    ew->active_check = GTK_WIDGET(gtk_builder_get_object (builder, "active_check"));
+    ew->language_entry = glade_xml_get_widget (xml, "language_entry");
+    ew->active_check = glade_xml_get_widget (xml, "active_check");
 
     /* Currency */
     edit = gnc_currency_edit_new();
     gnc_currency_edit_set_currency (GNC_CURRENCY_EDIT(edit), currency);
     ew->currency_edit = edit;
 
-    hbox = GTK_WIDGET(gtk_builder_get_object (builder, "currency_box"));
+    hbox = glade_xml_get_widget (xml, "currency_box");
     gtk_box_pack_start (GTK_BOX (hbox), edit, TRUE, TRUE, 0);
 
     /* WORKDAY: Value */
@@ -474,7 +470,7 @@ gnc_employee_new_window (QofBook *bookp,
     ew->workday_amount = edit;
     gtk_widget_show (edit);
 
-    hbox = GTK_WIDGET(gtk_builder_get_object (builder, "hours_hbox"));
+    hbox = glade_xml_get_widget (xml, "hours_hbox");
     gtk_box_pack_start (GTK_BOX (hbox), edit, TRUE, TRUE, 0);
 
     /* RATE: Monetary Value */
@@ -487,11 +483,11 @@ gnc_employee_new_window (QofBook *bookp,
     ew->rate_amount = edit;
     gtk_widget_show (edit);
 
-    hbox = GTK_WIDGET(gtk_builder_get_object (builder, "rate_hbox"));
+    hbox = glade_xml_get_widget (xml, "rate_hbox");
     gtk_box_pack_start (GTK_BOX (hbox), edit, TRUE, TRUE, 0);
 
     /* CCard Account Selection */
-    ew->ccard_acct_check = GTK_WIDGET(gtk_builder_get_object (builder, "ccard_check"));
+    ew->ccard_acct_check = glade_xml_get_widget (xml, "ccard_check");
 
     edit = gnc_account_sel_new();
     acct_types = g_list_prepend(NULL, (gpointer)ACCT_TYPE_CREDIT);
@@ -501,11 +497,13 @@ gnc_employee_new_window (QofBook *bookp,
     ew->ccard_acct_sel = edit;
     gtk_widget_show (edit);
 
-    hbox = GTK_WIDGET(gtk_builder_get_object (builder, "ccard_acct_hbox"));
+    hbox = glade_xml_get_widget (xml, "ccard_acct_hbox");
     gtk_box_pack_start (GTK_BOX (hbox), edit, TRUE, TRUE, 0);
 
     /* Setup signals */
-    gtk_builder_connect_signals_full (builder, gnc_builder_connect_full_func, ew);
+    glade_xml_signal_autoconnect_full( xml,
+                                       gnc_glade_autoconnect_full_func,
+                                       ew);
 
     /* Setup initial values */
     if (employee != NULL)
@@ -587,8 +585,6 @@ gnc_employee_new_window (QofBook *bookp,
 
     if (ccard_acct == NULL)
         gtk_widget_hide (ew->ccard_acct_sel);
-
-    g_object_unref(G_OBJECT(builder));
 
     return ew;
 }
@@ -707,15 +703,15 @@ gnc_employee_search (GncEmployee *start, QofBook *book)
     static GList *columns = NULL;
     static GNCSearchCallbackButton buttons[] =
     {
-        { N_("View/Edit Employee"), edit_employee_cb, NULL, TRUE},
-        { N_("Expense Vouchers"), invoice_employee_cb, NULL, TRUE},
-        { N_("Process Payment"), payment_employee_cb, NULL, FALSE},
+        { N_("View/Edit Employee"), edit_employee_cb},
+        { N_("Expense Vouchers"), invoice_employee_cb},
+        { N_("Process Payment"), payment_employee_cb},
         { NULL },
     };
 
     g_return_val_if_fail (book, NULL);
 
-    /* Build parameter list in reverse order */
+    /* Build parameter list in reverse order*/
     if (params == NULL)
     {
         params = gnc_search_param_prepend (params, _("Employee ID"), NULL, type,
@@ -759,7 +755,7 @@ gnc_employee_search (GncEmployee *start, QofBook *book)
                                      params, columns, q, q2,
                                      buttons, NULL, new_employee_cb,
                                      sw, free_employee_cb,
-                                     GNC_PREFS_GROUP_SEARCH, NULL);
+                                     GCONF_SECTION_SEARCH, NULL);
 }
 
 GNCSearchWindow *

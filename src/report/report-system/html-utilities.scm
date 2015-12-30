@@ -790,7 +790,7 @@
 (define (gnc:html-make-generic-budget-warning report-title-string)
   (gnc:html-make-generic-simple-warning
     report-title-string
-    (_ "No budgets exist. You must create at least one budget.")))
+    (_ "No budgets exist.  You must create at least one budget.")))
 
 
 (define (gnc:html-make-generic-simple-warning report-title-string message)
@@ -803,47 +803,74 @@
     p))
 
 
-(define (gnc:html-make-options-link report-id)
-   (if report-id
-    (gnc:html-markup-p
-     (gnc:html-markup-anchor
-      (gnc-build-url URL-TYPE-OPTIONS
-       (string-append "report-id=" (sprintf #f "%a" report-id))
-       "")
-      (_ "Edit report options")))))
-
-(define (gnc:html-make-generic-warning
-         report-title-string report-id
-         warning-title-string warning-string)
-  (let ((p (gnc:make-html-text)))
-   (gnc:html-text-append!
-    p
-    (gnc:html-markup-h2 (string-append (_ report-title-string) ":"))
-    (gnc:html-markup-h2 warning-title-string)
-    (gnc:html-markup-p warning-string)
-    (gnc:html-make-options-link report-id))
-   p))
+;; TODO: How 'bout factoring the "Edit report options" stuff out of
+;; these 3 functions?
 
 (define (gnc:html-make-generic-options-warning
-         report-title-string report-id)
-  (gnc:html-make-generic-warning
-    report-title-string
-    report-id
-    ""
-    (_ "This report requires you to specify certain report options.")))
+	 report-title-string report-id)
+  (let ((p (gnc:make-html-text)))
+    (gnc:html-text-append!
+     p
+     (gnc:html-markup-h2 (string-append
+			  (_ report-title-string)
+			  ":"))
+     (gnc:html-markup-h2 "")
+     (gnc:html-markup-p
+      (_ "This report requires you to specify certain report options.")))
+    (if report-id
+	(gnc:html-text-append!
+	 p
+	 (gnc:html-markup-p
+	  (gnc:html-markup-anchor
+	   (gnc-build-url URL-TYPE-OPTIONS
+			       (string-append "report-id="
+					      (sprintf #f "%a" report-id))
+			       "")
+	   (_ "Edit report options")))))
+    p))
+
 
 (define (gnc:html-make-no-account-warning
-         report-title-string report-id)
-  (gnc:html-make-generic-warning
-    report-title-string
-    report-id
-    (_ "No accounts selected")
-    (_ "This report requires accounts to be selected in the report options.")))
+	 report-title-string report-id)
+  (let ((p (gnc:make-html-text)))
+    (gnc:html-text-append! 
+     p 
+     (gnc:html-markup-h2 (string-append 
+			  (_ report-title-string)
+			  ":"))
+     (gnc:html-markup-h2 (_ "No accounts selected"))
+     (gnc:html-markup-p
+      (_ "This report requires accounts to be selected.")))
+    (if report-id
+	(gnc:html-text-append! 
+	 p 
+	 (gnc:html-markup-p
+	  (gnc:html-markup-anchor
+	   (gnc-build-url URL-TYPE-OPTIONS
+			       (string-append "report-id="
+					      (sprintf #f "%a" report-id))
+			       "")
+	   (_ "Edit report options")))))
+    p))
 
-(define (gnc:html-make-empty-data-warning
-         report-title-string report-id)
-  (gnc:html-make-generic-warning
-    report-title-string
-    report-id
-    (_ "No data")
-    (_ "The selected accounts contain no data/transactions (or only zeroes) for the selected time period")))
+(define (gnc:html-make-empty-data-warning 
+	 report-title-string report-id)
+  (let ((p (gnc:make-html-text)))
+    (gnc:html-text-append! 
+     p 
+     (gnc:html-markup-h2 
+      (string-append report-title-string ":"))
+     (gnc:html-markup-h2 (_ "No data"))
+     (gnc:html-markup-p
+      (_ "The selected accounts contain no data/transactions (or only zeroes) for the selected time period")))
+    (if report-id
+	(gnc:html-text-append! 
+	 p 
+	 (gnc:html-markup-p
+	  (gnc:html-markup-anchor
+	   (gnc-build-url URL-TYPE-OPTIONS
+			       (string-append "report-id="
+					      (sprintf #f "%a" report-id))
+			       "")
+	   (_ "Edit report options")))))
+    p))

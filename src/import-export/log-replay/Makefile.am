@@ -34,11 +34,13 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/gnome-utils \
   -I${top_srcdir}/src/import-export \
   -I${top_srcdir}/src/libqof/qof \
-  ${GTK_CFLAGS} \
+  ${GNOME_CFLAGS} \
+  ${GLADE_CFLAGS} \
+  ${GUILE_INCS} \
   ${GLIB_CFLAGS}
 
 uidir = $(GNC_UI_DIR)
 dist_ui_DATA = \
 	gnc-plugin-log-replay-ui.xml
 
-AM_CPPFLAGS += -DG_LOG_DOMAIN=\"gnc.import.log-replay\"
+INCLUDES = -DG_LOG_DOMAIN=\"gnc.import.log-replay\"

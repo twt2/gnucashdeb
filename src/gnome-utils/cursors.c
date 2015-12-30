@@ -21,8 +21,18 @@
  * 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652       *
  * Boston, MA  02110-1301,  USA       gnu@gnu.org                   *
 \********************************************************************/
+
+/********************************************************************\
+ * 2003-03-16 TomF changes for gnucash-gnome2-dev, 8th batch	    *
+ * * src/gnome-utils/cursors.c					    *
+ *   Replace calls of deprecated gtk_container_get_toplevels by	    *
+ *   gtk_window_list_toplevels					    *
+\********************************************************************/
+
 #include "config.h"
+
 #include <gtk/gtk.h>
+
 #include "gnc-ui.h"
 
 
@@ -50,7 +60,7 @@ gnc_ui_set_cursor (GdkWindow *win, GNCCursorType type, gboolean update_now)
         return;
 
     if (type != GNC_CURSOR_NORMAL)
-        cursor = gdk_cursor_new ((GdkCursorType)type);
+        cursor = gdk_cursor_new (type);
 
     gdk_window_set_cursor (win, cursor);
 
@@ -79,7 +89,7 @@ void
 gnc_set_busy_cursor (GtkWidget *w, gboolean update_now)
 {
     if (w != NULL)
-        gnc_ui_set_cursor (gtk_widget_get_window(w), GNC_CURSOR_BUSY, update_now);
+        gnc_ui_set_cursor (w->window, GNC_CURSOR_BUSY, update_now);
     else
     {
         GList *containerstop, *node;
@@ -88,10 +98,10 @@ gnc_set_busy_cursor (GtkWidget *w, gboolean update_now)
         {
             w = node->data;
 
-            if (!w || !GTK_IS_WIDGET (w) || !gtk_widget_get_has_window(w))
+            if (!w || !GTK_IS_WIDGET (w) || !w->window)
                 continue;
 
-            gnc_ui_set_cursor (gtk_widget_get_window(w), GNC_CURSOR_BUSY, update_now);
+            gnc_ui_set_cursor (w->window, GNC_CURSOR_BUSY, update_now);
         }
         g_list_free (containerstop);
     }
@@ -110,7 +120,7 @@ void
 gnc_unset_busy_cursor (GtkWidget *w)
 {
     if (w != NULL)
-        gnc_ui_set_cursor (gtk_widget_get_window(w), GNC_CURSOR_NORMAL, FALSE);
+        gnc_ui_set_cursor (w->window, GNC_CURSOR_NORMAL, FALSE);
     else
     {
         GList *containerstop, *node;
@@ -119,10 +129,10 @@ gnc_unset_busy_cursor (GtkWidget *w)
         {
             w = GTK_WIDGET (node->data);
 
-            if (!w || !GTK_IS_WIDGET (w) || (!gtk_widget_get_has_window(w)))
+            if (!w || !GTK_IS_WIDGET (w) || GTK_WIDGET_NO_WINDOW(w))
                 continue;
 
-            gnc_ui_set_cursor (gtk_widget_get_window(w), GNC_CURSOR_NORMAL, FALSE);
+            gnc_ui_set_cursor (w->window, GNC_CURSOR_NORMAL, FALSE);
         }
         g_list_free (containerstop);
     }

@@ -27,7 +27,7 @@
  * FUNCTION:
  * Lots implement the fundamental conceptual idea behind invoices,
  * inventory lots, and stock market investment lots.  See the file
- * src/doc/lots.txt for implementation overview.
+ * src/doc/lots.txt for implmentation overview.
  *
  * HISTORY:
  * Created by Linas Vepstas May 2002

@@ -49,7 +49,6 @@ extern "C" {
 #include <gtkmm.h>
 
 // And our own plugin
-#include "gncmm/wrap_init.hpp"
 #include "gnc-plugin-gtkmm.hpp"
 
 extern "C" {
@@ -76,12 +75,6 @@ extern "C" {
         {
             return FALSE;
         }
-
-        // Initialize glibmm
-        Glib::init();
-
-        // Register our own gncmm wrapper classes at glib type system
-        gnc::wrap_init();
 
         // Initialize the gtkmm framework. Calling this static method
         // is sufficient; we don't actually need a Gtk::Main object.

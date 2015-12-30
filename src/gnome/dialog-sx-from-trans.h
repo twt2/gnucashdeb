@@ -1,6 +1,7 @@
 /********************************************************************
  * dialog-sx-from-trans.h -- a simple dialog for creating a         *
- *                           scheduled transaction from a real one  *
+ *                           scheduled transaction for a "real      *
+ *                           one                                    *
  *                       (GnuCash)                                  *
  * Copyright (C) 2000 Robert Merkel <rgmerk@mira.net>               *
  *                                                                  *

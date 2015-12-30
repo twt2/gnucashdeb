@@ -30,6 +30,9 @@
 #include <sys/types.h>
 
 #include <regex.h>
+#ifdef HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
@@ -292,7 +295,6 @@ xaccQueryAddAccountGUIDMatch(QofQuery *q, AccountGUIDList *guid_list,
         break;
     default:
         PERR ("Invalid match type: %d", how);
-        break;
     }
 
     qof_query_add_term (q, param_list, pred_data, op);
@@ -473,18 +475,18 @@ xaccQueryAddDateMatch(QofQuery * q,
 void
 xaccQueryAddDateMatchTT(QofQuery * q,
                         gboolean use_start,
-                        time64 stt,
+                        time_t stt,
                         gboolean use_end,
-                        time64 ett,
+                        time_t ett,
                         QofQueryOp op)
 {
     Timespec   sts;
     Timespec   ets;
 
-    sts.tv_sec  = stt;
+    sts.tv_sec  = (long long)stt;
     sts.tv_nsec = 0;
 
-    ets.tv_sec  = ett;
+    ets.tv_sec  = (long long)ett;
     ets.tv_nsec = 0;
 
     /* gcc -O3 will auto-inline this function, avoiding a call overhead */
@@ -495,8 +497,8 @@ xaccQueryAddDateMatchTT(QofQuery * q,
 
 void
 xaccQueryGetDateMatchTT (QofQuery * q,
-                         time64 * stt,
-                         time64 * ett)
+                         time_t * stt,
+                         time_t * ett)
 {
     Timespec   sts;
     Timespec   ets;
@@ -548,11 +550,11 @@ xaccQueryAddGUIDMatch(QofQuery * q, const GncGUID *guid,
     if (!q || !guid || !id_type)
         return;
 
-    if (!g_strcmp0 (id_type, GNC_ID_SPLIT))
+    if (!safe_strcmp (id_type, GNC_ID_SPLIT))
         param_list = qof_query_build_param_list (QOF_PARAM_GUID, NULL);
-    else if (!g_strcmp0 (id_type, GNC_ID_TRANS))
+    else if (!safe_strcmp (id_type, GNC_ID_TRANS))
         param_list = qof_query_build_param_list (SPLIT_TRANS, QOF_PARAM_GUID, NULL);
-    else if (!g_strcmp0 (id_type, GNC_ID_ACCOUNT))
+    else if (!safe_strcmp (id_type, GNC_ID_ACCOUNT))
         param_list = qof_query_build_param_list (SPLIT_ACCOUNT, QOF_PARAM_GUID, NULL);
     else
         PERR ("Invalid match type: %s", id_type);
@@ -575,11 +577,11 @@ xaccQueryAddKVPMatch(QofQuery *q, GSList *path, const KvpValue *value,
     if (!pred_data)
         return;
 
-    if (!g_strcmp0 (id_type, GNC_ID_SPLIT))
+    if (!safe_strcmp (id_type, GNC_ID_SPLIT))
         param_list = qof_query_build_param_list (SPLIT_KVP, NULL);
-    else if (!g_strcmp0 (id_type, GNC_ID_TRANS))
+    else if (!safe_strcmp (id_type, GNC_ID_TRANS))
         param_list = qof_query_build_param_list (SPLIT_TRANS, TRANS_KVP, NULL);
-    else if (!g_strcmp0 (id_type, GNC_ID_ACCOUNT))
+    else if (!safe_strcmp (id_type, GNC_ID_ACCOUNT))
         param_list = qof_query_build_param_list (SPLIT_ACCOUNT, ACCOUNT_KVP, NULL);
     else
         PERR ("Invalid match type: %s", id_type);
@@ -587,44 +589,30 @@ xaccQueryAddKVPMatch(QofQuery *q, GSList *path, const KvpValue *value,
     qof_query_add_term (q, param_list, pred_data, op);
 }
 
-/********************************************************************
- * xaccQueryAddClosingTransMatch
- * Add a filter that matches book closing entries to an existing query.
- ********************************************************************/
-
-void
-xaccQueryAddClosingTransMatch(QofQuery *q, gboolean value, QofQueryOp op)
-{
-    GSList *param_list; 
-    
-    param_list = qof_query_build_param_list(SPLIT_TRANS, TRANS_IS_CLOSING, NULL);
-    qof_query_add_boolean_match(q, param_list, value, op);
-}
-
 /*******************************************************************
  *  xaccQueryGetEarliestDateFound
  *******************************************************************/
 
-time64
+time_t
 xaccQueryGetEarliestDateFound(QofQuery * q)
 {
     GList * spl;
     Split * sp;
-    time64 earliest;
+    time_t earliest;
 
     if (!q) return 0;
     spl = qof_query_last_run (q);
     if (!spl) return 0;
 
-    /* Safe until 2038 on archs where time64 is 32bit */
+    /* Safe until 2038 on archs where time_t is 32bit */
     sp = spl->data;
-    earliest = sp->parent->date_posted.tv_sec;
+    earliest = (time_t) sp->parent->date_posted.tv_sec;
     for (; spl; spl = spl->next)
     {
         sp = spl->data;
         if (sp->parent->date_posted.tv_sec < earliest)
         {
-            earliest = sp->parent->date_posted.tv_sec;
+            earliest = (time_t) sp->parent->date_posted.tv_sec;
         }
     }
     return earliest;
@@ -634,12 +622,12 @@ xaccQueryGetEarliestDateFound(QofQuery * q)
  *  xaccQueryGetLatestDateFound
  *******************************************************************/
 
-time64
+time_t
 xaccQueryGetLatestDateFound(QofQuery * q)
 {
     Split  * sp;
     GList  * spl;
-    time64 latest = 0;
+    time_t latest = 0;
 
     if (!q) return 0;
     spl = qof_query_last_run (q);
@@ -650,7 +638,7 @@ xaccQueryGetLatestDateFound(QofQuery * q)
         sp = spl->data;
         if (sp->parent->date_posted.tv_sec > latest)
         {
-            latest = sp->parent->date_posted.tv_sec;
+            latest = (time_t) sp->parent->date_posted.tv_sec;
         }
     }
     return latest;

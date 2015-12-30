@@ -8,7 +8,6 @@ test_date_converting_SOURCES = \
   ${top_srcdir}/src/backend/xml/sixtp.c \
   ${top_srcdir}/src/backend/xml/sixtp-stack.c \
   ${top_srcdir}/src/backend/xml/sixtp-to-dom-parser.c \
-  ${top_srcdir}/src/backend/xml/gnc-xml-helper.c \
   test-date-converting.c
 
 test_dom_converters1_SOURCES = \
@@ -18,7 +17,6 @@ test_dom_converters1_SOURCES = \
   ${top_srcdir}/src/backend/xml/sixtp.c \
   ${top_srcdir}/src/backend/xml/sixtp-stack.c \
   ${top_srcdir}/src/backend/xml/sixtp-to-dom-parser.c \
-  ${top_srcdir}/src/backend/xml/gnc-xml-helper.c \
   test-dom-converters1.c
 
 test_kvp_frames_SOURCES = \
@@ -28,7 +26,6 @@ test_kvp_frames_SOURCES = \
   ${top_srcdir}/src/backend/xml/sixtp.c \
   ${top_srcdir}/src/backend/xml/sixtp-stack.c \
   ${top_srcdir}/src/backend/xml/sixtp-to-dom-parser.c \
-  ${top_srcdir}/src/backend/xml/gnc-xml-helper.c \
   test-kvp-frames.c
 
 # the xml backend is now a GModule - this test does
@@ -56,7 +53,6 @@ test_load_example_account_SOURCES = \
   ${top_srcdir}/src/backend/xml/gnc-commodity-xml-v2.c \
   ${top_srcdir}/src/backend/xml/gnc-book-xml-v2.c \
   ${top_srcdir}/src/backend/xml/gnc-pricedb-xml-v2.c \
-  ${top_srcdir}/src/backend/xml/gnc-xml-helper.c \
   test-load-example-account.c
 
 test_string_converters_SOURCES = \
@@ -66,7 +62,6 @@ test_string_converters_SOURCES = \
   ${top_srcdir}/src/backend/xml/sixtp.c \
   ${top_srcdir}/src/backend/xml/sixtp-stack.c \
   ${top_srcdir}/src/backend/xml/sixtp-to-dom-parser.c \
-  ${top_srcdir}/src/backend/xml/gnc-xml-helper.c \
   test-string-converters.c
 
 test_xml_account_SOURCES = \
@@ -86,10 +81,6 @@ test_xml_account_SOURCES = \
   ${top_srcdir}/src/backend/xml/gnc-commodity-xml-v2.c \
   ${top_srcdir}/src/backend/xml/gnc-book-xml-v2.c \
   ${top_srcdir}/src/backend/xml/gnc-pricedb-xml-v2.c \
-  ${top_srcdir}/src/backend/xml/gnc-budget-xml-v2.c \
-  ${top_srcdir}/src/backend/xml/io-gncxml-v2.c \
-  ${top_srcdir}/src/backend/xml/io-utils.c \
-  ${top_srcdir}/src/backend/xml/gnc-xml-helper.c \
   test-xml-account.c
 
 test_xml_commodity_SOURCES = \
@@ -109,10 +100,6 @@ test_xml_commodity_SOURCES = \
   ${top_srcdir}/src/backend/xml/gnc-commodity-xml-v2.c \
   ${top_srcdir}/src/backend/xml/gnc-book-xml-v2.c \
   ${top_srcdir}/src/backend/xml/gnc-pricedb-xml-v2.c \
-  ${top_srcdir}/src/backend/xml/gnc-budget-xml-v2.c \
-  ${top_srcdir}/src/backend/xml/io-gncxml-v2.c \
-  ${top_srcdir}/src/backend/xml/io-utils.c \
-  ${top_srcdir}/src/backend/xml/gnc-xml-helper.c \
   test-xml-commodity.c
 
 test_xml_pricedb_SOURCES = \
@@ -132,10 +119,6 @@ test_xml_pricedb_SOURCES = \
   ${top_srcdir}/src/backend/xml/gnc-commodity-xml-v2.c \
   ${top_srcdir}/src/backend/xml/gnc-book-xml-v2.c \
   ${top_srcdir}/src/backend/xml/gnc-pricedb-xml-v2.c \
-  ${top_srcdir}/src/backend/xml/gnc-budget-xml-v2.c \
-  ${top_srcdir}/src/backend/xml/io-gncxml-v2.c \
-  ${top_srcdir}/src/backend/xml/io-utils.c \
-  ${top_srcdir}/src/backend/xml/gnc-xml-helper.c \
   test-xml-pricedb.c
 
 test_xml_transaction_SOURCES = \
@@ -158,7 +141,6 @@ test_xml_transaction_SOURCES = \
   ${top_srcdir}/src/backend/xml/gnc-pricedb-xml-v2.c \
   ${top_srcdir}/src/backend/xml/io-gncxml-v2.c \
   ${top_srcdir}/src/backend/xml/io-utils.c \
-  ${top_srcdir}/src/backend/xml/gnc-xml-helper.c \
   test-xml-transaction.c
 
 test_xml2_is_file_SOURCES = \
@@ -181,7 +163,6 @@ test_xml2_is_file_SOURCES = \
   ${top_srcdir}/src/backend/xml/io-gncxml-gen.c \
   ${top_srcdir}/src/backend/xml/io-gncxml-v2.c \
   ${top_srcdir}/src/backend/xml/io-utils.c \
-  ${top_srcdir}/src/backend/xml/gnc-xml-helper.c \
   test-xml2-is-file.c
 
 TESTS = \
@@ -212,12 +193,11 @@ GNC_TEST_DEPS = \
   --library-dir    ${top_builddir}/src/backend/xml
 
 TESTS_ENVIRONMENT = \
-  GUILE_WARN_DEPRECATED=no \
   GNC_ACCOUNT_PATH=${top_srcdir}/accounts/C \
-  GNC_TEST_FILES=test-files/xml2 \
+  GNC_TEST_FILES=${srcdir}/test-files/xml2 \
   SRCDIR=${srcdir} \
-  GNC_BUILDDIR="${abs_top_builddir}" \
-  $(shell ${abs_top_srcdir}/src/gnc-test-env.pl --noexports ${GNC_TEST_DEPS})
+  GNC_BUILDDIR=`\cd ${top_builddir} && pwd` \
+  $(shell ${top_srcdir}/src/gnc-test-env --no-exports ${GNC_TEST_DEPS})
 
 check_LTLIBRARIES = libgnc-test-file-stuff.la
 
@@ -266,7 +246,8 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/libqof/qof \
   ${LIBXML2_CFLAGS} \
   ${GLIB_CFLAGS} \
-  ${GUILE_CFLAGS}
+  ${GUILE_INCS} \
+  ${GCONF_CFLAGS}
 
 EXTRA_DIST = \
   grab-types.pl \
@@ -274,4 +255,4 @@ EXTRA_DIST = \
   test-real-data.sh \
   test-xml2-is-file.c
 
-AM_CPPFLAGS += -DG_LOG_DOMAIN=\"gnc.backend.xml\"
+INCLUDES = -DG_LOG_DOMAIN=\"gnc.backend.xml\"

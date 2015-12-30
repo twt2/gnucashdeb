@@ -126,9 +126,6 @@ xaccTransScrubOrphans (Transaction *trans)
     SplitList *node;
     QofBook *book = NULL;
     Account *root = NULL;
-
-    if (!trans) return;
-
     for (node = trans->splits; node; node = node->next)
     {
         Split *split = node->data;
@@ -283,9 +280,8 @@ xaccAccountTreeScrubImbalance (Account *acc)
 void
 xaccAccountScrubImbalance (Account *acc)
 {
-    GList *node, *splits;
+    GList *node;
     const char *str;
-    gint split_count = 0, curr_split_no = 1;
 
     if (!acc) return;
 
@@ -293,23 +289,80 @@ xaccAccountScrubImbalance (Account *acc)
     str = str ? str : "(null)";
     PINFO ("Looking for imbalance in account %s \n", str);
 
-    splits = xaccAccountGetSplitList(acc);
-    split_count = g_list_length (splits);
-    for (node = splits; node; node = node->next)
+    for (node = xaccAccountGetSplitList(acc); node; node = node->next)
     {
         Split *split = node->data;
         Transaction *trans = xaccSplitGetParent(split);
 
-        PINFO("Start processing split %d of %d",
-              curr_split_no, split_count);
-
-        xaccTransScrubCurrency(trans);
+        xaccTransScrubCurrencyFromSplits(trans);
 
         xaccTransScrubImbalance (trans, gnc_account_get_root (acc), NULL);
+    }
+}
 
-        PINFO("Finished processing split %d of %d",
-              curr_split_no, split_count);
-        curr_split_no++;
+void
+xaccTransScrubCurrencyFromSplits(Transaction *trans)
+{
+    GList *node;
+    gnc_commodity *common_currency = NULL;
+
+    if (!trans) return;
+
+    for (node = xaccTransGetSplitList (trans); node; node = node->next)
+    {
+        Split *split = node->data;
+
+        if (!xaccTransStillHasSplit(trans, split)) continue;
+        if (gnc_numeric_equal(xaccSplitGetAmount (split),
+                              xaccSplitGetValue (split)))
+        {
+
+            Account *s_account = xaccSplitGetAccount (split);
+            gnc_commodity *s_commodity = xaccAccountGetCommodity (s_account);
+
+            if (s_commodity)
+            {
+                if (gnc_commodity_is_currency(s_commodity))
+                {
+                    /* Found a split where the amount is the same as the value and
+                       the commodity is a currency.  If all splits in the transaction
+                       that fit this description are in the same currency then the
+                       transaction should be in that currency too. */
+
+                    if (common_currency == NULL)
+                        /* First one we've found, save the currency */
+                        common_currency = s_commodity;
+                    else if ( !gnc_commodity_equiv (common_currency, s_commodity))
+                    {
+                        /* Splits are inconsistent, more than one has a value equal to
+                           the amount, but they aren't all in the same currency. */
+                        common_currency = NULL;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    if (common_currency &&
+            !gnc_commodity_equiv (common_currency, xaccTransGetCurrency (trans)))
+    {
+
+        /* Found a common currency for the splits, and the transaction is not
+           in that currency */
+        gboolean trans_was_open;
+
+        PINFO ("transaction in wrong currency");
+
+        trans_was_open = xaccTransIsOpen (trans);
+
+        if (!trans_was_open)
+            xaccTransBeginEdit (trans);
+
+        xaccTransSetCurrency (trans, common_currency);
+
+        if (!trans_was_open)
+            xaccTransCommitEdit (trans);
     }
 }
 
@@ -542,10 +595,7 @@ xaccTransScrubImbalance (Transaction *trans, Account *root,
 
     /* Return immediately if things are balanced. */
     if (xaccTransIsBalanced (trans))
-    {
-        LEAVE ("transaction is balanced");
         return;
-    }
 
     currency = xaccTransGetCurrency (trans);
 
@@ -642,7 +692,7 @@ xaccTransScrubImbalance (Transaction *trans, Account *root,
         imbal_list = xaccTransGetImbalance (trans);
         if (!imbal_list)
         {
-            LEAVE("transaction is balanced");
+            LEAVE("()");
             return;
         }
 
@@ -877,9 +927,30 @@ xaccTransFindOldCommonCurrency (Transaction *trans, QofBook *book)
 
     retval = FindCommonCurrency (trans->splits, ra, rb);
 
-    if (retval && !gnc_commodity_is_currency(retval))
-        retval = NULL;
-        
+    /* Compare this value to what we think should be the 'right' value */
+    if (!trans->common_currency)
+    {
+        trans->common_currency = retval;
+    }
+    else if (!gnc_commodity_equiv (retval, trans->common_currency))
+    {
+        char guid_str[GUID_ENCODING_LENGTH+1];
+        guid_to_string_buff(xaccTransGetGUID(trans), guid_str);
+        PWARN ("expected common currency %s but found %s in txn %s\n",
+               gnc_commodity_get_unique_name (trans->common_currency),
+               gnc_commodity_get_unique_name (retval), guid_str);
+    }
+
+    if (NULL == retval)
+    {
+        /* In every situation I can think of, this routine should return
+         * common currency.  So make note of this ... */
+        char guid_str[GUID_ENCODING_LENGTH+1];
+        guid_to_string_buff(xaccTransGetGUID(trans), guid_str);
+        PWARN ("unable to find a common currency in txn %s, and that is strange.",
+               guid_str);
+    }
+
     return retval;
 }
 
@@ -937,9 +1008,10 @@ commodity_compare( gconstpointer a, gconstpointer b)
 static gnc_commodity *
 xaccTransFindCommonCurrency (Transaction *trans, QofBook *book)
 {
-    gnc_commodity *com_scratch;
+    gnc_commodity *com_first, *com_scratch;
     GList *node = NULL;
     GSList *comlist = NULL, *found = NULL;
+    int score = 0;
 
     if (!trans) return NULL;
 
@@ -947,28 +1019,11 @@ xaccTransFindCommonCurrency (Transaction *trans, QofBook *book)
 
     g_return_val_if_fail (book, NULL);
 
-    /* Find the most commonly used currency among the splits.  If a given split
-       is in a non-currency commodity, then look for an ancestor account in a 
-       currency, but prefer currencies used directly in splits.  Ignore trading
-       account splits in this whole process, they don't add any value to this algorithm. */
     for (node = trans->splits; node; node = node->next)
     {
         Split *s = node->data;
-        unsigned int curr_weight;
-        
         if (s == NULL || s->acc == NULL) continue;
-        if (xaccAccountGetType(s->acc) == ACCT_TYPE_TRADING) continue;
         com_scratch = xaccAccountGetCommodity(s->acc);
-        if (com_scratch && gnc_commodity_is_currency(com_scratch))
-        {
-            curr_weight = 3;
-        }
-        else
-        {
-            com_scratch = gnc_account_get_currency_or_parent(s->acc);
-            if (com_scratch == NULL) continue;
-            curr_weight = 1;
-        }
         if ( comlist )
         {
             found = g_slist_find_custom(comlist, com_scratch, commodity_equal);
@@ -977,18 +1032,18 @@ xaccTransFindCommonCurrency (Transaction *trans, QofBook *book)
         {
             CommodityCount *count = g_slice_new0(CommodityCount);
             count->commodity = com_scratch;
-            count->count = curr_weight;
+            count->count = ( gnc_commodity_is_currency( com_scratch ) ? 3 : 2 );
             comlist = g_slist_append(comlist, count);
         }
         else
         {
             CommodityCount *count = (CommodityCount*)(found->data);
-            count->count += curr_weight;
+            count->count += ( gnc_commodity_is_currency( com_scratch ) ? 3 : 2 );
         }
     }
     found = g_slist_sort( comlist, commodity_compare);
 
-    if ( found && found->data && (((CommodityCount*)(found->data))->commodity != NULL))
+    if ( ((CommodityCount*)(found->data))->commodity != NULL)
     {
         return ((CommodityCount*)(found->data))->commodity;
     }
@@ -1014,7 +1069,7 @@ xaccTransScrubCurrency (Transaction *trans)
     xaccTransScrubOrphans (trans);
 
     currency = xaccTransGetCurrency (trans);
-    if (currency && gnc_commodity_is_currency(currency)) return;
+    if (currency) return;
 
     currency = xaccTransFindCommonCurrency (trans, qof_instance_get_book(trans));
     if (currency)
@@ -1032,9 +1087,9 @@ xaccTransScrubCurrency (Transaction *trans)
         else
         {
             SplitList *node;
-            char guid_str[GUID_ENCODING_LENGTH + 1];
+            char guid_str[GUID_ENCODING_LENGTH+1];
             guid_to_string_buff(xaccTransGetGUID(trans), guid_str);
-            PWARN ("no common transaction currency found for trans=\"%s\" (%s);",
+            PWARN ("no common transaction currency found for trans=\"%s\" (%s)",
                    trans->description, guid_str);
 
             for (node = trans->splits; node; node = node->next)
@@ -1046,19 +1101,12 @@ xaccTransScrubCurrency (Transaction *trans)
                 }
                 else
                 {
-		    gnc_commodity *currency = xaccAccountGetCommodity(split->acc);
-                    PWARN ("setting to split=\"%s\" account=\"%s\" commodity=\"%s\"",
+                    PWARN (" split=\"%s\" account=\"%s\" commodity=\"%s\"",
                            split->memo, xaccAccountGetName(split->acc),
-                           gnc_commodity_get_mnemonic(currency));
-
-		    xaccTransBeginEdit (trans);
-		    xaccTransSetCurrency (trans, currency);
-		    xaccTransCommitEdit (trans);
-		    return;
+                           gnc_commodity_get_mnemonic(xaccAccountGetCommodity(split->acc)));
                 }
             }
         }
-        return;
     }
 
     for (node = trans->splits; node; node = node->next)
@@ -1089,6 +1137,9 @@ xaccTransScrubCurrency (Transaction *trans)
                  * 'other' transaction, which is going to keep that
                  * information. So I don't bother with that here. -- cstim,
                  * 2002/11/20. */
+                /* But if the commodity *isn't* a currency, then it's
+                 * the value that should be changed to the
+                 * amount. jralls, 2010-11-02 */
 
                 PWARN ("Adjusted split with mismatched values, desc=\"%s\" memo=\"%s\""
                        " old amount %s %s, new amount %s",
@@ -1097,7 +1148,14 @@ xaccTransScrubCurrency (Transaction *trans)
                        gnc_commodity_get_mnemonic (currency),
                        gnc_num_dbg_to_string (xaccSplitGetValue(sp)));
                 xaccTransBeginEdit (trans);
-                xaccSplitSetAmount (sp, xaccSplitGetValue(sp));
+                if ( gnc_commodity_is_currency( currency))
+                {
+                    xaccSplitSetAmount (sp, xaccSplitGetValue(sp));
+                }
+                else
+                {
+                    xaccSplitSetValue(sp, xaccSplitGetAmount(sp));
+                }
                 xaccTransCommitEdit (trans);
             }
             /*else

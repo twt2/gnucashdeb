@@ -19,7 +19,7 @@
 \********************************************************************/
 /** @addtogroup Engine
     @{ */
-/** @addtogroup Transaction Transaction, Split
+/** @addtogroup Transaction Financial Transactions
     A good overview of transactions, splits and accounts can be
     found in the texinfo documentation, together with an overview of
     how to use this API.
@@ -113,17 +113,6 @@ void xaccSplitReinit(Split * split);
  */
 gboolean      xaccSplitDestroy (Split *split);
 
-/*################## Added for Reg2 #################*/
-/** This is really a helper for xaccTransCopyOnto. It doesn't reparent
- *   the 'to' split to from's transaction, because xaccTransCopyOnto is
- *   responsible for parenting the split to the correct transaction.
- *   Also, from's parent transaction may not even be a valid
- *   transaction, so this function may not modify anything about 'from'
- *   or from's transaction.
- */
-void xaccSplitCopyOnto(const Split *from_split, Split *to_split);
-/*################## Added for Reg2 #################*/
-
 /** Returns the book of this split, i.e. the entity where this split
  * is stored. */
 QofBook *   xaccSplitGetBook (const Split *split);
@@ -172,18 +161,10 @@ const char *  xaccSplitGetMemo (const Split *split);
  * It is meant to be a very short (one to ten character) string that
  * signifies the "type" of this split, such as e.g. Buy, Sell, Div,
  * Withdraw, Deposit, ATM, Check, etc. The idea is that this field
- * can be used to create custom reports or graphs of data. Rather than use
- * this function directly, see 'gnc_set_num_action' in
- * engine/engine-helpers.c & .h which takes a user-set book option for selecting
- * the source for the num-cell (the transaction-number or the split-action field)
- * in registers/reports into account automatically */
+ * can be used to create custom reports or graphs of data. */
 void          xaccSplitSetAction (Split *split, const char *action);
 
-/** Returns the action string. Rather than use this function directly, see
- * 'gnc_get_num_action' and 'gnc_get_action_num'in
- * engine/engine-helpers.c & .h which takes a user-set book option for selecting
- * the source for the num-cell (the transaction-number or the split-action field)
- * in registers/reports into account automatically */
+/** Returns the action string. */
 const char *  xaccSplitGetAction (const Split *split);
 /** @} */
 
@@ -198,8 +179,8 @@ void          xaccSplitSetReconcile (Split *split, char reconciled_flag);
 char          xaccSplitGetReconcile (const Split *split);
 
 /** Set the date on which this split was reconciled by specifying the
- * time as time64. */
-void          xaccSplitSetDateReconciledSecs (Split *split, time64 time);
+ * time as time_t. */
+void          xaccSplitSetDateReconciledSecs (Split *split, time_t time);
 /** Set the date on which this split was reconciled by specifying the
  * time as Timespec.  Caller still owns *ts! */
 void          xaccSplitSetDateReconciledTS (Split *split, Timespec *ts);
@@ -209,11 +190,6 @@ void          xaccSplitGetDateReconciledTS (const Split *split,
         Timespec *ts);
 /** Returns the date (as Timespec) on which this split was reconciled. */
 Timespec      xaccSplitRetDateReconciledTS (const Split *split);
-
-/*################## Added for Reg2 #################*/
-/** Retrieve the date when the Split was reconciled. */
-time64        xaccSplitGetDateReconciled (const Split *split);
-/*################## Added for Reg2 #################*/
 
 /** @} */
 
@@ -338,6 +314,9 @@ gnc_numeric xaccSplitGetReconciledBalance (const Split *split);
 @{
 */
 
+/* Get a GList of unique transactions containing the given list of Splits. */
+GList *xaccSplitListGetUniqueTransactions(const GList *splits);
+
 /** Equality.
  *
  * @param sa First split to compare
@@ -366,10 +345,6 @@ gboolean xaccSplitEqual(const Split *sa, const Split *sb,
 Split      * xaccSplitLookup (const GncGUID *guid, QofBook *book);
 #define      xaccSplitLookupDirect(g,b) xaccSplitLookup(&(g),b)
 
-/*################## Added for Reg2 #################*/
-/* Get a GList of unique transactions containing the given list of Splits. */
-GList *xaccSplitListGetUniqueTransactions(const GList *splits);
-/*################## Added for Reg2 #################*/
 
 /**
  * The xaccSplitGetOtherSplit() is a convenience routine that returns
@@ -381,9 +356,9 @@ Split * xaccSplitGetOtherSplit (const Split *split);
 /** The xaccIsPeerSplit() is a convenience routine that returns TRUE
  * (a non-zero value) if the two splits share a common parent
  * transaction, else it returns FALSE (zero).
- *
+ */
 gboolean xaccIsPeerSplit (const Split *split_1, const Split *split_2);
-*/
+
 /** Returns the split type, which is either the string "normal", or
  * "stock-split" for a split from a stock split (pun intended? :-).  */
 const char *xaccSplitGetType(const Split *s);
@@ -441,12 +416,6 @@ int xaccSplitCompareOtherAccountCodes(const Split *sa, const Split *sb);
  * were added for the transaction report, and is in C because the code
  * was already written in C for the above functions and duplication
  * is silly.
- *
- * Note that this will only return a real value in case of a
- * two-split transaction as that is the only situation in which
- * a reliable value can be returned. In other situations
- * "-- Split Transaction --" will be returned as Account Name
- * or "Split" for Account Code.
  */
 
 char * xaccSplitGetCorrAccountFullName(const Split *sa);

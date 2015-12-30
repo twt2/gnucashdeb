@@ -28,7 +28,6 @@
 #include "SchedXaction.h"
 #include "datecell.h"
 #include "gnc-engine.h"
-#include "engine-helpers.h"
 #include "numcell.h"
 #include "pricecell.h"
 #include "recncell.h"
@@ -127,38 +126,18 @@ gnc_split_register_save_num_cell (BasicCell * cell,
 
     DEBUG ("NUM: %s\n", value ? value : "(null)");
 
-    /* set per book option */
-    gnc_set_num_action (sd->trans, sd->split, value, NULL);
+    xaccTransSetNum (sd->trans, value);
 
     if (gnc_num_cell_set_last_num ((NumCell *) cell, value))
     {
         SRInfo *info = gnc_split_register_get_info (reg);
         Split *blank_split = xaccSplitLookup (&info->blank_split_guid,
-                                                  gnc_get_current_book ());
+                                              gnc_get_current_book ());
         Transaction *blank_trans = xaccSplitGetParent (blank_split);
 
         if (sd->trans == blank_trans)
-           gnc_split_register_set_last_num (reg, gnc_basic_cell_get_value (cell));
+            gnc_split_register_set_last_num (reg, gnc_basic_cell_get_value (cell));
     }
-}
-
-static void
-gnc_split_register_save_tnum_cell (BasicCell * cell,
-                                  gpointer save_data,
-                                  gpointer user_data)
-{
-    SRSaveData *sd = save_data;
-    SplitRegister *reg = user_data;
-    const char *value;
-
-    g_return_if_fail (gnc_basic_cell_has_name (cell, TNUM_CELL));
-
-    value = gnc_basic_cell_get_value (cell);
-
-    DEBUG ("TNUM: %s\n", value ? value : "(null)");
-
-    /* set tran-num using utility function */
-    gnc_set_num_action (sd->trans, NULL, value, NULL);
 }
 
 static void
@@ -224,9 +203,7 @@ gnc_split_register_save_actn_cell (BasicCell * cell,
 
     DEBUG ("ACTN: %s", value ? value : "(null)");
 
-    /* Set split-action with gnc_set_num_action which is the same as
-     * xaccSplitSetAction with these arguments */
-    gnc_set_num_action (NULL, sd->split, NULL, value);
+    xaccSplitSetAction (sd->split, value);
 }
 
 static void
@@ -425,7 +402,7 @@ gnc_split_register_save_amount_values (SRSaveData *sd, SplitRegister *reg)
       * amount.
       */
     amtconv = convrate = gnc_split_register_get_rate_cell (reg, RATE_CELL);
-    if (acc && gnc_split_register_needs_conv_rate (reg, sd->trans, acc))
+    if (gnc_split_register_needs_conv_rate (reg, sd->trans, acc))
     {
 
         /* If we are in an expanded register and the xfer_acc->comm !=
@@ -488,7 +465,7 @@ gnc_split_register_save_amount_values (SRSaveData *sd, SplitRegister *reg)
     /* Now compute/set the split value.  Amount is in the register
      * currency but we need to convert to the txn currency.
      */
-    if (acc && gnc_split_register_needs_conv_rate (reg, sd->trans, acc))
+    if (gnc_split_register_needs_conv_rate (reg, sd->trans, acc))
     {
 
         /* convert the amount to the Value ... */
@@ -683,7 +660,6 @@ gnc_template_register_save_xfrm_cell (BasicCell * cell,
 
     /* set the actual account to the fake account for these templates */
     xaccAccountInsertSplit (template_acc, sd->split);
-    qof_instance_set_dirty (QOF_INSTANCE (sd->split));
 }
 
 static void
@@ -761,7 +737,6 @@ gnc_template_register_save_debcred_cell (BasicCell * cell,
     DEBUG ("kvp_frame  after: %s\n", kvp_frame_to_string (kvpf));
 
     /* set the amount to an innocuous value */
-    /* Note that this marks the split dirty */
     xaccSplitSetValue (sd->split, gnc_numeric_create (0, 1));
 
     sd->handled_dc = TRUE;
@@ -793,7 +768,6 @@ gnc_template_register_save_shares_cell (BasicCell * cell,
     DEBUG ("kvp_frame  after: %s\n", kvp_frame_to_string (kvpf));
 
     /* set the shares to an innocuous value */
-    /* Note that this marks the split dirty */
     xaccSplitSetSharePriceAndAmount (sd->split,
                                      gnc_numeric_create (0, 1),
                                      gnc_numeric_create (0, 1));
@@ -819,10 +793,6 @@ gnc_split_register_model_add_save_handlers (TableModel *model)
     gnc_table_model_set_save_handler (model,
                                       gnc_split_register_save_num_cell,
                                       NUM_CELL);
-
-    gnc_table_model_set_save_handler (model,
-                                      gnc_split_register_save_tnum_cell,
-                                      TNUM_CELL);
 
     gnc_table_model_set_save_handler (model,
                                       gnc_split_register_save_desc_cell,

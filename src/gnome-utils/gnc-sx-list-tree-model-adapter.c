@@ -268,7 +268,7 @@ gsltma_set_sort_func(GtkTreeSortable        *sortable,
                      gint                    sort_column_id,
                      GtkTreeIterCompareFunc  func,
                      gpointer                data,
-                     GDestroyNotify          destroy)
+                     GtkDestroyNotify        destroy)
 {
     gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(GNC_SX_LIST_TREE_MODEL_ADAPTER(sortable)->real),
                                     sort_column_id,
@@ -281,7 +281,7 @@ static void
 gsltma_set_default_sort_func(GtkTreeSortable        *sortable,
                              GtkTreeIterCompareFunc  func,
                              gpointer                data,
-                             GDestroyNotify          destroy)
+                             GtkDestroyNotify        destroy)
 {
     gtk_tree_sortable_set_default_sort_func(GTK_TREE_SORTABLE(GNC_SX_LIST_TREE_MODEL_ADAPTER(sortable)->real),
                                             func, data, destroy);
@@ -377,7 +377,7 @@ _name_comparator(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer u
 
     a_caseless = g_utf8_casefold(xaccSchedXactionGetName(a_inst->sx), -1);
     b_caseless = g_utf8_casefold(xaccSchedXactionGetName(b_inst->sx), -1);
-    rtn = g_strcmp0(a_caseless, b_caseless);
+    rtn = safe_strcmp(a_caseless, b_caseless);
     g_free(a_caseless);
     g_free(b_caseless);
 

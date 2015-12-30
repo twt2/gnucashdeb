@@ -156,92 +156,6 @@ struct table
     gpointer ui_data;
 };
 
-/** Color definitions used for table elements */
-typedef enum
-{
-    /* Colors used for background drawing */
-    COLOR_UNKNOWN_BG,
-    COLOR_HEADER_BG,
-    COLOR_PRIMARY_BG,
-    COLOR_PRIMARY_BG_ACTIVE,
-    COLOR_SECONDARY_BG,
-    COLOR_SECONDARY_BG_ACTIVE,
-    COLOR_SPLIT_BG,
-    COLOR_SPLIT_BG_ACTIVE,
-
-    /* Colors used for foreground drawing (text etc)
-     * ATTENTION: the background and foreground lists should have
-     *            the same types (the same amount of entries) !
-     *            The code relies on this ! */
-    COLOR_UNKNOWN_FG,
-    COLOR_HEADER_FG,
-    COLOR_PRIMARY_FG,
-    COLOR_PRIMARY_FG_ACTIVE,
-    COLOR_SECONDARY_FG,
-    COLOR_SECONDARY_FG_ACTIVE,
-    COLOR_SPLIT_FG,
-    COLOR_SPLIT_FG_ACTIVE,
-
-    /* Other colors */
-    COLOR_NEGATIVE, /* Color to use for negative numbers */
-} RegisterColor;
-
-
-
-
-/* Alternative color tables to use for the register.
- * The colors in this array are ordered according to the RegisterColor Enum
- * Be careful to respect this order !
- */
-static const guint32 reg_colors_default [] =
-{
-    0xFFFFFF,     // COLOR_UNKNOWN_BG
-    0x96B183,     // COLOR_HEADER_BG
-    0xBFDEB9,     // COLOR_PRIMARY_BG
-    0xFFEF98,     // COLOR_PRIMARY_BG_ACTIVE
-    0xF6FFDA,     // COLOR_SECONDARY_BG
-    0xFFEF98,     // COLOR_SECONDARY_BG_ACTIVE
-    0xEDE7D3,     // COLOR_SPLIT_BG
-    0xFFEF98,     // COLOR_SPLIT_BG_ACTIVE
-
-    0x000000,     // COLOR_UNKNOWN_FG
-    0x000000,     // COLOR_HEADER_FG
-    0x000000,     // COLOR_PRIMARY_FG
-    0x000000,     // COLOR_PRIMARY_FG_ACTIVE
-    0x000000,     // COLOR_SECONDARY_FG
-    0x000000,     // COLOR_SECONDARY_FG_ACTIVE
-    0x000000,     // COLOR_SPLIT_FG
-    0x000000,     // COLOR_SPLIT_FG_ACTIVE
-
-    0xFF0000,     // COLOR_NEGATIVE
-};
-
-/* The colors in this array are ordered according to the RegisterColor Enum
- * Be careful to respect this order !
- */
-static const guint32 reg_colors_gtkrc [] =
-{
-    COLOR_UNKNOWN_BG,          // COLOR_UNKNOWN_BG
-    COLOR_HEADER_BG,           // COLOR_HEADER_BG
-    COLOR_PRIMARY_BG,          // COLOR_PRIMARY_BG
-    COLOR_PRIMARY_BG_ACTIVE,   // COLOR_PRIMARY_BG_ACTIVE
-    COLOR_SECONDARY_BG,        // COLOR_SECONDARY_BG
-    COLOR_SECONDARY_BG_ACTIVE, // COLOR_SECONDARY_BG_ACTIVE
-    COLOR_SPLIT_BG,            // COLOR_SPLIT_BG
-    COLOR_SPLIT_BG_ACTIVE,     // COLOR_SPLIT_BG_ACTIVE
-
-    COLOR_UNKNOWN_FG,          // COLOR_UNKNOWN_FG
-    COLOR_HEADER_FG,           // COLOR_HEADER_FG
-    COLOR_PRIMARY_FG,          // COLOR_PRIMARY_FG
-    COLOR_PRIMARY_FG_ACTIVE,   // COLOR_PRIMARY_FG_ACTIVE
-    COLOR_SECONDARY_FG,        // COLOR_SECONDARY_FG
-    COLOR_SECONDARY_FG_ACTIVE, // COLOR_SECONDARY_FG_ACTIVE
-    COLOR_SPLIT_FG,            // COLOR_SPLIT_FG
-    COLOR_SPLIT_FG_ACTIVE,     // COLOR_SPLIT_FG_ACTIVE
-
-    COLOR_NEGATIVE,            // COLOR_NEGATIVE
-};
-
 
 /* Set the default gui handlers used by new tables. */
 void gnc_table_set_default_gui_handlers (TableGUIHandlers *gui_handlers);
@@ -252,7 +166,7 @@ Table *     gnc_table_new (TableLayout *layout,
                            TableControl *control);
 void        gnc_virtual_location_init (VirtualLocation *vloc);
 
-void        gnc_table_save_state (Table *table, gchar *state_section);
+void        gnc_table_save_state (Table *table);
 void        gnc_table_destroy (Table *table);
 
 
@@ -295,8 +209,6 @@ const char *   gnc_table_get_label (Table *table, VirtualLocation virt_loc);
 CellIOFlags    gnc_table_get_io_flags (Table *table, VirtualLocation virt_loc);
 
 guint32        gnc_table_get_fg_color (Table *table, VirtualLocation virt_loc);
-
-guint32        gnc_table_get_gtkrc_fg_color (Table *table, VirtualLocation virt_loc);
 
 guint32        gnc_table_get_bg_color (Table *table, VirtualLocation virt_loc,
                                        gboolean *hatching);
@@ -391,7 +303,7 @@ gboolean    gnc_table_find_close_valid_cell (Table *table,
 /** UI-specific functions *******************************/
 
 /* Initialize the GUI from a table */
-void        gnc_table_init_gui (GtkWidget *widget, gchar * state_section);
+void        gnc_table_init_gui (GtkWidget *widget, gpointer data);
 
 void        gnc_table_realize_gui (Table *table);
 

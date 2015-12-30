@@ -4,20 +4,19 @@
  * Copyright (C) 2006 Joshua Sled <jsled@asynchronous.org>          *
  *                                                                  *
  * This program is free software; you can redistribute it and/or    *
- * modify it under the terms of version 2 and/or version 3 of the   *
- * GNU General Public License as published by the Free Software     *
- * Foundation.                                                      *
- *                                                                  *
- * As a special exception, permission is granted to link the binary *
- * module resultant from this code with the OpenSSL project's       *
- * "OpenSSL" library (or modified versions of it that use the same  *
- * license as the "OpenSSL" library), and distribute the linked     *
- * executable.  You must obey the GNU General Public License in all *
- * respects for all of the code used other than "OpenSSL". If you   *
- * modify this file, you may extend this exception to your version  *
- * of the file, but you are not obligated to do so. If you do not   *
- * wish to do so, delete this exception statement from your version *
- * of this file.                                                    *
+ * modify it under the terms of version 2 and/or version 3 of the GNU General Public *
+ * License as published by the Free Software Foundation.            *
+ *
+ * As a special exception, permission is granted to link the binary
+ * module resultant from this code with the OpenSSL project's
+ * "OpenSSL" library (or modified versions of it that use the same
+ * license as the "OpenSSL" library), and distribute the linked
+ * executable.  You must obey the GNU General Public License in all
+ * respects for all of the code used other than "OpenSSL". If you
+ * modify this file, you may extend this exception to your version
+ * of the file, but you are not obligated to do so. If you do not
+ * wish to do so, delete this exception statement from your version
+ * of this file.
  *                                                                  *
  * This program is distributed in the hope that it will be useful,  *
  * but WITHOUT ANY WARRANTY; without even the implied warranty of   *
@@ -35,32 +34,29 @@
 #include "config.h"
 #include <glib.h>
 #include <gtk/gtk.h>
+#include <glade/glade-xml.h>
 
 #include "dialog-utils.h"
+#include "gnc-exp-parser.h"
 #include "gnc-sx-instance-model.h"
 #include "dialog-sx-since-last-run.h"
 
-#include "gnc-prefs.h"
 #include "gnc-ui-util.h"
 #include "Query.h"
 #include "qof.h"
 #include "gnc-ledger-display.h"
 #include "gnc-plugin-page-register.h"
-/*################## Added for Reg2 #################*/
-#include "gnc-ledger-display2.h"
-#include "gnc-plugin-page-register2.h"
-/*################## Added for Reg2 #################*/
 #include "gnc-main-window.h"
 #include "gnc-component-manager.h"
+#include "gnc-gconf-utils.h"
 #include "gnc-gui-query.h"
 #include "gnc-session.h"
 
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "gnc.gui.sx.slr"
 
-G_GNUC_UNUSED static QofLogModule log_module = GNC_MOD_GUI_SX;
-
 #define DIALOG_SX_SINCE_LAST_RUN_CM_CLASS "dialog-sx-since-last-run"
+#define GCONF_SECTION "dialogs/scheduled_trans/since_last_run"
 
 struct _GncSxSinceLastRunDialog
 {
@@ -126,7 +122,7 @@ GtkTreeModel* gnc_sx_get_slr_state_model(void);
 static void _show_created_transactions(GncSxSinceLastRunDialog *app_dialog, GList *created_txn_guids);
 
 static void close_handler(gpointer user_data);
-static void dialog_destroy_cb(GtkWidget *object, GncSxSinceLastRunDialog *app_dialog);
+static void dialog_destroy_cb(GtkObject *object, GncSxSinceLastRunDialog *app_dialog);
 static void dialog_response_cb(GtkDialog *dialog, gint response_id, GncSxSinceLastRunDialog *app_dialog);
 
 /* ------------------------------------------------------------ */
@@ -537,8 +533,8 @@ gsslrtma_populate_tree_store(GncSxSlrTreeModelAdapter *model)
                                            SLR_MODEL_COL_VARAIBLE_VALUE, tmp_str->str,
                                            SLR_MODEL_COL_INSTANCE_VISIBILITY, FALSE,
                                            SLR_MODEL_COL_VARIABLE_VISIBILITY, TRUE,
-                                           SLR_MODEL_COL_INSTANCE_STATE_SENSITIVITY, FALSE,
-                                           -1);
+                                           SLR_MODEL_COL_INSTANCE_STATE_SENSITIVITY, FALSE
+                                           - 1);
                         g_string_free(tmp_str, TRUE);
                     }
                     g_list_free(vars);
@@ -798,14 +794,8 @@ gnc_sx_sxsincelast_book_opened(void)
     GncSxInstanceModel *inst_model;
     GncSxSummary summary;
 
-    if (!gnc_prefs_get_bool (GNC_PREFS_GROUP_STARTUP, GNC_PREF_RUN_AT_FOPEN))
+    if (!gnc_gconf_get_bool(GCONF_SECTION, "show_at_file_open", NULL))
         return;
-
-    if (qof_book_is_readonly(gnc_get_current_book()))
-    {
-        /* Is the book read-only? Then don't change anything here. */
-        return;
-    }
 
     inst_model = gnc_sx_get_current_instances();
     gnc_sx_instance_model_summarize(inst_model, &summary);
@@ -821,14 +811,11 @@ gnc_sx_sxsincelast_book_opened(void)
     {
         if (summary.num_auto_create_no_notify_instances != 0)
         {
-            if (!gnc_prefs_get_bool(GNC_PREFS_GROUP_STARTUP, GNC_PREF_SHOW_AT_FOPEN))
-                return;
-
             gnc_info_dialog
             (NULL,
              ngettext
              ("There are no Scheduled Transactions to be entered at this time. "
-              "(One transaction automatically created)",
+              "(%d transaction automatically created)",
               "There are no Scheduled Transactions to be entered at this time. "
               "(%d transactions automatically created)",
               summary.num_auto_create_no_notify_instances),
@@ -927,17 +914,14 @@ GncSxSinceLastRunDialog*
 gnc_ui_sx_since_last_run_dialog(GncSxInstanceModel *sx_instances, GList *auto_created_txn_guids)
 {
     GncSxSinceLastRunDialog *dialog;
-    GtkBuilder *builder;
+    GladeXML *glade;
 
     dialog = g_new0(GncSxSinceLastRunDialog, 1);
-
-    builder = gtk_builder_new();
-    gnc_builder_add_from_file (builder, "dialog-sx.glade", "since-last-run-dialog");
-
-    dialog->dialog = GTK_WIDGET(gtk_builder_get_object (builder, "since-last-run-dialog"));
+    glade = gnc_glade_xml_new("sched-xact.glade", "since-last-run-dialog");
+    dialog->dialog = glade_xml_get_widget(glade, "since-last-run-dialog");
 
     dialog->editing_model = gnc_sx_slr_tree_model_adapter_new(sx_instances);
-    dialog->review_created_txns_toggle = GTK_TOGGLE_BUTTON(gtk_builder_get_object (builder, "review_txn_toggle"));
+    dialog->review_created_txns_toggle = GTK_TOGGLE_BUTTON(glade_xml_get_widget(glade, "review_txn_toggle"));
 
     dialog->created_txns = auto_created_txn_guids;
 
@@ -945,7 +929,7 @@ gnc_ui_sx_since_last_run_dialog(GncSxInstanceModel *sx_instances, GList *auto_cr
         GtkCellRenderer *renderer;
         GtkTreeViewColumn *col;
 
-        dialog->instance_view = GTK_TREE_VIEW(gtk_builder_get_object (builder, "instance_view"));
+        dialog->instance_view = GTK_TREE_VIEW(glade_xml_get_widget(glade, "instance_view"));
         gtk_tree_view_set_model(dialog->instance_view, GTK_TREE_MODEL(dialog->editing_model));
 
         renderer = gtk_cell_renderer_text_new();
@@ -975,7 +959,6 @@ gnc_ui_sx_since_last_run_dialog(GncSxInstanceModel *sx_instances, GList *auto_cr
                 "sensitive", SLR_MODEL_COL_INSTANCE_STATE_SENSITIVITY,
                 NULL);
         gtk_tree_view_append_column(dialog->instance_view, col);
-        gtk_tree_view_column_set_resizable(col, TRUE);
 
         renderer = gtk_cell_renderer_text_new();
         g_object_set(G_OBJECT(renderer),
@@ -997,7 +980,7 @@ gnc_ui_sx_since_last_run_dialog(GncSxInstanceModel *sx_instances, GList *auto_cr
     g_signal_connect(G_OBJECT(dialog->dialog), "response", G_CALLBACK(dialog_response_cb), dialog);
     g_signal_connect(G_OBJECT(dialog->dialog), "destroy", G_CALLBACK(dialog_destroy_cb), dialog);
 
-    gnc_restore_window_size(GNC_PREFS_GROUP_STARTUP, GTK_WINDOW(dialog->dialog));
+    gnc_restore_window_size(GCONF_SECTION, GTK_WINDOW(dialog->dialog));
 
     dialog->component_id = gnc_register_gui_component
                            (DIALOG_SX_SINCE_LAST_RUN_CM_CLASS, NULL, close_handler, dialog);
@@ -1006,21 +989,13 @@ gnc_ui_sx_since_last_run_dialog(GncSxInstanceModel *sx_instances, GList *auto_cr
 
     gtk_widget_show_all(dialog->dialog);
 
-    gtk_builder_connect_signals_full (builder, gnc_builder_connect_full_func, dialog);
-
-    g_object_unref(G_OBJECT(builder));
-
     return dialog;
 }
 
 static void
 _show_created_transactions(GncSxSinceLastRunDialog *app_dialog, GList *created_txn_guids)
 {
-#ifdef REGISTER2_ENABLED
-    GNCLedgerDisplay2 *ledger;
-#else
     GNCLedgerDisplay *ledger;
-#endif
     GncPluginPage *page;
     Query *book_query, *guid_query, *query;
     GList *guid_iter;
@@ -1033,19 +1008,11 @@ _show_created_transactions(GncSxSinceLastRunDialog *app_dialog, GList *created_t
         xaccQueryAddGUIDMatch(guid_query, (GncGUID*)guid_iter->data, GNC_ID_TRANS, QOF_QUERY_OR);
     }
     query = qof_query_merge(book_query, guid_query, QOF_QUERY_AND);
-#ifdef REGISTER2_ENABLED
-    /*################## Added for Reg2 #################*/
-    // inspired by dialog-find-transactions:do_find_cb:
-    ledger = gnc_ledger_display2_query(query, SEARCH_LEDGER2, REG2_STYLE_JOURNAL);
-    gnc_ledger_display2_refresh(ledger);
-    page = gnc_plugin_page_register2_new_ledger(ledger);
-    /*################## Added for Reg2 #################*/
-#else
+
     // inspired by dialog-find-transactions:do_find_cb:
     ledger = gnc_ledger_display_query(query, SEARCH_LEDGER, REG_STYLE_JOURNAL);
     gnc_ledger_display_refresh(ledger);
     page = gnc_plugin_page_register_new_ledger(ledger);
-#endif
     g_object_set(G_OBJECT(page), "page-name", _("Created Transactions"), NULL);
     gnc_main_window_open_page(NULL, page);
 
@@ -1059,12 +1026,12 @@ close_handler(gpointer user_data)
 {
     GncSxSinceLastRunDialog *app_dialog = user_data;
 
-    gnc_save_window_size(GNC_PREFS_GROUP_STARTUP, GTK_WINDOW(app_dialog->dialog));
+    gnc_save_window_size(GCONF_SECTION, GTK_WINDOW(app_dialog->dialog));
     gtk_widget_destroy(app_dialog->dialog);
 }
 
 static void
-dialog_destroy_cb(GtkWidget *object, GncSxSinceLastRunDialog *app_dialog)
+dialog_destroy_cb(GtkObject *object, GncSxSinceLastRunDialog *app_dialog)
 {
     gnc_unregister_gui_component(app_dialog->component_id);
 
@@ -1118,7 +1085,7 @@ dialog_response_cb(GtkDialog *dialog, gint response_id, GncSxSinceLastRunDialog 
     g_list_free(app_dialog->created_txns);
     app_dialog->created_txns = NULL;
 
-    /* FALL THROUGH */
+    /* FALLTHROUGH */
     case GTK_RESPONSE_CANCEL:
     case GTK_RESPONSE_DELETE_EVENT:
         gnc_close_gui_component(app_dialog->component_id);
@@ -1139,12 +1106,6 @@ gnc_sx_slr_model_effect_change(GncSxSlrTreeModelAdapter *model,
                                GList **created_transaction_guids,
                                GList **creation_errors)
 {
-    if (qof_book_is_readonly(gnc_get_current_book()))
-    {
-        /* Is the book read-only? Then don't change anything here. */
-        return;
-    }
-
     g_signal_handler_block(model->instances, model->updated_cb_id);
     gnc_sx_instance_model_effect_change(model->instances, auto_create_only, created_transaction_guids, creation_errors);
     g_signal_handler_unblock(model->instances, model->updated_cb_id);

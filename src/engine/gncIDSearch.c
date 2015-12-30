@@ -23,16 +23,7 @@
 
 #include "gncIDSearch.h"
 
-typedef enum
-{   UNDEFINED,
-    CUSTOMER,
-    VENDOR,
-    INVOICE,
-    BILL
-}GncSearchType;
-
-static void * search(QofBook * book, const gchar *id, void * object, GncSearchType type);
-static QofLogModule log_module = G_LOG_DOMAIN;
+static void * search(QofBook * book, const gchar *id, void * object, QofIdType type);
 /***********************************************************************
  * Search the book for a Customer/Invoice/Bill with the same ID.
  * If it exists return a valid object, if not then returns NULL.
@@ -40,13 +31,11 @@ static QofLogModule log_module = G_LOG_DOMAIN;
  @param gchar ID of the Customer
  @return GncCustomer * Pointer to the customer or NULL of there is no customer
  **********************************************************************/
-
-
 GncCustomer *
 gnc_search_customer_on_id (QofBook * book, const gchar *id)
 {
     GncCustomer *customer = NULL;
-    GncSearchType type = CUSTOMER;
+    QofIdType type = GNC_CUSTOMER_MODULE_NAME;
     customer = (GncCustomer*)search(book, id, customer, type);
     return customer;
 }
@@ -55,7 +44,7 @@ GncInvoice *
 gnc_search_invoice_on_id (QofBook * book, const gchar *id)
 {
     GncInvoice *invoice = NULL;
-    GncSearchType type = INVOICE;
+    QofIdType type = GNC_INVOICE_MODULE_NAME;
     invoice = (GncInvoice*)search(book, id, invoice, type);
     return invoice;
 }
@@ -65,7 +54,7 @@ GncInvoice *
 gnc_search_bill_on_id (QofBook * book, const gchar *id)
 {
     GncInvoice *bill =  NULL;
-    GncSearchType type = BILL;
+    QofIdType type = GNC_INVOICE_MODULE_NAME;
     bill = (GncInvoice*)search(book, id, bill, type);
     return bill;
 }
@@ -74,7 +63,7 @@ GncVendor *
 gnc_search_vendor_on_id (QofBook * book, const gchar *id)
 {
     GncVendor *vendor =  NULL;
-    GncSearchType type = VENDOR;
+    QofIdType type = GNC_VENDOR_MODULE_NAME;
     vendor = (GncVendor*)search(book, id, vendor, type);
     return vendor;
 }
@@ -84,40 +73,38 @@ gnc_search_vendor_on_id (QofBook * book, const gchar *id)
  * Generic search called after setting up stuff
  * DO NOT call directly but type tests should fail anyway
  ****************************************************************/
-static void * search(QofBook * book, const gchar *id, void * object, GncSearchType type)
+static void * search(QofBook * book, const gchar *id, void * object, QofIdType type)
 {
     void *c;
     GList *result;
     QofQuery *q;
     gint len;
     QofQueryPredData* string_pred_data;
-    
-    PINFO("Type = %d", type);
     g_return_val_if_fail (type, NULL);
     g_return_val_if_fail (id, NULL);
     g_return_val_if_fail (book, NULL);
 
     // Build the query
-    q = qof_query_create ();
+    q = qof_query_create_for (type);
     qof_query_set_book (q, book);
     // Search only the id field
     string_pred_data = qof_query_string_predicate (QOF_COMPARE_EQUAL, id, QOF_STRING_MATCH_NORMAL, FALSE);
-    if (type == CUSTOMER)
+
+    if (strcmp(type, GNC_CUSTOMER_MODULE_NAME))
     {
-        qof_query_search_for(q,GNC_CUSTOMER_MODULE_NAME);
+        GncCustomer *c = NULL;
         qof_query_add_term (q, qof_query_build_param_list("CUSTOMER_ID"), string_pred_data, QOF_QUERY_AND);
     }
-    else if (type ==  INVOICE || type ==  BILL)
+    else if (strcmp(type, GNC_INVOICE_MODULE_NAME))
     {
-        qof_query_search_for(q,GNC_INVOICE_MODULE_NAME);
+        GncInvoice *c = NULL;
         qof_query_add_term (q, qof_query_build_param_list("INVOICE_ID"), string_pred_data, QOF_QUERY_AND);
     }
-    else if (type == VENDOR)
+    else if (strcmp(type, GNC_VENDOR_MODULE_NAME))
     {
-        qof_query_search_for(q,GNC_VENDOR_MODULE_NAME);
+        GncVendor *c = NULL;
         qof_query_add_term (q, qof_query_build_param_list("VENDOR_ID"), string_pred_data, QOF_QUERY_AND);
     }
-
 
     // Run the query
     result = qof_query_run (q);
@@ -127,31 +114,12 @@ static void * search(QofBook * book, const gchar *id, void * object, GncSearchTy
     if (result && (len > 0))
     {
         result = g_list_first (result);
-
         while (result)
         {
             c = result->data;
-            
-            if (type == CUSTOMER && strcmp(id, gncCustomerGetID(c)) == 0)
+            if (strcmp(id, gncCustomerGetID(c)) == 0)
             {
                 // correct id found
-                object = c;
-                break;
-            }
-            else if (type == INVOICE && strcmp(id, gncInvoiceGetID(c)) == 0 
-                        && gncInvoiceGetType(c) == GNC_INVOICE_CUST_INVOICE)
-            {
-                object = c;
-                break;
-            }
-            else if (type == BILL && strcmp(id, gncInvoiceGetID(c)) == 0 
-                        && gncInvoiceGetType(c) == GNC_INVOICE_VEND_INVOICE)
-            {
-                object = c;
-                break;
-            }
-            else if (type == VENDOR && strcmp(id, gncVendorGetID(c)) == 0)
-            {
                 object = c;
                 break;
             }

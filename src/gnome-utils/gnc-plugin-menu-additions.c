@@ -44,6 +44,7 @@
 #include "gnc-main-window.h"
 #include "gnc-plugin-menu-additions.h"
 #include "gnc-window.h"
+#include "gnc-gconf-utils.h"
 #include "gnc-ui.h"
 #include "gnc-menu-extensions.h"
 
@@ -148,9 +149,15 @@ gnc_plugin_menu_additions_init (GncPluginMenuAdditions *plugin)
 static void
 gnc_plugin_menu_additions_finalize (GObject *object)
 {
+    GncPluginMenuAdditions *plugin;
+    GncPluginMenuAdditionsPrivate *priv;
+
     g_return_if_fail (GNC_IS_PLUGIN_MENU_ADDITIONS (object));
 
     ENTER("plugin %p", object);
+    plugin = GNC_PLUGIN_MENU_ADDITIONS (object);
+    priv = GNC_PLUGIN_MENU_ADDITIONS_GET_PRIVATE (plugin);
+
     G_OBJECT_CLASS (parent_class)->finalize (object);
     LEAVE("");
 }

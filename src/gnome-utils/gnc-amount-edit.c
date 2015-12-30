@@ -43,9 +43,6 @@
 #include "gnc-ui-util.h"
 #include "qof.h"
 
-#ifdef G_OS_WIN32
-# include <gdk/gdkwin32.h>
-#endif
 
 /* Signal codes */
 enum
@@ -59,7 +56,7 @@ static guint amount_edit_signals [LAST_SIGNAL] = { 0 };
 
 
 static void gnc_amount_edit_init         (GNCAmountEdit      *gae);
-static void gnc_amount_edit_class_init   (GNCAmountEditClass *klass);
+static void gnc_amount_edit_class_init   (GNCAmountEditClass *class);
 static void gnc_amount_edit_changed      (GtkEditable        *gae, gpointer data);
 static gint gnc_amount_edit_key_press    (GtkWidget          *widget,
         GdkEventKey        *event);
@@ -70,7 +67,7 @@ static GtkEntryClass *parent_class;
 /**
  * gnc_amount_edit_get_type:
  *
- * Returns the GType for the GNCAmountEdit widget
+ * Returns the GtkType for the GNCAmountEdit widget
  */
 GType
 gnc_amount_edit_get_type (void)
@@ -157,12 +154,7 @@ gnc_amount_edit_key_press(GtkWidget *widget, GdkEventKey *event)
     GNCAmountEdit *gae = GNC_AMOUNT_EDIT(widget);
     gint result;
 
-#ifdef G_OS_WIN32
-    /* gdk never sends GDK_KEY_KP_Decimal on win32. See #486658 */
-    if (event->hardware_keycode == VK_DECIMAL)
-        event->keyval = GDK_KEY_KP_Decimal;
-#endif
-    if (event->keyval == GDK_KEY_KP_Decimal)
+    if (event->keyval == GDK_KP_Decimal)
     {
         if (gae->print_info.monetary)
         {
@@ -176,13 +168,13 @@ gnc_amount_edit_key_press(GtkWidget *widget, GdkEventKey *event)
 
     switch (event->keyval)
     {
-    case GDK_KEY_Return:
+    case GDK_Return:
         if (gae->evaluate_on_enter)
             break;
         if (event->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SHIFT_MASK))
             break;
         return result;
-    case GDK_KEY_KP_Enter:
+    case GDK_KP_Enter:
         break;
     default:
         return result;
@@ -214,57 +206,6 @@ gnc_amount_edit_new (void)
 }
 
 /**
- * gnc_amount_edit_expr_is_valid
- * @gae: The GNCAmountEdit widget
- * @amount: parameter to hold the value of the parsed expression
- * @empty_ok: if true, an empty field is skipped, otherwise an empty field
- *            parses as 0
- *
- * If needed, parse the expression in the amount entry. If there's no
- * parsing error, it returns the amount, otherwise it returns the
- * position in the expression where the error occurred.
- *
- * Return *  0 if the parsing was successful (note that if !empty_ok,
- *             an empty field will parse to 0)
- *        * -1 if the field is empty and that's ok (empty_ok)
- *        * error position if there was a parsing error
- */
-gint
-gnc_amount_edit_expr_is_valid (GNCAmountEdit *gae, gnc_numeric *amount,
-                               gboolean empty_ok)
-{
-    const char *string;
-    char *error_loc;
-    gboolean ok;
-
-    g_return_val_if_fail(gae != NULL, -1);
-    g_return_val_if_fail(GNC_IS_AMOUNT_EDIT(gae), -1);
-
-    string = gtk_entry_get_text(GTK_ENTRY(gae));
-    if (!string || *string == '\0')
-    {
-        *amount = gnc_numeric_zero();
-        if (empty_ok)
-            return -1; /* indicate an empty field */
-        else
-            return 0; /* indicate successfully parsed as 0 */
-    }
-
-    error_loc = NULL;
-    ok = gnc_exp_parser_parse (string, amount, &error_loc);
-
-    if (ok)
-        return 0;
-
-    /* Not ok */
-    if (error_loc != NULL)
-        return  error_loc - string;
-    else
-        return 1;
-}
-
-
-/**
  * gnc_amount_edit_evaluate
  * @gae: The GNCAmountEdit widget
  *
@@ -278,22 +219,35 @@ gnc_amount_edit_expr_is_valid (GNCAmountEdit *gae, gnc_numeric *amount,
 gboolean
 gnc_amount_edit_evaluate (GNCAmountEdit *gae)
 {
-    gint result;
+    const char *string;
+    char *error_loc;
     gnc_numeric amount;
+    gboolean ok;
 
     g_return_val_if_fail(gae != NULL, FALSE);
     g_return_val_if_fail(GNC_IS_AMOUNT_EDIT(gae), FALSE);
 
-
     if (!gae->need_to_parse)
         return TRUE;
 
-    result = gnc_amount_edit_expr_is_valid (gae, &amount, FALSE);
+    string = gtk_entry_get_text(GTK_ENTRY(gae));
+    if (!string || *string == '\0')
+    {
+        gnc_numeric old_amount = gae->amount;
 
-    if (result == -1)  /* field was empty and may remain so */
+        gnc_amount_edit_set_amount (gae, gnc_numeric_zero ());
+
+        if (!gnc_numeric_equal (gnc_numeric_zero (), old_amount))
+            g_signal_emit (gae, amount_edit_signals [AMOUNT_CHANGED], 0);
+
         return TRUE;
+    }
 
-    if (result == 0)  /* parsing successful */
+    error_loc = NULL;
+
+    ok = gnc_exp_parser_parse (string, &amount, &error_loc);
+
+    if (ok)
     {
         gnc_numeric old_amount = gae->amount;
 
@@ -308,8 +262,10 @@ gnc_amount_edit_evaluate (GNCAmountEdit *gae)
         return TRUE;
     }
 
-    /* Parse error */
-    gtk_editable_set_position (GTK_EDITABLE(gae), result);
+    /* Not ok */
+    if (error_loc != NULL)
+        gtk_editable_set_position (GTK_EDITABLE(gae), error_loc - string);
+
     return FALSE;
 }
 
@@ -319,7 +275,7 @@ gnc_amount_edit_evaluate (GNCAmountEdit *gae)
  * @gae: The GNCAmountEdit widget
  *
  * Returns the amount entered in the GNCAmountEdit widget,
- * parsing the expression if necessary. The result of parsing
+ * parsing the epxression if necessary. The result of parsing
  * replaces the expression.
  */
 gnc_numeric
@@ -339,7 +295,7 @@ gnc_amount_edit_get_amount (GNCAmountEdit *gae)
  * @gae: The GNCAmountEdit widget
  *
  * Returns the amount entered in the GNCAmountEdit widget,
- * parsing the expression if necessary. The result of parsing
+ * parsing the epxression if necessary. The result of parsing
  * replaces the expression.
  */
 double

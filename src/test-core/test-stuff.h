@@ -4,29 +4,9 @@
  *
  * Modified by bstanley 20010323
  * removed testing functionality which depends on the rest of gnucash -
- * separated into gnc-test-stuff.h
+ * sepearated into gnc-test-stuff.h
  *
  */
-/********************************************************************\
- * This program is free software; you can redistribute it and/or    *
- * modify it under the terms of the GNU General Public License as   *
- * published by the Free Software Foundation; either version 2 of   *
- * the License, or (at your option) any later version.              *
- *                                                                  *
- * This program is distributed in the hope that it will be useful,  *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of   *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the    *
- * GNU General Public License for more details.                     *
- *                                                                  *
- * You should have received a copy of the GNU General Public License*
- * along with this program; if not, contact:                        *
- *                                                                  *
- * Free Software Foundation           Voice:  +1-617-542-5942       *
- * 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652       *
- * Boston, MA  02110-1301,  USA       gnu@gnu.org                   *
- *                                                                  *
-\********************************************************************/
-
 
 /* Outline of a test program using the new testing functions:
 #include "test-stuff.h"
@@ -72,7 +52,6 @@ Otherwise, only failures are printed out.
  * Apparently C99 can, too, but it's not exactly standard either.
 #define do_test_args( result, title, format ) do_test_call( result, title, __FILE__, __LINE__, format, ... );
 */
-
 
 /* Privately used to indicate a test result. You may use these if you
  * wish, but it's easier to use the do_test macro above.
@@ -144,10 +123,8 @@ gchar get_random_character(void);
 gchar* get_random_string(void);
 gchar * get_random_string_length_in_range(int minlen, int maxlen);
 gchar* get_random_string_without(const char *exclude_chars);
-gint32 get_random_gint32 (void);
 gint64 get_random_gint64(void);
 double get_random_double(void);
 const char* get_random_string_in_array(const char* str_list[]);
-
 
 #endif /* TEST_STUFF_H */

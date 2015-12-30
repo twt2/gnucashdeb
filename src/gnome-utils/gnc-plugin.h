@@ -81,6 +81,7 @@
 
 #include "gnc-main-window.h"
 #include "gnc-plugin-page.h"
+#include <gconf/gconf-client.h>
 
 G_BEGIN_DECLS
 
@@ -136,6 +137,28 @@ typedef struct
      *  menu/toolbar action items. */
     const gchar *ui_filename;
 
+    /*  GConf section */
+
+    /** The partial section name that will be used in GConf for
+     *  any preferences that are automatically stored for this
+     *  page.  This will be converted to a full section name by
+     *  prefixing the string "/apps/gnucash/" to whatever is
+     *  here. */
+    const gchar* gconf_section;
+    /** A callback that will be invoked when any key in the
+     *  specified GConf section is changed.
+     *
+     *  @param client A pointer to the gconf client instance.
+     *
+     *  @param cnxn_id The id number for this callback function.
+     *
+     *  @param entry A pointer to the changed data.
+     *
+     *  @param user_data A pointer to the GncWindow where the
+     *  plugin is installed. */
+    void (* gconf_notifications)
+    (GConfClient *client, guint cnxn_id, GConfEntry *entry, gpointer user_data);
+
     /*  Virtual Table */
 
     /** A callback that will be invoked when this plugin is added
@@ -181,8 +204,9 @@ GType gnc_plugin_get_type (void);
 
 
 /** Add the specified plugin to the specified window.  This function
- *  will add the page's user interface from the window and call the
- *  plugin to perform any plugin specific actions.
+ *  will add the page's user interface from the window, set up gconf
+ *  notifications if the page uses gconf, and call the plugin to
+ *  perform any plugin specific actions.
  *
  *  @param plugin The plugin to be added.
  *
@@ -197,7 +221,8 @@ void gnc_plugin_add_to_window (GncPlugin *plugin,
 
 /** Remove the specified plugin from the specified window.  This
  *  function will call the plugin to perform any plugin specific
- *  actions and remove the page's user interface from the window.
+ *  actions, remove any gconf notifications that were set up for the
+ *  page, and remove the page's user interface from the window.
  *
  *  @param plugin The plugin to be removed.
  *

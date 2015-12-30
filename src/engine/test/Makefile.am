@@ -1,6 +1,3 @@
-include $(top_srcdir)/test-templates/Makefile.decl
-
-MODULEPATH = src/engine
 
 AM_CPPFLAGS = \
   -I${top_srcdir} \
@@ -11,7 +8,7 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/engine/test-core \
   -I${top_srcdir}/src/libqof/qof \
   -I${top_srcdir}/src/core-utils \
-  ${GUILE_CFLAGS} \
+  ${GUILE_INCS} \
   ${GLIB_CFLAGS}
 
 LDADD = \
@@ -38,19 +35,16 @@ TESTS = \
   test-account-object \
   test-group-vs-book \
   test-lots \
+  test-period \
   test-querynew \
   test-query \
+  test-recursive \
   test-split-vs-account  \
   test-transaction-reversal \
   test-transaction-voiding \
   test-recurrence \
   test-scm-query \
-  test-business \
-  test-address \
-  test-customer \
-  test-employee \
-  test-job \
-  test-vendor
+  test-book-merge
 
 GNC_TEST_DEPS = \
   --gnc-module-dir ${top_builddir}/src/engine \
@@ -64,11 +58,9 @@ GNC_TEST_DEPS = \
   --library-dir    ${top_builddir}/src/backend/sql
 
 TESTS_ENVIRONMENT = \
-  GUILE_WARN_DEPRECATED=no \
-  GUILE="${GUILE}" \
   SRCDIR=${srcdir} \
-  GNC_BUILDDIR="${abs_top_builddir}" \
-  $(shell ${abs_top_srcdir}/src/gnc-test-env.pl --noexports ${GNC_TEST_DEPS})
+  GNC_BUILDDIR=`\cd ${top_builddir} && pwd` \
+  $(shell ${top_srcdir}/src/gnc-test-env --no-exports ${GNC_TEST_DEPS})
 
 check_PROGRAMS = \
   test-link \
@@ -79,21 +71,18 @@ check_PROGRAMS = \
   test-account-object \
   test-group-vs-book \
   test-load-engine \
+  test-period \
   test-lots \
   test-numeric \
+  test-book-merge \
   test-object \
   test-query \
   test-querynew \
+  test-recursive \
   test-scm-query \
   test-split-vs-account \
   test-transaction-reversal \
-  test-transaction-voiding \
-  test-business \
-  test-address \
-  test-customer \
-  test-employee \
-  test-job \
-  test-vendor
+  test-transaction-voiding
 
 
 test_link_SOURCES = test-link.c
@@ -101,49 +90,11 @@ test_link_LDADD = ../libgncmod-engine.la \
   ${top_builddir}/src/libqof/qof/libgnc-qof.la \
   ${top_builddir}/src/core-utils/libgnc-core-utils.la
 
-EXTRA_DIST += \
+EXTRA_DIST = \
   test-create-account \
   test-create-account.scm \
   test-scm-query-import \
   test-scm-query-import.scm
-
-TEST_PROGS += test-engine
-
-noinst_PROGRAMS = ${TEST_PROGS} ${CHECK_PROGS}
-
-test_engine_SOURCES = \
-	test-engine.c \
-	utest-Account.c \
-	utest-Budget.c \
-	utest-Entry.c \
-	utest-Invoice.c
-
-test_engine_LDADD = \
-	libutest-Split.la \
-	libutest-Trans.la \
-	$(LDADD)
-test_engine_CFLAGS = \
-	${DEFAULT_INCLUDES} \
-	-I${top_srcdir}/${MODULEPATH}/ \
-	-DTESTPROG=test_engine \
-	${GLIB_CFLAGS}
-
-noinst_LTLIBRARIES = \
-	libutest-Split.la \
-	libutest-Trans.la
-
-libutest_Split_la_SOURCES = \
-	utest-Split.c \
-	${top_srcdir}/src/libqof/qof/gnc-numeric.c
-
-
-libutest_Split_la_LIBADD = $(LDADD)
-
-libutest_Trans_la_SOURCES = \
-	utest-Transaction.c
-
-libutest_Trans_la_LIBADD = $(LDADD)
-
 
 clean-local:
 	rm -f translog.*

@@ -28,7 +28,7 @@
 
 #include "Account.h"
 #include "gnc-ui-util.h"
-#include "qof.h"	/* for g_strcmp0 */
+#include "qof.h"	/* for safe_strcmp */
 
 #include "datecell.h"
 #include "checkboxcell.h"
@@ -36,6 +36,15 @@
 #include "gncEntryLedgerP.h"
 #include "gncEntryLedgerModel.h"
 
+static GncEntryLedgerColors reg_colors =
+{
+    0x96B183,
+    0xBFDEB9,
+    0xF6FFDA,
+
+    0xFFEF98,
+    0xFFEF98,
+};
 
 /** Private Interfaces ***********************************************/
 
@@ -283,7 +292,7 @@ static const char * get_pric_entry (VirtualLocation virt_loc,
     gnc_numeric price;
 
     entry = gnc_entry_ledger_get_entry (ledger, virt_loc.vcell_loc);
-    if (ledger->is_cust_doc)
+    if (ledger->is_invoice)
         price = gncEntryGetInvPrice (entry);
     else
         price = gncEntryGetBillPrice (entry);
@@ -304,7 +313,7 @@ static const char * get_qty_entry (VirtualLocation virt_loc,
     gnc_numeric qty;
 
     entry = gnc_entry_ledger_get_entry (ledger, virt_loc.vcell_loc);
-    qty = gncEntryGetDocQuantity (entry, ledger->is_credit_note);
+    qty = gncEntryGetQuantity (entry);
 
     if (gnc_numeric_zero_p (qty))
         return NULL;
@@ -322,7 +331,7 @@ static const char * get_taxable_entry (VirtualLocation virt_loc,
     gboolean taxable;
 
     entry = gnc_entry_ledger_get_entry (ledger, virt_loc.vcell_loc);
-    if (ledger->is_cust_doc)
+    if (ledger->is_invoice)
         taxable = gncEntryGetInvTaxable (entry);
     else
         taxable = gncEntryGetBillTaxable (entry);
@@ -375,7 +384,7 @@ static const char * get_taxtable_entry (VirtualLocation virt_loc,
     }
 
     entry = gnc_entry_ledger_get_entry (ledger, virt_loc.vcell_loc);
-    if (ledger->is_cust_doc)
+    if (ledger->is_invoice)
         table = gncEntryGetInvTaxTable (entry);
     else
         table = gncEntryGetBillTaxTable (entry);
@@ -403,7 +412,7 @@ static const char * get_taxincluded_entry (VirtualLocation virt_loc,
     }
 
     entry = gnc_entry_ledger_get_entry (ledger, virt_loc.vcell_loc);
-    if (ledger->is_cust_doc)
+    if (ledger->is_invoice)
         taxincluded = gncEntryGetInvTaxIncluded (entry);
     else
         taxincluded = gncEntryGetBillTaxIncluded (entry);
@@ -442,9 +451,6 @@ static const char * get_value_entry (VirtualLocation virt_loc,
     if (virt_cell_loc_equal (ledger->table->current_cursor_loc.vcell_loc,
                              virt_loc.vcell_loc))
     {
-        /* Sign attention: this function works with values as seen
-         * on-screen in the ledger, so they are always in the proper sign.
-         */
         gnc_entry_ledger_compute_value (ledger, &value, NULL);
     }
     else
@@ -454,12 +460,8 @@ static const char * get_value_entry (VirtualLocation virt_loc,
         if (entry == gnc_entry_ledger_get_blank_entry (ledger))
             return NULL;
 
-        /* Ledger should display values with the same sign as on the document
-         * so get the document value instead of the internal value here.
-         */
-        value = gncEntryGetDocValue (entry, TRUE, ledger->is_cust_doc, ledger->is_credit_note);
+        value = gncEntryReturnValue (entry, ledger->is_invoice);
     }
-
     return xaccPrintAmount (value, gnc_default_print_info (FALSE));
 }
 
@@ -475,9 +477,6 @@ static const char * get_taxval_entry (VirtualLocation virt_loc,
     if (virt_cell_loc_equal (ledger->table->current_cursor_loc.vcell_loc,
                              virt_loc.vcell_loc))
     {
-        /* Sign attention: this function works with values as seen
-         * on-screen in the ledger, so they are always in the proper sign.
-         */
         gnc_entry_ledger_compute_value (ledger, NULL, &value);
     }
     else
@@ -487,10 +486,7 @@ static const char * get_taxval_entry (VirtualLocation virt_loc,
         if (entry == gnc_entry_ledger_get_blank_entry (ledger))
             return NULL;
 
-        /* Ledger should display values with the same sign as on the document
-         * so get the document value instead of the internal value here.
-         */
-        value = gncEntryGetDocTaxValue (entry, TRUE, ledger->is_cust_doc, ledger->is_credit_note);
+        value = gncEntryReturnTaxValue (entry, ledger->is_invoice);
     }
 
     return xaccPrintAmount (value, gnc_default_print_info (FALSE));
@@ -568,9 +564,9 @@ static char * get_date_help (VirtualLocation virt_loc, gpointer user_data)
     GncEntryLedger *ledger = user_data;
     BasicCell *cell;
     char string[1024];
-    struct tm tm;
+    struct tm *tm;
     Timespec ts;
-    time64 tt;
+    time_t tt;
 
     cell = gnc_table_get_cell (ledger->table, virt_loc);
     if (!cell)
@@ -581,8 +577,8 @@ static char * get_date_help (VirtualLocation virt_loc, gpointer user_data)
 
     gnc_date_cell_get_date ((DateCell *) cell, &ts);
     tt = ts.tv_sec;
-    gnc_localtime_r (&tt, &tm);
-    qof_strftime (string, sizeof(string), _("%A %d %B %Y"), &tm);
+    tm = localtime (&tt);
+    qof_strftime (string, sizeof(string), "%A %d %B %Y", tm);
 
     return g_strdup (string);
 }
@@ -739,21 +735,11 @@ static char * get_inv_help (VirtualLocation virt_loc, gpointer user_data)
     case GNCENTRY_BILL_VIEWER:
     case GNCENTRY_EXPVOUCHER_ENTRY:
     case GNCENTRY_EXPVOUCHER_VIEWER:
-        help = _("Is this entry invoiced?");
-        break;
-    case GNCENTRY_VEND_CREDIT_NOTE_ENTRY:
-    case GNCENTRY_VEND_CREDIT_NOTE_VIEWER:
-    case GNCENTRY_EMPL_CREDIT_NOTE_ENTRY:
-    case GNCENTRY_EMPL_CREDIT_NOTE_VIEWER:
-        help = _("Is this entry credited?");
+        help = _("Is this entry Invoiced?");
         break;
     case GNCENTRY_INVOICE_ENTRY:
     case GNCENTRY_INVOICE_VIEWER:
         help = _("Include this entry on this invoice?");
-        break;
-    case GNCENTRY_CUST_CREDIT_NOTE_ENTRY:
-    case GNCENTRY_CUST_CREDIT_NOTE_VIEWER:
-        help = _("Include this entry on this credit note?");
         break;
     default:
         help = _("Unknown EntryLedger Type");
@@ -826,7 +812,7 @@ static CellIOFlags get_standard_io_flags (VirtualLocation virt_loc,
         if (gncEntryGetInvoice (entry) != NULL)
             return XACC_CELL_ALLOW_SHADOW;
     }
-    /* FALL THROUGH */
+    /* FALLTHROUGH */
     default:
         return XACC_CELL_ALLOW_ALL;
     }
@@ -847,9 +833,8 @@ static CellIOFlags get_inv_io_flags (VirtualLocation virt_loc,
     switch (ledger->type)
     {
     case GNCENTRY_INVOICE_ENTRY:
-    case GNCENTRY_CUST_CREDIT_NOTE_ENTRY:
     {
-        /* This cell should be immutable IFF this entry is attached to
+        /* This cell should be mutably IFF this entry is attached to
          * a bill, order, or something else.
          */
         GncEntry * entry = gnc_entry_ledger_get_entry (ledger, virt_loc.vcell_loc);
@@ -858,7 +843,7 @@ static CellIOFlags get_inv_io_flags (VirtualLocation virt_loc,
             return XACC_CELL_ALLOW_ALL | XACC_CELL_ALLOW_EXACT_ONLY;
 
     }
-    /* FALL THROUGH */
+    /* FALLTHROUGH */
     default:
         return XACC_CELL_ALLOW_SHADOW;
     }
@@ -902,7 +887,7 @@ static CellIOFlags get_qty_io_flags (VirtualLocation virt_loc, gpointer user_dat
     CellIOFlags flags = get_standard_io_flags (virt_loc, user_data);
 
     /* If this isn't an invoice, or the flags are already read-only ... */
-    if (!ledger->is_cust_doc || flags == XACC_CELL_ALLOW_SHADOW)
+    if (!ledger->is_invoice || flags == XACC_CELL_ALLOW_SHADOW)
         return flags;
 
     /* ok, if this is an invoice ledger AND this entry is attached to a
@@ -918,84 +903,42 @@ static CellIOFlags get_qty_io_flags (VirtualLocation virt_loc, gpointer user_dat
 /* GET BG_COLORS */
 
 static guint32
-gnc_entry_ledger_get_color_internal (VirtualLocation virt_loc,
-                                     GncEntryLedger *ledger,
-                                     const guint32 *color_table,
-                                     gboolean foreground)
-{
-    const char *cursor_name;
-    VirtualCell *vcell;
-    gboolean is_current;
-    guint32 colorbase = 0; /* By default return background colors */
-
-    if (foreground)
-        colorbase = COLOR_UNKNOWN_FG; /* a bit of enum arithmetic */
-
-    if (!ledger)
-        return color_table[colorbase + COLOR_UNKNOWN_BG];
-
-    if (gnc_table_virtual_location_in_header (ledger->table, virt_loc))
-        return color_table[colorbase + COLOR_HEADER_BG];
-
-    vcell = gnc_table_get_virtual_cell (ledger->table, virt_loc.vcell_loc);
-    if (!vcell || !vcell->cellblock)
-        return color_table[colorbase + COLOR_UNKNOWN_BG];
-
-    if ((virt_loc.phys_col_offset < vcell->cellblock->start_col) ||
-            (virt_loc.phys_col_offset > vcell->cellblock->stop_col))
-        return color_table[colorbase + COLOR_UNKNOWN_BG];
-
-    is_current = virt_cell_loc_equal (ledger->table->current_cursor_loc.vcell_loc,
-                                      virt_loc.vcell_loc);
-
-    if (is_current)
-        return vcell->start_primary_color ?
-                color_table[colorbase + COLOR_PRIMARY_BG_ACTIVE] :
-                color_table[colorbase + COLOR_SECONDARY_BG_ACTIVE];
-
-    return vcell->start_primary_color ?
-            color_table[colorbase + COLOR_PRIMARY_BG] : color_table[colorbase + COLOR_SECONDARY_BG];
-
-}
-
-static guint32
-gnc_entry_ledger_get_fg_color (VirtualLocation virt_loc,
-                               gpointer user_data)
-{
-    GncEntryLedger *ledger = user_data;
-    return gnc_entry_ledger_get_color_internal (virt_loc, ledger, reg_colors_default, TRUE);
-}
-
-static guint32
-gnc_entry_ledger_get_gtkrc_fg_color (VirtualLocation virt_loc,
-                                     gpointer user_data)
-{
-    GncEntryLedger *ledger = user_data;
-    return gnc_entry_ledger_get_color_internal (virt_loc, ledger, reg_colors_gtkrc, TRUE);
-}
-
-static guint32
 gnc_entry_ledger_get_bg_color (VirtualLocation virt_loc,
                                gboolean *hatching, gpointer user_data)
 {
     GncEntryLedger *ledger = user_data;
+    VirtualCell *vcell;
+    guint32 bg_color;
+    gboolean is_current;
 
     if (hatching)
         *hatching = FALSE;
 
-    return gnc_entry_ledger_get_color_internal (virt_loc, ledger, reg_colors_default, FALSE);
-}
+    bg_color = 0xffffff; /* white */
 
-static guint32
-gnc_entry_ledger_get_gtkrc_bg_color (VirtualLocation virt_loc,
-                                     gboolean *hatching, gpointer user_data)
-{
-    GncEntryLedger *ledger = user_data;
+    if (!ledger) return bg_color;
 
-    if (hatching)
-        *hatching = FALSE;
+    if (gnc_table_virtual_location_in_header (ledger->table, virt_loc))
+        return reg_colors.header_bg_color;
 
-    return gnc_entry_ledger_get_color_internal (virt_loc, ledger, reg_colors_gtkrc, FALSE);
+    vcell = gnc_table_get_virtual_cell (ledger->table, virt_loc.vcell_loc);
+    if (!vcell || !vcell->cellblock)
+        return bg_color;
+
+    if ((virt_loc.phys_col_offset < vcell->cellblock->start_col) ||
+            (virt_loc.phys_col_offset > vcell->cellblock->stop_col))
+        return bg_color;
+
+    is_current = virt_cell_loc_equal
+                 (ledger->table->current_cursor_loc.vcell_loc, virt_loc.vcell_loc);
+
+    if (is_current)
+        return vcell->start_primary_color ?
+               reg_colors.primary_active_bg_color :
+               reg_colors.secondary_active_bg_color;
+
+    return vcell->start_primary_color ?
+           reg_colors.primary_bg_color : reg_colors.secondary_bg_color;
 }
 
 /* SAVE CELLS */
@@ -1046,15 +989,15 @@ static void gnc_entry_ledger_save_cells (gpointer save_data,
                                            ENTRY_DATE_CELL, TRUE))
     {
         BasicCell *cell;
-        GDate date;
+        Timespec ts;
 
         cell = gnc_table_layout_get_cell (ledger->table->layout, ENTRY_DATE_CELL);
 
         /* commit any pending changes */
         gnc_date_cell_commit ((DateCell *) cell);
 
-        gnc_date_cell_get_date_gdate ((DateCell *) cell, &date);
-        gncEntrySetDateGDate (entry, &date);
+        gnc_date_cell_get_date ((DateCell *) cell, &ts);
+        gncEntrySetDate (entry, ts);
     }
 
     if (gnc_table_layout_get_cell_changed (ledger->table->layout,
@@ -1104,9 +1047,7 @@ static void gnc_entry_ledger_save_cells (gpointer save_data,
         gnc_numeric amount;
 
         if (gnc_entry_ledger_get_numeric (ledger, ENTRY_QTY_CELL, &amount))
-        {
-            gncEntrySetDocQuantity (entry, amount, ledger->is_credit_note);
-        }
+            gncEntrySetQuantity (entry, amount);
     }
 
     if (gnc_table_layout_get_cell_changed (ledger->table->layout,
@@ -1125,9 +1066,9 @@ static void gnc_entry_ledger_save_cells (gpointer save_data,
 
         value = gnc_table_layout_get_cell_value (ledger->table->layout,
                 ENTRY_PAYMENT_CELL);
-        if (!g_strcmp0 (value, _("Cash")))
+        if (!safe_strcmp (value, _("Cash")))
             gncEntrySetBillPayment (entry, GNC_PAYMENT_CASH);
-        else if (!g_strcmp0 (value, _("Charge")))
+        else if (!safe_strcmp (value, _("Charge")))
             gncEntrySetBillPayment (entry, GNC_PAYMENT_CARD);
         else
             g_warning ("Invalid Payment cell: %s", value ? value : "(null)");
@@ -1140,7 +1081,7 @@ static void gnc_entry_ledger_save_cells (gpointer save_data,
 
         if (gnc_entry_ledger_get_numeric (ledger, ENTRY_PRIC_CELL, &amount))
         {
-            if (ledger->is_cust_doc)
+            if (ledger->is_invoice)
                 gncEntrySetInvPrice (entry, amount);
             else
                 gncEntrySetBillPrice (entry, amount);
@@ -1153,7 +1094,7 @@ static void gnc_entry_ledger_save_cells (gpointer save_data,
         gboolean taxable;
 
         taxable = gnc_entry_ledger_get_checkmark (ledger, ENTRY_TAXABLE_CELL);
-        if (ledger->is_cust_doc)
+        if (ledger->is_invoice)
             gncEntrySetInvTaxable (entry, taxable);
         else
             gncEntrySetBillTaxable (entry, taxable);
@@ -1168,7 +1109,7 @@ static void gnc_entry_ledger_save_cells (gpointer save_data,
         table = gnc_entry_ledger_get_taxtable (ledger, ENTRY_TAXTABLE_CELL);
         if (table)
         {
-            if (ledger->is_cust_doc)
+            if (ledger->is_invoice)
                 gncEntrySetInvTaxTable (entry, table);
             else
                 gncEntrySetBillTaxTable (entry, table);
@@ -1182,14 +1123,13 @@ static void gnc_entry_ledger_save_cells (gpointer save_data,
 
         taxincluded = gnc_entry_ledger_get_checkmark (ledger,
                       ENTRY_TAXINCLUDED_CELL);
-        if (ledger->is_cust_doc)
+        if (ledger->is_invoice)
             gncEntrySetInvTaxIncluded (entry, taxincluded);
         else
             gncEntrySetBillTaxIncluded (entry, taxincluded);
     }
 
-    if (ledger->type == GNCENTRY_INVOICE_ENTRY ||
-            ledger->type == GNCENTRY_CUST_CREDIT_NOTE_ENTRY)
+    if (ledger->type == GNCENTRY_INVOICE_ENTRY)
     {
         gboolean inv_value;
 
@@ -1247,17 +1187,8 @@ static void gnc_entry_ledger_model_new_handlers (TableModel *model,
     };
     unsigned int i;
 
-    gnc_table_model_set_default_fg_color_handler
-    (model, gnc_entry_ledger_get_fg_color);
-
-    gnc_table_model_set_fg_color_handler
-    (model, gnc_entry_ledger_get_gtkrc_fg_color, "gtkrc");
-
     gnc_table_model_set_default_bg_color_handler
     (model, gnc_entry_ledger_get_bg_color);
-
-    gnc_table_model_set_bg_color_handler
-    (model, gnc_entry_ledger_get_gtkrc_bg_color, "gtkrc");
 
 
     for (i = 0; i < (sizeof(models) / sizeof(*models)); i++)
@@ -1290,9 +1221,6 @@ static void gnc_entry_ledger_model_new_handlers (TableModel *model,
     case GNCENTRY_INVOICE_VIEWER:
     case GNCENTRY_BILL_VIEWER:
     case GNCENTRY_EXPVOUCHER_VIEWER:
-    case GNCENTRY_CUST_CREDIT_NOTE_VIEWER:
-    case GNCENTRY_VEND_CREDIT_NOTE_VIEWER:
-    case GNCENTRY_EMPL_CREDIT_NOTE_VIEWER:
         /* make this table read-only */
         gnc_table_model_set_read_only (model, TRUE);
         break;

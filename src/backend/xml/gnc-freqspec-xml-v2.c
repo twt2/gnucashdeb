@@ -145,7 +145,7 @@ fs_uift_handler( xmlNodePtr node, gpointer data)
     g_return_val_if_fail( nodeTxt, FALSE );
     for ( i = 0; (tmp = uiFreqTypeStrs[i].str) != NULL; i++ )
     {
-        if ( g_strcmp0( nodeTxt, tmp ) == 0 )
+        if ( safe_strcmp( nodeTxt, tmp ) == 0 )
         {
             fspd->uift = uiFreqTypeStrs[i].uift;
             g_free( nodeTxt );
@@ -409,6 +409,9 @@ static
 gboolean
 fs_guid_handler( xmlNodePtr node, gpointer data)
 {
+    fsParseData *fspd = data;
+    GncGUID        *guid;
+    guid = dom_tree_to_guid( node );
     return TRUE;
 }
 

@@ -43,9 +43,6 @@
 static gint gs_address_event_handler_id = 0;
 static void listen_for_address_events(QofInstance *entity, QofEventId event_type,
                                       gpointer user_data, gpointer event_data);
-static void qofVendorSetAddr (GncVendor *vendor, QofInstance *addr_ent);
-static const char* qofVendorGetTaxIncluded(const GncVendor *vendor);
-static void qofVendorSetTaxIncluded(GncVendor *vendor, const char* type_string);
 
 struct _gncVendor
 {
@@ -88,17 +85,7 @@ void mark_vendor (GncVendor *vendor)
 enum
 {
     PROP_0,
-    PROP_NAME,
-    PROP_ID,
-    PROP_NOTES,
-    PROP_CURRENCY,
-    PROP_ACTIVE,
-    PROP_TAXTABLE_OVERRIDE,
-    PROP_BILLTERMS,
-    PROP_TAXTABLE,
-    PROP_ADDRESS,
-    PROP_TAX_INCLUDED,
-    PROP_TAX_INCLUDED_STR
+    PROP_NAME
 };
 
 /* GObject Initialization */
@@ -121,12 +108,6 @@ gnc_vendor_finalize(GObject* vendorp)
     G_OBJECT_CLASS(gnc_vendor_parent_class)->finalize(vendorp);
 }
 
-/* Note that g_value_set_object() refs the object, as does
- * g_object_get(). But g_object_get() only unrefs once when it disgorges
- * the object, leaving an unbalanced ref, which leaks. So instead of
- * using g_value_set_object(), use g_value_take_object() which doesn't
- * ref the object when used in get_property().
- */
 static void
 gnc_vendor_get_property (GObject         *object,
                          guint            prop_id,
@@ -142,36 +123,6 @@ gnc_vendor_get_property (GObject         *object,
     {
     case PROP_NAME:
         g_value_set_string(value, vendor->name);
-        break;
-    case PROP_ID:
-        g_value_set_string(value, vendor->id);
-        break;
-    case PROP_NOTES:
-        g_value_set_string(value, vendor->notes);
-        break;
-    case PROP_CURRENCY:
-        g_value_take_object(value, vendor->currency);
-        break;
-    case PROP_ACTIVE:
-        g_value_set_boolean(value, vendor->active);
-        break;
-    case PROP_TAXTABLE_OVERRIDE:
-        g_value_set_boolean(value, vendor->taxtable_override);
-        break;
-    case PROP_BILLTERMS:
-        g_value_take_object(value, vendor->terms);
-        break;
-    case PROP_TAXTABLE:
-        g_value_take_object(value, vendor->taxtable);
-        break;
-    case PROP_ADDRESS:
-        g_value_take_object(value, vendor->addr);
-        break;
-    case PROP_TAX_INCLUDED:
-        g_value_set_int(value, vendor->taxincluded);
-        break;
-    case PROP_TAX_INCLUDED_STR:
-        g_value_set_string(value, qofVendorGetTaxIncluded(vendor));
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -195,40 +146,23 @@ gnc_vendor_set_property (GObject         *object,
     case PROP_NAME:
         gncVendorSetName(vendor, g_value_get_string(value));
         break;
-    case PROP_ID:
-        gncVendorSetID(vendor, g_value_get_string(value));
-        break;
-    case PROP_NOTES:
-        gncVendorSetNotes(vendor, g_value_get_string(value));
-        break;
-    case PROP_CURRENCY:
-        gncVendorSetCurrency(vendor, g_value_get_object(value));
-        break;
-    case PROP_ACTIVE:
-        gncVendorSetActive(vendor, g_value_get_boolean(value));
-        break;
-    case PROP_TAXTABLE_OVERRIDE:
-        gncVendorSetTaxTableOverride(vendor, g_value_get_boolean(value));
-        break;
-    case PROP_BILLTERMS:
-        gncVendorSetTerms(vendor, g_value_get_object(value));
-        break;
-    case PROP_TAXTABLE:
-        gncVendorSetTaxTable(vendor, g_value_get_object(value));
-        break;
-    case PROP_ADDRESS:
-        qofVendorSetAddr(vendor, g_value_get_object(value));
-        break;
-    case PROP_TAX_INCLUDED:
-        gncVendorSetTaxIncluded(vendor, (GncTaxIncluded)g_value_get_int(value));
-        break;
-    case PROP_TAX_INCLUDED_STR:
-        qofVendorSetTaxIncluded(vendor, g_value_get_string(value));
-        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
+}
+
+/** Return displayable name */
+static gchar*
+impl_get_display_name(const QofInstance* inst)
+{
+    GncVendor* v;
+
+    g_return_val_if_fail(inst != NULL, FALSE);
+    g_return_val_if_fail(GNC_IS_VENDOR(inst), FALSE);
+
+    v = GNC_VENDOR(inst);
+    return g_strdup_printf("Vendor %s", v->name);
 }
 
 /** Does this object refer to a specific object */
@@ -295,101 +229,6 @@ gnc_vendor_class_init (GncVendorClass *klass)
                           "assigned by the user to provide the vendor name.",
                           NULL,
                           G_PARAM_READWRITE));
-
-    g_object_class_install_property
-    (gobject_class,
-     PROP_ID,
-     g_param_spec_string ("id",
-                          "Vendor ID",
-                          "The vendor id is an arbitrary string "
-                          "assigned by the user to identify the vendor.",
-                          NULL,
-                          G_PARAM_READWRITE));
-
-    g_object_class_install_property
-    (gobject_class,
-     PROP_NOTES,
-     g_param_spec_string ("notes",
-                          "Vendor notes",
-                          "The vendor notes is an arbitrary string "
-                          "assigned by the user to add extra information about the vendor.",
-                          NULL,
-                          G_PARAM_READWRITE));
-
-    g_object_class_install_property
-    (gobject_class,
-     PROP_CURRENCY,
-     g_param_spec_object ("currency",
-                          "Currency",
-                          "The currency property denotes the currency used by this vendor.",
-                          GNC_TYPE_COMMODITY,
-                          G_PARAM_READWRITE));
-
-    g_object_class_install_property
-    (gobject_class,
-     PROP_ACTIVE,
-     g_param_spec_boolean ("active",
-                           "Active",
-                           "TRUE if the vendor is active.  FALSE if inactive.",
-                           FALSE,
-                           G_PARAM_READWRITE));
-
-    g_object_class_install_property
-    (gobject_class,
-     PROP_TAXTABLE_OVERRIDE,
-     g_param_spec_boolean ("tax-table-override",
-                           "Tax table override",
-                           "TRUE if the vendor has a specific tax table which overrides the default "
-                           "tax table.  FALSE if the default table should be used.",
-                           FALSE,
-                           G_PARAM_READWRITE));
-
-    g_object_class_install_property
-    (gobject_class,
-     PROP_BILLTERMS,
-     g_param_spec_object ("terms",
-                          "Terms",
-                          "The billing terms used by this vendor.",
-                          GNC_TYPE_COMMODITY,
-                          G_PARAM_READWRITE));
-
-    g_object_class_install_property
-    (gobject_class,
-     PROP_TAXTABLE,
-     g_param_spec_object ("tax-table",
-                          "Tax table",
-                          "The tax table which applies to this vendor.",
-                          GNC_TYPE_COMMODITY,
-                          G_PARAM_READWRITE));
-
-    g_object_class_install_property
-    (gobject_class,
-     PROP_ADDRESS,
-     g_param_spec_object ("address",
-                          "Address",
-                          "The address property contains the address information for this vendor.",
-                          GNC_TYPE_ADDRESS,
-                          G_PARAM_READWRITE));
-
-    g_object_class_install_property
-    (gobject_class,
-     PROP_TAX_INCLUDED,
-     g_param_spec_int  ("tax-included",
-                        "Tax included",
-                        "The tax-included property contains the information about tax calculation this vendor.",
-                        GNC_TAXINCLUDED_YES,       /* min */
-                        GNC_TAXINCLUDED_USEGLOBAL, /* max */
-                        GNC_TAXINCLUDED_USEGLOBAL, /* default */
-                        G_PARAM_READWRITE));
-
-    g_object_class_install_property
-    (gobject_class,
-     PROP_TAX_INCLUDED_STR,
-     g_param_spec_string("tax-included-string",
-                         "Tax included string",
-                         "The tax-included-string property contains a character version of tax-included.",
-                         FALSE,
-                         G_PARAM_READWRITE));
 }
 
 /* Create/Destroy Functions */
@@ -449,13 +288,70 @@ static void gncVendorFree (GncVendor *vendor)
     g_object_unref (vendor);
 }
 
+/** Create a copy of a vendor, placing the copy into a new book. */
+GncVendor *
+gncCloneVendor (GncVendor *from, QofBook *book)
+{
+    GList *node;
+    GncVendor *vendor;
+
+    if (!book) return NULL;
+
+    vendor = g_object_new (GNC_TYPE_VENDOR, NULL);
+    qof_instance_init_data (&vendor->inst, _GNC_MOD_NAME, book);
+    qof_instance_gemini (&vendor->inst, &from->inst);
+
+    vendor->id = CACHE_INSERT (from->id);
+    vendor->name = CACHE_INSERT (from->name);
+    vendor->notes = CACHE_INSERT (from->notes);
+    vendor->addr = gncCloneAddress (from->addr, &vendor->inst, book);
+    vendor->taxincluded = from->taxincluded;
+    vendor->taxtable_override = from->taxtable_override;
+    vendor->active = from->active;
+
+    vendor->terms = gncBillTermObtainTwin (from->terms, book);
+    gncBillTermIncRef (vendor->terms);
+
+    vendor->currency = gnc_commodity_obtain_twin (from->currency, book);
+
+    vendor->taxtable = gncTaxTableObtainTwin (from->taxtable, book);
+    gncTaxTableIncRef (vendor->taxtable);
+
+    vendor->jobs = NULL;
+    for (node = g_list_last(from->jobs); node; node = node->prev)
+    {
+        GncJob *job = node->data;
+        job = gncJobObtainTwin (job, book);
+        vendor->jobs = g_list_prepend(vendor->jobs, job);
+    }
+
+    qof_event_gen (&vendor->inst, QOF_EVENT_CREATE, NULL);
+
+    return vendor;
+}
+
+GncVendor *
+gncVendorObtainTwin (GncVendor *from, QofBook *book)
+{
+    GncVendor *vendor;
+    if (!book) return NULL;
+
+    vendor = (GncVendor *) qof_instance_lookup_twin (QOF_INSTANCE(from), book);
+    if (!vendor)
+    {
+        vendor = gncCloneVendor (from, book);
+    }
+
+    return vendor;
+}
+
 /* ============================================================== */
 /* Set Functions */
 
 #define SET_STR(obj, member, str) { \
         char * tmp; \
         \
-        if (!g_strcmp0 (member, str)) return; \
+        if (!safe_strcmp (member, str)) return; \
         gncVendorBeginEdit (obj); \
         tmp = CACHE_INSERT (str); \
         CACHE_REMOVE (member); \
@@ -751,19 +647,19 @@ gboolean gncVendorEqual(const GncVendor *a, const GncVendor *b)
     g_return_val_if_fail(GNC_IS_VENDOR(a), FALSE);
     g_return_val_if_fail(GNC_IS_VENDOR(b), FALSE);
 
-    if (g_strcmp0(a->id, b->id) != 0)
+    if (safe_strcmp(a->id, b->id) != 0)
     {
         PWARN("IDs differ: %s vs %s", a->id, b->id);
         return FALSE;
     }
 
-    if (g_strcmp0(a->name, b->name) != 0)
+    if (safe_strcmp(a->name, b->name) != 0)
     {
         PWARN("Names differ: %s vs %s", a->name, b->name);
         return FALSE;
     }
 
-    if (g_strcmp0(a->notes, b->notes) != 0)
+    if (safe_strcmp(a->notes, b->notes) != 0)
     {
         PWARN("Notes differ");
         return FALSE;
@@ -815,8 +711,28 @@ gboolean gncVendorEqual(const GncVendor *a, const GncVendor *b)
     return TRUE;
 }
 
-gboolean
-gncVendorIsDirty (const GncVendor *vendor)
+GList * gncVendorGetJoblist (const GncVendor *vendor, gboolean show_all)
+{
+    if (!vendor) return NULL;
+
+    if (show_all)
+    {
+        return (g_list_copy (vendor->jobs));
+    }
+    else
+    {
+        GList *list = NULL, *iterator;
+        for (iterator = vendor->jobs; iterator; iterator = iterator->next)
+        {
+            GncJob *j = iterator->data;
+            if (gncJobGetActive (j))
+                list = g_list_append (list, j);
+        }
+        return list;
+    }
+}
+
+gboolean gncVendorIsDirty (const GncVendor *vendor)
 {
     if (!vendor) return FALSE;
     return (qof_instance_get_dirty_flag(vendor)

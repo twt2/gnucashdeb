@@ -1,4 +1,4 @@
-noinst_LTLIBRARIES=libgncmod-test-engine.la
+check_LTLIBRARIES=libgncmod-test-engine.la
 
 LDADD = \
   ${top_builddir}/src/gnc-module/libgnc-module.la \
@@ -23,4 +23,4 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/engine \
   -I${top_srcdir}/src/libqof/qof \
   ${GLIB_CFLAGS} \
-  ${GUILE_CFLAGS}
+  ${GUILE_INCS}

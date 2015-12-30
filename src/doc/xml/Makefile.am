@@ -1,6 +1,5 @@
 
 EXTRA_DIST = \
-  README \
   account-v2.dtd \
   commodity-v2.dtd \
   defaults-v1.dtd \

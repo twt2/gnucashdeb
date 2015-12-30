@@ -90,7 +90,6 @@ static xmlNodePtr
 invoice_dom_tree_create (GncInvoice *invoice)
 {
     xmlNodePtr ret;
-    kvp_frame *kf;
     Timespec ts;
     Transaction *txn;
     GNCLot *lot;
@@ -156,16 +155,6 @@ invoice_dom_tree_create (GncInvoice *invoice)
     amt = gncInvoiceGetToChargeAmount (invoice);
     if (! gnc_numeric_zero_p (amt))
         xmlAddChild (ret, gnc_numeric_to_dom_tree (invoice_tochargeamt_string, &amt));
-
-    kf = qof_instance_get_slots (QOF_INSTANCE(invoice));
-    if (kf)
-    {
-        xmlNodePtr kvpnode = kvp_frame_to_dom_tree(invoice_slots_string, kf);
-        if (kvpnode)
-        {
-            xmlAddChild(ret, kvpnode);
-        }
-    }
 
     return ret;
 }
@@ -407,10 +396,7 @@ invoice_tochargeamt_handler (xmlNodePtr node, gpointer invoice_pdata)
 static gboolean
 invoice_slots_handler (xmlNodePtr node, gpointer invoice_pdata)
 {
-    struct invoice_pdata *pdata = invoice_pdata;
-
-    return dom_tree_to_kvp_frame_given
-           (node, xaccAccountGetSlots (pdata->invoice));
+    return TRUE;
 }
 
 static struct dom_tree_handler invoice_handlers_v2[] =
@@ -466,10 +452,13 @@ gnc_invoice_end_handler(gpointer data_for_children,
                         gpointer parent_data, gpointer global_data,
                         gpointer *result, const gchar *tag)
 {
+    int successful;
     GncInvoice *invoice;
     xmlNodePtr tree = (xmlNodePtr)data_for_children;
     gxpf_data *gdata = (gxpf_data*)global_data;
     QofBook *book = gdata->bookdata;
+
+    successful = TRUE;
 
     if (parent_data)
     {

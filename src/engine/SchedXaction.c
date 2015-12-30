@@ -35,10 +35,13 @@
 #include "SchedXaction.h"
 #include "Transaction.h"
 #include "gnc-engine.h"
-#include "engine-helpers.h"
 
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "gnc.engine.sx"
+
+/* Local Prototypes *****/
+
+void sxprivtransactionListMapDelete( gpointer data, gpointer user_data );
 
 enum
 {
@@ -92,12 +95,6 @@ gnc_schedxaction_finalize(GObject* sxp)
     G_OBJECT_CLASS(gnc_schedxaction_parent_class)->finalize(sxp);
 }
 
-/* Note that g_value_set_object() refs the object, as does
- * g_object_get(). But g_object_get() only unrefs once when it disgorges
- * the object, leaving an unbalanced ref, which leaks. So instead of
- * using g_value_set_object(), use g_value_take_object() which doesn't
- * ref the object when used in get_property().
- */
 static void
 gnc_schedxaction_get_property (GObject         *object,
                                guint            prop_id,
@@ -139,22 +136,16 @@ gnc_schedxaction_get_property (GObject         *object,
         g_value_set_boxed(value, &sx->start_date);
         break;
     case PROP_END_DATE:
-        /* g_value_set_boxed raises a critical error if sx->end_date
-         * is invalid */
-        if (g_date_valid (&sx->end_date))
-            g_value_set_boxed(value, &sx->end_date);
+        g_value_set_boxed(value, &sx->end_date);
         break;
     case PROP_LAST_OCCURANCE_DATE:
-     /* g_value_set_boxed raises a critical error if sx->last_date
-         * is invalid */
-        if (g_date_valid (&sx->last_date))
-            g_value_set_boxed(value, &sx->last_date);
+        g_value_set_boxed(value, &sx->last_date);
         break;
     case PROP_INSTANCE_COUNT:
         g_value_set_int(value, sx->instance_num);
         break;
     case PROP_TEMPLATE_ACCOUNT:
-        g_value_take_object(value, sx->template_acct);
+        g_value_set_object(value, sx->template_acct);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -590,23 +581,12 @@ xaccSchedXactionSetName( SchedXaction *sx, const gchar *newName )
 const GDate*
 xaccSchedXactionGetStartDate(const SchedXaction *sx )
 {
-    g_assert (sx);
     return &sx->start_date;
 }
 
 void
 xaccSchedXactionSetStartDate( SchedXaction *sx, const GDate* newStart )
 {
-    if ( newStart == NULL || !g_date_valid( newStart ))
-    {
-        /* XXX: I reject the bad data - is this the right
-         * thing to do <rgmerk>.
-         * This warning is only human readable - the caller
-         * doesn't know the call failed.  This is bad
-         */
-        g_critical("Invalid Start Date");
-        return;
-    }
     gnc_sx_begin_edit(sx);
     sx->start_date = *newStart;
     qof_instance_set_dirty(&sx->inst);
@@ -616,32 +596,27 @@ xaccSchedXactionSetStartDate( SchedXaction *sx, const GDate* newStart )
 gboolean
 xaccSchedXactionHasEndDate( const SchedXaction *sx )
 {
-    return sx != NULL && g_date_valid( &sx->end_date );
+    return g_date_valid( &sx->end_date );
 }
 
 const GDate*
 xaccSchedXactionGetEndDate(const SchedXaction *sx )
 {
-    g_assert (sx);
     return &sx->end_date;
 }
 
 void
 xaccSchedXactionSetEndDate( SchedXaction *sx, const GDate *newEnd )
 {
-/* Note that an invalid GDate IS a permissable value: It means that
- * the SX is to run "forever". See gnc_sxed_save_sx() and
- * schedXact_editor_populate() in dialog-sx-editor.c.
- */
-    if (newEnd == NULL ||
-        (g_date_valid(newEnd) && g_date_compare( newEnd, &sx->start_date ) < 0 ))
+    if ( g_date_valid( newEnd )
+            && g_date_compare( newEnd, &sx->start_date ) < 0 )
     {
         /* XXX: I reject the bad data - is this the right
          * thing to do <rgmerk>.
          * This warning is only human readable - the caller
          * doesn't know the call failed.  This is bad
          */
-        g_critical("Bad End Date: Invalid or before Start Date");
+        g_critical("New end date before start date");
         return;
     }
 
@@ -660,7 +635,6 @@ xaccSchedXactionGetLastOccurDate(const SchedXaction *sx )
 void
 xaccSchedXactionSetLastOccurDate(SchedXaction *sx, const GDate* new_last_occur)
 {
-    g_return_if_fail (new_last_occur != NULL);
     if (g_date_valid(&sx->last_date)
             && g_date_compare(&sx->last_date, new_last_occur) == 0)
         return;
@@ -792,6 +766,28 @@ gint gnc_sx_get_num_occur_daterange(const SchedXaction *sx, const GDate* start_d
 
     gnc_sx_destroy_temporal_state (tmpState);
     return result;
+}
+
+
+KvpValue *
+xaccSchedXactionGetSlot( const SchedXaction *sx, const char *slot )
+{
+    if (!sx) return NULL;
+
+    return kvp_frame_get_slot(sx->inst.kvp_data, slot);
+}
+
+void
+xaccSchedXactionSetSlot( SchedXaction *sx,
+                         const char *slot,
+                         const KvpValue *value )
+{
+    if (!sx) return;
+
+    gnc_sx_begin_edit(sx);
+    kvp_frame_set_slot( sx->inst.kvp_data, slot, value );
+    qof_instance_set_dirty(&sx->inst);
+    gnc_sx_commit_edit(sx);
 }
 
 gboolean
@@ -1026,10 +1022,7 @@ gnc_sx_set_instance_count(SchedXaction *sx, gint instance_num)
     g_return_if_fail(sx);
     if (sx->instance_num == instance_num)
         return;
-    gnc_sx_begin_edit(sx);
     sx->instance_num = instance_num;
-    qof_instance_set_dirty(&sx->inst);
-    gnc_sx_commit_edit(sx);
 }
 
 GList *
@@ -1053,10 +1046,9 @@ pack_split_info (TTSplitInfo *s_info, Account *parent_acct,
     xaccSplitSetMemo(split,
                      gnc_ttsplitinfo_get_memo(s_info));
 
-    /* Set split-action with gnc_set_num_action which is the same as
-     * xaccSplitSetAction with these arguments */
-    gnc_set_num_action(NULL, split, NULL,
+    xaccSplitSetAction(split,
                        gnc_ttsplitinfo_get_action(s_info));
+
 
     xaccAccountInsertSplit(parent_acct,
                            split);
@@ -1126,12 +1118,10 @@ xaccSchedXactionSetTemplateTrans(SchedXaction *sx, GList *t_t_list,
         xaccTransSetDescription(new_trans,
                                 gnc_ttinfo_get_description(tti));
 
-        xaccTransSetDatePostedSecsNormalized(new_trans, gnc_time (NULL));
+        xaccTransSetDatePostedSecs(new_trans, time(NULL));
 
-        /* Set tran-num with gnc_set_num_action which is the same as
-         * xaccTransSetNum with these arguments */
-        gnc_set_num_action(new_trans, NULL,
-                        gnc_ttinfo_get_num(tti), NULL);
+        xaccTransSetNum(new_trans,
+                        gnc_ttinfo_get_num(tti));
         xaccTransSetCurrency( new_trans,
                               gnc_ttinfo_get_currency(tti) );
 
@@ -1152,11 +1142,8 @@ SXTmpStateData*
 gnc_sx_create_temporal_state(const SchedXaction *sx )
 {
     SXTmpStateData *toRet =
-	 g_new0( SXTmpStateData, 1 );
-    if (g_date_valid (&(sx->last_date)))
-	 toRet->last_date       = sx->last_date;
-    else
-	g_date_set_dmy (&(toRet->last_date), 1, 1, 1970);
+        g_new0( SXTmpStateData, 1 );
+    toRet->last_date       = sx->last_date;
     toRet->num_occur_rem   = sx->num_occurances_remain;
     toRet->num_inst   = sx->instance_num;
     return toRet;
@@ -1178,6 +1165,18 @@ gnc_sx_incr_temporal_state(const SchedXaction *sx, SXTmpStateData *stateData )
         tsd->num_occur_rem -= 1;
     }
     tsd->num_inst += 1;
+}
+
+void
+gnc_sx_revert_to_temporal_state( SchedXaction *sx, SXTmpStateData *stateData )
+{
+    SXTmpStateData *tsd = (SXTmpStateData*)stateData;
+    gnc_sx_begin_edit(sx);
+    sx->last_date        = tsd->last_date;
+    sx->num_occurances_remain = tsd->num_occur_rem;
+    sx->instance_num     = tsd->num_inst;
+    qof_instance_set_dirty(&sx->inst);
+    gnc_sx_commit_edit(sx);
 }
 
 void

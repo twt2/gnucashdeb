@@ -33,19 +33,17 @@
 #include "dialog-account.h"
 #include "dialog-utils.h"
 #include "gnc-component-manager.h"
-#include "gnc-prefs.h"
 #include "gnc-ui.h"
 #include "gnc-ui-util.h"
 #include "gnc-gui-query.h"
-#include "gnome-utils/gnc-warnings.h"
 #include "table-allgui.h"
 #include "pricecell.h"
 #include "dialog-tax-table.h"
+#include "core-utils/gnc-gconf-utils.h"
 #include "register/register-core/checkboxcell.h"
 
 #include "gncEntryLedgerP.h"
 #include "gncEntryLedgerControl.h"
-
 
 static gboolean
 gnc_entry_ledger_save (GncEntryLedger *ledger, gboolean do_commit)
@@ -69,7 +67,7 @@ gnc_entry_ledger_save (GncEntryLedger *ledger, gboolean do_commit)
         {
             if (ledger->blank_entry_edited)
             {
-                ledger->last_date_entered = gncEntryGetDateGDate (entry);
+                ledger->last_date_entered = gncEntryGetDate (entry);
                 ledger->blank_entry_guid = *guid_null ();
                 ledger->blank_entry_edited = FALSE;
                 blank_entry = NULL;
@@ -91,7 +89,7 @@ gnc_entry_ledger_save (GncEntryLedger *ledger, gboolean do_commit)
     if (entry == blank_entry)
     {
         Timespec ts;
-        ts.tv_sec = gnc_time (NULL);
+        ts.tv_sec = time(NULL);
         ts.tv_nsec = 0;
         gncEntrySetDateEntered (blank_entry, ts);
 
@@ -101,14 +99,11 @@ gnc_entry_ledger_save (GncEntryLedger *ledger, gboolean do_commit)
             gncOrderAddEntry (ledger->order, blank_entry);
             break;
         case GNCENTRY_INVOICE_ENTRY:
-        case GNCENTRY_CUST_CREDIT_NOTE_ENTRY:
             /* Anything entered on an invoice entry must be part of the invoice! */
             gncInvoiceAddEntry (ledger->invoice, blank_entry);
             break;
         case GNCENTRY_BILL_ENTRY:
         case GNCENTRY_EXPVOUCHER_ENTRY:
-        case GNCENTRY_VEND_CREDIT_NOTE_ENTRY:
-        case GNCENTRY_EMPL_CREDIT_NOTE_ENTRY:
             /* Anything entered on an invoice entry must be part of the invoice! */
             gncBillAddEntry (ledger->invoice, blank_entry);
             break;
@@ -125,7 +120,7 @@ gnc_entry_ledger_save (GncEntryLedger *ledger, gboolean do_commit)
         {
             ledger->blank_entry_guid = *guid_null ();
             blank_entry = NULL;
-            ledger->last_date_entered = gncEntryGetDateGDate (entry);
+            ledger->last_date_entered = gncEntryGetDate (entry);
         }
         else
             ledger->blank_entry_edited = TRUE;
@@ -181,15 +176,12 @@ gnc_entry_ledger_verify_can_save (GncEntryLedger *ledger)
         switch (ledger->type)
         {
         case GNCENTRY_INVOICE_ENTRY:
-        case GNCENTRY_CUST_CREDIT_NOTE_ENTRY:
             if (!gnc_entry_ledger_verify_acc_cell_ok (ledger, ENTRY_IACCT_CELL,
                     _("This account should usually be of type income.")))
                 return FALSE;
             break;
         case GNCENTRY_BILL_ENTRY:
         case GNCENTRY_EXPVOUCHER_ENTRY:
-        case GNCENTRY_VEND_CREDIT_NOTE_ENTRY:
-        case GNCENTRY_EMPL_CREDIT_NOTE_ENTRY:
             if (!gnc_entry_ledger_verify_acc_cell_ok (ledger, ENTRY_BACCT_CELL,
                     _("This account should usually be of type expense or asset.")))
                 return FALSE;
@@ -236,7 +228,9 @@ static void gnc_entry_ledger_move_cursor (VirtualLocation *p_new_virt_loc,
          * then it may have moved. Find out where it is now. */
         if (gnc_entry_ledger_find_entry (ledger, new_entry, &vcell_loc))
         {
-            gnc_table_get_virtual_cell (ledger->table, vcell_loc);
+            VirtualCell *vcell;
+
+            vcell = gnc_table_get_virtual_cell (ledger->table, vcell_loc);
             new_virt_loc.vcell_loc = vcell_loc;
         }
         else
@@ -310,13 +304,10 @@ find_entry_in_book_by_desc(GncEntryLedger *reg, const char* desc)
     {
     case GNCENTRY_INVOICE_ENTRY:
     case GNCENTRY_INVOICE_VIEWER:
-    case GNCENTRY_CUST_CREDIT_NOTE_ENTRY:
-    case GNCENTRY_CUST_CREDIT_NOTE_VIEWER:
         use_invoice = TRUE;
         break;
     default:
         use_invoice = FALSE;
-        break;
     };
 
     query = new_query_for_entry_desc(reg, desc, use_invoice);
@@ -366,7 +357,7 @@ gnc_find_entry_in_reg_by_desc(GncEntryLedger *reg, const char* desc)
             if (entry == last_entry)
                 continue;
 
-            if (g_strcmp0 (desc, gncEntryGetDescription (entry)) == 0)
+            if (safe_strcmp (desc, gncEntryGetDescription (entry)) == 0)
                 return entry;
 
             last_entry = entry;
@@ -380,7 +371,7 @@ static void set_value_combo_cell(BasicCell *cell, const char *new_value)
 {
     if (!cell || !new_value)
         return;
-    if (g_strcmp0 (new_value, gnc_basic_cell_get_value (cell)) == 0)
+    if (safe_strcmp (new_value, gnc_basic_cell_get_value (cell)) == 0)
         return;
 
     gnc_combo_cell_set_value ((ComboCell *) cell, new_value);
@@ -411,6 +402,7 @@ gnc_entry_ledger_auto_completion (GncEntryLedger *ledger,
     const char *desc;
     BasicCell *cell = NULL;
     char *account_name = NULL;
+    char *new_value = NULL;
 
     g_assert(ledger);
     g_assert(ledger->table);
@@ -433,9 +425,6 @@ gnc_entry_ledger_auto_completion (GncEntryLedger *ledger,
     case GNCENTRY_INVOICE_ENTRY:
     case GNCENTRY_BILL_ENTRY:
     case GNCENTRY_EXPVOUCHER_ENTRY:
-    case GNCENTRY_CUST_CREDIT_NOTE_ENTRY:
-    case GNCENTRY_VEND_CREDIT_NOTE_ENTRY:
-    case GNCENTRY_EMPL_CREDIT_NOTE_ENTRY:
         break;
     default:
         return FALSE;
@@ -523,14 +512,11 @@ gnc_entry_ledger_auto_completion (GncEntryLedger *ledger,
     switch (ledger->type)
     {
     case GNCENTRY_INVOICE_ENTRY:
-    case GNCENTRY_CUST_CREDIT_NOTE_ENTRY:
         cell = gnc_table_layout_get_cell (ledger->table->layout, ENTRY_IACCT_CELL);
         account_name = gnc_get_account_name_for_register (gncEntryGetInvAccount(auto_entry));
         break;
     case GNCENTRY_EXPVOUCHER_ENTRY:
     case GNCENTRY_BILL_ENTRY:
-    case GNCENTRY_VEND_CREDIT_NOTE_ENTRY:
-    case GNCENTRY_EMPL_CREDIT_NOTE_ENTRY:
         cell = gnc_table_layout_get_cell (ledger->table->layout, ENTRY_BACCT_CELL);
         account_name = gnc_get_account_name_for_register (gncEntryGetBillAccount(auto_entry));
         break;
@@ -543,25 +529,9 @@ gnc_entry_ledger_auto_completion (GncEntryLedger *ledger,
     set_value_combo_cell (cell, account_name);
     g_free (account_name);
 
-    /* Auto-complete quantity cell. Note that this requires some care because
-     * credit notes store quantities with a reversed sign. So we need to figure
-     * out if the original document from which we extract the autofill entry
-     * was a credit note or not. */
-    {
-        gboolean orig_is_cn;
-        switch (ledger->type)
-        {
-        case GNCENTRY_INVOICE_ENTRY:
-        case GNCENTRY_CUST_CREDIT_NOTE_ENTRY:
-            orig_is_cn = gncInvoiceGetIsCreditNote (gncEntryGetInvoice (auto_entry));
-            break;
-        default:
-            orig_is_cn = gncInvoiceGetIsCreditNote (gncEntryGetBill (auto_entry));
-            break;
-        }
-        cell = gnc_table_layout_get_cell (ledger->table->layout, ENTRY_QTY_CELL);
-        set_value_price_cell (cell, gncEntryGetDocQuantity (auto_entry, orig_is_cn));
-    }
+    /* Auto-complete quantity cell */
+    cell = gnc_table_layout_get_cell (ledger->table->layout, ENTRY_QTY_CELL);
+    set_value_price_cell (cell, gncEntryGetQuantity (auto_entry));
 
     /* Auto-complete price cell */
     {
@@ -569,12 +539,10 @@ gnc_entry_ledger_auto_completion (GncEntryLedger *ledger,
         switch (ledger->type)
         {
         case GNCENTRY_INVOICE_ENTRY:
-        case GNCENTRY_CUST_CREDIT_NOTE_ENTRY:
             price = gncEntryGetInvPrice (auto_entry);
             break;
         default:
             price = gncEntryGetBillPrice (auto_entry);
-            break;
         }
 
         /* Auto-complete price cell */
@@ -591,7 +559,6 @@ gnc_entry_ledger_auto_completion (GncEntryLedger *ledger,
         switch (ledger->type)
         {
         case GNCENTRY_INVOICE_ENTRY:
-        case GNCENTRY_CUST_CREDIT_NOTE_ENTRY:
             taxable = gncEntryGetInvTaxable (auto_entry);
             taxincluded = gncEntryGetInvTaxIncluded (auto_entry);
             taxtable = gncEntryGetInvTaxTable (auto_entry);
@@ -600,7 +567,6 @@ gnc_entry_ledger_auto_completion (GncEntryLedger *ledger,
             taxable = gncEntryGetBillTaxable (auto_entry);
             taxincluded = gncEntryGetBillTaxIncluded (auto_entry);
             taxtable = gncEntryGetBillTaxTable (auto_entry);
-            break;
         }
 
         /* Taxable? cell */
@@ -622,8 +588,8 @@ gnc_entry_ledger_auto_completion (GncEntryLedger *ledger,
     gnc_resume_gui_refresh ();
 
     /* now move to the non-empty amount column unless config setting says not */
-    if ( !gnc_prefs_get_bool(GNC_PREFS_GROUP_GENERAL_REGISTER,
-                             GNC_PREF_TAB_TRANS_MEMORISED) )
+    if ( !gnc_gconf_get_bool(GCONF_GENERAL_REGISTER,
+                             "tab_includes_transfer_on_memorised", NULL) )
     {
         VirtualLocation new_virt_loc;
         const char *cell_name = ENTRY_QTY_CELL;
@@ -676,18 +642,12 @@ static gboolean gnc_entry_ledger_traverse (VirtualLocation *p_new_virt_loc,
         {
         case GNCENTRY_INVOICE_ENTRY:
         case GNCENTRY_INVOICE_VIEWER:
-        case GNCENTRY_CUST_CREDIT_NOTE_ENTRY:
-        case GNCENTRY_CUST_CREDIT_NOTE_VIEWER:
             cell_name = ENTRY_IACCT_CELL;
             break;
         case GNCENTRY_BILL_ENTRY:
         case GNCENTRY_BILL_VIEWER:
         case GNCENTRY_EXPVOUCHER_ENTRY:
         case GNCENTRY_EXPVOUCHER_VIEWER:
-        case GNCENTRY_VEND_CREDIT_NOTE_ENTRY:
-        case GNCENTRY_VEND_CREDIT_NOTE_VIEWER:
-        case GNCENTRY_EMPL_CREDIT_NOTE_ENTRY:
-        case GNCENTRY_EMPL_CREDIT_NOTE_VIEWER:
             cell_name = ENTRY_BACCT_CELL;
             break;
         default:
@@ -869,14 +829,13 @@ static gboolean gnc_entry_ledger_traverse (VirtualLocation *p_new_virt_loc,
         GtkWidget *dialog;
         const char *title = _("Save the current entry?");
         const char *message =
-            _("The current entry has been changed. However, this entry is "
+            _("The current entry has been changed.  However, this entry is "
               "part of an existing order. Would you like to record the change "
               "and effectively change your order?");
 
         switch (ledger->type)
         {
         case GNCENTRY_INVOICE_ENTRY:
-        case GNCENTRY_CUST_CREDIT_NOTE_ENTRY:
             if (gncEntryGetOrder (entry) != NULL)
             {
                 dialog = gtk_message_dialog_new(GTK_WINDOW(ledger->parent),
@@ -891,12 +850,12 @@ static gboolean gnc_entry_ledger_traverse (VirtualLocation *p_new_virt_loc,
                                        GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
                                        _("_Record"), GTK_RESPONSE_ACCEPT,
                                        NULL);
-                response = gnc_dialog_run(GTK_DIALOG(dialog), GNC_PREF_WARN_INV_ENTRY_MOD);
+                response = gnc_dialog_run(GTK_DIALOG(dialog), "invoice_entry_changed");
                 gtk_widget_destroy(dialog);
                 break;
             }
 
-            /* FALL THROUGH */
+            /* FALLTHROUGH */
         default:
             response = GTK_RESPONSE_ACCEPT;
             break;
@@ -1012,8 +971,7 @@ gnc_entry_ledger_check_close (GtkWidget *parent, GncEntryLedger *ledger)
     {
         gboolean dontask = FALSE;
 
-        if (ledger->type ==  GNCENTRY_INVOICE_ENTRY ||
-                ledger->type ==  GNCENTRY_CUST_CREDIT_NOTE_ENTRY)
+        if (ledger->type ==  GNCENTRY_INVOICE_ENTRY)
         {
             gboolean inv_value;
             gboolean only_inv_changed = FALSE;

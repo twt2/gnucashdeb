@@ -4,33 +4,16 @@
 ;;
 ;;  Copyright (c) 2001 Linux Developers Group, Inc.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; This program is free software; you can redistribute it and/or
-;; modify it under the terms of the GNU General Public License as
-;; published by the Free Software Foundation; either version 2 of
-;; the License, or (at your option) any later version.
-;;
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-;;
-;; You should have received a copy of the GNU General Public License
-;; along with this program; if not, contact:
-;;
-;; Free Software Foundation           Voice:  +1-617-542-5942
-;; 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652
-;; Boston, MA  02110-1301,  USA       gnu@gnu.org
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 
 (define-module (gnucash report report-system))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
+(use-modules (ice-9 slib))
 (use-modules (ice-9 regex))
 (use-modules (srfi srfi-1))
 (use-modules (srfi srfi-19))
 (use-modules (gnucash gnc-module))
-(use-modules (gnucash core-utils))
+
+(require 'hash-table)
 
 (gnc:module-load "gnucash/engine" 0)
 (gnc:module-load "gnucash/app-utils" 0)
@@ -112,13 +95,11 @@
 (export gnc:html-build-acct-table)
 (export gnc:first-html-build-acct-table)
 (export gnc:html-make-exchangerates)
-(export gnc:html-make-generic-warning)
 (export gnc:html-make-no-account-warning)
 (export gnc:html-make-generic-budget-warning)
 (export gnc:html-make-generic-options-warning)
 (export gnc:html-make-generic-simple-warning)
 (export gnc:html-make-empty-data-warning)
-(export gnc:html-make-options-link)
 
 ;; report.scm
 (export gnc:menuname-reports)
@@ -128,17 +109,18 @@
 (export gnc:menuname-taxes)
 (export gnc:menuname-utility)
 (export gnc:menuname-custom)
-(export gnc:menuname-business-reports)
 (export gnc:pagename-general)
 (export gnc:pagename-accounts)
 (export gnc:pagename-display)
 (export gnc:optname-reportname)
-(export gnc:optname-invoice-number)
 
 (export gnc:define-report)
 (export <report>)
+(export gnc:report-template-new-options/name)
 (export gnc:report-template-new-options/report-guid)
+(export gnc:report-template-menu-name/name)
 (export gnc:report-template-menu-name/report-guid)
+(export gnc:report-template-renderer/name)
 (export gnc:report-template-renderer/report-guid)
 (export gnc:report-template-new-options)
 (export gnc:report-template-version)
@@ -155,7 +137,6 @@
 (export gnc:report-template-menu-tip)
 (export gnc:report-template-export-types)
 (export gnc:report-template-export-thunk)
-(export gnc:report-template-has-unique-name?)
 (export gnc:report-type)
 (export gnc:report-set-type!)
 (export gnc:report-id)
@@ -171,8 +152,8 @@
 (export gnc:report-ctext)
 (export gnc:report-set-ctext!)
 (export gnc:make-report)
+(export gnc:restore-report)
 (export gnc:restore-report-by-guid)
-(export gnc:restore-report-by-guid-with-custom-template)
 (export gnc:make-report-options)
 (export gnc:report-export-types)
 (export gnc:report-export-thunk)
@@ -180,28 +161,17 @@
 (export gnc:report-name)
 (export gnc:report-stylesheet)
 (export gnc:report-set-stylesheet!)
-(export gnc:all-report-template-guids)
-(export gnc:custom-report-template-guids)
+(export gnc:all-report-template-names)
+(export gnc:custom-report-template-names)
 (export gnc:delete-report)
-(export gnc:rename-report)
 (export gnc:find-report-template)
-(export gnc:report-serialize)
-(export gnc:report-to-template-new)
-(export gnc:report-to-template-update)
+(export gnc:report-generate-restore-forms)
+(export gnc:report-generate-saved-forms)
+(export gnc:report-save-to-savefile)
 (export gnc:report-render-html)
 (export gnc:report-run)
 (export gnc:report-templates-for-each)
 (export gnc:report-embedded-list)
-(export gnc:report-template-is-custom/template-guid?)
-(export gnc:is-custom-report-type)
-;; Legacy : the following 3 functions are only needed to
-;; load a saved-reports file version 2.0
-(export gnc:report-template-new-options/name)
-(export gnc:report-template-menu-name/name)
-(export gnc:report-template-renderer/name)
-;; Legacy: this function is needed only to restore
-;; a open report when loading a book last saved in GnuCash 2.2
-(export gnc:restore-report)
 
 ;; html-barchart.scm
 
@@ -417,6 +387,10 @@
 (export gnc:html-linechart-line-width)
 ;; html-style-info.scm
 
+(export make-kvtable)
+(export kvt-ref)
+(export kvt-set!)
+(export kvt-fold)
 (export <html-markup-style-info>)
 (export gnc:html-markup-style-info?)
 (export gnc:make-html-markup-style-info-internal)
@@ -667,6 +641,7 @@
 (export gnc:account-get-type-string-plural)
 (export gnc:accounts-get-commodities)
 (export gnc:get-current-account-tree-depth)
+(export gnc:split-get-corr-account-full-name)
 (export gnc:acccounts-get-all-subaccounts)
 (export gnc:make-stats-collector)
 (export gnc:make-drcr-collector)
@@ -702,7 +677,6 @@
 (export gnc-commodity-collector-allzero?)
 (export gnc:account-get-trans-type-balance-interval)
 (export gnc:account-get-trans-type-balance-interval-with-closing)
-(export gnc:account-get-total-flow)
 (export gnc:account-get-pos-trans-total-interval)
 (export gnc:account-get-trans-type-splits-interval)
 (export gnc:double-col)
@@ -720,22 +694,22 @@
 (export gnc:get-assoc-account-balances-total)
 (export make-file-url)
 
-(load-from-path "commodity-utilities")
-(load-from-path "html-barchart")
-(load-from-path "html-document")
-(load-from-path "html-piechart")
-(load-from-path "html-scatter")
-(load-from-path "html-linechart")
-(load-from-path "html-style-info")
-(load-from-path "html-fonts")
+(load-from-path "commodity-utilities.scm")
+(load-from-path "html-barchart.scm")
+(load-from-path "html-document.scm")
+(load-from-path "html-piechart.scm")
+(load-from-path "html-scatter.scm")
+(load-from-path "html-linechart.scm")
+(load-from-path "html-style-info.scm")
+(load-from-path "html-fonts.scm")
 
-(load-from-path "html-style-sheet")
-(load-from-path "html-table")
-(load-from-path "html-text")
-(load-from-path "html-acct-table")
-(load-from-path "html-utilities")
-(load-from-path "options-utilities")
-(load-from-path "report-utilities")
-(load-from-path "report")
+(load-from-path "html-style-sheet.scm")
+(load-from-path "html-table.scm")
+(load-from-path "html-text.scm")
+(load-from-path "html-acct-table.scm")
+(load-from-path "html-utilities.scm")
+(load-from-path "options-utilities.scm")
+(load-from-path "report-utilities.scm")
+(load-from-path "report.scm")
 
 (gnc-hook-add-scm-dangler HOOK-SAVE-OPTIONS gnc:save-style-sheet-options)

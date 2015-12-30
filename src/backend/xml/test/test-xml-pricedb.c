@@ -41,31 +41,37 @@
 #include "test-stuff.h"
 #include "test-engine-stuff.h"
 #include "test-file-stuff.h"
-#include "io-gncxml-v2.h"
+
+#define GNC_V2_STRING "gnc-v2"
+const gchar *gnc_v2_xml_version_string = GNC_V2_STRING;
 
 static QofSession *session;
-static int iter;
+
+struct pricedb_data_struct
+{
+    GNCPriceDB *db;
+    int value;
+};
+typedef struct pricedb_data_struct pricedb_data;
 
 static gboolean
 test_add_pricedb (const char *tag, gpointer globaldata, gpointer data)
 {
-    sixtp_gdv2 *gdata = globaldata;
-    GNCPriceDB *db = gnc_pricedb_get_db (gdata->book);
+    pricedb_data *gdata = globaldata;
 
-    do_test_args (gnc_pricedb_equal(data, db),
+    do_test_args (gnc_pricedb_equal(data, gdata->db),
                   "gnc_pricedb_sixtp_parser_create",
-                  __FILE__, __LINE__, "%d", iter);
+                  __FILE__, __LINE__, "%d", gdata->value);
 
     return TRUE;
 }
 
 static void
-test_db (GNCPriceDB *db)
+test_db (int i, GNCPriceDB *db)
 {
     xmlNodePtr test_node;
     gchar *filename1;
     int fd;
-    QofBook *book = qof_instance_get_book (QOF_INSTANCE (db));
 
     test_node = gnc_pricedb_dom_tree_create (db);
 
@@ -89,8 +95,10 @@ test_db (GNCPriceDB *db)
 
     {
         sixtp *parser;
-	load_counter lc;
-        sixtp_gdv2 data = {book, lc, NULL, NULL, FALSE};
+        pricedb_data data;
+
+        data.db = db;
+        data.value = i;
 
         parser = sixtp_new ();
 
@@ -100,14 +108,14 @@ test_db (GNCPriceDB *db)
                  NULL, NULL))
         {
             failure_args ("sixtp_add_some_sub_parsers failed",
-                          __FILE__, __LINE__, "%d", iter);
+                          __FILE__, __LINE__, "%d", i);
         }
         else if (!gnc_xml_parse_file (parser, filename1, test_add_pricedb,
                                       (gpointer)&data,
                                       qof_session_get_book (session)))
         {
             failure_args ("gnc_xml_parse_file returned FALSE",
-                          __FILE__, __LINE__, "%d", iter);
+                          __FILE__, __LINE__, "%d", i);
         }
     }
 
@@ -119,20 +127,22 @@ test_db (GNCPriceDB *db)
 static void
 test_generation (void)
 {
-    for (iter = 0; iter < 20; iter++)
+    int i;
+
+    for (i = 0; i < 20; i++)
     {
         GNCPriceDB *db;
-        g_message("iter=%d", iter);
+        g_message("i=%d", i);
         session = qof_session_new();
         db = get_random_pricedb (qof_session_get_book (session));
         if (!db)
         {
             failure_args ("gnc_random_price_db returned NULL",
-                          __FILE__, __LINE__, "%d", iter);
+                          __FILE__, __LINE__, "%d", i);
             return;
         }
         if (gnc_pricedb_get_num_prices (db))
-            test_db (db);
+            test_db (i, db);
 
         gnc_pricedb_destroy (db);
         qof_session_end(session);

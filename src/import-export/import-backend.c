@@ -35,15 +35,16 @@
 
 #include <errno.h>
 
+#include "gnc-gconf-utils.h"
 #include "import-backend.h"
 #include "import-utilities.h"
 #include "Account.h"
 #include "Query.h"
 #include "gnc-engine.h"
-#include "engine-helpers.h"
-#include "gnc-prefs.h"
 #include "gnc-ui-util.h"
 
+#define GCONF_SECTION "dialogs/import/generic_matcher"
+#define BAYES_OPTION  "use_bayes"
 
 /********************************************************************\
  *   Constants                                                      *
@@ -408,7 +409,7 @@ TransactionGetTokens(GNCImportTransInfo *info)
     Transaction* transaction;
     GList* tokens;
     const char* text;
-    time64 transtime;
+    time_t transtime;
     struct tm *tm_struct;
     char local_day_of_week[16];
     Split* split;
@@ -431,12 +432,12 @@ TransactionGetTokens(GNCImportTransInfo *info)
      * it to day of week as a token
      */
     transtime = xaccTransGetDate(transaction);
-    tm_struct = gnc_gmtime(&transtime);
+    tm_struct = gmtime(&transtime);
     if (!qof_strftime(local_day_of_week, sizeof(local_day_of_week), "%A", tm_struct))
     {
         PERR("TransactionGetTokens: error, strftime failed\n");
     }
-    gnc_tm_free (tm_struct);
+
     /* we cannot add a locally allocated string to this array, dup it so
      * it frees the same way the rest do
      */
@@ -475,7 +476,7 @@ matchmap_find_destination (GncImportMatchMap *matchmap, GNCImportTransInfo *info
                (xaccSplitGetAccount
                 (gnc_import_TransInfo_get_fsplit (info))));
 
-    useBayes = gnc_prefs_get_bool (GNC_PREFS_GROUP_IMPORT, GNC_PREF_USE_BAYES);
+    useBayes = gnc_gconf_get_bool(GCONF_SECTION, BAYES_OPTION, NULL);
     if (useBayes)
     {
         /* get the tokens for this transaction* */
@@ -546,7 +547,7 @@ matchmap_store_destination (GncImportMatchMap *matchmap,
                      (gnc_import_TransInfo_get_fsplit (trans_info))));
 
     /* see what matching system we are currently using */
-    useBayes = gnc_prefs_get_bool (GNC_PREFS_GROUP_IMPORT, GNC_PREF_USE_BAYES);
+    useBayes = gnc_gconf_get_bool(GCONF_SECTION, BAYES_OPTION, NULL);
     if (useBayes)
     {
         /* tokenize this transaction */
@@ -598,7 +599,7 @@ static void split_find_match (GNCImportTransInfo * trans_info,
         gint prob = 0;
         gboolean update_proposed;
         double downloaded_split_amount, match_split_amount;
-        time64 match_time, download_time;
+        time_t match_time, download_time;
         int datediff_day;
         Transaction *new_trans = gnc_import_TransInfo_get_trans (trans_info);
         Split *new_trans_fsplit = gnc_import_TransInfo_get_fsplit (trans_info);
@@ -643,7 +644,7 @@ static void split_find_match (GNCImportTransInfo * trans_info,
         /* Date heuristics */
         match_time = xaccTransGetDate (xaccSplitGetParent (split));
         download_time = xaccTransGetDate (new_trans);
-        datediff_day = llabs(match_time - download_time) / 86400;
+        datediff_day = abs(match_time - download_time) / 86400;
         /* Sorry, there are not really functions around at all that
         	 provide for less hacky calculation of days of date
         	 differences. Whatever. On the other hand, the difference
@@ -677,7 +678,7 @@ static void split_find_match (GNCImportTransInfo * trans_info,
 
         /* Check number heuristics */
         {
-            const char *new_trans_str = gnc_get_num_action(new_trans, new_trans_fsplit);
+            const char *new_trans_str = xaccTransGetNum(new_trans);
             if (new_trans_str && strlen(new_trans_str) != 0)
             {
                 long new_trans_number, split_number;
@@ -693,14 +694,14 @@ static void split_find_match (GNCImportTransInfo * trans_info,
                 if (errno || endptr == new_trans_str)
                     conversion_ok = FALSE;
 
-                split_str = gnc_get_num_action (xaccSplitGetParent (split), split);
+                split_str = xaccTransGetNum (xaccSplitGetParent (split));
                 errno = 0;
                 split_number = strtol(split_str, &endptr, 10);
                 if (errno || endptr == split_str)
                     conversion_ok = FALSE;
 
                 if ( (conversion_ok && (split_number == new_trans_number)) ||
-                        (g_strcmp0(new_trans_str, split_str) == 0) )
+                        (safe_strcmp(new_trans_str, split_str) == 0) )
                 {
                     /* An exact match of the Check number gives a +4 */
                     prob += 4;
@@ -720,14 +721,14 @@ static void split_find_match (GNCImportTransInfo * trans_info,
             const char *memo = xaccSplitGetMemo(new_trans_fsplit);
             if (memo && strlen(memo) != 0)
             {
-                if (safe_strcasecmp(memo, xaccSplitGetMemo(split)) == 0)
+                if (safe_strcmp(memo, xaccSplitGetMemo(split)) == 0)
                 {
                     /* An exact match of memo gives a +2 */
                     prob = prob + 2;
                     /* DEBUG("heuristics:  probability + 2 (memo)"); */
                 }
-                else if ((strncasecmp(memo, xaccSplitGetMemo(split),
-                                      strlen(xaccSplitGetMemo(split)) / 2)
+                else if ((strncmp(memo, xaccSplitGetMemo(split),
+                                  strlen(xaccSplitGetMemo(split)) / 2)
                           == 0))
                 {
                     /* Very primitive fuzzy match worth +1.  This matches the
@@ -745,17 +746,17 @@ static void split_find_match (GNCImportTransInfo * trans_info,
             const char *descr = xaccTransGetDescription(new_trans);
             if (descr && strlen(descr) != 0)
             {
-                if (safe_strcasecmp(descr,
-                                    xaccTransGetDescription(xaccSplitGetParent(split)))
+                if (safe_strcmp(descr,
+                                xaccTransGetDescription(xaccSplitGetParent(split)))
                         == 0)
                 {
                     /*An exact match of Description gives a +2 */
                     prob = prob + 2;
                     /*DEBUG("heuristics:  probability + 2 (description)");*/
                 }
-                else if ((strncasecmp(descr,
-                                      xaccTransGetDescription (xaccSplitGetParent(split)),
-                                      strlen(xaccTransGetDescription (new_trans)) / 2)
+                else if ((strncmp(descr,
+                                  xaccTransGetDescription (xaccSplitGetParent(split)),
+                                  strlen(xaccTransGetDescription (new_trans)) / 2)
                           == 0))
                 {
                     /* Very primitive fuzzy match worth +1.  This matches the
@@ -815,7 +816,7 @@ void gnc_import_find_split_matches(GNCImportTransInfo *trans_info,
         */
         Account *importaccount =
             xaccSplitGetAccount (gnc_import_TransInfo_get_fsplit (trans_info));
-        time64 download_time = xaccTransGetDate (gnc_import_TransInfo_get_trans (trans_info));
+        time_t download_time = xaccTransGetDate (gnc_import_TransInfo_get_trans (trans_info));
 
         qof_query_set_book (query, gnc_get_current_book());
         xaccQueryAddSingleAccountMatch (query, importaccount,
@@ -916,7 +917,7 @@ gnc_import_process_trans_item (GncImportMatchMap *matchmap,
         xaccSplitSetReconcile(gnc_import_TransInfo_get_fsplit (trans_info), CREC);
         /*Set reconcile date to today*/
         xaccSplitSetDateReconciledSecs(gnc_import_TransInfo_get_fsplit (trans_info),
-                                       gnc_time (NULL));
+                                       time(NULL));
         /* Done editing. */
         xaccTransCommitEdit(gnc_import_TransInfo_get_trans (trans_info));
         return TRUE;
@@ -944,9 +945,9 @@ gnc_import_process_trans_item (GncImportMatchMap *matchmap,
             /*DEBUG("BeginEdit selected_match")*/
             xaccTransBeginEdit(selected_match->trans);
 
-            xaccTransSetDatePostedSecsNormalized(selected_match->trans,
-                                                 xaccTransGetDate(xaccSplitGetParent(
-                                                         gnc_import_TransInfo_get_fsplit(trans_info))));
+            xaccTransSetDatePostedSecs(selected_match->trans,
+                                       xaccTransGetDate(xaccSplitGetParent(
+                                                   gnc_import_TransInfo_get_fsplit(trans_info))));
 
             xaccSplitSetAmount(selected_match->split,
                                xaccSplitGetAmount(
@@ -980,7 +981,7 @@ gnc_import_process_trans_item (GncImportMatchMap *matchmap,
             }
 
             /* Set reconcile date to today */
-            xaccSplitSetDateReconciledSecs(selected_match->split, gnc_time (NULL));
+            xaccSplitSetDateReconciledSecs(selected_match->split, time(NULL));
 
             /* Copy the online id to the reconciled transaction, so
                the match will be remembered */
@@ -1036,7 +1037,7 @@ gnc_import_process_trans_item (GncImportMatchMap *matchmap,
                 (selected_match->split, CREC);
             /* Set reconcile date to today */
             xaccSplitSetDateReconciledSecs
-            (selected_match->split, gnc_time (NULL));
+            (selected_match->split, time(NULL));
 
             /* Copy the online id to the reconciled transaction, so
             		 the match will be remembered */
@@ -1064,7 +1065,6 @@ gnc_import_process_trans_item (GncImportMatchMap *matchmap,
     return TRUE;
     default:
         DEBUG("Invalid GNCImportAction for this imported transaction.");
-        break;
     }
     /*DEBUG("End");*/
     return FALSE;
@@ -1117,6 +1117,7 @@ static gint check_trans_online_id(Transaction *trans1, void *user_data)
   its parent account. */
 gboolean gnc_import_exists_online_id (Transaction *trans)
 {
+    int i;
     gboolean online_id_exists = FALSE;
     Account *dest_acct;
     Split *source_split;

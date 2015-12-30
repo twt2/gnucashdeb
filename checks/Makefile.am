@@ -7,7 +7,12 @@ checks_DATA = \
 	quicken.chk \
 	quicken_wallet.chk \
 	voucher.chk \
-	quicken_check_21.chk \
-	quicken_3part.chk
+	quicken_check_21.chk
 
-EXTRA_DIST = ${checks_DATA}
+EXTRA_DIST = \
+	deluxe.chk \
+	liberty.chk \
+	quicken.chk \
+	quicken_wallet.chk \
+	voucher.chk \
+	quicken_check_21.chk

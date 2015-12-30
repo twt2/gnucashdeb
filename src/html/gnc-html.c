@@ -38,6 +38,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <regex.h>
+#include <libguile.h>
 
 #include "Account.h"
 #include "print-session.h"
@@ -63,6 +64,12 @@ GHashTable* gnc_html_url_handlers = NULL;
 
 /* hashes an HTML <object classid="ID"> classid to a handler function */
 extern GHashTable* gnc_html_object_handlers;
+
+static char error_404_format[] =
+    "<html><body><h3>%s</h3><p>%s</body></html>";
+static char error_404_title[] = N_("Not found");
+static char error_404_body[] =
+    N_("The specified URL could not be loaded.");
 
 G_DEFINE_ABSTRACT_TYPE(GncHtml, gnc_html, GTK_TYPE_BIN)
 
@@ -172,7 +179,6 @@ extract_machine_name( const gchar* path )
             machine = g_strndup( path + match[1].rm_so, match[1].rm_eo - match[1].rm_so );
         }
     }
-    regfree(&compiled_m);
     return machine;
 }
 
@@ -263,7 +269,7 @@ gnc_html_parse_url( GncHtml* self, const gchar* url,
 
     g_free( protocol );
 
-    if ( !g_strcmp0( retval, URL_TYPE_FILE ) )
+    if ( !safe_strcmp( retval, URL_TYPE_FILE ) )
     {
         if ( !found_protocol && path && self && priv->base_location )
         {
@@ -284,7 +290,7 @@ gnc_html_parse_url( GncHtml* self, const gchar* url,
         }
 
     }
-    else if ( !g_strcmp0( retval, URL_TYPE_JUMP ) )
+    else if ( !safe_strcmp( retval, URL_TYPE_JUMP ) )
     {
         *url_location = NULL;
         g_free( path );
@@ -524,14 +530,14 @@ gnc_html_export_to_file( GncHtml* self, const gchar* filepath )
 }
 
 void
-gnc_html_print( GncHtml* self, const gchar* jobname, gboolean export_pdf )
+gnc_html_print( GncHtml* self, const gchar* jobname )
 {
     g_return_if_fail( self != NULL );
     g_return_if_fail( GNC_IS_HTML(self) );
 
     if ( GNC_HTML_GET_CLASS(self)->print != NULL )
     {
-        GNC_HTML_GET_CLASS(self)->print( self, jobname, export_pdf );
+        GNC_HTML_GET_CLASS(self)->print( self, jobname );
     }
     else
     {

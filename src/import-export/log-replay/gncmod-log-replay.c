@@ -26,6 +26,7 @@
 #include "config.h"
 
 #include <gmodule.h>
+#include <libguile.h>
 
 #include "gnc-log-replay.h"
 #include "gnc-module.h"

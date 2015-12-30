@@ -4,7 +4,6 @@
  * Copyright (C) 2001 Robert Merkel <rgmerk@mira.net>               *
  * Copyright (C) 2001 Joshua Sled <jsled@asynchronous.org>          *
  * Copyright (c) 2006 David Hampton <hampton@employees.org>         *
- * Copyright (c) 2011 Robert Fewell                                 *
  *                                                                  *
  * This program is free software; you can redistribute it and/or    *
  * modify it under the terms of the GNU General Public License as   *
@@ -26,7 +25,6 @@
 
 #include "config.h"
 
-#include <gnc-gdate-utils.h>
 #include "dialog-sx-editor.h"
 #include "dialog-sx-from-trans.h"
 #include "dialog-utils.h"
@@ -35,8 +33,7 @@
 #include "gnc-dense-cal-store.h"
 #include "gnc-dense-cal.h"
 #include "gnc-engine.h"
-#include "engine-helpers.h"
-#include "gnc-prefs.h"
+#include "gnc-gconf-utils.h"
 #include "gnc-ui-util.h"
 #include "gnc-ui.h"
 #include "qof.h"
@@ -48,6 +45,23 @@
 #include <gtk/gtk.h>
 #include <stdlib.h>
 
+#define SX_GLADE_FILE "sched-xact.glade"
+#define SXFTD_DIALOG_GLADE_NAME "sx_from_real_trans"
+#define SXFTD_OK_BUTTON "ok_button"
+#define SXFTD_ADVANCED_BUTTON "advanced_button"
+#define SXFTD_CANCEL_BUTTON "cancel_button"
+#define SXFTD_NEVER_END_BUTTON "never_end_button"
+#define SXFTD_END_ON_DATE_BUTTON "end_on_date_button"
+#define SXFTD_N_OCCURRENCES_BUTTON "n_occurrences_button"
+#define SXFTD_PARAM_TABLE "param_table"
+#define SXFTD_NAME_ENTRY "name_entry"
+#define SXFTD_N_OCCURRENCES_ENTRY "n_occurrences_entry"
+#define SXFTD_FREQ_COMBO_BOX "freq_combo_box"
+/* #define SXFTD_END_DATE_EDIT "end_date_edit" */
+#define SXFTD_START_DATE_EDIT "start_date_edit"
+#define SXFTD_EX_CAL_FRAME "ex_cal_frame"
+#define SXFTD_END_DATE_BOX "end_date_hbox"
+
 #define SXFTD_ERRNO_UNBALANCED_XACTION 3
 #define SXFTD_ERRNO_OPEN_XACTION -3
 
@@ -56,10 +70,10 @@
 
 #define SXFTD_RESPONSE_ADVANCED 100 /* 'Advanced' button response code */
 
+static QofLogModule log_module = GNC_MOD_GUI_SX;
+
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN GNC_MOD_GUI_SX
-
-static QofLogModule log_module = GNC_MOD_GUI_SX;
 
 static void sxftd_freq_combo_changed( GtkWidget *w, gpointer user_data );
 static void gnc_sx_trans_window_response_cb(GtkDialog *dialog, gint response, gpointer data);
@@ -77,16 +91,8 @@ typedef enum { FREQ_DAILY = 0,  /* I know the =0 is redundant, but I'm using
 
 typedef struct
 {
-    GtkBuilder *builder;
+    GladeXML *gxml;
     GtkWidget *dialog;
-    GtkEntry *name;
-    GtkComboBox *freq_combo;
-
-    GtkToggleButton *ne_but;
-    GtkToggleButton *ed_but;
-    GtkToggleButton *oc_but;
-    GtkEntry *n_occurences;
-
     Transaction *trans;
     SchedXaction *sx;
 
@@ -125,11 +131,11 @@ sxfti_attach_callbacks(SXFromTransInfo *sxfti)
     {
         /* Whenever any of the controls change, we want to update the
          * calendar. */
-        { "never_end_button",     "clicked",      sxftd_update_excal_adapt },
-        { "end_on_date_button",   "clicked",      sxftd_update_excal_adapt },
-        { "n_occurrences_button", "clicked",      sxftd_update_excal_adapt },
-        { "n_occurrences_entry",  "changed",      sxftd_update_excal_adapt },
-        { NULL,                   NULL,           NULL }
+        { SXFTD_NEVER_END_BUTTON,     "clicked",      sxftd_update_excal_adapt },
+        { SXFTD_END_ON_DATE_BUTTON,   "clicked",      sxftd_update_excal_adapt },
+        { SXFTD_N_OCCURRENCES_BUTTON, "clicked",      sxftd_update_excal_adapt },
+        { SXFTD_N_OCCURRENCES_ENTRY,  "changed",      sxftd_update_excal_adapt },
+        { NULL,                  NULL,      NULL }
     };
 
     int i;
@@ -137,9 +143,9 @@ sxfti_attach_callbacks(SXFromTransInfo *sxfti)
     GtkWidget *w;
     for (i = 0; callbacks[i].name != NULL; i++)
     {
-        w = GTK_WIDGET(gtk_builder_get_object(sxfti->builder, callbacks[i].name));
+        w = glade_xml_get_widget(sxfti->gxml, callbacks[i].name);
 
-        g_signal_connect (G_OBJECT(w), callbacks[i].signal,
+        g_signal_connect (GTK_OBJECT(w), callbacks[i].signal,
                           G_CALLBACK(callbacks[i].handlerFn),
                           sxfti );
     }
@@ -154,33 +160,38 @@ static getEndTuple
 sxftd_get_end_info(SXFromTransInfo *sxfti)
 {
     getEndTuple retval;
+    GtkWidget *w;
 
     retval.type = BAD_END;
     g_date_clear( &(retval.end_date), 1 );
     retval.n_occurrences = 0;
 
-    if (gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(sxfti->ne_but)))
+    w = glade_xml_get_widget(sxfti->gxml, SXFTD_NEVER_END_BUTTON);
+    if (gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(w)))
     {
         retval.type = NEVER_END;
         return retval;
     }
 
-    if (gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(sxfti->ed_but)))
+    w = glade_xml_get_widget(sxfti->gxml, SXFTD_END_ON_DATE_BUTTON);
+    if (gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(w)))
     {
-        time64 end_tt;
+        time_t end_tt;
         retval.type = END_ON_DATE;
         g_date_clear( &(retval.end_date), 1 );
         end_tt = gnc_date_edit_get_date(sxfti->endDateGDE);
-        gnc_gdate_set_time64( &(retval.end_date), end_tt);
+        g_date_set_time_t( &(retval.end_date), end_tt);
         return retval;
     }
 
-    if (gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(sxfti->oc_but) ))
+    w = glade_xml_get_widget(sxfti->gxml, SXFTD_N_OCCURRENCES_BUTTON);
+    if (gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(w) ))
     {
         gchar *text, *endptr;
         guint n_occs;
+        w = glade_xml_get_widget(sxfti->gxml, SXFTD_N_OCCURRENCES_ENTRY);
+        text = gtk_editable_get_chars(GTK_EDITABLE(w), 0, -1);
 
-        text = gtk_editable_get_chars(GTK_EDITABLE(sxfti->n_occurences), 0, -1);
         if (text == NULL || strlen(text) == 0)
         {
             n_occs = 0;
@@ -193,12 +204,17 @@ sxftd_get_end_info(SXFromTransInfo *sxfti)
                 n_occs = -1;
             }
         }
+
         g_free(text);
 
-        retval.type = END_AFTER_N_OCCS;
-        retval.n_occurrences = n_occs;
-        return retval;
+        if (n_occs > 0)
+        {
+            retval.type = END_AFTER_N_OCCS;
+            retval.n_occurrences = n_occs;
+            return retval;
+        }
     }
+
     return retval;
 }
 
@@ -220,14 +236,14 @@ sxftd_add_template_trans(SXFromTransInfo *sxfti)
     runningBalance = gnc_numeric_zero();
 
     gnc_ttinfo_set_description(tti, xaccTransGetDescription(tr));
-    gnc_ttinfo_set_num(tti, gnc_get_num_action(tr, NULL));
+    gnc_ttinfo_set_num(tti, xaccTransGetNum(tr));
     gnc_ttinfo_set_currency(tti, xaccTransGetCurrency(tr));
 
     for (splits = xaccTransGetSplitList(tr); splits; splits = splits->next)
     {
         sp = splits->data;
         ttsi = gnc_ttsplitinfo_malloc();
-        gnc_ttsplitinfo_set_action(ttsi, gnc_get_num_action(NULL, sp));
+        gnc_ttsplitinfo_set_action(ttsi, xaccSplitGetAction(sp));
         split_value = xaccSplitGetValue(sp);
         gnc_ttsplitinfo_set_memo(ttsi, xaccSplitGetMemo(sp));
 
@@ -278,16 +294,16 @@ sxftd_add_template_trans(SXFromTransInfo *sxfti)
     return 0;
 }
 
-
 static void
 sxftd_update_schedule( SXFromTransInfo *sxfti, GDate *date, GList **recurrences)
 {
     gint index;
+    GtkWidget *w;
 
     /* Note that we make the start date the *NEXT* instance, not the
      * present one. */
-
-    index = gtk_combo_box_get_active(GTK_COMBO_BOX(sxfti->freq_combo));
+    w = glade_xml_get_widget(sxfti->gxml, SXFTD_FREQ_COMBO_BOX);
+    index = gtk_combo_box_get_active(GTK_COMBO_BOX(w));
 
     switch (index)
     {
@@ -330,7 +346,6 @@ sxftd_update_schedule( SXFromTransInfo *sxfti, GDate *date, GList **recurrences)
     }
 }
 
-
 static gint
 sxftd_init( SXFromTransInfo *sxfti )
 {
@@ -338,7 +353,7 @@ sxftd_init( SXFromTransInfo *sxfti )
     const char *transName;
     gint pos;
     GList *schedule = NULL;
-    time64 start_tt;
+    time_t start_tt;
     struct tm *tmpTm;
     GDate date, nextDate;
 
@@ -355,30 +370,13 @@ sxftd_init( SXFromTransInfo *sxfti )
         return SXFTD_ERRNO_OPEN_XACTION;
     }
 
-    /* Setup Widgets */
-    {
-        sxfti->ne_but = GTK_TOGGLE_BUTTON(gtk_builder_get_object(sxfti->builder, "never_end_button"));
-        sxfti->ed_but = GTK_TOGGLE_BUTTON(gtk_builder_get_object(sxfti->builder, "end_on_date_button"));
-        sxfti->oc_but = GTK_TOGGLE_BUTTON(gtk_builder_get_object(sxfti->builder, "n_occurrences_button"));
-        sxfti->n_occurences = GTK_ENTRY(gtk_builder_get_object(sxfti->builder, "n_occurrences_entry"));
-    }
-
-    /* Get the name from the transaction, try that as the initial SX name. */
-    transName = xaccTransGetDescription( sxfti->trans );
-    xaccSchedXactionSetName( sxfti->sx, transName );
-
-    sxfti->name = GTK_ENTRY(gtk_builder_get_object(sxfti->builder, "name_entry" ));
-    pos = 0;
-    gtk_editable_insert_text( GTK_EDITABLE(sxfti->name), transName,
-                              (strlen(transName) * sizeof(char)), &pos );
-
     sxfti_attach_callbacks(sxfti);
 
     /* Setup the example calendar and related data structures. */
     {
         int num_marks = SXFTD_EXCAL_NUM_MONTHS * 31;
 
-        w = GTK_WIDGET(gtk_builder_get_object(sxfti->builder, "ex_cal_frame" ));
+        w = GTK_WIDGET(glade_xml_get_widget( sxfti->gxml, SXFTD_EX_CAL_FRAME ));
         sxfti->dense_cal_model = gnc_dense_cal_store_new(num_marks);
         sxfti->example_cal = GNC_DENSE_CAL(gnc_dense_cal_new_with_model(GNC_DENSE_CAL_MODEL(sxfti->dense_cal_model)));
         g_object_ref_sink(sxfti->example_cal);
@@ -391,10 +389,11 @@ sxftd_init( SXFromTransInfo *sxfti )
 
     /* Setup the start and end dates as GNCDateEdits */
     {
-        GtkWidget *paramTable = GTK_WIDGET(gtk_builder_get_object(sxfti->builder, "param_table" ));
+        GtkWidget *paramTable = glade_xml_get_widget( sxfti->gxml,
+                                SXFTD_PARAM_TABLE );
         sxfti->startDateGDE =
-            GNC_DATE_EDIT( gnc_date_edit_new (gnc_time (NULL),
-                                              FALSE, FALSE));
+            GNC_DATE_EDIT( gnc_date_edit_new( time( NULL ),
+                                              FALSE, FALSE ) );
         gtk_table_attach( GTK_TABLE(paramTable),
                           GTK_WIDGET( sxfti->startDateGDE ),
                           1, 2, 2, 3,
@@ -406,34 +405,49 @@ sxftd_init( SXFromTransInfo *sxfti )
                           sxfti );
     }
     {
-        GtkWidget *endDateBox = GTK_WIDGET(gtk_builder_get_object(sxfti->builder, "end_date_hbox" ));
+        GtkWidget *endDateBox = glade_xml_get_widget( sxfti->gxml,
+                                SXFTD_END_DATE_BOX );
         sxfti->endDateGDE =
-            GNC_DATE_EDIT( gnc_date_edit_new (gnc_time (NULL),
-                                              FALSE, FALSE));
+            GNC_DATE_EDIT( gnc_date_edit_new( time( NULL ),
+                                              FALSE, FALSE ) );
         gtk_box_pack_start( GTK_BOX( endDateBox ),
                             GTK_WIDGET( sxfti->endDateGDE ),
-                            TRUE, TRUE, 0 );
+                            FALSE, TRUE, 0 );
         g_signal_connect( sxfti->endDateGDE, "date-changed",
                           G_CALLBACK( sxftd_update_excal_adapt ),
                           sxfti );
     }
 
+    /* Get the name from the transaction, try that as the initial SX name. */
+    transName = xaccTransGetDescription( sxfti->trans );
+    xaccSchedXactionSetName( sxfti->sx, transName );
+
     /* Setup the initial start date for user display/confirmation */
     /* compute good initial date. */
     start_tt = xaccTransGetDate( sxfti->trans );
-    gnc_gdate_set_time64( &date, start_tt );
-    sxfti->freq_combo = GTK_COMBO_BOX(gtk_builder_get_object(sxfti->builder, "freq_combo_box"));
-    gtk_combo_box_set_active(GTK_COMBO_BOX(sxfti->freq_combo), 0);
-    g_signal_connect( sxfti->freq_combo, "changed",
+    g_date_set_time_t( &date, start_tt );
+    w = glade_xml_get_widget(sxfti->gxml,
+                             SXFTD_FREQ_COMBO_BOX);
+    gtk_combo_box_set_active(GTK_COMBO_BOX(w), 0);
+    g_signal_connect( w, "changed",
                       G_CALLBACK(sxftd_freq_combo_changed),
                       sxfti );
     sxftd_update_schedule( sxfti, &date, &schedule);
     recurrenceListNextInstance(schedule, &date, &nextDate);
     recurrenceListFree(&schedule);
-    start_tt = gnc_time64_get_day_start_gdate (&nextDate);
+
+    tmpTm = g_new0( struct tm, 1 );
+    g_date_to_struct_tm( &nextDate, tmpTm );
+    start_tt = mktime( tmpTm );
+    g_free( tmpTm );
     gnc_date_edit_set_time( sxfti->startDateGDE, start_tt );
 
-    g_signal_connect( G_OBJECT(sxfti->name), "destroy",
+    w = glade_xml_get_widget( sxfti->gxml, SXFTD_NAME_ENTRY );
+    pos = 0;
+    gtk_editable_insert_text( GTK_EDITABLE(w), transName,
+                              (strlen(transName) * sizeof(char)), &pos );
+
+    g_signal_connect( GTK_OBJECT(w), "destroy",
                       G_CALLBACK(sxftd_destroy),
                       sxfti );
 
@@ -442,10 +456,10 @@ sxftd_init( SXFromTransInfo *sxfti )
     return 0;
 }
 
-
 static guint
 sxftd_compute_sx(SXFromTransInfo *sxfti)
 {
+    GtkWidget *w;
     gchar *name;
     GDate date;
     GList *schedule = NULL;
@@ -455,12 +469,12 @@ sxftd_compute_sx(SXFromTransInfo *sxfti)
     SchedXaction *sx = sxfti->sx;
 
     /* get the name */
-    name = gtk_editable_get_chars(GTK_EDITABLE(sxfti->name), 0, -1);
-
+    w = glade_xml_get_widget(sxfti->gxml, SXFTD_NAME_ENTRY);
+    name = gtk_editable_get_chars(GTK_EDITABLE(w), 0, -1);
     xaccSchedXactionSetName(sx, name);
     g_free(name);
 
-    gnc_gdate_set_time64( &date, gnc_date_edit_get_date( sxfti->startDateGDE ) );
+    g_date_set_time_t( &date, gnc_date_edit_get_date( sxfti->startDateGDE ) );
 
     sxftd_update_schedule(sxfti, &date, &schedule);
     if (sxftd_errno == 0)
@@ -498,19 +512,19 @@ sxftd_compute_sx(SXFromTransInfo *sxfti)
         gint daysInAdvance;
 
         autoCreateState =
-            gnc_prefs_get_bool (GNC_PREFS_GROUP_SXED, GNC_PREF_CREATE_AUTO);
+            gnc_gconf_get_bool( SXED_GCONF_SECTION, KEY_CREATE_AUTO, NULL );
         notifyState =
-            gnc_prefs_get_bool (GNC_PREFS_GROUP_SXED, GNC_PREF_NOTIFY);
+            gnc_gconf_get_bool( SXED_GCONF_SECTION, KEY_NOTIFY, NULL );
         xaccSchedXactionSetAutoCreate( sx,
                                        autoCreateState,
                                        (autoCreateState & notifyState) );
 
         daysInAdvance =
-            gnc_prefs_get_float (GNC_PREFS_GROUP_SXED, GNC_PREF_CREATE_DAYS);
+            gnc_gconf_get_float( SXED_GCONF_SECTION, KEY_CREATE_DAYS, NULL );
         xaccSchedXactionSetAdvanceCreation( sx, daysInAdvance );
 
         daysInAdvance =
-            gnc_prefs_get_float (GNC_PREFS_GROUP_SXED, GNC_PREF_REMIND_DAYS);
+            gnc_gconf_get_float( SXED_GCONF_SECTION, KEY_REMIND_DAYS, NULL );
         xaccSchedXactionSetAdvanceReminder( sx, daysInAdvance );
     }
 
@@ -521,7 +535,6 @@ sxftd_compute_sx(SXFromTransInfo *sxfti)
 
     return sxftd_errno;
 }
-
 
 static void
 sxftd_close(SXFromTransInfo *sxfti, gboolean delete_sx)
@@ -535,7 +548,6 @@ sxftd_close(SXFromTransInfo *sxfti, gboolean delete_sx)
 
     gtk_widget_destroy (GTK_WIDGET (sxfti->dialog));
 }
-
 
 static void
 sxftd_ok_clicked(SXFromTransInfo *sxfti)
@@ -566,7 +578,6 @@ sxftd_ok_clicked(SXFromTransInfo *sxfti)
     return;
 }
 
-
 /**
  * Update start date... right now we always base this off the transaction
  * start date, but ideally we want to respect what the user has in the field,
@@ -577,31 +588,36 @@ sxftd_freq_combo_changed( GtkWidget *w, gpointer user_data )
 {
     SXFromTransInfo *sxfti = (SXFromTransInfo*)user_data;
     GDate date, nextDate;
-    time64 tmp_tt;
+    time_t tmp_tt;
     struct tm *tmpTm;
     GList *schedule = NULL;
 
     tmp_tt = xaccTransGetDate( sxfti->trans );
-    gnc_gdate_set_time64 (&date, tmp_tt);
+    g_date_set_time_t( &date, tmp_tt );
 
     g_date_clear(&nextDate, 1);
     sxftd_update_schedule(sxfti, &date, &schedule);
     recurrenceListNextInstance(schedule, &date, &nextDate);
-    tmp_tt = gnc_time64_get_day_start_gdate (&nextDate);
+
+    tmpTm = g_new0( struct tm, 1 );
+    g_date_to_struct_tm( &nextDate, tmpTm );
+    tmp_tt = mktime( tmpTm );
+    g_free( tmpTm );
     gnc_date_edit_set_time( sxfti->startDateGDE, tmp_tt );
 
     recurrenceListFree(&schedule);
     sxftd_update_example_cal( sxfti );
 }
 
-
 static void
 sxftd_advanced_clicked(SXFromTransInfo *sxfti)
 {
     guint sx_error = sxftd_compute_sx(sxfti);
+    GncSxEditorDialog *adv_edit_dlg;
     GMainContext *context;
 
-    if ( sx_error != 0 && sx_error != SXFTD_ERRNO_UNBALANCED_XACTION )
+    if ( sx_error != 0
+            && sx_error != SXFTD_ERRNO_UNBALANCED_XACTION )
     {
         // unbalanced-xaction is "okay", since this is also checked for by
         // the advanced editor.
@@ -613,12 +629,13 @@ sxftd_advanced_clicked(SXFromTransInfo *sxfti)
     context = g_main_context_default();
     while (g_main_context_iteration(context, FALSE));
 
-    gnc_ui_scheduled_xaction_editor_dialog_create(sxfti->sx, TRUE /* newSX */);
+    adv_edit_dlg =
+        gnc_ui_scheduled_xaction_editor_dialog_create(sxfti->sx,
+                TRUE /* newSX */);
     /* close ourself, since advanced editing entails us, and there are sync
      * issues otherwise. */
     sxftd_close(sxfti, FALSE);
 }
-
 
 static void
 sxftd_destroy( GtkWidget *w, gpointer user_data )
@@ -635,9 +652,10 @@ sxftd_destroy( GtkWidget *w, gpointer user_data )
     g_object_unref(G_OBJECT(sxfti->dense_cal_model));
     g_object_unref(G_OBJECT(sxfti->example_cal));
 
+    /* FIXME: do we need to clean up the GladeXML pointer? */
+
     g_free(sxfti);
 }
-
 
 static void
 gnc_sx_trans_window_response_cb (GtkDialog *dialog,
@@ -667,7 +685,6 @@ gnc_sx_trans_window_response_cb (GtkDialog *dialog,
     LEAVE(" ");
 }
 
-
 /**
  * Update the example calendar; make sure to take into account the end
  * specification.
@@ -676,7 +693,7 @@ static void
 sxftd_update_example_cal( SXFromTransInfo *sxfti )
 {
     struct tm *tmpTm;
-    time64 tmp_tt;
+    time_t tmp_tt;
     GDate date, startDate, nextDate;
     GList *schedule = NULL;
     getEndTuple get;
@@ -684,7 +701,13 @@ sxftd_update_example_cal( SXFromTransInfo *sxfti )
     get = sxftd_get_end_info( sxfti );
 
     tmp_tt = gnc_date_edit_get_date( sxfti->startDateGDE );
-    gnc_gdate_set_time64 (&date, tmp_tt);
+    tmpTm = g_new0( struct tm, 1 );
+    *tmpTm = *localtime( &tmp_tt );
+    g_date_clear(&date, 1);
+    g_date_set_day( &date, tmpTm->tm_mday );
+    g_date_set_month( &date, tmpTm->tm_mon + 1 );
+    g_date_set_year( &date, tmpTm->tm_year + 1900 );
+    g_free( tmpTm );
 
     sxftd_update_schedule(sxfti, &date, &schedule);
 
@@ -696,10 +719,11 @@ sxftd_update_example_cal( SXFromTransInfo *sxfti )
     recurrenceListNextInstance(schedule, &date, &nextDate);
 
     {
+        GtkWidget *w;
         gchar *name;
         /* get the name */
-        name = NULL;
-        name = gtk_editable_get_chars(GTK_EDITABLE(sxfti->name), 0, -1);
+        w = glade_xml_get_widget(sxfti->gxml, SXFTD_NAME_ENTRY);
+        name = gtk_editable_get_chars(GTK_EDITABLE(w), 0, -1);
         gnc_dense_cal_store_update_name(sxfti->dense_cal_model, name);
         g_free(name);
     }
@@ -710,10 +734,6 @@ sxftd_update_example_cal( SXFromTransInfo *sxfti )
         gnc_dense_cal_store_update_info(sxfti->dense_cal_model, schedule_desc);
         g_free(schedule_desc);
     }
-
-    /* Set End date sensitivity */
-    gtk_widget_set_sensitive( GTK_WIDGET(sxfti->endDateGDE), (get.type == END_ON_DATE) );
-    gtk_widget_set_sensitive( GTK_WIDGET(sxfti->n_occurences), (get.type == END_AFTER_N_OCCS) );
 
     switch (get.type)
     {
@@ -737,10 +757,9 @@ sxftd_update_example_cal( SXFromTransInfo *sxfti )
     recurrenceListFree(&schedule);
 }
 
-
-/***********************************
- * Callback to update the calendar *
- **********************************/
+/**
+ * Callback to update the calendar
+ **/
 static void
 sxftd_update_excal_adapt( GObject *o, gpointer ud )
 {
@@ -748,27 +767,18 @@ sxftd_update_excal_adapt( GObject *o, gpointer ud )
     sxftd_update_example_cal( sxfti );
 }
 
-
-/*********************
- * Create the dialog *
- ********************/
 void
 gnc_sx_create_from_trans( Transaction *trans )
 {
     int errno;
     SXFromTransInfo *sxfti = g_new0( SXFromTransInfo, 1);
-    GtkBuilder *builder;
-    GtkWidget *dialog;
 
-    builder = gtk_builder_new();
+    sxfti->gxml = gnc_glade_xml_new(SX_GLADE_FILE,
+                                    SXFTD_DIALOG_GLADE_NAME);
 
-    gnc_builder_add_from_file  (builder , "dialog-sx.glade", "freq_liststore");
+    sxfti->dialog = glade_xml_get_widget(sxfti->gxml,
+                                         SXFTD_DIALOG_GLADE_NAME);
 
-    gnc_builder_add_from_file  (builder , "dialog-sx.glade", "sx_from_real_trans");
-    dialog = GTK_WIDGET(gtk_builder_get_object (builder, "sx_from_real_trans"));
-
-    sxfti->builder = builder;
-    sxfti->dialog = dialog;
     sxfti->trans = trans;
 
     sxfti->sx = xaccSchedXactionMalloc(gnc_get_current_book ());
@@ -792,7 +802,4 @@ gnc_sx_create_from_trans( Transaction *trans )
     }
 
     gtk_widget_show_all(GTK_WIDGET(sxfti->dialog));
-
-    gtk_builder_connect_signals(builder, sxfti);
-    g_object_unref(G_OBJECT(builder));
 }

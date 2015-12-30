@@ -195,7 +195,7 @@ xaccGetFIFOPolicy (void)
  * I'm not sure I got it right.
  */
 
-G_GNUC_UNUSED static GNCLot *
+static GNCLot *
 LIFOPolicyGetLot (GNCPolicy *pcy, Split *split)
 {
     if (!split) return NULL;
@@ -203,14 +203,14 @@ LIFOPolicyGetLot (GNCPolicy *pcy, Split *split)
                                          split->parent->common_currency);
 }
 
-G_GNUC_UNUSED static Split *
+static Split *
 LIFOPolicyGetSplit (GNCPolicy *pcy, GNCLot *lot)
 {
     return DirectionPolicyGetSplit (pcy, lot, 1);
 }
 
 /* This routine is actually identical to FIFO... */
-G_GNUC_UNUSED static void
+static void
 LIFOPolicyGetLotOpening (GNCPolicy *pcy,
                          GNCLot *lot,
                          gnc_numeric *ret_amount, gnc_numeric *ret_value,
@@ -225,12 +225,34 @@ LIFOPolicyGetLotOpening (GNCPolicy *pcy,
 }
 
 /* This routine is actually identical to FIFO... */
-G_GNUC_UNUSED static gboolean
+static gboolean
 LIFOPolicyIsOpeningSplit (GNCPolicy *pcy, GNCLot *lot, Split *split)
 {
     Split *opening_split;
     opening_split = gnc_lot_get_earliest_split(lot);
     return (split == opening_split);
+}
+
+/* ============================================================== */
+
+/* Define a single, static policy, since we have no per-object data.
+ * I suppose this could change, but we don't need any better at the
+ * moment ... */
+
+GNCPolicy *
+xaccGetLIFOPolicy (void)
+{
+    static GNCPolicy *pcy = NULL;
+
+    if (!pcy)
+    {
+        pcy = g_new (GNCPolicy, 1);
+        pcy->PolicyGetLot = LIFOPolicyGetLot;
+        pcy->PolicyGetSplit = LIFOPolicyGetSplit;
+        pcy->PolicyGetLotOpening = LIFOPolicyGetLotOpening;
+        pcy->PolicyIsOpeningSplit = LIFOPolicyIsOpeningSplit;
+    }
+    return pcy;
 }
 
 /* =========================== END OF FILE ======================= */

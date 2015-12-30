@@ -27,7 +27,7 @@
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (gnucash gnc-module))
 (use-modules (gnucash core-utils))
-(use-modules (gnucash gettext))
+(use-modules (gnucash report report-system))
 (use-modules (srfi srfi-13))
 (use-modules (srfi srfi-14))
 
@@ -67,17 +67,17 @@
          (opt-register
           (gnc:make-number-range-option
            (N_ "Tables")
-           (N_ "Table cell spacing") "a" (N_ "Space between table cells.")
+           (N_ "Table cell spacing") "a" (N_ "Space between table cells")
            0 0 20 0 1))
          (opt-register
           (gnc:make-number-range-option
            (N_ "Tables")
-           (N_ "Table cell padding") "b" (N_ "Space between table cell edge and content.")
+           (N_ "Table cell padding") "b" (N_ "Space between table cell edge and content")
            4 0 20 0 1))
          (opt-register
           (gnc:make-number-range-option
            (N_ "Tables")
-           (N_ "Table border width") "c" (N_ "Bevel depth on tables.")
+           (N_ "Table border width") "c" (N_ "Bevel depth on tables")
            0 0 20 0 1))
          (register-font-options options)
 
@@ -115,7 +115,7 @@
          (not (string=? bgpixmap "")))
     (gnc:html-document-set-style!
      ssdoc "body"
-     'attribute (list "background" (make-file-url bgpixmap))))
+     'attribute (list "background" bgpixmap)))
 
     (gnc:html-document-set-style!
        ssdoc "table"

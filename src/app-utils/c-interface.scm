@@ -15,6 +15,11 @@
 ;; 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652
 ;; Boston, MA  02110-1301,  USA       gnu@gnu.org
 
+(use-modules (ice-9 slib))
+(use-modules (ice-9 syncase))
+
+(require 'hash-table)
+
 (define (gnc:error->string tag args)
   (define (write-error port)
     (if (and (list? args) (not (null? args)))
@@ -33,6 +38,15 @@
   
   (false-if-exception
    (call-with-output-string write-error)))
+
+
+;; gettext functions
+(define gnc:gettext gnc-gettext-helper)
+(define gnc:_ gnc:gettext)
+(define _ gnc:gettext)
+(define-syntax N_
+  (syntax-rules ()
+    ((_ x) x)))
 
 
 ;; This database can be used to store and retrieve translatable

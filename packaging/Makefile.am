@@ -1,4 +1,7 @@
+SUBDIRS = win32
+
 EXTRA_DIST = \
+  gnucash-2.1.x.ebuild \
   gnucash.spec.in \
   gnucash.spec
 

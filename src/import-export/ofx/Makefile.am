@@ -1,4 +1,4 @@
-SUBDIRS = . gschemas test
+SUBDIRS = . test
 
 pkglib_LTLIBRARIES=libgncmod-ofx.la
 
@@ -36,7 +36,9 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/gnome-utils \
   -I${top_srcdir}/src/import-export \
   -I${top_srcdir}/src/libqof/qof \
-  ${GTK_CFLAGS} \
+  ${GNOME_CFLAGS} \
+  ${GLADE_CFLAGS} \
+  ${GUILE_INCS} \
   ${GLIB_CFLAGS} \
   ${LIBOFX_CFLAGS} 
 
@@ -44,6 +46,6 @@ uidir = $(GNC_UI_DIR)
 ui_DATA = \
 	gnc-plugin-ofx-ui.xml
 
-EXTRA_DIST = $(ui_DATA) migratable-prefs-ofx.xml
+EXTRA_DIST = $(ui_DATA)
 
-AM_CPPFLAGS += -DG_LOG_DOMAIN=\"gnc.import.ofx\"
+INCLUDES = -DG_LOG_DOMAIN=\"gnc.import.ofx\"

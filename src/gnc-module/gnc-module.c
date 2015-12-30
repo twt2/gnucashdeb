@@ -2,26 +2,6 @@
  * gnc-module.c -- loadable plugin/module system for gnucash
  * Copyright 2001 Linux Developers Group, Inc.
  *************************************************************/
-/********************************************************************\
- * This program is free software; you can redistribute it and/or    *
- * modify it under the terms of the GNU General Public License as   *
- * published by the Free Software Foundation; either version 2 of   *
- * the License, or (at your option) any later version.              *
- *                                                                  *
- * This program is distributed in the hope that it will be useful,  *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of   *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the    *
- * GNU General Public License for more details.                     *
- *                                                                  *
- * You should have received a copy of the GNU General Public License*
- * along with this program; if not, contact:                        *
- *                                                                  *
- * Free Software Foundation           Voice:  +1-617-542-5942       *
- * 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652       *
- * Boston, MA  02110-1301,  USA       gnu@gnu.org                   *
- *                                                                  *
-\********************************************************************/
-
 
 #include "config.h"
 
@@ -192,14 +172,12 @@ gnc_module_system_refresh(void)
         {
             /* is the file a loadable module? */
 
-            /* Gotcha: On MacOS, G_MODULE_SUFFIX is defined as "so",
-             * but if we do not build clean libtool modules with
-             * "-module", we get dynamic libraries ending on .dylib On
-             * Windows, all modules will move to bin/, so they will be
-             * mixed with other libraries, such as gtk+. Adding a
-             * prefix "libgncmod" filter will prevent the module loader
-             * from loading other libraries. The filter should work on
-             * other platforms.
+            /* Gotcha: On MacOS, G_MODULE_SUFFIX is defined as "so", but if we do
+             * not build clean libtool modules with "-module", we get dynamic
+             * libraries ending on .dylib
+             * On Windows, all modules will move to bin/, so they will be mixed with
+             * other libraries, such as gtk+. Adding a prefix "libgncmod" filter will prevent
+             * module loader load other libraries. And the filter should works on other platform.
              */
             if ((g_str_has_suffix(dent, "." G_MODULE_SUFFIX)
                     || g_str_has_suffix(dent, ".dylib"))
@@ -455,7 +433,7 @@ gnc_module_load_common(const char * module_name, gint iface, gboolean optional)
     GModule         * gmodule;
     GNCModuleInfo   * modinfo;
 
-    ENTER("module_name: %s", module_name);
+    ENTER("module_name: %s",module_name);
 
     if (!loaded_modules)
     {

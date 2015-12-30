@@ -22,9 +22,11 @@
 
 #include "config.h"
 
+#include <gnome.h>
 #include <glib/gi18n.h>
 
 #include "dialog-utils.h"
+#include "gnc-gconf-utils.h"
 #include "qof.h"
 #include "gnc-gui-query.h"
 #include "gnc-ui.h"
@@ -73,9 +75,6 @@ gnc_ok_cancel_dialog(GtkWidget *parent,
     g_free(buffer);
     va_end(args);
 
-    if (parent == NULL)
-        gtk_window_set_skip_taskbar_hint(GTK_WINDOW(dialog), FALSE);
-
     gtk_dialog_set_default_response (GTK_DIALOG(dialog), default_result);
     result = gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy (dialog);
@@ -121,9 +120,6 @@ gnc_verify_dialog(GtkWidget *parent, gboolean yes_is_default,
     g_free(buffer);
     va_end(args);
 
-    if (parent == NULL)
-        gtk_window_set_skip_taskbar_hint(GTK_WINDOW(dialog), FALSE);
-
     gtk_dialog_set_default_response(GTK_DIALOG(dialog),
                                     (yes_is_default ? GTK_RESPONSE_YES : GTK_RESPONSE_NO));
     result = gtk_dialog_run(GTK_DIALOG(dialog));
@@ -163,9 +159,6 @@ gnc_info_dialog(GtkWidget *parent, const gchar *format, ...)
                                      buffer);
     va_end(args);
 
-    if (parent == NULL)
-        gtk_window_set_skip_taskbar_hint(GTK_WINDOW(dialog), FALSE);
-
     gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy (dialog);
 }
@@ -200,9 +193,6 @@ gnc_warning_dialog_common(GtkWidget *parent, const gchar *format, va_list args)
                                      "%s",
                                      buffer);
     g_free(buffer);
-
-    if (parent == NULL)
-        gtk_window_set_skip_taskbar_hint(GTK_WINDOW(dialog), FALSE);
 
     gtk_dialog_run (GTK_DIALOG (dialog));
     gtk_widget_destroy (dialog);
@@ -247,9 +237,6 @@ gnc_error_dialog_common(GtkWidget *parent, const gchar *format, va_list args)
                                      "%s",
                                      buffer);
     g_free(buffer);
-
-    if (parent == NULL)
-        gtk_window_set_skip_taskbar_hint(GTK_WINDOW(dialog), FALSE);
 
     gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy (dialog);
@@ -346,11 +333,12 @@ gnc_choose_radio_option_dialog(GtkWidget *parent,
                                           GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
                                           button_name, GTK_RESPONSE_OK,
                                           NULL);
+    gtk_dialog_set_has_separator (GTK_DIALOG(dialog), FALSE);
 
     /* default to ok */
     gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_OK);
 
-    dvbox = gtk_dialog_get_content_area (GTK_DIALOG(dialog));
+    dvbox = GTK_DIALOG(dialog)->vbox;
 
     gtk_box_pack_start(GTK_BOX(dvbox), main_vbox, TRUE, TRUE, 0);
 

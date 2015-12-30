@@ -37,8 +37,6 @@
 #include "recncell.h"
 #include "split-register.h"
 #include "split-register-p.h"
-#include "engine-helpers.h"
-#include "pricecell.h"
 
 
 /* This static indicates the debugging module that this .o belongs to. */
@@ -213,7 +211,7 @@ _find_split_with_parent_txn(gconstpointer a, gconstpointer b)
 }
 
 static void add_quickfill_completions(TableLayout *layout, Transaction *trans,
-                                      Split *split, gboolean has_last_num)
+                                      gboolean has_last_num)
 {
     Split *s;
     int i = 0;
@@ -229,7 +227,7 @@ static void add_quickfill_completions(TableLayout *layout, Transaction *trans,
     if (!has_last_num)
         gnc_num_cell_set_last_num(
             (NumCell *) gnc_table_layout_get_cell(layout, NUM_CELL),
-            gnc_get_num_action(trans, split));
+            xaccTransGetNum(trans));
 
     while ((s = xaccTransGetSplit(trans, i)) != NULL)
     {
@@ -238,89 +236,6 @@ static void add_quickfill_completions(TableLayout *layout, Transaction *trans,
             xaccSplitGetMemo(s));
         i++;
     }
-}
-
-static Split*
-create_blank_split (Account *default_account, SRInfo *info)
-{
-    Transaction *new_trans;
-    gboolean currency_from_account = TRUE;
-    Split *blank_split = NULL;
-    /* Determine the proper currency to use for this transaction.
-     * if default_account != NULL and default_account->commodity is
-     * a currency, then use that.  Otherwise use the default currency.
-     */
-    gnc_commodity * currency = gnc_account_or_default_currency(default_account, &currency_from_account);
-
-    if (default_account != NULL && !currency_from_account)
-    {
-	/* If we don't have a currency then pop up a warning dialog */
-	gnc_info_dialog(NULL, "%s",
-			_("Could not determine the account currency. "
-			  "Using the default currency provided by your system."));
-    }
-
-    gnc_suspend_gui_refresh ();
-
-    new_trans = xaccMallocTransaction (gnc_get_current_book ());
-
-    xaccTransBeginEdit (new_trans);
-    xaccTransSetCurrency (new_trans, currency);
-    xaccTransSetDatePostedSecsNormalized(new_trans, info->last_date_entered);
-    blank_split = xaccMallocSplit (gnc_get_current_book ());
-    xaccSplitSetParent(blank_split, new_trans);
-    /* We don't want to commit this transaction yet, because the split
-       doesn't even belong to an account yet.  But, we don't want to
-       set this transaction as the pending transaction either, because
-       we want to pretend that it hasn't been changed.  We depend on
-       some other code (somewhere) to commit this transaction if we
-       really edit it, even though it's not marked as the pending
-       transaction. */
-
-    info->blank_split_guid = *xaccSplitGetGUID (blank_split);
-    info->blank_split_edited = FALSE;
-    info->auto_complete = FALSE;
-    DEBUG("created new blank_split=%p", blank_split);
-
-    gnc_resume_gui_refresh ();
-    return blank_split;
-}
-
-static void
-change_account_separator (SRInfo *info, Table *table, SplitRegister *reg)
-{
-    info->separator_changed = FALSE;
-
-    /* set the completion character for the xfer cells */
-    gnc_combo_cell_set_complete_char(
-	(ComboCell *) gnc_table_layout_get_cell(table->layout, MXFRM_CELL),
-	gnc_get_account_separator());
-
-    gnc_combo_cell_set_complete_char(
-	(ComboCell *) gnc_table_layout_get_cell(table->layout, XFRM_CELL),
-	gnc_get_account_separator());
-
-    /* set the confirmation callback for the reconcile cell */
-    gnc_recn_cell_set_confirm_cb(
-	(RecnCell *) gnc_table_layout_get_cell(table->layout, RECN_CELL),
-	gnc_split_register_recn_cell_confirm, reg);
-}
-
-static void
-update_info (SRInfo *info, SplitRegister *reg)
-{
-    /* Set up the hint transaction, split, transaction split, and column. */
-    info->cursor_hint_trans = gnc_split_register_get_current_trans (reg);
-    info->cursor_hint_split = gnc_split_register_get_current_split (reg);
-    info->cursor_hint_trans_split =
-        gnc_split_register_get_current_trans_split (reg, NULL);
-    info->cursor_hint_cursor_class =
-        gnc_split_register_get_current_cursor_class (reg);
-    info->hint_set_by_traverse = FALSE;
-    info->traverse_to_new = FALSE;
-    info->exact_traversal = FALSE;
-    info->first_pass = FALSE;
-    info->reg_loaded = TRUE;
 }
 
 void
@@ -347,14 +262,11 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
 
     gboolean start_primary_color = TRUE;
     gboolean found_pending = FALSE;
-    gboolean need_divider_upper = FALSE;
-    gboolean found_divider_upper = FALSE;
     gboolean found_divider = FALSE;
     gboolean has_last_num = FALSE;
     gboolean multi_line;
     gboolean dynamic;
     gboolean we_own_slist = FALSE;
-    gboolean use_autoreadonly = qof_book_uses_autoreadonly(gnc_get_current_book());
 
     VirtualCellLocation vcell_loc;
     VirtualLocation save_loc;
@@ -362,7 +274,7 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
     int new_trans_split_row = -1;
     int new_trans_row = -1;
     int new_split_row = -1;
-    time64 present, autoreadonly_time = 0;
+    time_t present;
 
     g_return_if_fail(reg);
     table = reg->table;
@@ -378,24 +290,82 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
     pending_trans = xaccTransLookup (&info->pending_trans_guid,
                                      gnc_get_current_book ());
 
-    /* Bug 742089: Set the debit and credit cells' print_info to the account */
-    gnc_price_cell_set_print_info
-    ((PriceCell *) gnc_table_layout_get_cell (table->layout, DEBT_CELL),
-     gnc_account_print_info (default_account, FALSE));
-
-    gnc_price_cell_set_print_info
-    ((PriceCell *) gnc_table_layout_get_cell (table->layout, CRED_CELL),
-     gnc_account_print_info (default_account, FALSE));
-
     /* make sure we have a blank split */
     if (blank_split == NULL)
     {
-	/* Wouldn't it be a bug to open the new transaction if there was
-	 * already a pending transaction?
-	*/
-	g_assert(pending_trans == NULL);
-	blank_split = create_blank_split (default_account, info);
+        Transaction *new_trans;
+        gnc_commodity * currency = NULL;
+
+        /* Determine the proper currency to use for this transaction.
+         * if default_account != NULL and default_account->commodity is
+         * a currency, then use that.  Otherwise use the default currency.
+         */
+        if (default_account != NULL)
+        {
+            gnc_commodity * commodity = xaccAccountGetCommodity (default_account);
+            if (gnc_commodity_is_currency(commodity))
+                currency = commodity;
+            else
+            {
+                Account *parent_account = default_account;
+                /* Account commodity is not a currency, walk up the tree until
+                 * we find a parent account that is a currency account and use
+                 * it's currency.
+                 */
+                do
+                {
+                    parent_account = gnc_account_get_parent (parent_account);
+                    if (parent_account)
+                    {
+                        commodity = xaccAccountGetCommodity (parent_account);
+                        if (gnc_commodity_is_currency(commodity))
+                        {
+                            currency = commodity;
+                            break;
+                        }
+                    }
+                }
+                while (parent_account && !currency);
+            }
+
+            /* If we don't have a currency then pop up a warning dialog */
+            if (!currency)
+            {
+                gnc_info_dialog(NULL, "%s",
+                                _("Could not determine the account currency.  "
+                                  "Using the default currency provided by your system."));
+            }
+        }
+
+        gnc_suspend_gui_refresh ();
+
+        new_trans = xaccMallocTransaction (gnc_get_current_book ());
+
+        xaccTransBeginEdit (new_trans);
+        xaccTransSetCurrency (new_trans,
+                              currency ? currency : gnc_default_currency());
+        xaccTransSetDatePostedSecs (new_trans, info->last_date_entered);
+        blank_split = xaccMallocSplit (gnc_get_current_book ());
+        xaccSplitSetParent(blank_split, new_trans);
+        /* We don't want to commit this transaction yet, because the split
+           doesn't even belong to an account yet.  But, we don't want to
+           set this transaction as the pending transaction either, because
+           we want to pretend that it hasn't been changed.  We depend on
+           some other code (somewhere) to commit this transaction if we
+           really edit it, even though it's not marked as the pending
+           transaction. */
+
+        /* Wouldn't it be a bug to open this transaction if there was already a
+           pending transaction? */
+        g_assert(pending_trans == NULL);
+
+        info->blank_split_guid = *xaccSplitGetGUID (blank_split);
+        info->blank_split_edited = FALSE;
+        DEBUG("created new blank_split=%p", blank_split);
+
+        gnc_resume_gui_refresh ();
     }
+
     blank_trans = xaccSplitGetParent (blank_split);
 
     DEBUG("blank_split=%p, blank_trans=%p, pending_trans=%p",
@@ -460,14 +430,7 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
     vcell_loc.virt_row++;
 
     /* get the current time and reset the dividing row */
-    present = gnc_time64_get_today_end ();
-    if (use_autoreadonly)
-    {
-        GDate *d = qof_book_get_autoreadonly_gdate(gnc_get_current_book());
-        // "d" is NULL if use_autoreadonly is FALSE
-        autoreadonly_time = d ? timespecToTime64(gdate_to_timespec(*d)) : 0;
-        g_date_free(d);
-    }
+    present = gnc_timet_get_today_end ();
 
     if (info->first_pass)
     {
@@ -492,9 +455,24 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
     }
 
     if (info->separator_changed)
-	change_account_separator (info, table, reg);
+    {
+        info->separator_changed = FALSE;
 
-    table->model->dividing_row_upper = -1;
+        /* set the completion character for the xfer cells */
+        gnc_combo_cell_set_complete_char(
+            (ComboCell *) gnc_table_layout_get_cell(table->layout, MXFRM_CELL),
+            gnc_get_account_separator());
+
+        gnc_combo_cell_set_complete_char(
+            (ComboCell *) gnc_table_layout_get_cell(table->layout, XFRM_CELL),
+            gnc_get_account_separator());
+
+        /* set the confirmation callback for the reconcile cell */
+        gnc_recn_cell_set_confirm_cb(
+            (RecnCell *) gnc_table_layout_get_cell(table->layout, RECN_CELL),
+            gnc_split_register_recn_cell_confirm, reg);
+    }
+
     table->model->dividing_row = -1;
 
     // Ensure that the transaction and splits being edited are in the split
@@ -536,14 +514,6 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
 
         if (pending_trans == trans)
             found_pending = TRUE;
-	/* If the transaction has only one split, and it's not our
-	 * pending_trans, then it's another register's blank split and
-	 * we don't want to see it.
-	 */
-	else if (xaccTransCountSplits (trans) == 1 &&
-		 xaccSplitGetAccount (split) == NULL)
-	    continue;
-
 
         /* Do not load splits from the blank transaction. */
         if (trans == blank_trans)
@@ -559,23 +529,8 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
         }
 
         if (info->show_present_divider &&
-                use_autoreadonly &&
-                !found_divider_upper)
-        {
-            if (xaccTransGetDate (trans) >= autoreadonly_time)
-            {
-                table->model->dividing_row_upper = vcell_loc.virt_row;
-                found_divider_upper = TRUE;
-            }
-            else
-            {
-                need_divider_upper = TRUE;
-            }
-        }
-
-        if (info->show_present_divider &&
                 !found_divider &&
-                (xaccTransGetDate (trans) > present))
+                (present < xaccTransGetDate (trans)))
         {
             table->model->dividing_row = vcell_loc.virt_row;
             found_divider = TRUE;
@@ -584,7 +539,7 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
         /* If this is the first load of the register,
          * fill up the quickfill cells. */
         if (info->first_pass)
-            add_quickfill_completions(reg->table->layout, trans, split, has_last_num);
+            add_quickfill_completions(reg->table->layout, trans, has_last_num);
 
         if (trans == find_trans)
             new_trans_row = vcell_loc.virt_row;
@@ -609,15 +564,6 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
     /* add the blank split at the end. */
     if (pending_trans == blank_trans)
         found_pending = TRUE;
-
-    /* No upper divider yet? Store it now */
-    if (info->show_present_divider &&
-            use_autoreadonly &&
-            !found_divider_upper && need_divider_upper)
-    {
-        table->model->dividing_row_upper = vcell_loc.virt_row;
-        found_divider_upper = TRUE;
-    }
 
     if (blank_trans == find_trans)
         new_trans_row = vcell_loc.virt_row;
@@ -664,6 +610,7 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
     /* restore the cursor to its rightful position */
     {
         VirtualLocation trans_split_loc;
+        Split *trans_split;
 
         if (new_split_row > 0)
             save_loc.vcell_loc.virt_row = new_split_row;
@@ -674,8 +621,9 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
 
         trans_split_loc = save_loc;
 
-	gnc_split_register_get_trans_split (reg, save_loc.vcell_loc,
-					    &trans_split_loc.vcell_loc);
+        trans_split =
+            gnc_split_register_get_trans_split (reg, save_loc.vcell_loc,
+                                                &trans_split_loc.vcell_loc);
 
         if (dynamic || multi_line || info->trans_expanded)
         {
@@ -701,11 +649,23 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
             if (find_split == gnc_split_register_get_current_split (reg))
                 gnc_table_restore_current_cursor (table, cursor_buffer);
         }
-    }
-    gnc_cursor_buffer_destroy (cursor_buffer);
-    cursor_buffer = NULL;
 
-    update_info (info, reg);
+        gnc_cursor_buffer_destroy (cursor_buffer);
+        cursor_buffer = NULL;
+    }
+
+    /* Set up the hint transaction, split, transaction split, and column. */
+    info->cursor_hint_trans = gnc_split_register_get_current_trans (reg);
+    info->cursor_hint_split = gnc_split_register_get_current_split (reg);
+    info->cursor_hint_trans_split =
+        gnc_split_register_get_current_trans_split (reg, NULL);
+    info->cursor_hint_cursor_class =
+        gnc_split_register_get_current_cursor_class (reg);
+    info->hint_set_by_traverse = FALSE;
+    info->traverse_to_new = FALSE;
+    info->exact_traversal = FALSE;
+    info->first_pass = FALSE;
+    info->reg_loaded = TRUE;
 
     gnc_split_register_set_cell_fractions(
         reg, gnc_split_register_get_current_split (reg));

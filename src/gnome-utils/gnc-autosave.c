@@ -31,12 +31,12 @@
 #include "gnc-ui.h"
 #include "gnc-file.h"
 #include "gnc-window.h"
-#include "gnc-prefs.h"
+#include "gnc-gconf-utils.h"
 #include "gnc-main-window.h"
 #include "gnc-gui-query.h"
 
-#define GNC_PREF_AUTOSAVE_SHOW_EXPLANATION "autosave-show-explanation"
-#define GNC_PREF_AUTOSAVE_INTERVAL         "autosave-interval-minutes"
+#define KEY_AUTOSAVE_SHOW_EXPLANATION "autosave_show_explanation"
+#define KEY_AUTOSAVE_INTERVAL "autosave_interval_minutes"
 #define AUTOSAVE_SOURCE_ID "autosave_source_id"
 
 #ifdef G_LOG_DOMAIN
@@ -77,10 +77,11 @@ autosave_remove_timer_cb(QofBook *book, gpointer key, gpointer user_data);
 
 static gboolean autosave_confirm(GtkWidget *toplevel)
 {
-    GtkWidget *dialog;
+    GtkWidget *dialog, *label;
     guint interval_mins =
-        gnc_prefs_get_float(GNC_PREFS_GROUP_GENERAL, GNC_PREF_AUTOSAVE_INTERVAL);
+        gnc_gconf_get_float(GCONF_GENERAL, KEY_AUTOSAVE_INTERVAL, NULL);
     gboolean switch_off_autosave, show_expl_again, save_now;
+    gchar *message;
     gint response;
 
 #define YES_THIS_TIME 1
@@ -98,19 +99,9 @@ static gboolean autosave_confirm(GtkWidget *toplevel)
                                _("Save file automatically?"));
     gtk_message_dialog_format_secondary_text
     (GTK_MESSAGE_DIALOG(dialog),
-     ngettext("Your data file needs to be saved to your hard disk to save your changes. "
-              "GnuCash has a feature to save the file automatically every %d minute, "
-              "just as if you had pressed the \"Save\" button each time. \n\n"
-              "You can change the time interval or turn off this feature under "
-              "Edit -> Preferences -> General -> Auto-save time interval. \n\n"
-              "Should your file be saved automatically?",
-              "Your data file needs to be saved to your hard disk to save your changes. "
-              "GnuCash has a feature to save the file automatically every %d minutes, "
-              "just as if you had pressed the \"Save\" button each time. \n\n"
-              "You can change the time interval or turn off this feature under "
-              "Edit -> Preferences -> General -> Auto-save time interval. \n\n"
-              "Should your file be saved automatically?",
-              interval_mins),
+     _("Your data file needs to be saved to your hard disk to save your changes.  GnuCash has a feature to save the file automatically every %d minutes, just as if you had pressed the \"Save\" button each time. \n\n"
+       "You can change the time interval or turn off this feature under Edit -> Preferences -> General -> Auto-save time interval. \n\n"
+       "Should your file be saved automatically?"),
      interval_mins);
     gtk_dialog_add_buttons(GTK_DIALOG(dialog),
                            _("_Yes, this time"), YES_THIS_TIME,
@@ -150,14 +141,14 @@ static gboolean autosave_confirm(GtkWidget *toplevel)
     };
 
     /* Should we show this explanation again? */
-    gnc_prefs_set_bool(GNC_PREFS_GROUP_GENERAL, GNC_PREF_AUTOSAVE_SHOW_EXPLANATION, show_expl_again);
+    gnc_gconf_set_bool(GCONF_GENERAL, KEY_AUTOSAVE_SHOW_EXPLANATION, show_expl_again, NULL);
     g_debug("autosave_timeout_cb: Show explanation again=%s\n",
             (show_expl_again ? "TRUE" : "FALSE"));
 
     /* Should we switch off autosave? */
     if (switch_off_autosave)
     {
-        gnc_prefs_set_float(GNC_PREFS_GROUP_GENERAL, GNC_PREF_AUTOSAVE_INTERVAL, 0);
+        gnc_gconf_set_float(GCONF_GENERAL, KEY_AUTOSAVE_INTERVAL, 0, NULL);
         g_debug("autosave_timeout_cb: User chose to disable auto-save.\n");
     }
 
@@ -177,16 +168,15 @@ static gboolean autosave_timeout_cb(gpointer user_data)
     /* Is there already a save in progress? If yes, return FALSE so that
        the timeout is automatically destroyed and the function will not
        be called again. */
-    if (gnc_file_save_in_progress() || !gnc_current_session_exist()
-            || qof_book_is_readonly(book))
+    if (gnc_file_save_in_progress() || !gnc_current_session_exist())
         return FALSE;
 
     /* Store the current toplevel window for later use. */
     toplevel = gnc_ui_get_toplevel();
 
-    /* Lookup preference to show an explanatory dialog, if wanted. */
+    /* Lookup gconf key to show an explanatory dialog, if wanted. */
     show_explanation =
-        gnc_prefs_get_bool(GNC_PREFS_GROUP_GENERAL, GNC_PREF_AUTOSAVE_SHOW_EXPLANATION);
+        gnc_gconf_get_bool(GCONF_GENERAL, KEY_AUTOSAVE_SHOW_EXPLANATION, NULL);
     if (show_explanation)
     {
         save_now = autosave_confirm(toplevel);
@@ -252,7 +242,7 @@ void gnc_autosave_remove_timer(QofBook *book)
 static void gnc_autosave_add_timer(QofBook *book)
 {
     guint interval_mins =
-        gnc_prefs_get_float(GNC_PREFS_GROUP_GENERAL, GNC_PREF_AUTOSAVE_INTERVAL);
+        gnc_gconf_get_float(GCONF_GENERAL, KEY_AUTOSAVE_INTERVAL, NULL);
 
     /* Interval zero means auto-save is turned off. */
     if ( interval_mins > 0
@@ -262,8 +252,15 @@ static void gnc_autosave_add_timer(QofBook *book)
         /* Add a new timer (timeout) that runs until the next autosave
            timeout. */
         guint autosave_source_id =
+#if GLIB_CHECK_VERSION(2, 14, 0)
+            /* g_timeout_add_seconds is much more suitable here, but is new in
+            	 glib-2.14. */
             g_timeout_add_seconds(interval_mins * 60,
                                   autosave_timeout_cb, book);
+#else
+            g_timeout_add(interval_mins * 60 * 1000,
+                          autosave_timeout_cb, book);
+#endif
         g_debug("Adding new auto-save timer with id %d\n", autosave_source_id);
 
         /* Save the event source id for a potential removal, and also
@@ -280,12 +277,6 @@ void gnc_autosave_dirty_handler (QofBook *book, gboolean dirty)
             (dirty ? "TRUE" : "FALSE"));
     if (dirty)
     {
-        if (qof_book_is_readonly(book))
-        {
-            //g_debug("Book is read-only, ignoring dirty flag");
-            return;
-        }
-
         /* Book state changed from non-dirty to dirty. */
         if (!qof_book_shutting_down(book))
         {

@@ -37,7 +37,6 @@
 #include "gnc-dense-cal-model.h"
 #include "gnc-dense-cal-store.h"
 #include "Recurrence.h"
-#include <gnc-gdate-utils.h>
 
 struct _GncDenseCalStore
 {
@@ -138,10 +137,10 @@ gnc_dense_cal_store_new(int num_marks)
     }
     model->num_real_marks = 0;
     g_date_clear(&model->start_date, 1);
-    gnc_gdate_set_today (&model->start_date);
+    g_date_set_time_t(&model->start_date, time(NULL));
     model->end_type = NEVER_END;
     g_date_clear(&model->end_date, 1);
-    gnc_gdate_set_today (&model->end_date);
+    g_date_set_time_t(&model->end_date, time(NULL));
     model->n_occurrences = 0;
     return model;
 }

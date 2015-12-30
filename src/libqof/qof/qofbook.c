@@ -67,7 +67,7 @@ qof_book_init (QofBook *book)
 
     book->hash_of_collections = g_hash_table_new_full(
                                     g_str_hash, g_str_equal,
-                                    (GDestroyNotify)qof_string_cache_remove,  /* key_destroy_func   */
+                                    (GDestroyNotify)qof_util_string_cache_remove,  /* key_destroy_func   */
                                     coll_destroy);                            /* value_destroy_func */
 
     qof_instance_init_data (&book->inst, QOF_ID_BOOK, book);
@@ -152,6 +152,18 @@ qof_book_destroy (QofBook *book)
 
     LEAVE ("book=%p", book);
 }
+
+/* ====================================================================== */
+/* XXX this should probably be calling is_equal callbacks on gncObject */
+
+gboolean
+qof_book_equal (const QofBook *book_1, const QofBook *book_2)
+{
+    if (book_1 == book_2) return TRUE;
+    if (!book_1 || !book_2) return FALSE;
+    return FALSE;
+}
+
 /* ====================================================================== */
 
 gboolean
@@ -170,8 +182,8 @@ qof_book_mark_session_saved (QofBook *book)
     book->dirty_time = 0;
     if (book->session_dirty)
     {
-        /* Set the session clean upfront, because the callback will check. */
-        book->session_dirty = FALSE;
+/* Set the session clean upfront, because the callback will check. */
+	book->session_dirty = FALSE;
         if (book->dirty_cb)
             book->dirty_cb(book, FALSE, book->dirty_data);
     }
@@ -182,9 +194,9 @@ void qof_book_mark_session_dirty (QofBook *book)
     if (!book) return;
     if (!book->session_dirty)
     {
-        /* Set the session dirty upfront, because the callback will check. */
-        book->session_dirty = TRUE;
-        book->dirty_time = gnc_time (NULL);
+/* Set the session dirty upfront, because the callback will check. */
+	book->session_dirty = TRUE;
+        book->dirty_time = time(NULL);
         if (book->dirty_cb)
             book->dirty_cb(book, TRUE, book->dirty_data);
     }
@@ -193,13 +205,13 @@ void qof_book_mark_session_dirty (QofBook *book)
 void
 qof_book_print_dirty (const QofBook *book)
 {
-    if (qof_book_session_not_saved(book))
-        PINFO("book is dirty.");
+    if (qof_instance_get_dirty_flag(book))
+        printf("book is dirty.\n");
     qof_book_foreach_collection
     (book, (QofCollectionForeachCB)qof_collection_print_dirty, NULL);
 }
 
-time64
+time_t
 qof_book_get_session_dirty_time (const QofBook *book)
 {
     return book->dirty_time;
@@ -209,7 +221,7 @@ void
 qof_book_set_dirty_cb(QofBook *book, QofBookDirtyCB cb, gpointer user_data)
 {
     if (book->dirty_cb)
-        PWARN("Already existing callback %p, will be overwritten by %p\n",
+        g_warning("qof_book_set_dirty_cb: Already existing callback %p, will be overwritten by %p\n",
                   book->dirty_cb, cb);
     book->dirty_data = user_data;
     book->dirty_cb = cb;
@@ -314,7 +326,7 @@ qof_book_get_collection (const QofBook *book, QofIdType entity_type)
         col = qof_collection_new (entity_type);
         g_hash_table_insert(
             book->hash_of_collections,
-            qof_string_cache_insert((gpointer) entity_type), col);
+            qof_util_string_cache_insert((gpointer) entity_type), col);
     }
     return col;
 }
@@ -360,6 +372,33 @@ void qof_book_mark_closed (QofBook *book)
     book->book_open = 'n';
 }
 
+gchar qof_book_get_open_marker(const QofBook *book)
+{
+    if (!book)
+    {
+        return 'n';
+    }
+    return book->book_open;
+}
+
+gint32 qof_book_get_version (const QofBook *book)
+{
+    if (!book)
+    {
+        return -1;
+    }
+    return book->version;
+}
+
+void qof_book_set_version (QofBook *book, gint32 version)
+{
+    if (!book && version < 0)
+    {
+        return;
+    }
+    book->version = version;
+}
+
 gint64
 qof_book_get_counter (QofBook *book, const char *counter_name)
 {
@@ -403,6 +442,7 @@ qof_book_get_counter (QofBook *book, const char *counter_name)
 gchar *
 qof_book_increment_and_format_counter (QofBook *book, const char *counter_name)
 {
+    QofBackend *be;
     KvpFrame *kvp;
     KvpValue *value;
     gint64 counter;
@@ -423,7 +463,7 @@ qof_book_increment_and_format_counter (QofBook *book, const char *counter_name)
     /* Get the current counter value from the KVP in the book. */
     counter = qof_book_get_counter(book, counter_name);
 
-    /* Check if an error occurred */
+    /* Check if an error occured */
     if (counter < 0)
         return NULL;
 
@@ -649,72 +689,6 @@ qof_book_use_trading_accounts (const QofBook *book)
     return FALSE;
 }
 
-/* Returns TRUE if this book uses split action field as the 'Num' field, FALSE
- * if it uses transaction number field */
-gboolean
-qof_book_use_split_action_for_num_field (const QofBook *book)
-{
-    const char *opt;
-    kvp_value *kvp_val;
-
-    g_assert(book);
-    kvp_val = kvp_frame_get_slot_path (qof_book_get_slots (book),
-                                       KVP_OPTION_PATH,
-                                       OPTION_SECTION_ACCOUNTS,
-                                       OPTION_NAME_NUM_FIELD_SOURCE,
-                                       NULL);
-    if (kvp_val == NULL)
-        return FALSE;
-
-    opt = kvp_value_get_string (kvp_val);
-
-    if (opt && opt[0] == 't' && opt[1] == 0)
-        return TRUE;
-    return FALSE;
-}
-
-gboolean qof_book_uses_autoreadonly (const QofBook *book)
-{
-    g_assert(book);
-    return (qof_book_get_num_days_autoreadonly(book) != 0);
-}
-
-gint qof_book_get_num_days_autoreadonly (const QofBook *book)
-{
-    kvp_value *kvp_val;
-    double tmp;
-    g_assert(book);
-    kvp_val = kvp_frame_get_slot_path (qof_book_get_slots (book),
-                                       KVP_OPTION_PATH,
-                                       OPTION_SECTION_ACCOUNTS,
-                                       OPTION_NAME_AUTO_READONLY_DAYS,
-                                       NULL);
-
-    if (kvp_val == NULL)
-    {
-        //PWARN("kvp_val for slot '%s' is NULL", OPTION_NAME_AUTO_READONLY_DAYS);
-        return 0;
-    }
-
-    tmp = kvp_value_get_double (kvp_val);
-    return (gint) tmp;
-}
-
-GDate* qof_book_get_autoreadonly_gdate (const QofBook *book)
-{
-    gint num_days;
-    GDate* result = NULL;
-
-    g_assert(book);
-    num_days = qof_book_get_num_days_autoreadonly(book);
-    if (num_days > 0)
-    {
-        result = gnc_g_date_new_today();
-        g_date_subtract_days(result, num_days);
-    }
-    return result;
-}
-
 const char*
 qof_book_get_string_option(const QofBook* book, const char* opt_name)
 {
@@ -741,6 +715,15 @@ static void commit_err (QofInstance *inst, QofBackendError errcode)
     PERR ("Failed to commit: %d", errcode);
 //  gnc_engine_signal_commit_error( errcode );
 }
+
+#if 0
+static void lot_free(QofInstance* inst)
+{
+    GNCLot* lot = GNC_LOT(inst);
+
+    gnc_lot_free(lot);
+}
+#endif
 
 static void noop (QofInstance *inst) {}
 

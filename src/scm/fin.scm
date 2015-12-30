@@ -15,12 +15,7 @@
 ;; 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652
 ;; Boston, MA  02110-1301,  USA       gnu@gnu.org
 
-
-;; Financial functions originally used by the mortgage/loan druid, 
-;; but useful in scheduled transactions
-;; 
 ;; Copyright 2002 Joshua Sled <jsled@asynchronous.org>
-;; Update 2012 Frank H. Elenberger <frank.h.ellenberger@gmail.com>
 ;;
 
 ;; Simple function for testing:
@@ -30,44 +25,25 @@
 ;; positive values to be returned (as gnucash will handle the credit/debit
 ;; appropriately)
 
-;; interest payment amount:
 (define (gnc:ipmt rate per nper pv fv type)
   (* -1 (* rate
-	   (- 0 (calc-principal pv
-				(calc-pmt rate nper pv fv type)
-				rate (- (if (> per nper) nper per) 1)))))
+           (- 0 (calc-principal pv
+                                (calc-pmt rate nper pv fv type)
+                                rate (- per 1)))
+        ))
 )
 
-;; principal payment amount:
 (define (gnc:ppmt rate per nper pv fv type)
   (let* ((pmt (calc-pmt rate nper pv fv type))
-         (ipmt (gnc:ipmt rate per nper pv fv type)))
-    (* -1 (- pmt (* -1 ipmt))))
+         (ipmt (* rate
+                  (calc-principal pv pmt rate (- per 1)))))
+    (* -1 (-
+           pmt
+           (* -1 ipmt))))
 )
 
-;; payment amount:
 (define (gnc:pmt rate nper pv fv type)
-  (* -1 (calc-pmt rate nper pv fv type))
-)
-
-;; 2 functions from http://lists.gnucash.org/pipermail/gnucash-user/2005-February/012964.html
-;; future value of deposits with compound interests:
-(define (gnc:futureValue a r n t)
-    ;; Parameters:
-    ;; a: amount
-    ;; r: interest rate
-    ;; n: frequency per year
-    ;; t: time
-    ;;
-    ;; formula from http://www.riskglossary.com/articles/compounding.htm
-  (* a (expt (+ 1 (/ r n)) (* n t))))
-
-(define (gnc:computeInterestIncrement amount interest periods i)
-  (let ((thisVal (gnc:futureValue amount interest periods i))
-        (prevVal (gnc:futureValue amount interest periods (- i 1))))
-    (- thisVal prevVal)
-  )
-)
+  (* -1 (calc-pmt rate nper pv fv type)))
 
 ;;;;;
 ;; below: not-exposed/"private" functions, used by the "public" functions
@@ -129,7 +105,7 @@
 ;; holding true for all calculated numbers. However, this won't fix the first problem if your bank
 ;; can't do proper maths and manual fixing of transactions will still be required.
 
-;; FIXME: One problem with the rounding procedure in these three functions is that it is always 
+;; One problem with the rounding procedure in these three functions is that it is always 
 ;; rounding at the second decimal. This works great with dollars and euros and a lot of major 
 ;; currencies but might well cause issues with other currencies not typically divided in 100. 
 ;; I have not tested anything else than dollars.
@@ -142,7 +118,7 @@
 ;; On the opposite side, if you want the automatic rounding but don't understand how to use
 ;; the cpd_ functions, here is a quick example on how to convert original gnc:Zpmt
 ;; function calls. The typical setup is to use 'rate/yfreq' as the first parameter, so the 
-;; solution is to simply use yfreq for both yfreq and ycomp in the gnc:cpd_Zpmt calls, like this:
+;; slution is to simply use yfreq for both yfreq and ycomp in the gnc:cpd_Zpmt calls, like this:
 ;;                         gnc:pmt( rate  /  yfreq   :nper:pv:fv:type)
 ;; is equivalent to    gnc:cpd_pmt( rate:yfreq:yfreq :nper:pv:fv:type)
 

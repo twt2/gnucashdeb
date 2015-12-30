@@ -5,54 +5,17 @@
  *  gfec stands for 'guile fancy error catching'.
  *  This code is in the public domain.
  */
-/********************************************************************\
- * This program is free software; you can redistribute it and/or    *
- * modify it under the terms of the GNU General Public License as   *
- * published by the Free Software Foundation; either version 2 of   *
- * the License, or (at your option) any later version.              *
- *                                                                  *
- * This program is distributed in the hope that it will be useful,  *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of   *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the    *
- * GNU General Public License for more details.                     *
- *                                                                  *
- * You should have received a copy of the GNU General Public License*
- * along with this program; if not, contact:                        *
- *                                                                  *
- * Free Software Foundation           Voice:  +1-617-542-5942       *
- * 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652       *
- * Boston, MA  02110-1301,  USA       gnu@gnu.org                   *
- *                                                                  *
-\********************************************************************/
-
 
 #include <assert.h>
 #include <string.h>
 
 #include "config.h"
 #include "gfec.h"
-#include "gnc-guile-utils.h"
 #include "platform.h"
-#include <glib.h>
 #if COMPILER(MSVC)
 # define strdup _strdup
 #endif
 
-typedef struct {
-    char **msg;
-    SCM *scm_string;
-} helper_data_t;
-
-static SCM helper_scm_to_string(void *ptr_void)
-{
-    helper_data_t* ptr = ptr_void;
-    g_assert(ptr);
-    *(ptr->msg) = gnc_scm_to_utf8_string(*ptr->scm_string);
-    return SCM_UNDEFINED;
-}
-
-
-static int gfec_catcher_recursion_level = 0;
 
 /* We assume that data is actually a char**. The way we return results
  * from this function is to malloc a fresh string, and store it in
@@ -60,71 +23,29 @@ static int gfec_catcher_recursion_level = 0;
  * smart with this freshly allocated storage. the caller can determine
  * whether there was an error by initializing the char* passed in to
  * NULL. If there is an error, the char string will not be NULL on
- * return.
- *
- * This function might call itself recursively: The conversion of the error
- * object to a string might itself throw an exception, hence the scm_to_string
- * function must be wrapped into a stack_catch block as well. To avoid infinite
- * recursion, we check the recursion level by gfec_catcher_recursion_level.
- */
+ * return. */
 static SCM
 gfec_catcher(void *data, SCM tag, SCM throw_args)
 {
     SCM func;
     SCM result;
-    char *msg = NULL;
-
-    // To much recursion? Better jump out of here quickly.
-    if (gfec_catcher_recursion_level > 2)
-    {
-        *(char**)data = strdup("Guile error: Too many recursions in error catch handler.");
-        return SCM_UNDEFINED;
-    }
-
-    gfec_catcher_recursion_level++;
+    const char *msg = NULL;
 
     func = scm_c_eval_string("gnc:error->string");
     if (scm_is_procedure(func))
     {
         result = scm_call_2(func, tag, throw_args);
         if (scm_is_string(result))
-        {
-            char *internal_err_msg = NULL;
-            helper_data_t helper_data;
-
-            helper_data.msg = &msg;
-            helper_data.scm_string = &result;
-
-            // The conversion to string can itself throw as well
-            scm_internal_stack_catch(SCM_BOOL_T,
-                                     helper_scm_to_string,
-                                     (void *) &helper_data,
-                                     gfec_catcher,
-                                     &internal_err_msg);
-            // Previously: msg = gnc_scm_to_utf8_string (result);
-
-            // Did we run into an exception? Then the output argument msg is
-            // not set (due to the exception), but err_msg is set and contains
-            // that error message. We thus pass the err_msg instead of msg to
-            // our caller.
-            if (internal_err_msg)
-            {
-                msg = internal_err_msg;
-            }
-        }
+            msg = scm_to_locale_string(result);
     }
 
     if (msg == NULL)
     {
-        *(char**)data = strdup("Error running guile function.");
-    }
-    else
-    {
-        *(char**)data = strdup(msg);
-        g_free(msg);
+        msg = "Error running guile function.";
     }
 
-    --gfec_catcher_recursion_level;
+    *(char**)data = strdup(msg);
+
     return SCM_UNDEFINED;
 }
 
@@ -137,6 +58,39 @@ gfec_catcher(void *data, SCM tag, SCM throw_args)
    scm_catch_handler_t handler : the hander function
    void *handler_data          : a pointer to pass to the handler
 */
+
+static SCM
+gfec_file_helper(void *data)
+{
+    char *file = data;
+
+    return scm_c_primitive_load(file);
+}
+
+SCM
+gfec_eval_file(const char *file, gfec_error_handler error_handler)
+{
+    char *err_msg = NULL;
+    SCM result;
+
+    result = scm_internal_stack_catch(SCM_BOOL_T,
+                                      gfec_file_helper,
+                                      (void *) file,
+                                      gfec_catcher,
+                                      &err_msg);
+
+    if (err_msg != NULL)
+    {
+        if (error_handler)
+            error_handler(err_msg);
+
+        free(err_msg);
+
+        return SCM_UNDEFINED;
+    }
+
+    return result;
+}
 
 static SCM
 gfec_string_helper(void *data)
@@ -167,31 +121,6 @@ gfec_eval_string(const char *str, gfec_error_handler error_handler)
 
         return SCM_UNDEFINED;
     }
-
-    return result;
-}
-
-SCM
-gfec_eval_file(const char *file, gfec_error_handler error_handler)
-{
-    char *err_msg = NULL;
-    gchar *contents = NULL;
-    GError *save_error = NULL;
-    SCM result;
-
-    if (!g_file_get_contents (file, &contents, NULL, &save_error))
-    {
-        gchar *full_msg = g_strdup_printf ("Couldn't read contents of %s.\nReason: %s", file, save_error->message);
-        error_handler(full_msg);
-
-        g_error_free (save_error);
-        g_free(full_msg);
-
-        return SCM_UNDEFINED;
-    }
-
-    result = gfec_eval_string (contents, error_handler);
-    g_free (contents);
 
     return result;
 }

@@ -30,6 +30,7 @@
 
 #include "config.h"
 
+#include <gnome.h>
 #include <string.h>
 
 #include "gnucash-color.h"
@@ -37,7 +38,6 @@
 #include "gnucash-item-edit.h"
 #include "gnucash-grid.h"
 #include "gnucash-sheet.h"
-#include "gnucash-sheetP.h"
 #include "gnucash-style.h"
 
 
@@ -59,7 +59,6 @@ enum
     TARGET_UTF8_STRING,
     TARGET_STRING,
     TARGET_TEXT,
-    TARGET_COMPOUND_TEXT
 };
 
 static GnomeCanvasItemClass *gnc_item_edit_parent_class;
@@ -172,6 +171,8 @@ gnc_item_edit_draw_info (GncItemEdit *item_edit, int x, int y, TextDrawInfo *inf
 {
     const char LINE_FEED = 0x0a;
 
+    SheetBlock *block;
+    SheetBlockStyle *style;
     GtkEditable *editable;
     Table *table;
 
@@ -188,7 +189,11 @@ gnc_item_edit_draw_info (GncItemEdit *item_edit, int x, int y, TextDrawInfo *inf
     GnucashSheet *sheet;
 
     sheet = GNUCASH_SHEET (item_edit->sheet);
+    style = item_edit->style;
     table = item_edit->sheet->table;
+
+    block = gnucash_sheet_get_block (item_edit->sheet,
+                                     item_edit->virt_loc.vcell_loc);
 
     if (item_edit->sheet->use_theme_colors)
     {
@@ -196,20 +201,16 @@ gnc_item_edit_draw_info (GncItemEdit *item_edit, int x, int y, TextDrawInfo *inf
                      item_edit->virt_loc,
                      &hatching);
         info->bg_color = get_gtkrc_color(item_edit->sheet, color_type);
-        color_type = gnc_table_get_gtkrc_fg_color (table,
-                     item_edit->virt_loc);
-        info->fg_color = get_gtkrc_color(item_edit->sheet, color_type);
     }
     else
     {
         argb = gnc_table_get_bg_color (table, item_edit->virt_loc,
                                        &hatching);
         info->bg_color = gnucash_color_argb_to_gdk (argb);
-        argb = gnc_table_get_fg_color (table, item_edit->virt_loc);
-        info->fg_color = gnucash_color_argb_to_gdk (argb);
     }
 
     info->hatching = hatching;
+    info->fg_color = &gn_black;
 
     info->bg_color2 = &gn_dark_gray;
     info->fg_color2 = &gn_white;
@@ -268,7 +269,7 @@ gnc_item_edit_draw_info (GncItemEdit *item_edit, int x, int y, TextDrawInfo *inf
         attr->end_index = end_byte_pos;
         pango_attr_list_insert (attr_list, attr);
 
-        color = gtk_widget_has_focus(GTK_WIDGET(item_edit->sheet)) ? 0x0 : 0x7fff;
+        color = GTK_WIDGET_HAS_FOCUS(item_edit->sheet) ? 0x0 : 0x7fff;
         attr = pango_attr_background_new (color, color, color);
         attr->start_index = start_byte_pos;
         attr->end_index = end_byte_pos;
@@ -468,7 +469,7 @@ gnc_item_edit_realize (GnomeCanvasItem *item)
          (gnc_item_edit_parent_class)->realize) (item);
 
     item_edit = GNC_ITEM_EDIT (item);
-    window = gtk_widget_get_window (GTK_WIDGET (canvas));
+    window = GTK_WIDGET (canvas)->window;
 
     item_edit->gc = gdk_gc_new (window);
 }
@@ -477,6 +478,10 @@ gnc_item_edit_realize (GnomeCanvasItem *item)
 static void
 gnc_item_edit_unrealize (GnomeCanvasItem *item)
 {
+    GncItemEdit *item_edit;
+
+    item_edit = GNC_ITEM_EDIT (item);
+
     if (GNOME_CANVAS_ITEM_CLASS (gnc_item_edit_parent_class)->unrealize)
         (*GNOME_CANVAS_ITEM_CLASS
          (gnc_item_edit_parent_class)->unrealize) (item);
@@ -491,7 +496,7 @@ gnc_item_edit_focus_in (GncItemEdit *item_edit)
     g_return_if_fail (GNC_IS_ITEM_EDIT(item_edit));
 
     ev.type = GDK_FOCUS_CHANGE;
-    ev.window = gtk_widget_get_window (GTK_WIDGET (item_edit->sheet));
+    ev.window = GTK_WIDGET (item_edit->sheet)->window;
     ev.in = TRUE;
     gtk_widget_event (item_edit->editor, (GdkEvent*) &ev);
     queue_sync(item_edit);
@@ -506,7 +511,7 @@ gnc_item_edit_focus_out (GncItemEdit *item_edit)
     g_return_if_fail (GNC_IS_ITEM_EDIT(item_edit));
 
     ev.type = GDK_FOCUS_CHANGE;
-    ev.window = gtk_widget_get_window (GTK_WIDGET (item_edit->sheet));
+    ev.window = GTK_WIDGET (item_edit->sheet)->window;
     ev.in = FALSE;
     gtk_widget_event (item_edit->editor, (GdkEvent*) &ev);
     queue_sync(item_edit);
@@ -576,7 +581,9 @@ gnc_item_edit_init (GncItemEdit *item_edit)
     item_edit->sheet = NULL;
     item_edit->parent = NULL;
     item_edit->editor = NULL;
+    item_edit->clipboard = NULL;
 
+    item_edit->has_selection = FALSE;
     item_edit->is_popup = FALSE;
     item_edit->show_popup = FALSE;
 
@@ -646,6 +653,12 @@ gnc_item_edit_finalize (GObject *object)
 {
     GncItemEdit *item_edit = GNC_ITEM_EDIT (object);
 
+    if (item_edit->clipboard != NULL)
+    {
+        g_free (item_edit->clipboard);
+        item_edit->clipboard = NULL;
+    }
+
     if (item_edit->gc)
     {
         g_object_unref (item_edit->gc);
@@ -666,7 +679,7 @@ gnc_item_edit_set_cursor_pos (GncItemEdit *item_edit,
     GtkEditable *editable;
     Table *table;
     gint pos = 0;
-    gint o_x;
+    gint o_x, o_y;
     CellDimensions *cd;
     gint cell_row, cell_col;
     SheetBlockStyle *style;
@@ -691,6 +704,7 @@ gnc_item_edit_set_cursor_pos (GncItemEdit *item_edit,
         gnc_item_edit_reset_offset (item_edit);
 
     o_x = cd->origin_x + item_edit->x_offset;
+    o_y = cd->origin_y;
 
     if (changed_cells)
     {
@@ -706,14 +720,14 @@ gnc_item_edit_set_cursor_pos (GncItemEdit *item_edit,
     {
         PangoLayout *layout;
         int textByteIndex, textIndex, textTrailing;
+        gboolean insideText;
         const gchar *text;
 
-        layout = gtk_entry_get_layout (GTK_ENTRY(item_edit->editor));
+        layout = gtk_entry_get_layout( GTK_ENTRY(item_edit->editor) );
         text = pango_layout_get_text (layout);
-        pango_layout_xy_to_index (layout,
-				  ((x - o_x) - CELL_HPADDING) * PANGO_SCALE,
-				  10 * PANGO_SCALE, &textByteIndex,
-				  &textTrailing);
+        insideText = pango_layout_xy_to_index( layout,
+                                               ((x - o_x) - CELL_HPADDING) * PANGO_SCALE, 10 * PANGO_SCALE,
+                                               &textByteIndex, &textTrailing );
         textIndex = (int) g_utf8_pointer_to_offset (text, text + textByteIndex);
         pos = textIndex + textTrailing;
     }
@@ -829,7 +843,7 @@ gnc_item_edit_cut_copy_clipboard (GncItemEdit *item_edit, guint32 time, gboolean
         return;
 
     clipboard = gtk_widget_get_clipboard (GTK_WIDGET (editable),
-                                          clipboard_atom);
+					  clipboard_atom);
     g_return_if_fail (clipboard != NULL);
     g_return_if_fail (GTK_IS_CLIPBOARD (clipboard));
     clip = gtk_editable_get_chars (editable, start_sel, end_sel);
@@ -857,8 +871,6 @@ gnc_item_edit_copy_clipboard (GncItemEdit *item_edit, guint32 time)
     gnc_item_edit_cut_copy_clipboard(item_edit, time, FALSE);
 }
 
-
-
 static void
 paste_received (GtkClipboard *clipboard, const gchar *text, gpointer data)
 {
@@ -868,11 +880,11 @@ paste_received (GtkClipboard *clipboard, const gchar *text, gpointer data)
     gint start_sel, end_sel;
 
     if (text == NULL)
-        return;
+	return;
     if (gtk_editable_get_selection_bounds (editable, &start_sel, &end_sel))
     {
-        reselect = TRUE;
-        gtk_editable_delete_text (editable, start_sel, end_sel);
+	reselect = TRUE;
+	gtk_editable_delete_text (editable, start_sel, end_sel);
     }
 
     tmp_pos = old_pos = gtk_editable_get_position (editable);
@@ -881,29 +893,42 @@ paste_received (GtkClipboard *clipboard, const gchar *text, gpointer data)
     gtk_editable_set_position (editable, tmp_pos);
 
     if (!reselect)
-        return;
+	return;
 
     gtk_editable_select_region (editable, old_pos,
-                                gtk_editable_get_position (editable));
+				gtk_editable_get_position (editable));
 
 }
 
 void
-gnc_item_edit_paste_selection (GncItemEdit *item_edit, GdkAtom selection,
-                               guint32 time)
+gnc_item_edit_paste_clipboard (GncItemEdit *item_edit, guint32 time)
 {
     GtkClipboard *clipboard;
     g_return_if_fail(item_edit != NULL);
     g_return_if_fail(GNC_IS_ITEM_EDIT(item_edit));
 
     clipboard = gtk_widget_get_clipboard (GTK_WIDGET (item_edit->sheet),
-                                          selection);
+					  clipboard_atom);
 
     g_return_if_fail (clipboard != NULL);
     g_return_if_fail (GTK_IS_CLIPBOARD (clipboard));
 
     gtk_clipboard_request_text (clipboard, paste_received, item_edit->editor);
 }
+
+
+void
+gnc_item_edit_paste_primary (GncItemEdit *item_edit, guint32 time)
+{
+    g_return_if_fail(item_edit != NULL);
+    g_return_if_fail(GNC_IS_ITEM_EDIT(item_edit));
+
+    gtk_selection_convert(GTK_WIDGET(item_edit->sheet),
+                          GDK_SELECTION_PRIMARY,
+                          gdk_atom_intern("UTF8_STRING", FALSE),
+                          time);
+}
+
 
 static void
 gnc_item_edit_show_popup_toggle (GncItemEdit *item_edit,
@@ -993,12 +1018,12 @@ gnc_item_edit_popup_toggled (GtkToggleButton *button, gpointer data)
 static void
 block_toggle_signals(GncItemEdit *item_edit)
 {
-    GObject *obj;
+    GtkObject *obj;
 
     if (!item_edit->popup_toggle.signals_connected)
         return;
 
-    obj = G_OBJECT (item_edit->popup_toggle.toggle_button);
+    obj = GTK_OBJECT (item_edit->popup_toggle.toggle_button);
 
     g_signal_handlers_block_matched (obj, G_SIGNAL_MATCH_DATA,
                                      0, 0, NULL, NULL, item_edit);
@@ -1008,12 +1033,12 @@ block_toggle_signals(GncItemEdit *item_edit)
 static void
 unblock_toggle_signals(GncItemEdit *item_edit)
 {
-    GObject *obj;
+    GtkObject *obj;
 
     if (!item_edit->popup_toggle.signals_connected)
         return;
 
-    obj = G_OBJECT (item_edit->popup_toggle.toggle_button);
+    obj = GTK_OBJECT (item_edit->popup_toggle.toggle_button);
 
     g_signal_handlers_unblock_matched (obj, G_SIGNAL_MATCH_DATA,
                                        0, 0, NULL, NULL, item_edit);
@@ -1023,14 +1048,14 @@ unblock_toggle_signals(GncItemEdit *item_edit)
 static void
 connect_popup_toggle_signals (GncItemEdit *item_edit)
 {
-    GObject *object;
+    GtkObject *object;
 
     g_return_if_fail(GNC_IS_ITEM_EDIT(item_edit));
 
     if (item_edit->popup_toggle.signals_connected)
         return;
 
-    object = G_OBJECT(item_edit->popup_toggle.toggle_button);
+    object = GTK_OBJECT(item_edit->popup_toggle.toggle_button);
 
     g_signal_connect (object, "toggled",
                       G_CALLBACK(gnc_item_edit_popup_toggled),
@@ -1059,12 +1084,6 @@ disconnect_popup_toggle_signals (GncItemEdit *item_edit)
     item_edit->popup_toggle.signals_connected = FALSE;
 }
 
-/* Note that g_value_set_object() refs the object, as does
- * g_object_get(). But g_object_get() only unrefs once when it disgorges
- * the object, leaving an unbalanced ref, which leaks. So instead of
- * using g_value_set_object(), use g_value_take_object() which doesn't
- * ref the object when used in get_property().
- */
 static void
 gnc_item_edit_get_property (GObject *object,
                             guint param_id,
@@ -1076,10 +1095,10 @@ gnc_item_edit_get_property (GObject *object,
     switch (param_id)
     {
     case PROP_SHEET:
-        g_value_take_object (value, item_edit->sheet);
+        g_value_set_object (value, item_edit->sheet);
         break;
     case PROP_EDITOR:
-        g_value_take_object (value, item_edit->editor);
+        g_value_set_object (value, item_edit->editor);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -1213,7 +1232,6 @@ gnc_item_edit_new (GnomeCanvasGroup *parent, GnucashSheet *sheet, GtkWidget *ent
     static const GtkTargetEntry targets[] =
     {
         { "UTF8_STRING", 0, TARGET_UTF8_STRING },
-        { "COMPOUND_TEXT", 0, TARGET_COMPOUND_TEXT },
         { "TEXT",   0, TARGET_TEXT },
         { "STRING", 0, TARGET_STRING },
     };
@@ -1280,7 +1298,6 @@ gnc_item_edit_show_popup (GncItemEdit *item_edit)
 {
     GtkToggleButton *toggle;
     GtkAnchorType popup_anchor;
-    GtkAllocation alloc;
     GnucashSheet *sheet;
     gint x, y, w, h;
     gint y_offset;
@@ -1301,9 +1318,8 @@ gnc_item_edit_show_popup (GncItemEdit *item_edit)
 
     sheet = item_edit->sheet;
 
-    gtk_widget_get_allocation (GTK_WIDGET (sheet), &alloc);
-    view_height = alloc.height;
-    view_width  = alloc.width;
+    view_height = GTK_WIDGET (sheet)->allocation.height;
+    view_width  = GTK_WIDGET (sheet)->allocation.width;
 
     gnome_canvas_get_scroll_offsets (GNOME_CANVAS(sheet), NULL, &y_offset);
     gnc_item_edit_get_pixel_coords (item_edit, &x, &y, &w, &h);
@@ -1477,3 +1493,159 @@ gnc_item_edit_get_has_selection (GncItemEdit *item_edit)
     return gtk_editable_get_selection_bounds(editable, NULL, NULL);
 }
 
+gboolean
+gnc_item_edit_selection_clear (GncItemEdit          *item_edit,
+                               GdkEventSelection *event)
+{
+    g_return_val_if_fail(item_edit != NULL, FALSE);
+    g_return_val_if_fail(GNC_IS_ITEM_EDIT(item_edit), FALSE);
+    g_return_val_if_fail(event != NULL, FALSE);
+
+    /* Let the selection handling code know that the selection
+     * has been changed, since we've overriden the default handler */
+    if (!gtk_selection_clear (GTK_WIDGET(item_edit->sheet), event))
+        return FALSE;
+
+    if (event->selection == GDK_SELECTION_PRIMARY)
+    {
+        if (item_edit->has_selection)
+        {
+            item_edit->has_selection = FALSE;
+            /* TODO: redraw differently? */
+        }
+    }
+    else if (event->selection == clipboard_atom)
+    {
+        g_free (item_edit->clipboard);
+        item_edit->clipboard = NULL;
+    }
+
+    return TRUE;
+}
+
+
+void
+gnc_item_edit_selection_get (GncItemEdit      *item_edit,
+                             GtkSelectionData *selection_data,
+                             guint             info,
+                             guint             time)
+{
+    GtkEditable *editable;
+
+    gint start_pos;
+    gint end_pos;
+    GdkAtom selection = selection_data->selection;
+
+    gchar *str;
+    gint length;
+
+    g_return_if_fail(item_edit != NULL);
+    g_return_if_fail(GNC_IS_ITEM_EDIT(item_edit));
+
+    editable = GTK_EDITABLE (item_edit->editor);
+
+    if (selection == GDK_SELECTION_PRIMARY)
+    {
+        gtk_editable_get_selection_bounds (editable, &start_pos, &end_pos);
+
+        str = gtk_editable_get_chars(editable, start_pos, end_pos);
+    }
+    else /* CLIPBOARD */
+    {
+        str = item_edit->clipboard;
+    }
+
+    if (str == NULL)
+        return;
+
+    length = strlen(str);
+    gtk_selection_data_set_text(selection_data, str, length);
+
+    if (str != item_edit->clipboard)
+        g_free(str);
+}
+
+
+void
+gnc_item_edit_selection_received (GncItemEdit       *item_edit,
+                                  GtkSelectionData  *selection_data,
+                                  guint              time)
+{
+    GtkEditable *editable;
+    gboolean reselect;
+    gint old_pos;
+    gint tmp_pos;
+    gint start_sel, end_sel;
+    enum {INVALID, CTEXT} type;
+
+    g_return_if_fail(item_edit != NULL);
+    g_return_if_fail(GNC_IS_ITEM_EDIT(item_edit));
+
+    editable = GTK_EDITABLE(item_edit->editor);
+
+    /* @fixme: this should implement the fallback logic from
+     * gtkclipboard.c:request_text_received_func.  It'd be nice to have a
+     * good way to test the various request types. :( --jsled **/
+
+    if (selection_data->type == GDK_TARGET_STRING
+            || selection_data->type == gdk_atom_intern("UTF8_STRING", FALSE)
+            || selection_data->type == gdk_atom_intern("COMPOUND_TEXT", FALSE)
+            || selection_data->type == gdk_atom_intern("TEXT", FALSE))
+    {
+        type = CTEXT;
+    }
+    else
+    {
+        type = INVALID;
+    }
+
+    if (type == INVALID || selection_data->length < 0)
+    {
+        /* avoid infinite loop */
+        if (selection_data->target != GDK_TARGET_STRING)
+        {
+            gtk_selection_convert(GTK_WIDGET(item_edit->sheet),
+                                  selection_data->selection,
+                                  GDK_TARGET_STRING, time);
+        }
+        return;
+    }
+
+    reselect = FALSE;
+
+    if (gtk_editable_get_selection_bounds(editable, &start_sel, &end_sel)
+            && (!item_edit->has_selection
+                || selection_data->selection == clipboard_atom))
+    {
+        reselect = TRUE;
+        gtk_editable_delete_text(editable, start_sel, end_sel);
+    }
+
+    tmp_pos = old_pos = gtk_editable_get_position (editable);
+
+    {
+        guchar *sel = gtk_selection_data_get_text(selection_data);
+
+        if (sel)
+        {
+            gtk_editable_insert_text(editable,
+                                     (gchar *)sel,
+                                     strlen((char *)sel),
+                                     &tmp_pos);
+            gtk_editable_set_position(editable, tmp_pos);
+            g_free(sel);
+        }
+    }
+
+    if (!reselect)
+        return;
+
+    gtk_editable_select_region(editable, old_pos, gtk_editable_get_position (editable));
+}
+
+
+/*
+  Local Variables:
+  c-basic-offset: 8
+  End:
+*/

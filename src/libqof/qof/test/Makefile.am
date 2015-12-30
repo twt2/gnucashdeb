@@ -9,39 +9,26 @@ include $(top_srcdir)/test-templates/Makefile.decl
 MODULEPATH = src/libqof/qof
 
 test_qof_SOURCES = \
-	test-gnc-date.c \
 	test-qof.c \
 	test-qofbook.c \
 	test-qofinstance.c \
-	test-kvp_frame.c \
-	test-qofobject.c \
-	test-qofsession.c \
-	test-qof-string-cache.c \
-	${top_srcdir}/src/test-core/unittest-support.c
+	test-qofsession.c
 
-test_qof_HEADERS = \
+test_qof_HEADERSS = \
 	$(top_srcdir)/${MODULEPATH}/qofbook.h \
 	$(top_srcdir)/${MODULEPATH}/qofinstance.h \
-	$(top_srcdir)/${MODULEPATH}/kvp_frame.h \
-	$(top_srcdir)/${MODULEPATH}/qofobject.h \
-	$(top_srcdir)/${MODULEPATH}/qofsession.h \
-	$(top_srcdir)/src/test-core/unittest-support.h
+	$(top_srcdir)/${MODULEPATH/}qofsession.h
 
 TEST_PROGS += test-qof
 
 noinst_PROGRAMS = ${TEST_PROGS}
-test_qofdir = ${GNC_LIBEXECDIR}/${MODULEPATH}/test
 
 #The tests might require more libraries, but try to keep them
 #as independent as possible.
-test_qof_LDADD = \
-	${top_builddir}/${MODULEPATH}/libgnc-qof.la \
-	$(GLIB_LIBS)
+test_qof_LDADD = ${top_builddir}/${MODULEPATH}/libgnc-qof.la $(GLIB_LIBS)
 
 test_qof_CFLAGS = \
 	${DEFAULT_INCLUDES} \
-	-I$(top_srcdir)/${MODULEPATH} \
-	-I$(top_srcdir)/src/test-core \
+	-I$(top_srcdir)/${MODULEPATH}/ \
 	-DTESTPROG=test_qof \
-	-I$(top_srcdir)/lib/libc \
 	${GLIB_CFLAGS}

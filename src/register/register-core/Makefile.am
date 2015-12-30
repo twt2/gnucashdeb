@@ -61,10 +61,11 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/gnc-module \
   -I${top_srcdir}/src/gnome-utils \
   -I${top_srcdir}/src/libqof/qof \
-  ${GUILE_CFLAGS} \
-  ${GTK_CFLAGS} \
+  ${GUILE_INCS} \
+  ${GLADE_CFLAGS} \
+  ${GNOME_CFLAGS} \
   ${GLIB_CFLAGS}
 
 CLEANFILES = $(BUILT_SOURCES)
 
-AM_CPPFLAGS += -DG_LOG_DOMAIN=\"gnc.register.core\"
+INCLUDES = -DG_LOG_DOMAIN=\"gnc.register.core\"

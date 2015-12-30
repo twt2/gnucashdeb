@@ -18,7 +18,6 @@ libgncmod_stylesheets_la_LIBADD = \
   ${top_builddir}/src/gnc-module/libgnc-module.la \
   ${top_builddir}/src/libqof/qof/libgnc-qof.la \
   ${GUILE_LIBS} \
-  ${GTK_LIBS} \
   ${GLIB_LIBS}
 
 AM_CPPFLAGS = \
@@ -29,11 +28,11 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/gnome-utils \
   -I${top_srcdir}/src/report/report-gnome \
   -I${top_srcdir}/src/libqof/qof \
-  ${GUILE_CFLAGS} \
+  ${GUILE_INCS} \
   ${GLIB_CFLAGS} \
-  ${GTK_CFLAGS}
+  ${GNOME_CFLAGS}
 
-gncscmmoddir = ${GNC_SCM_INSTALL_DIR}/gnucash/report/
+gncscmmoddir = ${GNC_SHAREDIR}/guile-modules/gnucash/report/
 gncscmmod_DATA = \
   stylesheets.scm \
   stylesheet-plain.scm \
@@ -61,41 +60,6 @@ if ! OS_WIN32
 	touch .scm-links
 endif
 
-if GNC_HAVE_GUILE_2
-GUILE_COMPILE_ENV = \
-  --gnc-module-dir ${top_builddir}/src/app-utils \
-  --gnc-module-dir ${top_builddir}/src/engine \
-  --gnc-module-dir ${top_builddir}/src/html \
-  --gnc-module-dir ${top_builddir}/src/gnome-utils \
-  --gnc-module-dir ${top_builddir}/src/report/report-system \
-  --guile-load-dir ${top_builddir}/src/app-utils \
-  --guile-load-dir ${top_builddir}/src/core-utils \
-  --guile-load-dir ${top_builddir}/src/engine \
-  --guile-load-dir ${top_builddir}/src/gnc-module \
-  --guile-load-dir ${top_builddir}/src/gnome-utils \
-  --guile-load-dir ${top_builddir}/src/report/report-system \
-  --guile-load-dir ${top_builddir}/src/scm \
-  --library-dir    ${top_builddir}/src/libqof/qof \
-  --library-dir    ${top_builddir}/src/engine \
-  --library-dir    ${top_builddir}/src/app-utils \
-  --library-dir    ${top_builddir}/src/core-utils \
-  --library-dir    ${top_builddir}/src/gnc-module \
-  --library-dir    ${top_builddir}/src/gnome-utils \
-  --library-dir    ${top_builddir}/src/backend/xml \
-  --library-dir    ${top_builddir}/src/backend/sql \
-  --library-dir    ${top_builddir}/src/html \
-  --library-dir    ${top_builddir}/src/report/report-system
-
-%.go : %.scm .scm-links $(pkglib_LTLIBRARIES)
-	GNC_UNINSTALLED=yes \
-	GNC_BUILDDIR=${top_builddir} \
-	$(shell ${abs_top_srcdir}/src/gnc-test-env.pl --noexports ${GUILE_COMPILE_ENV}) \
-	$(GUILD) compile -o $@ $<
-
-gncscmmodcachedir = ${pkglibdir}/scm/ccache/@GUILE_EFFECTIVE_VERSION@/gnucash/report
-gncscmmodcache_DATA = $(gncscmmod_DATA:.scm=.go)
-endif
-
 clean-local:
 	$(RM) -rf gnucash
 
@@ -107,7 +71,7 @@ dist_ui_DATA = \
 
 EXTRA_DIST = ${gncscmmod_DATA}
 
-CLEANFILES = .scm-links ${gncscmmodcache_DATA}
+CLEANFILES = .scm-links
 DISTCLEANFILES = ${SCM_FILE_LINKS}
 
-AM_CPPFLAGS += -DG_LOG_DOMAIN=\"gnc.report.core\"
+INCLUDES = -DG_LOG_DOMAIN=\"gnc.report.core\"

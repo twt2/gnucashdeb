@@ -159,10 +159,10 @@ load_single_entry( GncSqlBackend* be, GncSqlRow* row )
     g_return_val_if_fail( row != NULL, NULL );
 
     guid = gnc_sql_load_guid( be, row );
-    pEntry = gncEntryLookup( be->book, guid );
+    pEntry = gncEntryLookup( be->primary_book, guid );
     if ( pEntry == NULL )
     {
-        pEntry = gncEntryCreate( be->book );
+        pEntry = gncEntryCreate( be->primary_book );
     }
     gnc_sql_load_object( be, row, GNC_ID_ENTRY, pEntry, col_table );
     qof_instance_mark_clean( QOF_INSTANCE(pEntry) );
@@ -175,8 +175,11 @@ load_all_entries( GncSqlBackend* be )
 {
     GncSqlStatement* stmt;
     GncSqlResult* result;
+    QofBook* pBook;
 
     g_return_if_fail( be != NULL );
+
+    pBook = be->primary_book;
 
     stmt = gnc_sql_create_select_statement( be, TABLE_NAME );
     result = gnc_sql_execute_select_statement( be, stmt );
@@ -271,7 +274,7 @@ write_entries( GncSqlBackend* be )
 
     data.be = be;
     data.is_ok = TRUE;
-    qof_object_foreach( GNC_ID_ENTRY, be->book, write_single_entry, &data );
+    qof_object_foreach( GNC_ID_ENTRY, be->primary_book, write_single_entry, &data );
 
     return data.is_ok;
 }

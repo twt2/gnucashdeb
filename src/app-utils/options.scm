@@ -16,7 +16,6 @@
 ;; Free Software Foundation           Voice:  +1-617-542-5942
 ;; 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652
 ;; Boston, MA  02110-1301,  USA       gnu@gnu.org
-(use-modules (ice-9 regex))
 
 (define (gnc:make-option
          ;; The category of this option
@@ -186,16 +185,8 @@
               ")))")))
 
 (define (gnc:value->string value)
-  (let ((result (call-with-output-string
-                 (lambda (port) (write value port)))))
-       ;; Guile 1.8 has a bug that it serializes a space in a symbol to "\ "
-       ;; but can't deserialize this back to a symbol afterwards. Stripping the
-       ;; "\" appears to work around this (see gnucash bug  721654 which lead to this issue)
-       (cond-expand
-         (guile-2 )
-         (else (set! result (regexp-substitute/global #f "\\\\ " result 'pre " " 'post))))
-
-       result))
+  (call-with-output-string
+   (lambda (port) (write value port))))
 
 (define (gnc:make-string-option
          section
@@ -818,7 +809,7 @@
                                  (get-default)))))
          (value->string (lambda ()
                           (string-append
-                            (gnc:value->string (if option-set option #f)))))
+                           "'" (gnc:value->string (if option-set option #f)))))
          (validator
           (if (not value-validator)
               (lambda (account) (list #t account))
@@ -839,11 +830,11 @@
              (gnc:error "Illegal account value set"))))
      (lambda () (convert-to-account (get-default)))
      (gnc:restore-form-generator value->string)
-     (lambda (f p) (kvp-frame-set-slot-path-gslist f option p))
+     (lambda (f p) (kvp-frame-set-slot-path-gslist f value p))
      (lambda (f p)
        (let ((v (kvp-frame-get-slot-path-gslist f p)))
          (if (and v (string? v))
-             (set! option v))))
+             (set! value v))))
      validator
      (cons #f acct-type-list) #f #f #f)))
 
@@ -1118,7 +1109,7 @@
      (lambda (x) (set! value x))
      (lambda () default-value)
      (gnc:restore-form-generator value->string)
-     (lambda (f p) (kvp-frame-set-slot-path-gslist f value p))
+     (lambda (f p) (kvp-frame-set-slot-path-gslist f (symbol->string value) p))
      (lambda (f p)
        (let ((v (kvp-frame-get-slot-path-gslist f p)))
          (if (and v (number? v))

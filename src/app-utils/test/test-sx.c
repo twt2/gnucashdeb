@@ -1,30 +1,9 @@
-/********************************************************************\
- * This program is free software; you can redistribute it and/or    *
- * modify it under the terms of the GNU General Public License as   *
- * published by the Free Software Foundation; either version 2 of   *
- * the License, or (at your option) any later version.              *
- *                                                                  *
- * This program is distributed in the hope that it will be useful,  *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of   *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the    *
- * GNU General Public License for more details.                     *
- *                                                                  *
- * You should have received a copy of the GNU General Public License*
- * along with this program; if not, contact:                        *
- *                                                                  *
- * Free Software Foundation           Voice:  +1-617-542-5942       *
- * 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652       *
- * Boston, MA  02110-1301,  USA       gnu@gnu.org                   *
- *                                                                  *
-\********************************************************************/
-
 #include "config.h"
 #include <stdlib.h>
 #include <glib.h>
 #include "SX-book.h"
 #include "gnc-sx-instance-model.h"
 #include "gnc-ui-util.h"
-#include <gnc-gdate-utils.h>
 
 #include "test-stuff.h"
 #include "test-engine-stuff.h"
@@ -37,7 +16,7 @@ test_basic()
     SchedXaction *one_sx;
 
     g_date_clear(&today, 1);
-    gnc_gdate_set_today (&today);
+    g_date_set_time_t(&today, time(NULL));
 
     yesterday = today;
     g_date_subtract_days(&yesterday, 1);
@@ -107,14 +86,14 @@ test_once()
 
     when = g_date_new();
     g_date_clear(when, 1);
-    gnc_gdate_set_today (when);
+    g_date_set_time_t(when, time(NULL));
     while (random_offset_within_one_year == 0)
         random_offset_within_one_year = get_random_int_in_range(-365, 365);
     g_date_add_days(when, random_offset_within_one_year);
 
     end = g_date_new();
     g_date_clear(end, 1);
-    gnc_gdate_set_today (end);
+    g_date_set_time_t(end, time(NULL));
     g_date_add_years(end, 1);
 
     lonely = add_once_sx("once", when);
@@ -149,10 +128,10 @@ test_state_changes()
     GncSxInstance *inst;
 
     start = g_date_new();
-    gnc_gdate_set_today (start);
+    g_date_set_time_t(start, time(NULL));
 
     end = g_date_new();
-    gnc_gdate_set_today (end);
+    g_date_set_time_t(end, time(NULL));
     g_date_add_days(end, 3);
 
     foo = add_daily_sx("foo", start, NULL, NULL);
@@ -214,6 +193,7 @@ int
 main(int argc, char **argv)
 {
     g_setenv ("GNC_UNINSTALLED", "1", TRUE);
+    g_type_init();
     qof_init();
     gnc_engine_init(0, NULL);
 

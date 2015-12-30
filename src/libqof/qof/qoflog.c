@@ -51,7 +51,6 @@
 #include "qoflog.h"
 
 #define QOF_LOG_MAX_CHARS 50
-#define QOF_LOG_MAX_CHARS_WITH_ALLOWANCE 100
 #define QOF_LOG_INDENT_WIDTH 4
 #define NUM_CLOCKS 10
 
@@ -104,7 +103,7 @@ log4glib_handler(const gchar     *log_domain,
 
     {
         char timestamp_buf[10];
-        time64 now;
+        time_t now;
         struct tm now_tm;
         const char *format_24hour =
 #ifdef G_OS_WIN32
@@ -114,8 +113,8 @@ log4glib_handler(const gchar     *log_domain,
 #endif
             ;
         gchar *level_str = qof_log_level_to_string(log_level);
-        now = gnc_time (NULL);
-        gnc_localtime_r (&now, &now_tm);
+        now = time(NULL);
+        localtime_r(&now, &now_tm);
         qof_strftime(timestamp_buf, 9, format_24hour, &now_tm);
 
         fprintf(fout, "* %s %*s <%s> %*s%s%s",
@@ -163,7 +162,7 @@ qof_log_init_filename(const gchar* log_filename)
             fout = fopen(fname, "wb");
 #else
             /* We must not overwrite /dev/null */
-            g_assert(g_strcmp0(log_filename, "/dev/null") != 0);
+            g_assert(safe_strcmp(log_filename, "/dev/null") != 0);
 
             /* Windows prevents renaming of open files, so the next command silently fails there
              * No problem, the filename on Winows will simply have the random characters */
@@ -239,33 +238,28 @@ qof_log_set_level(QofLogModule log_module, QofLogLevel level)
 const char *
 qof_log_prettify (const char *name)
 {
-    gchar *p, *buffer, *begin;
+    gchar *p, *buffer;
     gint length;
 
     if (!name)
     {
         return "";
     }
-/* Clang's __func__ displays the whole signature, like a good C++
- * compier should. Gcc displays only the name of the function. Strip
- * the extras from Clang's output so that log messages are the same
- * regardless of compiler.
- */
-    buffer = g_strndup(name, QOF_LOG_MAX_CHARS_WITH_ALLOWANCE - 1);
+    buffer = g_strndup(name, QOF_LOG_MAX_CHARS - 1);
     length = strlen(buffer);
-    p = g_strstr_len (buffer, length, "(");
-    if (p) *p = '\0';
-    begin = g_strrstr (buffer, "*");
-    if (begin == NULL)
-	begin = g_strrstr (buffer, " ");
-    if (begin != NULL)
-	p = begin + 1;
+    p = g_strstr_len(buffer, length, "(");
+    if (p)
+    {
+        *(p + 1) = ')';
+        *(p + 2) = 0x0;
+    }
     else
-	p = buffer;
-
+    {
+        strcpy (&buffer[QOF_LOG_MAX_CHARS - 6], "...()");
+    }
     if (function_buffer)
         g_free(function_buffer);
-    function_buffer = g_strdup(p);
+    function_buffer = g_strdup(buffer);
     g_free(buffer);
     return function_buffer;
 }
@@ -372,12 +366,11 @@ qof_log_check(QofLogModule log_domain, QofLogLevel log_level)
 
     {
         gpointer match_level;
-        if (log_levels &&
-	    (match_level = g_hash_table_lookup(log_levels, "")) != NULL)
+        if ((match_level = g_hash_table_lookup(log_levels, "")) != NULL)
             longest_match_level = (QofLogLevel)GPOINTER_TO_INT(match_level);
     }
 
-_QLC_DBG( { printf("trying [%s] (%d):", log_domain, log_levels != NULL ? g_hash_table_size(log_levels) : 0); });
+    _QLC_DBG( { printf("trying [%s] (%d):", log_domain, g_hash_table_size(log_levels)); });
     if (G_LIKELY(log_levels))
     {
         // e.g., "a.b.c\0" -> "a\0b.c\0" -> "a.b\0c\0", "a.b.c\0"

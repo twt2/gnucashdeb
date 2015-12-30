@@ -31,7 +31,6 @@
 #include <glib.h>
 #include <string.h>
 
-#include "gnc-features.h"
 #include "gncInvoice.h"
 #include "gncJob.h"
 #include "gncJobP.h"
@@ -200,6 +199,29 @@ GncJob *gncJobCreate (QofBook *book)
     return job;
 }
 
+GncJob *
+gncCloneJob (GncJob *from, QofBook *book)
+{
+    GncJob *job;
+
+    if (!book) return NULL;
+
+    job = g_object_new (GNC_TYPE_JOB, NULL);
+    qof_instance_init_data (&job->inst, _GNC_MOD_NAME, book);
+    qof_instance_gemini (&job->inst, &from->inst);
+
+    job->id = CACHE_INSERT (from->id);
+    job->name = CACHE_INSERT (from->name);
+    job->desc = CACHE_INSERT (from->desc);
+    job->active = from->active;
+
+    job->owner = gncCloneOwner(&from->owner, book);
+
+    qof_event_gen (&job->inst, QOF_EVENT_CREATE, NULL);
+
+    return job;
+}
+
 void gncJobDestroy (GncJob *job)
 {
     if (!job) return;
@@ -233,6 +255,19 @@ static void gncJobFree (GncJob *job)
     g_object_unref (job);
 }
 
+GncJob *
+gncJobObtainTwin (GncJob *from, QofBook *book)
+{
+    GncJob *job;
+    if (!from) return NULL;
+
+    job = (GncJob *) qof_instance_lookup_twin (QOF_INSTANCE(from), book);
+    if (!job)
+    {
+        job = gncCloneJob (from, book);
+    }
+    return job;
+}
 
 /* ================================================================== */
 /* Set Functions */
@@ -240,7 +275,7 @@ static void gncJobFree (GncJob *job)
 #define SET_STR(obj, member, str) { \
         char * tmp; \
         \
-        if (!g_strcmp0 (member, str)) return; \
+        if (!safe_strcmp (member, str)) return; \
         gncJobBeginEdit (obj); \
         tmp = CACHE_INSERT (str); \
         CACHE_REMOVE (member); \
@@ -339,11 +374,10 @@ qofJobSetOwner (GncJob *job, QofInstance *ent)
     {
         return;
     }
-
-    gncJobBeginEdit (job);
+    qof_begin_edit(&job->inst);
     qofOwnerSetEntity(&job->owner, ent);
     mark_job (job);
-    gncJobCommitEdit (job);
+    qof_commit_edit(&job->inst);
 }
 
 void gncJobBeginEdit (GncJob *job)
@@ -367,10 +401,6 @@ static void gncJobOnDone (QofInstance *qof) { }
 
 void gncJobCommitEdit (GncJob *job)
 {
-    /* GnuCash 2.6.3 and earlier didn't handle job kvp's... */
-    if (!kvp_frame_is_empty (job->inst.kvp_data))
-        gnc_features_set_used (qof_instance_get_book (QOF_INSTANCE (job)), GNC_FEATURE_KVP_EXTRA_DATA);
-
     if (!qof_commit_edit (QOF_INSTANCE(job))) return;
     qof_commit_edit_part2 (&job->inst, gncJobOnError,
                            gncJobOnDone, job_free);
@@ -427,7 +457,7 @@ int gncJobCompare (const GncJob * a, const GncJob *b)
     if (!a && b) return 1;
     if (a && !b) return -1;
 
-    return (g_strcmp0(a->id, b->id));
+    return (safe_strcmp(a->id, b->id));
 }
 
 gboolean gncJobEqual(const GncJob * a, const GncJob *b)
@@ -438,19 +468,19 @@ gboolean gncJobEqual(const GncJob * a, const GncJob *b)
     g_return_val_if_fail(GNC_IS_JOB(a), FALSE);
     g_return_val_if_fail(GNC_IS_JOB(b), FALSE);
 
-    if (g_strcmp0(a->id, b->id) != 0)
+    if (safe_strcmp(a->id, b->id) != 0)
     {
         PWARN("IDs differ: %s vs %s", a->id, b->id);
         return FALSE;
     }
 
-    if (g_strcmp0(a->name, b->name) != 0)
+    if (safe_strcmp(a->name, b->name) != 0)
     {
         PWARN("Names differ: %s vs %s", a->name, b->name);
         return FALSE;
     }
 
-    if (g_strcmp0(a->desc, b->desc) != 0)
+    if (safe_strcmp(a->desc, b->desc) != 0)
     {
         PWARN("Descriptions differ: %s vs %s", a->desc, b->desc);
         return FALSE;
@@ -479,6 +509,27 @@ static const char * _gncJobPrintable (gpointer item)
     if (!item) return NULL;
     c = item;
     return c->name;
+}
+
+static void
+destroy_job_on_book_close(QofInstance *ent, gpointer data)
+{
+    GncJob* job = GNC_JOB(ent);
+
+    gncJobFree(job);
+}
+
+/** Handles book end - frees all jobs from the book
+ *
+ * @param book Book being closed
+ */
+static void
+gnc_job_book_end(QofBook* book)
+{
+    QofCollection *col;
+
+    col = qof_book_get_collection(book, GNC_ID_JOB);
+    qof_collection_foreach(col, destroy_job_on_book_close, NULL);
 }
 
 static QofObject gncJobDesc =

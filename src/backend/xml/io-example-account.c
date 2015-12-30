@@ -173,7 +173,7 @@ generic_callback(const char *tag, gpointer globaldata, gpointer data)
 {
     GncExampleAccount *gea = (GncExampleAccount*)globaldata;
 
-    if (g_strcmp0(tag, "gnc:account") == 0)
+    if (safe_strcmp(tag, "gnc:account") == 0)
     {
         add_account_local(gea, (Account*)data);
     }
@@ -334,7 +334,6 @@ gnc_read_example_account(const gchar *filename)
                 GNC_ACCOUNT_STRING, main_parser,
                 NULL, NULL))
     {
-        gnc_destroy_example_account(gea);
         return FALSE;
     }
 
@@ -348,7 +347,6 @@ gnc_read_example_account(const gchar *filename)
                 "gnc:account", gnc_account_sixtp_parser_create(),
                 NULL, NULL))
     {
-        gnc_destroy_example_account(gea);
         return FALSE;
     }
 
@@ -357,7 +355,6 @@ gnc_read_example_account(const gchar *filename)
     {
         sixtp_destroy(top_parser);
         xaccLogEnable ();
-        gnc_destroy_example_account(gea);
         return FALSE;
     }
 

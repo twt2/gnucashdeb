@@ -1,23 +1,3 @@
-/********************************************************************\
- * This program is free software; you can redistribute it and/or    *
- * modify it under the terms of the GNU General Public License as   *
- * published by the Free Software Foundation; either version 2 of   *
- * the License, or (at your option) any later version.              *
- *                                                                  *
- * This program is distributed in the hope that it will be useful,  *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of   *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the    *
- * GNU General Public License for more details.                     *
- *                                                                  *
- * You should have received a copy of the GNU General Public License*
- * along with this program; if not, contact:                        *
- *                                                                  *
- * Free Software Foundation           Voice:  +1-617-542-5942       *
- * 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652       *
- * Boston, MA  02110-1301,  USA       gnu@gnu.org                   *
- *                                                                  *
-\********************************************************************/
-
 %module sw_gnome_utils
 %{
 /* Includes the header in the wrapper code */
@@ -26,6 +6,7 @@
 #include <glib-object.h>
 #include <dialog-options.h>
 #include <dialog-utils.h>
+#include <druid-utils.h>
 #include <gnc-amount-edit.h>
 #include <gnc-date-edit.h>
 #include <gnc-file.h>
@@ -37,15 +18,9 @@
 #include <gnc-plugin-file-history.h>
 #include <gnc-ui.h>
 #include <gnc-splash.h>
-#include <dialog-tax-table.h>
-%}
-#if defined(SWIGGUILE)
-%{
-#include "guile-mappings.h"
 
 SCM scm_init_sw_gnome_utils_module (void);
 %}
-#endif
 
 %import "base-typemaps.i"
 
@@ -77,5 +52,3 @@ void gnc_unset_busy_cursor (GtkWidget *w);
 void gnc_window_show_progress (const char *message, double percentage);
 
 gboolean gnucash_ui_is_running(void);
-
-TaxTableWindow * gnc_ui_tax_table_window_new (QofBook *book);

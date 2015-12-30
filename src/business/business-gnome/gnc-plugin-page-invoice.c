@@ -27,18 +27,16 @@
 #include <glib/gi18n.h>
 
 #include "gnc-plugin.h"
-#include "business-gnome-utils.h"
 #include "dialog-invoice.h"
-#include "gnc-ledger-display.h"
 #include "gnc-plugin-page-invoice.h"
 
 #include "dialog-account.h"
 #include "gnc-component-manager.h"
+#include "gnc-gconf-utils.h"
 #include "gnc-gobject-utils.h"
 #include "gnc-gnome-utils.h"
 #include "gnc-icons.h"
 #include "gnucash-sheet.h"
-#include "gnc-prefs.h"
 #include "gnc-ui-util.h"
 #include "gnc-window.h"
 
@@ -55,7 +53,11 @@ static void gnc_plugin_page_invoice_save_page (GncPluginPage *plugin_page, GKeyF
 static GncPluginPage *gnc_plugin_page_invoice_recreate_page (GtkWidget *window, GKeyFile *file, const gchar *group);
 static void gnc_plugin_page_invoice_window_changed (GncPluginPage *plugin_page, GtkWidget *window);
 
-static void gnc_plugin_page_invoice_summarybar_position_changed(gpointer prefs, gchar* pref, gpointer user_data);
+static void gnc_plugin_page_invoice_summarybar_position_changed(GConfEntry *entry, gpointer user_data);
+
+void gnc_plugin_page_invoice_start_toggle_cb(GtkToggleButton *toggle, gpointer data);
+void gnc_plugin_page_invoice_end_toggle_cb(GtkToggleButton *toggle, gpointer data);
+void gnc_plugin_page_invoice_today_cb(GtkButton *buttontoggle, gpointer data);
 
 /* Command callbacks */
 static void gnc_plugin_page_invoice_cmd_new_invoice (GtkAction *action, GncPluginPageInvoice *plugin_page);
@@ -90,7 +92,7 @@ static void gnc_plugin_page_invoice_cmd_entryDown (GtkAction *action, GncPluginP
 /************************************************************
  *                          Actions                         *
  ************************************************************/
-// FIXME:  The texts are wrong if we have a Bill or Expence Voucher.
+
 static GtkActionEntry gnc_plugin_page_invoice_actions [] =
 {
     /* Toplevel */
@@ -206,24 +208,14 @@ static guint gnc_plugin_page_invoice_n_actions = G_N_ELEMENTS (gnc_plugin_page_i
 
 static GtkRadioActionEntry radio_entries [] =
 {
-    { "SortStandardAction", NULL, N_("_Standard"), NULL, N_("Keep normal invoice order"), INVSORT_BY_STANDARD },
-    { "SortDateAction", NULL, N_("_Date"), NULL, N_("Sort by date"), INVSORT_BY_DATE },
-    { "SortDateEntryAction", NULL, N_("Date of _Entry"), NULL, N_("Sort by the date of entry"), INVSORT_BY_DATE_ENTERED },
-    { "SortQuantityAction", NULL, N_("_Quantity"), NULL, N_("Sort by quantity"), INVSORT_BY_QTY },
-    { "SortPriceAction", NULL, N_("_Price"), NULL, N_("Sort by price"), INVSORT_BY_PRICE },
-    { "SortDescriptionAction", NULL, N_("Descri_ption"), NULL, N_("Sort by description"), INVSORT_BY_DESC },
+    { "SortStandardAction", NULL, N_("_Standard"), NULL, N_("Keep normal invoice order"), BY_STANDARD },
+    { "SortDateAction", NULL, N_("_Date"), NULL, N_("Sort by date"), BY_DATE },
+    { "SortDateEntryAction", NULL, N_("Date of _Entry"), NULL, N_("Sort by the date of entry"), BY_DATE_ENTERED },
+    { "SortQuantityAction", NULL, N_("_Quantity"), NULL, N_("Sort by quantity"), BY_QTY },
+    { "SortPriceAction", NULL, N_("_Price"), NULL, N_("Sort by price"), BY_PRICE },
+    { "SortDescriptionAction", NULL, N_("Descri_ption"), NULL, N_("Sort by description"), BY_DESC },
 };
 static guint n_radio_entries = G_N_ELEMENTS (radio_entries);
-
-static const gchar *invoice_book_readwrite_actions[] =
-{
-    // Only insert actions here which are not yet in posted_actions and unposted_actions!
-    "FileNewAccountAction",
-    "EditDuplicateInvoiceAction",
-    "BusinessNewInvoiceAction",
-    "ToolsProcessPaymentAction",
-    NULL
-};
 
 static const gchar *posted_actions[] =
 {
@@ -372,13 +364,16 @@ gnc_plugin_page_invoice_class_init (GncPluginPageInvoiceClass *klass)
 static void
 gnc_plugin_page_invoice_init (GncPluginPageInvoice *plugin_page)
 {
+    GncPluginPageInvoicePrivate *priv;
     GncPluginPage *parent;
     GtkActionGroup *action_group;
     gboolean use_new;
 
+    priv = GNC_PLUGIN_PAGE_INVOICE_GET_PRIVATE(plugin_page);
+
     /* Init parent declared variables */
     parent = GNC_PLUGIN_PAGE(plugin_page);
-    use_new = gnc_prefs_get_bool (GNC_PREFS_GROUP_INVOICE, GNC_PREF_USE_NEW);
+    use_new = gnc_gconf_get_bool(GCONF_SECTION_INVOICE, KEY_USE_NEW, NULL);
     g_object_set(G_OBJECT(plugin_page),
                  "page-name",      _("Invoice"),
                  "page-uri",       "default:",
@@ -407,9 +402,15 @@ gnc_plugin_page_invoice_init (GncPluginPageInvoice *plugin_page)
 static void
 gnc_plugin_page_invoice_finalize (GObject *object)
 {
+    GncPluginPageInvoice *page;
+    GncPluginPageInvoicePrivate *priv;
+
     g_return_if_fail (GNC_IS_PLUGIN_PAGE_INVOICE (object));
 
     ENTER("object %p", object);
+    page = GNC_PLUGIN_PAGE_INVOICE (object);
+    priv = GNC_PLUGIN_PAGE_INVOICE_GET_PRIVATE(page);
+
     G_OBJECT_CLASS (parent_class)->finalize (object);
     LEAVE(" ");
 }
@@ -419,16 +420,8 @@ void
 gnc_plugin_page_invoice_update_menus (GncPluginPage *page, gboolean is_posted, gboolean can_unpost)
 {
     GtkActionGroup *action_group;
-    gboolean is_readonly = qof_book_is_readonly(gnc_get_current_book());
 
     g_return_if_fail(GNC_IS_PLUGIN_PAGE_INVOICE(page));
-
-    if (is_readonly)
-    {
-        // Are we readonly? Then don't allow any actions.
-        is_posted = TRUE;
-        can_unpost = FALSE;
-    }
 
     action_group = gnc_plugin_page_get_action_group(page);
     gnc_plugin_update_actions (action_group, posted_actions,
@@ -437,8 +430,6 @@ gnc_plugin_page_invoice_update_menus (GncPluginPage *page, gboolean is_posted, g
                                "sensitive", !is_posted);
     gnc_plugin_update_actions (action_group, can_unpost_actions,
                                "sensitive", can_unpost);
-    gnc_plugin_update_actions (action_group, invoice_book_readwrite_actions,
-                               "sensitive", !is_readonly);
 }
 
 
@@ -469,15 +460,9 @@ gnc_plugin_page_invoice_create_widget (GncPluginPage *plugin_page)
 
     plugin_page->summarybar = gnc_invoice_window_create_summary_bar(priv->iw);
     gtk_box_pack_start(GTK_BOX (priv->widget), plugin_page->summarybar, FALSE, FALSE, 0);
-    gnc_plugin_page_invoice_summarybar_position_changed(NULL, NULL, page);
-    gnc_prefs_register_cb (GNC_PREFS_GROUP_GENERAL,
-                           GNC_PREF_SUMMARYBAR_POSITION_TOP,
-                           gnc_plugin_page_invoice_summarybar_position_changed,
-                           page);
-    gnc_prefs_register_cb (GNC_PREFS_GROUP_GENERAL,
-                           GNC_PREF_SUMMARYBAR_POSITION_BOTTOM,
-                           gnc_plugin_page_invoice_summarybar_position_changed,
-                           page);
+    gnc_plugin_page_invoice_summarybar_position_changed(NULL, page);
+    gnc_gconf_general_register_cb(KEY_SUMMARYBAR_POSITION,
+                                  gnc_plugin_page_invoice_summarybar_position_changed, page);
 
     regWidget = gnc_invoice_get_register(priv->iw);
     if (regWidget)
@@ -505,14 +490,8 @@ gnc_plugin_page_invoice_destroy_widget (GncPluginPage *plugin_page)
     page = GNC_PLUGIN_PAGE_INVOICE (plugin_page);
     priv = GNC_PLUGIN_PAGE_INVOICE_GET_PRIVATE(page);
 
-    gnc_prefs_remove_cb_by_func (GNC_PREFS_GROUP_GENERAL,
-                                 GNC_PREF_SUMMARYBAR_POSITION_TOP,
-                                 gnc_plugin_page_invoice_summarybar_position_changed,
-                                 page);
-    gnc_prefs_remove_cb_by_func (GNC_PREFS_GROUP_GENERAL,
-                                 GNC_PREF_SUMMARYBAR_POSITION_BOTTOM,
-                                 gnc_plugin_page_invoice_summarybar_position_changed,
-                                 page);
+    gnc_gconf_general_remove_cb(KEY_SUMMARYBAR_POSITION,
+                                gnc_plugin_page_invoice_summarybar_position_changed, page);
 
     if (priv->widget == NULL)
     {
@@ -611,12 +590,14 @@ gnc_plugin_page_invoice_window_changed (GncPluginPage *plugin_page,
 
 
 static void
-gnc_plugin_page_invoice_summarybar_position_changed(gpointer prefs, gchar *pref, gpointer user_data)
+gnc_plugin_page_invoice_summarybar_position_changed(GConfEntry *entry,
+        gpointer user_data)
 {
     GncPluginPage *plugin_page;
     GncPluginPageInvoice *page;
     GncPluginPageInvoicePrivate *priv;
     GtkPositionType position = GTK_POS_BOTTOM;
+    gchar *conf_string;
 
     g_return_if_fail(user_data != NULL);
 
@@ -624,8 +605,14 @@ gnc_plugin_page_invoice_summarybar_position_changed(gpointer prefs, gchar *pref,
     page = GNC_PLUGIN_PAGE_INVOICE (user_data);
     priv = GNC_PLUGIN_PAGE_INVOICE_GET_PRIVATE(page);
 
-    if (gnc_prefs_get_bool (GNC_PREFS_GROUP_GENERAL, GNC_PREF_SUMMARYBAR_POSITION_TOP))
-        position = GTK_POS_TOP;
+    conf_string = gnc_gconf_get_string (GCONF_GENERAL,
+                                        KEY_SUMMARYBAR_POSITION, NULL);
+    if (conf_string)
+    {
+        position = gnc_enum_from_nick (GTK_TYPE_POSITION_TYPE,
+                                       conf_string, GTK_POS_BOTTOM);
+        g_free (conf_string);
+    }
 
     gtk_box_reorder_child(GTK_BOX(priv->widget),
                           plugin_page->summarybar,
@@ -980,6 +967,6 @@ gnc_plugin_page_invoice_refresh_cb (GHashTable *changes, gpointer user_data)
 
     priv = GNC_PLUGIN_PAGE_INVOICE_GET_PRIVATE(page);
     reg = gnc_invoice_get_register(priv->iw);
-    gnucash_register_refresh_from_prefs(GNUCASH_REGISTER(reg));
+    gnucash_register_refresh_from_gconf(GNUCASH_REGISTER(reg));
     gtk_widget_queue_draw(priv->widget);
 }

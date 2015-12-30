@@ -57,7 +57,6 @@ typedef enum
 {
     GNC_TREE_MODEL_COMMODITY_COL_NAMESPACE,
     GNC_TREE_MODEL_COMMODITY_COL_MNEMONIC,
-    GNC_TREE_MODEL_COMMODITY_COL_USER_SYMBOL,
     GNC_TREE_MODEL_COMMODITY_COL_FULLNAME,
     GNC_TREE_MODEL_COMMODITY_COL_PRINTNAME,
     GNC_TREE_MODEL_COMMODITY_COL_UNIQUE_NAME,
@@ -193,7 +192,7 @@ gnc_commodity *gnc_tree_model_commodity_get_commodity (GncTreeModelCommodity *mo
  *
  *  @return TRUE if the returned iter is valid, FALSE otherwise. */
 gboolean gnc_tree_model_commodity_get_iter_from_namespace (GncTreeModelCommodity *model,
-        gnc_commodity_namespace *name_space,
+        gnc_commodity_namespace *namespace,
         GtkTreeIter *iter);
 
 /** Convert a commodity pointer into a GtkTreeIter.
@@ -209,6 +208,19 @@ gboolean gnc_tree_model_commodity_get_iter_from_namespace (GncTreeModelCommodity
 gboolean gnc_tree_model_commodity_get_iter_from_commodity (GncTreeModelCommodity *model,
         gnc_commodity *commodity,
         GtkTreeIter *iter);
+
+/** Convert a commodity namespace pointer into a GtkTreePath.
+ *
+ *  @param model A pointer to the commodity tree model.
+ *
+ *  @param namespace A pointer to the gnucash commodity namespace.
+ *
+ *  @return A pointer to a GtkTreePath describing the location of this
+ *  namespace.  This pointer must be freed by the caller when no
+ *  longer needed.  This routine will return NULL if the namespace
+ *  does not exist in the tree. */
+GtkTreePath *gnc_tree_model_commodity_get_path_from_namespace (GncTreeModelCommodity *model,
+        gnc_commodity_namespace *namespace);
 
 /** Convert a commodity pointer into a GtkTreePath.
  *

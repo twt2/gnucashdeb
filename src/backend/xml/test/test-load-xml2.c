@@ -37,17 +37,15 @@
 #include <glib-object.h>
 #include <glib/gstdio.h>
 
-#include <cashobjects.h>
-#include <TransLog.h>
-#include <gnc-engine.h>
-#include "../gnc-backend-xml.h"
-#include "../io-gncxml-v2.h"
-#include <gnc-prefs.h>
+#include "cashobjects.h"
+#include "TransLog.h"
+#include "gnc-engine.h"
+#include "gnc-backend-xml.h"
+#include "io-gncxml-v2.h"
 
-#include <test-stuff.h>
-#include <unittest-support.h>
-#include <test-engine-stuff.h>
-#include <test-file-stuff.h>
+#include "test-stuff.h"
+#include "test-engine-stuff.h"
+#include "test-file-stuff.h"
 
 #define GNC_LIB_NAME "gncmod-backend-xml"
 
@@ -81,18 +79,12 @@ test_load_file(const char *filename)
     QofBook *book;
     Account *root;
     gboolean ignore_lock;
-    gchar *logdomain = "backend.xml";
-    guint loglevel = G_LOG_LEVEL_WARNING;
-    TestErrorStruct check = { loglevel, logdomain, NULL };
-    g_log_set_handler (logdomain, loglevel,
-                       (GLogFunc)test_checked_handler, &check);
 
     session = qof_session_new();
 
     remove_locks(filename);
 
-    ignore_lock = (g_strcmp0(g_getenv("SRCDIR"), ".") != 0);
-/*    gnc_prefs_set_file_save_compressed(FALSE); */
+    ignore_lock = (safe_strcmp(g_getenv("SRCDIR"), ".") != 0);
     qof_session_begin(session, filename, ignore_lock, FALSE, TRUE);
 
     qof_session_load(session, NULL);
@@ -107,7 +99,7 @@ test_load_file(const char *filename)
                  "qof error=%d for file [%s]",
                  qof_session_get_error(session), filename);
     /* Uncomment the line below to generate corrected files */
-/*    qof_session_save( session, NULL ); */
+    qof_session_save( session, NULL );
     qof_session_end(session);
 }
 
@@ -115,9 +107,9 @@ int
 main (int argc, char ** argv)
 {
     const char *location = g_getenv("GNC_TEST_FILES");
-    int files_tested = 0;
     GDir *xml2_dir;
 
+    g_type_init();
     qof_init();
     cashobjects_register();
     do_test(qof_load_backend_library ("../.libs/", GNC_LIB_NAME),
@@ -146,7 +138,6 @@ main (int argc, char ** argv)
                 if (!g_file_test(to_open, G_FILE_TEST_IS_DIR))
                 {
                     test_load_file(to_open);
-                    files_tested++;
                 }
                 g_free(to_open);
             }
@@ -154,11 +145,6 @@ main (int argc, char ** argv)
     }
 
     g_dir_close(xml2_dir);
-
-    if (files_tested == 0)
-    {
-        failure("handled 0 files in test-load-xml2");
-    }
 
     print_test_results();
     qof_close();

@@ -7,12 +7,15 @@ TESTS = \
   test-sx
 
 test_exp_parser_SOURCES = \
+  ${top_builddir}/src/core-utils/gnc-gconf-utils.c \
   test-exp-parser.c
 
 test_print_parse_amount_SOURCES = \
+  ${top_builddir}/src/core-utils/gnc-gconf-utils.c \
   test-print-parse-amount.c
 
 GNC_TEST_DEPS = --gnc-module-dir ${top_builddir}/src/engine \
+  --gnc-module-dir ${top_builddir}/src/calculation \
   --gnc-module-dir ${top_builddir}/src/app-utils \
   --guile-load-dir ${top_builddir}/src/core-utils \
   --guile-load-dir ${top_builddir}/src/gnc-module \
@@ -25,14 +28,12 @@ GNC_TEST_DEPS = --gnc-module-dir ${top_builddir}/src/engine \
   --library-dir    ${top_builddir}/src/engine \
   --library-dir    ${top_builddir}/src/backend/xml \
   --library-dir    ${top_builddir}/src/backend/sql \
+  --library-dir    ${top_builddir}/src/calculation \
   --library-dir    ${top_builddir}/src/app-utils
 
 TESTS_ENVIRONMENT = \
-  GUILE_WARN_DEPRECATED=no \
-  GUILE="${GUILE}" \
-  SRCDIR=${srcdir} \
-  GNC_BUILDDIR="${abs_top_builddir}" \
-  $(shell ${abs_top_srcdir}/src/gnc-test-env.pl --noexports ${GNC_TEST_DEPS})
+  GNC_BUILDDIR=`\cd ${top_builddir} && pwd` \
+  $(shell ${top_srcdir}/src/gnc-test-env --no-exports ${GNC_TEST_DEPS})
 
 LDADD = \
    ${top_builddir}/src/libqof/qof/libgnc-qof.la \
@@ -42,7 +43,8 @@ LDADD = \
    ${top_builddir}/src/app-utils/libgncmod-app-utils.la \
    ${top_builddir}/src/test-core/libtest-core.la \
    ${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
-   ${GUILE_LIBS}
+   ${GUILE_LIBS} \
+   ${GCONF_LIBS}
 
 check_PROGRAMS = \
   test-link-module \
@@ -64,5 +66,6 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/gnc-module \
   -I${top_srcdir}/src/core-utils \
   -I${top_srcdir}/src/libqof/qof \
-  ${GUILE_CFLAGS} \
-  ${GLIB_CFLAGS}
+  ${GUILE_INCS} \
+  ${GLIB_CFLAGS} \
+  ${GCONF_CFLAGS}

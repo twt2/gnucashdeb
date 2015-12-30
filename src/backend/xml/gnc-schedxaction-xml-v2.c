@@ -44,6 +44,8 @@
 
 #include "sixtp-dom-parsers.h"
 
+#include "gnc-gconf-utils.h"
+
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "gnc.backend.file.sx"
 
@@ -85,12 +87,11 @@ gnc_schedXaction_dom_tree_create(SchedXaction *sx)
     gint        instCount;
     const GncGUID        *templ_acc_guid;
     gboolean allow_2_2_incompat = TRUE;
-    gchar *name = g_strdup (xaccSchedXactionGetName(sx));
 
     templ_acc_guid = xaccAccountGetGUID(sx->template_acct);
 
     /* FIXME: this should be the same as the def in io-gncxml-v2.c */
-    ret = xmlNewNode (NULL, BAD_CAST GNC_SCHEDXACTION_TAG);
+    ret = xmlNewNode( NULL, BAD_CAST GNC_SCHEDXACTION_TAG );
 
     if (allow_2_2_incompat)
         xmlSetProp(ret, BAD_CAST "version", BAD_CAST schedxaction_version2_string);
@@ -101,8 +102,7 @@ gnc_schedXaction_dom_tree_create(SchedXaction *sx)
                  guid_to_dom_tree(SX_ID,
                                   xaccSchedXactionGetGUID(sx)) );
 
-    xmlNewTextChild( ret, NULL, BAD_CAST SX_NAME, checked_char_cast (name));
-    g_free (name);
+    xmlNewTextChild( ret, NULL, BAD_CAST SX_NAME, BAD_CAST xaccSchedXactionGetName(sx) );
 
     if (allow_2_2_incompat)
     {
@@ -248,7 +248,7 @@ sx_enabled_handler( xmlNodePtr node, gpointer sx_pdata )
     SchedXaction *sx = pdata->sx;
     gchar *tmp = dom_tree_to_text( node );
 
-    sx->enabled = (g_strcmp0( tmp, "y" ) == 0 ? TRUE : FALSE );
+    sx->enabled = (safe_strcmp( tmp, "y" ) == 0 ? TRUE : FALSE );
 
     return TRUE;
 }
@@ -260,7 +260,7 @@ sx_autoCreate_handler( xmlNodePtr node, gpointer sx_pdata )
     SchedXaction *sx = pdata->sx;
     gchar *tmp = dom_tree_to_text( node );
 
-    sx->autoCreateOption = (g_strcmp0( tmp, "y" ) == 0 ? TRUE : FALSE );
+    sx->autoCreateOption = (safe_strcmp( tmp, "y" ) == 0 ? TRUE : FALSE );
 
     return TRUE;
 }
@@ -272,7 +272,7 @@ sx_notify_handler( xmlNodePtr node, gpointer sx_pdata )
     SchedXaction *sx = pdata->sx;
     gchar *tmp = dom_tree_to_text( node );
 
-    sx->autoCreateNotify = (g_strcmp0( tmp, "y" ) == 0 ? TRUE : FALSE );
+    sx->autoCreateNotify = (safe_strcmp( tmp, "y" ) == 0 ? TRUE : FALSE );
 
     return TRUE;
 }

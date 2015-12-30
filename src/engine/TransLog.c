@@ -37,8 +37,6 @@
 # define g_fopen fopen
 #endif
 
-static QofLogModule log_module = "gnc.translog";
-
 /*
  * Some design philosphy that I think would be good to keep in mind:
  * (0) Simplicity and foolproofness are the over-riding design points.
@@ -159,17 +157,13 @@ xaccOpenLog (void)
     char * filename;
     char * timestamp;
 
-    if (!gen_logs)
-    {
-	 PINFO ("Attempt to open disabled transaction log");
-	 return;
-    }
+    if (!gen_logs) return;
     if (trans_log) return;
 
     if (!log_base_name) log_base_name = g_strdup ("translog");
 
     /* tag each filename with a timestamp */
-    timestamp = gnc_date_timestamp ();
+    timestamp = xaccDateUtilGetStampNow ();
 
     filename = g_strconcat (log_base_name, ".", timestamp, ".log", NULL);
 
@@ -221,26 +215,22 @@ void
 xaccTransWriteLog (Transaction *trans, char flag)
 {
     GList *node;
-    char trans_guid_str[GUID_ENCODING_LENGTH + 1];
-    char split_guid_str[GUID_ENCODING_LENGTH + 1];
+    char trans_guid_str[GUID_ENCODING_LENGTH+1];
+    char split_guid_str[GUID_ENCODING_LENGTH+1];
     const char *trans_notes;
     char dnow[100], dent[100], dpost[100], drecn[100];
     Timespec ts;
 
-    if (!gen_logs)
-    {
-	 PINFO ("Attempt to write disabled transaction log");
-	 return;
-    }
+    if (!gen_logs) return;
     if (!trans_log) return;
 
-    timespecFromTime64(&ts, gnc_time (NULL));
+    timespecFromTime_t(&ts, time(NULL));
     gnc_timespec_to_iso8601_buff (ts, dnow);
 
-    timespecFromTime64(&ts, trans->date_entered.tv_sec);
+    timespecFromTime_t(&ts, trans->date_entered.tv_sec);
     gnc_timespec_to_iso8601_buff (ts, dent);
 
-    timespecFromTime64(&ts, trans->date_posted.tv_sec);
+    timespecFromTime_t(&ts, trans->date_posted.tv_sec);
     gnc_timespec_to_iso8601_buff (ts, dpost);
 
     guid_to_string_buff (xaccTransGetGUID(trans), trans_guid_str);
@@ -251,7 +241,7 @@ xaccTransWriteLog (Transaction *trans, char flag)
     {
         Split *split = node->data;
         const char * accname = "";
-        char acc_guid_str[GUID_ENCODING_LENGTH + 1];
+        char acc_guid_str[GUID_ENCODING_LENGTH+1];
         gnc_numeric amt, val;
 
         if (xaccSplitGetAccount(split))
@@ -265,7 +255,7 @@ xaccTransWriteLog (Transaction *trans, char flag)
             acc_guid_str[0] = '\0';
         }
 
-        timespecFromTime64(&ts, split->date_reconciled.tv_sec);
+        timespecFromTime_t(&ts, split->date_reconciled.tv_sec);
         gnc_timespec_to_iso8601_buff (ts, drecn);
 
         guid_to_string_buff (xaccSplitGetGUID(split), split_guid_str);
@@ -304,6 +294,137 @@ xaccTransWriteLog (Transaction *trans, char flag)
     /* get data out to the disk */
     fflush (trans_log);
 }
+
+/********************************************************************\
+\********************************************************************/
+
+#if 0
+/* open_memstream seems to give various distros fits
+ * this has resulted in warfare on the mailing list.
+ * I think the truce called required changing this to asprintf
+ * this code is not currently used ...  so its ifdef out
+ */
+
+char *
+xaccSplitAsString(Split *split, const char prefix[])
+{
+    char *result = NULL;
+    size_t result_size;
+    FILE *stream = open_memstream(&result, &result_size);
+    const char *split_memo = xaccSplitGetMemo(split);
+    const double split_value = gnc_numeric_to_double(xaccSplitGetValue(split));
+    Account *split_dest = xaccSplitGetAccount(split);
+    const char *dest_name =
+        split_dest ? xaccAccountGetName(split_dest) : NULL;
+
+    g_return_val_if_fail (stream, NULL);
+
+    fputc('\n', stream);
+    fputs(prefix, stream);
+    fprintf(stream, "  %10.2f | %15s | %s",
+            split_value,
+            dest_name ? dest_name : "<no-account-name>",
+            split_memo ? split_memo : "<no-split-memo>");
+    fclose(stream);
+    return(result);
+}
+
+static char *
+xaccTransGetDateStr (Transaction *trans)
+{
+    char buf [MAX_DATE_LENGTH];
+    struct tm *date;
+    time_t secs;
+
+    secs = xaccTransGetDate (trans);
+
+    date = localtime (&secs);
+
+    qof_print_date_buff(buf, date->tm_mday, date->tm_mon + 1, date->tm_year + 1900);
+
+    return g_strdup (buf);
+}
+
+char *
+xaccTransAsString(Transaction *txn, const char prefix[])
+{
+    char *result = NULL;
+    size_t result_size;
+    FILE *stream = open_memstream(&result, &result_size);
+    time_t date = xaccTransGetDate(txn);
+    const char *num = xaccTransGetNum(txn);
+    const char *desc = xaccTransGetDescription(txn);
+    const char *memo = xaccSplitGetMemo(xaccTransGetSplit(txn, 0));
+    const double total = gnc_numeric_to_double(xaccSplitGetValue(xaccTransGetSplit(txn, 0)));
+
+    g_return_val_if_fail (stream, NULL);
+
+    fputs(prefix, stream);
+    if (date)
+    {
+        char *datestr = xaccTransGetDateStr(txn);
+        fprintf(stream, "%s", datestr);
+        free(datestr);
+    }
+    else
+    {
+        fprintf(stream, "<no-date>");
+    }
+    fputc(' ', stream);
+    if (num)
+    {
+        fputs(num, stream);
+    }
+    else
+    {
+        fprintf(stream, "<no-num>");
+    }
+
+    fputc('\n', stream);
+    fputs(prefix, stream);
+    if (desc)
+    {
+        fputs("  ", stream);
+        fputs(desc, stream);
+    }
+    else
+    {
+        fprintf(stream, "<no-description>");
+    }
+
+    fputc('\n', stream);
+    fputs(prefix, stream);
+    if (memo)
+    {
+        fputs("  ", stream);
+        fputs(memo, stream);
+    }
+    else
+    {
+        fprintf(stream, "<no-transaction-memo>");
+    }
+
+    {
+        int split_count = xaccTransCountSplits(txn);
+        int i;
+        for (i = 1; i < split_count; i++)
+        {
+            Split *split = xaccTransGetSplit(txn, i);
+            char *split_text = xaccSplitAsString(split, prefix);
+            fputs(split_text, stream);
+            free(split_text);
+        }
+    }
+    fputc('\n', stream);
+
+    fputs(prefix, stream);
+    fprintf(stream, "  %10.2f -- Transaction total\n", total);
+    fclose(stream);
+
+    return(result);
+}
+
+#endif
 
 /************************ END OF ************************************\
 \************************* FILE *************************************/

@@ -21,6 +21,8 @@
 #ifndef GNUCASH_STYLE_H
 #define GNUCASH_STYLE_H
 
+#include <gnome.h>
+
 #include "gnucash-sheet.h"
 
 typedef struct
@@ -127,3 +129,8 @@ void gnucash_sheet_set_header_widths (GnucashSheet *sheet,
 #endif
 
 
+/*
+  Local Variables:
+  c-basic-offset: 8
+  End:
+*/

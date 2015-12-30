@@ -19,20 +19,10 @@ if ! OS_WIN32
 	touch .scm-links
 endif
 
-if GNC_HAVE_GUILE_2
-%.go : %.scm .scm-links
-	$(GUILD) compile \
-	-o $@ $<
-
-gncscmcachedir = ${pkglibdir}/scm/ccache/@GUILE_EFFECTIVE_VERSION@/gnumeric
-gncscmcache_DATA = $(gncscm_DATA:.scm=.go)
-endif
-
 noinst_DATA = .scm-links
 
 EXTRA_DIST = \
   ${gncscm_DATA}
 
-CLEANFILES = .scm-links ${gncscmcache_DATA}
-
+CLEANFILES = .scm-links
 DISTCLEANFILES = ${SCM_FILE_LINKS}

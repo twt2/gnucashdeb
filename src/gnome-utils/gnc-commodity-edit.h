@@ -46,3 +46,9 @@ gpointer gnc_commodity_edit_new_select (gpointer arg, gpointer ptr,
                                         GtkWidget *toplevel);
 
 #endif
+
+/*
+  Local Variables:
+  c-basic-offset: 8
+  End:
+*/

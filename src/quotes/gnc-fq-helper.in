@@ -2,17 +2,17 @@
 ######################################################################
 ### gnc-fq-helper - present a scheme interface to Finance::Quote
 ### Copyright 2001 Rob Browning <rlb@cs.utexas.edu>
-###
-### This program is free software; you can redistribute it and/or
-### modify it under the terms of the GNU General Public License as
-### published by the Free Software Foundation; either version 2 of
-### the License, or (at your option) any later version.
-###
-### This program is distributed in the hope that it will be useful,
-### but WITHOUT ANY WARRANTY; without even the implied warranty of
-### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-### GNU General Public License for more details.
-###
+### 
+### This program is free software; you can redistribute it and/or    
+### modify it under the terms of the GNU General Public License as   
+### published by the Free Software Foundation; either version 2 of   
+### the License, or (at your option) any later version.              
+###                                                                  
+### This program is distributed in the hope that it will be useful,  
+### but WITHOUT ANY WARRANTY; without even the implied warranty of   
+### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the    
+### GNU General Public License for more details.                     
+###                                                                  
 ### You should have received a copy of the GNU General Public License
 ### along with this program# if not, contact:
 ###
@@ -25,104 +25,90 @@ use strict;
 use English;
 use FileHandle;
 
-# Date::Manip provides ParseDate, ParseDateString, and UnixTime.
+# The following include is needed for the ParseDateString function.
+# This should eventually be replaced with a requirement for F::Q
+# version 1.11 (or better) and the use of the 'isodate' field to
+# handle the date part of the conversion.  Still need a method to
+# handle the time conversion.
 use Date::Manip;
 
-=head1 NAME
+# Input: (on standard input - one entry per line and one line per
+# entry, and double quotes must only be delimiters, not string
+# content -- remember, we don't have a real scheme parser on the perl
+# side :>).
 
-gnc-fq-helper  -  allows gnucash to communicate with Finance::Quote
-                  over pipes from guile. The requests and responses
-                  are scheme forms.
+# (<method-name> symbol symbol symbol ...)
 
-=head1 SYNOPSIS
+# where <method-name> indicates the desired Finance::Quote method.
+# The currently recognized subset is yahoo, yahoo_europe,
+# fidelity_direct, troweprice_direct, vanguard, asx, tiaacref,
+# and currency.
 
-gnc-fq-helper
+# For currency quotes, the symbols alternate between the 'from'
+# and 'to' currencies.
 
-=head1 DESCRIPTION
+# For example:
+#
+# (yahoo "IBM" "LNUX")
+# (fidelity_direct "FBIOX" "FSELX")
+# (currency "USD" "AUD")
 
-Input: (on standard input - one entry per line and one line per
-entry, and double quotes must only be delimiters, not string
-content -- remember, we don't have a real scheme parser on the perl
-side :>).
+# Output (on standard output, one output form per input line):
 
-(<method-name> symbol symbol symbol ...)
+# Schemified version of gnc-fq's output, basically an alist of
+# alists, as in the example below.  Right now, only the fields that
+# this script knows about (and knows how to convert to scheme) are
+# returned, so the conversion function will have to be updated
+# whenever Finance::Quote changes.  Currently you'll get symbol,
+# gnc:time-no-zone, and currency, and either last, nav, or price.
+# Fields with gnc: prefixes are non-Finance::Quote fields.
+# gnc:time-no-zone is returned as a string of the form "YYYY-MM-DD
+# HH:MM:SS", basically the unmolested (and underspecified) output of
+# the quote source.  It's up to you to know what it's proper timezone
+# really is.  i.e. if you know the time was in America/Chicago, you'll
+# need to convert it to that.
 
-where <method-name> indicates the desired Finance::Quote method.
-The currently recognized subset is yahoo, yahoo_europe,
-fidelity_direct, troweprice_direct, vanguard, asx, tiaacref,
-and currency.
+# For example:
 
-For currency quotes, the symbols alternate between the 'from'
-and 'to' currencies.
+#  $ echo '(yahoo "CSCO" "JDSU" "^IXIC")' | ./gnc-fq-helper
+# (("CSCO" (symbol . "CSCO")
+#          (gnc:time-no-zone . "2001-03-13 19:27:00")
+#          (last . 20.375)
+#          (currency . "USD"))
+#  ("JDSU" (symbol . "JDSU")
+#          (gnc:time-no-zone . "2001-03-13 19:27:00")
+#          (last . 23.5625)
+#          (currency . "USD"))
+# ("^IXIC" (symbol . ^IXIC)
+#          (gnc:time-no-zone . 2002-12-04 17:16:00)
+#          (last . 1430.35)
+#          (currency . failed-conversion)))
 
-For example:
+# On error, the overall result may be #f, or on individual errors, the
+# list sub-item for a given symbol may be #f, like this:
 
-(yahoo "IBM" "LNUX")
-(fidelity_direct "FBIOX" "FSELX")
-(currency "USD" "AUD")
+#  $ echo '(yahoo "CSCO" "JDSU")' | ./gnc-fq-helper
+# (#f
+#  ("JDSU" (symbol . "JDSU")
+#          (gnc:time-no-zone . "2001-03-13 19:27:00")
+#          (last . 23.5625)
+#          (currency . "USD")))
 
-Output (on standard output, one output form per input line):
+# further, errors may be stored with each quote as indicated in
+# Finance::Quote, and whenever the conversion to scheme data fails,
+# the field will have the value 'failed-conversion, and accordingly
+# this symbol will never be a legitimate conversion.
 
-Schemified version of gnc-fq's output, basically an alist of
-alists, as in the example below.  Right now, only the fields that
-this script knows about (and knows how to convert to scheme) are
-returned, so the conversion function will have to be updated
-whenever Finance::Quote changes.  Currently you'll get symbol,
-gnc:time-no-zone, and currency, and either last, nav, or price.
-Fields with gnc: prefixes are non-Finance::Quote fields.
-gnc:time-no-zone is returned as a string of the form "YYYY-MM-DD
-HH:MM:SS", basically the unmolested (and underspecified) output of
-the quote source.  It's up to you to know what it's proper timezone
-really is.  i.e. if you know the time was in America/Chicago, you'll
-need to convert it to that.
-
-For example:
-
- $ echo '(yahoo "CSCO" "JDSU" "^IXIC")' | ./gnc-fq-helper
-(("CSCO" (symbol . "CSCO")
-         (gnc:time-no-zone . "2001-03-13 19:27:00")
-         (last . 20.375)
-         (currency . "USD"))
- ("JDSU" (symbol . "JDSU")
-         (gnc:time-no-zone . "2001-03-13 19:27:00")
-         (last . 23.5625)
-         (currency . "USD"))
-("^IXIC" (symbol . ^IXIC)
-         (gnc:time-no-zone . 2002-12-04 17:16:00)
-         (last . 1430.35)
-         (currency . failed-conversion)))
-
-On error, the overall result may be #f, or on individual errors, the
-list sub-item for a given symbol may be #f, like this:
-
- $ echo '(yahoo "CSCO" "JDSU")' | ./gnc-fq-helper
-(#f
- ("JDSU" (symbol . "JDSU")
-         (gnc:time-no-zone . "2001-03-13 19:27:00")
-         (last . 23.5625)
-         (currency . "USD")))
-
-further, errors may be stored with each quote as indicated in
-Finance::Quote, and whenever the conversion to scheme data fails,
-the field will have the value 'failed-conversion, and accordingly
-this symbol will never be a legitimate conversion.
-
-Exit status
-
-0 - success
-non-zero - failure
-
-=cut
-
-# Set a base date with the current time in the current TZ:
-my $base_date = new Date::Manip::Date;
-$base_date->parse("now");
+# Exit status
+#
+# 0 - success
+# non-zero - failure
 
 # The methods we know about.  For now we assume they all have the same
 # signature so this works OK.
 
 sub check_modules {
-  my @modules = qw(Finance::Quote Date::Manip);
+  my @modules = qw(Finance::Quote LWP HTML::TableExtract Crypt::SSLeay);
   my @missing;
 
   foreach my $mod (@modules) {
@@ -187,11 +173,23 @@ sub schemify_num {
 
   if(!$numstr) { return "failed-conversion"; }
 
-  if($numstr =~ /^\s*(\d+(\.\d+)?([eE][+-]?\d+)?)$/o) {
+  if($numstr =~ /^\s*(\d+(\.\d+)?)$/o) {
     return $1;
   } else {
     return "failed-conversion";
   }
+}
+
+sub schemify_date {
+  # return the date in epoch seconds.
+  my ($datestr) = @_;
+
+  my $date = ParseDate($datestr);
+  my $result = UnixDate($date, "%s");
+  if($result !~ /^(\+|-)?\d+$/) {
+    $result = "failed-conversion";
+  }
+  return("$result");
 }
 
 # sub schemify_range {
@@ -204,24 +202,33 @@ sub get_quote_time {
 
   my $datestr = $$quotehash{$item, 'date'};
   my $timestr = $$quotehash{$item, 'time'};
-  my $format = "%Y-%m-%d %H:%M:%S";
-  my $result;
 
-  if ($datestr) {
-      my $parsestr = $datestr . " " . ($timestr ? $timestr : "12:00:00");
-      my $date = $base_date->new();
-      my $err = $date->parse($parsestr);
-      if ($err) {
-          print $date->err(), " $parsestr\n";
-          $result = $base_date->printf($format);
-      }
-      else {
-          $result = $date->printf($format);
-      }
-  } else {
-      $result = $base_date->printf($format);
+  if(!$datestr) {
+    return undef;
   }
-  return("\"$result\"");
+
+  my $parsestr = $datestr;
+  if(!$timestr) {
+    #fix date handling for quotes with no time. 
+    #Keeps gnucash from getting date wrong in west longitude places.
+    $parsestr .= " 12:00:00"
+  } else {
+    $parsestr .= " $timestr";
+  }
+
+  $parsestr = ParseDateString($parsestr);
+
+  my $result = UnixDate($parsestr, "\"%Y-%m-%d %H:%M:%S\"");
+  if(!$result) {
+    # Fix date handling for quotes with no date: assume local date
+    (my $second,my $minute,my $hour,my $dayofmonth,my $month,my $year,my $dayofweek,my $dayofyear,my $daylightsaving) = localtime();
+#    $result = "\"".sprintf("%04d-%02d-%02d%02d:%02d:%02d",($year+1900),++$month,$dayOfMonth,$hour,$minute,$second)."\"";
+    $result = "\"" . sprintf("%04d-%02d-%02d", ($year+1900), ++$month, $dayofmonth) . " 12:00:00\"";
+  }
+  if($result !~ /^\"\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d\"$/) {
+    $result = "failed-conversion";
+  }
+  return $result;
 }
 
 sub schemify_quote {
@@ -324,6 +331,9 @@ sub parse_input_line {
 # Check for and load non-standard modules
 check_modules ();
 
+# Help Date::Manip on Windows
+Date_Init("TZ=UTC") if ($^O eq "MSWin32" && (!$ENV{'TZ'}));
+
 # Create a stockquote object.
 my $quoter = Finance::Quote->new();
 my $prgnam = "gnc-fq-helper";
@@ -350,19 +360,6 @@ while(<>) {
     last unless $to_currency;
 
     my $price = $quoter->currency($from_currency, $to_currency);
-    my $inv_price = undef;
-    #Sometimes price quotes are available in only one direction, and if the
-    #direction we asked for results in a quote < 1 we want the other direction
-    #if it's available to get more significant digits.
-    unless (defined($price) && $price > 1) {
-        $inv_price = $quoter->currency($to_currency, $from_currency);
-        if (defined($inv_price)) {
-            my $tmp = $to_currency;
-            $to_currency = $from_currency;
-            $from_currency = $tmp;
-            $price = $inv_price;
-        }
-    }
 
     $quote_data{$from_currency, "success"} = defined($price);
     $quote_data{$from_currency, "symbol"} = $from_currency;
@@ -404,7 +401,7 @@ __END__
 #          $timezone = 0;
 #        } else {
 #          return 0;
-#        }
+#        }                
 #      }
 
 #  sub get_quote_utc {

@@ -140,6 +140,15 @@ gint qof_instance_guid_compare(const gconstpointer ptr1, const gconstpointer ptr
 /** Return the pointer to the kvp_data */
 /*@ dependent @*/
 KvpFrame* qof_instance_get_slots (const QofInstance *);
+
+/** Return the last time this instance was modified.  If QofInstances
+ *  are used with the QofObject storage backends, then the instance
+ *  update times are reserved for use by the backend, for managing
+ *  multi-user updates.  Non-backend code should not set the update
+ *  times.
+ */
+Timespec qof_instance_get_last_update (const QofInstance *inst);
+
 void qof_instance_set_editlevel(gpointer inst, gint level);
 gint qof_instance_get_editlevel (gconstpointer ptr);
 void qof_instance_increase_editlevel (gpointer ptr);
@@ -200,19 +209,23 @@ void qof_instance_set_dirty(QofInstance* inst);
 /* reset the dirty flag */
 void qof_instance_mark_clean (QofInstance *);
 
+gboolean qof_instance_check_edit(const QofInstance *inst);
+
 gboolean qof_instance_get_infant(const QofInstance *inst);
 
 /** Get the version number on this instance.  The version number is
  *  used to manage multi-user updates. */
 gint32 qof_instance_get_version (gconstpointer inst);
-
+/** Compare the version numbers of two instances. */
+gint qof_instance_compare_version (gconstpointer inst1, gconstpointer inst2);
 /** Set the version number on this instance.  The version number is
  *  used to manage multi-user updates. */
 void qof_instance_set_version (gpointer inst, gint32 value);
 /** Copy the version number on this instance.  The version number is
  *  used to manage multi-user updates. */
 void qof_instance_copy_version (gpointer to, gconstpointer from);
-
+/** Increment the instance version number */
+void qof_instance_increment_version (gpointer inst, guint32 new_check);
 /** Get the instance version_check number */
 guint32 qof_instance_get_version_check (gconstpointer inst);
 /** Set the instance version_check number */
@@ -224,6 +237,33 @@ void qof_instance_copy_version_check (gpointer to, gconstpointer from);
     used for kvp management in sql backends. */
 guint32 qof_instance_get_idata (gconstpointer inst);
 void qof_instance_set_idata(gpointer inst, guint32 idata);
+
+/** Pair things up.  This routine inserts a kvp value into each instance
+ *  containing the guid of the other.  In this way, if one has one of the
+ *  pair, one can always find the other by looking up it's guid.  Typically,
+ *  you will want to use qof_instance_lookup_twin() to find the twin.
+ *  (The current implementation assumes the two instances belong to different
+ *  books, and will not add gemini kvp's unless the books differ.  Note that
+ *  the gemini kvp includes the book guid as well, so that the right book can
+ *  be found.
+ */
+void qof_instance_gemini (QofInstance *to, const QofInstance *from);
+
+/** The qof_instance_lookup_twin() routine will find the "twin" of this
+ *    instance 'src' in the given other 'book' (if the twin exists).
+ *
+ *    When instances are gemini'ed or cloned, both of the pair are marked
+ *    with the guid of their copy, thus allowing the sibling-copy of
+ *    an instance to be found.  Since the sibling may end up in a
+ *    different book, we need a way of finding it, given only that we
+ *    know the book, and that we know its twin.
+ *
+ *    That's what this routine does.  Given some book 'book', and an
+ *    instance 'src', it will find the sibling instance of 'src' that is
+ *    in 'book', and return it.  If not found, it returns NULL.  This
+ *    routine uses the 'gemini' kvp values to do its work.
+ */
+QofInstance * qof_instance_lookup_twin (const QofInstance *src, QofBook *book);
 
 /**
  * Returns a displayable name for this object.  The returned string must be freed by the caller.

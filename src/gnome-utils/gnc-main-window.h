@@ -336,7 +336,7 @@ void gnc_main_window_save_all_windows(GKeyFile *keyfile);
 
 /** Restore the persistent state of one window to a sane default.
  */
-void gnc_main_window_restore_default_state(GncMainWindow *window);
+void gnc_main_window_restore_default_state(void);
 
 /**
  * gnc_gtk_action_group_set_translation_domain:
@@ -409,18 +409,6 @@ GtkAction *gnc_main_window_find_action (GncMainWindow *window, const gchar *name
  * Shows all main windows.
  **/
 void gnc_main_window_show_all_windows(void);
-
-/**
- * Opens the Book Options dialog.
- *
- *  @param modal True to open in modal mode, false otherwise.
- *
- *  @param title Title of the dialog; "Book Options" if NULL.
- *
- *  @return A pointer to the GtkWidget for the dialog that can be used
- *  when started in modal mode.
- **/
-GtkWidget *gnc_book_options_dialog_cb (gboolean modal, gchar *title);
 
 #endif /* __GNC_MAIN_WINDOW_H */
 

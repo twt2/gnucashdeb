@@ -28,21 +28,18 @@
 
 #include "config.h"
 
+#include <gnome.h>
 #include <locale.h>
-#include <gdk/gdkkeysyms.h>
 
 #include "gnc-engine.h"
 
 #include "gnc-locale-utils.h"
+#include "gnc-exp-parser.h"
 #include "gnc-ui-util.h"
 
 #include "formulacell.h"
 #include "formulacell-gnome.h"
 #include "pricecell-gnome.h"
-
-#ifdef G_OS_WIN32
-# include <gdk/gdkwin32.h>
-#endif
 
 //static QofLogModule log_module = GNC_MOD_REGISTER;
 
@@ -66,25 +63,20 @@ gnc_formula_cell_direct_update( BasicCell *bcell,
 
     is_return = FALSE;
 
-    /* FIXME!! This code is almost identical (except for GDK_KEY_KP_Enter
+    /* FIXME!! This code is almost identical (except for GDK_KP_Enter
      * handling) to pricecell-gnome.c:gnc_price_cell_direct_update.  I write
      * this after fixing a bug where one copy was kept up to date, and the
      * other not.  So, fix this.
      */
-#ifdef G_OS_WIN32
-    /* gdk never sends GDK_KEY_KP_Decimal on win32. See #486658 */
-    if (event->hardware_keycode == VK_DECIMAL)
-        event->keyval = GDK_KEY_KP_Decimal;
-#endif
     switch (event->keyval)
     {
-    case GDK_KEY_Return:
+    case GDK_Return:
         if (!(event->state &
                 (GDK_CONTROL_MASK | GDK_MOD1_MASK | GDK_SHIFT_MASK)))
             is_return = TRUE;
-        /* FALL THROUGH */
+        /* FALL THROUGH TO NEXT CASE */
 
-    case GDK_KEY_KP_Enter:
+    case GDK_KP_Enter:
     {
         gnc_formula_cell_set_value( cell, cell->cell.value );
 
@@ -95,7 +87,7 @@ gnc_formula_cell_direct_update( BasicCell *bcell,
         return !is_return;
     }
 
-    case GDK_KEY_KP_Decimal:
+    case GDK_KP_Decimal:
         break;
 
     default:

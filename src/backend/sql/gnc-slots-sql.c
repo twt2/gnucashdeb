@@ -209,7 +209,7 @@ get_key_from_path( GString *path )
 static gchar *
 get_path_from_path( GString *path )
 {
-    gchar *str = NULL, *key = NULL;
+    gchar *str = NULL, *key = NULL, *ret = NULL;
 
     g_return_val_if_fail( path != NULL, NULL );
 
@@ -709,7 +709,7 @@ save_slot( const gchar* key, KvpValue* value, gpointer data )
 gboolean
 gnc_sql_slots_save( GncSqlBackend* be, const GncGUID* guid, gboolean is_infant, KvpFrame* pFrame )
 {
-    slot_info_t slot_info = { NULL, NULL, TRUE, NULL, 0, NULL, FRAME, NULL, g_string_new(NULL) };
+    slot_info_t slot_info = { NULL, NULL, TRUE, NULL, 0, NULL, FRAME, NULL, g_string_new('\0') };
 
     g_return_val_if_fail( be != NULL, FALSE );
     g_return_val_if_fail( guid != NULL, FALSE );
@@ -736,7 +736,7 @@ gnc_sql_slots_delete( GncSqlBackend* be, const GncGUID* guid )
     GncSqlResult* result;
     gchar guid_buf[GUID_ENCODING_LENGTH + 1];
     GncSqlStatement* stmt;
-    slot_info_t slot_info = { NULL, NULL, TRUE, NULL, 0, NULL, FRAME, NULL, g_string_new(NULL) };
+    slot_info_t slot_info = { NULL, NULL, TRUE, NULL, 0, NULL, FRAME, NULL, g_string_new('\0') };
 
     g_return_val_if_fail( be != NULL, FALSE );
     g_return_val_if_fail( guid != NULL, FALSE );
@@ -818,7 +818,7 @@ load_slot( slot_info_t *pInfo, GncSqlRow* row )
 void
 gnc_sql_slots_load( GncSqlBackend* be, QofInstance* inst )
 {
-    slot_info_t info = { NULL, NULL, TRUE, NULL, 0, NULL, FRAME, NULL, g_string_new(NULL) };
+    slot_info_t info = { NULL, NULL, TRUE, NULL, 0, NULL, FRAME, NULL, g_string_new('\0') };
     g_return_if_fail( be != NULL );
     g_return_if_fail( inst != NULL );
 
@@ -979,7 +979,7 @@ load_slot_for_book_object( GncSqlBackend* be, GncSqlRow* row, BookLookupFn looku
 
     guid = load_obj_guid( be, row );
     g_return_if_fail( guid != NULL );
-    inst = lookup_fn( guid, be->book );
+    inst = lookup_fn( guid, be->primary_book );
     g_return_if_fail( inst != NULL );
 
     slot_info.be = be;

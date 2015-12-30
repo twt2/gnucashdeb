@@ -42,6 +42,5 @@
 #    define xmlAttrPropertyValue children
 #  endif /* ifndef xmlAttrPropertyValue */
 
-xmlChar* checked_char_cast (gchar *val);
 
 #endif /* _GNC_XML_HELPER_H_ */

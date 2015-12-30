@@ -33,7 +33,7 @@
 #include "gnc-component-manager.h"
 #include "gnc-euro.h"
 #include "gnc-event.h"
-#include "gnc-prefs.h"
+#include "gnc-gconf-utils.h"
 #include "gnc-locale-utils.h"
 #include "gnc-ui-util.h"
 #include "window-main-summarybar.h"
@@ -49,9 +49,9 @@ typedef struct
 
 #define WINDOW_SUMMARYBAR_CM_CLASS "summary-bar"
 
-#define GNC_PREFS_GROUP       "window.pages.account-tree.summary"
-#define GNC_PREF_GRAND_TOTAL  "grand-total"
-#define GNC_PREF_NON_CURRENCY "non-currency"
+#define GCONF_SECTION    "window/pages/account_tree/summary"
+#define KEY_GRAND_TOTAL  "grand_total"
+#define KEY_NON_CURRENCY "non_currency"
 
 /**
  * An accumulator for a given currency.
@@ -84,10 +84,11 @@ typedef struct
 typedef struct
 {
     gnc_commodity *default_currency;
+    gboolean euro;
     gboolean grand_total;
     gboolean non_currency;
-    time64 start_date;
-    time64 end_date;
+    time_t start_date;
+    time_t end_date;
 } GNCSummarybarOptions;
 
 /**
@@ -133,7 +134,9 @@ gnc_ui_accounts_recurse (Account *parent, GList **currency_list,
     gnc_numeric end_amount_default_currency;
     GNCAccountType account_type;
     gnc_commodity * account_currency;
+    gnc_commodity * euro_commodity;
     GNCCurrencyAcc *currency_accum = NULL;
+    GNCCurrencyAcc *euro_accum = NULL;
     GNCCurrencyAcc *grand_total_accum = NULL;
     GNCCurrencyAcc *non_curr_accum = NULL;
     GList *children, *node;
@@ -155,6 +158,16 @@ gnc_ui_accounts_recurse (Account *parent, GList **currency_list,
             grand_total_accum = gnc_ui_get_currency_accumulator(currency_list,
                                 options.default_currency,
                                 TOTAL_GRAND_TOTAL);
+
+        if (options.euro)
+        {
+            euro_commodity = gnc_get_euro ();
+            euro_accum = gnc_ui_get_currency_accumulator(currency_list,
+                         euro_commodity,
+                         TOTAL_CURR_TOTAL);
+        }
+        else
+            euro_commodity = NULL;
 
         if (!gnc_commodity_is_currency(account_currency))
         {
@@ -183,11 +196,11 @@ gnc_ui_accounts_recurse (Account *parent, GList **currency_list,
         case ACCT_TYPE_PAYABLE:
         case ACCT_TYPE_RECEIVABLE:
             end_amount = xaccAccountGetBalanceAsOfDate(account, options.end_date);
-            timespecFromTime64(&end_timespec, options.end_date);
+            timespecFromTime_t(&end_timespec, options.end_date);
             end_amount_default_currency =
                 xaccAccountConvertBalanceToCurrencyAsOfDate
                 (account, end_amount, account_currency, options.default_currency,
-                 timespecToTime64(timespecCanonicalDayTime(end_timespec)));
+                 timespecToTime_t(timespecCanonicalDayTime(end_timespec)));
 
             if (!non_currency || options.non_currency)
             {
@@ -213,22 +226,31 @@ gnc_ui_accounts_recurse (Account *parent, GList **currency_list,
                                      GNC_HOW_RND_ROUND_HALF_UP);
             }
 
+            if (options.euro && (currency_accum != euro_accum))
+            {
+                euro_accum->assets =
+                    gnc_numeric_add (euro_accum->assets,
+                                     gnc_convert_to_euro(account_currency, end_amount),
+                                     gnc_commodity_get_fraction (euro_commodity),
+                                     GNC_HOW_RND_ROUND_HALF_UP);
+            }
+
             gnc_ui_accounts_recurse(account, currency_list, options);
             break;
         case ACCT_TYPE_INCOME:
         case ACCT_TYPE_EXPENSE:
             start_amount = xaccAccountGetBalanceAsOfDate(account, options.start_date);
-            timespecFromTime64(&start_timespec, options.start_date);
+            timespecFromTime_t(&start_timespec, options.start_date);
             start_amount_default_currency =
                 xaccAccountConvertBalanceToCurrencyAsOfDate
                 (account, start_amount, account_currency, options.default_currency,
-                 timespecToTime64(timespecCanonicalDayTime(start_timespec)));
+                 timespecToTime_t(timespecCanonicalDayTime(start_timespec)));
             end_amount = xaccAccountGetBalanceAsOfDate(account, options.end_date);
-            timespecFromTime64(&end_timespec, options.end_date);
+            timespecFromTime_t(&end_timespec, options.end_date);
             end_amount_default_currency =
                 xaccAccountConvertBalanceToCurrencyAsOfDate
                 (account, end_amount, account_currency, options.default_currency,
-                 timespecToTime64(timespecCanonicalDayTime(end_timespec)));
+                 timespecToTime_t(timespecCanonicalDayTime(end_timespec)));
 
             if (!non_currency || options.non_currency)
             {
@@ -265,6 +287,20 @@ gnc_ui_accounts_recurse (Account *parent, GList **currency_list,
                     gnc_numeric_sub (grand_total_accum->profits,
                                      end_amount_default_currency,
                                      gnc_commodity_get_fraction (options.default_currency),
+                                     GNC_HOW_RND_ROUND_HALF_UP);
+            }
+
+            if (options.euro && (currency_accum != euro_accum))
+            {
+                euro_accum->profits =
+                    gnc_numeric_add (euro_accum->profits,
+                                     gnc_convert_to_euro(account_currency, start_amount),
+                                     gnc_commodity_get_fraction (euro_commodity),
+                                     GNC_HOW_RND_ROUND_HALF_UP);
+                euro_accum->profits =
+                    gnc_numeric_sub (euro_accum->profits,
+                                     gnc_convert_to_euro(account_currency, end_amount),
+                                     gnc_commodity_get_fraction (euro_commodity),
                                      GNC_HOW_RND_ROUND_HALF_UP);
             }
 
@@ -331,7 +367,7 @@ enum
  * equities.
  *
  * The EURO gets special treatment. There can be one line with
- * EUR amounts and a EUR (total) line which sums up all EURO
+ * EUR amounts and a EUR (total) line which summs up all EURO
  * member currencies.
  *
  * There can be a 'grand total', too, which sums up all accounts
@@ -349,18 +385,13 @@ gnc_main_window_summary_refresh (GNCMainSummary * summary)
     GList *current;
     GNCSummarybarOptions options;
 
+    options.default_currency = gnc_default_report_currency ();
 
-    root = gnc_get_current_root_account ();
-    options.default_currency = xaccAccountGetCommodity(root);
-    if (options.default_currency == NULL)
-    {
-        options.default_currency = gnc_default_currency ();
-    }
-
+    options.euro = gnc_gconf_get_bool(GCONF_GENERAL, KEY_ENABLE_EURO, NULL);
     options.grand_total =
-        gnc_prefs_get_bool(GNC_PREFS_GROUP, GNC_PREF_GRAND_TOTAL);
+        gnc_gconf_get_bool(GCONF_SECTION, KEY_GRAND_TOTAL, NULL);
     options.non_currency =
-        gnc_prefs_get_bool(GNC_PREFS_GROUP, GNC_PREF_NON_CURRENCY);
+        gnc_gconf_get_bool(GCONF_SECTION, KEY_NON_CURRENCY, NULL);
     options.start_date = gnc_accounting_period_fiscal_start();
     options.end_date = gnc_accounting_period_fiscal_end();
 
@@ -376,6 +407,7 @@ gnc_main_window_summary_refresh (GNCMainSummary * summary)
     gnc_ui_get_currency_accumulator (&currency_list, options.default_currency,
                                      TOTAL_SINGLE);
 
+    root = gnc_get_current_root_account ();
     gnc_ui_accounts_recurse(root, &currency_list, options);
 
     {
@@ -395,7 +427,11 @@ gnc_main_window_summary_refresh (GNCMainSummary * summary)
 
             currency_accum = current->data;
 
-            mnemonic = gnc_commodity_get_nice_symbol (currency_accum->currency);
+            if (gnc_commodity_equiv (currency_accum->currency, gnc_locale_default_currency ()))
+                mnemonic = lc->currency_symbol;
+            else
+                mnemonic = gnc_commodity_get_mnemonic (currency_accum->currency);
+
             if (mnemonic == NULL)
                 mnemonic = "";
 
@@ -440,7 +476,7 @@ gnc_main_window_summary_refresh (GNCMainSummary * summary)
 static void
 gnc_main_window_summary_destroy_cb(GNCMainSummary *summary, gpointer data)
 {
-    gnc_prefs_remove_cb_by_id (GNC_PREFS_GROUP, summary->cnxn_id);
+    gnc_gconf_remove_anon_notification(GCONF_SECTION, summary->cnxn_id);
     gnc_unregister_gui_component(summary->component_id);
     g_free(summary);
 }
@@ -453,7 +489,10 @@ summarybar_refresh_handler(GHashTable * changes, gpointer user_data)
 }
 
 static void
-prefs_changed_cb (gpointer prefs, gchar *pref, gpointer user_data)
+gconf_client_notify_cb (GConfClient *client,
+                        guint cnxn_id,
+                        GConfEntry *entry,
+                        gpointer user_data)
 {
     GNCMainSummary * summary = user_data;
     gnc_main_window_summary_refresh(summary);
@@ -507,8 +546,9 @@ gnc_main_window_summary_new (void)
 
     gnc_main_window_summary_refresh(retval);
 
-    retval->cnxn_id =  gnc_prefs_register_cb (GNC_PREFS_GROUP, NULL,
-                       prefs_changed_cb, retval);
+    retval->cnxn_id =  gnc_gconf_add_anon_notification(GCONF_SECTION,
+                       gconf_client_notify_cb,
+                       retval);
 
     return retval->hbox;
 }

@@ -27,6 +27,7 @@
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <glade/glade.h>
 
 #include "gnc-ui.h"
 #include "dialog-utils.h"
@@ -38,23 +39,23 @@ void
 gnc_ui_object_references_show( const gchar* explanation_text, GList* objlist )
 {
     GtkWidget* dialog;
-    GtkBuilder* builder;
+    GladeXML* xml;
     GtkWidget* box;
+    GList* ds_node;
+    GtkButton* op;
     GList* node;
     GtkLabel* explanation;
     GtkListStore* store;
     GtkWidget* listview;
     GtkTreeViewColumn* column;
     GtkCellRenderer* renderer;
-
-    ENTER("");
+    gint response;
 
     /* Open the dialog */
-    builder = gtk_builder_new();
-    gnc_builder_add_from_file (builder, "dialog-object-references.glade", "Object references" );
-    dialog = GTK_WIDGET(gtk_builder_get_object (builder, "Object references" ));
+    xml = gnc_glade_xml_new( "dialog-object-references.glade", "Object references" );
+    dialog = glade_xml_get_widget( xml, "Object references" );
 
-    explanation = GTK_LABEL(gtk_builder_get_object (builder, "lbl_explanation" ));
+    explanation = GTK_LABEL(glade_xml_get_widget( xml, "lbl_explanation" ));
     gtk_label_set_text( explanation, explanation_text );
 
     /* Set up the list store */
@@ -74,17 +75,14 @@ gnc_ui_object_references_show( const gchar* explanation_text, GList* objlist )
     column = gtk_tree_view_column_new_with_attributes( "Object", renderer, "text", 0, NULL );
     gtk_tree_view_append_column( GTK_TREE_VIEW(listview), column );
 
-    box = GTK_WIDGET(gtk_builder_get_object (builder, "hbox_list" ));
+    box = glade_xml_get_widget( xml, "hbox_list" );
     gtk_container_add( GTK_CONTAINER(box), listview );
 
     /* Autoconnect signals */
-    gtk_builder_connect_signals_full (builder, gnc_builder_connect_full_func, dialog);
+    glade_xml_signal_autoconnect_full( xml, gnc_glade_autoconnect_full_func, dialog );
 
     /* Run the dialog */
     gtk_widget_show_all( dialog );
-    gtk_dialog_run( GTK_DIALOG(dialog) );
-    g_object_unref(G_OBJECT(builder));
+    response = gtk_dialog_run( GTK_DIALOG(dialog) );
     gtk_widget_destroy( dialog );
-
-    LEAVE("");
 }

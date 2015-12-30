@@ -25,16 +25,17 @@
 
 #include <glib.h>
 #include <glib/gi18n.h>
+#include <libguile.h>
 
 #include "Account.h"
 #include "account-quickfill.h"
 #include "combocell.h"
 #include "gnc-component-manager.h"
-#include "gnc-prefs.h"
+#include "gnc-gconf-utils.h"
 #include "gnc-ui-util.h"
 #include "recncell.h"
 
-#include "business-helpers.h"
+#include "business-options.h"
 
 #include "gncEntry.h"
 #include "gncEntryLedger.h"
@@ -42,9 +43,6 @@
 #include "quickfillcell.h"
 #include "app-utils/gnc-entry-quickfill.h"
 
-#define GNC_PREF_TAX_INCL "tax-included"
-
-static const QofLogModule log_module = "Business Entry Ledger";
 
 /* XXX: This should go elsewhere */
 const char * gnc_entry_ledger_type_string_getter (char flag)
@@ -56,9 +54,8 @@ const char * gnc_entry_ledger_type_string_getter (char flag)
     case '2':
         return _("%");
     default:
-        break;
+        return "?";
     };
-    return "?";
 }
 
 const char * gnc_entry_ledger_how_string_getter (char flag)
@@ -72,9 +69,8 @@ const char * gnc_entry_ledger_how_string_getter (char flag)
     case '3':
         return _(">");
     default:
-        break;
-    };
         return "?";
+    };
 }
 
 static void load_discount_type_cells (GncEntryLedger *ledger)
@@ -112,7 +108,7 @@ static void load_discount_how_cells (GncEntryLedger *ledger)
 static void load_payment_type_cells (GncEntryLedger *ledger)
 {
     ComboCell *cell;
-    const GncOwner *owner;
+    GncOwner *owner;
     GncEmployee *employee;
 
     cell = (ComboCell *) gnc_table_layout_get_cell (ledger->table->layout,
@@ -211,8 +207,6 @@ load_xfer_type_cells (GncEntryLedger *ledger)
     case GNCENTRY_ORDER_VIEWER:
     case GNCENTRY_INVOICE_ENTRY:
     case GNCENTRY_INVOICE_VIEWER:
-    case GNCENTRY_CUST_CREDIT_NOTE_ENTRY:
-    case GNCENTRY_CUST_CREDIT_NOTE_VIEWER:
         qf = gnc_get_shared_account_name_quickfill (root, IKEY,
                 skip_expense_acct_cb, NULL);
         store = gnc_get_shared_account_name_list_store (root, IKEY,
@@ -223,19 +217,12 @@ load_xfer_type_cells (GncEntryLedger *ledger)
     case GNCENTRY_BILL_VIEWER:
     case GNCENTRY_EXPVOUCHER_ENTRY:
     case GNCENTRY_EXPVOUCHER_VIEWER:
-    case GNCENTRY_VEND_CREDIT_NOTE_ENTRY:
-    case GNCENTRY_VEND_CREDIT_NOTE_VIEWER:
-    case GNCENTRY_EMPL_CREDIT_NOTE_ENTRY:
-    case GNCENTRY_EMPL_CREDIT_NOTE_VIEWER:
     case GNCENTRY_NUM_REGISTER_TYPES:
         qf = gnc_get_shared_account_name_quickfill (root, EKEY,
                 skip_income_acct_cb, NULL);
         store = gnc_get_shared_account_name_list_store (root, EKEY,
                 skip_income_acct_cb, NULL);
         break;
-    default:
-	PWARN ("Bad GncEntryLedgerType");
-	break;
     }
 
     cell = (ComboCell *)
@@ -297,13 +284,10 @@ load_description_cell (GncEntryLedger *ledger)
     {
     case GNCENTRY_INVOICE_ENTRY:
     case GNCENTRY_INVOICE_VIEWER:
-    case GNCENTRY_CUST_CREDIT_NOTE_ENTRY:
-    case GNCENTRY_CUST_CREDIT_NOTE_VIEWER:
         shared_quickfill = gnc_get_shared_entry_desc_quickfill(ledger->book, DESC_QF_KEY_INVOICES, TRUE);
         break;
     default:
         shared_quickfill = gnc_get_shared_entry_desc_quickfill(ledger->book, DESC_QF_KEY_BILLS, FALSE);
-        break;
     };
 
     cell = (QuickFillCell *)
@@ -322,7 +306,7 @@ void gnc_entry_ledger_load_xfer_cells (GncEntryLedger *ledger)
 /* XXX (FIXME): This should be in a config file! */
 /* Copy GncEntry information from the list to the rows of the Ledger. */
 /* XXX This code is a cut-n-paste job from the SplitRegister code;
- * the split-register should be generalized to the point where a cut-n-paste
+ * the split-regsiter should be generalized to the point where a cut-n-paste
  * like this isn't required, and this should be trashed.
  */
 void gnc_entry_ledger_load (GncEntryLedger *ledger, GList *entry_list)
@@ -335,6 +319,7 @@ void gnc_entry_ledger_load (GncEntryLedger *ledger, GList *entry_list)
     CellBlock *cursor_header, *cursor;
     VirtualCellLocation vcell_loc;
     VirtualLocation save_loc;
+    time_t present;
     gboolean start_primary_color = TRUE;
 
     int new_entry_row = -1;
@@ -359,14 +344,11 @@ void gnc_entry_ledger_load (GncEntryLedger *ledger, GList *entry_list)
         case GNCENTRY_INVOICE_ENTRY:
         case GNCENTRY_BILL_ENTRY:
         case GNCENTRY_EXPVOUCHER_ENTRY:
-        case GNCENTRY_CUST_CREDIT_NOTE_ENTRY:
-        case GNCENTRY_VEND_CREDIT_NOTE_ENTRY:
-        case GNCENTRY_EMPL_CREDIT_NOTE_ENTRY:
 
             gnc_suspend_gui_refresh ();
 
             blank_entry = gncEntryCreate (ledger->book);
-            gncEntrySetDateGDate (blank_entry, &ledger->last_date_entered);
+            gncEntrySetDate (blank_entry, ledger->last_date_entered);
             ledger->blank_entry_guid = *gncEntryGetGUID (blank_entry);
 
             gnc_resume_gui_refresh ();
@@ -374,13 +356,15 @@ void gnc_entry_ledger_load (GncEntryLedger *ledger, GList *entry_list)
             /* The rest of this does not apply to expense vouchers */
             if (ledger->type != GNCENTRY_EXPVOUCHER_ENTRY)
             {
-                const GncOwner *owner = gncOwnerGetEndOwner (gncInvoiceGetOwner (ledger->invoice));
+                GncOwner *owner = gncInvoiceGetOwner (ledger->invoice);
                 GncTaxTable *table = NULL;
                 GncTaxIncluded taxincluded_p = GNC_TAXINCLUDED_USEGLOBAL;
                 gboolean taxincluded = FALSE;
                 gnc_numeric discount = gnc_numeric_zero ();
+                GNCOptionDB *odb;
 
                 /* Determine the TaxIncluded and Discount values */
+                owner = gncOwnerGetEndOwner (owner);
                 switch (gncOwnerGetType (owner))
                 {
                 case GNC_OWNER_CUSTOMER:
@@ -404,9 +388,9 @@ void gnc_entry_ledger_load (GncEntryLedger *ledger, GList *entry_list)
                     taxincluded = FALSE;
                     break;
                 case GNC_TAXINCLUDED_USEGLOBAL:
-                    if (ledger->prefs_group)
+                    if (ledger->gconf_section)
                     {
-                        taxincluded = gnc_prefs_get_bool (ledger->prefs_group, GNC_PREF_TAX_INCL);
+                        taxincluded = gnc_gconf_get_bool(ledger->gconf_section, "tax_included", NULL);
                     }
                     else
                     {
@@ -416,19 +400,26 @@ void gnc_entry_ledger_load (GncEntryLedger *ledger, GList *entry_list)
                 }
 
                 /* Compute the proper taxtable */
+                odb = gnc_option_db_new_for_type (GNC_ID_BOOK);
+                gnc_option_db_load_from_kvp (odb, qof_book_get_slots (ledger->book));
+
                 switch (gncOwnerGetType (owner))
                 {
                 case GNC_OWNER_CUSTOMER:
-                    table = gnc_business_get_default_tax_table (ledger->book,
-                            GNC_OWNER_CUSTOMER);
+                    table = gnc_option_db_lookup_taxtable_option (odb,
+                            "Business",
+                            "Default Customer TaxTable",
+                            NULL);
 
                     if (gncCustomerGetTaxTableOverride (owner->owner.customer))
                         table = gncCustomerGetTaxTable (owner->owner.customer);
                     break;
 
                 case GNC_OWNER_VENDOR:
-                    table = gnc_business_get_default_tax_table (ledger->book,
-                            GNC_OWNER_VENDOR);
+                    table = gnc_option_db_lookup_taxtable_option (odb,
+                            "Business",
+                            "Default Vendor TaxTable",
+                            NULL);
 
                     if (gncVendorGetTaxTableOverride (owner->owner.vendor))
                         table = gncVendorGetTaxTable (owner->owner.vendor);
@@ -438,7 +429,9 @@ void gnc_entry_ledger_load (GncEntryLedger *ledger, GList *entry_list)
                     break;
                 }
 
-                if (ledger->is_cust_doc)
+                gnc_option_db_destroy (odb);
+
+                if (ledger->is_invoice)
                 {
                     gncEntrySetInvTaxTable (blank_entry, table);
                     gncEntrySetInvTaxIncluded (blank_entry, taxincluded);
@@ -514,7 +507,7 @@ void gnc_entry_ledger_load (GncEntryLedger *ledger, GList *entry_list)
     vcell_loc.virt_row++;
 
     /* get the current time and reset the dividing row */
-    table->model->dividing_row_upper = -1;
+    present = gnc_timet_get_today_end ();
     table->model->dividing_row = -1;
     cursor = gnc_table_layout_get_cursor (table->layout, "cursor");
 

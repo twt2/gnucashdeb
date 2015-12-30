@@ -46,32 +46,41 @@
 #include "gnc-accounting-period.h"
 #include "gnc-gdate-utils.h"
 #include "gnc-date.h"
-#include "gnc-prefs.h"
+#include "gnc-gconf-utils.h"
 #include "qof.h"
 #include "gnc-ui-util.h"
 
-static time64 gnc_accounting_period_start_time64 (GncAccountingPeriod which,
-						   const GDate *fy_end,
-						   const GDate *contains);
-static time64 gnc_accounting_period_end_time64 (GncAccountingPeriod which,
-						 const GDate *fy_end,
-						 const GDate *contains);
+/* TODO: This should probably be changed eventually. */
+#define GCONF_SECTION    "window/pages/account_tree/summary"
+#define KEY_START_CHOICE "start_choice"
+#define KEY_START_DATE   "start_date"
+#define KEY_START_PERIOD "start_period"
+#define KEY_END_CHOICE 	 "end_choice"
+#define KEY_END_DATE   	 "end_date"
+#define KEY_END_PERIOD 	 "end_period"
 
-static time64
-lookup_start_date_option(GDate *fy_end)
+static time_t
+lookup_start_date_option(const gchar *section,
+                         const gchar *key_choice,
+                         const gchar *key_absolute,
+                         const gchar *key_relative,
+                         GDate *fy_end)
 {
     gchar *choice;
-    time64 time;
+    time_t time;
     int which;
 
-
-    if (gnc_prefs_get_bool (GNC_PREFS_GROUP_ACCT_SUMMARY, GNC_PREF_START_CHOICE_ABS))
-        time = gnc_prefs_get_int64 (GNC_PREFS_GROUP_ACCT_SUMMARY, GNC_PREF_START_DATE);
+    choice = gnc_gconf_get_string(section, key_choice, NULL);
+    if (choice && strcmp(choice, "absolute") == 0)
+    {
+        time = gnc_gconf_get_int(section, key_absolute, NULL);
+    }
     else
     {
-        which = gnc_prefs_get_int(GNC_PREFS_GROUP_ACCT_SUMMARY, GNC_PREF_START_PERIOD);
-        time = gnc_accounting_period_start_time64(which, fy_end, NULL);
+        which = gnc_gconf_get_int(section, key_relative, NULL);
+        time = gnc_accounting_period_start_timet(which, fy_end, NULL);
     }
+    g_free(choice);
     /* we will need the balance of the last transaction before the start
        date, so subtract 1 from start date */
     /* CAS: we don't actually do what this comment says.  I think that's
@@ -79,19 +88,30 @@ lookup_start_date_option(GDate *fy_end)
     return time;
 }
 
-static time64
-lookup_end_date_option(GDate *fy_end)
+
+static time_t
+lookup_end_date_option(const gchar *section,
+                       const gchar *key_choice,
+                       const gchar *key_absolute,
+                       const gchar *key_relative,
+                       GDate *fy_end)
 {
-    time64 time;
+    gchar *choice;
+    time_t time;
     int which;
 
-    if (gnc_prefs_get_bool (GNC_PREFS_GROUP_ACCT_SUMMARY, GNC_PREF_END_CHOICE_ABS))
-        time = gnc_prefs_get_int64 (GNC_PREFS_GROUP_ACCT_SUMMARY, GNC_PREF_END_DATE);
+    choice = gnc_gconf_get_string(section, key_choice, NULL);
+    if (choice && strcmp(choice, "absolute") == 0)
+    {
+        time = gnc_gconf_get_int(section, key_absolute, NULL);
+        time = gnc_timet_get_day_end(time);
+    }
     else
     {
-        which = gnc_prefs_get_int(GNC_PREFS_GROUP_ACCT_SUMMARY, GNC_PREF_END_PERIOD);
-        time = gnc_accounting_period_end_time64(which, fy_end, NULL);
+        which = gnc_gconf_get_int(section, key_relative, NULL);
+        time = gnc_accounting_period_end_timet(which, fy_end, NULL);
     }
+    g_free(choice);
     if (time == 0)
         time = -1;
     return time;
@@ -113,24 +133,26 @@ get_fy_end(void)
     return NULL;
 }
 
-time64
+time_t
 gnc_accounting_period_fiscal_start(void)
 {
-    time64 t;
+    time_t t;
     GDate *fy_end = get_fy_end();
-    t = lookup_start_date_option(fy_end);
+    t = lookup_start_date_option(GCONF_SECTION, KEY_START_CHOICE,
+                                 KEY_START_DATE, KEY_START_PERIOD, fy_end);
     if (fy_end)
         g_date_free(fy_end);
     return t;
 }
 
-time64
+time_t
 gnc_accounting_period_fiscal_end(void)
 {
-    time64 t;
+    time_t t;
     GDate *fy_end = get_fy_end();
 
-    t = lookup_end_date_option(fy_end);
+    t = lookup_end_date_option(GCONF_SECTION, KEY_END_CHOICE,
+                               KEY_END_DATE, KEY_END_PERIOD, fy_end);
     if (fy_end)
         g_date_free(fy_end);
     return t;
@@ -151,8 +173,8 @@ gnc_accounting_period_start_gdate (GncAccountingPeriod which,
     }
     else
     {
-        date = g_date_new ();
-        gnc_gdate_set_today (date);
+        date = g_date_new();
+        g_date_set_time_t(date, time(NULL));
     }
 
     switch (which)
@@ -213,19 +235,19 @@ gnc_accounting_period_start_gdate (GncAccountingPeriod which,
     return date;
 }
 
-static time64
-gnc_accounting_period_start_time64 (GncAccountingPeriod which,
+time_t
+gnc_accounting_period_start_timet (GncAccountingPeriod which,
                                    const GDate *fy_end,
                                    const GDate *contains)
 {
     GDate *date;
-    time64 secs;
+    time_t secs;
 
     date = gnc_accounting_period_start_gdate(which, fy_end, contains);
     if (!date)
         return 0;
 
-    secs = gnc_time64_get_day_start_gdate(date);
+    secs = gnc_timet_get_day_start_gdate(date);
     g_date_free(date);
     return secs;
 }
@@ -245,8 +267,8 @@ gnc_accounting_period_end_gdate (GncAccountingPeriod which,
     }
     else
     {
-        date = g_date_new ();
-        gnc_gdate_set_today (date);
+        date = g_date_new();
+        g_date_set_time_t(date, time(NULL));
     }
 
     switch (which)
@@ -308,21 +330,22 @@ gnc_accounting_period_end_gdate (GncAccountingPeriod which,
     return date;
 }
 
-static time64
-gnc_accounting_period_end_time64 (GncAccountingPeriod which,
+time_t
+gnc_accounting_period_end_timet (GncAccountingPeriod which,
                                  const GDate *fy_end,
                                  const GDate *contains)
 {
     GDate *date;
-    time64 secs;
+    time_t secs;
 
     date = gnc_accounting_period_end_gdate(which, fy_end, contains);
     if (!date)
         return 0;
 
-    secs = gnc_time64_get_day_end_gdate(date);
+    secs = gnc_timet_get_day_end_gdate(date);
     g_date_free(date);
     return secs ;
 }
+
 
 /** @} */

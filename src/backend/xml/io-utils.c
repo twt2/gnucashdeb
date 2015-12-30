@@ -31,6 +31,7 @@
 #include "gnc-xml.h"
 #include "gnc-xml.h"
 #include "io-utils.h"
+#include "gnc-gconf-utils.h"
 
 /*
   <!-- Local variables: -->

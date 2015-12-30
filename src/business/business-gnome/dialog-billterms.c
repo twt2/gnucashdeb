@@ -31,6 +31,7 @@
 #include "gnc-component-manager.h"
 #include "gnc-ui.h"
 #include "gnc-gui-query.h"
+#include "gnc-gconf-utils.h"
 #include "gnc-ui-util.h"
 #include "qof.h"
 
@@ -55,6 +56,7 @@ void billterms_type_combobox_changed (GtkComboBox *cb, gpointer data);
 
 typedef struct _billterm_notebook
 {
+    GtkTooltips *		tooltips;
     GtkWidget *		notebook;
 
     /* "Days" widgets */
@@ -99,16 +101,16 @@ typedef struct _new_billterms
 
 
 static GtkWidget *
-read_widget (GtkBuilder *builder, char *name, gboolean read_only)
+read_widget (GladeXML *xml, char *name, gboolean read_only)
 {
-    GtkWidget *widget = GTK_WIDGET(gtk_builder_get_object (builder, name));
+    GtkWidget *widget = glade_xml_get_widget (xml, name);
     if (read_only)
     {
         GtkAdjustment *adj;
         gtk_editable_set_editable (GTK_EDITABLE (widget), FALSE);
         adj = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (widget));
-        gtk_adjustment_set_step_increment (adj, 0.0);
-        gtk_adjustment_set_page_increment (adj, 0.0);
+        adj->step_increment = 0.0;
+        adj->page_increment = 0.0;
         gtk_adjustment_changed (adj);
     }
 
@@ -120,37 +122,31 @@ static void
 init_notebook_widgets (BillTermNB *notebook, gboolean read_only,
                        GtkDialog *dialog, gpointer user_data)
 {
-    GtkBuilder *builder;
+    GladeXML *xml;
     GtkWidget *parent;
 
-    /* Load the notebook from Glade File */
-    builder = gtk_builder_new();
-    gnc_builder_add_from_file (builder, "dialog-billterms.glade", "discount_adj");
-    gnc_builder_add_from_file (builder, "dialog-billterms.glade", "discount_days_adj");
-    gnc_builder_add_from_file (builder, "dialog-billterms.glade", "due_days_adj");
-    gnc_builder_add_from_file (builder, "dialog-billterms.glade", "pdiscount_adj");
-    gnc_builder_add_from_file (builder, "dialog-billterms.glade", "pdiscount_day_adj");
-    gnc_builder_add_from_file (builder, "dialog-billterms.glade", "pdue_day_adj");
-    gnc_builder_add_from_file (builder, "dialog-billterms.glade", "pcutoff_day_adj");
-    gnc_builder_add_from_file (builder, "dialog-billterms.glade", "Term Notebook");
-    notebook->notebook = GTK_WIDGET(gtk_builder_get_object (builder, "term_notebook"));
-    parent = GTK_WIDGET(gtk_builder_get_object (builder, "Term Notebook"));
+    /* Initialize the tooltips */
+    notebook->tooltips = gtk_tooltips_new ();
+
+    /* Load the notebook from XML */
+    xml = gnc_glade_xml_new ("billterms.glade", "Term Notebook");
+    notebook->notebook = glade_xml_get_widget (xml, "term_notebook");
+    parent = glade_xml_get_widget (xml, "Term Notebook");
 
     /* load the "days" widgets */
-    notebook->days_due_days = read_widget (builder, "days:due_days", read_only);
-    notebook->days_disc_days = read_widget (builder, "days:discount_days", read_only);
-    notebook->days_disc = read_widget (builder, "days:discount", read_only);
+    notebook->days_due_days = read_widget (xml, "days:due_days", read_only);
+    notebook->days_disc_days = read_widget (xml, "days:discount_days", read_only);
+    notebook->days_disc = read_widget (xml, "days:discount", read_only);
 
     /* load the "proximo" widgets */
-    notebook->prox_due_day = read_widget (builder, "prox:due_day", read_only);
-    notebook->prox_disc_day = read_widget (builder, "prox:discount_day", read_only);
-    notebook->prox_disc = read_widget (builder, "prox:discount", read_only);
-    notebook->prox_cutoff = read_widget (builder, "prox:cutoff_day", read_only);
+    notebook->prox_due_day = read_widget (xml, "prox:due_day", read_only);
+    notebook->prox_disc_day = read_widget (xml, "prox:discount_day", read_only);
+    notebook->prox_disc = read_widget (xml, "prox:discount", read_only);
+    notebook->prox_cutoff = read_widget (xml, "prox:cutoff_day", read_only);
 
     /* Disconnect the notebook from the window */
     g_object_ref (notebook->notebook);
     gtk_container_remove (GTK_CONTAINER (parent), notebook->notebook);
-    g_object_unref(G_OBJECT(builder));
     gtk_widget_destroy (parent);
 
     /* NOTE: The caller needs to unref once they attach */
@@ -262,45 +258,26 @@ billterm_to_ui (GncBillTerm *term, GtkWidget *desc, BillTermNB *notebook)
 static gboolean
 verify_term_ok (NewBillTerm *nbt)
 {
-    char *message = _("Discount days cannot be more than due days.");
-    gboolean result;
-    BillTermNB *notebook;
-    gint days_due_days, days_disc_days;
-    gint prox_due_days, prox_disc_days;
+    char *message;
+    gnc_numeric num;
 
-    days_due_days=0;
-    days_disc_days=0;
-    prox_due_days=0;
-    prox_disc_days=0;
+    return TRUE;
 
-    notebook = &nbt->notebook;
-    result=TRUE;
-
-
-    days_due_days=gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (notebook->days_due_days));
-    days_disc_days=gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (notebook->days_disc_days));
-    prox_due_days=gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (notebook->prox_due_day));
-    prox_disc_days=gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (notebook->prox_disc_day));
-
-    switch (nbt->notebook.type)
+    /* verify the discount day(s) is less than the due day(s) */
+    num = gnc_numeric_zero ();
+    if (gnc_numeric_negative_p (num))
     {
-    case GNC_TERM_TYPE_DAYS:
-        if (days_due_days<days_disc_days)
-        {
-              gnc_error_dialog (nbt->dialog, "%s", message);
-              result=FALSE;
-        }
-        break;
-    case GNC_TERM_TYPE_PROXIMO:
-	if (prox_due_days<prox_disc_days)
-        {
-            gnc_error_dialog (nbt->dialog, "%s", message);
-            result=FALSE;
-        }
-        break;
+        message = _("Negative amounts are not allowed.");
+        gnc_error_dialog (nbt->dialog, "%s", message);
+        return FALSE;
     }
-
-    return result;
+    if (gnc_numeric_compare (num, gnc_numeric_create (100, 1)) > 0)
+    {
+        message = _("Percentage amount must be between 0 and 100.");
+        gnc_error_dialog (nbt->dialog, "%s", message);
+        return FALSE;
+    }
+    return TRUE;
 }
 
 static gboolean
@@ -401,14 +378,11 @@ new_billterm_dialog (BillTermsWindow *btw, GncBillTerm *term,
 {
     GncBillTerm *created_term = NULL;
     NewBillTerm *nbt;
-    GtkBuilder *builder;
+    GladeXML *xml;
     GtkWidget *box, *combo_box;
     gint response;
     gboolean done;
     const gchar *dialog_name;
-    const gchar *dialog_desc;
-    const gchar *dialog_combo;
-    const gchar *dialog_nb;
 
     if (!btw) return NULL;
 
@@ -416,27 +390,12 @@ new_billterm_dialog (BillTermsWindow *btw, GncBillTerm *term,
     nbt->btw = btw;
     nbt->this_term = term;
 
-    /* Open and read the Glade File */
-    if (term == NULL)
-    {
-        dialog_name = "New Term Dialog";
-        dialog_desc = "description_entry";
-        dialog_combo = "type_combobox";
-        dialog_nb = "note_book_hbox";
-    }
-    else
-    {
-        dialog_name = "Edit Term Dialog";
-        dialog_desc = "entry_desc";
-        dialog_combo = "type_combo";
-        dialog_nb = "notebook_hbox";
-    }
-    builder = gtk_builder_new();
-    gnc_builder_add_from_file (builder, "dialog-billterms.glade", "type_liststore");
-    gnc_builder_add_from_file (builder, "dialog-billterms.glade", dialog_name);
-    nbt->dialog = GTK_WIDGET(gtk_builder_get_object (builder, dialog_name));
-    nbt->name_entry = GTK_WIDGET(gtk_builder_get_object (builder, "name_entry"));
-    nbt->desc_entry = GTK_WIDGET(gtk_builder_get_object (builder, dialog_desc));
+    /* Open and read the XML */
+    dialog_name = term ? "Edit Term Dialog" : "New Term Dialog";
+    xml = gnc_glade_xml_new ("billterms.glade", dialog_name);
+    nbt->dialog = glade_xml_get_widget (xml, dialog_name);
+    nbt->name_entry = glade_xml_get_widget (xml, "name_entry");
+    nbt->desc_entry = glade_xml_get_widget (xml, "desc_entry");
     if (name)
         gtk_entry_set_text (GTK_ENTRY (nbt->name_entry), name);
 
@@ -445,7 +404,7 @@ new_billterm_dialog (BillTermsWindow *btw, GncBillTerm *term,
                            GTK_DIALOG (nbt->dialog), nbt);
 
     /* Attach the notebook */
-    box = GTK_WIDGET(gtk_builder_get_object (builder, dialog_nb));
+    box = glade_xml_get_widget (xml, "notebook_box");
     gtk_box_pack_start (GTK_BOX (box), nbt->notebook.notebook, TRUE, TRUE, 0);
     g_object_unref (nbt->notebook.notebook);
 
@@ -456,14 +415,16 @@ new_billterm_dialog (BillTermsWindow *btw, GncBillTerm *term,
         nbt->notebook.type = GNC_TERM_TYPE_DAYS;
 
     /* Create the menu */
-    combo_box = GTK_WIDGET(gtk_builder_get_object (builder, dialog_combo));
+    combo_box = glade_xml_get_widget (xml, "type_combobox");
     gtk_combo_box_set_active(GTK_COMBO_BOX(combo_box), nbt->notebook.type - 1);
 
     /* Show the right notebook page */
     show_notebook (&nbt->notebook);
 
     /* Setup signals */
-    gtk_builder_connect_signals_full (builder, gnc_builder_connect_full_func, nbt);
+    glade_xml_signal_autoconnect_full( xml,
+                                       gnc_glade_autoconnect_full_func,
+                                       nbt);
 
     gtk_window_set_transient_for (GTK_WINDOW(nbt->dialog),
                                   GTK_WINDOW(btw->dialog));
@@ -496,8 +457,6 @@ new_billterm_dialog (BillTermsWindow *btw, GncBillTerm *term,
         }
     }
 
-    g_object_unref(G_OBJECT(builder));
-
     gtk_widget_destroy(nbt->dialog);
     g_free(nbt);
 
@@ -515,7 +474,7 @@ billterms_term_refresh (BillTermsWindow *btw)
 
     if (!btw->current_term)
     {
-        gtk_widget_hide (btw->term_vbox);
+        gtk_widget_hide_all (btw->term_vbox);
         return;
     }
 
@@ -659,7 +618,7 @@ billterms_delete_term_cb (GtkButton *button, BillTermsWindow *btw)
     if (gncBillTermGetRefcount (btw->current_term) > 0)
     {
         gnc_error_dialog (btw->dialog,
-                          _("Term \"%s\" is in use. You cannot delete it."),
+                          _("Term \"%s\" is in use.  You cannot delete it."),
                           gncBillTermGetName (btw->current_term));
         return;
     }
@@ -738,7 +697,7 @@ BillTermsWindow *
 gnc_ui_billterms_window_new (QofBook *book)
 {
     BillTermsWindow *btw;
-    GtkBuilder *builder;
+    GladeXML *xml;
     GtkWidget *widget;
     GtkTreeView *view;
     GtkTreeViewColumn *column;
@@ -765,14 +724,13 @@ gnc_ui_billterms_window_new (QofBook *book)
     btw = g_new0 (BillTermsWindow, 1);
     btw->book = book;
 
-    /* Open and read the Glade File */
-    builder = gtk_builder_new();
-    gnc_builder_add_from_file (builder, "dialog-billterms.glade", "Terms Window");
-    btw->dialog = GTK_WIDGET(gtk_builder_get_object (builder, "Terms Window"));
-    btw->terms_view = GTK_WIDGET(gtk_builder_get_object (builder, "terms_view"));
-    btw->desc_entry = GTK_WIDGET(gtk_builder_get_object (builder, "desc_entry"));
-    btw->type_label = GTK_WIDGET(gtk_builder_get_object (builder, "type_label"));
-    btw->term_vbox = GTK_WIDGET(gtk_builder_get_object (builder, "term_vbox"));
+    /* Open and read the XML */
+    xml = gnc_glade_xml_new ("billterms.glade", "Terms Window");
+    btw->dialog = glade_xml_get_widget (xml, "Terms Window");
+    btw->terms_view = glade_xml_get_widget (xml, "terms_view");
+    btw->desc_entry = glade_xml_get_widget (xml, "desc_entry");
+    btw->type_label = glade_xml_get_widget (xml, "type_label");
+    btw->term_vbox = glade_xml_get_widget (xml, "term_vbox");
 
     /* Initialize the view */
     view = GTK_TREE_VIEW(btw->terms_view);
@@ -797,13 +755,15 @@ gnc_ui_billterms_window_new (QofBook *book)
                            GTK_DIALOG (btw->dialog), btw);
 
     /* Attach the notebook */
-    widget = GTK_WIDGET(gtk_builder_get_object (builder, "notebook_box"));
+    widget = glade_xml_get_widget (xml, "notebook_box");
     gtk_box_pack_start (GTK_BOX (widget), btw->notebook.notebook,
                         TRUE, TRUE, 0);
     g_object_unref (btw->notebook.notebook);
 
     /* Setup signals */
-    gtk_builder_connect_signals_full (builder, gnc_builder_connect_full_func, btw);
+    glade_xml_signal_autoconnect_full( xml,
+                                       gnc_glade_autoconnect_full_func,
+                                       btw);
 
     /* register with component manager */
     btw->component_id =
@@ -814,8 +774,6 @@ gnc_ui_billterms_window_new (QofBook *book)
 
     gtk_widget_show_all (btw->dialog);
     billterms_window_refresh (btw);
-
-    g_object_unref(G_OBJECT(builder));
 
     return btw;
 }

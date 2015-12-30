@@ -32,9 +32,9 @@
 #include "gnc-ledger-display.h"
 #include "gnucash-sheet.h"
 
-#define GNC_SPLIT_REG(obj)         G_TYPE_CHECK_INSTANCE_CAST( obj, gnc_split_reg_get_type(), GNCSplitReg )
-#define GNC_SPLIT_REG_CLASS(klass) G_TYPE_CHECK_CLASS_CAST( klass, gnc_split_reg_get_type(), GNCSplitRegClass )
-#define IS_GNC_SPLIT_REG(obj)      G_TYPE_CHECK_INSTANCE_TYPE( obj, gnc_split_reg_get_type() )
+#define GNC_SPLIT_REG(obj)         GTK_CHECK_CAST( obj, gnc_split_reg_get_type(), GNCSplitReg )
+#define GNC_SPLIT_REG_CLASS(klass) GTK_CHECK_CLASS_CAST( klass, gnc_split_reg_get_type(), GNCSplitRegClass )
+#define IS_GNC_SPLIT_REG(obj)      GTK_CHECK_TYPE( obj, gnc_split_reg_get_type() )
 
 typedef struct _GNCSplitReg GNCSplitReg;
 typedef struct _GNCSplitRegClass GNCSplitRegClass;
@@ -111,11 +111,9 @@ struct _GNCSplitRegClass
     void (*unvoid_txn_cb)   ( GNCSplitReg *w, gpointer user_data );
     void (*reverse_txn_cb)  ( GNCSplitReg *w, gpointer user_data );
     void (*help_changed_cb) ( GNCSplitReg *w, gpointer user_data );
-    void (*include_date_cb) ( GNCSplitReg *w, time64 date, gpointer user_data );
+    void (*include_date_cb) ( GNCSplitReg *w, time_t date, gpointer user_data );
 };
-/* Something somewhere sets these to silly values and causes problems */
-#undef DELETE
-#undef DUPLICATE
+
 typedef enum
 {
     ENTER,
@@ -187,18 +185,10 @@ GnucashRegister *gnc_split_reg_get_register( GNCSplitReg *gsr );
 GtkWidget *gsr_create_summary_bar( GNCSplitReg *gsr );
 
 /**
- * Gets/sets the sort-type of the GNCSplitReg. The 'force' version causes the
- * query to be redone even if SortType has not changed.
+ * Gets/sets the sort-type of the GNCSplitReg.
  **/
 SortType gnc_split_reg_get_sort_type( GNCSplitReg *gsr );
 void gnc_split_reg_set_sort_type( GNCSplitReg *gsr, SortType t );
-void gnc_split_reg_set_sort_type_force( GNCSplitReg *gsr, SortType t, gboolean force);
-
-/**
- * Set/get sort order of register
- **/ 
-void gnc_split_reg_set_sort_reversed(GNCSplitReg *gsr, gboolean rev);
-
 
 /**
  * Gets/sets the style of the GNCSplitReg.
@@ -241,12 +231,9 @@ void gnc_split_reg_jump_to_split_amount(GNCSplitReg *gsr, Split *split);
  * window.
  */
 void gnc_split_reg_balancing_entry (GNCSplitReg *gsr, Account *account,
-                                    time64 statement_date, gnc_numeric balancing_amount);
+                                    time_t statement_date, gnc_numeric balancing_amount);
 
 void gsr_default_delete_handler( GNCSplitReg *gsr, gpointer data );
-void gsr_default_associate_handler_file( GNCSplitReg *gsr, gpointer data );
-void gsr_default_associate_handler_location( GNCSplitReg *gsr, gpointer data );
-void gsr_default_execassociated_handler( GNCSplitReg *gsr, gpointer data );
 void gnc_split_reg_enter( GNCSplitReg *gsr, gboolean next_transaction );
 void gsr_default_delete_handler( GNCSplitReg *gsr, gpointer data );
 void gsr_default_reinit_handler( GNCSplitReg *gsr, gpointer data );

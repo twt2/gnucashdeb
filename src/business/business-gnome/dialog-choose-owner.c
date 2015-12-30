@@ -25,7 +25,7 @@
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
-#include "qof.h"
+#include <qof.h>
 
 #include "Transaction.h"
 #include "dialog-utils.h"
@@ -47,7 +47,7 @@ static DialogChooseOwner *
 gcoi_create_dialog(Split* split)
 {
     DialogChooseOwner* dco;
-    GtkBuilder *builder;
+    GladeXML *xml;
     GtkWidget *widget, *box;
 
     g_return_val_if_fail(split, NULL);
@@ -58,46 +58,42 @@ gcoi_create_dialog(Split* split)
     dco->split = split;
 
     /* Open the Glade file */
-    builder = gtk_builder_new();
-    gnc_builder_add_from_file (builder, "dialog-choose-owner.glade", "Choose Owner Dialog");
-    g_assert(builder);
+    xml = gnc_glade_xml_new("choose-owner.glade", "Choose Owner Dialog");
+    g_assert(xml);
 
     /* Get the dialog handle */
-    dco->dialog = GTK_WIDGET(gtk_builder_get_object (builder, "Choose Owner Dialog"));
+    dco->dialog = glade_xml_get_widget(xml, "Choose Owner Dialog");
     g_assert(dco->dialog);
 
     /* Get the title widget and set the title */
-    widget = GTK_WIDGET(gtk_builder_get_object (builder, "title_label"));
+    widget = glade_xml_get_widget(xml, "title_label");
     if (1 == 1)
     {
         gncOwnerInitCustomer(&(dco->owner), NULL);
         gtk_label_set_text(GTK_LABEL(widget),
                            _("This transaction needs to be assigned to a Customer."
-                             " Please choose the Customer below."));
+                             "  Please choose the Customer below."));
     }
     else
     {
         gncOwnerInitVendor(&(dco->owner), NULL);
         gtk_label_set_text(GTK_LABEL(widget),
                            _("This transaction needs to be assigned to a Vendor."
-                             " Please choose the Vendor below."));
+                             "  Please choose the Vendor below."));
     }
 
     /* Get the transaction description and set it */
-    widget = GTK_WIDGET(gtk_builder_get_object (builder, "desc_label"));
+    widget = glade_xml_get_widget(xml, "desc_label");
     gtk_label_set_text(GTK_LABEL(widget),
                        xaccTransGetDescription(xaccSplitGetParent(split)));
 
     /* Get the owner label and the owner box */
-    widget = GTK_WIDGET(gtk_builder_get_object (builder, "owner_label"));
-    box = GTK_WIDGET(gtk_builder_get_object (builder, "owner_box"));
+    widget = glade_xml_get_widget(xml, "owner_label");
+    box = glade_xml_get_widget(xml, "owner_box");
     dco->owner_choice = gnc_owner_select_create(widget, box, dco->book,
                         &(dco->owner));
 
     gtk_widget_show_all(dco->dialog);
-
-    g_object_unref(G_OBJECT(builder));
-
     return dco;
 }
 

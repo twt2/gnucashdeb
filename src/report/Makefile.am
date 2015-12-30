@@ -3,8 +3,7 @@ NONGUI_SUBDIRS = \
   standard-reports \
   utility-reports \
   business-reports \
-  locale-specific \
-  jqplot
+  locale-specific
 
 GUI_SUBDIRS = \
   report-gnome \

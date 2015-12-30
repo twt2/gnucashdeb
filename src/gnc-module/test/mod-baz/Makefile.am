@@ -3,7 +3,7 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/gnc-module \
   -I${top_srcdir}/src/gnc-module/test/mod-foo \
   ${GLIB_CFLAGS} \
-  ${GUILE_CFLAGS}
+  ${GUILE_INCS}
 
 PWD := $(shell pwd)
 check_LTLIBRARIES = libbaz.la libgncmodbaz.la
@@ -26,16 +26,9 @@ libgncmodbaz_la_LIBADD = \
   $(GUILE_LIBS) \
   $(GLIB_LIBS)
 
-if BUILDING_FROM_VCS
+if BUILDING_FROM_SVN
 swig-baz.c: baz.i
 	$(SWIG) -guile $(SWIG_ARGS) -Linkage module -o $@ $<
-if ! OS_WIN32
-if ! SWIG_DIST_FAIL
-	if ! `grep "define scm_from_utf8_string" $@ > /dev/null 2>&1`; then \
-	  patch $@ $(top_srcdir)/src/swig-utf8.patch; \
-	fi
-endif
-endif
 endif
 
 EXTRA_DIST = \

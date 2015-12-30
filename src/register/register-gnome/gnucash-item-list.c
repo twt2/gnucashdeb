@@ -29,9 +29,8 @@
 
 #include "config.h"
 
+#include <gnome.h>
 #include <glib/gi18n.h>
-#include <gdk/gdkkeysyms.h>
-#include <libgnomecanvas/libgnomecanvas.h>
 
 #include "gnc-engine.h"
 #include "gnucash-item-list.h"
@@ -132,7 +131,7 @@ _gnc_item_find_selection(GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *it
     gboolean found;
 
     gtk_tree_model_get(model, iter, 0, &iterStr, -1);
-    found = g_strcmp0(to_find->string_to_find, iterStr) == 0;
+    found = safe_strcmp(to_find->string_to_find, iterStr) == 0;
     g_free(iterStr);
     if (found)
     {
@@ -230,6 +229,9 @@ gnc_item_list_autosize (GncItemList *item_list)
     g_return_val_if_fail(item_list != NULL, 0);
     g_return_val_if_fail(IS_GNC_ITEM_LIST(item_list), 0);
 
+#if 0
+    return gtk_clist_columns_autosize (item_list->clist);
+#endif
     return 100;
 }
 
@@ -308,7 +310,7 @@ gnc_item_list_key_event (GtkWidget *widget, GdkEventKey *event, gpointer data)
 
     switch (event->keyval)
     {
-    case GDK_KEY_Return:
+    case GDK_Return:
         selection = gtk_tree_view_get_selection (item_list->tree_view);
         if (!gtk_tree_selection_get_selected (selection, &model, &iter))
             return FALSE;
@@ -322,10 +324,10 @@ gnc_item_list_key_event (GtkWidget *widget, GdkEventKey *event, gpointer data)
         g_free(string);
         return TRUE;
 
-    case GDK_KEY_Page_Up:
-    case GDK_KEY_Page_Down:
-    case GDK_KEY_Up:
-    case GDK_KEY_Down:
+    case GDK_Page_Up:
+    case GDK_Page_Down:
+    case GDK_Up:
+    case GDK_Down:
         /* These go to the clist */
         return FALSE;
     }
@@ -517,3 +519,8 @@ gnc_item_list_new(GnomeCanvasGroup *parent, GtkListStore *list_store)
 }
 
 
+/*
+  Local Variables:
+  c-basic-offset: 8
+  End:
+*/

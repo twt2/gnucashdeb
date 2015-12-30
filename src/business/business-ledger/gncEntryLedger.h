@@ -31,23 +31,27 @@
 
 typedef enum
 {
-    GNC_ENTRY_ORDER_NONE = -1, //Force clang to use int representation of enum.
     GNCENTRY_ORDER_ENTRY,
     GNCENTRY_ORDER_VIEWER,
     GNCENTRY_INVOICE_ENTRY,
     GNCENTRY_INVOICE_VIEWER,
-    GNCENTRY_CUST_CREDIT_NOTE_ENTRY,
-    GNCENTRY_CUST_CREDIT_NOTE_VIEWER,
     GNCENTRY_BILL_ENTRY,
     GNCENTRY_BILL_VIEWER,
-    GNCENTRY_VEND_CREDIT_NOTE_ENTRY,
-    GNCENTRY_VEND_CREDIT_NOTE_VIEWER,
     GNCENTRY_EXPVOUCHER_ENTRY,
     GNCENTRY_EXPVOUCHER_VIEWER,
-    GNCENTRY_EMPL_CREDIT_NOTE_ENTRY,
-    GNCENTRY_EMPL_CREDIT_NOTE_VIEWER,
     GNCENTRY_NUM_REGISTER_TYPES
 } GncEntryLedgerType;
+
+typedef struct entry_ledger_colors
+{
+    guint32 header_bg_color;
+
+    guint32 primary_bg_color;
+    guint32 secondary_bg_color;
+
+    guint32 primary_active_bg_color;
+    guint32 secondary_active_bg_color;
+} GncEntryLedgerColors;
 
 #define ENTRY_IACCT_CELL	"inv-account"
 #define ENTRY_BACCT_CELL	"bill-account"
@@ -146,6 +150,6 @@ void gnc_entry_ledger_move_current_entry_updown (GncEntryLedger *ledger,
 
 QofQuery * gnc_entry_ledger_get_query (GncEntryLedger *ledger);
 
-void gnc_entry_ledger_set_prefs_group (GncEntryLedger *ledger, const gchar *string);
+void gnc_entry_ledger_set_gconf_section (GncEntryLedger *ledger, const gchar *string);
 
 #endif /* GNC_ENTRY_LEDGER_H */

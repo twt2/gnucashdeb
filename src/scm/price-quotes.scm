@@ -1,17 +1,17 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; price-quotes.scm - manage sub-processes.
 ;;; Copyright 2001 Rob Browning <rlb@cs.utexas.edu>
-;;;
-;;; This program is free software; you can redistribute it and/or
-;;; modify it under the terms of the GNU General Public License as
-;;; published by the Free Software Foundation; either version 2 of
-;;; the License, or (at your option) any later version.
-;;;
-;;; This program is distributed in the hope that it will be useful,
-;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;;; GNU General Public License for more details.
-;;;
+;;; 
+;;; This program is free software; you can redistribute it and/or    
+;;; modify it under the terms of the GNU General Public License as   
+;;; published by the Free Software Foundation; either version 2 of   
+;;; the License, or (at your option) any later version.              
+;;;                                                                  
+;;; This program is distributed in the hope that it will be useful,  
+;;; but WITHOUT ANY WARRANTY; without even the implied warranty of   
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the    
+;;; GNU General Public License for more details.                     
+;;;                                                                  
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with this program; if not, contact:
 ;;;
@@ -22,20 +22,30 @@
 
 (define-module (gnucash price-quotes))
 
+(export yahoo-get-historical-quotes)
 (export gnc:book-add-quotes) ;; called from gnome/dialog-price-edit-db.c
 (export gnc:price-quotes-install-sources)
 
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (gnucash gnc-module))
 (use-modules (gnucash core-utils))
-(use-modules (srfi srfi-1))
 
 (gnc:module-load "gnucash/gnome-utils" 0) ;; for gnucash-ui-is-running
 (gnc:module-load "gnucash/app-utils" 0)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; Yahoo-based Historical Quotes
+;;
+
+(use-modules (www main))
+(use-modules (srfi srfi-1))
+
+;; (use-modules (srfi srfi-19)) when available (see below).
+
 (define (item-list->hash! lst hash
 			  getkey getval
-			  hashref hashset
+			  hashref hashset 
 			  list-duplicates?)
   ;; Takes a list of the form (item item item item) and returns a hash
   ;; formed by traversing the list, and getting the key and val from
@@ -58,9 +68,174 @@
 	  (if existing-val
 	      (hashset hash key (cons val existing-val))
 	      (hashset hash key (list val))))))
-
+  
   (for-each handle-item lst)
   hash)
+
+(define (yahoo-get-historical-quotes symbol
+                                     start-year start-month start-day
+                                     end-year end-month end-day)
+  ;; symbol must be a string naming the item of interest
+  ;; (i.e. "LNUX"), and all the other arguments must be integers.
+  ;; Abbreviated 2 digit years are not allowed, and months and days
+  ;; are numbered starting with 1.
+  ;;
+  ;; This function returns a list of alists containing the quote data,
+  ;; or #f on failure.  Each alist will look like this:
+  ;;
+  ;; ((date . "21-Dec-1999")
+  ;;  (open . 108.5)
+  ;;  (high . 110.12)
+  ;;  (low . 108.06)
+  ;;  (close . 110.12)
+  ;;  (volume . 4775500))
+  ;;
+  ;; Note that the dates are left as strings, but the years will
+  ;; always be 4 digits.  The dates are left as strings for now
+  ;; because without additional timezone information, it is impossible
+  ;; to perform the conversion to UTC here.  Further, it's not at all
+  ;; clear which UTC instant each price should represent...
+  ;;
+  ;; NOTE: right now, we can't handle dates before 1970.  That's
+  ;; because to properly handle the fact that yahoo returns lame-ass 2
+  ;; digit years, we need to be able to compare the dates it returns
+  ;; using (+ year 1900) and (+ year 2000) to see which one is within
+  ;; the star-end range requested (at least that's one of the easiest
+  ;; ways to handle the problem).  The most straightforward way to do
+  ;; this is via mktime, but it can't handle anything before the
+  ;; epoch.  However, I believe SRFI-19 can
+  ;; (http://srfi.schemers.org/srfi-19/srfi-19.html), so as soon as we
+  ;; have a working implementation in guile, we can switch to that and
+  ;; handle essentially arbitrary ranges.
+  ;;
+  ;; For now we'll leave in the mktime based conversion code
+  ;; (commented out) so it'll be easy to switch later, but we'll
+  ;; actually use a simpler (and more broken) approach -- any 2 digit
+  ;; date >= 70 gets 1900 added, and any 2 digit date < 70 gets 2000
+  ;; added.
+
+;    (define (str->month month-str)
+;     (cond
+;      ((string-ci=? "Jan" month-str) 1)
+;      ((string-ci=? "Feb" month-str) 2)
+;      ((string-ci=? "Mar" month-str) 3)
+;      ((string-ci=? "Apr" month-str) 4)
+;      ((string-ci=? "May" month-str) 5)
+;      ((string-ci=? "Jun" month-str) 6)
+;      ((string-ci=? "Jul" month-str) 7)
+;      ((string-ci=? "Aug" month-str) 8)
+;      ((string-ci=? "Sep" month-str) 9)
+;      ((string-ci=? "Oct" month-str) 10)
+;      ((string-ci=? "Nov" month-str) 11)
+;      ((string-ci=? "Dec" month-str) 12)
+;      (else #f)))
+
+;   (define (ymd->secs year month day)
+;     (let ((timevec (localtime 0)))
+;       (display (list 'foo year month day)) (newline)
+;       (set-tm:sec timevec 59)
+;       (set-tm:min timevec 59)
+;       (set-tm:hour timevec 23)
+;       (set-tm:mday timevec day)
+;       (set-tm:mon timevec (- month 1))
+;       (set-tm:year timevec (- year 1900))
+;       (set-tm:wday timevec -1)
+;       (set-tm:yday timevec -1)
+;       (set-tm:isdst timevec -1)
+;       (display timevec) (newline)
+;       (car (mktime timevec))))
+
+;   (define (fix-lame-ass-date-if-needed! quote)
+;     (let* ((date-str (vector-ref quote 0))
+;            (date-list (and date-str (string-split date-str #\-)))
+;            (year-str (and date-list (caddr date-list))))
+;       (if (= (string-length year-str) 2)
+;           (let* ((day (string->number (car date-list)))
+;                  (month (str->month (cadr date-list)))
+;                  (year (string->number year-str))
+;                  (start-secs (ymd->secs start-year start-month start-day))
+;                  (end-secs (ymd->secs end-year end-month end-day))
+;                  (guess-1900 (ymd->secs (+ year 1900) month day)))
+            
+;             (if (and (>= guess-1900 start-secs)
+;                      (<= guess-1900 end-secs))
+;                 (vector-set! quote 0 (string-append (car date-list) "-"
+;                                                     (cadr date-list) "-"
+;                                                     (number->string
+;                                                      (+ year 1900))))
+;                 (let ((guess-2000 (ymd->secs (+ year 2000) month day)))
+                  
+;                   (if (and (>= guess-2000 start-secs)
+;                            (<= guess-2000 end-secs))
+;                       (vector-set! quote 0 (string-append (car date-list) "-"
+;                                                           (cadr date-list) "-"
+;                                                           (number->string
+;                                                            (+ year 2000))))
+;                       (vector-set! quote 0 #f))))))))
+
+  (define (fix-lame-ass-date-if-needed! quote-data)
+    (let* ((date-str (assq-ref quote-data 'date))
+           (date-list (and date-str (string-split date-str #\-)))
+           (year-str (and date-list (caddr date-list))))
+
+      (if (= (string-length year-str) 2)
+          (let* ((day (car date-list))
+                 (month (cadr date-list))
+                 (year (string->number year-str)))
+            (assq-set!
+             quote-data
+             'date
+             (string-append (car date-list) "-"
+                            (cadr date-list) "-"
+                            (number->string
+                             (+ year (if (>= year 70)
+                                         1900
+                                         2000)))))))))
+
+  (define (quote-line->quote-alist line)
+    (let ((fields (string-split line #\,)))
+      (cond 
+       ((= 6 (length fields))
+        (map
+         (lambda (name value) (cons name value))
+         '(date open high low close volume)
+         (cons (car fields) (map string->number (cdr fields)))))
+       ((zero? (string-length line))
+        'ignore)
+       (else
+        #f))))
+  
+  (define (csv-str->quotes str)
+    (let ((lines (string-split str #\newline)))
+      (if (string=? (car lines) "Date,Open,High,Low,Close,Volume")
+          (let ((result (map quote-line->quote-alist (cdr lines))))
+            (if (any not result)
+                #f
+                (begin
+                  (set! result
+                        (filter (lambda (x) (not (eq? 'ignore x))) result))
+                  (for-each fix-lame-ass-date-if-needed! result)
+                  result)))
+          #f)))
+  
+  (if (< start-year 1970)
+      #f
+      (let* ((request (string-append
+                       "http://chart.yahoo.com/table.csv?"
+                       "s=" symbol
+                       "&a=" (number->string start-month)
+                       "&b=" (number->string start-day)
+                       "&c=" (number->string start-year)
+                       "&d=" (number->string end-month)
+                       "&e=" (number->string end-day)
+                       "&f=" (number->string end-year)
+                       "&g=d&q=q&y=0"))
+             (result (www:get request)))
+        
+        (if result
+            (or (csv-str->quotes result)
+                result)
+            #f))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -205,7 +380,7 @@
     ;; a list of the corresponding commodities.  Also perform a bit of
     ;; optimization, merging calls for symbols to the same
     ;; Finance::Quote method.
-    ;;
+    ;; 
     ;; Returns a list of the info needed for a set of calls to
     ;; gnc-fq-helper.  Each item will of the list will be of the
     ;; form:
@@ -222,8 +397,8 @@
 	     ct))
 	   (commodity-list #f)
 	   (currency-list (filter
-			   (lambda (a) (not (gnc-commodity-equiv (cadr a) (caddr a))))
-			   (call-with-values
+			   (lambda (a) (not (equal? (cadr a) (caddr a))))
+			   (call-with-values 
                                (lambda () (partition!
                                            (lambda (cmd)
                                              (not (string=? (car cmd) "currency")))
@@ -257,7 +432,7 @@
     ;;
     ;; ("yahoo" (commodity-1 currency-1 tz-1)
     ;;          (commodity-2 currency-2 tz-2) ...)
-    ;;
+    ;; 
     ;; ("yahoo" "IBM" "AMD" ...)
     ;;
 
@@ -322,17 +497,7 @@
                  (= (length call-data) (+ 1 (length call-result))))
 
             ;; OK, continue.
-	    (for-each
-	     (lambda (call-data-item call-result-item)
-	       (if (and (list? call-result-item) (list? (car call-result-item)))
-		   (for-each
-		    (lambda (result-subitem)
-		      (gnc:debug "call-data-item: " call-data-item)
-		      (gnc:debug "result-subitem: " result-subitem)
-		      (process-a-quote call-data-item result-subitem))
-		    call-result-item)
-		   (process-a-quote call-data-item call-result-item)))
-	     (cdr call-data) call-result)
+            (for-each process-a-quote (cdr call-data) call-result)
 
             ;; else badly formed result, must assume all garbage.
             (for-each
@@ -351,7 +516,7 @@
 
   (define (timestr->time-pair timestr time-zone)
     ;; time-zone is ignored currently
-    (cons (gnc-parse-time-to-time64 timestr "%Y-%m-%d %H:%M:%S")
+    (cons (gnc-parse-time-to-timet timestr "%Y-%m-%d %H:%M:%S")
           0))
 
   (define (commodity-tz-quote-triple->price book c-tz-quote-triple)
@@ -370,20 +535,8 @@
                  (string? currency-str)
                  (gnc-commodity-table-lookup commodity-table
                                              "ISO4217"
-                                             (string-upcase currency-str))))
-           (pricedb (gnc-pricedb-get-db book))
-           (saved-price #f)
-           (commodity-str (gnc-commodity-get-printname commodity))
-           )
-      (if (equal? (gnc-commodity-get-printname currency) commodity-str)
-          (let* ((symbol (assq-ref quote-data 'symbol))
-                 (other-curr
-                  (and commodity-table
-                       (string? symbol)
-                       (gnc-commodity-table-lookup commodity-table "ISO4217"
-                                                   (string-upcase symbol)))))
-            (set! commodity other-curr))
-        )
+                                             (string-upcase currency-str)))))
+
       (or-map (lambda (price-sym)
                 (let ((p (assq-ref quote-data price-sym)))
                   (if p
@@ -415,52 +568,27 @@
       (if (not (and commodity currency gnc-time price price-type))
           (string-append
            currency-str ":" (gnc-commodity-get-mnemonic commodity))
-          (begin
-            (set! saved-price (gnc-pricedb-lookup-day pricedb
-                                                      commodity currency
-                                                      gnc-time))
-            (if (null? saved-price) ;;See if there's a reversed price.
+          (let ((gnc-price (gnc-price-create book)))
+            (if (not gnc-price)
+                (string-append
+                 currency-str ":" (gnc-commodity-get-mnemonic commodity))
                 (begin
-                  (set! saved-price (gnc-pricedb-lookup-day pricedb currency
-                                                            commodity gnc-time))
-                  (if (not (null? saved-price))
-                      (set! price (gnc-numeric-invert price)))))
-            (if (not (null? saved-price))
-                (if (> (gnc-price-get-source saved-price) PRICE-SOURCE-FQ)
-                    (begin
-                      (gnc-price-begin-edit saved-price)
-                      (gnc-price-set-time saved-price gnc-time)
-                      (gnc-price-set-source saved-price PRICE-SOURCE-FQ)
-                      (gnc-price-set-typestr saved-price price-type)
-                      (gnc-price-set-value saved-price price)
-                      (gnc-price-commit-edit saved-price)
-                      #f)
-                    #f)
-              (let ((gnc-price (gnc-price-create book)))
-                (if (not gnc-price)
-                    (string-append
-                     currency-str ":" (gnc-commodity-get-mnemonic commodity))
-                    (begin
-                      (gnc-price-begin-edit gnc-price)
-                      (gnc-price-set-commodity gnc-price commodity)
-                      (gnc-price-set-currency gnc-price currency)
-                      (gnc-price-set-time gnc-price gnc-time)
-                      (gnc-price-set-source gnc-price PRICE-SOURCE-FQ)
-                      (gnc-price-set-typestr gnc-price price-type)
-                      (gnc-price-set-value gnc-price price)
-                      (gnc-price-commit-edit gnc-price)
-                      gnc-price)))))
-          )))
+				  (gnc-price-begin-edit gnc-price)
+                  (gnc-price-set-commodity gnc-price commodity)
+                  (gnc-price-set-currency gnc-price currency)
+                  (gnc-price-set-time gnc-price gnc-time)
+                  (gnc-price-set-source gnc-price "Finance::Quote")
+                  (gnc-price-set-typestr gnc-price price-type)
+                  (gnc-price-set-value gnc-price price)
+				  (gnc-price-commit-edit gnc-price)
+                  gnc-price))))))
 
   (define (book-add-prices! book prices)
     (let ((pricedb (gnc-pricedb-get-db book)))
       (for-each
        (lambda (price)
-         (if price
-             (begin
-               (gnc-pricedb-add-price pricedb price)
-               (gnc-price-unref price)
-               #f)))
+         (gnc-pricedb-add-price pricedb price)
+         (gnc-price-unref price))
        prices)))
 
   ;; FIXME: uses of gnc:warn in here need to be cleaned up.  Right

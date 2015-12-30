@@ -76,7 +76,6 @@ static GtkWidget * gnc_owner_new (GtkWidget *label, GtkWidget *hbox,
     case GNCSEARCH_TYPE_EDIT:
         text = _("Edit...");
         text_editable = FALSE;
-        break;
     };
 
     switch (owner->type)
@@ -128,7 +127,7 @@ static GtkWidget * gnc_owner_new (GtkWidget *label, GtkWidget *hbox,
 
     gnc_general_search_set_selected (GNC_GENERAL_SEARCH (edit),
                                      owner->owner.undefined);
-    gtk_box_pack_start (GTK_BOX (hbox), edit, TRUE, TRUE, 0);
+    gtk_box_pack_start (GTK_BOX (hbox), edit, FALSE, FALSE, 0);
     if (label)
         gtk_label_set_text (GTK_LABEL (label), _(qof_object_get_type_label (type_name)));
 
@@ -205,12 +204,19 @@ static void
 gnc_invoice_select_search_set_label(GncISI* isi)
 {
     GncOwnerType owner_type;
+    GncOwner *tmp;
     char *label;
 
     g_assert(isi);
     if (!isi->label) return;
 
-    owner_type = gncOwnerGetType(gncOwnerGetEndOwner(&isi->owner));
+    tmp = &isi->owner;
+    owner_type = gncOwnerGetType(tmp);
+    while (owner_type == GNC_OWNER_JOB)
+    {
+        tmp = gncOwnerGetEndOwner(tmp);
+        owner_type = gncOwnerGetType(tmp);
+    }
 
     /* Translators:  See comments in dialog-invoice.c:gnc_invoice_search() */
     switch (owner_type)
@@ -223,7 +229,6 @@ gnc_invoice_select_search_set_label(GncISI* isi)
         break;
     default:
         label = _("Invoice");
-        break;
     }
 
     gtk_label_set_text(GTK_LABEL(isi->label), label);
@@ -311,26 +316,27 @@ void gnc_invoice_set_owner (GtkWidget *widget, GncOwner *owner)
     gnc_invoice_select_search_set_label(isi);
 }
 
-Account *
-gnc_account_select_combo_fill (GtkWidget *combo, QofBook *book,
+void
+gnc_fill_account_select_combo (GtkWidget *combo, QofBook *book,
                                GList *acct_types, GList *acct_commodities)
 {
     GtkListStore *store;
-    GtkTreeIter iter;
+    GtkEntry *entry;
     GList *list, *node;
-    const gchar *text;
+    char *text;
 
-    g_return_val_if_fail (combo && GTK_IS_COMBO_BOX(combo), NULL);
-    g_return_val_if_fail (book, NULL);
-    g_return_val_if_fail (acct_types, NULL);
+    g_return_if_fail (combo && GTK_IS_COMBO_BOX_ENTRY(combo));
+    g_return_if_fail (book);
+    g_return_if_fail (acct_types);
 
     /* Figure out if anything is set in the combo */
-    text = gtk_entry_get_text(GTK_ENTRY (gtk_bin_get_child(GTK_BIN (GTK_COMBO_BOX(combo)))));
+    text = gtk_combo_box_get_active_text(GTK_COMBO_BOX(combo));
 
-    g_object_set_data (G_OBJECT(combo), "book", book);
     list = gnc_account_get_descendants (gnc_book_get_root_account (book));
 
     /* Clear the existing list */
+    entry = GTK_ENTRY(gtk_bin_get_child(GTK_BIN(combo)));
+    gtk_entry_set_text(entry, "");
     store = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(combo)));
     gtk_list_store_clear(store);
 
@@ -358,274 +364,327 @@ gnc_account_select_combo_fill (GtkWidget *combo, QofBook *book,
         }
 
         name = gnc_account_get_full_name (account);
-        gtk_list_store_append(store, &iter);
-        gtk_list_store_set (store, &iter, 0, name, -1);
-
-        /* Save the first account name in case no account name was set */
-        if (!text || g_strcmp0 (text, "") == 0)
-        {
-            text = g_strdup (name);
-        }
+        gtk_combo_box_append_text(GTK_COMBO_BOX(combo), name);
         g_free(name);
     }
     gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
 
     g_list_free (list);
 
-    gnc_cbwe_set_by_string(GTK_COMBO_BOX(combo), text);
+    gnc_cbe_set_by_string(GTK_COMBO_BOX_ENTRY(combo), text);
 
-    return gnc_account_select_combo_get_active (combo);
+    if (text)
+        g_free (text);
 }
 
-Account *
-gnc_account_select_combo_get_active (GtkWidget *combo)
+GList *
+gnc_business_account_types (GncOwner *owner)
 {
-    const gchar *text;
-    QofBook *book;
+    g_return_val_if_fail (owner, NULL);
 
-    if (!combo || !GTK_IS_COMBO_BOX(combo))
-        return NULL;
-
-    book = g_object_get_data (G_OBJECT(combo), "book");
-    if (!book)
-        return NULL;
-
-    text = gtk_entry_get_text( GTK_ENTRY( gtk_bin_get_child( GTK_BIN( GTK_COMBO_BOX(combo)))));
-
-    if (!text || g_strcmp0 (text, "") == 0)
-        return NULL;
-
-    return gnc_account_lookup_by_full_name (gnc_book_get_root_account (book), text);
+    switch (gncOwnerGetType (owner))
+    {
+    case GNC_OWNER_CUSTOMER:
+        return (g_list_prepend (NULL, (gpointer)ACCT_TYPE_RECEIVABLE));
+    case GNC_OWNER_VENDOR:
+    case GNC_OWNER_EMPLOYEE:
+        return (g_list_prepend (NULL, (gpointer)ACCT_TYPE_PAYABLE));
+        break;
+    default:
+        return (g_list_prepend (NULL, (gpointer)ACCT_TYPE_NONE));
+    }
 }
 
-/***********************************************************************
- * gnc_simple_combo implementation functions
- */
+GList *
+gnc_business_commodities (GncOwner *owner)
+{
+    g_return_val_if_fail (owner, NULL);
+    g_return_val_if_fail (gncOwnerGetCurrency(owner), NULL);
+
+    return (g_list_prepend (NULL, gncOwnerGetCurrency(owner)));
+}
+
+/*********************************************************************/
+/* Option Menu creation                                              */
 
 typedef const char * (*GenericLookup_t)(gpointer);
-typedef gboolean (*GenericEqual_t)(gpointer, gpointer);
 
 typedef struct
 {
-    gint         component_id;
-    GtkComboBox  *cbox;
-    QofBook      *book;
-    gboolean     none_ok;
-    const char * (*get_name)(gpointer);
-    GList *      (*get_list)(QofBook*);
-    gboolean     (*is_equal)(gpointer, gpointer);
+    gint		component_id;
+    GtkWidget *	omenu;
+    QofBook *	book;
+    gboolean	none_ok;
+    const char *	(*get_name)(gpointer);
+    GList *	(*get_list)(QofBook*);
 
-} ListStoreData;
+    gboolean	building_menu;
+    gpointer	result;
+    gpointer *	result_p;
 
-static void
-gnc_simple_combo_add_item (GtkListStore *liststore, const char *label, gpointer this_item)
-{
-    GtkTreeIter iter;
+    void		(*changed_cb)(GtkWidget*, gpointer);
+    gpointer	cb_arg;
+} OpMenuData;
 
-    gtk_list_store_append (liststore, &iter);
-    gtk_list_store_set (liststore, &iter, 0, label, 1, this_item, -1);
+#define DO_ADD_ITEM(s,o) { \
+	add_menu_item (menu, (s), omd, (o)); \
+	if (omd->result == (o)) current = index; \
+	index++; \
 }
 
 static void
-gnc_simple_combo_generate_liststore (ListStoreData *lsd)
+business_option_changed (GtkWidget *widget, gpointer data)
+{
+    OpMenuData *omd = data;
+
+    g_return_if_fail (omd);
+    omd->result = g_object_get_data (G_OBJECT (widget), "this_item");
+
+    if (!omd->building_menu)
+    {
+        if (omd->result_p)
+            *(omd->result_p) = omd->result;
+
+        if (omd->changed_cb)
+            (omd->changed_cb)(omd->omenu, omd->cb_arg);
+    }
+}
+
+static void
+add_menu_item (GtkWidget *menu, const char *label, OpMenuData *omd,
+               gpointer this_item)
+{
+    GtkWidget *item = gtk_menu_item_new_with_label (label);
+    g_object_set_data (G_OBJECT (item), "this_item", this_item);
+    g_signal_connect (G_OBJECT (item), "activate",
+                      G_CALLBACK (business_option_changed), omd);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+    gtk_widget_show (item);
+}
+
+static void
+generic_omenu_destroy_cb (GtkWidget *widget, gpointer data)
+{
+    OpMenuData *omd = data;
+
+    gnc_unregister_gui_component (omd->component_id);
+    g_free (omd);
+}
+
+static void
+build_generic_optionmenu (OpMenuData *omd)
 {
     GList *items;
-    GtkListStore *liststore;
+    GtkWidget *menu;
+    int current = 0, index = 0;
 
-    if (!(lsd->get_list))
-        return;
-    if (!(lsd->get_name))
+    /* Make sure we can "get_list" */
+    if (omd->get_list == NULL)
         return;
 
     /* Get the list of items */
-    items = (lsd->get_list)(lsd->book);
+    items = (omd->get_list)(omd->book);
 
-    /* Reset the combobox' liststore */
-    liststore = GTK_LIST_STORE (gtk_combo_box_get_model (lsd->cbox));
-    gtk_list_store_clear (liststore);
+    /* Make a menu */
+    menu = gtk_menu_new ();
 
-    if (lsd->none_ok || !items)
-        gnc_simple_combo_add_item (liststore, _("None"), NULL);
+    omd->building_menu = TRUE;
+
+    if (omd->none_ok || items == NULL)
+        DO_ADD_ITEM (_("None"), NULL);
 
     for ( ; items; items = items->next)
-        gnc_simple_combo_add_item (liststore, (lsd->get_name)(items->data), items->data);
+        DO_ADD_ITEM ((omd->get_name)(items->data), items->data);
+
+    gtk_option_menu_set_menu (GTK_OPTION_MENU (omd->omenu), menu);
+    gtk_option_menu_set_history (GTK_OPTION_MENU (omd->omenu), current);
+    gtk_widget_show (menu);
+
+    omd->building_menu = FALSE;
 }
 
 static void
-gnc_simple_combo_refresh_handler (GHashTable *changes, gpointer user_data)
+generic_omenu_refresh_handler (GHashTable *changes, gpointer user_data)
 {
-    ListStoreData *lsd = user_data;
-    gnc_simple_combo_generate_liststore (lsd);
+    OpMenuData *omd = user_data;
+    build_generic_optionmenu (omd);
 }
 
-static void
-gnc_simple_combo_destroy_cb (GtkWidget *widget, gpointer data)
+static OpMenuData *
+make_generic_optionmenu (GtkWidget *omenu, QofBook *book,
+                         gboolean none_ok, QofIdType type_name,
+                         GList * (*get_list)(QofBook*),
+                         GenericLookup_t get_name,
+                         gpointer *result)
 {
-    ListStoreData *lsd = data;
+    OpMenuData *omd;
 
-    gnc_unregister_gui_component (lsd->component_id);
-    g_free (lsd);
-}
-
-static void
-gnc_simple_combo_make (GtkComboBox *cbox, QofBook *book,
-                       gboolean none_ok, QofIdType type_name,
-                       GList * (*get_list)(QofBook*),
-                       GenericLookup_t get_name,
-                       GenericEqual_t is_equal,
-                       gpointer initial_choice)
-{
-    ListStoreData *lsd;
-
-    lsd = g_object_get_data (G_OBJECT (cbox), "liststore-data");
+    omd = g_object_get_data (G_OBJECT (omenu), "menu-data");
 
     /* If this is the first time we've been called, then build the
      * Option Menu Data object, register with the component manager, and
      * watch for changed items.  Then register for deletion, so we can
      * unregister and free the data when this menu is destroyed.
      */
-    if (!lsd)
+    if (!omd)
     {
+        omd = g_new0 (OpMenuData, 1);
+        omd->omenu = omenu;
+        omd->book = book;
+        omd->result_p = result;
+        omd->none_ok = none_ok;
+        omd->get_name = get_name;
+        omd->get_list = get_list;
+        g_object_set_data (G_OBJECT (omenu), "menu-data", omd);
 
-        lsd = g_new0 (ListStoreData, 1);
-        lsd->cbox = cbox;
-        lsd->book = book;
-        lsd->none_ok = none_ok;
-        lsd->get_name = get_name;
-        lsd->get_list = get_list;
-        lsd->is_equal = is_equal;
-        g_object_set_data (G_OBJECT (cbox), "liststore-data", lsd);
+        if (result)
+            omd->result = *result;
 
-        lsd->component_id =
-            gnc_register_gui_component ("gnc-simple-combo-refresh-hook",
-                                        gnc_simple_combo_refresh_handler,
-                                        NULL, lsd);
+        omd->component_id =
+            gnc_register_gui_component ("generic-omenu-refresh-hook",
+                                        generic_omenu_refresh_handler,
+                                        NULL, omd);
+
 
         if (type_name)
-            gnc_gui_component_watch_entity_type (lsd->component_id,
+            gnc_gui_component_watch_entity_type (omd->component_id,
                                                  type_name,
                                                  QOF_EVENT_MODIFY | QOF_EVENT_DESTROY);
 
-        g_signal_connect (G_OBJECT (cbox), "destroy",
-                          G_CALLBACK (gnc_simple_combo_destroy_cb), lsd);
+        g_signal_connect (G_OBJECT (omenu), "destroy",
+                          G_CALLBACK (generic_omenu_destroy_cb), omd);
+
     }
 
-    gnc_simple_combo_generate_liststore (lsd);
-    gnc_simple_combo_set_value (cbox, initial_choice);
+    build_generic_optionmenu (omd);
+
+    return omd;
 }
 
-/***********************************************************
- * Specific invocations of the gnc_simple_combo widget
- */
+void
+gnc_ui_optionmenu_set_changed_callback (GtkWidget *omenu,
+                                        void (*changed_cb)(GtkWidget*, gpointer),
+                                        gpointer cb_arg)
+{
+    OpMenuData *omd;
 
-/* Use a list available billing terms to fill the model of
- * the combobox passed in.  If none_ok is true, then add "none" as a
- * choice (with data set to NULL)..  If inital_choice is non-NULL,
+    if (!omenu) return;
+
+    omd = g_object_get_data (G_OBJECT (omenu), "menu-data");
+    g_return_if_fail (omd);
+
+    omd->changed_cb = changed_cb;
+    omd->cb_arg = cb_arg;
+}
+
+gpointer
+gnc_ui_optionmenu_get_value (GtkWidget *omenu)
+{
+    OpMenuData *omd;
+
+    if (!omenu) return NULL;
+
+    omd = g_object_get_data (G_OBJECT (omenu), "menu-data");
+    g_return_val_if_fail (omd, NULL);
+
+    return omd->result;
+}
+
+void
+gnc_ui_optionmenu_set_value (GtkWidget *omenu, gpointer data)
+{
+    OpMenuData *omd;
+    GtkWidget *menu;
+    GList *node;
+    gint counter;
+
+    if (!omenu) return;
+
+    omd = g_object_get_data (G_OBJECT (omenu), "menu-data");
+    g_return_if_fail (omd);
+
+    menu = gtk_option_menu_get_menu (GTK_OPTION_MENU (omenu));
+    g_return_if_fail (menu);
+
+    /* now walk all the children until we find our object */
+    for (counter = 0, node = ((GTK_MENU_SHELL (menu))->children);
+            node;
+            node = node->next, counter++)
+    {
+        GObject *menuitem = node->data;
+        gpointer this_object = g_object_get_data (menuitem, "this_item");
+
+        if (this_object == data)
+        {
+            gtk_option_menu_set_history (GTK_OPTION_MENU (omd->omenu), counter);
+            return;
+        }
+    }
+}
+
+/* Create an optionmenu of available billing terms and attach it to
+ * the menu passed in.  If none_ok is true, then add "none" as a
+ * choice (with data set to NULL).  Any time the menu changes,
+ * 'choice' will be set to the chosen option.  If *choice is non-NULL,
  * then that will be the default option setting when the menu is
  * created.
  */
 void
-gnc_billterms_combo (GtkComboBox *cbox, QofBook *book,
-                     gboolean none_ok, GncBillTerm *initial_choice)
+gnc_ui_billterms_optionmenu (GtkWidget *omenu, QofBook *book,
+                             gboolean none_ok, GncBillTerm **choice)
 {
-    if (!cbox || !book) return;
+    if (!omenu || !book) return;
 
-    gnc_simple_combo_make (cbox, book, none_ok, GNC_BILLTERM_MODULE_NAME,
-                           gncBillTermGetTerms,
-                           (GenericLookup_t)gncBillTermGetName,
-                           (GenericEqual_t)gncBillTermIsFamily,
-                           (gpointer)initial_choice);
+    make_generic_optionmenu (omenu, book, none_ok, GNC_BILLTERM_MODULE_NAME,
+                             gncBillTermGetTerms,
+                             (GenericLookup_t)gncBillTermGetName,
+                             (gpointer *)choice);
 }
 
 void
-gnc_taxtables_combo (GtkComboBox *cbox, QofBook *book,
-                     gboolean none_ok, GncTaxTable *initial_choice)
+gnc_ui_taxtables_optionmenu (GtkWidget *omenu, QofBook *book,
+                             gboolean none_ok, GncTaxTable **choice)
 {
-    if (!cbox || !book) return;
+    if (!omenu || !book) return;
 
-    gnc_simple_combo_make (cbox, book, none_ok, GNC_TAXTABLE_MODULE_NAME,
-                           gncTaxTableGetTables,
-                           (GenericLookup_t)gncTaxTableGetName,
-                           NULL,
-                           (gpointer)initial_choice);
+    make_generic_optionmenu (omenu, book, none_ok, GNC_TAXTABLE_MODULE_NAME,
+                             gncTaxTableGetTables,
+                             (GenericLookup_t)gncTaxTableGetName,
+                             (gpointer *)choice);
 }
 
 void
-gnc_taxincluded_combo (GtkComboBox *cbox, GncTaxIncluded initial_choice)
+gnc_ui_taxincluded_optionmenu (GtkWidget *omenu, GncTaxIncluded *choice)
 {
-    GtkListStore *liststore;
+    GtkWidget *menu;
+    OpMenuData *omd;
+    int current = 0, index = 0;
 
-    if (!cbox) return;
+    if (!omenu) return;
 
-    gnc_simple_combo_make (cbox, NULL, FALSE, NULL, NULL, NULL, NULL,
-                           GINT_TO_POINTER(initial_choice));
-    liststore = GTK_LIST_STORE (gtk_combo_box_get_model (cbox));
+    omd = make_generic_optionmenu (omenu, NULL, FALSE, NULL, NULL, NULL,
+                                   (gpointer *)choice);
 
-    gnc_simple_combo_add_item (liststore, _("Yes"),
-                               GINT_TO_POINTER (GNC_TAXINCLUDED_YES));
-    gnc_simple_combo_add_item (liststore, _("No"),
-                               GINT_TO_POINTER (GNC_TAXINCLUDED_NO));
-    gnc_simple_combo_add_item (liststore, _("Use Global"),
-                               GINT_TO_POINTER (GNC_TAXINCLUDED_USEGLOBAL));
+    g_return_if_fail (omd);
 
-    gnc_simple_combo_set_value (cbox, GINT_TO_POINTER(initial_choice));
-}
+    menu = gtk_menu_new ();
 
-/* Convenience functions for the above simple combo box types.  */
+    add_menu_item (menu, _("Yes"), omd,
+                   GINT_TO_POINTER (GNC_TAXINCLUDED_YES));
+    if (*choice == GNC_TAXINCLUDED_YES) current = index;
+    index++;
 
-/** Get the value of the item that is currently selected in the combo box */
-gpointer
-gnc_simple_combo_get_value (GtkComboBox *cbox)
-{
-    GtkTreeIter iter;
-    GtkTreeModel *model;
-    GValue value = { 0 };
+    add_menu_item (menu, _("No"), omd,
+                   GINT_TO_POINTER (GNC_TAXINCLUDED_NO));
+    if (*choice == GNC_TAXINCLUDED_NO) current = index;
+    index++;
 
-    if (!cbox) return NULL;
+    add_menu_item (menu, _("Use Global"), omd,
+                   GINT_TO_POINTER (GNC_TAXINCLUDED_USEGLOBAL));
+    if (*choice == GNC_TAXINCLUDED_USEGLOBAL) current = index;
+    index++;
 
-    model = gtk_combo_box_get_model (cbox);
-    if (!gtk_combo_box_get_active_iter (cbox, &iter))
-        return NULL;
-    gtk_tree_model_get_value (model, &iter, 1, &value);
-    return g_value_get_pointer (&value);
-}
-
-/** Find the item in the combo box whose value is "data"
- *  and make it the active item. */
-void
-gnc_simple_combo_set_value (GtkComboBox *cbox, gpointer data)
-{
-    GtkTreeIter iter;
-    GtkTreeModel *model;
-    gboolean valid_iter;
-    ListStoreData *lsd = g_object_get_data (G_OBJECT (cbox), "liststore-data");
-
-    if (!cbox) return;
-
-    model = gtk_combo_box_get_model (cbox);
-    valid_iter = gtk_tree_model_get_iter_first (model, &iter);
-
-    while (valid_iter)
-    {
-        GValue value = { 0 };
-
-        gtk_tree_model_get_value (model, &iter, 1, &value);
-        if (lsd && lsd->is_equal)    // A specific comparator function was set
-        {
-            if ((lsd->is_equal)(g_value_get_pointer(&value), data))
-            {
-                gtk_combo_box_set_active_iter (cbox, &iter);
-                return;
-            }
-        }
-        else    // No specific comparator function set, use generic pointer comparison instead
-        {
-            if (g_value_get_pointer(&value) == data)
-            {
-                gtk_combo_box_set_active_iter (cbox, &iter);
-                return;
-            }
-        }
-        valid_iter = gtk_tree_model_iter_next (model, &iter);
-    }
+    gtk_option_menu_set_menu (GTK_OPTION_MENU (omenu), menu);
+    gtk_option_menu_set_history (GTK_OPTION_MENU (omenu), current);
+    gtk_widget_show (menu);
 }

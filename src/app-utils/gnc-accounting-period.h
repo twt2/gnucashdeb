@@ -45,14 +45,13 @@
 #define GNC_ACCOUNTING_PERIOD_H
 
 #include <glib.h>
-#include <gnc-date.h>
+#include <time.h>
 
 /**
  * This specifies a time interval.
  */
 typedef enum
 {
-    GNC_ACCOUNTING_PERIOD_INVALID = -1, //Force Clang to use a signed enum
     GNC_ACCOUNTING_PERIOD_TODAY,
     GNC_ACCOUNTING_PERIOD_MONTH,
     GNC_ACCOUNTING_PERIOD_MONTH_PREV,
@@ -94,6 +93,32 @@ typedef enum
 GDate *gnc_accounting_period_start_gdate (GncAccountingPeriod which,
         const GDate *fy_end,
         const GDate *contains);
+
+
+/** This function returns the starting time for an accounting period.
+ *  The time will be computed based upon the type of accounting
+ *  interval requested, an optional fiscal year end value, and an
+ *  optional time value.
+ *
+ *  @param which An enum specifying the type of accounting period.
+ *
+ *  @param fy_end This argument specifies the month and day of the
+ *  fiscal year end.  If the accounting period specified in the
+ *  'which' parameter is not a fiscal accounting period, this variable
+ *  is ignored and may be NULL.  Note: the year field of this argument
+ *  is always ignored.
+ *
+ *  @param contains This argument specifies the origin time value used
+ *  by the calculations in this function.  If this value is NULL, the
+ *  origin will be the current time.
+ *
+ *  @return The starting second of the specified time interval, based
+ *  on a zero value of January 1st, 1970. */
+time_t gnc_accounting_period_start_timet (GncAccountingPeriod which,
+        const GDate *fy_end,
+        const GDate *contains);
+
+
 /** This function returns the ending date for an accounting period.
  *  The date will be computed based upon the type of accounting
  *  interval requested, an optional fiscal year end value, and an
@@ -117,10 +142,35 @@ GDate *gnc_accounting_period_end_gdate (GncAccountingPeriod which,
                                         const GDate *fy_end,
                                         const GDate *contains);
 
+
+/** This function returns the ending time for an accounting period.
+ *  The time will be computed based upon the type of accounting
+ *  interval requested, an optional fiscal year end value, and an
+ *  optional time value.
+ *
+ *  @param which An enum specifying the type of accounting period.
+ *
+ *  @param fy_end This argument specifies the month and day of the
+ *  fiscal year end.  If the accounting period specified in the
+ *  'which' parameter is not a fiscal accounting period, this variable
+ *  is ignored and may be NULL.  Note: the year field of this argument
+ *  is always ignored.
+ *
+ *  @param contains This argument specifies the origin time value used
+ *  by the calculations in this function.  If this value is NULL, the
+ *  origin will be the current time.
+ *
+ *  @return The ending second of the specified time interval, based
+ *  on a zero value of January 1st, 1970. */
+time_t gnc_accounting_period_end_timet (GncAccountingPeriod which,
+                                        const GDate *fy_end,
+                                        const GDate *contains);
+
+
 /* Get the fiscal accounting period from the preferences and return
    the start and end times. */
-time64 gnc_accounting_period_fiscal_start(void);
-time64 gnc_accounting_period_fiscal_end(void);
+time_t gnc_accounting_period_fiscal_start(void);
+time_t gnc_accounting_period_fiscal_end(void);
 
 /** @} */
 

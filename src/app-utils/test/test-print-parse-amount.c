@@ -1,33 +1,12 @@
-/********************************************************************\
- * This program is free software; you can redistribute it and/or    *
- * modify it under the terms of the GNU General Public License as   *
- * published by the Free Software Foundation; either version 2 of   *
- * the License, or (at your option) any later version.              *
- *                                                                  *
- * This program is distributed in the hope that it will be useful,  *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of   *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the    *
- * GNU General Public License for more details.                     *
- *                                                                  *
- * You should have received a copy of the GNU General Public License*
- * along with this program; if not, contact:                        *
- *                                                                  *
- * Free Software Foundation           Voice:  +1-617-542-5942       *
- * 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652       *
- * Boston, MA  02110-1301,  USA       gnu@gnu.org                   *
- *                                                                  *
-\********************************************************************/
-
 #include "config.h"
 #include <glib.h>
 #include <stdlib.h>
-#include <glib/gprintf.h>
 
 #include "gnc-ui-util.h"
 #include "gnc-numeric.h"
 #include "test-engine-stuff.h"
 #include "test-stuff.h"
-#include <unittest-support.h>
+
 
 static void
 test_num_print_info (gnc_numeric n, GNCPrintAmountInfo print_info, int line)
@@ -36,32 +15,22 @@ test_num_print_info (gnc_numeric n, GNCPrintAmountInfo print_info, int line)
     const char *s;
     gboolean ok, print_ok;
 
-    gchar *msg = "[PrintAmountInternal()] Bad numeric from rounding: GNC_ERROR_OVERFLOW.";
-    gchar *log_domain = "gnc.gui";
-    guint loglevel = G_LOG_LEVEL_WARNING, hdlr;
-    TestErrorStruct check = { loglevel, log_domain, msg };
-
-    /* Throws overflows during rounding step in xaccPrintAmount when the "fraction" is high. See bug 665707. */
-    hdlr = g_log_set_handler (log_domain, loglevel,
-                              (GLogFunc)test_checked_handler, &check);
     s = xaccPrintAmount (n, print_info);
     print_ok = (s && s[0] != '\0');
     if (!print_ok)
         return;
 
     ok = xaccParseAmount (s, print_info.monetary, &n_parsed, NULL);
-    g_log_remove_handler (log_domain, hdlr);
-
 
     do_test_args (ok, "parsing failure", __FILE__, __LINE__,
                   "num: %s, string %s (line %d)", gnc_numeric_to_string (n), s, line);
 
     ok = gnc_numeric_equal (n, n_parsed);
+
     do_test_args (ok, "not equal", __FILE__, __LINE__,
                   "start: %s, string %s, finish: %s (line %d)",
                   gnc_numeric_to_string (n), s,
                   gnc_numeric_to_string (n_parsed), line);
-
 }
 
 static void

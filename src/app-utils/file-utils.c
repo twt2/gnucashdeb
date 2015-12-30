@@ -23,6 +23,7 @@
 
 #include <glib.h>
 #include <glib/gstdio.h>
+#include <libguile.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
@@ -37,6 +38,7 @@
 # define read _read
 #endif
 
+#include "guile-mappings.h"
 #include "file-utils.h"
 #include "gnc-engine.h"
 #include "gnc-filepath-utils.h"
@@ -44,10 +46,31 @@
 #include "gnc-uri-utils.h"
 
 /* This static indicates the debugging module that this .o belongs to.  */
-static QofLogModule log_module = G_LOG_DOMAIN;
+static QofLogModule log_module = GNC_MOD_GUILE;
 
 /********************************************************************\
 \********************************************************************/
+
+char *
+gncFindFile (const char * filename)
+{
+    const gchar *full_filename = NULL;
+    SCM find_doc_file;
+    SCM scm_filename;
+    SCM scm_result;
+
+    if (!filename || *filename == '\0')
+        return NULL;
+
+    find_doc_file = scm_c_eval_string("gnc:find-doc-file");
+    scm_filename = scm_makfrom0str ((char *) filename);
+    scm_result = scm_call_1(find_doc_file, scm_filename);
+
+    if (scm_is_string(scm_result))
+        full_filename = scm_to_locale_string(scm_result);
+
+    return g_strdup (full_filename);
+}
 
 /********************************************************************\
  * gncReadFile                                                      *
@@ -65,10 +88,14 @@ gncReadFile (const char * filename, char ** data)
     int   size = 0;
     int   fd;
 
+    /* construct absolute path -- twiddle the relative path we received */
     if (!filename || filename[0] == '\0') return 0;
 
-    /* construct absolute path if we received a relative path */
-    fullname = gnc_path_find_localized_html_file (filename);
+    /* take absolute paths without searching */
+    if (!g_path_is_absolute (filename))
+        fullname = gncFindFile (filename);
+    else
+        fullname = g_strdup (filename);
 
     if (!fullname) return 0;
 
@@ -148,6 +175,131 @@ gnc_getline (gchar **line, FILE *file)
     *line = gs->str;
     g_string_free(gs, FALSE);
     return len;
+}
+
+/*  Find the state file that corresponds to this URL and guid.
+ *
+ * The state files will be searched for in the books directory in GnuCash'
+ * private configuration directory. This configuration directory is
+ * platform dependent and can be overridden with environment variable
+ * DOT_GNUCASH_DIR. On linux for example this is ~/.gnucash by default.
+ *
+ * The URL is used to compute the base name of the state file and the
+ * guid is used to differentiate when the user has multiple data files
+ * with the same name.
+ *
+ * As of GnuCash 2.4.1 state files will have their own extension to
+ * differentiate them from data files saved by the user. New state
+ * files will always be created with such an extension. But GnuCash
+ * will continue to search for state files without an extension if
+ * no proper state file with extension is found. */
+GKeyFile *
+gnc_find_state_file (const gchar *url,
+                     const gchar *guid,
+                     gchar **filename_p)
+{
+    gchar *basename, *original = NULL, *filename, *tmp, *file_guid;
+    gchar *sf_extension = NULL, *newstyle_filename = NULL;
+    GKeyFile *key_file = NULL;
+    gint i;
+
+    ENTER("url %s, guid %s", url, guid);
+
+    if ( gnc_uri_is_file_uri ( url ) )
+    {
+        /* The url is a true file, use its basename. */
+        gchar *path = gnc_uri_get_path ( url );
+        basename = g_path_get_basename ( path );
+        g_free ( path );
+    }
+    else
+    {
+        /* The url is composed of database connection parameters. */
+        gchar* protocol = NULL;
+        gchar* host = NULL;
+        gchar* dbname = NULL;
+        gchar* username = NULL;
+        gchar* password = NULL;
+        gint portnum = 0;
+        gnc_uri_get_components ( url, &protocol, &host, &portnum,
+                                 &username, &password, &dbname );
+
+        basename = g_strjoin("_", protocol, host, username, dbname, NULL);
+        g_free( protocol );
+        g_free( host );
+        g_free( username );
+        g_free( password );
+        g_free( dbname );
+    }
+
+    DEBUG("Basename %s", basename);
+    original = gnc_build_book_path(basename);
+    g_free(basename);
+    DEBUG("Original %s", original);
+
+    sf_extension = g_strdup(STATE_FILE_EXT);
+    i = 1;
+    while (1)
+    {
+        if (i == 1)
+            filename = g_strconcat(original, sf_extension, NULL);
+        else
+            filename = g_strdup_printf("%s_%d%s", original, i, sf_extension);
+        DEBUG("Trying %s", filename);
+        key_file = gnc_key_file_load_from_file(filename, FALSE, FALSE, NULL);
+        DEBUG("Result %p", key_file);
+
+        if (!key_file)
+        {
+            DEBUG("No key file by that name");
+            if (g_strcmp0(sf_extension, STATE_FILE_EXT) == 0)
+            {
+                DEBUG("Trying old state file names for compatibility");
+                newstyle_filename = filename;
+                i = 1;
+                g_free( sf_extension);
+                sf_extension = g_strdup("");
+                continue;
+            }
+            break;
+        }
+
+        file_guid = g_key_file_get_string(key_file,
+                                          STATE_FILE_TOP, STATE_FILE_BOOK_GUID,
+                                          NULL);
+        DEBUG("File GncGUID is %s", file_guid ? file_guid : "<not found>");
+        if (safe_strcmp(guid, file_guid) == 0)
+        {
+            DEBUG("Matched !!!");
+            g_free(file_guid);
+            break;
+        }
+        DEBUG("Clean up this pass");
+        g_free(file_guid);
+        g_key_file_free(key_file);
+        g_free(filename);
+        i++;
+    }
+
+    DEBUG("Clean up");
+    g_free(original);
+    /* Pre-2.4.1 compatibility block: make sure when the state file is
+     * written again later, it will use the next available filename with
+     * extension and optional counter. (This name was determined earlier
+     * in the loop.) */
+    if (newstyle_filename)
+    {
+        g_free(filename);
+        filename = newstyle_filename;
+    }
+
+    if (filename_p)
+        *filename_p = filename;
+    else
+        g_free(filename);
+    LEAVE("key_file %p, filename %s", key_file,
+          filename_p ? *filename_p : "(none)");
+    return key_file;
 }
 
 /* ----------------------- END OF FILE ---------------------  */

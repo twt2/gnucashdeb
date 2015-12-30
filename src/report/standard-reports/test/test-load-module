@@ -1,5 +1,5 @@
 #! /bin/sh 
-exec ${GUILE} -s "$0"
+exec guile -s "$0"
 !#
 
 (display "  testing standard report module load ... ")

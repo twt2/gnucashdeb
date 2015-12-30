@@ -27,7 +27,6 @@
 #include <glib.h>
 
 #include "gnc-xml-helper.h"
-#include <gnc-date.h>
 
 #include "sixtp-dom-generators.h"
 #include "sixtp-utils.h"
@@ -44,13 +43,12 @@ xmlNodePtr
 text_to_dom_tree(const char *tag, const char *str)
 {
     xmlNodePtr result;
-    gchar *newstr = g_strdup (str);
+
     g_return_val_if_fail(tag, NULL);
     g_return_val_if_fail(str, NULL);
     result = xmlNewNode(NULL, BAD_CAST tag);
     g_return_val_if_fail(result, NULL);
-    xmlNodeAddContent(result, checked_char_cast (newstr));
-    g_free (newstr);
+    xmlNodeAddContent(result, BAD_CAST str);
     return result;
 }
 
@@ -106,7 +104,6 @@ xmlNodePtr
 commodity_ref_to_dom_tree(const char *tag, const gnc_commodity *c)
 {
     xmlNodePtr ret;
-    gchar *name_space, *mnemonic;
 
     g_return_val_if_fail(c, NULL);
 
@@ -116,32 +113,27 @@ commodity_ref_to_dom_tree(const char *tag, const gnc_commodity *c)
     {
         return NULL;
     }
-    name_space = g_strdup (gnc_commodity_get_namespace_compat(c));
-    mnemonic = g_strdup (gnc_commodity_get_mnemonic(c));
-    xmlNewTextChild(ret, NULL, BAD_CAST "cmdty:space",
-		    checked_char_cast (name_space));
-    xmlNewTextChild(ret, NULL, BAD_CAST "cmdty:id",
-		    checked_char_cast (mnemonic));
-    g_free (name_space);
-    g_free (mnemonic);
+
+    xmlNewTextChild(ret, NULL, BAD_CAST "cmdty:space", BAD_CAST gnc_commodity_get_namespace_compat(c));
+    xmlNewTextChild(ret, NULL, BAD_CAST "cmdty:id", BAD_CAST gnc_commodity_get_mnemonic(c));
+
     return ret;
 }
 
-/* gnc_g_date_time_new_from_timespec_local normalizes the timespec,
- * but we want to serialize it un-normalized, so we make a partial
- * copy.
- */
 gchar *
 timespec_sec_to_string(const Timespec *ts)
 {
-     gchar *time_string;
-     GDateTime *gdt;
-     Timespec sts = { ts->tv_sec, 0};
-     gdt = gnc_g_date_time_new_from_timespec_local (sts);
-     g_return_val_if_fail (gdt != NULL, NULL);
-     time_string = g_date_time_format (gdt, "%Y-%m-%d %H:%M:%S %z");
-     g_date_time_unref (gdt);
-     return time_string;
+    gchar *ret;
+
+    ret = g_new(gchar, TIMESPEC_SEC_FORMAT_MAX);
+
+    if (!timespec_secs_to_given_string (ts, ret))
+    {
+        g_free(ret);
+        return NULL;
+    }
+
+    return ret;
 }
 
 gchar *
@@ -168,16 +160,14 @@ timespec_to_dom_tree(const char *tag, const Timespec *spec)
 
     ret = xmlNewNode(NULL, BAD_CAST tag);
 
-    xmlNewTextChild(ret, NULL, BAD_CAST "ts:date",
-		    checked_char_cast (date_str));
+    xmlNewTextChild(ret, NULL, BAD_CAST "ts:date", BAD_CAST date_str);
 
     if (spec->tv_nsec > 0)
     {
         ns_str = timespec_nsec_to_string(spec);
         if (ns_str)
         {
-            xmlNewTextChild(ret, NULL, BAD_CAST "ts:ns",
-			    checked_char_cast (ns_str));
+            xmlNewTextChild(ret, NULL, BAD_CAST "ts:ns", BAD_CAST ns_str);
         }
     }
 
@@ -203,7 +193,7 @@ gdate_to_dom_tree(const char *tag, const GDate *date)
 
     ret = xmlNewNode(NULL, BAD_CAST tag);
 
-    xmlNewTextChild(ret, NULL, BAD_CAST "gdate", checked_char_cast (date_str));
+    xmlNewTextChild(ret, NULL, BAD_CAST "gdate", BAD_CAST date_str);
 
     g_free(date_str);
 
@@ -223,7 +213,7 @@ gnc_numeric_to_dom_tree(const char *tag, const gnc_numeric *num)
 
     ret = xmlNewNode(NULL, BAD_CAST tag);
 
-    xmlNodeAddContent(ret, checked_char_cast (numstr));
+    xmlNodeAddContent(ret, BAD_CAST numstr);
 
     g_free(numstr);
 
@@ -234,8 +224,21 @@ gchar*
 double_to_string(double value)
 {
     gchar *numstr;
+#ifdef USE_GUILE_FOR_DOUBLE_CONVERSION
+    numstr = gh_scm2newstr(scm_call_1(scm_c_eval_string("number->string"),
+                                      scm_make_real(value)),
+                           NULL);
+
+#else /* don't USE_GUILE_FOR_DOUBLE_CONVERSION */
+    /*
+     * we're just going to use plain-old libc for the double conversion.
+     * There was some question as to whether libc is accurate enough
+     * in its printf function for doubles, but I don't understand
+     * how it couldn't be ...
+     */
     numstr = g_strdup_printf ("%24.18g", value);
 
+#endif /* USE_GUILE_FOR_DOUBLE_CONVERSION */
     if (!numstr)
     {
         return NULL;
@@ -250,12 +253,9 @@ double_to_string(double value)
 static void
 add_text_to_node(xmlNodePtr node, gchar *type, gchar *val)
 {
-    gchar *newtype = g_strdup (type);
-    gchar *newval = g_strdup (val);
-    xmlSetProp(node, BAD_CAST "type", checked_char_cast (type));
-    xmlNodeSetContent(node, checked_char_cast (val));
-    g_free (newtype);
-    g_free(newval);
+    xmlSetProp(node, BAD_CAST "type", BAD_CAST type);
+    xmlNodeSetContent(node, BAD_CAST val);
+    g_free(val);
 }
 
 
@@ -267,17 +267,13 @@ static void
 add_kvp_value_node(xmlNodePtr node, gchar *tag, kvp_value* val)
 {
     xmlNodePtr val_node;
+    gchar *tmp_str1;
     kvp_value_t kvp_type;
 
     kvp_type = kvp_value_get_type(val);
 
     if (kvp_type == KVP_TYPE_STRING)
-    {
-	gchar *newstr = g_strdup (kvp_value_get_string(val));
-        val_node = xmlNewTextChild(node, NULL, BAD_CAST tag,
-				   checked_char_cast (newstr));
-	g_free (newstr);
-    }
+        val_node = xmlNewTextChild(node, NULL, BAD_CAST tag, BAD_CAST kvp_value_get_string(val));
     else if (kvp_type == KVP_TYPE_TIMESPEC)
         val_node = NULL;
     else if (kvp_type == KVP_TYPE_GDATE)
@@ -327,12 +323,11 @@ add_kvp_value_node(xmlNodePtr node, gchar *tag, kvp_value* val)
     case KVP_TYPE_BINARY:
     {
         guint64 size;
-	gchar *tmp_str1;
         void *binary_data = kvp_value_get_binary(val, &size);
         xmlSetProp(val_node, BAD_CAST "type", BAD_CAST "binary");
         g_return_if_fail(binary_data);
         tmp_str1 = binary_to_string(binary_data, size);
-        xmlNodeSetContent(val_node, checked_char_cast (tmp_str1));
+        xmlNodeSetContent(val_node, BAD_CAST tmp_str1);
         g_free(tmp_str1);
     }
     break;
@@ -372,12 +367,11 @@ add_kvp_slot(gpointer key, gpointer value, gpointer data)
 {
     xmlNodePtr slot_node;
     xmlNodePtr node = (xmlNodePtr)data;
-    gchar *newkey = g_strdup ((gchar*)key);
+
     slot_node = xmlNewChild(node, NULL, BAD_CAST "slot", NULL);
 
-    xmlNewTextChild(slot_node, NULL, BAD_CAST "slot:key",
-		    checked_char_cast (newkey));
-    g_free (newkey);
+    xmlNewTextChild(slot_node, NULL, BAD_CAST "slot:key", (xmlChar*)key);
+
     add_kvp_value_node(slot_node, "slot:value", (kvp_value*)value);
 }
 

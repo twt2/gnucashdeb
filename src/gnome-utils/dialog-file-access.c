@@ -26,6 +26,7 @@
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <glade/glade.h>
 
 #include "gnc-ui.h"
 #include "gnc-ui-util.h"
@@ -49,23 +50,21 @@ typedef struct FileAccessWindow
     /* Parts of the dialog */
     int type;
 
-    GtkWidget           *dialog;
-    GtkWidget           *frame_file;
-    GtkWidget           *frame_database;
-    GtkWidget           *readonly_checkbutton;
-    GtkFileChooser      *fileChooser;
-    gchar               *starting_dir;
-    GtkComboBoxText     *cb_uri_type;
-    GtkEntry            *tf_host;
-    GtkEntry            *tf_database;
-    GtkEntry            *tf_username;
-    GtkEntry            *tf_password;
+    GtkWidget* dialog;
+    GtkWidget* frame_file;
+    GtkWidget* frame_database;
+    GtkFileChooser* fileChooser;
+    GtkComboBox* cb_uri_type;
+    GtkEntry* tf_host;
+    GtkEntry* tf_database;
+    GtkEntry* tf_username;
+    GtkEntry* tf_password;
 } FileAccessWindow;
 
 void gnc_ui_file_access_file_activated_cb( GtkFileChooser *chooser,
         FileAccessWindow *faw );
 void gnc_ui_file_access_response_cb( GtkDialog *, gint, GtkDialog * );
-static void cb_uri_type_changed_cb( GtkComboBoxText* cb );
+static void cb_uri_type_changed_cb( GtkComboBox* cb );
 
 static gchar*
 geturl( FileAccessWindow* faw )
@@ -85,7 +84,7 @@ geturl( FileAccessWindow* faw )
     password = gtk_entry_get_text( faw->tf_password );
     file = gtk_file_chooser_get_filename( faw->fileChooser );
 
-    type = gtk_combo_box_text_get_active_text(faw->cb_uri_type );
+    type = gtk_combo_box_get_active_text( faw->cb_uri_type );
     if ( gnc_uri_is_file_protocol( type ) )
     {
         if ( file == NULL ) /* file protocol was chosen but no filename was set */
@@ -133,18 +132,15 @@ gnc_ui_file_access_response_cb(GtkDialog *dialog, gint response, GtkDialog *unus
             return;
         }
 
-        if ( g_file_test( g_filename_from_uri( url, NULL, NULL ),
-                          G_FILE_TEST_IS_DIR ))
-        {
-            gtk_file_chooser_set_current_folder_uri( faw->fileChooser, url );
-            return;
-        }
+	if ( g_file_test( g_filename_from_uri( url, NULL, NULL ),
+			  G_FILE_TEST_IS_DIR ))
+	{
+	    gtk_file_chooser_set_current_folder_uri( faw->fileChooser, url );
+	    return;
+	}
         if ( faw->type == FILE_ACCESS_OPEN )
         {
-            gboolean open_readonly = faw->readonly_checkbutton
-                                     ? gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(faw->readonly_checkbutton))
-                                     : FALSE;
-            gnc_file_open_file( url, open_readonly );
+            gnc_file_open_file( url );
         }
         else if ( faw->type == FILE_ACCESS_SAVE_AS )
         {
@@ -178,7 +174,6 @@ set_widget_sensitivity( FileAccessWindow* faw, gboolean is_file_based_uri )
     {
         gtk_widget_show(faw->frame_file);
         gtk_widget_hide(faw->frame_database);
-        gtk_file_chooser_set_current_folder(faw->fileChooser, faw->starting_dir);
     }
     else
     {
@@ -208,7 +203,7 @@ set_widget_sensitivity_for_uri_type( FileAccessWindow* faw, const gchar* uri_typ
 }
 
 static void
-cb_uri_type_changed_cb( GtkComboBoxText* cb )
+cb_uri_type_changed_cb( GtkComboBox* cb )
 {
     GtkWidget* dialog;
     FileAccessWindow* faw;
@@ -221,7 +216,7 @@ cb_uri_type_changed_cb( GtkComboBoxText* cb )
     faw = g_object_get_data( G_OBJECT(dialog), "FileAccessWindow" );
     g_return_if_fail( faw != NULL );
 
-    type = gtk_combo_box_text_get_active_text( cb );
+    type = gtk_combo_box_get_active_text( cb );
     set_widget_sensitivity_for_uri_type( faw, type );
 }
 
@@ -243,9 +238,11 @@ static void
 gnc_ui_file_access( int type )
 {
     FileAccessWindow *faw;
-    GtkBuilder* builder;
+    GladeXML* xml;
+    GtkWidget* box;
+    GList* ds_node;
     GtkButton* op;
-    GtkWidget* file_chooser;
+    GtkWidget* align;
     GtkFileChooserWidget* fileChooser;
     GtkFileChooserAction fileChooserAction = GTK_FILE_CHOOSER_ACTION_OPEN;
     GList* list;
@@ -260,8 +257,9 @@ gnc_ui_file_access( int type )
     gint active_access_method_index = -1;
     const gchar* default_db;
     const gchar *button_label = NULL;
-    const gchar *settings_section = NULL;
+    const gchar *gconf_section = NULL;
     gchar *last;
+    gchar *starting_dir = NULL;
 
     g_return_if_fail( type == FILE_ACCESS_OPEN || type == FILE_ACCESS_SAVE_AS || type == FILE_ACCESS_EXPORT );
 
@@ -269,25 +267,22 @@ gnc_ui_file_access( int type )
     g_return_if_fail( faw != NULL );
 
     faw->type = type;
-    faw->starting_dir = NULL;
 
     /* Open the dialog */
-    builder = gtk_builder_new();
-    gnc_builder_add_from_file (builder, "dialog-file-access.glade", "File Access" );
-    faw->dialog = GTK_WIDGET(gtk_builder_get_object (builder, "File Access" ));
+    xml = gnc_glade_xml_new( "dialog-file-access.glade", "File Access" );
+    faw->dialog = glade_xml_get_widget( xml, "File Access" );
     g_object_set_data_full( G_OBJECT(faw->dialog), "FileAccessWindow", faw,
                             g_free );
 
-    faw->frame_file = GTK_WIDGET(gtk_builder_get_object (builder, "frame_file" ));
-    faw->frame_database = GTK_WIDGET(gtk_builder_get_object (builder, "frame_database" ));
-    faw->readonly_checkbutton = GTK_WIDGET(gtk_builder_get_object (builder, "readonly_checkbutton"));
-    faw->tf_host = GTK_ENTRY(gtk_builder_get_object (builder, "tf_host" ));
+    faw->frame_file = glade_xml_get_widget( xml, "frame_file" );
+    faw->frame_database = glade_xml_get_widget( xml, "frame_database" );
+    faw->tf_host = GTK_ENTRY(glade_xml_get_widget( xml, "tf_host" ));
     gtk_entry_set_text( faw->tf_host, DEFAULT_HOST );
-    faw->tf_database = GTK_ENTRY(gtk_builder_get_object (builder, "tf_database" ));
+    faw->tf_database = GTK_ENTRY(glade_xml_get_widget( xml, "tf_database" ));
     default_db = get_default_database();
     gtk_entry_set_text( faw->tf_database, default_db );
-    faw->tf_username = GTK_ENTRY(gtk_builder_get_object (builder, "tf_username" ));
-    faw->tf_password = GTK_ENTRY(gtk_builder_get_object (builder, "tf_password" ));
+    faw->tf_username = GTK_ENTRY(glade_xml_get_widget( xml, "tf_username" ));
+    faw->tf_password = GTK_ENTRY(glade_xml_get_widget( xml, "tf_password" ));
 
     switch ( type )
     {
@@ -295,39 +290,35 @@ gnc_ui_file_access( int type )
         gtk_window_set_title(GTK_WINDOW(faw->dialog), _("Open..."));
         button_label = "gtk-open";
         fileChooserAction = GTK_FILE_CHOOSER_ACTION_OPEN;
-        settings_section = GNC_PREFS_GROUP_OPEN_SAVE;
+        gconf_section = GCONF_DIR_OPEN_SAVE;
         break;
 
     case FILE_ACCESS_SAVE_AS:
         gtk_window_set_title(GTK_WINDOW(faw->dialog), _("Save As..."));
         button_label = "gtk-save-as";
         fileChooserAction = GTK_FILE_CHOOSER_ACTION_SAVE;
-        settings_section = GNC_PREFS_GROUP_OPEN_SAVE;
-        gtk_widget_destroy(faw->readonly_checkbutton);
-        faw->readonly_checkbutton = NULL;
+        gconf_section = GCONF_DIR_OPEN_SAVE;
         break;
 
     case FILE_ACCESS_EXPORT:
         gtk_window_set_title(GTK_WINDOW(faw->dialog), _("Export"));
         button_label = "gtk-save-as";
         fileChooserAction = GTK_FILE_CHOOSER_ACTION_SAVE;
-        settings_section = GNC_PREFS_GROUP_EXPORT;
-        gtk_widget_destroy(faw->readonly_checkbutton);
-        faw->readonly_checkbutton = NULL;
+        gconf_section = GCONF_DIR_EXPORT;
         break;
     }
 
-    op = GTK_BUTTON(gtk_builder_get_object (builder, "pb_op" ));
+    op = GTK_BUTTON(glade_xml_get_widget( xml, "pb_op" ));
     if ( op != NULL )
     {
         gtk_button_set_label( op, button_label );
         gtk_button_set_use_stock( op, TRUE );
     }
 
-    file_chooser = GTK_WIDGET(gtk_builder_get_object (builder, "file_chooser" ));
+    align = glade_xml_get_widget( xml, "alignment_file_chooser" );
     fileChooser = GTK_FILE_CHOOSER_WIDGET(gtk_file_chooser_widget_new( fileChooserAction ));
     faw->fileChooser = GTK_FILE_CHOOSER(fileChooser);
-    gtk_box_pack_start( GTK_BOX(file_chooser), GTK_WIDGET(fileChooser), TRUE, TRUE, 6 );
+    gtk_container_add( GTK_CONTAINER(align), GTK_WIDGET(fileChooser) );
 
     /* Set the default directory */
     if (type == FILE_ACCESS_OPEN || type == FILE_ACCESS_SAVE_AS)
@@ -336,19 +327,19 @@ gnc_ui_file_access( int type )
         if ( last && gnc_uri_is_file_uri ( last ) )
         {
             gchar *filepath = gnc_uri_get_path ( last );
-            faw->starting_dir = g_path_get_dirname( filepath );
+            starting_dir = g_path_get_dirname( filepath );
             g_free ( filepath );
         }
     }
-    if (!faw->starting_dir)
-        faw->starting_dir = gnc_get_default_directory(settings_section);
-    gtk_file_chooser_set_current_folder(faw->fileChooser, faw->starting_dir);
+    if (!starting_dir)
+        starting_dir = gnc_get_default_directory(gconf_section);
+    gtk_file_chooser_set_current_folder(faw->fileChooser, starting_dir);
 
     g_object_connect( G_OBJECT(faw->fileChooser), "signal::file-activated",
                       gnc_ui_file_access_file_activated_cb, faw, NULL );
 
-    uri_type_container = GTK_WIDGET(gtk_builder_get_object (builder, "vb_uri_type_container" ));
-    faw->cb_uri_type = GTK_COMBO_BOX_TEXT(gtk_combo_box_text_new());
+    uri_type_container = glade_xml_get_widget( xml, "vb_uri_type_container" );
+    faw->cb_uri_type = GTK_COMBO_BOX(gtk_combo_box_new_text());
     gtk_container_add( GTK_CONTAINER(uri_type_container), GTK_WIDGET(faw->cb_uri_type) );
     gtk_box_set_child_packing( GTK_BOX(uri_type_container), GTK_WIDGET(faw->cb_uri_type),
                                /*expand*/TRUE, /*fill*/FALSE, /*padding*/0, GTK_PACK_START );
@@ -357,7 +348,8 @@ gnc_ui_file_access( int type )
                       NULL );
 
     /* Autoconnect signals */
-    gtk_builder_connect_signals_full (builder, gnc_builder_connect_full_func, faw);
+    glade_xml_signal_autoconnect_full( xml, gnc_glade_autoconnect_full_func,
+                                       faw->dialog );
 
     /* See what qof backends are available and add appropriate ones to the combo box */
     list = qof_backend_get_registered_access_method_list();
@@ -406,27 +398,27 @@ gnc_ui_file_access( int type )
     access_method_index = -1;
     if ( need_access_method_file )
     {
-        gtk_combo_box_text_append_text( faw->cb_uri_type, "file" );
+        gtk_combo_box_append_text( faw->cb_uri_type, "file" );
         active_access_method_index = ++access_method_index;
     }
     if ( need_access_method_mysql )
     {
-        gtk_combo_box_text_append_text( faw->cb_uri_type, "mysql" );
+        gtk_combo_box_append_text( faw->cb_uri_type, "mysql" );
         ++access_method_index;
     }
     if ( need_access_method_postgres )
     {
-        gtk_combo_box_text_append_text( faw->cb_uri_type, "postgres" );
+        gtk_combo_box_append_text( faw->cb_uri_type, "postgres" );
         ++access_method_index;
     }
     if ( need_access_method_sqlite3 )
     {
-        gtk_combo_box_text_append_text( faw->cb_uri_type, "sqlite3" );
+        gtk_combo_box_append_text( faw->cb_uri_type, "sqlite3" );
         active_access_method_index = ++access_method_index;
     }
     if ( need_access_method_xml )
     {
-        gtk_combo_box_text_append_text( faw->cb_uri_type, "xml" );
+        gtk_combo_box_append_text( faw->cb_uri_type, "xml" );
         ++access_method_index;
 
         // Set XML as default if it is offered (which mean we are in
@@ -435,15 +427,17 @@ gnc_ui_file_access( int type )
     }
     g_assert( active_access_method_index >= 0 );
 
-    g_object_unref(G_OBJECT(builder));
+    /* Clean up the xml data structure when the dialog is destroyed */
+    g_object_set_data_full( G_OBJECT(faw->dialog), "dialog-file-access.glade",
+                            xml, g_object_unref );
 
     /* Run the dialog */
     gtk_widget_show_all( faw->dialog );
 
     /* Hide the frame that's not required for the active access method so either only
      * the File or only the Database frame are presented. */
-    gtk_combo_box_set_active(GTK_COMBO_BOX(faw->cb_uri_type), active_access_method_index );
-    set_widget_sensitivity_for_uri_type( faw, gtk_combo_box_text_get_active_text( faw->cb_uri_type ));
+    gtk_combo_box_set_active( faw->cb_uri_type, active_access_method_index );
+    set_widget_sensitivity_for_uri_type( faw, gtk_combo_box_get_active_text( faw->cb_uri_type ) );
 }
 
 void

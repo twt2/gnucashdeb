@@ -37,7 +37,7 @@
 #include "gnc-locale-utils.h"
 #include "guile-mappings.h"
 
-#define GEP_GROUP_NAME "Variables"
+#define GROUP_NAME "Variables"
 
 static QofLogModule log_module = GNC_MOD_GUI;
 
@@ -91,10 +91,10 @@ gnc_exp_parser_real_init ( gboolean addPredefined )
         key_file = gnc_key_file_load_from_file(filename, TRUE, FALSE, NULL);
         if (key_file)
         {
-            keys = g_key_file_get_keys(key_file, GEP_GROUP_NAME, NULL, NULL);
+            keys = g_key_file_get_keys(key_file, GROUP_NAME, NULL, NULL);
             for (key = keys; key && *key; key++)
             {
-                str_value = g_key_file_get_string(key_file, GEP_GROUP_NAME, *key, NULL);
+                str_value = g_key_file_get_string(key_file, GROUP_NAME, *key, NULL);
                 if (str_value && string_to_gnc_numeric(str_value, &value))
                 {
                     gnc_exp_parser_set_value (*key, gnc_numeric_reduce (value));
@@ -124,7 +124,7 @@ set_one_key (gpointer key, gpointer value, gpointer data)
     char *num_str;
 
     num_str = gnc_numeric_to_string (gnc_numeric_reduce (pnum->value));
-    g_key_file_set_string ((GKeyFile *)data, GEP_GROUP_NAME, name, num_str);
+    g_key_file_set_string ((GKeyFile *)data, GROUP_NAME, name, num_str);
     g_free (num_str);
 }
 
@@ -140,7 +140,7 @@ gnc_exp_parser_shutdown (void)
     filename = gnc_exp_parser_filname();
     key_file = g_key_file_new();
     g_hash_table_foreach (variable_bindings, set_one_key, key_file);
-    g_key_file_set_comment(key_file, GEP_GROUP_NAME, NULL,
+    g_key_file_set_comment(key_file, GROUP_NAME, NULL,
                            " Variables are in the form 'name=value'",
                            NULL);
     gnc_key_file_save_to_file(filename, key_file, NULL);
@@ -155,6 +155,27 @@ gnc_exp_parser_shutdown (void)
     last_gncp_error = NO_ERR;
 
     parser_inited = FALSE;
+}
+
+static void
+prepend_name (gpointer key, gpointer value, gpointer data)
+{
+    GList **list = data;
+
+    *list = g_list_prepend (*list, key);
+}
+
+GList *
+gnc_exp_parser_get_variable_names (void)
+{
+    GList *names = NULL;
+
+    if (!parser_inited)
+        return NULL;
+
+    g_hash_table_foreach (variable_bindings, prepend_name, &names);
+
+    return names;
 }
 
 void
@@ -176,6 +197,40 @@ gnc_exp_parser_remove_variable (const char *variable_name)
         g_free(key);
         g_free(value);
     }
+}
+
+void
+gnc_exp_parser_remove_variable_names (GList * variable_names)
+{
+    if (!parser_inited)
+        return;
+
+    while (variable_names != NULL)
+    {
+        gnc_exp_parser_remove_variable (variable_names->data);
+        variable_names = variable_names->next;
+    }
+}
+
+gboolean
+gnc_exp_parser_get_value (const char * variable_name, gnc_numeric *value_p)
+{
+    ParserNum *pnum;
+
+    if (!parser_inited)
+        return FALSE;
+
+    if (variable_name == NULL)
+        return FALSE;
+
+    pnum = g_hash_table_lookup (variable_bindings, variable_name);
+    if (pnum == NULL)
+        return FALSE;
+
+    if (value_p != NULL)
+        *value_p = pnum->value;
+
+    return TRUE;
 }
 
 void
@@ -311,11 +366,11 @@ func_op(const char *fname, int argc, void **argv)
         {
         case VST_NUMERIC:
             n = *(gnc_numeric*)(vs->value);
-            scmTmp = scm_from_double ( gnc_numeric_to_double( n ) );
+            scmTmp = scm_make_real( gnc_numeric_to_double( n ) );
             break;
         case VST_STRING:
             str = (char*)(vs->value);
-            scmTmp = scm_from_utf8_string( str );
+            scmTmp = scm_mem2string( str, strlen(str) );
             break;
         default:
             /* FIXME: error */
@@ -337,17 +392,9 @@ func_op(const char *fname, int argc, void **argv)
     }
 
     result = g_new0( gnc_numeric, 1 );
-    *result = double_to_gnc_numeric( scm_to_double(scmTmp),
+    *result = double_to_gnc_numeric( scm_num2dbl(scmTmp, G_STRFUNC),
                                      GNC_DENOM_AUTO,
-                                     GNC_HOW_DENOM_SIGFIGS(12) | GNC_HOW_RND_ROUND_HALF_UP );
-    if (gnc_numeric_check (*result) != GNC_ERROR_OK)
-    {
-	PERR("Attempt to convert %f to GncNumeric Failed: %s",
-	     scm_to_double(scmTmp),
-	     gnc_numeric_errorCode_to_string (gnc_numeric_check (*result)));
-	g_free (result);
-	return NULL;
-    }
+                                     GNC_HOW_DENOM_SIGFIGS(6) | GNC_HOW_RND_ROUND_HALF_UP );
     /* FIXME: cleanup scmArgs = scm_list, cons'ed cells? */
     return (void*)result;
 }

@@ -94,7 +94,7 @@ gnc_budget_init(GncBudget* budget)
     priv->description = CACHE_INSERT("");
 
     priv->num_periods = 12;
-    gnc_gdate_set_today (&date);
+    g_date_set_time_t(&date, time(NULL));
     g_date_subtract_days(&date, g_date_get_day(&date) - 1);
     recurrenceSet(&priv->recurrence, 1, PERIOD_MONTH, &date, WEEKEND_ADJ_NONE);
 }
@@ -507,14 +507,6 @@ gnc_budget_set_account_period_value(GncBudget *budget, const Account *account,
     gchar path[BUF_SIZE];
     gchar *bufend;
 
-    /* Watch out for an off-by-one error here:
-     * period_num starts from 0 while num_periods starts from 1 */
-    if (period_num >= GET_PRIVATE(budget)->num_periods)
-    {
-        PWARN("Period %i does not exist", period_num);
-        return;
-    }
-
     gnc_budget_begin_edit(budget);
     frame = qof_instance_get_slots(QOF_INSTANCE(budget));
     guid = xaccAccountGetGUID(account);
@@ -534,6 +526,34 @@ gnc_budget_set_account_period_value(GncBudget *budget, const Account *account,
 
 /* We don't need these here, but maybe they're useful somewhere else?
    Maybe this should move to Account.h */
+#if 0
+static gpointer
+is_same_commodity(Account *a, gpointer data)
+{
+    gnc_commodity *acct_comm;
+    gnc_commodity *comm;
+
+    g_return_val_if_fail(data, NULL);
+    // What? No type-checking macro?
+    comm = (gnc_commodity *) data;
+    acct_comm = xaccAccountGetCommodity(a);
+
+    return gnc_commodity_equal(comm, acct_comm) ? NULL : data;
+}
+
+static gboolean
+xaccAccountChildrenHaveSameCommodity(Account *account)
+{
+    gpointer different;
+    gnc_commodity *comm;
+
+    comm = xaccAccountGetCommodity(account);
+    different =
+        gnc_account_foreach_descendant_until(account, is_same_commodity, comm);
+    return (different == NULL);
+}
+#endif
+
 
 gboolean
 gnc_budget_is_account_period_value_set(const GncBudget *budget, const Account *account,
@@ -578,20 +598,17 @@ gnc_budget_get_account_period_value(const GncBudget *budget, const Account *acco
 Timespec
 gnc_budget_get_period_start_date(const GncBudget *budget, guint period_num)
 {
-    Timespec ts = {0, 0};
-    g_return_val_if_fail (GNC_IS_BUDGET(budget), ts);
-    timespecFromTime64(
-        &ts, recurrenceGetPeriodTime(&GET_PRIVATE(budget)->recurrence,
-                                     period_num, FALSE));
+    Timespec ts;
+    timespecFromTime_t(
+        &ts,  recurrenceGetPeriodTime(&GET_PRIVATE(budget)->recurrence, period_num, FALSE));
     return ts;
 }
 
 Timespec
 gnc_budget_get_period_end_date(const GncBudget *budget, guint period_num)
 {
-    Timespec ts = {0, 0};
-    g_return_val_if_fail (GNC_IS_BUDGET(budget), ts);
-    timespecFromTime64(
+    Timespec ts;
+    timespecFromTime_t(
         &ts,  recurrenceGetPeriodTime(&GET_PRIVATE(budget)->recurrence, period_num, TRUE));
     return ts;
 }
@@ -604,6 +621,13 @@ gnc_budget_get_account_period_actual_value(
     g_return_val_if_fail(GNC_IS_BUDGET(budget) && acc, gnc_numeric_zero());
     return recurrenceGetAccountPeriodValue(&GET_PRIVATE(budget)->recurrence,
                                            acc, period_num);
+}
+
+QofBook*
+gnc_budget_get_book(const GncBudget* budget)
+{
+    g_return_val_if_fail(GNC_IS_BUDGET(budget), NULL);
+    return qof_instance_get_book(&budget->inst);
 }
 
 GncBudget*

@@ -26,7 +26,7 @@
 /**
  * A GncHtml object is an abstract base for an html engine used to display reports and
  * charts in gnucash.  It must be overridden to create specific objects using specific
- * html engines (e.g. webkit).
+ * html engines (e.g. gtkhtml, webkit).
  */
 
 #include <glib-object.h>
@@ -135,7 +135,7 @@ struct _GncHtmlClass
     void (*reload)( GncHtml* html );
     void (*copy_to_clipboard)( GncHtml* html );
     gboolean (*export_to_file)( GncHtml* html, const gchar* file );
-    void (*print)( GncHtml* html, const gchar* jobname, gboolean export_pdf );
+    void (*print)( GncHtml* html, const gchar* jobname );
     void (*cancel)( GncHtml* html );
     URLType (*parse_url)( GncHtml* html, const gchar* url,
                           gchar** url_location, gchar** url_label );
@@ -199,11 +199,8 @@ gboolean gnc_html_export_to_file( GncHtml* html, const gchar* filename );
  * Prints the report.
  *
  * @param html GncHtml object
- * \param jobname A jobname for identifying this job, or to be used as an output file
- * \param export_pdf If TRUE, only run a "print to PDF" operation in order to
- *        export this to pdf. If FALSE, run a normal printing dialog.
  */
-void gnc_html_print( GncHtml* html, const gchar* jobname, gboolean export_pdf );
+void gnc_html_print( GncHtml* html, const gchar* jobname );
 
 /**
  * Cancels the current operation

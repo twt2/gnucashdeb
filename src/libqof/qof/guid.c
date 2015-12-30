@@ -29,7 +29,6 @@
 # include <sys/types.h>
 #endif
 #include <ctype.h>
-#include <stdint.h>
 #ifdef HAVE_DIRENT_H
 # include <dirent.h>
 #endif
@@ -55,14 +54,7 @@
 /* Constants *******************************************************/
 #define DEBUG_GUID 0
 #define BLOCKSIZE 4096
-#ifdef G_PLATFORM_WIN32
-/* Win32 has a smaller pool of random bits, but the displayed warning confuses
- * really a lot of people. Hence, I think we'd better switch off this warning
- * for this particular known case. */
-# define THRESHOLD 1500
-#else
-# define THRESHOLD (2 * BLOCKSIZE)
-#endif
+#define THRESHOLD (2 * BLOCKSIZE)
 
 
 /* Static global variables *****************************************/
@@ -79,7 +71,7 @@ static QofLogModule log_module = QOF_MOD_ENGINE;
  *
  * @return the value stored in @a value
  */
-const GncGUID*
+G_CONST_RETURN GncGUID*
 gnc_value_get_guid (const GValue *value)
 {
     GncGUID *val;
@@ -248,8 +240,7 @@ init_from_file(const char *filename, size_t max_size)
     file_bytes = init_from_stream(fp, max_size);
 
 #ifdef HAVE_SCANF_LLD
-    PINFO ("guid_init got %" G_GUINT64_FORMAT " bytes from %s",
-	   (guint64) file_bytes,
+    PINFO ("guid_init got %llu bytes from %s", (unsigned long long int) file_bytes,
            filename);
 #else
     PINFO ("guid_init got %lu bytes from %s", (unsigned long int) file_bytes,
@@ -324,7 +315,7 @@ static size_t
 init_from_time(void)
 {
     size_t total;
-    time64 time;
+    time_t t_time;
 #ifdef HAVE_SYS_TIMES_H
     clock_t clocks;
     struct tms tms_buf;
@@ -334,9 +325,9 @@ init_from_time(void)
 
     total = 0;
 
-    time = gnc_time (NULL);
-    md5_process_bytes(&time, sizeof(time), &guid_context);
-    total += sizeof(time);
+    t_time = time(NULL);
+    md5_process_bytes(&t_time, sizeof(t_time), &guid_context);
+    total += sizeof(t_time);
 
 #ifdef HAVE_SYS_TIMES_H
     clocks = times(&tms_buf);
@@ -501,7 +492,7 @@ guid_init(void)
     {
         int n, i;
 
-        srand((unsigned int) gnc_time (NULL));
+        srand((unsigned int) time(NULL));
 
         for (i = 0; i < 32; i++)
         {
@@ -515,15 +506,42 @@ guid_init(void)
     /* time in secs and clock ticks */
     bytes += init_from_time();
 
-    PINFO ("got %" G_GUINT64_FORMAT " bytes", (guint64) bytes);
+#ifdef HAVE_SCANF_LLD
+    PINFO ("got %llu bytes", (unsigned long long int) bytes);
 
     if (bytes < THRESHOLD)
-        PWARN("only got %" G_GUINT64_FORMAT " bytes.\n"
+        PWARN("only got %llu bytes.\n"
               "The identifiers might not be very random.\n",
-              (guint64)bytes);
+              (unsigned long long int)bytes);
+#else
+    PINFO ("got %lu bytes", (unsigned long int) bytes);
+
+    if (bytes < THRESHOLD)
+        PWARN("only got %lu bytes.\n"
+              "The identifiers might not be very random.\n",
+              (unsigned long int)bytes);
+#endif
 
     guid_initialized = TRUE;
     LEAVE();
+}
+
+void
+guid_init_with_salt(const void *salt, size_t salt_len)
+{
+    guid_init();
+
+    md5_process_bytes(salt, salt_len, &guid_context);
+}
+
+void
+guid_init_only_salt(const void *salt, size_t salt_len)
+{
+    md5_init_ctx(&guid_context);
+
+    md5_process_bytes(salt, salt_len, &guid_context);
+
+    guid_initialized = TRUE;
 }
 
 void
@@ -656,7 +674,6 @@ const char *
 guid_to_string(const GncGUID * guid)
 {
 #ifdef G_THREADS_ENABLED
-#ifndef HAVE_GLIB_2_32
     static GStaticPrivate guid_buffer_key = G_STATIC_PRIVATE_INIT;
     gchar *string;
 
@@ -666,17 +683,6 @@ guid_to_string(const GncGUID * guid)
         string = malloc(GUID_ENCODING_LENGTH + 1);
         g_static_private_set (&guid_buffer_key, string, g_free);
     }
-#else
-    static GPrivate guid_buffer_key = G_PRIVATE_INIT(g_free);
-    gchar *string;
-
-    string = g_private_get (&guid_buffer_key);
-    if (string == NULL)
-    {
-        string = malloc(GUID_ENCODING_LENGTH + 1);
-        g_private_set (&guid_buffer_key, string);
-    }
-#endif
 #else
     static char string[64];
 #endif

@@ -9,8 +9,7 @@ GNC_TEST_DEPS = \
   --library-dir    ${top_builddir}/src/gnc-module
 
 TESTS_ENVIRONMENT = \
-  GUILE="${GUILE}" \
-  $(shell ${abs_top_srcdir}/src/gnc-test-env.pl --noexports ${GNC_TEST_DEPS})
+  $(shell ${top_srcdir}/src/gnc-test-env --no-exports ${GNC_TEST_DEPS})
 
 check_PROGRAMS=test-link-module
 test_link_module_SOURCES=test-link-module.c

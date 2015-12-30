@@ -31,13 +31,6 @@
 
 #define ACTION_BUY_STR  _("Buy")
 #define ACTION_SELL_STR _("Sell")
-
-typedef enum {
-    RATE_RESET_NOT_REQD = 0,
-    RATE_RESET_REQD     = 1,
-    RATE_RESET_DONE     = 2
-} RateReset_t;
-
 struct sr_info
 {
     /* The blank split at the bottom of the register */
@@ -82,7 +75,7 @@ struct sr_info
     GncGUID default_account;
 
     /* The last date recorded in the blank split */
-    time64 last_date_entered;
+    time_t last_date_entered;
 
     /* true if the current blank split has been edited and commited */
     gboolean blank_split_edited;
@@ -98,14 +91,8 @@ struct sr_info
      * split */
     gboolean change_confirmed;
 
-    /* RATE_RESET_NOT_REQD => No exchange rate dialog needed for current split
-     * RATE_RESET_REQD => Need new exchange rate for current split
-     * RATE_RESET_DONE => Already got a new exchange rate for current split
-     */
-    RateReset_t rate_reset;
-    
-    /* true if the transaction being edited was auto-filled */
-    gboolean auto_complete;
+    /* true if the exchange rate has been reset on the current split */
+    gboolean rate_reset;
 
     /* account on the current split when the exchange rate was last set */
     Account *rate_account;
@@ -115,6 +102,9 @@ struct sr_info
 
     /* hook to get parent widget */
     SRGetParentCallback get_parent;
+
+    /* flag indicating a template register */
+    gboolean template;
 
     /* The template account which template transaction should belong to */
     GncGUID template_account;

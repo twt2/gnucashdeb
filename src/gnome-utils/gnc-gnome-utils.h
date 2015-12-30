@@ -35,13 +35,67 @@
 #ifndef GNC_GNOME_UTILS_H
 #define GNC_GNOME_UTILS_H
 
+#include <libgnome/libgnome.h>
 #include <gnc-main-window.h>
-#include "dialog-options.h"
 
-/** Load a gtk resource configuration file to customize gtk
- *  appearance and behviour.
+/** Initialize the Gnome libraries. */
+void gnc_gnome_init (int argc, char **argv, const char * version);
+
+/** Given a pixmap/pixbuf file name, find the file in the pixmap
+ *  directory associated with this application.  This routine will
+ *  display an error message if it can't find the file.
+ *
+ *  @param name The name of the file to be found.
+ *
+ *  @return the full path name of the file, or NULL of the file can't
+ *  be found.
+ *
+ *  @note It is the caller's responsibility to free the returned string.
  */
-void gnc_gtk_add_rc_file (void);
+char *gnc_gnome_locate_pixmap (const char *name);
+
+
+/** Given a file name, find the file in the directories associated
+ *  with this application.  This routine will display an error message
+ *  if it can't find the file.
+ *
+ *  @param name The name of the file to be found.
+ *
+ *  @return the full path name of the file, or NULL of the file can't
+ *  be found.
+ *
+ *  @note It is the caller's responsibility to free the returned string.
+ */
+char *gnc_gnome_locate_data_file (const char *name);
+
+
+/** Given a file name, find the file in the directories associated
+ *  with this application.  This routine will display an error message
+ *  if it can't find the file.
+ *
+ *  @param name The name of the file to be found.
+ *
+ *  @return the full path name of the file, or NULL of the file can't
+ *  be found.
+ *
+ *  @note It is the caller's responsibility to free the returned string.
+ */
+char *gnc_gnome_locate_ui_file (const char *name);
+
+/** Given a file name, find the file in the directories associated
+ *  with the given file domain.  This routine will display an error
+ *  message if it can't find the file.
+ *
+ *  @param domain The GnomeFileDomain, e.g. GNOME_FILE_DOMAIN_APP_HELP
+ *
+ *  @param name The name of the file to be found.
+ *
+ *  @return the full path name of the file, or NULL of the file can't
+ *  be found.
+ *
+ *  @note It is the caller's responsibility to free the returned string.
+ */
+char *gnc_gnome_locate_file (GnomeFileDomain domain, const char *name);
 
 /** Launch the default gnome help browser and open to a given link
  *  within a given file.  This routine will display an error message
@@ -56,19 +110,7 @@ void gnc_gtk_add_rc_file (void);
  */
 void gnc_gnome_help (const char *file_name,
                      const char *anchor);
-/** Launch the default gnome browser and open the provided URI.
- */
-void gnc_launch_assoc (const char *uri);
 
-/** Set the help callback to 'gnc_book_options_help_cb' to open a help browser
- *  and point it to the Book Options link in the Help file.
- */
-void gnc_options_dialog_set_book_options_help_cb (GNCOptionWin *win);
- 
-/** Set the intial values of new book options to values specified in user
- *  preferences.
- */
-void gnc_options_dialog_set_new_book_option_values (GNCOptionDB *odb);
 
 /** Given a file name, find and load the requested pixmap.  This
  *  routine will display an error message if it can't find the file or
@@ -101,8 +143,6 @@ GdkPixbuf * gnc_gnome_get_gdkpixbuf (const char *name);
  */
 void gnc_shutdown (int exit_status);
 
-
-/** Initialize the gnucash gui */
 GncMainWindow *gnc_gui_init (void);
 int gnc_ui_start_event_loop (void);
 gboolean gnucash_ui_is_running (void);

@@ -26,13 +26,13 @@
  * FUNCTION:
  * Lots implement the fundamental conceptual idea behind invoices,
  * inventory lots, and stock market investment lots.  See the file
- * src/doc/lots.txt for implementation overview.
+ * src/doc/lots.txt for implmentation overview.
  *
  * XXX Lots are not currently treated in a correct transactional
  * manner.  There's now a per-Lot dirty flag in the QofInstance, but
  * this code still needs to emit the correct signals when a lot has
  * changed.  This is true both in the Scrub2.c and in
- * src/gnome/dialog-lot-viewer.c
+ * src/gnome/lot-viewer.c
  *
  * HISTORY:
  * Created by Linas Vepstas May 2002
@@ -231,8 +231,6 @@ gnc_lot_free(GNCLot* lot)
     priv->is_closed = TRUE;
     /* qof_instance_release (&lot->inst); */
     g_object_unref (lot);
-
-    LEAVE();
 }
 
 void
@@ -321,6 +319,26 @@ gnc_lot_set_account(GNCLot* lot, Account* account)
         LotPrivate* priv;
         priv = GET_PRIVATE(lot);
         priv->account = account;
+    }
+}
+
+unsigned char
+gnc_lot_get_marker(const GNCLot* lot)
+{
+    LotPrivate* priv;
+    if (lot == NULL) return 0;
+    priv = GET_PRIVATE(lot);
+    return priv->marker;
+}
+
+void
+gnc_lot_set_marker(GNCLot* lot, unsigned char m)
+{
+    LotPrivate* priv;
+    if (lot != NULL)
+    {
+        priv = GET_PRIVATE(lot);
+        priv->marker = m;
     }
 }
 
@@ -561,7 +579,6 @@ gnc_lot_remove_split (GNCLot *lot, Split *split)
     }
     gnc_lot_commit_edit(lot);
     qof_event_gen (QOF_INSTANCE(lot), QOF_EVENT_MODIFY, NULL);
-    LEAVE("removed from lot");
 }
 
 /* ============================================================== */
@@ -578,7 +595,6 @@ gnc_lot_get_earliest_split (GNCLot *lot)
     return priv->splits->data;
 }
 
-/* Utility function, get latest split in lot */
 Split *
 gnc_lot_get_latest_split (GNCLot *lot)
 {

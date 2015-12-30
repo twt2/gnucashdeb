@@ -8,8 +8,9 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/gnome-utils \
   -I${top_srcdir}/src/gnc-module \
   -I${top_srcdir}/src/libqof/qof \
-  ${GUILE_CFLAGS} \
-  ${GTK_CFLAGS} \
+  ${GUILE_INCS} \
+  ${GLADE_CFLAGS} \
+  ${GNOME_CFLAGS} \
   ${GLIB_CFLAGS}
 
 libgncmod_gnome_search_la_SOURCES = \
@@ -53,14 +54,16 @@ libgncmod_gnome_search_la_LIBADD = \
   ${top_builddir}/src/core-utils/libgnc-core-utils.la \
   ${top_builddir}/src/libqof/qof/libgnc-qof.la \
   ${GUILE_LIBS} \
+  ${GNOME_LIBS} \
+  ${GLADE_LIBS} \
   ${GLIB_LIBS} \
   ${REGEX_LIBS}
 
-gtkbuilderdir = $(GNC_GTKBUILDER_DIR)
-gtkbuilder_DATA = \
-  dialog-search.glade
+gladedir = $(GNC_GLADE_DIR)
+glade_DATA = \
+  search.glade
 
 EXTRA_DIST = \
-  ${gtkbuilder_DATA}
+  ${glade_DATA}
 
-AM_CPPFLAGS += -DG_LOG_DOMAIN=\"gnc.gui.search\"
+INCLUDES = -DG_LOG_DOMAIN=\"gnc.gui.search\"

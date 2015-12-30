@@ -14,7 +14,7 @@
       <placeholder name="ActionsPlaceholder">
 	<separator name="ActionsSep1"/>
         <menuitem name="FileNewAccount" action="FileNewAccountAction"/>
-        <menuitem name="FileAddAccountHierarchyAssistant" action="FileAddAccountHierarchyAssistantAction"/>
+        <menuitem name="FileAddAccountHierarchyDruid" action="FileAddAccountHierarchyDruidAction"/>
         <separator name="ActionsSep2"/>
 	<menuitem name="ActionsTransfer" action="ActionsTransferAction"/>
 	<menuitem name="ActionsReconcile" action="ActionsReconcileAction"/>
@@ -26,14 +26,6 @@
 	  <menuitem name="Scrub" action="ScrubAction"/>
 	  <menuitem name="ScrubSub" action="ScrubSubAction"/>
 	  <menuitem name="ScrubAll" action="ScrubAllAction"/>
-	</menu>
-      </placeholder>
-    </menu>
-    <menu name="Extensions" action="ExtensionsAction">
-      <placeholder name="ExtensionsPlaceholder">
-	<menu name="Register2Test" action="Register2TestAction">
-	  <menuitem name="Register2TestAccount" action="Register2TestAccountAction"/>
-	  <menuitem name="Register2TestSubAccount" action="Register2TestSubAccountAction"/>
 	</menu>
       </placeholder>
     </menu>

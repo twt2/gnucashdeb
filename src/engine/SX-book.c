@@ -118,7 +118,6 @@ sxtg_book_begin (QofBook *book)
     xaccAccountBeginEdit(root);
     xaccAccountSetType(root, ACCT_TYPE_ROOT);
     xaccAccountSetName(root, "Template Root");
-    qof_instance_set_dirty (QOF_INSTANCE (root));
     xaccAccountCommitEdit(root);
     gnc_book_set_template_root (book, root);
 }
@@ -303,7 +302,7 @@ book_sxlist_notsaved(const QofCollection *col)
 
     sxl = gnc_collection_get_schedxactions(col);
     if (!sxl) return FALSE;
-    if (sxl->sx_notsaved) return TRUE;
+    if ((sxl && sxl->sx_notsaved)) return TRUE;
 
     for (sxlist = sxl->sx_list;
             sxlist != NULL;

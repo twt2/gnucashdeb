@@ -245,6 +245,19 @@ const char *gnc_quote_source_get_user_name (const gnc_quote_source *source);
 /*@ dependent @*/
 const char *gnc_quote_source_get_internal_name (const gnc_quote_source *source);
 
+/** Given a gnc_quote_source data structure, return the internal name
+ *  of this quote source.  This is the name used by both gnucash and
+ *  by Finance::Quote.  E.G. "yahoo_australia" or "australia"
+ *
+ *  @note This routine should only be used for backward compatability
+ *  with the existing XML files.  The rest of the code should use the
+ *  gnc_quote_source_lookup_by_internal() routine.
+ *
+ *  @param source The quote source in question.
+ *
+ *  @return The internal name.
+ */
+const char *gnc_quote_source_get_old_internal_name (const gnc_quote_source *source);
 /** @} */
 
 
@@ -458,42 +471,9 @@ gnc_quote_source* gnc_commodity_get_default_quote_source(const gnc_commodity *cm
  *  caller.
  */
 const char* gnc_commodity_get_quote_tz(const gnc_commodity *cm);
-
-/** Retrieve the user-defined symbol for the specified commodity. This
- *  will be a pointer to a nul terminated string like "£", "US$", etc.
- *
- *  @param cm A pointer to a commodity data structure.
- *
- *  @return A pointer to the user-defined symbol for this commodity.
- *  NULL means that the user didn't define any symbol, and that fallback to
- *  e.g. the mnemonic is in order. This string is owned by the engine and
- *  should not be freed by the caller.
- */
-const char* gnc_commodity_get_user_symbol(const gnc_commodity *cm);
-
-/** Retrieve the default symbol for the specified commodity. This will
- *  be a pointer to a nul terminated string like "£", "US$", etc. Note
- *  that for the locale currency, you probably want to look at the
- *  system-provided symbol first. See gnc_commodity_get_nice_symbol.
- *
- * @param cm A pointer to a commodity data structure.
- *
- * @return A pointer to the default symbol for this commodity.
- */
-const char* gnc_commodity_get_default_symbol(const gnc_commodity *cm);
-
-/** Retrieve a symbol for the specified commodity, suitable for
- *  display to the user. This will be a pointer to a nul terminated
- *  string like "£", "US$", etc. That function is locale-aware and
- *  will base its choice of symbol on the user-configured symbol,
- *  the locale a
- *
- * @param cm A pointer to a commodity data structure.
- *
- * @return A pointer to the symbol for this commodity.
- */
-const char*gnc_commodity_get_nice_symbol(const gnc_commodity *cm);
 /** @} */
+
+
 
 /** @name Commodity Accessor Routines - Set
 @{
@@ -614,17 +594,8 @@ void  gnc_commodity_set_quote_source(gnc_commodity *cm, gnc_quote_source *src);
  *  engine.
  */
 void  gnc_commodity_set_quote_tz(gnc_commodity *cm, const char *tz);
-
-/** Set a user-defined symbol for the specified commodity. This should
- *  be a pointer to a nul terminated string like "£", "US$", etc.
- *
- *  @param cm A pointer to a commodity data structure.
- *
- *  @param tz A pointer to the symbol for this commodity. This string
- *  belongs to the caller and will be duplicated by the engine.
- */
-void  gnc_commodity_set_user_symbol(gnc_commodity *cm, const char *user_symbol);
 /** @} */
+
 
 /** @name Commodity Usage Count Adjustment Routines
 @{
@@ -725,6 +696,14 @@ gboolean gnc_commodity_is_currency(const gnc_commodity *cm);
 /*@ dependent @*/
 gnc_commodity_table * gnc_commodity_table_get_table(QofBook *book);
 
+/** compare two tables for equality */
+gboolean gnc_commodity_table_equal(gnc_commodity_table *t_1,
+                                   gnc_commodity_table *t_2);
+
+/** copy all commodities from src table to dest table */
+void gnc_commodity_table_copy(gnc_commodity_table *dest,
+                              gnc_commodity_table *src,
+                              QofBook *dest_book);
 /** @} */
 /* ---------------------------------------------------------- */
 /** @name Commodity Table Lookup functions
@@ -741,8 +720,8 @@ gnc_commodity * gnc_commodity_table_find_full(const gnc_commodity_table * t,
         const char * fullname);
 
 /*@ dependent @*/
-gnc_commodity * gnc_commodity_find_commodity_by_guid(const GncGUID *guid,
-        QofBook *book);
+gnc_commodity * gnc_commodity_find_commodity_by_guid(const GncGUID *guid, QofBook *book);
+gnc_commodity_namespace * gnc_commodity_find_namespace_by_guid(const GncGUID *guid, QofBook *book);
 
 /** @} */
 /* ---------------------------------------------------------- */
@@ -811,6 +790,13 @@ const char * gnc_commodity_namespace_get_name (const gnc_commodity_namespace *ns
  *  @note This list is owned by the engine.  The caller must not free the list. */
 GList * gnc_commodity_namespace_get_commodity_list(const gnc_commodity_namespace * ns);
 
+
+/** Return a count of the number of namespaces in the commodity table.
+ *  This count includes both system and user defined namespaces.
+ *
+ *  @return The number of namespaces.  Zero if an invalid argument was
+ *  supplied or there was an error. */
+guint gnc_commodity_table_get_number_of_namespaces(const gnc_commodity_table* tbl);
 
 /** Test to see if the indicated namespace exits in the commodity table.
  *
@@ -970,12 +956,6 @@ gboolean gnc_commodity_table_register (void);
 
 void gnc_commodity_begin_edit (gnc_commodity *cm);
 void gnc_commodity_commit_edit (gnc_commodity *cm);
-
-/** Get the internal KVP from of the currency.
- * You should rather use the individual accessors for individual properties
- */
-#define gnc_commodity_get_kvp_frame(cm) \
-	qof_instance_get_slots(QOF_INSTANCE(cm))
 
 /** @} */
 

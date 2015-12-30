@@ -26,5 +26,14 @@
 #ifndef _TEST_DBI_BUSINESS_STUFF_H_
 #define _TEST_DBI_BUSINESS_STUFF_H_
 
-void compare_business_books( QofBook* book_1, QofBook* book_2 );
+/**
+ * Test storing a session contents to a db, reloading into a new session, then comparing the
+ * two sessions.
+ *
+ * @param driver Driver name
+ * @param session_1 Session to test
+ * @param url Database URL
+ */
+void test_dbi_business_store_and_reload( const gchar* driver, QofSession* session_1, const gchar* url );
+
 #endif

@@ -57,7 +57,7 @@ run_test (void)
     gnc_numeric old_amt, new_amt, old_val, new_val;
     QofBook *book;
     Timespec ts;
-    time64 now;
+    time_t now;
 
     char *reason = "because I can";
 
@@ -91,7 +91,7 @@ run_test (void)
     old_amt = xaccSplitGetAmount(xaccTransGetSplit(transaction, 0));
     old_val = xaccSplitGetValue(xaccTransGetSplit(transaction, 1));
 
-    now = gnc_time (NULL);
+    now = time (NULL);
 
     xaccTransVoid(transaction, reason);
 

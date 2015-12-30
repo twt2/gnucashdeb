@@ -96,7 +96,7 @@ xaccScrubLot (GNCLot *lot)
     acc = gnc_lot_get_account (lot);
     pcy = gnc_account_get_policy(acc);
     xaccAccountBeginEdit(acc);
-    xaccScrubMergeLotSubSplits (lot, TRUE);
+    xaccScrubMergeLotSubSplits (lot);
 
     /* If the lot balance is zero, we don't need to rebalance */
     lot_baln = gnc_lot_get_balance (lot);
@@ -132,7 +132,7 @@ rethin:
         xaccLotFill (lot);
 
         /* Make sure there are no subsplits. */
-        splits_deleted = xaccScrubMergeLotSubSplits (lot, TRUE);
+        splits_deleted = xaccScrubMergeLotSubSplits (lot);
     }
 
     /* Now re-compute cap gains, and then double-check that.

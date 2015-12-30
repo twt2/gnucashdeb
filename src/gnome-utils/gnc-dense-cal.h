@@ -4,7 +4,7 @@
  *                                                                  *
  * This program is free software; you can redistribute it and/or    *
  * modify it under the terms of the GNU General Public License as   *
- * published by the Free Software Foundation, under version 2 and/or version 3 of    *
+ * published by the Free Software Foundation, under version 2 of    *
  * the License.                                                     *
  *                                                                  *
  * This program is distributed in the hope that it will be useful,  *
@@ -32,9 +32,9 @@
 G_BEGIN_DECLS
 
 #define GNC_TYPE_DENSE_CAL          (gnc_dense_cal_get_type ())
-#define GNC_DENSE_CAL(obj)          G_TYPE_CHECK_INSTANCE_CAST (obj, gnc_dense_cal_get_type (), GncDenseCal)
-#define GNC_DENSE_CAL_CLASS(klass)  G_TYPE_CHECK_CLASS_CAST (klass, gnc_dense_cal_get_type (), GncDenseCalClass)
-#define GNC_IS_DENSE_CAL(obj)       G_TYPE_CHECK_INSTANCE_TYPE (obj, gnc_dense_cal_get_type ())
+#define GNC_DENSE_CAL(obj)          GTK_CHECK_CAST (obj, gnc_dense_cal_get_type (), GncDenseCal)
+#define GNC_DENSE_CAL_CLASS(klass)  GTK_CHECK_CLASS_CAST (klass, gnc_dense_cal_get_type (), GncDenseCalClass)
+#define GNC_IS_DENSE_CAL(obj)       GTK_CHECK_TYPE (obj, gnc_dense_cal_get_type ())
 
 typedef struct _GncDenseCal        GncDenseCal;
 typedef struct _GncDenseCalClass   GncDenseCalClass;
@@ -58,7 +58,7 @@ struct _GncDenseCal
     GtkComboBox *view_options;
     GtkDrawingArea *cal_drawing_area;
 
-    cairo_surface_t *surface;
+    GdkPixmap *drawbuf;
 
     gboolean initialized;
 

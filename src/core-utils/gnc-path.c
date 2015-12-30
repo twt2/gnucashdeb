@@ -42,7 +42,7 @@ gchar *gnc_path_get_bindir()
 }
 
 /** Returns the libdir path, usually
- * "$prefix/lib".
+ * "$prefix/lib". Needed for gnome_program_init().
  *
  * @returns A newly allocated string. */
 gchar *gnc_path_get_libdir()
@@ -52,7 +52,7 @@ gchar *gnc_path_get_libdir()
 }
 
 /** Returns the datadir path, usually
- * "$prefix/share/gnucash". Needed for gnc_gnome_locate_*().
+ * "$prefix/share/gnucash". Needed for gnome_program_init().
  *
  * @returns A newly allocated string. */
 gchar *gnc_path_get_pkgdatadir()
@@ -64,21 +64,8 @@ gchar *gnc_path_get_pkgdatadir()
     return result;
 }
 
-/** Returns the docdir path, usually
- * "$prefix/share/doc/gnucash".
- *
- * @returns A newly allocated string. */
-gchar *gnc_path_get_pkgdocdir()
-{
-    gchar *docdir = gnc_gbr_find_data_dir (DATADIR);
-    gchar *result = g_build_filename (docdir, "doc", "gnucash", (char*)NULL);
-    g_free (docdir);
-    //printf("Returning pkgdocdir %s\n", result);
-    return result;
-}
-
 /** Returns the sysconfdir path, usually
- * "$prefix/etc/gnucash".
+ * "$prefix/etc/gnucash". Needed for gnome_program_init().
  *
  * @returns A newly allocated string. */
 gchar *gnc_path_get_pkgsysconfdir()
@@ -109,16 +96,16 @@ gchar *gnc_path_get_pkglibdir()
     return result;
 }
 
-/** Returns the gtkbuilder file path, usually
- * "$prefix/share/gnucash/gtkbuilder".
+/** Returns the glade file path, usually
+ * "$prefix/share/gnucash/glade".
  *
  * @returns A newly allocated string. */
-gchar *gnc_path_get_gtkbuilderdir()
+gchar *gnc_path_get_gladedir()
 {
     gchar *pkgdatadir = gnc_path_get_pkgdatadir ();
-    gchar *result = g_build_filename (pkgdatadir, "gtkbuilder", (char*)NULL);
+    gchar *result = g_build_filename (pkgdatadir, "glade", (char*)NULL);
     g_free (pkgdatadir);
-    //printf("Returning gtkbuilderdir %s\n", result);
+    //printf("Returning gladedir %s\n", result);
     return result;
 }
 
@@ -149,7 +136,7 @@ gchar *gnc_path_get_accountsdir()
 }
 
 /** Returns the file path to the report directory, usually
- * "$prefix/share/gnucash/scm/gnucash/report".
+ * "$prefix/share/gnucash/guile-modules/gnucash/report".
  *
  * @returns A newly allocated string. */
 gchar *gnc_path_get_reportdir()
@@ -158,24 +145,14 @@ gchar *gnc_path_get_reportdir()
     const gchar *builddir = g_getenv ("GNC_BUILDDIR");
     if (g_getenv ("GNC_UNINSTALLED") && builddir)
     {
-        result = g_build_filename (builddir, "src", "report", NULL);
+	result = g_build_filename (builddir, "src", "report", NULL);
     }
     else
     {
-        /* Careful: if the autoconf macro GNC_SCM_INSTALL_DIR gets changed
-         * in configure.ac, this path should probably change as well.
-         * Currently this code assumes GNC_SCM_INSTALL_DIR is set to
-         * pkgdatadir/scm
-         * We can't use the AC_MACRO GNC_SCM_INSTALL_DIR here directly
-         * because that's expanded at build time. On Windows and OS X
-         * the final path may get installed in a different location
-         * than assumed during build, invalidating the build path at
-         * runtime.
-         */
-        gchar *pkgdatadir = gnc_path_get_pkgdatadir ();
-        result = g_build_filename (pkgdatadir, "scm",
-                                   "gnucash", "report", (char*)NULL);
-        g_free (pkgdatadir);
+	gchar *pkgdatadir = gnc_path_get_pkgdatadir ();
+	result = g_build_filename (pkgdatadir, "guile-modules",
+                                      "gnucash", "report", (char*)NULL);
+	g_free (pkgdatadir);
     }
     //printf("Returning stdreportsdir %s\n", result);
     return result;
@@ -183,7 +160,7 @@ gchar *gnc_path_get_reportdir()
 
 /** Returns the file path to the standard
  * reports, usually
- * "$prefix/share/gnucash/scm/gnucash/report/standard-reports".
+ * "$prefix/share/gnucash/guile-modules/gnucash/report/standard-reports".
  *
  * @returns A newly allocated string. */
 gchar *gnc_path_get_stdreportsdir()
@@ -192,15 +169,42 @@ gchar *gnc_path_get_stdreportsdir()
     gchar *reportdir = gnc_path_get_reportdir ();
     if (g_getenv ("GNC_UNINSTALLED"))
     {
-        result = g_build_filename (reportdir, "standard-reports", "gnucash",
-                                   "report", "standard-reports", NULL);
+	result = g_build_filename (reportdir, "standard-reports", "gnucash",
+				   "report", "standard-reports", NULL);
     }
     else
     {
-        result = g_build_filename (reportdir, "standard-reports", NULL);
+	result = g_build_filename (reportdir, "standard-reports", NULL);
     }
     g_free (reportdir);
     //printf("Returning stdreportsdir %s\n", result);
+    return result;
+}
+
+/** Returns the gconf schema config source path, usually
+ * "$prefix/etc/gconf/gconf.xml.defaults".
+ *
+ * @returns A newly allocated string. */
+gchar *gnc_path_get_gconfdir(gboolean force_slashes)
+{
+    gchar *sysconfdir = gnc_gbr_find_etc_dir (SYSCONFDIR);
+    gchar *separator = G_DIR_SEPARATOR_S;
+    gchar *result;
+
+    if (force_slashes)
+    {
+        gchar **splitted;
+        splitted = g_strsplit (sysconfdir, "\\", -1);
+        g_free (sysconfdir);
+        sysconfdir = g_strjoinv ("/", splitted);
+        g_strfreev (splitted);
+        separator = "/";
+    }
+
+    result = g_build_path (separator, sysconfdir, "gconf", "gconf.xml.defaults",
+                           (gchar*)NULL);
+    g_free (sysconfdir);
+    //printf("Returning gconfdir %s\n", result);
     return result;
 }
 

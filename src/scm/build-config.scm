@@ -1,6 +1,6 @@
 
-(define gnc:version "2.6.9")
+(define gnc:version "2.4.10")
 
 ;; Automatically generated defaults (don't use these directly --
 ;; they're used during actual initialization elsewhere)
-(define gnc:_install-doc-path_ '("/opt/share"))
+(define gnc:_install-doc-path_ '("/usr/local/share"))

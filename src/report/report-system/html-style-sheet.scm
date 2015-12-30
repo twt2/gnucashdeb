@@ -21,7 +21,6 @@
 ;; Boston, MA  02110-1301,  USA       gnu@gnu.org
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-modules (gnucash gettext))
 
 (define *gnc:_style-sheet-templates_* (make-hash-table 23))
 (define *gnc:_style-sheets_* (make-hash-table 23))

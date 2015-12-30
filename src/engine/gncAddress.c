@@ -32,7 +32,6 @@
 #include "gncAddress.h"
 #include "gncAddressP.h"
 #include "gncCustomerP.h"
-#include "gnc-features.h"
 
 struct _gncAddress
 {
@@ -358,6 +357,31 @@ qofAddressGetOwner(const GncAddress *addr)
     return addr->parent;
 }
 
+GncAddress *
+gncCloneAddress (const GncAddress *from, QofInstance *new_parent, QofBook *book)
+{
+    GncAddress *addr;
+
+    if (!book) return NULL;
+
+    addr = g_object_new (GNC_TYPE_ADDRESS, NULL);
+    qof_instance_init_data(&addr->inst, GNC_ID_ADDRESS, book);
+    addr->book = book;
+    addr->dirty = TRUE;
+    addr->parent = new_parent;
+
+    addr->name = CACHE_INSERT (from->name);
+    addr->addr1 = CACHE_INSERT (from->addr1);
+    addr->addr2 = CACHE_INSERT (from->addr2);
+    addr->addr3 = CACHE_INSERT (from->addr3);
+    addr->addr4 = CACHE_INSERT (from->addr4);
+    addr->phone = CACHE_INSERT (from->phone);
+    addr->fax = CACHE_INSERT (from->fax);
+    addr->email = CACHE_INSERT (from->email);
+
+    return addr;
+}
+
 void
 gncAddressDestroy (GncAddress *addr)
 {
@@ -393,7 +417,7 @@ gncAddressFree (GncAddress *addr)
 	char * tmp; \
 	\
 	if (member == str) return; \
-	if (!g_strcmp0 (member, str)) return; \
+	if (!safe_strcmp (member, str)) return; \
 	gncAddressBeginEdit (obj); \
 	tmp = CACHE_INSERT (str); \
 	CACHE_REMOVE (member); \
@@ -493,10 +517,6 @@ static void address_free (QofInstance *inst)
 
 void gncAddressCommitEdit (GncAddress *addr)
 {
-    /* GnuCash 2.6.3 and earlier didn't handle address kvp's... */
-    if (!kvp_frame_is_empty (addr->inst.kvp_data))
-        gnc_features_set_used (qof_instance_get_book (QOF_INSTANCE (addr)), GNC_FEATURE_KVP_EXTRA_DATA);
-
     if (!qof_commit_edit (QOF_INSTANCE(addr))) return;
     qof_commit_edit_part2 (&addr->inst, gncAddressOnError,
                            gncAddressOnDone, address_free);
@@ -571,7 +591,7 @@ int gncAddressCompare (const GncAddress *a, const GncAddress *b)
     if (!a && b) return 1;
     if (a && !b) return -1;
 
-    return g_strcmp0 (a->name, b->name);
+    return safe_strcmp (a->name, b->name);
 }
 
 gboolean
@@ -583,42 +603,42 @@ gncAddressEqual(const GncAddress* a, const GncAddress* b)
     g_return_val_if_fail(GNC_IS_ADDRESS(a), FALSE);
     g_return_val_if_fail(GNC_IS_ADDRESS(b), FALSE);
 
-    if (g_strcmp0(a->name, b->name) != 0)
+    if (safe_strcmp(a->name, b->name) != 0)
     {
         PWARN("names differ: %s vs %s", a->name, b->name);
         return FALSE;
     }
-    if (g_strcmp0(a->addr1, b->addr1) != 0)
+    if (safe_strcmp(a->addr1, b->addr1) != 0)
     {
         PWARN("address lines 1 differ: %s vs %s", a->addr1, b->addr1);
         return FALSE;
     }
-    if (g_strcmp0(a->addr2, b->addr2) != 0)
+    if (safe_strcmp(a->addr2, b->addr2) != 0)
     {
         PWARN("address lines 2 differ: %s vs %s", a->addr2, b->addr1);
         return FALSE;
     }
-    if (g_strcmp0(a->addr3, b->addr3) != 0)
+    if (safe_strcmp(a->addr3, b->addr3) != 0)
     {
         PWARN("address lines 3 differ: %s vs %s", a->addr3, b->addr3);
         return FALSE;
     }
-    if (g_strcmp0(a->addr4, b->addr4) != 0)
+    if (safe_strcmp(a->addr4, b->addr4) != 0)
     {
         PWARN("address lines 4 differ: %s vs %s", a->addr4, b->addr4);
         return FALSE;
     }
-    if (g_strcmp0(a->phone, b->phone) != 0)
+    if (safe_strcmp(a->phone, b->phone) != 0)
     {
         PWARN("phone numbers differ: %s vs %s", a->phone, b->phone);
         return FALSE;
     }
-    if (g_strcmp0(a->fax, b->fax) != 0)
+    if (safe_strcmp(a->fax, b->fax) != 0)
     {
         PWARN("fax numbers differ: %s vs %s", a->fax, b->fax);
         return FALSE;
     }
-    if (g_strcmp0(a->email, b->email) != 0)
+    if (safe_strcmp(a->email, b->email) != 0)
     {
         PWARN("email addresses differ: %s vs %s", a->email, b->email);
         return FALSE;

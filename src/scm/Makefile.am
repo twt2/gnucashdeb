@@ -2,13 +2,16 @@
 SUBDIRS = gnumeric
 
 gncscmdir = ${GNC_SCM_INSTALL_DIR}
-gncscmmoddir = ${GNC_SCM_INSTALL_DIR}/gnucash
+gncscmmoddir = ${GNC_SHAREDIR}/guile-modules/gnucash
 
 gncscmmod_DATA = main.scm price-quotes.scm printf.scm
 
 gnc_regular_scm_files = \
   string.scm \
+  command-line.scm \
+  doc.scm \
   fin.scm \
+  main-window.scm \
   substring-search.scm \
   xml-generator.scm
 
@@ -41,27 +44,6 @@ if ! OS_WIN32
 	touch .scm-links
 endif
 
-if GNC_HAVE_GUILE_2
-GUILE_COMPILE_ENV = \
-  --guile-load-dir ${top_builddir}/src/core-utils \
-  --guile-load-dir ${top_builddir}/src/gnc-module \
-  --guile-load-dir ${top_builddir}/src/scm \
-  --library-dir    ${top_builddir}/src/core-utils \
-  --library-dir    ${top_builddir}/src/gnc-module \
-  --library-dir    ${top_builddir}/src/libqof/qof
-
-
-%.go : %.scm .scm-links
-	$(shell ${abs_top_srcdir}/src/gnc-test-env.pl --noexports ${GUILE_COMPILE_ENV}) \
-	$(GUILD) compile -o $@ $<
-
-gncscmmodcachedir = ${pkglibdir}/scm/ccache/@GUILE_EFFECTIVE_VERSION@/gnucash
-gncscmmodcache_DATA = $(gncscmmod_DATA:.scm=.go)
-
-gncscmcachedir = ${pkglibdir}/scm/ccache/@GUILE_EFFECTIVE_VERSION@
-gncscmcache_DATA = $(gncscm_DATA:.scm=.go)
-endif
-
 clean-local:
 	$(RM) -rf gnucash
 
@@ -70,6 +52,7 @@ SCM_FILES = ${gncscm_DATA} ${gncscmmod_DATA}
 EXTRA_DIST = \
   build-config.scm.in \
   config \
+  startup-design.txt \
   ${SCM_FILES}
 
 ## We borrow guile's convention and use @-...-@ as the substitution
@@ -83,7 +66,6 @@ build-config.scm: ${srcdir}/build-config.scm.in Makefile
             -e 's#@-GNC_HELPDIR-@#${GNC_HELPDIR}#'
 	mv $@.tmp $@
 
-CLEANFILES = .scm-links ${gncscmmodcache_DATA} ${gncscmcache_DATA}
-
+CLEANFILES = .scm-links
 DISTCLEANFILES = ${SCM_FILE_LINKS}
 MAINTAINERCLEANFILES = build-config.scm

@@ -28,7 +28,6 @@
 #include <glib.h>
 #include <libguile.h>
 #include "guile-mappings.h"
-#include "gnc-guile-utils.h"
 #include "swig-runtime.h"
 #include "glib-helpers.h"
 
@@ -100,12 +99,7 @@ gnc_glist_string_to_scm(GList *glist)
     GList *node;
 
     for (node = glist; node; node = node->next)
-    {
-        if (node->data)
-            list = scm_cons (scm_from_utf8_string(node->data), list);
-        else
-            list = scm_cons (SCM_BOOL_F, list);
-    }
+        list = scm_cons (scm_makfrom0str(node->data), list);
 
     return scm_reverse (list);
 }
@@ -127,15 +121,9 @@ gnc_scm_to_glist_string(SCM list)
 
     while (!scm_is_null (list))
     {
-        if (scm_is_string(SCM_CAR(list)))
-        {
-            gchar * str;
-
-            str = gnc_scm_to_utf8_string (SCM_CAR(list));
-            if (str)
-                glist = g_list_prepend (glist, g_strdup (str));
-            g_free (str);
-        }
+        const gchar * str = scm_to_locale_string (SCM_CAR(list));
+        if (str)
+            glist = g_list_prepend (glist, g_strdup (str));
         list = SCM_CDR (list);
     }
 
@@ -149,15 +137,9 @@ gnc_scm_to_gslist_string(SCM list)
 
     while (!scm_is_null (list))
     {
-        if (scm_is_string(SCM_CAR(list)))
-        {
-            gchar * str;
-
-            str = gnc_scm_to_utf8_string (SCM_CAR(list));
-            if (str)
-                gslist = g_slist_prepend (gslist, g_strdup (str));
-            g_free (str);
-        }
+        const gchar * str = scm_to_locale_string (SCM_CAR(list));
+        if (str)
+            gslist = g_slist_prepend (gslist, g_strdup (str));
         list = SCM_CDR (list);
     }
 

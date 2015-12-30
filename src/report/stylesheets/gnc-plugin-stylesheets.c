@@ -25,7 +25,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-#include "dialog-report-style-sheet.h"
+#include "dialog-style-sheet.h"
 #include "gnc-gnome-utils.h"
 #include "gnc-plugin-stylesheets.h"
 #include "gnc-plugin-manager.h"
@@ -49,7 +49,7 @@ static GtkActionEntry gnc_plugin_actions [] =
     /* Menu Items */
     {
         "EditStyleSheetsAction", NULL, N_("St_yle Sheets"), NULL,
-        N_("Edit report style sheets"),
+        N_("Edit report style sheets."),
         G_CALLBACK (gnc_plugin_stylesheets_cmd_edit_style_sheet)
     },
 };
@@ -134,7 +134,13 @@ gnc_plugin_stylesheets_init (GncPluginStylesheets *plugin)
 static void
 gnc_plugin_stylesheets_finalize (GObject *object)
 {
+    GncPluginStylesheets *plugin;
+    GncPluginStylesheetsPrivate *priv;
+
     g_return_if_fail (GNC_IS_PLUGIN_STYLESHEETS (object));
+
+    plugin = GNC_PLUGIN_STYLESHEETS (object);
+    priv = GNC_PLUGIN_STYLESHEETS_GET_PRIVATE(plugin);
 
     G_OBJECT_CLASS (parent_class)->finalize (object);
 }

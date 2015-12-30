@@ -67,12 +67,12 @@
 
 typedef struct
 {
-    GtkComboBox combobox;
+    GtkComboBoxEntry combobox;
 } GNCCurrencyEdit;
 
 typedef struct
 {
-    GtkComboBoxClass combobox;
+    GtkComboBoxEntryClass combobox;
 } GNCCurrencyEditClass;
 
 /** Return the GType for the GNCCurrencyEdit currency selection widget.
@@ -121,3 +121,8 @@ gnc_commodity *gnc_currency_edit_get_currency (GNCCurrencyEdit *gce);
 /** @} */
 /** @} */
 
+/*
+  Local Variables:
+  c-basic-offset: 8
+  End:
+*/

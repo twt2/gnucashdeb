@@ -81,7 +81,7 @@ struct _QofBook
 
     /* The time when the book was first dirtied.  This is a secondary
      * indicator. It should only be used when session_saved is FALSE. */
-    time64 dirty_time;
+    time_t dirty_time;
 
     /* This callback function is called any time the book dirty flag
      * changes state. Both clean->dirty and dirty->clean transitions
@@ -248,29 +248,6 @@ void qof_book_mark_readonly(QofBook *book);
 /** Returns flag indicating whether this book uses trading accounts */
 gboolean qof_book_use_trading_accounts (const QofBook *book);
 
-/** Returns TRUE if the auto-read-only feature should be used, otherwise
- * FALSE. This is just a wrapper on qof_book_get_num_days_autoreadonly() == 0. */
-gboolean qof_book_uses_autoreadonly (const QofBook *book);
-
-/** Returns the number of days for auto-read-only transactions. If zero,
- * the auto-read-only feature should be disabled (and qof_book_uses_autoreadonly()
- * returns FALSE). */
-gint qof_book_get_num_days_autoreadonly (const QofBook *book);
-
-/** Returns the GDate that is the threshold for auto-read-only. Any txn
- * with posted-date lesser than this date should be considered read-only.
- *
- * If the auto-read-only feature is not used (qof_book_uses_autoreadonly()
- * returns FALSE), NULL is returned here.
- *
- * The returned object was allocated newly; the caller must
- * g_date_free() the object afterwards. */
-GDate* qof_book_get_autoreadonly_gdate (const QofBook *book);
-
-/** Returns TRUE if this book uses split action field as the 'Num' field, FALSE
- *  if it uses transaction number field */
-gboolean qof_book_use_split_action_for_num_field (const QofBook *book);
-
 /** Is the book shutting down? */
 gboolean qof_book_shutting_down (const QofBook *book);
 
@@ -299,8 +276,14 @@ void qof_book_mark_session_saved(QofBook *book);
  */
 void qof_book_mark_session_dirty(QofBook *book);
 
+/** This debugging function can be used to traverse the book structure
+ *    and all subsidiary structures, printing out which structures
+ *    have been marked dirty.
+ */
+void qof_book_print_dirty (const QofBook *book);
+
 /** Retrieve the earliest modification time on the book. */
-time64 qof_book_get_session_dirty_time(const QofBook *book);
+time_t qof_book_get_session_dirty_time(const QofBook *book);
 
 /** Set the function to call when a book transitions from clean to
  *    dirty, or vice versa.
@@ -310,6 +293,11 @@ void qof_book_set_dirty_cb(QofBook *book, QofBookDirtyCB cb, gpointer user_data)
 /** Call this function when you change the book kvp, to make sure the book
  * is marked 'dirty'. */
 void qof_book_kvp_changed (QofBook *book);
+
+/** The qof_book_equal() method returns TRUE if books are equal.
+ * XXX this routine is broken, and does not currently compare data.
+ */
+gboolean qof_book_equal (const QofBook *book_1, const QofBook *book_2);
 
 /** This will get the named counter for this book. The return value is
  *    -1 on error or the current value of the counter.

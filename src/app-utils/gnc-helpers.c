@@ -29,7 +29,7 @@
 #include "swig-runtime.h"
 
 #include "gnc-engine.h"
-#include "engine-helpers-guile.h"
+#include "engine-helpers.h"
 #include "gnc-helpers.h"
 #include "gnc-ui-util.h"
 
@@ -47,12 +47,12 @@ gnc_printinfo2scm(GNCPrintAmountInfo info)
     info_scm = scm_cons (SCM_BOOL (info.use_symbol), info_scm);
     info_scm = scm_cons (SCM_BOOL (info.use_separators), info_scm);
 
-    info_scm = scm_cons (scm_from_int (info.min_decimal_places), info_scm);
-    info_scm = scm_cons (scm_from_int (info.max_decimal_places), info_scm);
+    info_scm = scm_cons (scm_int2num (info.min_decimal_places), info_scm);
+    info_scm = scm_cons (scm_int2num (info.max_decimal_places), info_scm);
 
     info_scm = scm_cons (gnc_commodity_to_scm (info.commodity), info_scm);
 
-    info_scm = scm_cons (scm_from_locale_symbol ("print-info"), info_scm);
+    info_scm = scm_cons (scm_str2symbol ("print-info"), info_scm);
 
     return info_scm;
 }
@@ -67,10 +67,12 @@ gnc_scm2printinfo(SCM info_scm)
     info.commodity = gnc_scm_to_commodity (SCM_CAR (info_scm));
 
     info_scm = SCM_CDR (info_scm);
-    info.max_decimal_places = scm_to_int (SCM_CAR (info_scm));
+    info.max_decimal_places = scm_num2int (SCM_CAR (info_scm), SCM_ARG1,
+                                           G_STRFUNC);
 
     info_scm = SCM_CDR (info_scm);
-    info.min_decimal_places = scm_to_int (SCM_CAR (info_scm));
+    info.min_decimal_places = scm_num2int (SCM_CAR (info_scm), SCM_ARG1,
+                                           G_STRFUNC);
 
     info_scm = SCM_CDR (info_scm);
     info.use_separators = scm_is_true (SCM_CAR (info_scm));
@@ -91,6 +93,25 @@ gnc_scm2printinfo(SCM info_scm)
     info.round = scm_is_true (SCM_CAR (info_scm));
 
     return info;
+}
+
+int
+gnc_printinfo_p(SCM info_scm)
+{
+    const gchar *symbol;
+
+    if (!scm_is_list(info_scm) || scm_is_null(info_scm))
+        return 0;
+
+    info_scm = SCM_CAR (info_scm);
+    if (!scm_is_symbol (info_scm))
+        return 0;
+
+    symbol = SCM_SYMBOL_CHARS (info_scm);
+    if (symbol == NULL)
+        return 0;
+
+    return (strcmp (symbol, "print-info") == 0);
 }
 
 /* This is a scaled down version of the routine that would be needed
@@ -125,11 +146,26 @@ gnc_quoteinfo2scm(gnc_commodity *comm)
                                       SWIG_TypeQuery("_p_gnc_commodity"), 0);
 
     if (tz)
-        info_scm = scm_cons (scm_from_utf8_string (tz), info_scm);
+        info_scm = scm_cons (scm_makfrom0str (tz), info_scm);
     else
         info_scm = scm_cons (SCM_BOOL_F, info_scm);
     info_scm = scm_cons (def_comm_scm, info_scm);
     info_scm = scm_cons (comm_scm, info_scm);
-    info_scm = scm_cons (name ? scm_from_utf8_string (name) : SCM_BOOL_F, info_scm);
+    info_scm = scm_cons (scm_makfrom0str (name), info_scm);
     return info_scm;
+}
+
+SCM
+gnc_parse_amount_helper (const char * string, gboolean monetary)
+{
+    gnc_numeric result;
+    gboolean ok;
+
+    g_return_val_if_fail (string, SCM_BOOL_F);
+
+    ok = xaccParseAmount (string, monetary, &result, NULL);
+    if (!ok)
+        return SCM_BOOL_F;
+
+    return gnc_numeric_to_scm (result);
 }

@@ -51,7 +51,7 @@
 
 #define _GNC_MOD_NAME	GNC_ID_VENDOR
 
-G_GNUC_UNUSED static QofLogModule log_module = G_LOG_DOMAIN;
+static QofLogModule log_module = G_LOG_DOMAIN;
 
 #define MAX_NAME_LEN 2048
 #define MAX_ID_LEN 2048
@@ -64,16 +64,22 @@ G_GNUC_UNUSED static QofLogModule log_module = G_LOG_DOMAIN;
 static GncSqlColumnTableEntry col_table[] =
 {
     { "guid",         CT_GUID,          0,               COL_NNUL | COL_PKEY, "guid" },
-    { "name",         CT_STRING,        MAX_NAME_LEN,    COL_NNUL,            "name" },
-    { "id",           CT_STRING,        MAX_ID_LEN,      COL_NNUL,            "id" },
-    { "notes",        CT_STRING,        MAX_NOTES_LEN,   COL_NNUL,            "notes" },
-    { "currency",     CT_COMMODITYREF,  0,               COL_NNUL,            "currency" },
-    { "active",       CT_BOOLEAN,       0,               COL_NNUL,            "active" },
-    { "tax_override", CT_BOOLEAN,       0,               COL_NNUL,            "tax-table-override" },
-    { "addr",         CT_ADDRESS,       0,               0,                   "address" },
-    { "terms",        CT_BILLTERMREF,   0,               0,                   "terms" },
-    { "tax_inc",      CT_STRING,        MAX_TAX_INC_LEN, 0,                   "tax-included-string" },
-    { "tax_table",    CT_TAXTABLEREF,   0,               0,                   "tax-table" },
+    { "name",         CT_STRING,        MAX_NAME_LEN,    COL_NNUL,          "name" },
+    { "id",           CT_STRING,        MAX_ID_LEN,      COL_NNUL,          NULL, VENDOR_ID },
+    { "notes",        CT_STRING,        MAX_NOTES_LEN,   COL_NNUL,          NULL, VENDOR_NOTES },
+    {
+        "currency",     CT_COMMODITYREF,  0,               COL_NNUL,          NULL, NULL,
+        (QofAccessFunc)gncVendorGetCurrency, (QofSetterFunc)gncVendorSetCurrency
+    },
+    {
+        "active",       CT_BOOLEAN,       0,               COL_NNUL,          NULL, NULL,
+        (QofAccessFunc)gncVendorGetActive, (QofSetterFunc)gncVendorSetActive
+    },
+    { "tax_override", CT_BOOLEAN,       0,               COL_NNUL,          NULL, VENDOR_TAX_OVERRIDE },
+    { "addr",         CT_ADDRESS,       0,               0,                 NULL, VENDOR_ADDR },
+    { "terms",        CT_BILLTERMREF,   0,               0,                 NULL, VENDOR_TERMS },
+    { "tax_inc",      CT_STRING,        MAX_TAX_INC_LEN, 0,                 NULL, VENDOR_TAX_INC },
+    { "tax_table",    CT_TAXTABLEREF,   0,               0,                 NULL, VENDOR_TAX_TABLE },
     { NULL }
 };
 
@@ -87,10 +93,10 @@ load_single_vendor( GncSqlBackend* be, GncSqlRow* row )
     g_return_val_if_fail( row != NULL, NULL );
 
     guid = gnc_sql_load_guid( be, row );
-    pVendor = gncVendorLookup( be->book, guid );
+    pVendor = gncVendorLookup( be->primary_book, guid );
     if ( pVendor == NULL )
     {
-        pVendor = gncVendorCreate( be->book );
+        pVendor = gncVendorCreate( be->primary_book );
     }
     gnc_sql_load_object( be, row, GNC_ID_VENDOR, pVendor, col_table );
     qof_instance_mark_clean( QOF_INSTANCE(pVendor) );
@@ -103,8 +109,11 @@ load_all_vendors( GncSqlBackend* be )
 {
     GncSqlStatement* stmt;
     GncSqlResult* result;
+    QofBook* pBook;
 
     g_return_if_fail( be != NULL );
+
+    pBook = be->primary_book;
 
     stmt = gnc_sql_create_select_statement( be, TABLE_NAME );
     result = gnc_sql_execute_select_statement( be, stmt );
@@ -247,7 +256,7 @@ write_vendors( GncSqlBackend* be )
 
     data.be = be;
     data.is_ok = TRUE;
-    qof_object_foreach( GNC_ID_VENDOR, be->book, write_single_vendor, &data );
+    qof_object_foreach( GNC_ID_VENDOR, be->primary_book, write_single_vendor, &data );
 
     return data.is_ok;
 }

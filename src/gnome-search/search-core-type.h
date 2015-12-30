@@ -33,9 +33,8 @@
 
 typedef struct
 {
-    GObject parent;
+    GtkObject parent;
 
-    /* This appears to be unused */
     GNCSearchParam *	param;
 } GNCSearchCoreType;
 

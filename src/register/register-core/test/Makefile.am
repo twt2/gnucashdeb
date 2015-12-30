@@ -6,7 +6,7 @@ TESTS =  \
 #
 
 #TESTS_ENVIRONMENT := \
-#  $(shell ${abs_top_srcdir}/src/gnc-test-env.pl --noexports ${GNC_TEST_DEPS})
+#  $(shell ${top_srcdir}/src/gnc-test-env --no-exports ${GNC_TEST_DEPS})
 
 check_PROGRAMS = \
   test-link-module

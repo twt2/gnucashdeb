@@ -65,7 +65,6 @@ ToDo:
 #include "TransactionP.h"
 #include "cap-gains.h"
 #include "gnc-engine.h"
-#include "engine-helpers.h"
 #include "gnc-lot.h"
 #include "policy.h"
 #include "policy-p.h"
@@ -465,7 +464,7 @@ xaccSplitAssignToLot (Split *split, GNCLot *lot)
     /* If we are here, then (cmp == +1 iff (amt > baln)) and we need
      * to split up the split into pieces. Do it. */
     {
-        time64 now = gnc_time (NULL);
+        time_t now = time(0);
         Split * new_split;
         gnc_numeric amt_a, amt_b, amt_tot;
         gnc_numeric val_a, val_b, val_tot;
@@ -533,10 +532,7 @@ xaccSplitAssignToLot (Split *split, GNCLot *lot)
 
         /* Copy most of the split attributes */
         xaccSplitSetMemo (new_split, xaccSplitGetMemo (split));
-        /* Set split-action with gnc_set_num_action which is the same as
-         * xaccSplitSetAction with these arguments; use gnc_get_num_action to get
-         * split-action which is the same as xaccSplitGetAction */
-        gnc_set_num_action(NULL, new_split, NULL, gnc_get_num_action(NULL, split));
+        xaccSplitSetAction (new_split, xaccSplitGetAction (split));
         xaccSplitSetReconcile (new_split, xaccSplitGetReconcile (split));
         ts = xaccSplitRetDateReconciledTS (split);
         xaccSplitSetDateReconciledTS (new_split, &ts);
@@ -736,7 +732,7 @@ xaccSplitComputeCapGains(Split *split, Account *gain_acc)
         return;
     }
 
-    if (g_strcmp0 ("stock-split", xaccSplitGetType (split)) == 0)
+    if (safe_strcmp ("stock-split", xaccSplitGetType (split)) == 0)
     {
         LEAVE ("Stock split split, returning.");
         return;
@@ -930,7 +926,6 @@ xaccSplitComputeCapGains(Split *split, Account *gain_acc)
         {
             Account *lot_acc = gnc_lot_get_account(lot);
             QofBook *book = qof_instance_get_book(lot_acc);
-            Transaction *base_txn = xaccSplitGetParent (split);
 
             new_gain_split = TRUE;
 
@@ -969,11 +964,8 @@ xaccSplitComputeCapGains(Split *split, Account *gain_acc)
              * that this is the gains transaction that corresponds
              * to the gains source.
              */
-            xaccTransBeginEdit (base_txn);
             kvp_frame_set_guid (split->inst.kvp_data, "gains-split",
                                 xaccSplitGetGUID (lot_split));
-            qof_instance_set_dirty (QOF_INSTANCE (split));
-            xaccTransCommitEdit (base_txn);
             kvp_frame_set_guid (lot_split->inst.kvp_data, "gains-source",
                                 xaccSplitGetGUID (split));
 
@@ -1023,7 +1015,7 @@ xaccSplitComputeCapGains(Split *split, Account *gain_acc)
             /* Common to both */
             ts = xaccTransRetDatePostedTS (split->parent);
             xaccTransSetDatePostedTS (trans, &ts);
-            xaccTransSetDateEnteredSecs (trans, gnc_time (NULL));
+            xaccTransSetDateEnteredSecs (trans, time(0));
 
             xaccSplitSetAmount (lot_split, zero);
             xaccSplitSetValue (lot_split, value);

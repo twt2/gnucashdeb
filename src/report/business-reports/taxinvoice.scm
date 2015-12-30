@@ -1,6 +1,5 @@
 
 ;; $Author: chris $ $Date: 2009/07/29 09:31:44 $ $Revision: 1.33 $
-;; Modified by Dmitry Smirnov <onlyjob@member.fsf.org>  16 Feb 2012
 ;;
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -17,21 +16,17 @@
 ;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 ;; 02111-1307 USA
 
-; If you want to adapt this report privately:
-; - copy the report to your .gnucash directory
-; - specify a different module name below (eg mytaxinvoice)
-; - refer to it from .gnucash/config.user
+; put the (define-module... back when installing as a 'proper' report
+; as opposed to referring to it from .gnucash/config.user
 ; (see http://wiki.gnucash.org/wiki/Custom_Reports )
-(define-module (gnucash report taxinvoice))
+(define-module (gnucash report taxinvoice))        
 
-(cond-expand
-  (guile-2
-      (use-modules (ice-9 local-eval)))  ; for the-environment
-  (else ))
 (use-modules (gnucash main))
-(use-modules (gnucash gnc-module))
-(use-modules (gnucash gettext))
+(use-modules (gnucash gnc-module))        
+(use-modules (gnucash app-utils))
+(use-modules (gnucash business-utils))
 (gnc:module-load "gnucash/report/report-system" 0)
+(gnc:module-load "gnucash/business-utils" 0)
 (gnc:module-load "gnucash/html" 0)
 (gnc:module-load "gnucash/engine" 0)
 
@@ -91,48 +86,29 @@
 (define notespage    (N_ "Notes"))
 ;(define filespage    (N_ "Files"))
 (define displaypage  (N_ "Display"))
-(define elementspage			(N_ "Elements"))
+(define generalpage  gnc:pagename-general)
 ; option names 
-(define optname-col-date		(N_ "column: Date"))
-(define optname-col-taxrate		(N_ "column: Tax Rate"))
-(define optname-col-units		(N_ "column: Units"))
-(define optname-row-address		(N_ "row: Address"))
-(define optname-row-contact		(N_ "row: Contact"))
-(define optname-row-invoice-number	(N_ "row: Invoice Number"))
-(define optname-row-company-name	(N_ "row: Company Name"))
-(define optname-report-currency		(N_ "Report Currency"))
-(define optname-invoice-number-text	(N_ "Invoice number text"))
-(define optname-to-text			(N_ "To text"))
-(define optname-ref-text		(N_ "Ref text"))
-(define optname-jobname-text		(N_ "Job Name text"))
-(define optname-jobnumber-text		(N_ "Job Number text"))
-(define optname-jobname-show		(N_ "Show Job name"))
-(define optname-jobnumber-show		(N_ "Show Job number"))
-(define optname-invnum-next-to-title	(N_ "Invoice number next to title"))
-(define optname-border-collapse		(N_ "table-border-collapse"))
-(define optname-border-color-th		(N_ "table-header-border-color"))
-(define optname-border-color-td		(N_ "table-cell-border-color"))
-(define optname-extra-css		(N_ "Embedded CSS"))
-(define optname-report-title		(N_ "Report title"))
-(define optname-template-file		(N_ "Template file"))
-(define optname-css-file	        (N_ "CSS stylesheet file"))
-(define optname-heading-font		(N_ "Heading font"))
-(define optname-text-font		(N_ "Text font"))
-(define optname-logofile	        (N_ "Logo filename"))
-(define optname-logo-width     		(N_ "Logo width"))
-(define optname-units          		(N_ "Units"))
-(define optname-qty            		(N_ "Qty"))
-(define optname-unit-price     		(N_ "Unit Price"))
-(define optname-disc-rate      		(N_ "Discount Rate"))
-(define optname-disc-amount    		(N_ "Discount Amount"))
-(define optname-net-price      		(N_ "Net Price"))
-(define optname-tax-rate       		(N_ "Tax Rate"))
-(define optname-tax-amount     		(N_ "Tax Amount"))
-(define optname-total-price    		(N_ "Total Price"))
-(define optname-subtotal       		(N_ "Sub-total"))
-(define optname-amount-due     		(N_ "Amount Due"))
-(define optname-payment-recd   		(N_ "Payment received text"))
-(define optname-extra-notes    		(N_ "Extra notes"))
+(define optname-report-title   (N_ "Report title"))
+(define optname-invoice-number (N_ "Invoice number"))
+(define optname-template-file  (N_ "Template file"))
+(define optname-css-file       (N_ "CSS stylesheet file"))
+(define optname-heading-font   (N_ "Heading font"))
+(define optname-text-font      (N_ "Text font"))
+(define optname-logofile       (N_ "Logo filename"))
+(define optname-logo-width     (N_ "Logo width"))
+(define optname-units          (N_ "Units"))
+(define optname-qty            (N_ "Qty"))
+(define optname-unit-price     (N_ "Unit Price"))
+(define optname-disc-rate      (N_ "Discount Rate"))
+(define optname-disc-amount    (N_ "Discount Amount"))
+(define optname-net-price      (N_ "Net Price"))
+(define optname-tax-rate       (N_ "Tax Rate"))
+(define optname-tax-amount     (N_ "Tax Amount"))
+(define optname-total-price    (N_ "Total Price"))
+(define optname-subtotal       (N_ "Sub-total"))
+(define optname-amount-due     (N_ "Amount Due"))
+(define optname-payment-recd   (N_ "Payment received text"))
+(define optname-extra-notes    (N_ "Extra notes"))
 
 ; Choose only customer invoices
 ; (This doesn't work very nicely -- all invoices and bills
@@ -156,97 +132,68 @@
 
   (add-option
     (gnc:make-invoice-option ; defined in gnucash/scm/business-options.scm
-      gnc:pagename-general gnc:optname-invoice-number 
+      generalpage optname-invoice-number 
       "a" "" (lambda () '()) 
       #f))        ;customers-only)) ;-- see above
 
-(add-option (gnc:make-currency-option		gnc:pagename-general	optname-report-currency		"b" "" ""))
-
-  ;; Elements page options
-(add-option (gnc:make-simple-boolean-option	elementspage	optname-col-date		"a" (N_ "Display the date?") #t))
-(add-option (gnc:make-simple-boolean-option	elementspage	optname-col-taxrate		"b" (N_ "Display the Tax Rate?") #t))
-(add-option (gnc:make-simple-boolean-option	elementspage	optname-col-units		"c" (N_ "Display the Units?") #t))
-(add-option (gnc:make-simple-boolean-option	elementspage	optname-row-contact		"d" (N_ "Display the contact?") #t))
-(add-option (gnc:make-simple-boolean-option	elementspage	optname-row-address		"e" (N_ "Display the address?") #t))
-(add-option (gnc:make-simple-boolean-option	elementspage	optname-row-invoice-number	"f" (N_ "Display the Invoice Number?") #t))
-(add-option (gnc:make-simple-boolean-option	elementspage	optname-row-company-name	"g" (N_ "Display the Company Name?") #t))
-(add-option (gnc:make-simple-boolean-option	elementspage	optname-invnum-next-to-title	"h" (N_ "Invoice Number next to title?") #f))
-(add-option (gnc:make-simple-boolean-option	elementspage	optname-jobname-show		"i" (N_ "Display Job name?") #t))
-(add-option (gnc:make-simple-boolean-option	elementspage	optname-jobnumber-show		"j" (N_ "Invoice Job number?") #f))
-
   ;; Display options
   (add-option (gnc:make-string-option displaypage optname-template-file "a" 
-    (N_ "The file name of the eguile template part of this report. This file should either be in your .gnucash directory, or else in its proper place within the GnuCash installation directories.")
+    (N_ "The file name of the eguile template part of this report.  This file should either be in your .gnucash directory, or else in its proper place within the GnuCash installation directories.")
     "taxinvoice.eguile.scm"))
   (add-option (gnc:make-string-option displaypage optname-css-file "b" 
-    (N_ "The file name of the CSS stylesheet to use with this report. This file should either be in your .gnucash directory, or else in its proper place within the GnuCash installation directories.") 
+    (N_ "The file name of the CSS stylesheet to use with this report.  This file should either be in your .gnucash directory, or else in its proper place within the GnuCash installation directories.") 
     "taxinvoice.css"))
   (add-option (gnc:make-font-option 
                 displaypage optname-heading-font "c" 
-                (N_ "Font to use for the main heading.") "Sans Bold 18"))
+                (N_ "Font to use for the main heading") "Sans Bold 18"))
   (add-option (gnc:make-font-option 
                 displaypage optname-text-font "d" 
-                (N_ "Font to use for everything else.") "Sans 10"))
+                (N_ "Font to use for everything else") "Sans 10"))
   (add-option (gnc:make-pixmap-option
                 displaypage optname-logofile "e" 
-                (N_ "Name of a file containing a logo to be used on the report.") 
+                (N_ "Name of a file containing a logo to be used on the report") 
                 ""))
   (add-option (gnc:make-string-option
-                displaypage optname-logo-width "f" (N_ "Width of the logo in CSS format, e.g. 10% or 32px. Leave blank to display the logo at its natural width. The height of the logo will be scaled accordingly.") ""))
-(add-option (gnc:make-simple-boolean-option	displaypage	optname-border-collapse	"g" (N_ "Border-collapse?") #f))
-(add-option (gnc:make-string-option		displaypage	optname-border-color-th "h" (N_ "CSS color.") "black"))
-(add-option (gnc:make-string-option		displaypage	optname-border-color-td "i" (N_ "CSS color.") "black"))
+                displaypage optname-logo-width "f" (N_ "Width of the logo in CSS format, e.g. 10% or 32px.  Leave blank to display the logo at its natural width.  The height of the logo will be scaled accordingly.") ""))
 
   ;; Heading options
   (add-option (gnc:make-string-option
                 ; page / name / orderkey / tooltip / default
-                headingpage optname-report-title "a" "" (_ "Invoice")))
+                headingpage optname-report-title "a" "" (N_ "Invoice")))
   (add-option (gnc:make-string-option
-                headingpage optname-units "b" "" (_ "Units")))
+                headingpage optname-units "b" "" (N_ "Units")))
   (add-option (gnc:make-string-option
-                headingpage optname-qty "c" "" (_ "Qty")))
+                headingpage optname-qty "c" "" (N_ "Qty")))
   (add-option (gnc:make-string-option
-                headingpage optname-unit-price "d" "" (_ "Unit Price")))
+                headingpage optname-unit-price "d" "" (N_ "Unit Price")))
   (add-option (gnc:make-string-option
-                headingpage optname-disc-rate "e" "" (_ "Discount Rate")))
+                headingpage optname-disc-rate "e" "" (N_ "Discount Rate")))
   (add-option (gnc:make-string-option
-                headingpage optname-disc-amount "f" "" (_ "Discount Amount")))
+                headingpage optname-disc-amount "f" "" (N_ "Discount Amount")))
   (add-option (gnc:make-string-option
-                headingpage optname-net-price "g" "" (_ "Net Price")))
+                headingpage optname-net-price "g" "" (N_ "Net Price")))
   (add-option (gnc:make-string-option
-                headingpage optname-tax-rate "h" "" (_ "Tax Rate")))
+                headingpage optname-tax-rate "h" "" (N_ "Tax Rate")))
   (add-option (gnc:make-string-option
-                headingpage optname-tax-amount "i" "" (_ "Tax Amount")))
+                headingpage optname-tax-amount "i" "" (N_ "Tax Amount")))
   (add-option (gnc:make-string-option
-                headingpage optname-total-price "j" "" (_ "Total Price")))
+                headingpage optname-total-price "j" "" (N_ "Total Price")))
   (add-option (gnc:make-string-option
-                headingpage2 optname-subtotal "a" "" (_ "Sub-total")))
+                headingpage2 optname-subtotal "a" "" (N_ "Sub-total")))
   (add-option (gnc:make-string-option
-                headingpage2 optname-amount-due "b" "" (_ "Amount Due")))
+                headingpage2 optname-amount-due "b" "" (N_ "Amount Due")))
   (add-option (gnc:make-string-option
                 headingpage2 optname-payment-recd "c" "" 
-                (_ "Payment received, thank you")))
-  (add-option (gnc:make-string-option	headingpage2	optname-invoice-number-text
-    "d" "" (N_ "Invoice number: ")))
-  (add-option (gnc:make-string-option	headingpage2	optname-to-text
-    "e" "" (N_ "To: ")))
-  (add-option (gnc:make-string-option	headingpage2	optname-ref-text
-    "f" "" (N_ "Your ref: ")))
-  (add-option (gnc:make-string-option	headingpage2	optname-jobnumber-text
-    "g" "" (N_ "Job number: ")))
-  (add-option (gnc:make-string-option	headingpage2	optname-jobname-text
-    "h" "" (N_ "Job name: ")))
+                (N_ "Payment received, thank you")))
 
   (add-option (gnc:make-text-option
                 notespage optname-extra-notes "a"
-                (_ "Notes added at end of invoice -- may contain HTML markup.") 
-                (_ "Thank you for your patronage!")))
+                (N_ "Notes added at end of invoice -- may contain HTML markup") 
+                ""))
                 ;(N_ "(Development version -- don't rely on the numbers on this report without double-checking them.<br>Change the 'Extra Notes' option to get rid of this message)")))
 
-  (add-option (gnc:make-text-option	notespage optname-extra-css "b"
-                (N_ "Embedded CSS.")	"h1.coyname { text-align: left; }"))
   (gnc:options-set-default-section
-    report-options gnc:pagename-general)
+    report-options generalpage)
 
   report-options)
 
@@ -264,7 +211,7 @@
 
   ; Get all the options
   (let* ((document                  (gnc:make-html-document))
-         (opt-invoice               (opt-value gnc:pagename-general gnc:optname-invoice-number))
+         (opt-invoice               (opt-value generalpage  optname-invoice-number))
          (opt-template-file         (find-file 
                                       (opt-value displaypage optname-template-file)))
          (opt-css-file              (find-file 
@@ -275,20 +222,6 @@
                                       (opt-value displaypage optname-text-font)))
          (opt-logofile              (opt-value displaypage  optname-logofile)) 
          (opt-logo-width            (opt-value displaypage  optname-logo-width)) 
-         (opt-col-date              (opt-value elementspage  optname-col-date))
-         (opt-col-taxrate           (opt-value elementspage  optname-col-taxrate))
-         (opt-col-units             (opt-value elementspage  optname-col-units))
-         (opt-row-contact           (opt-value elementspage  optname-row-contact))
-         (opt-row-address           (opt-value elementspage  optname-row-address))
-         (opt-row-invoice-number    (opt-value elementspage  optname-row-invoice-number))
-         (opt-row-company-name      (opt-value elementspage  optname-row-company-name))
-         (opt-invnum-next-to-title  (opt-value elementspage  optname-invnum-next-to-title))
-         (opt-jobname-show          (opt-value elementspage  optname-jobname-show))
-         (opt-jobnumber-show        (opt-value elementspage  optname-jobnumber-show))
-         (opt-report-currency       (opt-value gnc:pagename-general optname-report-currency))
-         (opt-css-border-collapse   (if (opt-value displaypage optname-border-collapse) "border-collapse:collapse;"))
-         (opt-css-border-color-th   (opt-value displaypage optname-border-color-th))
-         (opt-css-border-color-td   (opt-value displaypage optname-border-color-td))
          (opt-report-title          (opt-value headingpage  optname-report-title))
          (opt-units-heading         (opt-value headingpage  optname-units))
          (opt-qty-heading           (opt-value headingpage  optname-qty))
@@ -302,12 +235,6 @@
          (opt-subtotal-heading      (opt-value headingpage2 optname-subtotal))
          (opt-amount-due-heading    (opt-value headingpage2 optname-amount-due))
          (opt-payment-recd-heading  (opt-value headingpage2 optname-payment-recd))
-         (opt-invoice-number-text   (opt-value headingpage2 optname-invoice-number-text))
-         (opt-to-text               (opt-value headingpage2 optname-to-text))
-         (opt-ref-text              (opt-value headingpage2 optname-ref-text))
-         (opt-jobnumber-text        (opt-value headingpage2 optname-jobnumber-text))
-         (opt-jobname-text          (opt-value headingpage2 optname-jobname-text))
-         (opt-extra-css             (opt-value notespage    optname-extra-css)) 
          (opt-extra-notes           (opt-value notespage    optname-extra-notes)) 
          (css? #t) ;(and (defined? 'gnc-html-engine-supports-css) (gnc-html-engine-supports-css)))
          (html #f))

@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "sixtp.h"
 #include "sixtp-utils.h"
@@ -40,7 +41,9 @@
 #ifndef HAVE_STRPTIME
 #include "strptime.h"
 #endif
-#include <gnc-date.h>
+#ifndef HAVE_LOCALTIME_R
+#include "localtime_r.h"
+#endif
 #endif
 
 static QofLogModule log_module = GNC_MOD_IO;
@@ -141,18 +144,66 @@ concatenate_child_result_chars(GSList *data_from_children)
 
 /*********/
 /* double
+
+   RLB writes:
+   We have to use guile because AFAICT, libc, and C in general isn't
+   smart enough to actually parse it's own output, especially not
+   portably (big surprise).
+
+   Linas writes:
+   I don't understand the claim; I'm just going to use
+   atof or strtod to accomplish this.
+
+   RLB writes: FIXME: OK, but at the very least this may cause a
+   locale dependency.  Whoever fixes that, please delete this whole
+   comment block.
+
  */
 
 gboolean
 string_to_double(const char *str, double *result)
 {
-    char *endptr = 0x0;
-
     g_return_val_if_fail(str, FALSE);
     g_return_val_if_fail(result, FALSE);
 
-    *result = strtod (str, &endptr);
-    if (endptr == str) return (FALSE);
+#ifdef USE_GUILE_FOR_DOUBLE_CONVERSION
+    {
+        /* FIXME: NOT THREAD SAFE - USES STATIC DATA */
+        static SCM string_to_number;
+        static gboolean ready = FALSE;
+
+        SCM conversion_result;
+
+        if (!ready)
+        {
+            string_to_number = scm_c_eval_string("string->number");
+            scm_gc_protect_object(string_to_number);
+            ready = TRUE;
+        }
+
+        conversion_result = scm_call_1(string_to_number, scm_makfrom0str(str));
+        if (!conversion_result == SCM_BOOL_F)
+        {
+            return(FALSE);
+        }
+
+        *result = scm_num2dbl(conversion_result, G_STRFUNC);
+    }
+
+#else /* don't USE_GUILE_FOR_DOUBLE_CONVERSION */
+    {
+        char *endptr = 0x0;
+
+        /* We're just going to use plain-old libc for the double conversion.
+         * There was some question as to whether libc is accurate enough
+         * in its printf function for doubles, but I don't understand
+         * how it couldn't be ...
+         */
+
+        *result = strtod (str, &endptr);
+        if (endptr == str) return (FALSE);
+    }
+#endif /* USE_GUILE_FOR_DOUBLE_CONVERSION */
 
     return(TRUE);
 }
@@ -341,6 +392,42 @@ simple_chars_only_parser_new(sixtp_end_handler end_handler)
                SIXTP_NO_MORE_HANDLERS);
 }
 
+
+#ifdef HAVE_TIMEGM
+#  define gnc_timegm timegm
+#else /* !HAVE_TIMEGM */
+
+/* This code originates from GLib 2.12, gtimer.c and works until the year 2100
+ * or the system-dependent maximal date that can be represented by a time_t,
+ * whatever comes first.  The old implementation called mktime after setting
+ * the environment variable TZ to UTC.  It did not work on Windows, at least.
+ */
+static const gint days_before[] =
+{
+    0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334
+};
+
+static time_t
+gnc_timegm (struct tm *tm)
+{
+    time_t retval;
+    if (tm->tm_mon < 0 || tm->tm_mon > 11)
+        return (time_t) - 1;
+
+    retval = (tm->tm_year - 70) * 365;
+    retval += (tm->tm_year - 68) / 4;
+    retval += days_before[tm->tm_mon] + tm->tm_mday - 1;
+
+    if (tm->tm_year % 4 == 0 && tm->tm_mon < 2)
+        retval -= 1;
+
+    retval = ((((retval * 24) + tm->tm_hour) * 60) + tm->tm_min) * 60 + tm->tm_sec;
+
+    return retval;
+}
+#endif /* HAVE_TIMEGM */
+
+
 /****************************************************************************/
 /* generic timespec handler.
 
@@ -364,7 +451,7 @@ string_to_timespec_secs(const gchar *str, Timespec *ts)
 
     struct tm parsed_time;
     const gchar *strpos;
-    time64 parsed_secs;
+    time_t parsed_secs;
     long int gmtoff;
 
     if (!str || !ts) return FALSE;
@@ -410,6 +497,8 @@ string_to_timespec_secs(const gchar *str, Timespec *ts)
 
     parsed_secs = gnc_timegm(&parsed_time);
 
+    if (parsed_secs == (time_t) - 1) return(FALSE);
+
     parsed_secs -= gmtoff;
 
     ts->tv_sec = parsed_secs;
@@ -438,6 +527,47 @@ string_to_timespec_nsecs(const gchar *str, Timespec *ts)
     ts->tv_nsec = nanosecs;
 
     return(TRUE);
+}
+
+gboolean
+timespec_secs_to_given_string (const Timespec *ts, gchar *str)
+{
+    struct tm parsed_time;
+    size_t num_chars;
+    time_t tmp_time;
+    long int tz;
+    int minutes;
+    int hours;
+    int sign;
+
+    if (!ts || !str)
+        return FALSE;
+
+    tmp_time = ts->tv_sec;
+
+    if (!localtime_r(&tmp_time, &parsed_time))
+        return FALSE;
+
+    num_chars = qof_strftime(str, TIMESPEC_SEC_FORMAT_MAX,
+                             TIMESPEC_TIME_FORMAT, &parsed_time);
+    if (num_chars == 0)
+        return FALSE;
+
+    str += num_chars;
+
+    tz = gnc_timezone (&parsed_time);
+
+    /* gnc_timezone is seconds west of UTC */
+    sign = (tz > 0) ? -1 : 1;
+
+    minutes = ABS (tz) / 60;
+    hours = minutes / 60;
+    minutes -= hours * 60;
+
+    g_snprintf (str, TIMESPEC_SEC_FORMAT_MAX - num_chars,
+                " %c%02d%02d", (sign > 0) ? '+' : '-', hours, minutes);
+
+    return TRUE;
 }
 
 /* Top level timespec node:
@@ -603,7 +733,7 @@ generic_timespec_parser_new(sixtp_end_handler end_handler)
                 top_level, TRUE,
                 "s", timespec_sixtp_new(generic_timespec_secs_end_handler),
                 "ns", timespec_sixtp_new(generic_timespec_nsecs_end_handler),
-                NULL, NULL))
+                0))
     {
         return NULL;
     }

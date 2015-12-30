@@ -15,26 +15,6 @@
  * Created by Linux Developers Group, 2001
  * Updates Linas Vepstas July 2004
  */
-/********************************************************************\
- * This program is free software; you can redistribute it and/or    *
- * modify it under the terms of the GNU General Public License as   *
- * published by the Free Software Foundation; either version 2 of   *
- * the License, or (at your option) any later version.              *
- *                                                                  *
- * This program is distributed in the hope that it will be useful,  *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of   *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the    *
- * GNU General Public License for more details.                     *
- *                                                                  *
- * You should have received a copy of the GNU General Public License*
- * along with this program; if not, contact:                        *
- *                                                                  *
- * Free Software Foundation           Voice:  +1-617-542-5942       *
- * 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652       *
- * Boston, MA  02110-1301,  USA       gnu@gnu.org                   *
- *                                                                  *
-\********************************************************************/
-
 #include "config.h"
 
 #include <sys/types.h>
@@ -482,26 +462,20 @@ get_random_gnc_numeric(void)
 
     /* Arbitrary random numbers can cause pointless overflow
      * during calculations.  Limit dynamic range in hopes
-     * of avoiding overflow. Right now limit it to approx 2^44.
+     * of avoiding overflow. Right now limit it to approx 2^48.
      * The initial division is to help us down towards the range.
      * The loop is to "make sure" we get there.  We might
      * want to make this dependent on "deno" in the future.
      */
-    numer = get_random_gint64 () % (2ULL << 44);
+    do
+    {
+        numer = get_random_gint64() / 1000000;
+    }
+    while ((numer >> 31) > 0x1FFFF);
     if (0 == numer) numer = 1;
     /* Make sure we have a non-zero denominator */
     if (0 == deno) deno = 1;
     return gnc_numeric_create(numer, deno);
-}
-
-static gnc_numeric
-get_random_rate (void)
-{
-    /* Large rates blow up xaccSplitAssignToLot, so we clamp the rate
-     * at a smallish value */
-    gint64 numer = get_random_gint64 () % (2ULL << 24);
-    gint64 denom = 100LL;
-    return gnc_numeric_create (numer, denom);
 }
 
 /* ================================================================= */
@@ -536,11 +510,11 @@ get_random_commodity_from_table (gnc_commodity_table *table)
     do
     {
         GList *commodities;
-        char *name_space;
+        char *namespace;
 
-        name_space = get_random_list_element (namespaces);
+        namespace = get_random_list_element (namespaces);
 
-        commodities = gnc_commodity_table_get_commodities (table, name_space);
+        commodities = gnc_commodity_table_get_commodities (table, namespace);
         if (!commodities)
             continue;
 
@@ -676,7 +650,6 @@ void
 make_random_changes_to_price (QofBook *book, GNCPrice *p)
 {
     Timespec *ts;
-    PriceSource ps;
     char *string;
     gnc_commodity *c;
 
@@ -694,9 +667,9 @@ make_random_changes_to_price (QofBook *book, GNCPrice *p)
     gnc_price_set_time (p, *ts);
     g_free (ts);
 
-    ps = (PriceSource)get_random_int_in_range((int)PRICE_SOURCE_EDIT_DLG,
-                                              (int)PRICE_SOURCE_INVALID);
-    gnc_price_set_source (p, ps);
+    string = get_random_string ();
+    gnc_price_set_source (p, string);
+    g_free (string);
 
     string = get_random_string ();
     gnc_price_set_typestr (p, string);
@@ -735,6 +708,7 @@ gboolean
 make_random_pricedb (QofBook *book, GNCPriceDB *db)
 {
     int num_prices;
+    gboolean check;
 
     num_prices = get_random_int_in_range (1, 41);
     if (num_prices < 1) /* should be impossible */
@@ -756,9 +730,11 @@ make_random_pricedb (QofBook *book, GNCPriceDB *db)
             return FALSE;
         }
 
-        if (!gnc_pricedb_add_price (db, p))
-            /* probably the same date as another price, just try again. */
-            ++num_prices;
+        check = gnc_pricedb_add_price (db, p);
+        if (!check)
+        {
+            return check;
+        }
 
         gnc_price_unref (p);
     }
@@ -940,7 +916,7 @@ add_random_splits(QofBook *book, Transaction *trn, GList *account_list)
 {
     Account *acc, *bcc;
     Split *s;
-    gnc_numeric val;
+    gnc_numeric val, amt;
 
     /* Gotta have at least two different accounts */
     if (1 >= g_list_length (account_list)) return;
@@ -973,6 +949,23 @@ add_random_splits(QofBook *book, Transaction *trn, GList *account_list)
     }
     val = gnc_numeric_neg(val);
     xaccSplitSetValue(s, val);
+
+    if (gnc_commodity_equal (xaccTransGetCurrency(trn),
+                             xaccAccountGetCommodity(bcc)) &&
+            (!do_bork()))
+    {
+        amt = val;
+    }
+    else
+    {
+        gnc_numeric amt2 = xaccSplitGetAmount(s);
+        if (gnc_numeric_positive_p(amt2) ^ gnc_numeric_positive_p(val))
+            amt = gnc_numeric_neg(amt2);
+    }
+
+    if (gnc_numeric_zero_p(val))
+        amt = val;
+
     xaccSplitSetAmount(s, val);
     xaccTransCommitEdit(trn);
 }
@@ -1253,7 +1246,7 @@ make_random_changes_to_account (QofBook *book, Account *account)
 
     set_account_random_string (account, xaccAccountSetName);
 
-    tmp_int = get_random_int_in_range (ACCT_TYPE_BANK, NUM_ACCOUNT_TYPES - 1);
+    tmp_int = get_random_int_in_range (ACCT_TYPE_BANK, ACCT_TYPE_CREDITLINE);
     xaccAccountSetType (account, tmp_int);
 
     set_account_random_string (account, xaccAccountSetCode);
@@ -1339,8 +1332,7 @@ get_random_split(QofBook *book, Account *acct, Transaction *trn)
                                                xaccSplitGetAccount(ret)));
         do
         {
-            /* Large rates blow up xaccSplitAssignLot */
-            rate = get_random_rate ();
+            rate = gnc_numeric_abs(get_random_gnc_numeric());
             amt = gnc_numeric_mul(val, rate,
                                   GNC_DENOM_AUTO, GNC_HOW_DENOM_REDUCE);
             amt = gnc_numeric_convert(amt, denom, GNC_HOW_RND_ROUND_HALF_UP);
@@ -1398,7 +1390,7 @@ set_tran_random_string(Transaction* trn,
                        void(*func)(Transaction *act, const gchar*str))
 {
     gchar *tmp_str = get_random_string();
-    if (!trn)
+    if (!trn || !(&trn->inst))
     {
         return;
     }
@@ -1444,6 +1436,7 @@ get_random_transaction_with_currency(QofBook *book,
     gint num;
     gchar *numstr;
 
+    numstr = g_new0(gchar, 10);
     if (!account_list)
     {
         account_list = gnc_account_get_descendants (gnc_book_get_root_account (book));
@@ -1456,8 +1449,6 @@ get_random_transaction_with_currency(QofBook *book,
                      "get_random_transaction_with_currency: account_list too short");
         return NULL;
     }
-
-    numstr = g_new0(gchar, 10);
 
     trans = xaccMallocTransaction(book);
 
@@ -1605,7 +1596,6 @@ get_random_queryop(void)
         break;
     default:
         g_assert_not_reached();
-        break;
     };
     if (gnc_engine_debug_random) printf ("op = %d (int was %d), ", op, op_num);
     return op;
@@ -1621,7 +1611,7 @@ get_random_kvp_path (void)
     len = get_random_int_in_range (1, kvp_max_depth);
 
     while (len--)
-        path = g_slist_prepend (path, get_random_string_without ("\n\\"));
+        path = g_slist_prepend (path, get_random_string ());
 
     return g_slist_reverse (path);
 }
@@ -1649,7 +1639,7 @@ get_random_id_type (void)
     case 3:
         return GNC_ID_ACCOUNT;
     default:
-         return get_random_string ();
+        return get_random_string ();
     }
 }
 
@@ -1717,7 +1707,6 @@ set_query_sort (QofQuery *q, sort_type_t sort_code)
     default:
         g_slist_free (standard);
         g_return_if_fail (FALSE);
-        break;
     }
 
     qof_query_set_sort_order (q, p1, p2, p3);
@@ -1761,7 +1750,7 @@ get_random_query(void)
             break;
 
         case 2: /*PR_ACTION */
-            string = get_random_string_without ("\\");
+            string = get_random_string ();
             xaccQueryAddActionMatch (q,
                                      string,
                                      get_random_boolean (),
@@ -1803,7 +1792,7 @@ get_random_query(void)
             break;
 
         case 6: /* PR_DESC */
-            string = get_random_string_without ("\\");
+            string = get_random_string ();
             xaccQueryAddDescriptionMatch (q,
                                           string,
                                           get_random_boolean (),
@@ -1839,7 +1828,7 @@ get_random_query(void)
             break;
 
         case 9: /* PR_MEMO */
-            string = get_random_string_without ("\\");
+            string = get_random_string ();
             xaccQueryAddMemoMatch (q,
                                    string,
                                    get_random_boolean (),
@@ -1849,7 +1838,7 @@ get_random_query(void)
             break;
 
         case 10: /* PR_NUM */
-            string = get_random_string_without ("\\");
+            string = get_random_string ();
             xaccQueryAddNumberMatch (q,
                                      string,
                                      get_random_boolean (),
@@ -1950,9 +1939,10 @@ add_random_transactions_to_book (QofBook *book, gint num_transactions)
     while (num_transactions--)
     {
         gnc_commodity *com;
+        Transaction *trans;
 
         com = get_random_commodity_from_table (table);
-        get_random_transaction_with_currency (book, com, accounts);
+        trans = get_random_transaction_with_currency (book, com, accounts);
     }
     g_list_free (accounts);
 }

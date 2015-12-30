@@ -4,41 +4,14 @@
 ;;
 ;;  Copyright (c) 2001 Linux Developers Group, Inc. 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; This program is free software; you can redistribute it and/or
-;; modify it under the terms of the GNU General Public License as
-;; published by the Free Software Foundation; either version 2 of
-;; the License, or (at your option) any later version.
-;;
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-;;
-;; You should have received a copy of the GNU General Public License
-;; along with this program; if not, contact:
-;;
-;; Free Software Foundation           Voice:  +1-617-542-5942
-;; 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652
-;; Boston, MA  02110-1301,  USA       gnu@gnu.org
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 
 (define-module (gnucash report report-gnome))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (gnucash gnc-module))
 (use-modules (gnucash gnome-utils))
-(use-modules (gnucash gettext))
 
 (use-modules (gnucash printf))
 
-(cond-expand
-  (guile-2
-    (eval-when
-      (compile load eval expand)
-      (load-extension "libgncmod-gnome-utils" "scm_init_sw_gnome_utils_module")
-      (load-extension "libgncmod-report-gnome" "scm_init_sw_report_gnome_module")))
-  (else ))
 (use-modules (sw_report_gnome))
 
 (gnc:module-load "gnucash/gnome-utils" 0)
@@ -138,10 +111,10 @@
 
   (gnc-add-scm-extension 
    (gnc:make-menu-item
-   (N_ "Saved Report Configurations")
+   (N_ "Custom Reports")
    "4d3dcdc8890b11df99dd94cddfd72085"
-   (N_ "Manage and run saved report configurations")
-   (list "Reports/SavedReportConfigs")
+   (N_ "Manage and run custom reports")
+   (list gnc:menuname-reports)
    (lambda (window)
      (gnc:spawn-custom-report-dialog window))))
 

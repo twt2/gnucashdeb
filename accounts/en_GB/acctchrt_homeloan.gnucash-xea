@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <gnc-account-example>
     <gnc-act:title>
       Home Mortgage Loan
@@ -48,6 +48,7 @@
       <slot:value type="string">true</slot:value>
     </slot>
   </act:slots>
+  <act:parent type="new">1972cce2e2364f95b2b0bc014502661d</act:parent>
 </gnc:account>
 <gnc:account version="2.0.0">
   <act:name>Mortgage Loan</act:name>

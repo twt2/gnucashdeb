@@ -53,7 +53,7 @@ run_test (void)
 {
     Account *acc1, *acc2;
     Transaction *transaction, *new_trans;
-    gnc_numeric old, new;
+    gnc_numeric old, new, result;
     QofBook *book;
     char *msg;
     int i;
@@ -93,6 +93,7 @@ run_test (void)
     {
         old = xaccSplitGetAmount(xaccTransGetSplit(transaction, i));
         new = xaccSplitGetAmount(xaccTransGetSplit(new_trans, i));
+        result = gnc_numeric_add(old, new, GNC_DENOM_AUTO, GNC_HOW_DENOM_FIXED);
         if (gnc_numeric_eq(old, gnc_numeric_neg(new)))
         {
             msg = g_strdup_printf("Amount of split %d wrong after reversal\n", i);
@@ -101,6 +102,7 @@ run_test (void)
 
         old = xaccSplitGetValue(xaccTransGetSplit(transaction, i));
         new = xaccSplitGetValue(xaccTransGetSplit(new_trans, i));
+        result = gnc_numeric_add(old, new, GNC_DENOM_AUTO, GNC_HOW_DENOM_FIXED);
         if (gnc_numeric_eq(old, gnc_numeric_neg(new)))
         {
             msg = g_strdup_printf("Value of split %d wrong after reversal\n", i);

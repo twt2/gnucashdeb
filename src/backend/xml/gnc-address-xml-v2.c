@@ -69,7 +69,6 @@ xmlNodePtr
 gnc_address_to_dom_tree (const char *tag, GncAddress *addr)
 {
     xmlNodePtr ret;
-    kvp_frame *kf;
 
     ret = xmlNewNode(NULL, BAD_CAST tag);
     xmlSetProp(ret, BAD_CAST "version", BAD_CAST address_version_string);
@@ -84,16 +83,6 @@ gnc_address_to_dom_tree (const char *tag, GncAddress *addr)
     maybe_add_string (ret, addr_phone_string, gncAddressGetPhone (addr));
     maybe_add_string (ret, addr_fax_string, gncAddressGetFax (addr));
     maybe_add_string (ret, addr_email_string, gncAddressGetEmail (addr));
-
-    kf = qof_instance_get_slots (QOF_INSTANCE(addr));
-    if (kf)
-    {
-        xmlNodePtr kvpnode = kvp_frame_to_dom_tree(addr_slots_string, kf);
-        if (kvpnode)
-        {
-            xmlAddChild(ret, kvpnode);
-        }
-    }
 
     return ret;
 }
@@ -186,10 +175,7 @@ address_email_handler (xmlNodePtr node, gpointer addr_pdata)
 static gboolean
 address_slots_handler (xmlNodePtr node, gpointer addr_pdata)
 {
-    struct address_pdata *pdata = addr_pdata;
-
-    return dom_tree_to_kvp_frame_given
-           (node, xaccAccountGetSlots (pdata->address));
+    return TRUE;
 }
 
 static struct dom_tree_handler address_handlers_v2[] =

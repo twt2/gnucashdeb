@@ -30,12 +30,9 @@
 (use-modules (srfi srfi-1))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (gnucash gnc-module))
-(use-modules (gnucash gettext))
 
 (use-modules (gnucash printf))
-(use-modules (gnucash report report-system report-collectors))
-(use-modules (gnucash report report-system collectors))
-(use-modules (gnucash report standard-reports category-barchart)) ; for guids of called reports
+
 (gnc:module-load "gnucash/report/report-system" 0)
 
 (define reportname (N_ "Income/Expense Chart"))
@@ -58,12 +55,12 @@
 (define optname-plot-height (N_ "Plot Height"))
 
 (define optname-line-width (N_ "Line Width"))
-(define opthelp-line-width (N_ "Set line width in pixels."))
+(define opthelp-line-width (N_ "Set line width in pixels"))
 
 (define optname-markers (N_ "Data markers?"))
 
 ;;(define optname-x-grid (N_ "X grid"))
-(define optname-y-grid (N_ "Grid"))
+(define optname-y-grid (N_ "Y Grid"))
 
 
 
@@ -155,7 +152,7 @@
     (add-option
      (gnc:make-simple-boolean-option
       gnc:pagename-display optname-y-grid
-      "f" (N_ "Add grid lines.")
+      "f" (N_ "Add horizontal grid lines.")
       #f))
 
     ;(add-option
@@ -245,8 +242,6 @@
     ;; 'report-currency' according to the exchange-fn. Returns a
     ;; double.
     (define (collector->double c date)
-      (if (not (gnc:timepair? date))
-	  (throw 'wrong))
       (gnc-numeric-to-double
        (gnc:gnc-monetary-amount
         (gnc:sum-collector-commodity
@@ -297,7 +292,6 @@
      (let* ((assets-list #f)
             (liability-list #f)
             (net-list #f)
-	    (progress-range (cons 50 80))
             (date-string-list (map
                                (if inc-exp?
                                    (lambda (date-list-item)
@@ -305,46 +299,20 @@
                                       (car date-list-item)))
                                    gnc-print-date)
                                dates-list)))
-       (let* ((the-acount-destination-alist
-	       (if inc-exp?
-		   (append (map (lambda (account) (cons account 'asset))
-				 (assoc-ref classified-accounts ACCT-TYPE-INCOME))
-			   (map (lambda (account) (cons account 'liability))
-				 (assoc-ref classified-accounts ACCT-TYPE-EXPENSE)))
-		   (append  (map (lambda (account) (cons account 'asset))
-				 (assoc-ref classified-accounts ACCT-TYPE-ASSET))
-			    (map (lambda (account) (cons account 'liability))
-				 (assoc-ref classified-accounts ACCT-TYPE-LIABILITY)))))
-	      (account-reformat (if inc-exp?
-				    (lambda (account result)
-				      (map (lambda (collector date-interval)
-					     (- (collector->double collector (second date-interval))))
-					   result dates-list))
-				    (lambda (account result)
-				      (let ((commodity-collector (gnc:make-commodity-collector)))
-					(collector-end (fold (lambda (next date list-collector)
-							       (commodity-collector 'merge next #f)
-							       (collector-add list-collector
-									      (collector->double
-									       commodity-collector date)))
-							     (collector-into-list)
-							     result
-							     dates-list))))))
-	      (work (category-by-account-report-work inc-exp?
-					  dates-list
-					  the-acount-destination-alist
-					  (lambda (account date)
-					    (make-gnc-collector-collector))
-					  account-reformat))
-	      (rpt (category-by-account-report-do-work work progress-range))
-	      (assets (assoc-ref rpt 'asset))
-	      (liabilities (assoc-ref rpt 'liability)))
-	 (set! assets-list (if assets (car assets)
-			       (map (lambda (d) 0) dates-list)))
-	 (set! liability-list (if liabilities (car liabilities)
-				  (map (lambda (d) 0) dates-list)))
-	 )
 
+       (set! assets-list
+             (process-datelist
+              (if inc-exp?
+                  accounts
+                  (assoc-ref classified-accounts ACCT-TYPE-ASSET))
+              dates-list #t))
+       (gnc:report-percent-done 70)
+       (set! liability-list
+             (process-datelist
+              (if inc-exp?
+                  accounts
+                  (assoc-ref classified-accounts ACCT-TYPE-LIABILITY))
+              dates-list #f))
        (gnc:report-percent-done 80)
        (set! net-list
              (map + assets-list liability-list))
@@ -413,8 +381,8 @@
                   (list
                    (gnc:make-report-anchor
                     (if inc-exp?
-                        category-barchart-income-uuid
-                        category-barchart-asset-uuid)
+                        "Income Over Time"
+                        "Assets Over Time")
                     report-obj
                     (list
                      (list gnc:pagename-display
@@ -426,8 +394,8 @@
                                (_ "Asset Chart")))))
                    (gnc:make-report-anchor
                     (if inc-exp?
-                        category-barchart-expense-uuid
-                        category-barchart-liability-uuid)
+                        "Expense Over Time"
+                        "Liabilities Over Time")
                     report-obj
                     (list
                      (list gnc:pagename-display
@@ -448,11 +416,6 @@
            (gnc:html-document-add-object! document chart)
              (if show-table?
              (let ((table (gnc:make-html-table)))
-                (gnc:html-table-set-style!
-                  table "table"
-                  'attribute (list "border" 0)
-                  'attribute (list "cellspacing" 0)
-                  'attribute (list "cellpadding" 4))
                 (gnc:html-table-set-col-headers!
                  table
                  (append
@@ -502,16 +465,11 @@
     (gnc:report-finished)
     document))
 
-;; Export reports
-
-(export net-worth-linechart-uuid)
-(define net-worth-linechart-uuid "d8b63264186b11e19038001558291366")
-
 ;; Here we define the actual report
 (gnc:define-report
  'version 1
  'name (N_ "Net Worth Linechart")
- 'report-guid net-worth-linechart-uuid
+ 'report-guid "d8b63264186b11e19038001558291366"
  'menu-path (list gnc:menuname-asset-liability)
  'options-generator (lambda () (options-generator #f))
  'renderer (lambda (report-obj) (net-renderer report-obj #f)))

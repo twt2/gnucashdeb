@@ -55,7 +55,7 @@ struct GncSqlBackend
     QofBackend be;				/**< QOF backend */
     GncSqlConnection* conn;		/**< SQL connection */
     /*@ dependent @*/
-    QofBook *book;	/**< The primary, main open book */
+    QofBook *primary_book;	/**< The primary, main open book */
     gboolean loading;				/**< We are performing an initial load */
     gboolean in_query;			/**< We are processing a query */
     gboolean is_pristine_db;		/**< Are we saving to a new pristine db? */
@@ -80,16 +80,6 @@ void gnc_sql_init( GncSqlBackend* be );
  * @param book Book to be loaded
  */
 void gnc_sql_load( GncSqlBackend* be, /*@ dependent @*/ QofBook *book, QofBackendLoadType loadType );
-
-/**
- * Register a commodity to be committed after loading is complete.
- *
- * Necessary to save corrections made while loading.
- * @param be SQL backend
- * @param comm The commodity item to be committed.
- */
-void gnc_sql_push_commodity_for_postload_processing (GncSqlBackend *be,
-						     gpointer *comm);
 
 /**
  * Save the contents of a book to an SQL database.

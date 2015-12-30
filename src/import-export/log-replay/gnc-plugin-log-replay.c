@@ -46,7 +46,7 @@ static GtkActionEntry gnc_plugin_actions [] =
 {
     {
         "LogReplayAction", GTK_STOCK_CONVERT, N_("_Replay GnuCash .log file..."), NULL,
-        N_("Replay a GnuCash log file after a crash. This cannot be undone."),
+        N_("Replay a GnuCash log file after a crash.  This cannot be undone."),
         G_CALLBACK (gnc_plugin_log_replay_cmd_new_log_replay)
     },
 };
@@ -126,7 +126,13 @@ gnc_plugin_log_replay_init (GncPluginLogreplay *plugin)
 static void
 gnc_plugin_log_replay_finalize (GObject *object)
 {
+    GncPluginLogreplay *plugin;
+    GncPluginLogreplayPrivate *priv;
+
     g_return_if_fail (GNC_IS_PLUGIN_LOG_REPLAY (object));
+
+    plugin = GNC_PLUGIN_LOG_REPLAY (object);
+    priv = GNC_PLUGIN_LOG_REPLAY_GET_PRIVATE(plugin);
 
     G_OBJECT_CLASS (parent_class)->finalize (object);
 }

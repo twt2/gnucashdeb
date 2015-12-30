@@ -33,37 +33,40 @@ typedef struct _invoice_window InvoiceWindow;
 #include "gncInvoice.h"
 #include "gncOwner.h"
 #include "dialog-search.h"
-#include "dialog-query-view.h"
+#include "dialog-query-list.h"
 
 typedef enum
 {
-    INVSORT_BY_STANDARD = 0,
-    INVSORT_BY_DATE,
-    INVSORT_BY_DATE_ENTERED,
-    INVSORT_BY_DESC,
-    INVSORT_BY_QTY,
-    INVSORT_BY_PRICE
+    BY_STANDARD = 0,
+    BY_DATE,
+    BY_DATE_ENTERED,
+    BY_DESC,
+    BY_QTY,
+    BY_PRICE
 } invoice_sort_type_t;
+
+
+#define GCONF_SECTION_INVOICE "dialogs/business/invoice"
+#define GCONF_SECTION_BILL    "dialogs/business/bill"
+#define GCONF_SECTION_VOUCHER "dialogs/business/voucher"
 
 
 /* Create and edit an invoice */
 InvoiceWindow * gnc_ui_invoice_edit (GncInvoice *invoice);
 InvoiceWindow * gnc_ui_invoice_new (GncOwner *owner, QofBook *book);
-
-/** Create a new invoice as a duplicate of the given existing invoice.
- *
- * \param invoice The invoice which is being duplicated
- * \param open_properties If TRUE, open the "invoice properties" dialog window after creating the new invoice
- * \param new_date If non-NULL, use this date as the date for the "opening date" and also as date for all invoice entries.
- *
- * \return The InvoiceWindow structure that contains a whole lot of things,
- * among others the "created_invoice" as a GncInvoice* pointer on the newly
- * created invoice.
- */
-InvoiceWindow * gnc_ui_invoice_duplicate (GncInvoice *invoice, gboolean open_properties, const GDate *new_date);
+InvoiceWindow * gnc_ui_invoice_duplicate (GncInvoice *invoice);
 
 /* Search for invoices */
 GNCSearchWindow * gnc_invoice_search (GncInvoice *start, GncOwner *owner, QofBook *book);
+
+/*
+ * These callbacks are for use with the gnc_general_search widget
+ *
+ * select() provides a Select Dialog and returns it.
+ * edit() opens the existing invoice for editing and returns NULL.
+ */
+GNCSearchWindow * gnc_invoice_search_select (gpointer start, gpointer book);
+GNCSearchWindow * gnc_invoice_search_edit (gpointer start, gpointer book);
 
 void gnc_business_call_owner_report (GncOwner *owner, Account *acc);
 
@@ -85,7 +88,7 @@ void gnc_invoice_save_page (InvoiceWindow *iw, GKeyFile *key_file, const gchar *
 
 GtkWidget * gnc_invoice_create_page (InvoiceWindow *iw, gpointer page);
 
-DialogQueryView *gnc_invoice_show_bills_due (QofBook *book, double days_in_advance);
+DialogQueryList *gnc_invoice_show_bills_due (QofBook *book, double days_in_advance);
 
 GtkWidget *gnc_invoice_get_register(InvoiceWindow *iw);
 

@@ -7,7 +7,7 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/import-export \
   -I${top_srcdir}/src/import-export/qif \
   -I${top_srcdir}/src/libqof/qof \
-  ${GUILE_CFLAGS} \
+  ${GUILE_INCS} \
   ${GLIB_CFLAGS}
 
 LDADD = \
@@ -41,7 +41,7 @@ GNC_TEST_DEPS = --gnc-module-dir ${top_builddir}/src/core-utils \
 
 TESTS_ENVIRONMENT = \
   GNC_TEST_FILES=${srcdir}/test-files \
-  $(shell ${abs_top_srcdir}/src/gnc-test-env.pl --noexports ${GNC_TEST_DEPS})
+  $(shell ${top_srcdir}/src/gnc-test-env --no-exports ${GNC_TEST_DEPS})
 
 check_PROGRAMS = \
   test-link \

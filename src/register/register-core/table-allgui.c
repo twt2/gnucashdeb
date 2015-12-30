@@ -345,21 +345,19 @@ gnc_table_get_label (Table *table, VirtualLocation virt_loc)
     return label;
 }
 
-static guint32
-gnc_table_get_fg_color_internal (Table *table, VirtualLocation virt_loc,
-                                 gboolean want_gtkrc)
+guint32
+gnc_table_get_fg_color (Table *table, VirtualLocation virt_loc)
 {
     TableGetFGColorHandler fg_color_handler;
-    const char *handler_name = "gtkrc";
+    const char *cell_name;
 
     if (!table || !table->model)
         return 0x0; /* black */
 
-    if (!want_gtkrc)
-        handler_name = gnc_table_get_cell_name (table, virt_loc);
+    cell_name = gnc_table_get_cell_name (table, virt_loc);
 
     fg_color_handler = gnc_table_model_get_fg_color_handler (table->model,
-                       handler_name);
+                       cell_name);
     if (!fg_color_handler)
         return 0x0;
 
@@ -367,24 +365,11 @@ gnc_table_get_fg_color_internal (Table *table, VirtualLocation virt_loc,
 }
 
 guint32
-gnc_table_get_fg_color (Table *table, VirtualLocation virt_loc)
-{
-    return gnc_table_get_fg_color_internal (table, virt_loc, FALSE);
-}
-
-guint32
-gnc_table_get_gtkrc_fg_color (Table *table, VirtualLocation virt_loc)
-{
-    return gnc_table_get_fg_color_internal (table, virt_loc, TRUE);
-}
-
-static guint32
-gnc_table_get_bg_color_internal (Table *table, VirtualLocation virt_loc,
-                                 gboolean *hatching,
-                                 gboolean want_gtkrc)
+gnc_table_get_bg_color (Table *table, VirtualLocation virt_loc,
+                        gboolean *hatching)
 {
     TableGetBGColorHandler bg_color_handler;
-    const char *handler_name = "gtkrc";
+    const char *cell_name;
 
     if (hatching)
         *hatching = FALSE;
@@ -392,11 +377,10 @@ gnc_table_get_bg_color_internal (Table *table, VirtualLocation virt_loc,
     if (!table || !table->model)
         return 0xffffff; /* white */
 
-    if (!want_gtkrc)
-        handler_name = gnc_table_get_cell_name (table, virt_loc);
+    cell_name = gnc_table_get_cell_name (table, virt_loc);
 
     bg_color_handler = gnc_table_model_get_bg_color_handler (table->model,
-            handler_name);
+                       cell_name);
     if (!bg_color_handler)
         return 0xffffff;
 
@@ -405,17 +389,27 @@ gnc_table_get_bg_color_internal (Table *table, VirtualLocation virt_loc,
 }
 
 guint32
-gnc_table_get_bg_color (Table *table, VirtualLocation virt_loc,
-                        gboolean *hatching)
-{
-    return gnc_table_get_bg_color_internal (table, virt_loc, hatching, FALSE);
-}
-
-guint32
 gnc_table_get_gtkrc_bg_color (Table *table, VirtualLocation virt_loc,
                               gboolean *hatching)
 {
-    return gnc_table_get_bg_color_internal (table, virt_loc, hatching, TRUE);
+    TableGetBGColorHandler bg_color_handler;
+    const char *cell_name;
+
+    if (hatching)
+        *hatching = FALSE;
+
+    if (!table || !table->model)
+        return 0xffffff; /* white */
+
+    cell_name = gnc_table_get_cell_name (table, virt_loc);
+
+    bg_color_handler = gnc_table_model_get_bg_color_handler (table->model,
+                       "gtkrc");
+    if (!bg_color_handler)
+        return 0xffffff;
+
+    return bg_color_handler (virt_loc, hatching,
+                             table->model->handler_user_data);
 }
 
 void
@@ -1135,7 +1129,7 @@ gnc_table_enter_update (Table *table,
 
         can_edit = enter (cell, cursor_position, start_selection, end_selection);
 
-        if (g_strcmp0 (old_value, cell->value) != 0)
+        if (safe_strcmp (old_value, cell->value) != 0)
         {
             if (gnc_table_model_read_only (table->model))
             {
@@ -1195,7 +1189,7 @@ gnc_table_leave_update (Table *table, VirtualLocation virt_loc)
 
         leave (cell);
 
-        if (g_strcmp0 (old_value, cell->value) != 0)
+        if (safe_strcmp (old_value, cell->value) != 0)
         {
             if (gnc_table_model_read_only (table->model))
             {
@@ -1301,7 +1295,7 @@ gnc_table_modify_update (Table *table,
         gnc_basic_cell_set_value (cell, newval);
     }
 
-    if (g_strcmp0 (old_value, cell->value) != 0)
+    if (safe_strcmp (old_value, cell->value) != 0)
     {
         changed = TRUE;
         cell->changed = TRUE;
@@ -1371,7 +1365,7 @@ gnc_table_direct_update (Table *table,
     result = cell->direct_update (cell, cursor_position, start_selection,
                                   end_selection, gui_data);
 
-    if (g_strcmp0 (old_value, cell->value) != 0)
+    if (safe_strcmp (old_value, cell->value) != 0)
     {
         if (!gnc_table_confirm_change (table, virt_loc))
         {
@@ -1725,10 +1719,13 @@ gnc_table_traverse_update(Table *table,
                           gncTableTraversalDir dir,
                           VirtualLocation *dest_loc)
 {
+    CellBlock *cb;
     gboolean abort_move;
 
     if ((table == NULL) || (dest_loc == NULL))
         return FALSE;
+
+    cb = table->current_cursor;
 
     ENTER("proposed (%d %d) -> (%d %d)\n",
           virt_loc.vcell_loc.virt_row, virt_loc.vcell_loc.virt_row,
@@ -1771,8 +1768,6 @@ gnc_table_traverse_update(Table *table,
     {
         VirtualLocation new_loc = *dest_loc;
         int increment;
-        int col_offset = 0;
-        gboolean second_traversal = FALSE;
 
         /* Keep going in the specified direction until we find a valid
          * row to land on, or we hit the end of the table. At the end,
@@ -1792,25 +1787,8 @@ gnc_table_traverse_update(Table *table,
 
             if (!gnc_table_move_vertical_position (table, &new_loc, increment))
             {
-                /* Special case: if there is no valid cell at all in the column
-                 * we are scanning, (both up and down directions didn't work)
-                 * attempt to do the same in the next column.
-                 * Hack alert: there is no check to see if there really is a
-                 * valid next column. However this situation so far only happens
-                 * after a pagedown/pageup key event in the SX transaction editor
-                 * which always tests the first column to start (which has no
-                 * editable cells) and in that situation there is a valid next column.
-                 */
-                if (!second_traversal)
-                    second_traversal = TRUE;
-                else
-                {
-                    second_traversal = FALSE;
-                    col_offset++;
-                }
                 increment *= -1;
                 new_loc = *dest_loc;
-                new_loc.phys_col_offset = new_loc.phys_col_offset + col_offset;
             }
         }
 

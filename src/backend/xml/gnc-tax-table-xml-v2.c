@@ -104,7 +104,6 @@ taxtable_dom_tree_create (GncTaxTable *table)
 {
     xmlNodePtr ret, entries;
     GList *list;
-    kvp_frame *kf;
 
     ret = xmlNewNode(NULL, BAD_CAST gnc_taxtable_string);
     xmlSetProp(ret, BAD_CAST "version", BAD_CAST taxtable_version_string);
@@ -129,16 +128,6 @@ taxtable_dom_tree_create (GncTaxTable *table)
     {
         GncTaxTableEntry *entry = list->data;
         xmlAddChild(entries, ttentry_dom_tree_create (entry));
-    }
-
-    kf = qof_instance_get_slots (QOF_INSTANCE(table));
-    if (kf)
-    {
-        xmlNodePtr kvpnode = kvp_frame_to_dom_tree(taxtable_slots_string, kf);
-        if (kvpnode)
-        {
-            xmlAddChild(ret, kvpnode);
-        }
     }
 
     return ret;
@@ -359,10 +348,10 @@ taxtable_entries_handler (xmlNodePtr node, gpointer taxtable_pdata)
     {
         GncTaxTableEntry *entry;
 
-        if (g_strcmp0 ("text", (char*)mark->name) == 0)
+        if (safe_strcmp ("text", (char*)mark->name) == 0)
             continue;
 
-        if (g_strcmp0 (gnc_taxtableentry_string, (char*)mark->name))
+        if (safe_strcmp (gnc_taxtableentry_string, (char*)mark->name))
             return FALSE;
 
         entry = dom_tree_to_ttentry (mark, pdata->book);
@@ -379,10 +368,7 @@ taxtable_entries_handler (xmlNodePtr node, gpointer taxtable_pdata)
 static gboolean
 taxtable_slots_handler (xmlNodePtr node, gpointer taxtable_pdata)
 {
-    struct taxtable_pdata *pdata = taxtable_pdata;
-
-    return dom_tree_to_kvp_frame_given
-           (node, xaccAccountGetSlots (pdata->table));
+    return TRUE;
 }
 
 static struct dom_tree_handler taxtable_handlers_v2[] =
@@ -429,10 +415,13 @@ gnc_taxtable_end_handler(gpointer data_for_children,
                          gpointer parent_data, gpointer global_data,
                          gpointer *result, const gchar *tag)
 {
+    int successful;
     GncTaxTable *table;
     xmlNodePtr tree = (xmlNodePtr)data_for_children;
     gxpf_data *gdata = (gxpf_data*)global_data;
     QofBook *book = gdata->bookdata;
+
+    successful = TRUE;
 
     if (parent_data)
     {

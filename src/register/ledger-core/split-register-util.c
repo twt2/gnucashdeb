@@ -24,7 +24,6 @@
 
 #include <glib.h>
 
-#include <gnc-gdate-utils.h>
 #include "pricecell.h"
 #include "split-register-p.h"
 
@@ -52,7 +51,7 @@ gnc_split_register_init_info (SplitRegister *reg)
     info->default_account = *guid_null ();
     info->template_account = *guid_null ();
 
-    info->last_date_entered = gnc_time64_get_today_start ();
+    info->last_date_entered = gnc_timet_get_today_start ();
 
     info->first_pass = TRUE;
     info->full_refresh = TRUE;
@@ -338,78 +337,18 @@ gnc_split_register_set_trans_visible (SplitRegister *reg,
 void
 gnc_split_register_set_cell_fractions (SplitRegister *reg, Split *split)
 {
-    Account *split_account;
-    Account *reg_account;
+    Account *account;
     Transaction *trans;
-    gnc_commodity *trans_currency;  /* or default currency if no transaction */
+    gnc_commodity *currency;
     PriceCell *cell;
     int fraction;
-    gboolean trading_accts;
-    gnc_commodity *commodity;
-    
-    /* This function must use the same algorithm as gnc_split_register_get_shares_entry
-       and gnc_split_register_get_debcred_entry.  Changes here may require changes in
-       one of them or vice versa. */
-
-    /* If the split has a new account use that, otherwise use the one it
-       had before we started editing it. */
-    split_account = gnc_split_register_get_account (reg, XFRM_CELL);
-    if (!split_account)
-        split_account = xaccSplitGetAccount (split);
-
-    reg_account = gnc_split_register_get_default_account (reg);
 
     trans = xaccSplitGetParent (split);
-    if (trans)
-    {
-        trading_accts = xaccTransUseTradingAccounts (trans);
-        trans_currency = xaccTransGetCurrency (trans);
-    }
-    else
-    {
-        /* It should be ok to use the current book since that's what 
-           gnc_split_register_get_account uses to find the account. */
-        trading_accts = qof_book_use_trading_accounts (gnc_get_current_book());
-        trans_currency = gnc_default_currency();
-    }
+    currency = xaccTransGetCurrency (trans);
+    if (!currency)
+        currency = gnc_default_currency ();
 
-    /* What follows is similar to the tests in gnc_split_register_get_debcred_entry */
-    if (trading_accts)
-    {
-        if (reg->type == STOCK_REGISTER ||
-            reg->type == CURRENCY_REGISTER ||
-            reg->type == PORTFOLIO_LEDGER)
-        {
-            /* These tests are similar to gnc_split_register_use_security_cells */
-            if (!split_account)
-                commodity = trans_currency;
-            else if (trading_accts &&
-                     !gnc_commodity_is_iso (xaccAccountGetCommodity(split_account)))
-                commodity = trans_currency;
-            else if (xaccAccountIsPriced (split_account))
-                commodity = trans_currency;
-            else
-                commodity = xaccAccountGetCommodity (split_account);
-        }
-        else
-        {
-            commodity = xaccAccountGetCommodity (split_account);
-        }
-    }
-    else
-    {
-        /* Not trading accounts */
-        if (reg->type == STOCK_REGISTER ||
-            reg->type == CURRENCY_REGISTER ||
-            reg->type == PORTFOLIO_LEDGER)
-            commodity = trans_currency;
-        else
-            commodity = xaccAccountGetCommodity (reg_account);
-    }
-    if (!commodity)
-        commodity = gnc_default_currency ();
-
-    fraction = gnc_commodity_get_fraction (commodity);
+    fraction = gnc_commodity_get_fraction (currency);
 
     cell = (PriceCell *) gnc_table_layout_get_cell (reg->table->layout,
             DEBT_CELL);
@@ -419,12 +358,13 @@ gnc_split_register_set_cell_fractions (SplitRegister *reg, Split *split)
             CRED_CELL);
     gnc_price_cell_set_fraction (cell, fraction);
 
+    account = xaccSplitGetAccount (split);
+
     cell = (PriceCell *) gnc_table_layout_get_cell (reg->table->layout,
             SHRS_CELL);
 
-    /* gnc_split_register_get_shares_entry always uses the split's commodity */
-    if (split_account)
-        gnc_price_cell_set_fraction (cell, xaccAccountGetCommoditySCU (split_account));
+    if (account)
+        gnc_price_cell_set_fraction (cell, xaccAccountGetCommoditySCU (account));
     else
         gnc_price_cell_set_fraction (cell, 1000000);
 }
@@ -439,16 +379,12 @@ gnc_split_register_get_passive_cursor (SplitRegister *reg)
     case REG_STYLE_LEDGER:
     case REG_STYLE_AUTO_LEDGER:
         cursor_name = reg->use_double_line ?
-                      (reg->use_tran_num_for_num_field ? CURSOR_DOUBLE_LEDGER
-                                                : CURSOR_DOUBLE_LEDGER_NUM_ACTN)
-                        : CURSOR_SINGLE_LEDGER;
+                      CURSOR_DOUBLE_LEDGER : CURSOR_SINGLE_LEDGER;
         break;
 
     case REG_STYLE_JOURNAL:
         cursor_name = reg->use_double_line ?
-                      (reg->use_tran_num_for_num_field ? CURSOR_DOUBLE_JOURNAL
-                                                : CURSOR_DOUBLE_JOURNAL_NUM_ACTN)
-                        : CURSOR_SINGLE_JOURNAL;
+                      CURSOR_DOUBLE_JOURNAL : CURSOR_SINGLE_JOURNAL;
         break;
     }
 
@@ -473,9 +409,7 @@ gnc_split_register_get_active_cursor (SplitRegister *reg)
         if (!info->trans_expanded)
         {
             cursor_name = reg->use_double_line ?
-                      (reg->use_tran_num_for_num_field ? CURSOR_DOUBLE_LEDGER
-                                                : CURSOR_DOUBLE_LEDGER_NUM_ACTN)
-                        : CURSOR_SINGLE_LEDGER;
+                          CURSOR_DOUBLE_LEDGER : CURSOR_SINGLE_LEDGER;
             break;
         }
 
@@ -483,9 +417,7 @@ gnc_split_register_get_active_cursor (SplitRegister *reg)
     case REG_STYLE_AUTO_LEDGER:
     case REG_STYLE_JOURNAL:
         cursor_name = reg->use_double_line ?
-                      (reg->use_tran_num_for_num_field ? CURSOR_DOUBLE_JOURNAL
-                                                : CURSOR_DOUBLE_JOURNAL_NUM_ACTN)
-                        : CURSOR_SINGLE_JOURNAL;
+                      CURSOR_DOUBLE_JOURNAL : CURSOR_SINGLE_JOURNAL;
         break;
     }
 
@@ -564,10 +496,8 @@ gnc_split_register_cursor_name_to_class (const char *cursor_name)
 
     if (strcmp (cursor_name, CURSOR_SINGLE_LEDGER) == 0  ||
             strcmp (cursor_name, CURSOR_DOUBLE_LEDGER) == 0  ||
-            strcmp (cursor_name, CURSOR_DOUBLE_LEDGER_NUM_ACTN) == 0  ||
             strcmp (cursor_name, CURSOR_SINGLE_JOURNAL) == 0 ||
-            strcmp (cursor_name, CURSOR_DOUBLE_JOURNAL) == 0 ||
-            strcmp (cursor_name, CURSOR_DOUBLE_JOURNAL_NUM_ACTN) == 0)
+            strcmp (cursor_name, CURSOR_DOUBLE_JOURNAL) == 0)
         return CURSOR_CLASS_TRANS;
 
     if (strcmp (cursor_name, CURSOR_SPLIT) == 0)

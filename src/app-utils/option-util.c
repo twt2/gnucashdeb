@@ -29,11 +29,10 @@
 #include <time.h>
 #include <string.h>
 
-#include "Account.h"
 #include "option-util.h"
-#include "engine-helpers-guile.h"
+#include "engine-helpers.h"
 #include "glib-helpers.h"
-#include "gnc-guile-utils.h"
+#include "guile-util.h"
 #include "qof.h"
 #include "guile-mappings.h"
 
@@ -126,6 +125,14 @@ static int last_db_handle = 0;
 
 
 /*******************************************************************/
+
+gboolean
+gnc_option_get_changed (GNCOption *option)
+{
+    if (!option) return FALSE;
+    return option->changed;
+}
+
 void
 gnc_option_set_changed (GNCOption *option, gboolean changed)
 {
@@ -191,7 +198,7 @@ gnc_option_db_init(GNCOptionDB *odb)
 {
     SCM func = scm_c_eval_string("gnc:send-options");
 
-    scm_call_2(func, scm_from_int (odb->handle), odb->guile_options);
+    scm_call_2(func, scm_int2num(odb->handle), odb->guile_options);
 }
 
 
@@ -308,12 +315,11 @@ gnc_option_db_load_from_kvp(GNCOptionDB* odb, kvp_frame *slots)
 }
 
 void
-gnc_option_db_save_to_kvp(GNCOptionDB* odb, kvp_frame *slots, gboolean clear_kvp)
+gnc_option_db_save_to_kvp(GNCOptionDB* odb, kvp_frame *slots)
 {
     static SCM scm_to_kvp = SCM_UNDEFINED;
     static SCM kvp_option_path = SCM_UNDEFINED;
     SCM scm_slots;
-    SCM scm_clear_kvp;
 
     if (!odb || !slots) return;
 
@@ -337,11 +343,12 @@ gnc_option_db_save_to_kvp(GNCOptionDB* odb, kvp_frame *slots, gboolean clear_kvp
             return;
         }
     }
-    scm_slots = SWIG_NewPointerObj(slots, SWIG_TypeQuery("_p_KvpFrame"), 0);
-    scm_clear_kvp = scm_from_bool (clear_kvp);
 
-    scm_call_4 (scm_to_kvp, odb->guile_options, scm_slots, kvp_option_path, scm_clear_kvp);
+    scm_slots = SWIG_NewPointerObj(slots, SWIG_TypeQuery("p_KvpFrame"), 0);
+
+    scm_call_3 (scm_to_kvp, odb->guile_options, scm_slots, kvp_option_path);
 }
+
 /********************************************************************\
  * gnc_option_db_destroy                                            *
  *   unregister the scheme options and free all the memory          *
@@ -473,7 +480,7 @@ gnc_option_db_register_change_callback(GNCOptionDB *odb,
     }
     else
     {
-        arg = scm_from_utf8_string(name);
+        arg = scm_makfrom0str(name);
     }
     args = scm_cons(arg, args);
 
@@ -484,7 +491,7 @@ gnc_option_db_register_change_callback(GNCOptionDB *odb,
     }
     else
     {
-        arg = scm_from_utf8_string(section);
+        arg = scm_makfrom0str(section);
     }
     args = scm_cons(arg, args);
 
@@ -595,7 +602,7 @@ gnc_option_section(GNCOption *option)
 {
     initialize_getters();
 
-    return gnc_scm_call_1_to_string(getters.section, option->guile_option);
+    return gnc_guile_call1_to_string(getters.section, option->guile_option);
 }
 
 
@@ -612,7 +619,7 @@ gnc_option_name(GNCOption *option)
 {
     initialize_getters();
 
-    return gnc_scm_call_1_to_string(getters.name, option->guile_option);
+    return gnc_guile_call1_to_string(getters.name, option->guile_option);
 }
 
 
@@ -629,7 +636,7 @@ gnc_option_type(GNCOption *option)
 {
     initialize_getters();
 
-    return gnc_scm_call_1_symbol_to_string(getters.type,
+    return gnc_guile_call1_symbol_to_string(getters.type,
                                             option->guile_option);
 }
 
@@ -647,7 +654,7 @@ gnc_option_sort_tag(GNCOption *option)
 {
     initialize_getters();
 
-    return gnc_scm_call_1_to_string(getters.sort_tag, option->guile_option);
+    return gnc_guile_call1_to_string(getters.sort_tag, option->guile_option);
 }
 
 
@@ -664,7 +671,7 @@ gnc_option_documentation(GNCOption *option)
 {
     initialize_getters();
 
-    return gnc_scm_call_1_to_string(getters.documentation,
+    return gnc_guile_call1_to_string(getters.documentation,
                                      option->guile_option);
 }
 
@@ -682,7 +689,7 @@ gnc_option_getter(GNCOption *option)
 {
     initialize_getters();
 
-    return gnc_scm_call_1_to_procedure(getters.getter,
+    return gnc_guile_call1_to_procedure(getters.getter,
                                         option->guile_option);
 }
 
@@ -700,7 +707,7 @@ gnc_option_setter(GNCOption *option)
 {
     initialize_getters();
 
-    return gnc_scm_call_1_to_procedure(getters.setter,
+    return gnc_guile_call1_to_procedure(getters.setter,
                                         option->guile_option);
 }
 
@@ -718,7 +725,7 @@ gnc_option_default_getter(GNCOption *option)
 {
     initialize_getters();
 
-    return gnc_scm_call_1_to_procedure(getters.default_getter,
+    return gnc_guile_call1_to_procedure(getters.default_getter,
                                         option->guile_option);
 }
 
@@ -736,7 +743,7 @@ gnc_option_value_validator(GNCOption *option)
 {
     initialize_getters();
 
-    return gnc_scm_call_1_to_procedure(getters.value_validator,
+    return gnc_guile_call1_to_procedure(getters.value_validator,
                                         option->guile_option);
 }
 
@@ -826,7 +833,7 @@ gnc_option_num_permissible_values(GNCOption *option)
 
     if (scm_is_exact(value))
     {
-        return scm_to_int(value);
+        return scm_num2int(value, SCM_ARG1, G_STRFUNC);
     }
     else
     {
@@ -855,7 +862,7 @@ gnc_option_permissible_value_index(GNCOption *option, SCM search_value)
     }
     else
     {
-        return scm_to_int(value);
+        return scm_num2int(value, SCM_ARG1, G_STRFUNC);
     }
 }
 
@@ -881,7 +888,7 @@ gnc_option_permissible_value(GNCOption *option, int index)
     initialize_getters();
 
     value = scm_call_2(getters.index_to_value, option->guile_option,
-                       scm_from_int (index));
+                       scm_int2num(index));
 
     return value;
 }
@@ -908,13 +915,13 @@ gnc_option_permissible_value_name(GNCOption *option, int index)
     initialize_getters();
 
     name = scm_call_2(getters.index_to_name, option->guile_option,
-                      scm_from_int (index));
+                      scm_int2num(index));
     if (name == SCM_UNDEFINED)
         return NULL;
     if (!scm_is_string(name))
         return NULL;
 
-    return gnc_scm_to_utf8_string (name);
+    return g_strdup(scm_to_locale_string(name));
 }
 
 
@@ -939,13 +946,13 @@ gnc_option_permissible_value_description(GNCOption *option, int index)
     initialize_getters();
 
     help = scm_call_2(getters.index_to_description, option->guile_option,
-                      scm_from_int (index));
+                      scm_int2num(index));
     if (help == SCM_UNDEFINED)
         return NULL;
     if (!scm_is_string(help))
         return NULL;
 
-    return gnc_scm_to_utf8_string (help);
+    return g_strdup(scm_to_locale_string(help));
 }
 
 
@@ -1041,7 +1048,7 @@ gnc_option_get_account_type_list(GNCOption *option)
         }
         else
         {
-            type = scm_to_long (item);
+            type = scm_num2long (item, SCM_ARG1, G_STRFUNC);
             type_list = g_list_prepend (type_list, GINT_TO_POINTER (type));
         }
     }
@@ -1083,7 +1090,7 @@ gboolean gnc_option_get_range_info(GNCOption *option,
         return FALSE;
 
     if (lower_bound != NULL)
-        *lower_bound = scm_to_double(value);
+        *lower_bound = scm_num2dbl(value, G_STRFUNC);
 
     if (!scm_is_list(list) || scm_is_null(list))
         return FALSE;
@@ -1096,7 +1103,7 @@ gboolean gnc_option_get_range_info(GNCOption *option,
         return FALSE;
 
     if (upper_bound != NULL)
-        *upper_bound = scm_to_double(value);
+        *upper_bound = scm_num2dbl(value, G_STRFUNC);
 
     if (!scm_is_list(list) || scm_is_null(list))
         return FALSE;
@@ -1113,7 +1120,7 @@ gboolean gnc_option_get_range_info(GNCOption *option,
      */
     if (num_decimals != NULL)
     {
-        double decimals = scm_to_double(value);
+        double decimals = scm_num2dbl(value, G_STRFUNC);
         *num_decimals = (int)decimals;
     }
 
@@ -1128,7 +1135,7 @@ gboolean gnc_option_get_range_info(GNCOption *option,
         return FALSE;
 
     if (step_size != NULL)
-        *step_size = scm_to_double(value);
+        *step_size = scm_num2dbl(value, G_STRFUNC);
 
     return TRUE;
 }
@@ -1158,7 +1165,7 @@ gnc_option_color_range(GNCOption *option)
     if (!scm_is_number(value))
         return 0.0;
 
-    return scm_to_double(value);
+    return scm_num2dbl(value, G_STRFUNC);
 }
 
 
@@ -1271,7 +1278,7 @@ gnc_option_get_color_info(GNCOption *option,
 
     scale = 1.0 / scale;
 
-    rgba = scm_to_double(SCM_CAR(value));
+    rgba = scm_num2dbl(SCM_CAR(value), G_STRFUNC);
     if (red != NULL)
         *red = MIN(1.0, rgba * scale);
 
@@ -1279,7 +1286,7 @@ gnc_option_get_color_info(GNCOption *option,
     if (!scm_is_list(value) || scm_is_null(value) || !scm_is_number(SCM_CAR(value)))
         return FALSE;
 
-    rgba = scm_to_double(SCM_CAR(value));
+    rgba = scm_num2dbl(SCM_CAR(value), G_STRFUNC);
     if (green != NULL)
         *green = MIN(1.0, rgba * scale);
 
@@ -1287,7 +1294,7 @@ gnc_option_get_color_info(GNCOption *option,
     if (!scm_is_list(value) || scm_is_null(value) || !scm_is_number(SCM_CAR(value)))
         return FALSE;
 
-    rgba = scm_to_double(SCM_CAR(value));
+    rgba = scm_num2dbl(SCM_CAR(value), G_STRFUNC);
     if (blue != NULL)
         *blue = MIN(1.0, rgba * scale);
 
@@ -1295,7 +1302,7 @@ gnc_option_get_color_info(GNCOption *option,
     if (!scm_is_list(value) || scm_is_null(value) || !scm_is_number(SCM_CAR(value)))
         return FALSE;
 
-    rgba = scm_to_double(SCM_CAR(value));
+    rgba = scm_num2dbl(SCM_CAR(value), G_STRFUNC);
     if (alpha != NULL)
         *alpha = MIN(1.0, rgba * scale);
 
@@ -1340,7 +1347,7 @@ compare_sections(gconstpointer a, gconstpointer b)
     const GNCOptionSection *sa = a;
     const GNCOptionSection *sb = b;
 
-    return g_strcmp0(sa->section_name, sb->section_name);
+    return safe_strcmp(sa->section_name, sb->section_name);
 }
 
 static gint
@@ -1352,7 +1359,7 @@ compare_option_tags(gconstpointer a, gconstpointer b)
     char *tag_b = gnc_option_sort_tag(ob);
     gint result;
 
-    result = g_strcmp0(tag_a, tag_b);
+    result = safe_strcmp(tag_a, tag_b);
 
     if (tag_a != NULL)
         free(tag_a);
@@ -1362,6 +1369,29 @@ compare_option_tags(gconstpointer a, gconstpointer b)
 
     return result;
 }
+
+#if 0
+static gint
+compare_option_names(gconstpointer a, gconstpointer b)
+{
+    GNCOption *oa = (GNCOption *) a;
+    GNCOption *ob = (GNCOption *) b;
+    char *name_a = gnc_option_name(oa);
+    char *name_b = gnc_option_name(ob);
+    gint result;
+
+    result = safe_strcmp(name_a, name_b);
+
+    if (name_a != NULL)
+        free(name_a);
+
+    if (name_b != NULL)
+        free(name_b);
+
+    return result;
+}
+#endif
+
 
 /********************************************************************\
  * gnc_option_db_dirty                                              *
@@ -1566,7 +1596,7 @@ gnc_option_db_get_option_by_name(GNCOptionDB *odb, const char *section_name,
         option = option_node->data;
 
         node_name = gnc_option_name(option);
-        result = g_strcmp0(name, node_name);
+        result = safe_strcmp(name, node_name);
         free(node_name);
 
         if (result == 0)
@@ -1683,7 +1713,6 @@ gnc_commit_option(GNCOption *option)
         char *section, *name;
         const gchar *message;
         const gchar *format = _("There is a problem with option %s:%s.\n%s");
-        char * str;
 
         /* Second element is error message */
         oops = SCM_CADR(result);
@@ -1693,7 +1722,7 @@ gnc_commit_option(GNCOption *option)
             return;
         }
 
-        message = gnc_scm_to_utf8_string (oops);
+        message = scm_to_locale_string(oops);
         name = gnc_option_name(option);
         section = gnc_option_section(option);
 
@@ -1721,7 +1750,6 @@ gnc_commit_option(GNCOption *option)
             free(name);
         if (section != NULL)
             free(section);
-        g_free ((gpointer *) message);
     }
 }
 
@@ -1896,7 +1924,7 @@ gnc_option_db_get_default_section(GNCOptionDB *odb)
     if (!scm_is_string(value))
         return NULL;
 
-    return gnc_scm_to_utf8_string (value);
+    return g_strdup(scm_to_locale_string(value));
 }
 
 
@@ -2002,7 +2030,7 @@ gnc_option_db_lookup_string_option(GNCOptionDB *odb,
         {
             value = scm_call_0(getter);
             if (scm_is_string(value))
-                return gnc_scm_to_utf8_string (value);
+                return g_strdup(scm_to_locale_string(value));
         }
     }
 
@@ -2067,7 +2095,7 @@ gnc_option_db_lookup_multichoice_option(GNCOptionDB *odb,
         {
             value = scm_call_0(getter);
             if (scm_is_symbol(value))
-                return gnc_scm_symbol_to_locale_string (value);
+                return g_strdup(SCM_SYMBOL_CHARS(value));
         }
     }
 
@@ -2086,7 +2114,7 @@ gnc_option_db_lookup_multichoice_option(GNCOptionDB *odb,
  *   set_ab_value argument. If the default_value argument is NULL,  *
  *   copies the current date to set_ab_value. Whatever value is     *
  *   stored in set_ab_value is returned as an approximate (no       *
- *   nanoseconds) time64 value.  set_ab_value may be NULL, in which *
+ *   nanoseconds) time_t value.  set_ab_value may be NULL, in which *
  *   case only the return value can be used. If is_relative is      *
  *   non-NULL, it is set to whether the date option is currently    *
  *   storing a relative date.  If it is, and set_rel_value          *
@@ -2100,9 +2128,9 @@ gnc_option_db_lookup_multichoice_option(GNCOptionDB *odb,
  *       set_ab_value  - location to store absolute option value    *
  *       set_rel_value - location to store relative option value    *
  *       default       - default value if not found                 *
- * Return: time64 approximation of set_value                        *
+ * Return: time_t approximation of set_value                        *
 \********************************************************************/
-time64
+time_t
 gnc_option_db_lookup_date_option(GNCOptionDB *odb,
                                  const char *section,
                                  const char *name,
@@ -2153,7 +2181,7 @@ gnc_option_db_lookup_date_option(GNCOptionDB *odb,
 
                 symbol = gnc_date_option_value_get_type (value);
 
-                if (g_strcmp0(symbol, "relative") == 0)
+                if (safe_strcmp(symbol, "relative") == 0)
                 {
                     SCM relative = gnc_date_option_value_get_relative (value);
 
@@ -2161,10 +2189,11 @@ gnc_option_db_lookup_date_option(GNCOptionDB *odb,
                         *is_relative = TRUE;
 
                     if (set_rel_value != NULL)
-                        *set_rel_value = gnc_scm_symbol_to_locale_string (relative);
+                        *set_rel_value = g_strdup(SCM_SYMBOL_CHARS (relative));
                 }
 
-                g_free (symbol);
+                if (symbol)
+                    free (symbol);
             }
         }
     }
@@ -2172,7 +2201,7 @@ gnc_option_db_lookup_date_option(GNCOptionDB *odb,
     {
         if (default_value == NULL)
         {
-            set_ab_value->tv_sec = gnc_time (NULL);
+            set_ab_value->tv_sec = time (NULL);
             set_ab_value->tv_nsec = 0;
         }
         else
@@ -2213,7 +2242,7 @@ gnc_option_db_lookup_number_option(GNCOptionDB *odb,
         {
             value = scm_call_0(getter);
             if (scm_is_number(value))
-                return scm_to_double(value);
+                return scm_num2dbl(value, G_STRFUNC);
         }
     }
 
@@ -2321,7 +2350,7 @@ gnc_option_db_lookup_list_option(GNCOptionDB *odb,
             return default_value;
         }
 
-        list = g_slist_prepend(list, gnc_scm_symbol_to_locale_string (item));
+        list = g_slist_prepend(list, g_strdup(SCM_SYMBOL_CHARS(item)));
     }
 
     if (!scm_is_list(value) || !scm_is_null(value))
@@ -2468,7 +2497,7 @@ gnc_option_db_set_number_option(GNCOptionDB *odb,
     if (option == NULL)
         return FALSE;
 
-    scm_value = scm_from_double (value);
+    scm_value = scm_make_real(value);
 
     scm_value = gnc_option_valid_value(option, scm_value);
     if (scm_value == SCM_UNDEFINED)
@@ -2549,7 +2578,7 @@ gnc_option_db_set_string_option(GNCOptionDB *odb,
         return FALSE;
 
     if (value)
-        scm_value = scm_from_utf8_string(value);
+        scm_value = scm_mem2string(value, strlen(value));
     else
         scm_value = SCM_BOOL_F;
 
@@ -2580,7 +2609,12 @@ gnc_option_date_option_get_subtype(GNCOption *option)
 
     initialize_getters();
 
-    return gnc_scm_call_1_symbol_to_string(getters.date_option_subtype, option->guile_option);
+    value = scm_call_1(getters.date_option_subtype, option->guile_option);
+
+    if (scm_is_symbol(value))
+        return g_strdup(SCM_SYMBOL_CHARS(value));
+    else
+        return NULL;
 }
 
 /*******************************************************************\
@@ -2597,7 +2631,11 @@ gnc_date_option_value_get_type (SCM option_value)
 
     initialize_getters();
 
-    return gnc_scm_call_1_symbol_to_string (getters.date_option_value_type, option_value);
+    value = scm_call_1 (getters.date_option_value_type, option_value);
+    if (!scm_is_symbol (value))
+        return NULL;
+
+    return g_strdup(SCM_SYMBOL_CHARS (value));
 }
 
 /*******************************************************************\
@@ -2673,7 +2711,7 @@ gboolean gnc_dateformat_option_value_parse(SCM value, QofDateFormat *format,
         gboolean *years, char **custom)
 {
     SCM val;
-    gchar *str;
+    const char *str;
 
     if (!scm_is_list(value) || scm_is_null(value))
         return TRUE;
@@ -2686,7 +2724,7 @@ gboolean gnc_dateformat_option_value_parse(SCM value, QofDateFormat *format,
         value = SCM_CDR(value);
         if (!scm_is_symbol(val))
             break;
-        str = gnc_scm_symbol_to_locale_string  (val);
+        str = SCM_SYMBOL_CHARS (val);
         if (!str)
             break;
 
@@ -2694,18 +2732,16 @@ gboolean gnc_dateformat_option_value_parse(SCM value, QofDateFormat *format,
         {
             if (gnc_date_string_to_dateformat(str, format))
             {
-                g_free (str);
                 break;
             }
         }
-        g_free (str);
 
         /* parse the months */
         val = SCM_CAR(value);
         value = SCM_CDR(value);
         if (!scm_is_symbol(val))
             break;
-        str = gnc_scm_symbol_to_locale_string (val);
+        str = SCM_SYMBOL_CHARS (val);
         if (!str)
             break;
 
@@ -2713,11 +2749,9 @@ gboolean gnc_dateformat_option_value_parse(SCM value, QofDateFormat *format,
         {
             if (gnc_date_string_to_monthformat(str, months))
             {
-                g_free (str);
                 break;
             }
         }
-        g_free (str);
 
         /* parse the years */
         val = SCM_CAR(value);
@@ -2737,7 +2771,7 @@ gboolean gnc_dateformat_option_value_parse(SCM value, QofDateFormat *format,
             break;
 
         if (custom)
-            *custom = gnc_scm_to_utf8_string (val);
+            *custom = g_strdup(scm_to_locale_string(val));
 
         return FALSE;
 
@@ -2756,7 +2790,7 @@ SCM gnc_dateformat_option_set_value(QofDateFormat format, GNCDateMonthFormat mon
 
     /* build the list in reverse order */
     if (custom)
-        val = scm_from_utf8_string(custom);
+        val = scm_mem2string(custom, strlen(custom));
     else
         val = SCM_BOOL_F;
     value = scm_cons(val, value);
@@ -2766,14 +2800,14 @@ SCM gnc_dateformat_option_set_value(QofDateFormat format, GNCDateMonthFormat mon
 
     str = gnc_date_monthformat_to_string(months);
     if (str)
-        val = scm_from_locale_symbol(str);
+        val = scm_str2symbol(str);
     else
         val = SCM_BOOL_F;
     value = scm_cons(val, value);
 
     str = gnc_date_dateformat_to_string(format);
     if (str)
-        val = scm_from_locale_symbol(str);
+        val = scm_str2symbol(str);
     else
         val = SCM_BOOL_F;
     value = scm_cons(val, value);

@@ -25,8 +25,9 @@
  */
 
 #include "config.h"
-#include <libgnomecanvas/libgnomecanvas.h>
-#include <gdk/gdkkeysyms.h>
+
+#include <gnome.h>
+
 #include "gnucash-date-picker.h"
 
 
@@ -88,18 +89,18 @@ gnc_date_picker_key_event(GtkWidget *widget, GdkEventKey *event, gpointer data)
 
     switch (event->keyval)
     {
-    case GDK_KEY_Return:
-    case GDK_KEY_KP_Enter:
+    case GDK_Return:
+    case GDK_KP_Enter:
         g_signal_emit (date_picker, gnc_date_picker_signals[DATE_PICKED], 0);
         g_signal_stop_emission_by_name (widget, "key_press_event");
 
         return TRUE;
 
-    case GDK_KEY_Up:
-    case GDK_KEY_Down:
-    case GDK_KEY_Left:
-    case GDK_KEY_Right:
-    case GDK_KEY_space:
+    case GDK_Up:
+    case GDK_Down:
+    case GDK_Left:
+    case GDK_Right:
+    case GDK_space:
         /* these go to the calendar */
         return FALSE;
 
@@ -119,12 +120,12 @@ gnc_date_picker_key_event(GtkWidget *widget, GdkEventKey *event, gpointer data)
 static void
 gnc_date_picker_class_init (GNCDatePickerClass *date_picker_class)
 {
-    GObjectClass  *object_class;
+    GtkObjectClass  *object_class;
 
     gnc_date_picker_parent_class =
-        g_type_class_peek_parent (date_picker_class);
+        gtk_type_class (gnome_canvas_widget_get_type());
 
-    object_class = G_OBJECT_CLASS (date_picker_class);
+    object_class = GTK_OBJECT_CLASS (date_picker_class);
 
     gnc_date_picker_signals[DATE_SELECTED] =
         g_signal_new("date_selected",

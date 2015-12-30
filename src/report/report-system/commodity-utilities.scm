@@ -644,11 +644,8 @@
     (if (not (null? curr-accounts))
 	;; Go through all splits and add up all value-amounts
 	;; and share-amounts
-	;; However skip splits in trading accounts as these counterbalance
-	;; the actual value and share amounts back to zero
 	(for-each 
 	 (lambda (a)
-	   (if (not (eq? (xaccAccountGetType (xaccSplitGetAccount a)) ACCT-TYPE-TRADING))
 	   (let* ((transaction-comm (xaccTransGetCurrency
 				     (xaccSplitGetParent a)))
 		  (account-comm (xaccAccountGetCommodity
@@ -700,7 +697,7 @@
 					 (car comm-list) sumlist)))))
 		   ;; And add the balances to the comm-list entry.
 		   ((caadr pair) 'add (cadr foreignlist))
-		   ((cdadr pair) 'add (caddr foreignlist)))))))
+		   ((cdadr pair) 'add (caddr foreignlist))))))
 	 (gnc:get-all-commodity-splits curr-accounts end-date)))
   
     (gnc:resolve-unknown-comm sumlist report-commodity)))
@@ -967,12 +964,6 @@
 	 source-option report-currency commodity-list to-date-tp
 	 start-percent delta-percent)
   (case source-option
-    ;; Make this the same as gnc:case-exchange-fn
-    ((average-cost) (let* ((exchange-fn (gnc:make-exchange-function
-                                         (gnc:make-exchange-cost-alist
-                                          report-currency to-date-tp)))) 
-                      (lambda (foreign domestic date)
-                       (exchange-fn foreign domestic))))
     ((weighted-average) (let ((pricealist
 			      (gnc:get-commoditylist-totalavg-prices
 			       commodity-list report-currency to-date-tp

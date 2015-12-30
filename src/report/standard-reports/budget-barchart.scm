@@ -29,15 +29,10 @@
 (use-modules (srfi srfi-1))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (gnucash gnc-module))
-(use-modules (gnucash gettext))
 
 (use-modules (gnucash printf))
 
 (gnc:module-load "gnucash/report/report-system" 0)
-
-;; included since Bug726449
-(use-modules (ice-9 regex)) ;; for regexp-substitute/global, used by jpqplot
-(load-from-path "html-jqplot") ;; for jqplot-escape-string
 
 (define reportname (N_ "Budget Barchart"))
 
@@ -59,7 +54,7 @@
     ;; Option to select Budget
     (add-option (gnc:make-budget-option
         gnc:pagename-general optname-budget
-        "a" (N_ "Budget to use.")))
+        "a" (N_ "Budget")))
 
     ;; Display tab
     (add-option
@@ -73,7 +68,7 @@
     ;; Option to select the accounts to that will be displayed
     (add-option (gnc:make-account-list-option
         gnc:pagename-accounts optname-accounts
-        "a" (N_ "Report on these accounts.")
+        "a" (N_ "Report on these accounts")
         (lambda ()
 	  (gnc:filter-accountlist-type
 	    (list ACCT-TYPE-BANK ACCT-TYPE-ASSET ACCT-TYPE-LIABILITY)
@@ -158,10 +153,7 @@
       (gnc:html-barchart-set-row-labels! chart date-list)
       (if running-sum
         (gnc:html-barchart-set-subtitle! chart
-          (string-append "Bgt:"
-                         (jqplot-escape-string (number->string bgt-sum))
-                         "<br /> Act:"
-                         (jqplot-escape-string (number->string act-sum)))))
+          (string-append "Bgt:" (number->string bgt-sum) "\n Act:" (number->string act-sum))))
     )
 
     ;; Reutrn newly created chart

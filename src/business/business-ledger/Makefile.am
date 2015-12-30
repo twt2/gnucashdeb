@@ -18,6 +18,9 @@ noinst_HEADERS = \
   gncEntryLedgerModel.h
 
 libgnc_business_ledger_la_LIBADD = \
+  ${top_builddir}/src/business/business-core/libgncmod-business-core.la \
+  ${top_builddir}/src/business/business-utils/libgncmod-business-utils.la \
+  ${top_builddir}/src/business/dialog-tax-table/libgncmod-dialog-tax-table.la \
   ${top_builddir}/src/register/register-core/libgncmod-register-core.la \
   ${top_builddir}/src/register/register-gnome/libgncmod-register-gnome.la \
   ${top_builddir}/src/gnome-utils/libgncmod-gnome-utils.la \
@@ -26,11 +29,14 @@ libgnc_business_ledger_la_LIBADD = \
   ${top_builddir}/src/core-utils/libgnc-core-utils.la \
   ${top_builddir}/src/libqof/qof/libgnc-qof.la \
   ${GTK_LIBS} \
+  ${GUILE_LIBS} \
   ${GLIB_LIBS}
 
 AM_CPPFLAGS = \
+  -I${top_srcdir}/src/business/business-core \
+  -I${top_srcdir}/src/business/business-utils \
+  -I${top_srcdir}/src/business/dialog-tax-table \
   -I${top_srcdir}/src \
-  -I${top_builddir}/src \
   -I${top_srcdir}/src/engine \
   -I${top_srcdir}/src/core-utils \
   -I${top_srcdir}/src/gnc-module \
@@ -38,7 +44,9 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/gnome-utils \
   -I${top_srcdir}/src/register/register-core \
   -I${top_srcdir}/src/libqof/qof \
-  ${GTK_CFLAGS} \
+  ${GUILE_INCS} \
+  ${GLADE_CFLAGS} \
+  ${GNOME_CFLAGS} \
   ${GLIB_CFLAGS}
 
-AM_CPPFLAGS += -DG_LOG_DOMAIN=\"gnc.business.ledger\"
+INCLUDES = -DG_LOG_DOMAIN=\"gnc.business.ledger\"
