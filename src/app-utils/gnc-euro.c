@@ -64,6 +64,7 @@ static gnc_euro_rate_struct gnc_euro_rates[] =
     { "LFR",  40.3399 },  /* luxembourg franc */
     { "LIT",  1936.27 },  /* italian lira */
     { "LUF",  40.3399 },  /* luxembourg franc */
+    { "LVL",  .702804 },  /* latvian lats */
     { "MTL",  .429300 },  /* maltese lira */
     { "NLG",  2.20371 },  /* netherland gulden */
     { "PTA",  166.386 },  /* spanish peseta */
@@ -86,6 +87,7 @@ gnc_euro_rate_compare (const void * key, const void * value)
     return g_ascii_strcasecmp(gnc_commodity_get_mnemonic(curr), euro->currency);
 }
 
+#if 0 /* Not Used */
 static int
 gnc_euro_rate_compare_code (const void * key, const void * value)
 {
@@ -97,24 +99,9 @@ gnc_euro_rate_compare_code (const void * key, const void * value)
 
     return g_ascii_strcasecmp (code, euro->currency);
 }
+#endif
 
 /* ------------------------------------------------------ */
-
-gboolean
-gnc_is_euro_currency_code (const char *code)
-{
-    gnc_euro_rate_struct *result;
-
-    if (!code) return FALSE;
-
-    result = bsearch (code,
-                      gnc_euro_rates,
-                      sizeof(gnc_euro_rates) / sizeof(gnc_euro_rate_struct),
-                      sizeof(gnc_euro_rate_struct),
-                      gnc_euro_rate_compare_code);
-
-    return result != NULL;
-}
 
 gboolean
 gnc_is_euro_currency(const gnc_commodity * currency)

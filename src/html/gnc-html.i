@@ -1,3 +1,23 @@
+/********************************************************************\
+ * This program is free software; you can redistribute it and/or    *
+ * modify it under the terms of the GNU General Public License as   *
+ * published by the Free Software Foundation; either version 2 of   *
+ * the License, or (at your option) any later version.              *
+ *                                                                  *
+ * This program is distributed in the hope that it will be useful,  *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of   *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the    *
+ * GNU General Public License for more details.                     *
+ *                                                                  *
+ * You should have received a copy of the GNU General Public License*
+ * along with this program; if not, contact:                        *
+ *                                                                  *
+ * Free Software Foundation           Voice:  +1-617-542-5942       *
+ * 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652       *
+ * Boston, MA  02110-1301,  USA       gnu@gnu.org                   *
+ *                                                                  *
+\********************************************************************/
+
 %module sw_gnc_html
 %{
 /* Includes the header in the wrapper code */
@@ -6,16 +26,20 @@
 #include <glib-object.h>
 #include <dialog-options.h>
 #include <dialog-utils.h>
-#include <druid-utils.h>
 #include <gnc-amount-edit.h>
 #include <gnc-date-edit.h>
 #include <gnc-file.h>
 #include <gnc-gnome-utils.h>
 #include <gnc-gui-query.h>
 #include <gnc-html.h>
+%}
+#if defined(SWIGGUILE)
+%{
+#include "guile-mappings.h"
 
 SCM scm_init_sw_gnc_html_module(void);
 %}
+#endif
 
 %import "base-typemaps.i"
 
@@ -23,7 +47,6 @@ SCM scm_init_sw_gnc_html_module(void);
 %newobject gnc_build_url;
 
 %include "gnc-html-extras.h"
-%include "gnc-html-graph-gog-extras.h"
 
 
 %init {
@@ -48,12 +71,7 @@ SCM scm_init_sw_gnc_html_module(void);
     SET_ENUM("URL-TYPE-PRICE");
     SET_ENUM("URL-TYPE-OTHER");
 
-    SET_ENUM("GNC-CHART-PIE");
-    SET_ENUM("GNC-CHART-BAR");
-    SET_ENUM("GNC-CHART-LINE");
-    SET_ENUM("GNC-CHART-SCATTER");
-
-#undefine SET_ENUM
+#undef SET_ENUM
   }
 
 }

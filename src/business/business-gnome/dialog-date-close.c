@@ -23,7 +23,6 @@
 
 #include "config.h"
 
-#include <gnome.h>
 #include <glib/gi18n.h>
 
 #include "dialog-utils.h"
@@ -73,14 +72,14 @@ gnc_dialog_date_close_ok_cb (GtkWidget *widget, gpointer user_data)
         if (!acc)
         {
             gnc_error_dialog (ddc->dialog, "%s",
-                              _("No Account selected.  Please try again."));
+                              _("No Account selected. Please try again."));
             return;
         }
 
         if (xaccAccountGetPlaceholder (acc))
         {
             gnc_error_dialog (ddc->dialog, "%s",
-                              _("Placeholder account selected.  Please try again."));
+                              _("Placeholder account selected. Please try again."));
             return;
         }
 
@@ -118,46 +117,6 @@ fill_in_acct_info (DialogDateClose *ddc, gboolean set_default_acct)
     gnc_account_sel_set_account( gas, ddc->acct, set_default_acct );
 }
 
-static void
-build_date_close_window (GtkWidget *hbox, const char *message)
-{
-    GtkWidget *pixmap = NULL;
-    GtkWidget *label;
-    GtkWidget *alignment;
-    char *s;
-
-    s = gnome_program_locate_file (NULL,
-                                   GNOME_FILE_DOMAIN_PIXMAP,
-                                   "gnome-question.png", TRUE, NULL);
-    if (s)
-    {
-        pixmap = gtk_image_new_from_file(s);
-        g_free(s);
-    }
-
-    if (pixmap)
-    {
-        gtk_box_pack_start (GTK_BOX(hbox), pixmap, FALSE, TRUE, 0);
-        gtk_widget_show (pixmap);
-    }
-
-    label = gtk_label_new (message);
-    gtk_label_set_justify (GTK_LABEL (label), GTK_JUSTIFY_LEFT);
-    gtk_misc_set_padding (GTK_MISC (label), GNOME_PAD, 0);
-    gtk_box_pack_start (GTK_BOX (hbox), label, TRUE, TRUE, 0);
-    gtk_widget_show (label);
-
-    /* Add some extra space on the right to balance the pixmap */
-    if (pixmap)
-    {
-        alignment = gtk_alignment_new (0., 0., 0., 0.);
-        gtk_widget_set_size_request (alignment, GNOME_PAD, -1);
-        gtk_widget_show (alignment);
-
-        gtk_box_pack_start (GTK_BOX (hbox), alignment, FALSE, FALSE, 0);
-    }
-}
-
 gboolean
 gnc_dialog_date_close_parented (GtkWidget *parent, const char *message,
                                 const char *label_message,
@@ -167,9 +126,8 @@ gnc_dialog_date_close_parented (GtkWidget *parent, const char *message,
 {
     DialogDateClose *ddc;
     GtkWidget *date_box;
-    GtkWidget *hbox;
-    GtkWidget *label;
-    GladeXML *xml;
+    GtkLabel *label;
+    GtkBuilder *builder;
     gboolean retval;
 
     if (!message || !label_message || !ts)
@@ -178,37 +136,38 @@ gnc_dialog_date_close_parented (GtkWidget *parent, const char *message,
     ddc = g_new0 (DialogDateClose, 1);
     ddc->ts = ts;
 
-    xml = gnc_glade_xml_new ("date-close.glade", "Date Close Dialog");
-    ddc->dialog = glade_xml_get_widget (xml, "Date Close Dialog");
-    hbox = glade_xml_get_widget (xml, "the_hbox");
-    label = glade_xml_get_widget (xml, "label");
+    builder = gtk_builder_new();
+    gnc_builder_add_from_file (builder, "dialog-date-close.glade", "Date Close Dialog");
+    ddc->dialog = GTK_WIDGET(gtk_builder_get_object (builder, "Date Close Dialog"));
 
-    date_box = glade_xml_get_widget (xml, "date_box");
+    date_box = GTK_WIDGET(gtk_builder_get_object (builder, "date_box"));
     ddc->date = gnc_date_edit_new (time(NULL), FALSE, FALSE);
     gtk_box_pack_start (GTK_BOX(date_box), ddc->date, TRUE, TRUE, 0);
+    gnc_date_edit_set_time_ts (GNC_DATE_EDIT (ddc->date), *ts);
 
     if (parent)
         gtk_window_set_transient_for (GTK_WINDOW(ddc->dialog), GTK_WINDOW(parent));
 
-    build_date_close_window (hbox, message);
-
-    gnc_date_edit_set_time_ts (GNC_DATE_EDIT (ddc->date), *ts);
-    gtk_label_set_text (GTK_LABEL (label), label_message);
+    /* Set the labels */
+    label = GTK_LABEL (gtk_builder_get_object (builder, "msg_label"));
+    gtk_label_set_text (label, message);
+    label = GTK_LABEL (gtk_builder_get_object (builder, "label"));
+    gtk_label_set_text (label, label_message);
 
     /* Setup signals */
-    glade_xml_signal_autoconnect_full( xml,
-                                       gnc_glade_autoconnect_full_func,
-                                       ddc);
+    gtk_builder_connect_signals_full (builder, gnc_builder_connect_full_func, ddc);
 
     gtk_widget_show_all (ddc->dialog);
 
     ddc->retval = FALSE;
     while (gtk_dialog_run (GTK_DIALOG (ddc->dialog)) == GTK_RESPONSE_OK)
     {
-        /* If reponse is OK but flag is not set, try again */
+        /* If response is OK but flag is not set, try again */
         if (ddc->retval)
             break;
     }
+
+    g_object_unref(G_OBJECT(builder));
 
     gtk_widget_destroy(ddc->dialog);
     retval = ddc->retval;
@@ -245,11 +204,10 @@ gnc_dialog_dates_acct_question_parented (GtkWidget *parent, const char *message,
         char **memo, Account **acct, gboolean *answer)
 {
     DialogDateClose *ddc;
-    GtkWidget *hbox;
-    GtkWidget *label;
+    GtkLabel *label;
     GtkWidget *date_box;
     GtkWidget *acct_box;
-    GladeXML *xml;
+    GtkBuilder *builder;
     gboolean retval;
 
     if (!message || !ddue_label_message || !post_label_message ||
@@ -268,47 +226,48 @@ gnc_dialog_dates_acct_question_parented (GtkWidget *parent, const char *message,
     ddc->memo = memo;
     ddc->terms = terms;
 
-    xml = gnc_glade_xml_new ("date-close.glade", "Date Account Dialog");
-    ddc->dialog = glade_xml_get_widget (xml, "Date Account Dialog");
-    ddc->memo_entry = glade_xml_get_widget (xml, "memo_entry");
-    hbox = glade_xml_get_widget (xml, "the_hbox");
+    builder = gtk_builder_new();
+    gnc_builder_add_from_file (builder, "dialog-date-close.glade", "Date Account Dialog");
+    ddc->dialog = GTK_WIDGET(gtk_builder_get_object (builder, "Date Account Dialog"));
+    ddc->memo_entry = GTK_WIDGET(gtk_builder_get_object (builder, "memo_entry"));
 
-    acct_box = glade_xml_get_widget (xml, "acct_hbox");
+    acct_box = GTK_WIDGET(gtk_builder_get_object (builder, "acct_hbox"));
     ddc->acct_combo = gnc_account_sel_new();
     gtk_box_pack_start (GTK_BOX(acct_box), ddc->acct_combo, TRUE, TRUE, 0);
 
-    date_box = glade_xml_get_widget (xml, "date_box");
+    date_box = GTK_WIDGET(gtk_builder_get_object (builder, "date_hbox"));
     ddc->date = gnc_date_edit_new (time(NULL), FALSE, FALSE);
     gtk_box_pack_start (GTK_BOX(date_box), ddc->date, TRUE, TRUE, 0);
 
-    date_box = glade_xml_get_widget (xml, "post_date_box");
+    date_box = GTK_WIDGET(gtk_builder_get_object (builder, "post_date_box"));
     ddc->post_date = gnc_date_edit_new (time(NULL), FALSE, FALSE);
     gtk_box_pack_start (GTK_BOX(date_box), ddc->post_date, TRUE, TRUE, 0);
 
-    ddc->question_check = glade_xml_get_widget(xml, "question_check");
+    ddc->question_check = GTK_WIDGET(gtk_builder_get_object (builder, "question_check"));
 
     if (parent)
         gtk_window_set_transient_for (GTK_WINDOW(ddc->dialog), GTK_WINDOW(parent));
 
-    build_date_close_window (hbox, message);
 
     /* Set the labels */
-    label = glade_xml_get_widget (xml, "date_label");
-    gtk_label_set_text (GTK_LABEL (label), ddue_label_message);
-    label = glade_xml_get_widget (xml, "postdate_label");
-    gtk_label_set_text (GTK_LABEL (label), post_label_message);
-    label = glade_xml_get_widget (xml, "acct_label");
-    gtk_label_set_text (GTK_LABEL (label), acct_label_message);
+    label = GTK_LABEL (gtk_builder_get_object (builder, "top_msg_label"));
+    gtk_label_set_text (label, message);
+    label = GTK_LABEL (gtk_builder_get_object (builder, "date_label"));
+    gtk_label_set_text (label, ddue_label_message);
+    label = GTK_LABEL (gtk_builder_get_object (builder, "postdate_label"));
+    gtk_label_set_text (label, post_label_message);
+    label = GTK_LABEL (gtk_builder_get_object (builder, "acct_label"));
+    gtk_label_set_text (label, acct_label_message);
 
     if (question_check_message)
     {
-        gtk_label_set_text(GTK_LABEL(GTK_BIN(ddc->question_check)->child), question_check_message);
+        gtk_label_set_text(GTK_LABEL(gtk_bin_get_child (GTK_BIN(ddc->question_check))), question_check_message);
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ddc->question_check), *answer);
     }
     else
     {
         gtk_widget_hide(ddc->question_check);
-        gtk_widget_hide(glade_xml_get_widget(xml, "hide1"));
+        gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object (builder, "hide1")));
     }
 
 
@@ -330,9 +289,7 @@ gnc_dialog_dates_acct_question_parented (GtkWidget *parent, const char *message,
     fill_in_acct_info (ddc, set_default_acct);
 
     /* Setup signals */
-    glade_xml_signal_autoconnect_full( xml,
-                                       gnc_glade_autoconnect_full_func,
-                                       ddc);
+    gtk_builder_connect_signals_full (builder, gnc_builder_connect_full_func, ddc);
 
     gtk_widget_show_all (ddc->dialog);
 
@@ -342,10 +299,12 @@ gnc_dialog_dates_acct_question_parented (GtkWidget *parent, const char *message,
     ddc->retval = FALSE;
     while (gtk_dialog_run (GTK_DIALOG (ddc->dialog)) == GTK_RESPONSE_OK)
     {
-        /* If reponse is OK but flag is not set, try again */
+        /* If response is OK but flag is not set, try again */
         if (ddc->retval)
             break;
     }
+
+    g_object_unref(G_OBJECT(builder));
 
     gtk_widget_destroy(ddc->dialog);
     retval = ddc->retval;
@@ -367,11 +326,10 @@ gnc_dialog_date_acct_parented (GtkWidget *parent, const char *message,
                                Timespec *date, Account **acct)
 {
     DialogDateClose *ddc;
-    GtkWidget *hbox;
-    GtkWidget *label;
+    GtkLabel *label;
     GtkWidget *date_box;
     GtkWidget *acct_box;
-    GladeXML *xml;
+    GtkBuilder *builder;
     gboolean retval;
 
     if (!message || !date_label_message || !acct_label_message ||
@@ -384,30 +342,31 @@ gnc_dialog_date_acct_parented (GtkWidget *parent, const char *message,
     ddc->acct_types = acct_types;
     ddc->acct = *acct;
 
-    xml = gnc_glade_xml_new ("date-close.glade", "Date Account Dialog");
-    ddc->dialog = glade_xml_get_widget (xml, "Date Account Dialog");
-    hbox = glade_xml_get_widget (xml, "the_hbox");
+    builder = gtk_builder_new();
+    gnc_builder_add_from_file (builder, "dialog-date-close.glade", "Date Account Dialog");
+    ddc->dialog = GTK_WIDGET(gtk_builder_get_object (builder, "Date Account Dialog"));
 
-    acct_box = glade_xml_get_widget (xml, "acct_hbox");
+    acct_box = GTK_WIDGET(gtk_builder_get_object (builder, "acct_hbox"));
     ddc->acct_combo = gnc_account_sel_new();
     if (*acct)
         gnc_account_sel_set_account (GNC_ACCOUNT_SEL(ddc->acct_combo), *acct, FALSE);
     gtk_box_pack_start (GTK_BOX(acct_box), ddc->acct_combo, TRUE, TRUE, 0);
 
-    date_box = glade_xml_get_widget (xml, "date_box");
+    date_box = GTK_WIDGET(gtk_builder_get_object (builder, "date_hbox"));
     ddc->date = gnc_date_edit_new (time(NULL), FALSE, FALSE);
     gtk_box_pack_start (GTK_BOX(date_box), ddc->date, TRUE, TRUE, 0);
 
     if (parent)
         gtk_window_set_transient_for (GTK_WINDOW(ddc->dialog), GTK_WINDOW(parent));
 
-    build_date_close_window (hbox, message);
 
     /* Set the labels */
-    label = glade_xml_get_widget (xml, "date_label");
-    gtk_label_set_text (GTK_LABEL (label), date_label_message);
-    label = glade_xml_get_widget (xml, "acct_label");
-    gtk_label_set_text (GTK_LABEL (label), acct_label_message);
+    label = GTK_LABEL (gtk_builder_get_object (builder, "top_msg_label"));
+    gtk_label_set_text (label, message);
+    label = GTK_LABEL (gtk_builder_get_object (builder, "date_label"));
+    gtk_label_set_text (label, date_label_message);
+    label = GTK_LABEL (gtk_builder_get_object (builder, "acct_label"));
+    gtk_label_set_text (label, acct_label_message);
 
     /* Set the date widget */
     gnc_date_edit_set_time_ts (GNC_DATE_EDIT (ddc->date), *date);
@@ -416,24 +375,24 @@ gnc_dialog_date_acct_parented (GtkWidget *parent, const char *message,
     fill_in_acct_info (ddc, FALSE);
 
     /* Setup signals */
-    glade_xml_signal_autoconnect_full( xml,
-                                       gnc_glade_autoconnect_full_func,
-                                       ddc);
+    gtk_builder_connect_signals_full (builder, gnc_builder_connect_full_func, ddc);
 
     gtk_widget_show_all (ddc->dialog);
 
-    gtk_widget_hide_all (glade_xml_get_widget (xml, "postdate_label"));
-    gtk_widget_hide_all (glade_xml_get_widget (xml, "post_date"));
-    gtk_widget_hide_all (glade_xml_get_widget (xml, "memo_entry"));
-    gtk_widget_hide_all (glade_xml_get_widget (xml, "memo_label"));
+    gtk_widget_hide (GTK_WIDGET(gtk_builder_get_object (builder, "postdate_label")));
+    gtk_widget_hide (GTK_WIDGET(gtk_builder_get_object (builder, "post_date_box")));
+    gtk_widget_hide (GTK_WIDGET(gtk_builder_get_object (builder, "memo_entry")));
+    gtk_widget_hide (GTK_WIDGET(gtk_builder_get_object (builder, "memo_label")));
 
     ddc->retval = FALSE;
     while (gtk_dialog_run (GTK_DIALOG (ddc->dialog)) == GTK_RESPONSE_OK)
     {
-        /* If reponse is OK but flag is not set, try again */
+        /* If response is OK but flag is not set, try again */
         if (ddc->retval)
             break;
     }
+
+    g_object_unref(G_OBJECT(builder));
 
     gtk_widget_destroy(ddc->dialog);
     retval = ddc->retval;

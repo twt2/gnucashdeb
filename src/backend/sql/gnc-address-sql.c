@@ -41,7 +41,7 @@
 #include "gnc-backend-sql.h"
 #include "gnc-address-sql.h"
 
-static QofLogModule log_module = G_LOG_DOMAIN;
+G_GNUC_UNUSED static QofLogModule log_module = G_LOG_DOMAIN;
 
 #define ADDRESS_MAX_NAME_LEN 1024
 #define ADDRESS_MAX_ADDRESS_LINE_LEN 1024
@@ -52,13 +52,13 @@ static QofLogModule log_module = G_LOG_DOMAIN;
 static GncSqlColumnTableEntry col_table[] =
 {
     { "name",  CT_STRING, ADDRESS_MAX_NAME_LEN,         COL_NNUL, "name" },
-    { "addr1", CT_STRING, ADDRESS_MAX_ADDRESS_LINE_LEN, COL_NNUL, NULL, ADDRESS_ONE },
-    { "addr2", CT_STRING, ADDRESS_MAX_ADDRESS_LINE_LEN, COL_NNUL, NULL, ADDRESS_TWO },
-    { "addr3", CT_STRING, ADDRESS_MAX_ADDRESS_LINE_LEN, COL_NNUL, NULL, ADDRESS_THREE },
-    { "addr4", CT_STRING, ADDRESS_MAX_ADDRESS_LINE_LEN, COL_NNUL, NULL, ADDRESS_FOUR },
-    { "phone", CT_STRING, ADDRESS_MAX_PHONE_LEN,        COL_NNUL, NULL, ADDRESS_PHONE },
-    { "fax",   CT_STRING, ADDRESS_MAX_FAX_LEN,          COL_NNUL, NULL, ADDRESS_FAX },
-    { "email", CT_STRING, ADDRESS_MAX_EMAIL_LEN,        COL_NNUL, NULL, ADDRESS_EMAIL },
+    { "addr1", CT_STRING, ADDRESS_MAX_ADDRESS_LINE_LEN, COL_NNUL, "addr1" },
+    { "addr2", CT_STRING, ADDRESS_MAX_ADDRESS_LINE_LEN, COL_NNUL, "addr2" },
+    { "addr3", CT_STRING, ADDRESS_MAX_ADDRESS_LINE_LEN, COL_NNUL, "addr3" },
+    { "addr4", CT_STRING, ADDRESS_MAX_ADDRESS_LINE_LEN, COL_NNUL, "addr4" },
+    { "phone", CT_STRING, ADDRESS_MAX_PHONE_LEN,        COL_NNUL, "phone" },
+    { "fax",   CT_STRING, ADDRESS_MAX_FAX_LEN,          COL_NNUL, "fax" },
+    { "email", CT_STRING, ADDRESS_MAX_EMAIL_LEN,        COL_NNUL, "email" },
     { NULL }
 };
 
@@ -82,7 +82,7 @@ load_address( const GncSqlBackend* be, GncSqlRow* row,
     g_return_if_fail( pObject != NULL );
     g_return_if_fail( table_row != NULL );
 
-    addr = gncAddressCreate( be->primary_book, NULL );
+    addr = gncAddressCreate( be->book, NULL );
     for ( subtable = col_table; subtable->col_name != NULL; subtable++ )
     {
         buf = g_strdup_printf( "%s_%s", table_row->col_name, subtable->col_name );
@@ -113,7 +113,14 @@ load_address( const GncSqlBackend* be, GncSqlRow* row,
             (*setter)( addr, (const gpointer)s );
         }
     }
-    (*a_setter)( pObject, addr );
+    if ( table_row->gobj_param_name != NULL )
+    {
+        g_object_set( pObject, table_row->gobj_param_name, addr, NULL );
+    }
+    else
+    {
+        (*a_setter)( pObject, addr );
+    }
 }
 
 static void
@@ -123,7 +130,6 @@ add_address_col_info_to_list( const GncSqlBackend* be, const GncSqlColumnTableEn
     GncSqlColumnInfo* info;
     gchar* buf;
     const GncSqlColumnTableEntry* subtable_row;
-    const gchar* type;
 
     g_return_if_fail( be != NULL );
     g_return_if_fail( table_row != NULL );
@@ -163,9 +169,15 @@ get_gvalue_address( const GncSqlBackend* be, QofIdTypeConst obj_name, const gpoi
     g_return_if_fail( value != NULL );
 
     memset( value, 0, sizeof( GValue ) );
-
-    getter = (AddressGetterFunc)gnc_sql_get_getter( obj_name, table_row );
-    addr = (*getter)( pObject );
+    if ( table_row->gobj_param_name != NULL )
+    {
+        g_object_get( pObject, table_row->gobj_param_name, &addr, NULL );
+    }
+    else
+    {
+        getter = (AddressGetterFunc)gnc_sql_get_getter( obj_name, table_row );
+        addr = (*getter)( pObject );
+    }
     g_value_init( value, gnc_address_get_type() );
     g_value_set_object( value, addr );
 }

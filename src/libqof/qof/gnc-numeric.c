@@ -26,30 +26,54 @@
 
 #include <glib.h>
 #include <math.h>
-#if defined(G_OS_WIN32) && !defined(_MSC_VER)
-# include <pow.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "gnc-numeric.h"
+
+/* Note: The qofmath128 functions are used mostly here and almost
+         nowhere else. Hence, we inline the C code directly into here so
+         that the compiler can potentially inline the code as-is and speed
+         up the gnc-numeric.c functions. */
 #include "qofmath128.c"
 
 /* static short module = MOD_ENGINE; */
+static const gint64 pten[] = { 1, 10, 100, 1000, 10000, 100000, 1000000,
+			       10000000, 100000000, 1000000000,
+			       INT64_C(10000000000), INT64_C(100000000000),
+			       INT64_C(1000000000000), INT64_C(10000000000000),
+			       INT64_C(100000000000000),
+			       INT64_C(10000000000000000),
+			       INT64_C(100000000000000000),
+			       INT64_C(1000000000000000000)};
+#define POWTEN_OVERFLOW -5
 
-/* =============================================================== */
-
-#if 0
-static const char * _numeric_error_strings[] =
+static inline gint64
+powten (int exp)
 {
-    "No error",
-    "Argument is not a valid number",
-    "Intermediate result overflow",
-    "Argument denominators differ in GNC_HOW_DENOM_FIXED operation",
-    "Remainder part in GNC_HOW_RND_NEVER operation"
-};
-#endif
+    if (exp > 18 || exp < -18)
+	return POWTEN_OVERFLOW;
+    return exp < 0 ? -pten[-exp] : pten[exp];
+}
+
+gint64
+pwr64 (gint64 op, int exp)
+{
+    qofint128 tmp;
+    if (exp == 0) return 1;
+    if (exp % 2)
+    {
+	tmp = mult128 (op, pwr64 (op, exp - 1));
+	if (tmp.isbig) return 0;
+	return tmp.lo;
+    }
+    tmp.lo = pwr64 (op, exp / 2);
+    tmp = mult128 (tmp.lo, tmp.lo);
+    if (tmp.isbig) return 0;
+    return tmp.lo;
+}
 
 /* =============================================================== */
 /* This function is small, simple, and used everywhere below,
@@ -575,14 +599,6 @@ gnc_numeric_mul(gnc_numeric a, gnc_numeric b,
         }
     }
 
-#if 0  /* currently, product denom won't ever be zero */
-    if (product.denom < 0)
-    {
-        product.num   = -product.num;
-        product.denom = -product.denom;
-    }
-#endif
-
     result = gnc_numeric_convert(product, denom, how);
     return result;
 }
@@ -816,17 +832,8 @@ gnc_numeric_convert(gnc_numeric in, gint64 denom, gint how)
             }
             sigfigs  = GNC_HOW_GET_SIGFIGS(how);
 
-            if (fabs(sigfigs - logratio) > 18)
+            if ((denom = powten (sigfigs - logratio)) == POWTEN_OVERFLOW)
                 return gnc_numeric_error(GNC_ERROR_OVERFLOW);
-
-            if (sigfigs - logratio >= 0)
-            {
-                denom    = (gint64)(pow(10, sigfigs - logratio));
-            }
-            else
-            {
-                denom    = -((gint64)(pow(10, logratio - sigfigs)));
-            }
 
             how = how & ~GNC_HOW_DENOM_SIGFIG & ~GNC_NUMERIC_SIGFIGS_MASK;
             break;
@@ -1142,7 +1149,26 @@ gnc_numeric_to_decimal(gnc_numeric *a, guint8 *max_decimal_places)
     return TRUE;
 }
 
-
+gnc_numeric
+gnc_numeric_invert(gnc_numeric num)
+{
+    if (num.num == 0)
+        return gnc_numeric_zero();
+    if (num.denom > 0)
+    {
+        if (num.num < 0)
+            return gnc_numeric_create (-num.denom, -num.num);
+        return gnc_numeric_create (num.denom, num.num);
+    }
+    else /* Negative denominator means multiply instead of divide. */
+    {
+        int64_t mult = (num.num < 0 ? INT64_C(-1) : INT64_C(1));
+        qofint128 denom = mult128(-num.denom, mult * num.num);
+        if (denom.hi)
+            return gnc_numeric_error(GNC_ERROR_OVERFLOW);
+        return gnc_numeric_create (mult, denom.lo);
+    }
+}
 /* *******************************************************************
  *  double_to_gnc_numeric
  ********************************************************************/
@@ -1150,7 +1176,6 @@ gnc_numeric_to_decimal(gnc_numeric *a, guint8 *max_decimal_places)
 #ifdef _MSC_VER
 # define rint /* */
 #endif
-
 gnc_numeric
 double_to_gnc_numeric(double in, gint64 denom, gint how)
 {
@@ -1160,6 +1185,9 @@ double_to_gnc_numeric(double in, gint64 denom, gint how)
     gint64 frac_int = 0;
     double logval;
     double sigfigs;
+
+    if (isnan (in) || fabs (in) > 1e18)
+	return gnc_numeric_error (GNC_ERROR_OVERFLOW);
 
     if ((denom == GNC_DENOM_AUTO) && (how & GNC_HOW_DENOM_SIGFIG))
     {
@@ -1174,14 +1202,8 @@ double_to_gnc_numeric(double in, gint64 denom, gint how)
                         (floor(logval) + 1.0) : (ceil(logval)));
         }
         sigfigs  = GNC_HOW_GET_SIGFIGS(how);
-        if (sigfigs - logval >= 0)
-        {
-            denom    = (gint64)(pow(10, sigfigs - logval));
-        }
-        else
-        {
-            denom    = -((gint64)(pow(10, logval - sigfigs)));
-        }
+	if ((denom = powten (sigfigs - logval)) == POWTEN_OVERFLOW)
+            return gnc_numeric_error(GNC_ERROR_OVERFLOW);
 
         how =  how & ~GNC_HOW_DENOM_SIGFIG & ~GNC_NUMERIC_SIGFIGS_MASK;
     }
@@ -1376,27 +1398,17 @@ gnc_num_dbg_to_string(gnc_numeric n)
 gboolean
 string_to_gnc_numeric(const gchar* str, gnc_numeric *n)
 {
-    size_t num_read;
     gint64 tmpnum;
     gint64 tmpdenom;
 
     if (!str) return FALSE;
 
-#ifdef GNC_DEPRECATED
-    /* must use "<" here because %n's effects aren't well defined */
-    if (sscanf(str, " " QOF_SCANF_LLD "/" QOF_SCANF_LLD "%n",
-               &tmpnum, &tmpdenom, &num_read) < 2)
-    {
-        return FALSE;
-    }
-#else
     tmpnum = g_ascii_strtoll (str, NULL, 0);
     str = strchr (str, '/');
     if (!str) return FALSE;
     str ++;
     tmpdenom = g_ascii_strtoll (str, NULL, 0);
-    num_read = strspn (str, "0123456789");
-#endif
+
     n->num = tmpnum;
     n->denom = tmpdenom;
     return TRUE;

@@ -52,6 +52,17 @@
 ;;
 ;; Add support for code N673, Format 4
 ;;
+;; September, 2012 Update:
+;;
+;; Add support of book option for num-source; use function gnc-get-num-action in
+;; place of xaccTransGetNum and function gnc-get-action-num in place of
+;; xaccSplitGetAction and modify report headings accordingly
+;;
+;; February, 2013 Update:
+;;
+;; Fix beginning balance sign and signs for Transfer From/To amounts for 
+;; liability/equity accounts
+;;
 ;; From prior version:
 ;; NOTE: setting of specific dates is squirly! and seems
 ;; to be current-date dependant!  Actually, time of day dependant!  Just
@@ -60,14 +71,42 @@
 ;; subtracts 2!  see "(to-value"
 ;;
 ;; Based on prior taxtxf.scm and with references to transaction.scm.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; This program is free software; you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License as
+;; published by the Free Software Foundation; either version 2 of
+;; the License, or (at your option) any later version.
+;;
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with this program; if not, contact:
+;;
+;; Free Software Foundation           Voice:  +1-617-542-5942
+;; 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652
+;; Boston, MA  02110-1301,  USA       gnu@gnu.org
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 (define-module (gnucash report taxtxf))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (srfi srfi-1))
 (use-modules (gnucash gnc-module))
+(use-modules (gnucash gettext))
+
+(cond-expand
+  (guile-2
+    (eval-when
+      (compile load eval expand)
+      (load-extension "libgncmod-gnome-utils" "scm_init_sw_gnome_utils_module")))
+  (else ))
 (use-modules (sw_gnome_utils)) ;; to get to gnc-error-dialog
 
 (use-modules (gnucash printf))
+(use-modules (gnucash core-utils)) ; for gnc:version
 
 (gnc:module-load "gnucash/html" 0)   ; added for 'gnc-html-engine-supports-css'
 (gnc:module-load "gnucash/tax/us" 0)
@@ -138,43 +177,43 @@
   (gnc:register-tax-option
    (gnc:make-multichoice-option
     gnc:pagename-general (N_ "Alternate Period")
-    "c" (N_ "Override or modify From: & To:")
+    "c" (N_ "Override or modify From: & To:.")
     (if after-tax-day 'from-to 'last-year)
     (list (list->vector
-           (list 'from-to (N_ "Use From - To") (N_ "Use From - To period")))
+           (list 'from-to (N_ "Use From - To") (N_ "Use From - To period.")))
           (list->vector
-           (list '1st-est (N_ "1st Est Tax Quarter") (N_ "Jan 1 - Mar 31")))
+           (list '1st-est (N_ "1st Est Tax Quarter") (N_ "Jan 1 - Mar 31.")))
           (list->vector
-           (list '2nd-est (N_ "2nd Est Tax Quarter") (N_ "Apr 1 - May 31")))
+           (list '2nd-est (N_ "2nd Est Tax Quarter") (N_ "Apr 1 - May 31.")))
           (list->vector
 	   ;; Translators: The US tax quarters are different from
 	   ;; actual year's quarters! See the definition of
 	   ;; tax-qtr-real-qtr-year variable above.
-           (list '3rd-est (N_ "3rd Est Tax Quarter") (N_ "Jun 1 - Aug 31")))
+           (list '3rd-est (N_ "3rd Est Tax Quarter") (N_ "Jun 1 - Aug 31.")))
           (list->vector
-           (list '4th-est (N_ "4th Est Tax Quarter") (N_ "Sep 1 - Dec 31")))
+           (list '4th-est (N_ "4th Est Tax Quarter") (N_ "Sep 1 - Dec 31.")))
           (list->vector
-           (list 'last-year (N_ "Last Year") (N_ "Last Year")))
+           (list 'last-year (N_ "Last Year") (N_ "Last Year.")))
           (list->vector
            (list '1st-last (N_ "Last Yr 1st Est Tax Qtr")
-                 (N_ "Jan 1 - Mar 31, Last year")))
+                 (N_ "Jan 1 - Mar 31, Last year.")))
           (list->vector
            (list '2nd-last (N_ "Last Yr 2nd Est Tax Qtr")
-                 (N_ "Apr 1 - May 31, Last year")))
+                 (N_ "Apr 1 - May 31, Last year.")))
           (list->vector
            (list '3rd-last (N_ "Last Yr 3rd Est Tax Qtr")
 		 ;; Translators: The US tax quarters are different from
 		 ;; actual year's quarters! See the definition of
 		 ;; tax-qtr-real-qtr-year variable above.
-                 (N_ "Jun 1 - Aug 31, Last year")))
+                 (N_ "Jun 1 - Aug 31, Last year.")))
           (list->vector
            (list '4th-last (N_ "Last Yr 4th Est Tax Qtr")
-                 (N_ "Sep 1 - Dec 31, Last year"))))))
+                 (N_ "Sep 1 - Dec 31, Last year."))))))
 
   (gnc:register-tax-option
    (gnc:make-account-list-option
     gnc:pagename-accounts (N_ "Select Accounts (none = all)")
-    "d" (N_ "Select accounts")
+    "d" (N_ "Select accounts.")
     (lambda () '())
     #f #t))
   
@@ -186,42 +225,47 @@
   (gnc:register-tax-option
    (gnc:make-simple-boolean-option
     gnc:pagename-display (N_ "Do not print full account names")
-    "g" (N_ "Do not print all Parent account names") #f))
+    "g" (N_ "Do not print all Parent account names.") #f))
 
   (gnc:register-tax-option
    (gnc:make-simple-boolean-option
     gnc:pagename-display (N_ "Print all Transfer To/From Accounts")
-    "h" (N_ "Print all split details for multi-split transactions") #f))
+    "h" (N_ "Print all split details for multi-split transactions.") #f))
 
   (gnc:register-tax-option
    (gnc:make-simple-boolean-option
     gnc:pagename-display (N_ "Print TXF export parameters")
-    "i" (N_ "Show TXF export parameters for each TXF code/account on report") #f))
+    "i" (N_ "Show TXF export parameters for each TXF code/account on report.") #f))
 
-  (gnc:register-tax-option
-   (gnc:make-simple-boolean-option
-    gnc:pagename-display (N_ "Do not print Action:Memo data")
-    "j" (N_ "Do not print Action:Memo data for transactions") #f))
+  (if (qof-book-use-split-action-for-num-field (gnc-get-current-book))
+      (gnc:register-tax-option
+       (gnc:make-simple-boolean-option
+        gnc:pagename-display (N_ "Do not print T-Num:Memo data")
+        "j" (N_ "Do not print T-Num:Memo data for transactions.") #f))
+      (gnc:register-tax-option
+       (gnc:make-simple-boolean-option
+        gnc:pagename-display (N_ "Do not print Action:Memo data")
+        "j" (N_ "Do not print Action:Memo data for transactions.") #f)))
 
   (gnc:register-tax-option
    (gnc:make-simple-boolean-option
     gnc:pagename-display (N_ "Do not print transaction detail")
-    "k" (N_ "Do not print transaction detail for accounts") #f))
+    "k" (N_ "Do not print transaction detail for accounts.") #f))
 
   (gnc:register-tax-option
    (gnc:make-simple-boolean-option
     gnc:pagename-display (N_ "Do not use special date processing")
-    "l" (N_ "Do not print transactions out of specified dates") #f))
+    "l" (N_ "Do not print transactions out of specified dates.") #f))
 
   (gnc:register-tax-option
    (gnc:make-multichoice-option
     gnc:pagename-display (N_ "Currency conversion date")
-    "m" (N_ "Select date to use for PriceDB lookups")
+    "m" (N_ "Select date to use for PriceDB lookups.")
     'conv-to-tran-date
     (list (list->vector
-           (list 'conv-to-tran-date (N_ "Nearest transaction date") (N_ "Use nearest to transaction date")))
+           (list 'conv-to-tran-date (N_ "Nearest transaction date") (N_ "Use nearest to transaction date.")))
           (list->vector
-           (list 'conv-to-report-date (N_ "Nearest report date") (N_ "Use nearest to report date")))
+           (list 'conv-to-report-date (N_ "Nearest report date") (N_ "Use nearest to report date.")))
     )))
 
   (if (gnc-html-engine-supports-css)
@@ -229,7 +273,7 @@
       (gnc:register-tax-option
        (gnc:make-simple-boolean-option
         gnc:pagename-display (N_ "Shade alternate transactions")
-        "n" (N_ "Shade background of alternate transactions, if more than one displayed") #f))
+        "n" (N_ "Shade background of alternate transactions, if more than one displayed.") #f))
   )
 
   (gnc:options-set-default-section options gnc:pagename-general)
@@ -393,14 +437,21 @@
        (append (list (gnc:make-html-table-header-cell/markup
                           "column-heading-center" "Date"))
                (list (gnc:make-html-table-header-cell/markup
-                          "column-heading-center" "Num"))
+                          "column-heading-center"
+                         (if (qof-book-use-split-action-for-num-field
+                                                         (gnc-get-current-book))
+                             "Num/Action"
+                             "Num")))
                (list (gnc:make-html-table-header-cell/markup
                           "column-heading-center" "Description"))
                (list (gnc:make-html-table-header-cell/markup
                           "column-heading-center"
                          (if suppress-action-memo?
                              "Notes"
-                             "Notes/Action:Memo")))
+                             (if (qof-book-use-split-action-for-num-field
+                                                         (gnc-get-current-book))
+                                 "Notes/T-Num:Memo"
+                                 "Notes/Action:Memo"))))
                (list (gnc:make-html-table-header-cell/markup
                           "column-heading-center"
                          (if format4?
@@ -497,7 +548,6 @@
 (define (render-txf-account account account-value d? date x? x-date
                             type code copy tax-entity-type sold-desc)
   (let* ((print-info (gnc-account-print-info account #f))
-         (value (xaccPrintAmount account-value print-info))
          (txf? (gnc:account-get-txf account)))
     (if (and txf?
              (not (gnc-numeric-zero-p account-value)))
@@ -546,10 +596,12 @@
                                    (xaccAccountGetName account)))
                              (else "")))
 
-               (value (string-append "$"  ; reverse signs on dr's & cr's
-                                     (xaccPrintAmount
-                                                 (gnc-numeric-neg account-value)
-                                                 print-info)))
+               (value (string-append "$"  ; in txf output, income is positive; expense negative
+                                          ; liabilities are positive, assets are negative;
+                                          ; essentially, just reverse signs on dr's & cr's
+                                     (sprintf #f "%.2f" (gnc-numeric-to-double
+                                                          (gnc-numeric-neg
+                                                            account-value)))))
           )
           ;; Based on TXF Spec of 6/16/06, V 041, and Quicken 98 output, the
           ;; fields by format are as follows, for F1040:
@@ -841,7 +893,11 @@
                         (split-acct-commodity
                                            (xaccAccountGetCommodity split-acct))
                         (splt-amnt (xaccSplitGetAmount tran-split))
-                        (splt-amnt (if (eq? acct-type ACCT-TYPE-INCOME)
+                        (splt-amnt (if (or (eq? acct-type ACCT-TYPE-INCOME)
+                                           (eq? acct-type ACCT-TYPE-CREDIT)
+                                           (eq? acct-type ACCT-TYPE-PAYABLE)
+                                           (eq? acct-type ACCT-TYPE-LIABILITY)
+                                           (eq? acct-type ACCT-TYPE-EQUITY))
                                             splt-amnt
                                             (gnc-numeric-neg splt-amnt)))
                         (print-info (gnc-account-print-info split-acct #f))
@@ -1164,7 +1220,7 @@
               );; B/S acct with either beg bal, splits or end bal
               ;; print beg bal line for B/S accts
               (let* ((curr-conv-note "")
-                     (curr-conv-data (list beg-bal-acct-curr
+                     (curr-conv-data (list beg-bal-rpt-amount
                                                           curr-conv-note #f ""))
                      (curr-conv-data (if (gnc-commodity-equiv
                                                  account-commodity USD-currency)
@@ -1300,7 +1356,7 @@
                   (notes (xaccTransGetNotes parent))
                   (action (if suppress-action-memo?
                               ""
-                              (xaccSplitGetAction split)))
+                              (gnc-get-action-num  parent split)))
                   (memo  (if suppress-action-memo?
                              ""
                              (xaccSplitGetMemo split)))
@@ -1446,7 +1502,8 @@
                                           'attribute (list "cellpadding" "0"))
                        (gnc:html-table-append-row!
                             num-table
-                            (gnc:make-html-table-cell (xaccTransGetNum parent)))
+                            (gnc:make-html-table-cell (gnc-get-num-action
+                                                                parent split)))
                        (gnc:html-table-set-style! desc-table "table" 
                                           'attribute (list "border" "0")
                                           'attribute (list "cellspacing" "0")
@@ -1713,7 +1770,7 @@
   ;; and have an invalid tax code are put on an error list. Codes N438 and N440
   ;; have special processing: if an asset account is assigned to either of these
   ;; two codes, an additional 'form-line-acct' entry is created for the other
-  ;; code so that either both accounts are represented or neither.
+  ;; code so that either both codes are represented or neither.
   (define (make-form-line-acct-list accounts tax-year)
      (map (lambda (account)
             (let* ((account-name (gnc-account-get-full-name account))
@@ -2002,8 +2059,14 @@
                                  "Do not print transaction detail")))
          (no-special-dates? (get-option gnc:pagename-display
                                  "Do not use special date processing"))
-         (suppress-action-memo? (get-option gnc:pagename-display 
-                                 "Do not print Action:Memo data"))
+         (suppress-action-memo? (if (gnc:lookup-option
+                                        (gnc:report-options report-obj)
+                                            gnc:pagename-display
+                                            "Do not print Action:Memo data")
+                                    (get-option gnc:pagename-display 
+                                     "Do not print Action:Memo data")
+                                    (get-option gnc:pagename-display 
+                                     "Do not print T-Num:Memo data")))
          (shade-alternate-transactions? (if (gnc-html-engine-supports-css)
                                             #t 
                                             (get-option gnc:pagename-display 

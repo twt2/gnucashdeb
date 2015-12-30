@@ -178,7 +178,7 @@ def recursivly_build_account_tree(original_parent_account,
                                   account_types_to_open ):
 
     for child in original_parent_account.get_children():
-        original_account = Account(instance=child)
+        original_account = child
         new_account = Account(new_book)
         # attach new account to its parent
         new_parent_account.append_child(new_account)
@@ -195,7 +195,9 @@ def recursivly_build_account_tree(original_parent_account,
         namespace = orig_commodity.get_namespace()
         mnemonic = orig_commodity.get_mnemonic()
         new_commodity = new_commodity_table.lookup(namespace, mnemonic)
-        assert(new_commodity.get_instance() != None )
+        if new_commodity == None:
+            new_commodity = orig_commodity.clone(new_book)
+            new_commodity_table.insert(new_commodity)
         new_account.SetCommodity(new_commodity)
 
         record_opening_balance( original_account, new_account,
@@ -220,7 +222,7 @@ def find_or_make_account(account_tuple, root_account, book,
                          currency ):
     current_account_name, account_path = account_tuple[0], account_tuple[1:]
     current_account = root_account.lookup_by_name(current_account_name)
-    if current_account.get_instance() == None:
+    if current_account == None:
         current_account = Account(book)
         current_account.SetName(current_account_name)
         current_account.SetCommodity(currency)
@@ -286,51 +288,70 @@ def create_opening_balance_transaction(commodtable, namespace, mnemonic,
     return simple_opening_name_used
         
 def main():
-    original_book_session = Session(argv[1], is_new=False)
-    new_book_session = Session(argv[2], in_new=True)
-    new_book = new_book_session.get_book()
-    new_book_root = new_book.get_root_account()
 
-    commodtable = new_book.get_table()
-    # we discovered that if we didn't have this save early on, there would
-    # be trouble later
-    new_book_session.save()
+    if len(argv) < 3:
+        print 'not enough parameters'
+        print 'usage: new_book_with_opening_balances.py {source_book_url} {destination_book_url}'
+        print 'examples:'
+        print "gnucash-env python new_book_with_opening_balances.py '/home/username/test.gnucash' 'sqlite3:///home/username/new_test.gnucash'"
+        print "gnucash-env python new_book_with_opening_balances.py '/home/username/test.gnucash' 'xml:///crypthome/username/finances/new_test.gnucash'"
+        return
 
-    opening_balance_per_currency = {}
-    recursivly_build_account_tree(
-        original_book_session.get_book().get_root_account(),
-        new_book_root,
-        new_book,
-        commodtable,
-        opening_balance_per_currency,
-        ACCOUNT_TYPES_TO_OPEN
-        )
+    #have everything in a try block to unable us to release our hold on stuff to the extent possible
+    try:
+        original_book_session = Session(argv[1], is_new=False)
+        new_book_session = Session(argv[2], is_new=True)
+        new_book = new_book_session.get_book()
+        new_book_root = new_book.get_root_account()
 
-    (namespace, mnemonic) = PREFERED_CURRENCY_FOR_SIMPLE_OPENING_BALANCE
-    if (namespace, mnemonic) in opening_balance_per_currency:
-        opening_trans, opening_amount = opening_balance_per_currency[
-            (namespace, mnemonic)]
-        simple_opening_name_used = create_opening_balance_transaction(
-            commodtable, namespace, mnemonic,
-            new_book_root, new_book,
-            opening_trans, opening_amount,
-            False )
-        del opening_balance_per_currency[
-            PREFERED_CURRENCY_FOR_SIMPLE_OPENING_BALANCE]
-    else:
-        simple_opening_name_used = False
+        commodtable = new_book.get_table()
+        # we discovered that if we didn't have this save early on, there would
+        # be trouble later
+        new_book_session.save()
 
-    for (namespace, mnemonic), (opening_trans, opening_amount) in \
-            opening_balance_per_currency.iteritems() :
-        simple_opening_name_used = create_opening_balance_transaction(
-            commodtable, namespace, mnemonic,
-            new_book_root, new_book,
-            opening_trans, opening_amount,
-            simple_opening_name_used )
+        opening_balance_per_currency = {}
+        recursivly_build_account_tree(
+            original_book_session.get_book().get_root_account(),
+            new_book_root,
+            new_book,
+            commodtable,
+            opening_balance_per_currency,
+            ACCOUNT_TYPES_TO_OPEN
+            )
 
-    new_book_session.save()
-    new_book_session.end()
-    original_book_session.end()
+        (namespace, mnemonic) = PREFERED_CURRENCY_FOR_SIMPLE_OPENING_BALANCE
+        if (namespace, mnemonic) in opening_balance_per_currency:
+            opening_trans, opening_amount = opening_balance_per_currency[
+                (namespace, mnemonic)]
+            simple_opening_name_used = create_opening_balance_transaction(
+                commodtable, namespace, mnemonic,
+                new_book_root, new_book,
+                opening_trans, opening_amount,
+                False )
+            del opening_balance_per_currency[
+                PREFERED_CURRENCY_FOR_SIMPLE_OPENING_BALANCE]
+        else:
+            simple_opening_name_used = False
+
+        for (namespace, mnemonic), (opening_trans, opening_amount) in \
+                opening_balance_per_currency.iteritems() :
+            simple_opening_name_used = create_opening_balance_transaction(
+                commodtable, namespace, mnemonic,
+                new_book_root, new_book,
+                opening_trans, opening_amount,
+                simple_opening_name_used )
+
+        new_book_session.save()
+        new_book_session.end()
+        original_book_session.end()
+    except:
+        if "original_book_session" in locals():
+            original_book_session.end()
+ 
+        if "new_book_session" in locals():
+            new_book_session.end()
+
+        raise
     
 
 if __name__ == "__main__":

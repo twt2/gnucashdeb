@@ -1,7 +1,7 @@
 AM_CPPFLAGS=\
   -I${top_srcdir}/src \
   -I${top_srcdir}/src/gnc-module \
-  ${GUILE_INCS} \
+  ${GUILE_CFLAGS} \
   ${GLIB_CFLAGS}
 
 PWD := $(shell pwd)
@@ -27,9 +27,16 @@ EXTRA_DIST = \
   foo.i \
   gnucash/foo.scm
 
-if BUILDING_FROM_SVN
+if BUILDING_FROM_VCS
 swig-foo.c: foo.i
 	$(SWIG) -guile $(SWIG_ARGS) -Linkage module -o $@ $<
+if ! OS_WIN32
+if ! SWIG_DIST_FAIL
+	if ! `grep "define scm_from_utf8_string" $@ > /dev/null 2>&1`; then \
+	  patch $@ $(top_srcdir)/src/swig-utf8.patch; \
+	fi
+endif
+endif
 endif
 
 BUILT_SOURCES = swig-foo.c

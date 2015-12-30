@@ -99,6 +99,12 @@ struct file_backend
 const gchar *gnc_v2_xml_version_string = GNC_V2_STRING;
 extern const gchar *gnc_v2_book_version_string;        /* see gnc-book-xml-v2 */
 
+/* Forward declarations */
+static FILE *try_gz_open (const char *filename, const char *perms, gboolean use_gzip,
+                          gboolean compress);
+static gboolean is_gzipped_file(const gchar *name);
+static gboolean wait_for_gzip(FILE *file);
+
 void
 run_callback(sixtp_gdv2 *data, const char *type)
 {
@@ -352,7 +358,7 @@ do_counter_cb (const char *type, gpointer data_p, gpointer be_data_p)
     if (be_data->ok == TRUE)
         return;
 
-    if (!safe_strcmp (be_data->tag, data->type_name))
+    if (!g_strcmp0 (be_data->tag, data->type_name))
         be_data->ok = TRUE;
 
     /* XXX: should we do anything with this counter? */
@@ -394,29 +400,33 @@ gnc_counter_end_handler(gpointer data_for_children,
               strval ? strval : "(null)");
         ret = FALSE;
     }
-    else if (safe_strcmp(type, "transaction") == 0)
+    else if (g_strcmp0(type, "transaction") == 0)
     {
         sixdata->counter.transactions_total = val;
     }
-    else if (safe_strcmp(type, "account") == 0)
+    else if (g_strcmp0(type, "account") == 0)
     {
         sixdata->counter.accounts_total = val;
     }
-    else if (safe_strcmp(type, "book") == 0)
+    else if (g_strcmp0(type, "book") == 0)
     {
         sixdata->counter.books_total = val;
     }
-    else if (safe_strcmp(type, "commodity") == 0)
+    else if (g_strcmp0(type, "commodity") == 0)
     {
         sixdata->counter.commodities_total = val;
     }
-    else if (safe_strcmp(type, "schedxaction") == 0)
+    else if (g_strcmp0(type, "schedxaction") == 0)
     {
         sixdata->counter.schedXactions_total = val;
     }
-    else if (safe_strcmp(type, "budget") == 0)
+    else if (g_strcmp0(type, "budget") == 0)
     {
         sixdata->counter.budgets_total = val;
+    }
+    else if (g_strcmp0(type, "price") == 0)
+    {
+        sixdata->counter.prices_total = val;
     }
     else
     {
@@ -482,10 +492,12 @@ file_rw_feedback (sixtp_gdv2 *gd, const char *type)
     counter = &gd->counter;
     loaded = counter->transactions_loaded + counter->accounts_loaded +
              counter->books_loaded + counter->commodities_loaded +
-             counter->schedXactions_loaded + counter->budgets_loaded;
+             counter->schedXactions_loaded + counter->budgets_loaded +
+             counter->prices_loaded;
     total = counter->transactions_total + counter->accounts_total +
             counter->books_total + counter->commodities_total +
-            counter->schedXactions_total + counter->budgets_total;
+            counter->schedXactions_total + counter->budgets_total +
+            counter->prices_total;
     if (total == 0)
         total = 1;
 
@@ -534,7 +546,7 @@ add_item_cb (const char *type, gpointer data_p, gpointer be_data_p)
     if (be_data->ok)
         return;
 
-    if (!safe_strcmp (be_data->tag, data->type_name))
+    if (!g_strcmp0 (be_data->tag, data->type_name))
     {
         if (data->add_item)
             (data->add_item)(be_data->gd, be_data->data);
@@ -548,31 +560,31 @@ book_callback(const char *tag, gpointer globaldata, gpointer data)
 {
     sixtp_gdv2 *gd = (sixtp_gdv2*)globaldata;
 
-    if (safe_strcmp(tag, ACCOUNT_TAG) == 0)
+    if (g_strcmp0(tag, ACCOUNT_TAG) == 0)
     {
         add_account_local(gd, (Account*)data);
     }
-    else if (safe_strcmp(tag, PRICEDB_TAG) == 0)
+    else if (g_strcmp0(tag, PRICEDB_TAG) == 0)
     {
         add_pricedb_local(gd, (GNCPriceDB*)data);
     }
-    else if (safe_strcmp(tag, COMMODITY_TAG) == 0)
+    else if (g_strcmp0(tag, COMMODITY_TAG) == 0)
     {
         add_commodity_local(gd, (gnc_commodity*)data);
     }
-    else if (safe_strcmp(tag, TRANSACTION_TAG) == 0)
+    else if (g_strcmp0(tag, TRANSACTION_TAG) == 0)
     {
         add_transaction_local(gd, (Transaction*)data);
     }
-    else if (safe_strcmp(tag, SCHEDXACTION_TAG) == 0)
+    else if (g_strcmp0(tag, SCHEDXACTION_TAG) == 0)
     {
         add_schedXaction_local(gd, (SchedXaction*)data);
     }
-    else if (safe_strcmp(tag, TEMPLATE_TRANSACTION_TAG) == 0)
+    else if (g_strcmp0(tag, TEMPLATE_TRANSACTION_TAG) == 0)
     {
         add_template_transaction_local( gd, (gnc_template_xaction_data*)data );
     }
-    else if (safe_strcmp(tag, BUDGET_TAG) == 0)
+    else if (g_strcmp0(tag, BUDGET_TAG) == 0)
     {
         // Nothing needed here.
     }
@@ -600,7 +612,7 @@ generic_callback(const char *tag, gpointer globaldata, gpointer data)
 {
     sixtp_gdv2 *gd = (sixtp_gdv2*)globaldata;
 
-    if (safe_strcmp(tag, BOOK_TAG) == 0)
+    if (g_strcmp0(tag, BOOK_TAG) == 0)
     {
         add_book_local(gd, (QofBook*)data);
         book_callback(tag, globaldata, data);
@@ -774,8 +786,29 @@ qof_session_load_from_xml_file_v2_full(
     }
     else
     {
-        retval = gnc_xml_parse_file(top_parser, fbe->fullpath,
-                                    generic_callback, gd, book);
+	/* Even though libxml2 knows how to decompress zipped files, we
+	 * do it ourself since as of version 2.9.1 it has a bug that
+	 * causes it to fail to decompress certain files. See
+	 * https://bugzilla.gnome.org/show_bug.cgi?id=712528 for more
+	 * info.
+	 */
+	gchar *filename = fbe->fullpath;
+	FILE *file;
+	gboolean is_compressed = is_gzipped_file(filename);
+	file = try_gz_open(filename, "r", is_compressed, FALSE);
+	if (file == NULL)
+	{
+	    PWARN("Unable to open file %s", filename);
+	    retval = FALSE;
+	}
+	else
+	{
+	    retval = gnc_xml_parse_fd(top_parser, file,
+				      generic_callback, gd, book);
+	    fclose(file);
+	    if (is_compressed)
+		wait_for_gzip(file);
+	}
     }
 
     if (!retval)
@@ -830,7 +863,7 @@ bail:
 
 gboolean
 qof_session_load_from_xml_file_v2(FileBackend *fbe, QofBook *book,
-    QofBookFileType type)
+                                  QofBookFileType type)
 {
     return qof_session_load_from_xml_file_v2_full(fbe, book, NULL, NULL, type);
 }
@@ -845,7 +878,7 @@ write_counts(FILE* out, ...)
     gboolean success = TRUE;
 
     va_start(ap, out);
-    type = va_arg(ap, char *);
+    type = g_strdup (va_arg(ap, char *));
 
     while (success && type)
     {
@@ -865,9 +898,10 @@ write_counts(FILE* out, ...)
              * This is invalid xml because the namespace isn't
              * declared in the tag itself. This should be changed to
              * 'type' at some point. */
-            xmlSetProp(node, BAD_CAST "cd:type", BAD_CAST type);
-            xmlNodeAddContent(node, BAD_CAST val);
+            xmlSetProp(node, BAD_CAST "cd:type", checked_char_cast (type));
+            xmlNodeAddContent(node, checked_char_cast (val));
             g_free(val);
+	    g_free (type);
 
             xmlElemDump(out, NULL, node);
             xmlFreeNode(node);
@@ -900,7 +934,7 @@ compare_namespaces(gconstpointer a, gconstpointer b)
 {
     const gchar *sa = (const gchar *) a;
     const gchar *sb = (const gchar *) b;
-    return(safe_strcmp(sa, sb));
+    return(g_strcmp0(sa, sb));
 }
 
 static gint
@@ -908,7 +942,7 @@ compare_commodity_ids(gconstpointer a, gconstpointer b)
 {
     const gnc_commodity *ca = (const gnc_commodity *) a;
     const gnc_commodity *cb = (const gnc_commodity *) b;
-    return(safe_strcmp(gnc_commodity_get_mnemonic(ca),
+    return(g_strcmp0(gnc_commodity_get_mnemonic(ca),
                        gnc_commodity_get_mnemonic(cb)));
 }
 
@@ -999,6 +1033,7 @@ write_book(FILE *out, QofBook *book, sixtp_gdv2 *gd)
                       g_list_length(gnc_book_get_schedxactions(book)->sx_list),
                       "budget", qof_collection_count(
                           qof_book_get_collection(book, GNC_ID_BUDGET)),
+                      "price", gnc_pricedb_get_num_prices(gnc_pricedb_get_db(book)),
                       NULL))
         return FALSE;
 
@@ -1083,20 +1118,55 @@ static gboolean
 write_pricedb(FILE *out, QofBook *book, sixtp_gdv2 *gd)
 {
     xmlNodePtr node;
+    xmlNodePtr parent;
+    xmlOutputBufferPtr outbuf;
 
-    node = gnc_pricedb_dom_tree_create(gnc_pricedb_get_db(book));
+    parent = gnc_pricedb_dom_tree_create(gnc_pricedb_get_db(book));
 
-    if (!node)
+    if (!parent)
     {
         return TRUE;
     }
 
-    xmlElemDump(out, NULL, node);
-    xmlFreeNode(node);
+    /* Write out the parent pricedb tag then loop to write out each price.
+       We do it this way instead of just calling xmlElemDump so that we can
+       increment the progress bar as we go. */
 
-    if (ferror(out) || fprintf(out, "\n") < 0)
+    if (fprintf( out, "<%s version=\"%s\">\n", parent->name,
+                 xmlGetProp(parent, BAD_CAST "version")) < 0)
         return FALSE;
 
+    /* We create our own output buffer so we can call xmlNodeDumpOutput to get
+       the indendation correct. */
+    outbuf = xmlOutputBufferCreateFile(out, NULL);
+    if (outbuf == NULL)
+    {
+        xmlFreeNode(parent);
+        return FALSE;
+    }
+
+    for (node = parent->children; node; node = node->next)
+    {
+        /* Write two spaces since xmlNodeDumpOutput doesn't indent the first line */
+        xmlOutputBufferWrite(outbuf, 2, "  ");
+        xmlNodeDumpOutput(outbuf, NULL, node, 1, 1, NULL);
+        /* It also doesn't terminate the last line */
+        xmlOutputBufferWrite(outbuf, 1, "\n");
+        if (ferror(out))
+            break;
+        gd->counter.prices_loaded += 1;
+        run_callback(gd, "prices");
+    }
+
+    xmlOutputBufferClose(outbuf);
+
+    if (ferror(out) || fprintf(out, "</%s>\n", parent->name) < 0)
+    {
+        xmlFreeNode(parent);
+        return FALSE;
+    }
+
+    xmlFreeNode(parent);
     return TRUE;
 }
 
@@ -1205,11 +1275,11 @@ write_budget (QofInstance *ent, gpointer data)
 }
 
 gboolean
-gnc_xml2_write_namespace_decl (FILE *out, const char *namespace)
+gnc_xml2_write_namespace_decl (FILE *out, const char *name_space)
 {
-    g_return_val_if_fail(namespace, FALSE);
+    g_return_val_if_fail(name_space, FALSE);
     return fprintf(out, "\n     xmlns:%s=\"http://www.gnucash.org/XML/%s\"",
-                   namespace, namespace) >= 0;
+                   name_space, name_space) >= 0;
 }
 
 static void
@@ -1282,6 +1352,7 @@ gnc_book_write_to_xml_filehandle_v2(QofBook *book, FILE *out)
         g_list_length(gnc_book_get_schedxactions(book)->sx_list);
     gd->counter.budgets_total = qof_collection_count(
                                     qof_book_get_collection(book, GNC_ID_BUDGET));
+    gd->counter.prices_total = gnc_pricedb_get_num_prices(gnc_pricedb_get_db(book));
 
     if (!write_book(out, book, gd)
             || fprintf(out, "</" GNC_V2_STRING ">\n\n") < 0)
@@ -1338,7 +1409,7 @@ gz_thread_func(gz_thread_params_t *params)
     gchar buffer[BUFLEN];
     gssize bytes;
     gint gzval;
-    gzFile *file;
+    gzFile file;
     gint success = 1;
 
 #ifdef G_OS_WIN32
@@ -1487,7 +1558,13 @@ try_gz_open (const char *filename, const char *perms, gboolean use_gzip,
         params->perms = g_strdup(perms);
         params->compress = compress;
 
-        thread = g_thread_create((GThreadFunc) gz_thread_func, params, TRUE, &error);
+#ifndef HAVE_GLIB_2_32
+        thread = g_thread_create((GThreadFunc) gz_thread_func, params,
+				 TRUE, &error);
+#else
+        thread = g_thread_new("xml_thread", (GThreadFunc) gz_thread_func,
+			      params);
+#endif
         if (!thread)
         {
             g_warning("Could not create thread for (de)compression: %s",
@@ -1593,8 +1670,7 @@ gnc_book_write_accounts_to_xml_file_v2(
     if (out && fclose(out))
         success = FALSE;
 
-    if (!success
-            && qof_backend_get_error(be) == ERR_BACKEND_NO_ERR)
+    if (!success && !qof_backend_check_error(be))
     {
 
         /* Use a generic write error code */
@@ -1636,7 +1712,7 @@ gnc_is_xml_data_file_v2(const gchar *name, gboolean *with_encoding)
 {
     if (is_gzipped_file(name))
     {
-        gzFile *file;
+        gzFile file = NULL;
         char first_chunk[256];
         int num_read;
 
@@ -2109,10 +2185,3 @@ gnc_xml2_parse_with_subst (FileBackend *fbe, QofBook *book, GHashTable *subst)
 
     return success;
 }
-
-/* For emacs we set some variables concerning indentation:
- * Local Variables: *
- * indent-tabs-mode:nil *
- * c-basic-offset:4 *
- * tab-width:8 *
- * End: */

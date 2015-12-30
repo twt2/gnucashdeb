@@ -140,24 +140,6 @@ print error message if its bad  */
 
 */
 
-/** Is QOF operating in "alternate" dirty mode?
- *
- * In normal mode, whenever an instance is dirtied, the collection
- * (and therefore the book) is immediately marked as dirty.  In
- * alternate mode, the collection is only marked dirty when a dirty
- * instance is committed.  If a dirty instance is freed instead of
- * committed, the dirty state of collection (and therefore the book)
- * is never changed. */
-gboolean qof_get_alt_dirty_mode (void);
-
-/** Set QOF into "alternate" dirty mode.  In normal mode, whenever an
- *  instance is dirtied, the collection (and therefore the book) is
- *  immediately marked as dirty.  In alternate mode, the collection is
- *  only marked dirty when a dirty instance is committed.  If a dirty
- *  instance is freed instead of committed, the dirty state of
- *  collection (and therefore the book) is never changed. */
-void qof_set_alt_dirty_mode (gboolean enabled);
-
 /** @name Collections of Entities
  @{ */
 
@@ -220,19 +202,6 @@ gboolean
 qof_collection_add_entity (QofCollection *coll, QofInstance *ent);
 
 void qof_collection_remove_entity (QofInstance *ent);
-
-/** \brief Merge two QOF_TYPE_COLLECT of the same type.
-
-\note \b NOT the same as the main collections in the book.
-
-QOF_TYPE_COLLECT uses a secondary collection, independent of
-those in the book. Entities will not be removed from the
-original collection as when using ::qof_instance_insert_entity
-or ::qof_instance_remove_entity.
-
-*/
-gboolean
-qof_collection_merge (QofCollection *target, QofCollection *merge);
 
 /** \brief Compare two secondary collections.
 

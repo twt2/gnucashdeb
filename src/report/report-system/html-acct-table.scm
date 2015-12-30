@@ -577,14 +577,21 @@
 
   ;; helper to plop <env> in the next available env cell
   (define (add-row env)
-    (let ((html-table (gnc:_html-acct-table-matrix_ acct-table)))
+    (let* ((html-table (gnc:_html-acct-table-matrix_ acct-table))
+           (row (gnc:html-table-num-rows html-table)))
       (gnc:html-table-set-cell!
        html-table
-       (gnc:html-table-num-rows html-table)
+       row
        0
        env)
+      row
       )
     )
+
+  ;; Add more stuff to an existing row
+  (define (append-to-row row env)
+    (gnc:html-acct-table-set-row-env! acct-table row
+      (append (gnc:html-acct-table-get-row-env acct-table row) env)))
   
   (let* ((env (gnc:_html-acct-table-env_ acct-table))
 	 ;; establish all input parameters and their defaults 
@@ -607,7 +614,6 @@
 	 (exchange-fn (or (get-val env 'exchange-fn)
                           #f))
          (get-balance-fn (or (get-val env 'get-balance-fn) #f))
-         ;;'weighted-average))
 	 (column-header (let ((cell (get-val env 'column-header)))
 			  (if (equal? cell #t)
 			      (gnc:make-html-table-cell "Account name")
@@ -621,14 +627,15 @@
 	 (balance-mode (or (get-val env 'balance-mode) 'post-closing))
 	 (closing-pattern (or (get-val env 'closing-pattern)
 			      (list
-			       (list 'str (N_ "Closing Entries"))
+			       (list 'str (_ "Closing Entries"))
 			       (list 'cased #f)
 			       (list 'regexp #f)
+			       (list 'closing #t)
 			       )
 			      ))
 	 (adjusting-pattern (or (get-val env 'adjusting-pattern)
 				(list
-				 (list 'str (N_ "Adjusting Entries"))
+				 (list 'str (_ "Adjusting Entries"))
 				 (list 'cased #f)
 				 (list 'regexp #f)
 				 )
@@ -764,6 +771,7 @@
 	     (if (integer? depth-limit)
 		 (min (- depth-limit 1) logi-depth)
 		 logi-depth))
+            (row-added? #f)
 	    )
 	
 	(for-each
@@ -834,6 +842,8 @@
 			     (and (equal? label-mode 'name)
 				  (gnc:make-html-text account-name))
 			     ))
+                  (row #f)
+                  (children-displayed? #f)
 		  )
 
 	     (set! acct-depth-reached (max acct-depth-reached acct-depth))
@@ -860,18 +870,22 @@
 					(+ disp-depth indent))
 				  )
 				 ))
-		   (add-row row-env)
+		   (set! row (add-row row-env))
 		   )
 		 )
 	     ;; Recurse:
 	     ;; Dive into an account even if it isnt selected!
 	     ;; why? because some subaccts may be selected.
-	     (traverse-accounts! subaccts
-				 (+ acct-depth 1)
-				 (if (use-acct? acct)
-				     (+ logi-depth 1)
-				     logi-depth)
-				 new-balances)
+	     (set! children-displayed?
+	           (traverse-accounts! subaccts
+				       (+ acct-depth 1)
+				       (if (use-acct? acct)
+				           (+ logi-depth 1)
+				           logi-depth)
+				       new-balances))
+
+	     ;; record whether any children were displayed
+	     (if row (append-to-row row (list (list 'children-displayed? children-displayed?))))
 
 	     ;; after the return from recursion: subtotals
 	     (or (not (use-acct? acct))
@@ -881,7 +895,7 @@
 		      (equal? zero-mode 'omit-leaf-acct))
 		 ;; ignore use-acct for subtotals...?
 		 ;; (not (use-acct? acct))
-		 (null? subaccts)
+		 (not children-displayed?)
 		 (let* ((lbl-txt (gnc:make-html-text (_ "Total") " ")))
 		   (apply gnc:html-text-append! lbl-txt
 			  (gnc:html-text-body label))
@@ -903,12 +917,14 @@
 		   (add-row row-env)
 		   )
 		 )
+	     (if (or row-added? children-displayed? row) (set! row-added? #t))
 	     )) ;; end of (lambda (acct) ...)
 	 ;; lambda is applied to each item in the (sorted) account list
 	 (if less-p
 	     (sort accts less-p)
 	     accts)
 	 ) ;; end of for-each
+	 row-added?
 	)
       ) ;; end of definition of traverse-accounts!
 
@@ -1002,33 +1018,33 @@
 (define (gnc:html-acct-table-set-row-env! acct-table row env)
   (gnc:html-acct-table-set-cell! acct-table row -1 env))
 
-(define (gnc:html-acct-table-append-row acct-table objects)
+(define (gnc:html-acct-table-append-row! acct-table newrow)
   (gnc:html-table-append-row!
    (gnc:_html-acct-table-matrix_ acct-table)
    (map
     (lambda (x) (gnc:make-html-table-cell (list x)))
-    objects)))
+    newrow)))
 
 (define (gnc:html-acct-table-prepend-row! acct-table newrow)
   (gnc:html-table-prepend-row!
    (gnc:_html-acct-table-matrix_ acct-table)
    (map
     (lambda (x) (gnc:make-html-table-cell (list x)))
-    objects)))
+    newrow)))
 
-(define (gnc:html-acct-table-append-col acct-table objects)
+(define (gnc:html-acct-table-append-col! acct-table newcol)
   (gnc:html-table-append-col!
    (gnc:_html-acct-table-matrix_ acct-table)
    (map
     (lambda (x) (gnc:make-html-table-cell (list x)))
-    objects)))
+    newcol)))
 
 (define (gnc:html-acct-table-prepend-col! acct-table newrow)
   (gnc:html-table-prepend-col!
    (gnc:_html-acct-table-matrix_ acct-table)
    (map
     (lambda (x) (gnc:make-html-table-cell (list x)))
-    objects)))
+    newcol)))
 
 (define (gnc:html-acct-table-remove-last-row! acct-table)
   (gnc:html-table-remove-last-row! (gnc:_html-acct-table-matrix_ acct-table)))
@@ -1181,6 +1197,7 @@
 			params))
 		  (acct (get-val env 'account))
 		  (children (get-val env 'account-children))
+		  (children-displayed? (get-val env 'children-displayed?))
 		  (label (get-val env 'account-label))
 		  (acct-name (get-val env 'account-name)) ;; for diagnostics...
 		  (report-commodity  (get-val env 'report-commodity))
@@ -1318,7 +1335,7 @@
 		 ;; some reports, the output might look incorrect. but,
 		 ;; if you think long and hard about it, i think you'll
 		 ;; find the current treatment correct... i think. -DM-
-		 (- 0 (if (if (null? children)
+		 (- 0 (if (if (not children-displayed?)
 			      #f
 			      (equal? bal-method 'immediate-bal))
 			  1 0)

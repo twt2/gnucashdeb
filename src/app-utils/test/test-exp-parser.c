@@ -1,13 +1,33 @@
+/********************************************************************\
+ * This program is free software; you can redistribute it and/or    *
+ * modify it under the terms of the GNU General Public License as   *
+ * published by the Free Software Foundation; either version 2 of   *
+ * the License, or (at your option) any later version.              *
+ *                                                                  *
+ * This program is distributed in the hope that it will be useful,  *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of   *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the    *
+ * GNU General Public License for more details.                     *
+ *                                                                  *
+ * You should have received a copy of the GNU General Public License*
+ * along with this program; if not, contact:                        *
+ *                                                                  *
+ * Free Software Foundation           Voice:  +1-617-542-5942       *
+ * 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652       *
+ * Boston, MA  02110-1301,  USA       gnu@gnu.org                   *
+ *                                                                  *
+\********************************************************************/
+
 #include "config.h"
 #include <glib.h>
 #include <stdlib.h>
 #include <stdio.h>
 
 #include <libguile.h>
-#include "gnc-gconf-utils.h"
 #include "gnc-exp-parser.h"
 #include "gnc-numeric.h"
 #include "test-stuff.h"
+#include <unittest-support.h>
 
 static GList *tests = NULL;
 
@@ -63,10 +83,16 @@ run_parser_test (TestNode *node)
     gboolean succeeded;
     gnc_numeric result;
     char *error_loc;
+    gchar *msg = "[func_op()] function eval error: [[func_op(]\n";
+    guint loglevel = G_LOG_LEVEL_CRITICAL, hdlr;
+    TestErrorStruct check = { loglevel, "gnc.gui", msg };
 
     result = gnc_numeric_error( -1 );
-    printf("Running test \"%s\" [%s] = ", node->test_name, node->exp);
+    hdlr = g_log_set_handler ("gnc.gui", loglevel,
+                              (GLogFunc)test_checked_handler, &check);
+    g_test_message ("Running test \"%s\" [%s] = ", node->test_name, node->exp);
     succeeded = gnc_exp_parser_parse (node->exp, &result, &error_loc);
+    g_log_remove_handler ("gnc.gui", hdlr);
     {
         int pass;
         pass = (succeeded == node->should_succeed);
@@ -74,9 +100,9 @@ run_parser_test (TestNode *node)
         {
             pass &= gnc_numeric_equal( result, node->expected_result );
         }
-        printf( "%0.4f [%s]\n",
-                gnc_numeric_to_double( result ),
-                (pass ? "PASS" : "FAIL" ) );
+        g_test_message ( "%0.4f [%s]\n",
+                         gnc_numeric_to_double( result ),
+                         (pass ? "PASS" : "FAIL" ) );
     }
 
     if (succeeded != node->should_succeed)

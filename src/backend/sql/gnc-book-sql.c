@@ -48,7 +48,7 @@
 #define BOOK_TABLE "books"
 #define TABLE_VERSION 1
 
-/*@ unused @*/ static QofLogModule log_module = G_LOG_DOMAIN;
+G_GNUC_UNUSED static QofLogModule log_module = G_LOG_DOMAIN;
 
 static /*@ dependent @*//*@ null @*/ gpointer get_root_account_guid( gpointer pObject );
 static void set_root_account_guid( gpointer pObject, /*@ null @*/ gpointer pValue );
@@ -140,15 +140,14 @@ set_root_template_guid( gpointer pObject, /*@ null @*/ gpointer pValue )
 static void
 load_single_book( GncSqlBackend* be, GncSqlRow* row )
 {
-    const GncGUID* guid;
     QofBook* pBook;
 
     g_return_if_fail( be != NULL );
     g_return_if_fail( row != NULL );
 
-    guid = gnc_sql_load_guid( be, row );
+    gnc_sql_load_guid( be, row );
 
-    pBook = be->primary_book;
+    pBook = be->book;
     if ( pBook == NULL )
     {
         pBook = qof_book_new();
@@ -179,10 +178,14 @@ load_all_books( GncSqlBackend* be )
         {
             GncSqlRow* row = gnc_sql_result_get_first_row( result );
 
-            // If there are no rows, try committing the book
+            /* If there are no rows, try committing the book; unset
+	     * loading so that it will actually get saved.
+	     */
             if ( row == NULL )
             {
-                (void)gnc_sql_save_book( be, QOF_INSTANCE(be->primary_book) );
+                be->loading = FALSE;
+                (void)gnc_sql_save_book( be, QOF_INSTANCE(be->book) );
+                be->loading = TRUE;
             }
             else
             {

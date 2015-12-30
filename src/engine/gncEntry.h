@@ -96,12 +96,29 @@ void gncEntryDestroy (GncEntry *entry);
 
 /** @name Generic (shared) data
  @{ */
+/** Set the date of this entry */
+void gncEntrySetDateGDate (GncEntry *entry, const GDate* date);
+/** DEPRECATED - use gncEntrySetDateGDate() instead! (Because the time-of-day
+is a misleading extra information. We are only dealing with the day
+information! */
 void gncEntrySetDate (GncEntry *entry, Timespec date);
 void gncEntrySetDateEntered (GncEntry *entry, Timespec date);
 void gncEntrySetDescription (GncEntry *entry, const char *desc);
 void gncEntrySetAction (GncEntry *entry, const char *action);
 void gncEntrySetNotes (GncEntry *entry, const char *notes);
+/** Set the internal quantity without any conversion.
+ *  This distinction is made because credit notes store their quantity
+ *  sign-reversed compared to how the quantity is written on the
+ *  actual credit note (and hence how the ledger and reports show it
+ *  to the user). */
 void gncEntrySetQuantity (GncEntry *entry, gnc_numeric quantity);
+/** Set the internal quantity converting from the quantity as
+ *  visible on the physical document.
+ *  This distinction is made because credit notes store their quantity
+ *  sign-reversed compared to how the quantity is written on the
+ *  actual credit note (and hence how the ledger and reports show it
+ *  to the user). */
+void gncEntrySetDocQuantity (GncEntry *entry, gnc_numeric quantity, gboolean is_cn);
 /** @} */
 
 /** @name Customer Invoices
@@ -137,12 +154,28 @@ void gncEntrySetBillPayment (GncEntry *entry, GncEntryPaymentType type);
 /* GET FUNCTIONS */
 /** @name Generic (shared) data
  @{ */
+/** Returns the day of this entry */
+GDate gncEntryGetDateGDate (const GncEntry *entry);
+/** DEPRECATED - use gncEntryGetDateGDate() instead! (Because the time-of-day
+is a misleading extra information. We are only dealing with the day
+information! */
 Timespec gncEntryGetDate (const GncEntry *entry);
 Timespec gncEntryGetDateEntered (const GncEntry *entry);
 const char * gncEntryGetDescription (const GncEntry *entry);
 const char * gncEntryGetAction (const GncEntry *entry);
 const char * gncEntryGetNotes (const GncEntry *notes);
+/** Get the quantity as stored internally.
+ *  This distinction is made because credit notes store their quantity
+ *  sign-reversed compared to how the quantity is written on the
+ *  actual credit note (and hence how the ledger and reports show it
+ *  to the user). */
 gnc_numeric gncEntryGetQuantity (const GncEntry *entry);
+/** Get the quantity as on the physical document.
+ *  This distinction is made because credit notes store their quantity
+ *  sign-reversed compared to how the quantity is written on the
+ *  actual credit note (and hence how the ledger and reports show it
+ *  to the user). */
+gnc_numeric gncEntryGetDocQuantity (const GncEntry *entry, gboolean is_cn);
 /** @} */
 
 /** @name Customer Invoices
@@ -172,36 +205,68 @@ GncOwner *gncEntryGetBillTo (GncEntry *entry);
 GncEntryPaymentType gncEntryGetBillPayment (const GncEntry* entry);
 /** @} */
 
-void gncEntryCopy (const GncEntry *src, GncEntry *dest);
+void gncEntryCopy (const GncEntry *src, GncEntry *dest, gboolean add_entry);
 
 /** @name Getting Values
-
- * The first three return the rounded values -- the last returns the
- * list of unrounded account-values.  The list belongs to the entry
- * and will be destroyed, so use it quickly.
+ *
+ * An entry has three important values:
+ * - entry value: the amount the merchant gets
+ * - tax value: the amount the government gets
+ * - discount value: the amount the customer saved
+ *
+ * These values can be retrieved in several variants. Depending on
+ * how they will be used some sign reversals can be applied on
+ * the values:
+ * - Doc value: the value as listed on the document. This is usually
+ *              a positive value, unless the document was a
+ *              negative invoice/bill or negative credit note.
+ *              Since credit note entry values are stored negatively
+ *              internally, they will be sign-reversed before returning
+ *              them.
+ * - Bal value: the value as it will impact the balance. Customer
+ *              invoices and vendor credit notes have a positive
+ *              influence on the balance, so these values will be positive.
+ *              For vendor bills and customer credit notes, the
+ *              values will be negative.
+ *
+ * For tax there are TaxValue and TaxValues variants: the first one
+ * returns to total tax value for this entry, meaning the sum of all
+ * individual taxes. The second one returns a list of all the individual
+ * tax values for this entry. This list holds unrounded values only, there's
+ * no variant with rounded values.
+ *
+ * Note that this list is not owned by the entry. When no longer needed,
+ * it should be freed with gncAccountValueDestroy.
+ *
+ * Finally, there are rounded and unrounded variants of most of
+ * these functions.
  @{
 */
-gnc_numeric gncEntryReturnValue (GncEntry *entry, gboolean is_inv);
-gnc_numeric gncEntryReturnDiscountValue (GncEntry *entry, gboolean is_inv);
-gnc_numeric gncEntryReturnTaxValue (GncEntry *entry, gboolean is_inv);
 typedef GList AccountValueList;
-AccountValueList * gncEntryReturnTaxValues (GncEntry *entry, gboolean is_inv);
+gnc_numeric gncEntryGetDocValue (GncEntry *entry, gboolean round, gboolean is_cust_doc, gboolean is_cn);
+gnc_numeric gncEntryGetDocTaxValue (GncEntry *entry, gboolean round, gboolean is_cust_doc, gboolean is_cn);
+/** Careful: the returned list is NOT owned by the entry and should be freed by the caller */
+AccountValueList * gncEntryGetDocTaxValues (GncEntry *entry, gboolean is_cust_doc, gboolean is_cn);
+gnc_numeric gncEntryGetDocDiscountValue (GncEntry *entry, gboolean round, gboolean is_cust_doc, gboolean is_cn);
 
-/** Compute the Entry value, tax-value, and discount_value, based on
- * the quantity, price, discount, tax-table, and types.  The value is
+gnc_numeric gncEntryGetBalValue (GncEntry *entry, gboolean round, gboolean is_cust_doc);
+gnc_numeric gncEntryGetBalTaxValue (GncEntry *entry, gboolean round, gboolean is_cust_doc);
+/** Careful: the returned list is NOT owned by the entry and should be freed by the caller */
+AccountValueList * gncEntryGetBalTaxValues (GncEntry *entry, gboolean is_cust_doc);
+gnc_numeric gncEntryGetBalDiscountValue (GncEntry *entry, gboolean round, gboolean is_cust_doc);
+
+/** Compute the Entry value, tax_value, and discount_value, based on
+ * the quantity, price, discount, tax_-table, and types.  The value is
  * the amount the merchant gets, the taxes are what the gov't gets,
  * and the discount is how much the customer saved.  The SCU is the
  * target denominator of the value and tax -- it should be the
  * account or commodity SCU of the target.
  *
- * The tax_values list is the property of the entry and will be
- * destroyed automatically, so use it quickly.  Note that all return
- * values from these two functions are NOT rounded.
+ *  The return values are NOT rounded.
+ *
+ * The tax_values list is owned by the entry and will be
+ * destroyed automatically, so use it quickly.
  */
-void gncEntryGetValue (GncEntry *entry, gboolean is_inv, gnc_numeric *value,
-                       gnc_numeric *discount, gnc_numeric *tax_value,
-                       GList **tax_values);
-
 void gncEntryComputeValue (gnc_numeric qty, gnc_numeric price,
                            const GncTaxTable *tax_table, gboolean tax_included,
                            gnc_numeric discount, GncAmountType discount_type,
@@ -231,7 +296,6 @@ gboolean gncEntryIsOpen (const GncEntry *entry);
 void gncEntryBeginEdit (GncEntry *entry);
 void gncEntryCommitEdit (GncEntry *entry);
 int gncEntryCompare (const GncEntry *a, const GncEntry *b);
-gboolean gncEntryEqual(const GncEntry *a, const GncEntry *b);
 
 #define ENTRY_DATE			"date"
 #define ENTRY_DATE_ENTERED 	"date-entered"

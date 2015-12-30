@@ -36,11 +36,10 @@
 #include "dialog-sx-editor.h"
 #include "dialog-transfer.h"
 #include "dialog-totd.h"
-#include "druid-hierarchy.h"
+#include "assistant-hierarchy.h"
 #include "file-utils.h"
 #include "gnc-component-manager.h"
 #include "gnc-engine.h"
-#include "gnc-gconf-utils.h"
 #include "gnc-file.h"
 #include "gnc-hooks.h"
 #include "gfec.h"
@@ -51,13 +50,16 @@
 #include "gnc-plugin-basic-commands.h" /* FIXME Remove this line*/
 #include "gnc-plugin-file-history.h" /* FIXME Remove this line*/
 #include "gnc-plugin-register.h" /* FIXME Remove this line*/
+#include "gnc-plugin-register2.h" /* FIXME Remove this line*/
 #include "gnc-plugin-budget.h"
 #include "gnc-plugin-page-register.h"
+#include "gnc-plugin-page-register2.h"
 #include "gnc-plugin-manager.h" /* FIXME Remove this line*/
 #include "gnc-html.h"
 #include "gnc-gnome-utils.h"
 #include "gnc-report.h"
 #include "gnc-split-reg.h"
+#include "gnc-state.h"
 #include "gnc-ui.h"
 #include "gnc-ui-util.h"
 #include "gnucash-color.h"
@@ -112,7 +114,6 @@ gnc_html_register_url_cb (const char *location, const char *label,
     Account     * account = NULL;
     Transaction * trans;
     GList       * node;
-    QofBook     * book = gnc_get_current_book();
     GncGUID       guid;
     QofInstance * entity = NULL;
 
@@ -191,7 +192,6 @@ static gboolean
 gnc_html_price_url_cb (const char *location, const char *label,
                        gboolean new_window, GNCURLResult *result)
 {
-    QofBook     * book = gnc_get_current_book();
     GncGUID       guid;
     QofInstance * entity = NULL;
 
@@ -224,7 +224,7 @@ gnc_html_price_url_cb (const char *location, const char *label,
 }
 
 /** Restore all persistent program state.  This function finds the
- *  "new" state file associated with a specific book guid.  It then
+ *  "new" state file associated with the current session.  It then
  *  iterates through this state information, calling a helper function
  *  to recreate each open window.
  *
@@ -241,36 +241,13 @@ static void
 gnc_restore_all_state (gpointer session, gpointer unused)
 {
     GKeyFile *keyfile = NULL;
-    QofBook *book;
-    const GncGUID *guid;
-    const gchar *url, *guid_string;
-    gchar *file_guid;
+    gchar *file_guid = NULL;
     GError *error = NULL;
 
-    url = qof_session_get_url(session);
-    ENTER("session %p (%s)", session, url ? url : "(null)");
-    if (!url)
-    {
-        LEAVE("no url, nothing to do");
-        return;
-    }
-
-    /* Get the book GncGUID */
-    book = qof_session_get_book(session);
-    guid = qof_entity_get_guid(QOF_INSTANCE(book));
-    guid_string = guid_to_string(guid);
-
-    keyfile = gnc_find_state_file(url, guid_string, NULL);
-
-    if (!keyfile)
-    {
-        gnc_main_window_restore_default_state();
-        LEAVE("no state file");
-        return;
-    }
+    keyfile = gnc_state_load (session);
 
 #ifdef DEBUG
-    /*  Debugging: dump a copy to stdout and the trace log */
+    /*  Debugging: dump a copy to the trace log */
     {
         gchar *file_data;
         gsize file_length;
@@ -280,21 +257,25 @@ gnc_restore_all_state (gpointer session, gpointer unused)
     }
 #endif
 
-    /* validate top level info */
+    /* If no state file was found, keyfile will be empty
+     * In that case, let's load the default state */
+    if (!g_key_file_has_group (keyfile, STATE_FILE_TOP))
+    {
+        gnc_main_window_restore_default_state(NULL);
+        LEAVE("no state file");
+        goto cleanup;
+    }
+
+    /* report any other keyfile read error as a warning
+     * but still load default state */
     file_guid = g_key_file_get_string(keyfile, STATE_FILE_TOP,
                                       STATE_FILE_BOOK_GUID, &error);
     if (error)
     {
+        gnc_main_window_restore_default_state(NULL);
         g_warning("error reading group %s key %s: %s",
                   STATE_FILE_TOP, STATE_FILE_BOOK_GUID, error->message);
-        LEAVE("can't read guid");
-        goto cleanup;
-    }
-    if (!file_guid || strcmp(guid_string, file_guid))
-    {
-        g_warning("guid mismatch: book guid %s, state file guid %s",
-                  guid_string, file_guid);
-        LEAVE("guid values do not match");
+        LEAVE("no guid in state file");
         goto cleanup;
     }
 
@@ -307,7 +288,6 @@ cleanup:
         g_error_free(error);
     if (file_guid)
         g_free(file_guid);
-    g_key_file_free(keyfile);
 }
 
 
@@ -329,37 +309,36 @@ static void
 gnc_save_all_state (gpointer session, gpointer unused)
 {
     QofBook *book;
-    const char *url, *guid_string;
-    gchar *filename;
+    const gchar *guid_string;
     const GncGUID *guid;
     GError *error = NULL;
     GKeyFile *keyfile = NULL;
 
-
-    url = qof_session_get_url(session);
-    ENTER("session %p (%s)", session, url ? url : "(null)");
-    if (!url)
+    keyfile = gnc_state_get_current ();
+    if (keyfile)
     {
-        LEAVE("no url, nothing to do");
-        return;
+        /* Remove existing Window and Page groups from the keyfile
+         * They will be regenerated.
+         */
+        gsize num_groups, curr;
+        gchar **groups = g_key_file_get_groups (keyfile, &num_groups);
+        gchar *group = NULL;
+        for (curr=0; curr < num_groups; curr++)
+        {
+            if (g_str_has_prefix (groups[curr], "Window ") ||
+                    g_str_has_prefix (groups[curr], "Page "))
+            {
+                DEBUG ("Removing state group %s", groups[curr]);
+                g_key_file_remove_group (keyfile, groups[curr], NULL);
+            }
+        }
+        g_strfreev (groups);
     }
 
-    /* Get the book GncGUID */
+    /* Store the book's GncGUID in the top level group */
     book = qof_session_get_book(session);
     guid = qof_entity_get_guid(QOF_INSTANCE(book));
     guid_string = guid_to_string(guid);
-
-    /* Find the filename to use.  This returns the data from the
-     * file so its possible that we could reuse the data and
-     * maintain comments that were added to the data file, but
-     * that's not something we currently do. For now the existing
-     * data is dumped and completely regenerated.*/
-    keyfile = gnc_find_state_file(url, guid_string, &filename);
-    if (keyfile)
-        g_key_file_free(keyfile);
-
-    keyfile = g_key_file_new();
-    /* Store top level info in the data structure */
     g_key_file_set_string(keyfile, STATE_FILE_TOP, STATE_FILE_BOOK_GUID,
                           guid_string);
 
@@ -375,19 +354,6 @@ gnc_save_all_state (gpointer session, gpointer unused)
         g_free(file_data);
     }
 #endif
-
-    /* Write it all out to disk */
-    gnc_key_file_save_to_file(filename, keyfile, &error);
-    if (error)
-    {
-        g_critical(_("Error: Failure saving state file.\n  %s"),
-                   error->message);
-        g_error_free(error);
-    }
-    g_free(filename);
-
-    /* Clean up */
-    g_key_file_free(keyfile);
     LEAVE("");
 }
 
@@ -419,12 +385,14 @@ gnc_main_gui_init (void)
         gnc_plugin_manager_get (), gnc_plugin_menu_additions_new ());
     gnc_plugin_manager_add_plugin (
         gnc_plugin_manager_get (), gnc_plugin_register_new ());
+    gnc_plugin_manager_add_plugin (
+        gnc_plugin_manager_get (), gnc_plugin_register2_new ());
     /* I'm not sure why the FIXME note says to remove this.  Maybe
        each module should be adding its own plugin to the manager?
        Anyway... Oh, maybe... nah */
     gnc_plugin_manager_add_plugin (gnc_plugin_manager_get (),
                                    gnc_plugin_budget_new ());
-    gnc_ui_hierarchy_druid_initialize();
+    gnc_ui_hierarchy_assistant_initialize();
 
     /* Run the ui startup hooks. */
     gnc_hook_run(HOOK_UI_STARTUP, NULL);
@@ -433,9 +401,6 @@ gnc_main_gui_init (void)
                          gnc_restore_all_state, NULL);
     gnc_hook_add_dangler(HOOK_BOOK_CLOSED,
                          gnc_save_all_state, NULL);
-
-    /* CAS: I'm not really sure why we remove before adding. */
-    gnc_hook_remove_dangler(HOOK_BOOK_CLOSED, (GFunc)gnc_reports_flush_global);
     gnc_hook_add_dangler(HOOK_BOOK_CLOSED,
                          (GFunc)gnc_reports_flush_global, NULL);
 

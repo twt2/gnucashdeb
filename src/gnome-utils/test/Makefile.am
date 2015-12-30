@@ -4,12 +4,11 @@ TESTS =  \
 # The following tests are nice, but have absolutely no place in an
 # automated testing system.
 #
-TESTS_GUI = test-gnc-recurrence test-gnc-dialog
+TESTS_GUI = test-gnc-recurrence
 
 ##lib_LTLIBRARIES = libgncgnome.la
 
 GNC_TEST_DEPS = --gnc-module-dir ${top_builddir}/src/engine \
-  --gnc-module-dir ${top_builddir}/src/calculation \
   --gnc-module-dir ${top_builddir}/src/app-utils \
   --gnc-module-dir ${top_builddir}/src/gnome-utils \
   --guile-load-dir ${top_builddir}/src/gnc-module \
@@ -18,25 +17,27 @@ GNC_TEST_DEPS = --gnc-module-dir ${top_builddir}/src/engine \
   --guile-load-dir ${top_builddir}/src/core-utils \
   --guile-load-dir ${top_builddir}/src/app-utils \
   --guile-load-dir ${top_builddir}/src/gnome-utils \
+  --library-dir    ${top_builddir}/src/gnome-utils \
   --library-dir    ${top_builddir}/src/libqof/qof \
   --library-dir    ${top_builddir}/src/core-utils \
   --library-dir    ${top_builddir}/src/gnc-module \
   --library-dir    ${top_builddir}/src/engine \
   --library-dir    ${top_builddir}/src/backend/xml \
   --library-dir    ${top_builddir}/src/backend/sql \
-  --library-dir    ${top_builddir}/src/calculation \
   --library-dir    ${top_builddir}/src/app-utils
 
 
 TESTS_ENVIRONMENT = \
+  GUILE_WARN_DEPRECATED=no \
+  GUILE="${GUILE}" \
   SRCDIR=${srcdir} \
-  GNC_BUILDDIR=`\cd ${top_builddir} && pwd` \
-  $(shell ${top_srcdir}/src/gnc-test-env --no-exports ${GNC_TEST_DEPS})
+  GNC_BUILDDIR="${abs_top_builddir}" \
+  $(shell ${abs_top_srcdir}/src/gnc-test-env.pl --noexports ${GNC_TEST_DEPS})
 
 check_PROGRAMS = \
-  test-link-module test-gnc-recurrence test-gnc-dialog
+  test-link-module test-gnc-recurrence
 
-INCLUDES= \
+AM_CPPFLAGS = \
   -I${top_srcdir}/src \
   -I${top_srcdir}/src/engine \
   -I${top_srcdir}/src/engine/test-core \
@@ -46,9 +47,8 @@ INCLUDES= \
   -I${top_srcdir}/src/test-core \
   -I${top_srcdir}/src/libqof/qof \
   ${GLIB_CFLAGS} \
-  ${GUILE_INCS} \
-  ${GNOME_CFLAGS} \
-  ${GLADE_CFLAGS}
+  ${GTK_CFLAGS} \
+  ${GUILE_CFLAGS}
 
 LDADD = \
   ${GNOME_LIBS} \
@@ -59,10 +59,14 @@ LDADD = \
   ${top_builddir}/src/test-core/libtest-core.la
 
 test_gnc_recurrence_SOURCES=test-gnc-recurrence.c
+test_gnc_recurrence_LDADD = \
+  ${GTK_LIBS} \
+  ${LDADD}
 
 test_link_module_SOURCES=test-link-module.c
 test_link_module_LDADD = \
   ${GUILE_LIBS} \
+  ${GLIB_LIBS} \
   ${top_builddir}/src/gnc-module/libgnc-module.la
 
 EXTRA_DIST = \

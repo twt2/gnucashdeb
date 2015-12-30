@@ -47,7 +47,6 @@
 #include "gnc-html.h"
 #include "gnc-html-webkit.h"
 #include "gnc-html-history.h"
-#include "gnc-html-graph-gog-webkit.h"
 #include "print-session.h"
 
 G_DEFINE_TYPE(GncHtmlWebkit, gnc_html_webkit, GNC_TYPE_HTML )
@@ -66,7 +65,7 @@ static QofLogModule log_module = GNC_MOD_HTML;
 
 /* hashes for URLType -> protocol and protocol -> URLType */
 //extern GHashTable* gnc_html_type_to_proto_hash;
-extern GHashTable* gnc_html_proto_to_type_hash;
+//extern GHashTable* gnc_html_proto_to_type_hash;
 
 /* hashes an HTML <object classid="ID"> classid to a handler function */
 extern GHashTable* gnc_html_object_handlers;
@@ -97,8 +96,10 @@ static void gnc_html_link_clicked_cb( GtkHTML* html, const gchar* url, gpointer 
 static gboolean gnc_html_object_requested_cb( GtkHTML* html, GtkHTMLEmbedded* eb,
         gpointer data );
 #endif
+#if 0 /* Not Used */
 static int gnc_html_button_press_cb( GtkWidget* widg, GdkEventButton* event,
                                      gpointer user_data );
+#endif /* Not Used */
 static void impl_webkit_show_url( GncHtml* self, URLType type,
                                   const gchar* location, const gchar* label,
                                   gboolean new_window_hint );
@@ -106,7 +107,7 @@ static void impl_webkit_show_data( GncHtml* self, const gchar* data, int datalen
 static void impl_webkit_reload( GncHtml* self );
 static void impl_webkit_copy_to_clipboard( GncHtml* self );
 static gboolean impl_webkit_export_to_file( GncHtml* self, const gchar* filepath );
-static void impl_webkit_print( GncHtml* self, const gchar* jobname );
+static void impl_webkit_print( GncHtml* self, const gchar* jobname, gboolean export_pdf );
 static void impl_webkit_cancel( GncHtml* self );
 static void impl_webkit_set_parent( GncHtml* self, GtkWindow* parent );
 
@@ -200,9 +201,6 @@ gnc_html_webkit_class_init( GncHtmlWebkitClass* klass )
     html_class->print = impl_webkit_print;
     html_class->cancel = impl_webkit_cancel;
     html_class->set_parent = impl_webkit_set_parent;
-
-    // Initialize graphing support
-    gnc_html_graph_gog_webkit_init();
 }
 
 static void
@@ -216,6 +214,12 @@ gnc_html_webkit_dispose( GObject* obj )
         gtk_container_remove( GTK_CONTAINER(priv->base.container),
                               GTK_WIDGET(priv->web_view) );
         priv->web_view = NULL;
+    }
+
+    if ( priv->html_string != NULL )
+    {
+        g_free( priv->html_string );
+        priv->html_string = NULL;
     }
 
     G_OBJECT_CLASS(gnc_html_webkit_parent_class)->dispose( obj );
@@ -252,9 +256,9 @@ extract_base_name(URLType type, const gchar* path)
     regcomp(&compiled_m, machine_rexp, REG_EXTENDED);
     regcomp(&compiled_p, path_rexp, REG_EXTENDED);
 
-    if (!safe_strcmp (type, URL_TYPE_HTTP) ||
-            !safe_strcmp (type, URL_TYPE_SECURE) ||
-            !safe_strcmp (type, URL_TYPE_FTP))
+    if (!g_strcmp0 (type, URL_TYPE_HTTP) ||
+            !g_strcmp0 (type, URL_TYPE_SECURE) ||
+            !g_strcmp0 (type, URL_TYPE_FTP))
     {
 
         /* step 1: split the machine name away from the path
@@ -347,56 +351,79 @@ handle_embedded_object( GncHtmlWebkit* self, gchar* html_str )
     // Find the <object> tag and get the classid from it.  This will provide the correct
     // object callback handler.  Pass the <object> entity text to the handler.  What should
     // come back is embedded image information.
+    gchar* remainder_str = html_str;
     gchar* object_tag;
     gchar* end_object_tag;
     gchar* object_contents;
-    gchar* html_str_start;
+    gchar* html_str_start = NULL;
     gchar* html_str_middle;
-    gchar* html_str_result;
-    gchar* classid;
+    gchar* html_str_result = NULL;
+    gchar* classid_start;
     gchar* classid_end;
-    gchar* object_classid;
+    gchar* classid_str;
+    gchar* new_chunk;
     GncHTMLObjectCB h;
 
-    object_tag = g_strstr_len( html_str, -1, "<object classid=" );
-    if ( object_tag == NULL )
+    object_tag = g_strstr_len( remainder_str, -1, "<object classid=" );
+    while (object_tag)
     {
-        //  Hmmm... no object tag
-        return html_str;
-    }
-    classid = object_tag + strlen( "<object classid=" ) + 1;
-    classid_end = g_strstr_len( classid, -1, "\"" );
-    object_classid = g_strndup( classid, (classid_end - classid) );
-    end_object_tag = g_strstr_len( object_tag, -1, "</object>" );
-    if ( end_object_tag == NULL )
-    {
-        //  Hmmm... no object end tag
-        return html_str;
-    }
-    end_object_tag += strlen( "</object>" );
-    object_contents = g_strndup( object_tag, (end_object_tag - object_tag) );
 
-    h = g_hash_table_lookup( gnc_html_object_handlers, object_classid );
-    if ( h != NULL )
+        classid_start = object_tag + strlen( "<object classid=" ) + 1;
+        classid_end = g_strstr_len( classid_start, -1, "\"" );
+        classid_str = g_strndup( classid_start, (classid_end - classid_start) );
+
+        end_object_tag = g_strstr_len( object_tag, -1, "</object>" );
+        if ( end_object_tag == NULL )
+        {
+            /*  Hmmm... no object end tag
+                Return the original html string because we can't properly parse it */
+            g_free (classid_str);
+            g_free (html_str_result);
+            return g_strdup (html_str);
+        }
+        end_object_tag += strlen( "</object>" );
+        object_contents = g_strndup( object_tag, (end_object_tag - object_tag) );
+
+        h = g_hash_table_lookup( gnc_html_object_handlers, classid_str );
+        if ( h != NULL )
+        {
+            (void)h( GNC_HTML(self), object_contents, &html_str_middle );
+        }
+        else
+        {
+            html_str_middle = g_strdup_printf( "No handler found for classid \"%s\"", classid_str );
+        }
+
+        html_str_start = html_str_result;
+        new_chunk = g_strndup (remainder_str, (object_tag - remainder_str));
+        if (!html_str_start)
+            html_str_result = g_strconcat (new_chunk, html_str_middle, NULL);
+        else
+            html_str_result = g_strconcat (html_str_start, new_chunk, html_str_middle, NULL);
+
+        g_free( html_str_start );
+        g_free( new_chunk );
+        g_free( html_str_middle );
+
+        remainder_str = end_object_tag;
+        object_tag = g_strstr_len( remainder_str, -1, "<object classid=" );
+    }
+
+    if (html_str_result)
     {
-        (void)h( GNC_HTML(self), object_contents, &html_str_middle );
+        html_str_start =  html_str_result;
+        html_str_result = g_strconcat (html_str_start, remainder_str, NULL);
+        g_free (html_str_start);
     }
     else
-    {
-        html_str_middle = g_strdup_printf( "No handler found for classid \"%s\"", object_classid );
-    }
+        html_str_result = g_strdup (remainder_str);
 
-    html_str_start = g_strndup( html_str, (object_tag - html_str) );
-    html_str_result = g_strdup_printf( "%s%s%s", html_str_start, html_str_middle, end_object_tag );
-
-    g_free( html_str_start );
-    g_free( html_str_middle );
     return html_str_result;
 }
 
 /********************************************************************
  * load_to_stream : actually do the work of loading the HTML
- * or binary data referenced by a URL and feeding it into the GtkHTML
+ * or binary data referenced by a URL and feeding it into the webkit
  * widget.
  ********************************************************************/
 
@@ -470,11 +497,11 @@ load_to_stream( GncHtmlWebkit* self, URLType type,
 
     do
     {
-        if ( !safe_strcmp( type, URL_TYPE_SECURE ) ||
-                !safe_strcmp( type, URL_TYPE_HTTP ) )
+        if ( !g_strcmp0( type, URL_TYPE_SECURE ) ||
+                !g_strcmp0( type, URL_TYPE_HTTP ) )
         {
 
-            if ( !safe_strcmp( type, URL_TYPE_SECURE ) )
+            if ( !g_strcmp0( type, URL_TYPE_SECURE ) )
             {
                 if ( !https_allowed() )
                 {
@@ -495,9 +522,7 @@ load_to_stream( GncHtmlWebkit* self, URLType type,
             }
             else
             {
-                char *fullurl;
-
-                fullurl = gnc_build_url( type, location, label );
+                gnc_build_url( type, location, label );
             }
 
         }
@@ -655,6 +680,7 @@ gnc_html_set_base_cb( GtkHTML* gtkhtml, const gchar* base,
  * mouse button callback (if any)
  ********************************************************************/
 
+#if 0 /* Not Used */
 static int
 gnc_html_button_press_cb( GtkWidget* widg, GdkEventButton* event,
                           gpointer user_data )
@@ -673,6 +699,7 @@ gnc_html_button_press_cb( GtkWidget* widg, GdkEventButton* event,
         return FALSE;
     }
 }
+#endif /* Not Used */
 
 /********************************************************************
  * gnc_html_open_scm
@@ -856,23 +883,23 @@ impl_webkit_show_url( GncHtml* self, URLType type,
         return;
     }
 
-    if ( safe_strcmp( type, URL_TYPE_SCHEME ) == 0 )
+    if ( g_strcmp0( type, URL_TYPE_SCHEME ) == 0 )
     {
         gnc_html_open_scm( GNC_HTML_WEBKIT(self), location, label, new_window );
 
     }
-    else if ( safe_strcmp( type, URL_TYPE_JUMP ) == 0 )
+    else if ( g_strcmp0( type, URL_TYPE_JUMP ) == 0 )
     {
         /* Webkit jumps to the anchor on its own */
     }
-    else if ( safe_strcmp( type, URL_TYPE_SECURE ) == 0 ||
-              safe_strcmp( type, URL_TYPE_HTTP ) == 0 ||
-              safe_strcmp( type, URL_TYPE_FILE ) == 0 )
+    else if ( g_strcmp0( type, URL_TYPE_SECURE ) == 0 ||
+              g_strcmp0( type, URL_TYPE_HTTP ) == 0 ||
+              g_strcmp0( type, URL_TYPE_FILE ) == 0 )
     {
 
         do
         {
-            if ( safe_strcmp( type, URL_TYPE_SECURE ) == 0 )
+            if ( g_strcmp0( type, URL_TYPE_SECURE ) == 0 )
             {
                 if ( !https_allowed() )
                 {
@@ -884,7 +911,7 @@ impl_webkit_show_url( GncHtml* self, URLType type,
                 }
             }
 
-            if ( safe_strcmp( type, URL_TYPE_HTTP ) == 0 )
+            if ( g_strcmp0( type, URL_TYPE_HTTP ) == 0 )
             {
                 if ( !http_allowed() )
                 {
@@ -954,8 +981,6 @@ GncHtml*
 gnc_html_webkit_new( void )
 {
     GncHtmlWebkit* self = g_object_new( GNC_TYPE_HTML_WEBKIT, NULL );
-    GncHtmlWebkitPrivate* priv = GNC_HTML_WEBKIT_GET_PRIVATE(self);
-
     return GNC_HTML(self);
 }
 
@@ -1060,17 +1085,19 @@ impl_webkit_export_to_file( GncHtml* self, const char *filepath )
  * @param self HTML renderer object
  */
 static void
-impl_webkit_print( GncHtml* self, const gchar* jobname )
+impl_webkit_print( GncHtml* self, const gchar* jobname, gboolean export_pdf )
 {
 #if !HAVE(WEBKIT_WEB_FRAME_PRINT_FULL)
     extern void webkit_web_frame_print( WebKitWebFrame * frame );
 #endif
 
+    gchar *export_filename = NULL;
     GncHtmlWebkitPrivate* priv;
     WebKitWebFrame* frame;
 #if HAVE(WEBKIT_WEB_FRAME_PRINT_FULL)
     GtkPrintOperation* op = gtk_print_operation_new();
     GError* error = NULL;
+    GtkPrintSettings *print_settings;
 #endif
 
     priv = GNC_HTML_WEBKIT_GET_PRIVATE(self);
@@ -1078,16 +1105,165 @@ impl_webkit_print( GncHtml* self, const gchar* jobname )
 
 #if HAVE(WEBKIT_WEB_FRAME_PRINT_FULL)
     gnc_print_operation_init( op, jobname );
+    print_settings = gtk_print_operation_get_print_settings (op);
+    if (!print_settings)
+    {
+        print_settings = gtk_print_settings_new();
+        gtk_print_operation_set_print_settings(op, print_settings);
+    }
 #ifdef G_OS_WIN32
     gtk_print_operation_set_unit( op, GTK_UNIT_POINTS );
 #endif
-    webkit_web_frame_print_full( frame, op, GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG, &error );
-    g_object_unref( op );
+
+    // Make sure to generate a full export filename
+    if (g_str_has_suffix(jobname, ".pdf"))
+    {
+        export_filename = g_strdup(jobname);
+    }
+    else
+    {
+        export_filename = g_strconcat(jobname, ".pdf", NULL);
+    }
+
+    // Two different modes of operation. Either export to PDF, or run the
+    // normal print dialog
+    if (export_pdf)
+    {
+        GtkWidget *dialog;
+        gint result;
+        gchar *export_dirname = NULL;
+        gchar* basename;
+
+        // Before we save the PDF file, we always as the user for the export
+        // file name. We will store the chosen directory in the gtk print settings
+        // as well.
+        dialog = gtk_file_chooser_dialog_new (_("Export to PDF File"),
+                                              NULL,
+                                              GTK_FILE_CHOOSER_ACTION_SAVE,
+                                              GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                                              GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+                                              NULL);
+        gtk_file_chooser_set_do_overwrite_confirmation (GTK_FILE_CHOOSER (dialog), TRUE);
+
+        // Does the jobname look like a valid full file path?
+        basename = g_path_get_basename(jobname);
+        if (strcmp(basename, jobname) != 0)
+        {
+            gchar *tmp_basename;
+            gchar *tmp_dirname = g_path_get_dirname(jobname);
+
+            if (g_file_test(tmp_dirname, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
+            {
+                // Yes, the jobname starts with a directory name that actually
+                // exists. Hence we use this as output directory.
+                export_dirname = tmp_dirname;
+                tmp_dirname = NULL;
+
+                // As the prefix part of the "jobname" is the directory path, we
+                // need to extract the suffix part for the filename.
+                tmp_basename = g_path_get_basename(export_filename);
+                g_free(export_filename);
+                export_filename = tmp_basename;
+            }
+            g_free(tmp_dirname);
+        }
+        g_free(basename);
+
+        // Set the output file name from the given jobname
+        gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER(dialog), export_filename);
+
+        // Do we have a stored output directory?
+        if (!export_dirname && gtk_print_settings_has_key(print_settings, GNC_GTK_PRINT_SETTINGS_EXPORT_DIR))
+        {
+            const char* tmp_dirname = gtk_print_settings_get(print_settings,
+                                      GNC_GTK_PRINT_SETTINGS_EXPORT_DIR);
+            // Only use the directory subsequently if it exists.
+            if (g_file_test(tmp_dirname, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
+            {
+                export_dirname = g_strdup(tmp_dirname);
+            }
+        }
+
+        // If we have an already existing directory, propose it now.
+        if (export_dirname)
+        {
+            gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dialog), export_dirname);
+        }
+        g_free(export_dirname);
+
+        result = gtk_dialog_run (GTK_DIALOG (dialog));
+        // Weird. In gtk_dialog_run, the gtk code will run a fstat() on the
+        // proposed new output filename, which of course fails with "file not
+        // found" as this file doesn't exist. It will still show a warning output
+        // in the trace file, though.
+
+        if (result == GTK_RESPONSE_ACCEPT)
+        {
+            // The user pressed "Ok", so use the file name for the actual file output.
+            gchar *dirname;
+            char *tmp = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+            g_free(export_filename);
+            export_filename = tmp;
+
+            // Store the directory part of the file for later
+            dirname = g_path_get_dirname(export_filename);
+            if (g_file_test(dirname, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
+            {
+                gtk_print_settings_set(print_settings, GNC_GTK_PRINT_SETTINGS_EXPORT_DIR, dirname);
+            }
+            g_free(dirname);
+        }
+        gtk_widget_destroy (dialog);
+
+        if (result != GTK_RESPONSE_ACCEPT)
+        {
+            // User pressed cancel - no saving of the PDF file here.
+            g_free(export_filename);
+            g_object_unref( op );
+            return;
+        }
+
+        // This function expects the full filename including (absolute?) path
+        gtk_print_operation_set_export_filename(op, export_filename);
+
+        // Run the "Export to PDF" print operation
+        webkit_web_frame_print_full( frame, op, GTK_PRINT_OPERATION_ACTION_EXPORT, &error );
+    }
+    else
+    {
+
+        // Also store this export file name as output URI in the settings
+        if (gtk_print_settings_has_key(print_settings, GTK_PRINT_SETTINGS_OUTPUT_URI))
+        {
+            // Get the previous output URI, extract the directory part, and
+            // append the current filename.
+            const gchar *olduri = gtk_print_settings_get(print_settings, GTK_PRINT_SETTINGS_OUTPUT_URI);
+            gchar *dirname = g_path_get_dirname(olduri);
+            gchar *newuri = (g_strcmp0(dirname, ".") == 0)
+                            ? g_strdup(export_filename)
+                            : g_build_filename(dirname, export_filename, NULL);
+            //g_warning("olduri=%s newuri=%s", olduri, newuri);
+
+            // This function expects the full filename including protocol, path, and name
+            gtk_print_settings_set(print_settings, GTK_PRINT_SETTINGS_OUTPUT_URI, newuri);
+
+            g_free(newuri);
+            g_free(dirname);
+        }
+        else
+        {
+            // No stored output URI from the print settings, so just set our export filename
+            gtk_print_settings_set(print_settings, GTK_PRINT_SETTINGS_OUTPUT_URI, export_filename);
+        }
+
+        // Run the normal printing dialog
+        webkit_web_frame_print_full( frame, op, GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG, &error );
+    }
 
     if ( error != NULL )
     {
         GtkWidget* window = gtk_widget_get_toplevel( GTK_WIDGET(priv->web_view) );
-        GtkWidget* dialog = gtk_message_dialog_new( GTK_WIDGET_TOPLEVEL(window) ? GTK_WINDOW(window) : NULL,
+        GtkWidget* dialog = gtk_message_dialog_new( gtk_widget_is_toplevel(window) ? GTK_WINDOW(window) : NULL,
                             GTK_DIALOG_DESTROY_WITH_PARENT,
                             GTK_MESSAGE_ERROR,
                             GTK_BUTTONS_CLOSE,
@@ -1097,6 +1273,12 @@ impl_webkit_print( GncHtml* self, const gchar* jobname )
         g_signal_connect( dialog, "response", G_CALLBACK(gtk_widget_destroy), NULL);
         gtk_widget_show( dialog );
     }
+
+    // Remember to save the printing settings after this print job
+    gnc_print_operation_save_print_settings(op);
+    g_object_unref( op );
+    g_free(export_filename);
+
 #else
     webkit_web_frame_print( frame );
 #endif

@@ -26,7 +26,6 @@
 #include <glib/gi18n.h>
 #include <ctype.h>
 
-#include "guile-mappings.h"
 #include "guile-util.h"
 #include "gnc-engine.h"
 #include "gnc-menu-extensions.h"
@@ -81,22 +80,22 @@ gnc_extension_type (SCM extension, GtkUIManagerItemType *type)
 
     initialize_getters();
 
-    string = gnc_guile_call1_symbol_to_string(getters.type, extension);
+    string = gnc_scm_call_1_symbol_to_string(getters.type, extension);
     if (string == NULL)
     {
         PERR("bad type");
         return FALSE;
     }
 
-    if (safe_strcmp(string, "menu-item") == 0)
+    if (g_strcmp0(string, "menu-item") == 0)
     {
         *type = GTK_UI_MANAGER_MENUITEM;
     }
-    else if (safe_strcmp(string, "menu") == 0)
+    else if (g_strcmp0(string, "menu") == 0)
     {
         *type = GTK_UI_MANAGER_MENU;
     }
-    else if (safe_strcmp(string, "separator") == 0)
+    else if (g_strcmp0(string, "separator") == 0)
     {
         *type = GTK_UI_MANAGER_SEPARATOR;
     }
@@ -117,7 +116,7 @@ gnc_extension_name (SCM extension)
 {
     initialize_getters();
 
-    return gnc_guile_call1_to_string(getters.name, extension);
+    return gnc_scm_call_1_to_string(getters.name, extension);
 }
 
 
@@ -127,7 +126,7 @@ gnc_extension_guid (SCM extension)
 {
     initialize_getters();
 
-    return gnc_guile_call1_to_string(getters.guid, extension);
+    return gnc_scm_call_1_to_string(getters.guid, extension);
 }
 
 
@@ -137,7 +136,7 @@ gnc_extension_documentation (SCM extension)
 {
     initialize_getters();
 
-    return gnc_guile_call1_to_string(getters.documentation, extension);
+    return gnc_scm_call_1_to_string(getters.documentation, extension);
 }
 
 /* returns g_malloc'd path */
@@ -151,7 +150,7 @@ gnc_extension_path (SCM extension, char **fullpath)
 
     initialize_getters();
 
-    path = gnc_guile_call1_to_list(getters.path, extension);
+    path = gnc_scm_call_1_to_list(getters.path, extension);
     if ((path == SCM_UNDEFINED) || scm_is_null(path))
     {
         *fullpath = g_strdup("");
@@ -172,20 +171,15 @@ gnc_extension_path (SCM extension, char **fullpath)
 
         if (scm_is_string(item))
         {
-            char* s;
-
-            s = scm_to_locale_string(item);
+            gchar* s;
+            s = gnc_scm_to_utf8_string(item);
 
             if (i == 1)
-            {
-
                 strings[i] = g_strdup(s);
-            }
             else
-            {
                 strings[i] = g_strdup(gettext(s));
-            }
-            gnc_free_scm_locale_string(s);
+
+            g_free (s);
         }
         else
         {
@@ -247,7 +241,7 @@ gnc_extension_invoke_cb (SCM extension, SCM window)
 
     initialize_getters();
 
-    script = gnc_guile_call1_to_procedure(getters.script, extension);
+    script = gnc_scm_call_1_to_procedure(getters.script, extension);
     if (script == SCM_UNDEFINED)
     {
         PERR("not a procedure.");

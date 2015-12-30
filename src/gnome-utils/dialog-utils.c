@@ -28,7 +28,6 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include <glib/gi18n.h>
-#include <glade/glade.h>
 #include <gmodule.h>
 #ifdef HAVE_DLFCN_H
 # include <dlfcn.h>
@@ -40,132 +39,16 @@
 #include "gnc-engine.h"
 #include "gnc-euro.h"
 #include "gnc-ui-util.h"
-#include "gnc-gconf-utils.h"
+#include "gnc-prefs.h"
+#include "guile-util.h"
+#include "gnc-main-window.h"
+#include <gnc-gdate-utils.h>
 
 /* This static indicates the debugging module that this .o belongs to. */
 static QofLogModule log_module = GNC_MOD_GUI;
 
-#define WINDOW_POSITION		"window_position"
-#define WINDOW_GEOMETRY		"window_geometry"
+#define GNC_PREF_LAST_GEOMETRY "last-geometry"
 
-/* =========================================================== */
-
-static void
-gnc_option_menu_cb(GtkWidget *w, gpointer data)
-{
-    GNCOptionCallback cb;
-    gpointer _index;
-    gint index;
-
-    cb = g_object_get_data(G_OBJECT(w), "gnc_option_cb");
-
-    _index = g_object_get_data(G_OBJECT(w), "gnc_option_index");
-    index = GPOINTER_TO_INT(_index);
-
-    cb(w, index, data);
-}
-
-static void
-option_menu_destroy_cb (GtkObject *obj, gpointer data)
-{
-    GtkTooltips *tips = data;
-
-    g_object_unref (tips);
-}
-
-/********************************************************************\
- * gnc_build_option_menu:                                           *
- *   create an GTK "option menu" given the option structure         *
- *                                                                  *
- * Args: option_info - the option structure to use                  *
- *       num_options - the number of options                        *
- * Returns: void                                                    *
- \*******************************************************************/
-GtkWidget *
-gnc_build_option_menu(GNCOptionInfo *option_info, gint num_options)
-{
-    GtkTooltips *tooltips;
-    GtkWidget *omenu;
-    GtkWidget *menu;
-    GtkWidget *menu_item;
-    gint i;
-
-    omenu = gtk_option_menu_new();
-    gtk_widget_show(omenu);
-
-    menu = gtk_menu_new();
-    gtk_widget_show(menu);
-
-    tooltips = gtk_tooltips_new();
-
-    g_object_ref_sink(tooltips);
-
-    for (i = 0; i < num_options; i++)
-    {
-        menu_item = gtk_menu_item_new_with_label(option_info[i].name);
-        gtk_tooltips_set_tip(tooltips, menu_item, option_info[i].tip, NULL);
-        gtk_widget_show(menu_item);
-
-        g_object_set_data(G_OBJECT(menu_item),
-                          "gnc_option_cb",
-                          option_info[i].callback);
-
-        g_object_set_data(G_OBJECT(menu_item),
-                          "gnc_option_index",
-                          GINT_TO_POINTER(i));
-
-        g_object_set_data(G_OBJECT(menu_item),
-                          "gnc_option_menu",
-                          omenu);
-
-        if (option_info[i].callback != NULL)
-            g_signal_connect(menu_item, "activate",
-                             G_CALLBACK(gnc_option_menu_cb),
-                             option_info[i].user_data);
-
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
-    }
-
-    gtk_option_menu_set_menu(GTK_OPTION_MENU(omenu), menu);
-
-    g_signal_connect (omenu, "destroy",
-                      G_CALLBACK (option_menu_destroy_cb), tooltips);
-
-    return omenu;
-}
-
-
-/********************************************************************\
- * gnc_get_toolbar_style                                            *
- *   returns the current toolbar style for gnucash toolbars         *
- *                                                                  *
- * Args: none                                                       *
- * Returns: toolbar style                                           *
- \*******************************************************************/
-GtkToolbarStyle
-gnc_get_toolbar_style(void)
-{
-    GtkToolbarStyle tbstyle = GTK_TOOLBAR_BOTH;
-    char *style_string;
-
-    style_string = gnc_gconf_get_string(GCONF_GENERAL,
-                                        KEY_TOOLBAR_STYLE, NULL);
-    if (!style_string || strcmp(style_string, "system") == 0)
-    {
-        if (style_string)
-            g_free(style_string);
-        style_string = gnc_gconf_get_string(DESKTOP_GNOME_INTERFACE,
-                                            KEY_TOOLBAR_STYLE, NULL);
-    }
-
-    if (style_string == NULL)
-        return GTK_TOOLBAR_BOTH;
-    tbstyle = gnc_enum_from_nick(GTK_TYPE_TOOLBAR_STYLE, style_string,
-                                 GTK_TOOLBAR_BOTH);
-    g_free(style_string);
-
-    return tbstyle;
-}
 
 /********************************************************************\
  * gnc_get_deficit_color                                            *
@@ -198,7 +81,7 @@ gnc_set_label_color(GtkWidget *label, gnc_numeric value)
     GdkColormap *cm;
     GtkStyle *style;
 
-    if (!gnc_gconf_get_bool(GCONF_GENERAL, "red_for_negative", NULL))
+    if (!gnc_prefs_get_bool(GNC_PREFS_GROUP_GENERAL, GNC_PREF_NEGATIVE_IN_RED))
         return;
 
     cm = gtk_widget_get_colormap(GTK_WIDGET(label));
@@ -225,158 +108,93 @@ gnc_set_label_color(GtkWidget *label, gnc_numeric value)
 
 /********************************************************************\
  * gnc_restore_window_size                                          *
- *   returns the window size to use for the given option prefix,    *
- *   if window sizes are being saved, otherwise returns 0 for both. *
+ *   restores the position and size of the given window, if these   *
+ *   these parameters have been saved earlier. Does nothing if no   *
+ *   saved values are found.                                        *
  *                                                                  *
- * Args: prefix - the option name prefix                            *
- *       width  - pointer to width                                  *
- *       height - pointer to height                                 *
+ * Args: group - the preferences group to look in for saved coords  *
+ *       window - the window for which the coords are to be         *
+ *                restored                                          *
  * Returns: nothing                                                 *
  \*******************************************************************/
 void
-gnc_restore_window_size(const char *section, GtkWindow *window)
+gnc_restore_window_size(const char *group, GtkWindow *window)
 {
-    GSList *coord_list;
-    gint coords[2];
+    gint wpos[2], wsize[2];
+    GVariant *geometry;
 
-    g_return_if_fail(section != NULL);
+    ENTER("");
+
+    g_return_if_fail(group != NULL);
     g_return_if_fail(window != NULL);
 
-    if (!gnc_gconf_get_bool(GCONF_GENERAL, KEY_SAVE_GEOMETRY, NULL))
+    if (!gnc_prefs_get_bool(GNC_PREFS_GROUP_GENERAL, GNC_PREF_SAVE_GEOMETRY))
         return;
 
-    coord_list = gnc_gconf_get_list(section, WINDOW_POSITION,
-                                    GCONF_VALUE_INT, NULL);
-    if (coord_list)
+    geometry = gnc_prefs_get_value (group, GNC_PREF_LAST_GEOMETRY);
+    if (g_variant_is_of_type (geometry, (const GVariantType *) "(iiii)") )
     {
-        coords[0] = GPOINTER_TO_INT(g_slist_nth_data(coord_list, 0));
-        coords[1] = GPOINTER_TO_INT(g_slist_nth_data(coord_list, 1));
-        gtk_window_move(window, coords[0], coords[1]);
-        g_slist_free(coord_list);
-    }
+        gint screen_width = gdk_screen_width();
+        gint screen_height = gdk_screen_height();
 
-    coord_list = gnc_gconf_get_list(section, WINDOW_GEOMETRY,
-                                    GCONF_VALUE_INT, NULL);
-    if (coord_list)
-    {
-        coords[0] = GPOINTER_TO_INT(g_slist_nth_data(coord_list, 0));
-        coords[1] = GPOINTER_TO_INT(g_slist_nth_data(coord_list, 1));
-        if ((coords[0] != 0) && (coords[1] != 0))
-            gtk_window_resize(window, coords[0], coords[1]);
-        g_slist_free(coord_list);
+        g_variant_get (geometry, "(iiii)",
+                       &wpos[0],  &wpos[1],
+                       &wsize[0], &wsize[1]);
+        DEBUG("geometry from preferences - wpos[0]: %d, wpos[1]: %d, wsize[0]: %d, wsize[1]: %d",
+              wpos[0],  wpos[1], wsize[0], wsize[1]);
+
+        /* (-1, -1) means no geometry was saved (default preferences value) */
+        if ((wpos[0] != -1) && (wpos[1] != -1))
+        {
+            /* Keep the window on screen if possible */
+            if (screen_width != 0)
+                wpos[0] = wpos[0] % screen_width;
+            if (screen_height != 0)
+                wpos[1] = wpos[1] % screen_height;
+            DEBUG("geometry after screen adaption - wpos[0]: %d, wpos[1]: %d, wsize[0]: %d, wsize[1]: %d",
+                  wpos[0],  wpos[1], wsize[0], wsize[1]);
+
+            gtk_window_move(window, wpos[0], wpos[1]);
+        }
+
+        /* Don't attempt to restore invalid sizes */
+        if ((wsize[0] > 0) && (wsize[1] > 0))
+            gtk_window_resize(window, wsize[0], wsize[1]);
     }
+    g_variant_unref (geometry);
+
+    LEAVE("");
 }
 
 
 /********************************************************************\
  * gnc_save_window_size                                             *
- *   save the window size into options whose names are determined   *
- *   by the string prefix.                                          *
+ *   save the window position and size into options whose names are *
+ *   prefixed by the group name.                                   *
  *                                                                  *
- * Args: prefix - determines the options used to save the values    *
- *       width  - width of the window to save                       *
- *       height - height of the window to save                      *
+ * Args: group - preferences group to save the options in           *
+ *       window - the window for which current position and size    *
+ *                are to be saved                                   *
  * Returns: nothing                                                 *
 \********************************************************************/
 void
-gnc_save_window_size(const char *section, GtkWindow *window)
+gnc_save_window_size(const char *group, GtkWindow *window)
 {
-    GSList *coord_list = NULL;
-    gint coords[2];
+    gint wpos[2], wsize[2];
+    GVariant *geometry;
 
-    g_return_if_fail(section != NULL);
+    g_return_if_fail(group != NULL);
     g_return_if_fail(window != NULL);
 
-    if (GTK_OBJECT_FLAGS(window) & GTK_IN_DESTRUCTION)
+    if (!gnc_prefs_get_bool(GNC_PREFS_GROUP_GENERAL, GNC_PREF_SAVE_GEOMETRY))
         return;
 
-    if (!gnc_gconf_get_bool(GCONF_GENERAL, KEY_SAVE_GEOMETRY, NULL))
-        return;
-
-    gtk_window_get_size(GTK_WINDOW(window), &coords[0], &coords[1]);
-    coord_list = g_slist_append(coord_list, GUINT_TO_POINTER(coords[0]));
-    coord_list = g_slist_append(coord_list, GUINT_TO_POINTER(coords[1]));
-    gnc_gconf_set_list(section, WINDOW_GEOMETRY, GCONF_VALUE_INT,
-                       coord_list, NULL);
-    g_slist_free(coord_list);
-    coord_list = NULL;
-
-    gtk_window_get_position(GTK_WINDOW(window), &coords[0], &coords[1]);
-    coord_list = g_slist_append(coord_list, GUINT_TO_POINTER(coords[0]));
-    coord_list = g_slist_append(coord_list, GUINT_TO_POINTER(coords[1]));
-    gnc_gconf_set_list(section, WINDOW_POSITION, GCONF_VALUE_INT,
-                       coord_list, NULL);
-    g_slist_free(coord_list);
-}
-
-
-void
-gnc_option_menu_init(GtkWidget * w)
-{
-    GtkWidget * menu;
-    GtkWidget * active;
-    unsigned int i;
-
-    menu = gtk_option_menu_get_menu(GTK_OPTION_MENU(w));
-
-    for (i = 0; i < g_list_length(GTK_MENU_SHELL(menu)->children); i++)
-    {
-        gtk_option_menu_set_history(GTK_OPTION_MENU(w), i);
-        active = gtk_menu_get_active(GTK_MENU(menu));
-        g_object_set_data(G_OBJECT(active),
-                          "option_index",
-                          GINT_TO_POINTER(i));
-    }
-
-    gtk_option_menu_set_history(GTK_OPTION_MENU(w), 0);
-}
-
-typedef struct
-{
-    int i;
-    GCallback f;
-    gpointer cb_data;
-} menu_init_data;
-
-static void
-gnc_option_menu_set_one_item (gpointer loop_data, gpointer user_data)
-{
-    GObject *item = G_OBJECT(loop_data);
-    menu_init_data *args = (menu_init_data *) user_data;
-
-    g_object_set_data(item, "option_index", GINT_TO_POINTER(args->i++));
-    g_signal_connect(item, "activate", args->f, args->cb_data);
-}
-
-
-void
-gnc_option_menu_init_w_signal(GtkWidget * w, GCallback f, gpointer cb_data)
-{
-    GtkWidget * menu;
-    menu_init_data foo;
-
-    foo.i = 0;
-    foo.f = f;
-    foo.cb_data = cb_data;
-
-    menu = gtk_option_menu_get_menu(GTK_OPTION_MENU(w));
-    g_list_foreach(GTK_MENU_SHELL(menu)->children,
-                   gnc_option_menu_set_one_item, &foo);
-    gtk_option_menu_set_history(GTK_OPTION_MENU(w), 0);
-}
-
-
-int
-gnc_option_menu_get_active(GtkWidget * w)
-{
-    GtkWidget * menu;
-    GtkWidget * menuitem;
-
-    menu     = gtk_option_menu_get_menu(GTK_OPTION_MENU(w));
-    menuitem = gtk_menu_get_active(GTK_MENU(menu));
-
-    return GPOINTER_TO_INT(g_object_get_data(G_OBJECT(menuitem),
-                           "option_index"));
+    gtk_window_get_position(GTK_WINDOW(window), &wpos[0], &wpos[1]);
+    gtk_window_get_size(GTK_WINDOW(window), &wsize[0], &wsize[1]);
+    geometry = g_variant_new ("(iiii)", wpos[0],  wpos[1],
+                              wsize[0], wsize[1]);
+    gnc_prefs_set_value (group, GNC_PREF_LAST_GEOMETRY, geometry);
+    /* Don't unref geometry here, it is consumed by gnc_prefs_set_value */
 }
 
 
@@ -399,12 +217,13 @@ gnc_window_adjust_for_screen(GtkWindow * window)
         return;
 
     g_return_if_fail(GTK_IS_WINDOW(window));
-    if (GTK_WIDGET(window)->window == NULL)
+    if (gtk_widget_get_window (GTK_WIDGET(window)) == NULL)
         return;
 
     screen_width = gdk_screen_width();
     screen_height = gdk_screen_height();
-    gdk_drawable_get_size(GTK_WIDGET(window)->window, &width, &height);
+    width = gdk_window_get_width (gtk_widget_get_window (GTK_WIDGET(window)));
+    height = gdk_window_get_height (gtk_widget_get_window (GTK_WIDGET(window)));
 
     if ((width <= screen_width) && (height <= screen_height))
         return;
@@ -415,7 +234,7 @@ gnc_window_adjust_for_screen(GtkWindow * window)
     height = MIN(height, screen_height - 10);
     height = MAX(height, 0);
 
-    gdk_window_resize(GTK_WIDGET(window)->window, width, height);
+    gdk_window_resize(gtk_widget_get_window (GTK_WIDGET(window)), width, height);
     gtk_widget_queue_resize(GTK_WIDGET(window));
 }
 
@@ -436,6 +255,10 @@ gnc_handle_date_accelerator (GdkEventKey *event,
     if ((tm->tm_mday <= 0) || (tm->tm_mon == -1) || (tm->tm_year == -1))
         return FALSE;
 
+    // Make sure we have a valid date before we proceed
+    if (!g_date_valid_dmy (tm->tm_mday, tm->tm_mon + 1, tm->tm_year + 1900))
+        return FALSE;
+
     g_date_set_dmy (&gdate,
                     tm->tm_mday,
                     tm->tm_mon + 1,
@@ -447,9 +270,9 @@ gnc_handle_date_accelerator (GdkEventKey *event,
      */
     switch (event->keyval)
     {
-    case GDK_KP_Add:
-    case GDK_plus:
-    case GDK_equal:
+    case GDK_KEY_KP_Add:
+    case GDK_KEY_plus:
+    case GDK_KEY_equal:
         if (event->state & GDK_SHIFT_MASK)
             g_date_add_days (&gdate, 7);
         else if (event->state & GDK_MOD1_MASK)
@@ -461,9 +284,9 @@ gnc_handle_date_accelerator (GdkEventKey *event,
         g_date_to_struct_tm (&gdate, tm);
         return TRUE;
 
-    case GDK_minus:
-    case GDK_KP_Subtract:
-    case GDK_underscore:
+    case GDK_KEY_minus:
+    case GDK_KEY_KP_Subtract:
+    case GDK_KEY_underscore:
         if ((strlen (date_str) != 0) && (dateSeparator () == '-'))
         {
             const char *c;
@@ -511,41 +334,41 @@ gnc_handle_date_accelerator (GdkEventKey *event,
     /* Now check for the remaining keystrokes. */
     switch (event->keyval)
     {
-    case GDK_braceright:
-    case GDK_bracketright:
+    case GDK_KEY_braceright:
+    case GDK_KEY_bracketright:
         /* increment month */
         g_date_add_months (&gdate, 1);
         break;
 
-    case GDK_braceleft:
-    case GDK_bracketleft:
+    case GDK_KEY_braceleft:
+    case GDK_KEY_bracketleft:
         /* decrement month */
         g_date_subtract_months (&gdate, 1);
         break;
 
-    case GDK_M:
-    case GDK_m:
+    case GDK_KEY_M:
+    case GDK_KEY_m:
         /* beginning of month */
         g_date_set_day (&gdate, 1);
         break;
 
-    case GDK_H:
-    case GDK_h:
+    case GDK_KEY_H:
+    case GDK_KEY_h:
         /* end of month */
         g_date_set_day (&gdate, 1);
         g_date_add_months (&gdate, 1);
         g_date_subtract_days (&gdate, 1);
         break;
 
-    case GDK_Y:
-    case GDK_y:
+    case GDK_KEY_Y:
+    case GDK_KEY_y:
         /* beginning of year */
         g_date_set_day (&gdate, 1);
         g_date_set_month (&gdate, 1);
         break;
 
-    case GDK_R:
-    case GDK_r:
+    case GDK_KEY_R:
+    case GDK_KEY_r:
         /* end of year */
         g_date_set_day (&gdate, 1);
         g_date_set_month (&gdate, 1);
@@ -553,16 +376,11 @@ gnc_handle_date_accelerator (GdkEventKey *event,
         g_date_subtract_days (&gdate, 1);
         break;
 
-    case GDK_T:
-    case GDK_t:
-    {
+    case GDK_KEY_T:
+    case GDK_KEY_t:
         /* today */
-        GTime gtime;
-
-        gtime = time (NULL);
-        g_date_set_time_t (&gdate, gtime);
+        gnc_gdate_set_today (&gdate);
         break;
-    }
 
     default:
         return FALSE;
@@ -574,296 +392,63 @@ gnc_handle_date_accelerator (GdkEventKey *event,
 }
 
 
-typedef struct
-{
-    int row;
-    int col;
-    gboolean checked;
-} GNCCListCheckNode;
+/*--------------------------------------------------------------------------
+ *   GtkBuilder support functions
+ *-------------------------------------------------------------------------*/
 
-typedef struct
-{
-    GdkPixmap *on_pixmap;
-    GdkPixmap *off_pixmap;
-    GdkBitmap *mask;
+GModule *allsymbols = NULL;
 
-    GList *pending_checks;
-} GNCCListCheckInfo;
-
-static void
-free_check_list (GList *list)
-{
-    GList *node;
-
-    for (node = list; node; node = node->next)
-        g_free (node->data);
-
-    g_list_free (list);
-}
-
-static void
-check_realize (GtkWidget *widget, gpointer user_data)
-{
-    GNCCListCheckInfo *check_info = user_data;
-    GdkGCValues gc_values;
-    GtkCList *clist;
-    gint font_height;
-    gint check_size;
-    GdkColormap *cm;
-    GtkStyle *style;
-    GList *list;
-    GList *node;
-    GdkGC *gc;
-    PangoLayout *layout;
-
-    if (check_info->mask)
-        return;
-
-    layout = gtk_widget_create_pango_layout(widget, "sample");
-    pango_layout_get_pixel_size(layout, NULL,  &font_height);
-    g_object_unref(layout);
-    check_size = (font_height > 0) ? font_height - 6 : 9;
-
-    check_info->mask = gdk_pixmap_new (NULL, check_size, check_size, 1);
-
-    check_info->on_pixmap = gdk_pixmap_new (widget->window,
-                                            check_size, check_size, -1);
-
-    check_info->off_pixmap = gdk_pixmap_new (widget->window,
-                             check_size, check_size, -1);
-
-    style = gtk_widget_get_style (widget);
-    gc_values.foreground = style->white;
-    gc = gtk_gc_get (1, gtk_widget_get_colormap (widget),
-                     &gc_values, GDK_GC_FOREGROUND);
-
-    gdk_draw_rectangle (check_info->mask, gc, TRUE,
-                        0, 0, check_size, check_size);
-
-    gtk_gc_release (gc);
-
-    gc = style->base_gc[GTK_STATE_NORMAL];
-
-    gdk_draw_rectangle (check_info->on_pixmap, gc, TRUE,
-                        0, 0, check_size, check_size);
-    gdk_draw_rectangle (check_info->off_pixmap, gc, TRUE,
-                        0, 0, check_size, check_size);
-
-    cm = gtk_widget_get_colormap (widget);
-
-    gc_values.foreground.red = 0;
-    gc_values.foreground.green = 65535 / 2;
-    gc_values.foreground.blue = 0;
-
-    gdk_colormap_alloc_color (cm, &gc_values.foreground, FALSE, TRUE);
-
-    gc = gdk_gc_new_with_values (widget->window, &gc_values, GDK_GC_FOREGROUND);
-
-    gdk_draw_line (check_info->on_pixmap, gc,
-                   1, check_size / 2,
-                   check_size / 3, check_size - 5);
-    gdk_draw_line (check_info->on_pixmap, gc,
-                   1, check_size / 2 + 1,
-                   check_size / 3, check_size - 4);
-
-    gdk_draw_line (check_info->on_pixmap, gc,
-                   check_size / 3, check_size - 5,
-                   check_size - 3, 2);
-    gdk_draw_line (check_info->on_pixmap, gc,
-                   check_size / 3, check_size - 4,
-                   check_size - 3, 1);
-
-    g_object_unref (gc);
-
-    clist = GTK_CLIST (widget);
-
-    list = check_info->pending_checks;
-    check_info->pending_checks = NULL;
-
-    /* reverse so we apply in the order of the calls */
-    list = g_list_reverse (list);
-
-    for (node = list; node; node = node->next)
-    {
-        GNCCListCheckNode *cl_node = node->data;
-
-        gnc_clist_set_check (clist, cl_node->row, cl_node->col, cl_node->checked);
-    }
-
-    free_check_list (list);
-}
-
-static void
-check_unrealize (GtkWidget *widget, gpointer user_data)
-{
-    GNCCListCheckInfo *check_info = user_data;
-
-    if (check_info->mask)
-        g_object_unref (check_info->mask);
-
-    if (check_info->on_pixmap)
-        g_object_unref (check_info->on_pixmap);
-
-    if (check_info->off_pixmap)
-        g_object_unref (check_info->off_pixmap);
-
-    check_info->mask = NULL;
-    check_info->on_pixmap = NULL;
-    check_info->off_pixmap = NULL;
-}
-
-static void
-check_destroy (GtkWidget *widget, gpointer user_data)
-{
-    GNCCListCheckInfo *check_info = user_data;
-
-    free_check_list (check_info->pending_checks);
-    check_info->pending_checks = NULL;
-
-    g_free (check_info);
-}
-
-static GNCCListCheckInfo *
-gnc_clist_add_check (GtkCList *list)
-{
-    GNCCListCheckInfo *check_info;
-    GObject *object;
-
-    object = G_OBJECT (list);
-
-    check_info = g_object_get_data (object, "gnc-check-info");
-    if (check_info)
-    {
-        PWARN ("clist already has check");
-        return check_info;
-    }
-
-    check_info = g_new0 (GNCCListCheckInfo, 1);
-
-    g_object_set_data (object, "gnc-check-info", check_info);
-
-    g_signal_connect (object, "realize",
-                      G_CALLBACK (check_realize), check_info);
-    g_signal_connect (object, "unrealize",
-                      G_CALLBACK (check_unrealize), check_info);
-    g_signal_connect (object, "destroy",
-                      G_CALLBACK (check_destroy), check_info);
-
-    if (GTK_WIDGET_REALIZED (GTK_WIDGET (list)))
-        check_realize (GTK_WIDGET (list), check_info);
-
-    return check_info;
-}
-
-
-void
-gnc_clist_set_check (GtkCList *list, int row, int col, gboolean checked)
-{
-    GNCCListCheckInfo *check_info;
-    GdkPixmap *pixmap;
-
-    g_return_if_fail (GTK_IS_CLIST (list));
-
-    check_info = g_object_get_data (G_OBJECT (list), "gnc-check-info");
-    if (!check_info)
-        check_info = gnc_clist_add_check (list);
-
-    if (!GTK_WIDGET_REALIZED (GTK_WIDGET (list)))
-    {
-        GNCCListCheckNode *node;
-
-        node = g_new0 (GNCCListCheckNode, 1);
-
-        node->row = row;
-        node->col = col;
-        node->checked = checked;
-
-        check_info->pending_checks =
-            g_list_prepend (check_info->pending_checks, node);
-
-        return;
-    }
-
-    pixmap = checked ? check_info->on_pixmap : check_info->off_pixmap;
-
-    if (checked)
-        gtk_clist_set_pixmap (list, row, col, pixmap, check_info->mask);
-    else
-        gtk_clist_set_text (list, row, col, "");
-}
-
-/*   Glade Stuff
+/* gnc_builder_add_from_file:
  *
- *
+ *   a convenience wrapper for gtk_builder_add_objects_from_file.
+ *   It takes care of finding the directory for glade files and prints a
+ *   warning message in case of an error.
  */
-
-static gboolean glade_inited = FALSE;
-
-/* gnc_glade_xml_new: a convenience wrapper for glade_xml_new
- *   - takes care of glade initialization, if needed
- *   - takes care of finding the directory for glade files
- */
-GladeXML *
-gnc_glade_xml_new (const char *filename, const char *root)
+gboolean
+gnc_builder_add_from_file (GtkBuilder *builder, const char *filename, const char *root)
 {
-    GladeXML *xml;
+    GError* error = NULL;
     char *fname;
-    gchar *gnc_glade_dir;
+    gchar *gnc_builder_dir;
+    gboolean result;
 
-    g_return_val_if_fail (filename != NULL, NULL);
-    g_return_val_if_fail (root != NULL, NULL);
+    g_return_val_if_fail (builder != NULL, FALSE);
+    g_return_val_if_fail (filename != NULL, FALSE);
+    g_return_val_if_fail (root != NULL, FALSE);
 
-    if (!glade_inited)
+    gnc_builder_dir = gnc_path_get_gtkbuilderdir ();
+    fname = g_build_filename(gnc_builder_dir, filename, (char *)NULL);
+    g_free (gnc_builder_dir);
+
     {
-        glade_gnome_init ();
-        glade_inited = TRUE;
+        gchar *localroot = g_strdup(root);
+        gchar *objects[] = { localroot, NULL };
+        result = gtk_builder_add_objects_from_file (builder, fname, objects, &error);
+        if (!result)
+        {
+            PWARN ("Couldn't load builder file: %s", error->message);
+            g_error_free (error);
+        }
+        g_free (localroot);
     }
-
-    gnc_glade_dir = gnc_path_get_gladedir ();
-    fname = g_build_filename(gnc_glade_dir, filename, (char *)NULL);
-    g_free (gnc_glade_dir);
-
-    xml = glade_xml_new (fname, root, NULL);
 
     g_free (fname);
 
-    return xml;
+    return result;
 }
 
-/* gnc_glade_lookup_widget:  Given a root (or at least ancestor) widget,
- *   find the child widget with the given name.
- */
-GtkWidget *
-gnc_glade_lookup_widget (GtkWidget *widget, const char *name)
-{
-    GladeXML *xml;
-    GtkWidget *wid;
 
-    if (!widget || !name) return NULL;
-
-    xml = glade_get_widget_tree (widget);
-    if (!xml) return NULL;
-
-    wid = glade_xml_get_widget (xml, name);
-    if (!wid)
-        PWARN("I know nothing of this '%s' whom you seek.", name);
-
-    return wid;
-}
-
-/*
+/*---------------------------------------------------------------------
  * The following function is built from a couple of glade functions.
- */
-GModule *allsymbols = NULL;
-
+ *--------------------------------------------------------------------*/
 void
-gnc_glade_autoconnect_full_func(const gchar *handler_name,
-                                GObject *signal_object,
-                                const gchar *signal_name,
-                                const gchar *signal_data,
-                                GObject *other_object,
-                                gboolean signal_after,
-                                gpointer user_data)
+gnc_builder_connect_full_func(GtkBuilder *builder,
+                              GObject *signal_object,
+                              const gchar *signal_name,
+                              const gchar *handler_name,
+                              GObject *connect_object,
+                              GConnectFlags flags,
+                              gpointer user_data)
 {
     GCallback func;
     GCallback *p_func = &func;
@@ -884,27 +469,22 @@ gnc_glade_autoconnect_full_func(const gchar *handler_name,
 #endif
         if (func == NULL)
         {
-            g_warning("ggaff: could not find signal handler '%s'.", handler_name);
+            PWARN("ggaff: could not find signal handler '%s'.", handler_name);
             return;
         }
     }
 
-    if (other_object)
-    {
-        if (signal_after)
-            g_signal_connect_object (signal_object, signal_name, func,
-                                     other_object, G_CONNECT_AFTER);
-        else
-            g_signal_connect_object (signal_object, signal_name, func, other_object, 0);
-    }
+    if (connect_object)
+        g_signal_connect_object (signal_object, signal_name, func,
+                                 connect_object, flags);
     else
-    {
-        if (signal_after)
-            g_signal_connect_after(signal_object, signal_name, func, user_data);
-        else
-            g_signal_connect(signal_object, signal_name, func, user_data);
-    }
+        g_signal_connect_data(signal_object, signal_name, func,
+                              user_data, NULL , flags);
 }
+/*--------------------------------------------------------------------------
+ * End of GtkBuilder utilities
+ *-------------------------------------------------------------------------*/
+
 
 void
 gnc_gtk_dialog_add_button (GtkWidget *dialog, const gchar *label, const gchar *stock_id, guint response)
@@ -934,7 +514,7 @@ gnc_perm_button_cb (GtkButton *perm, gpointer user_data)
 }
 
 gint
-gnc_dialog_run (GtkDialog *dialog, const gchar *gconf_key)
+gnc_dialog_run (GtkDialog *dialog, const gchar *pref_name)
 {
     GtkWidget *perm, *temp;
     gboolean ask = TRUE;
@@ -942,10 +522,10 @@ gnc_dialog_run (GtkDialog *dialog, const gchar *gconf_key)
 
     /* Does the user want to see this question? If not, return the
      * previous answer. */
-    response = gnc_gconf_get_int(GCONF_WARNINGS_PERM, gconf_key, NULL);
+    response = gnc_prefs_get_int(GNC_PREFS_GROUP_WARNINGS_PERM, pref_name);
     if (response != 0)
         return response;
-    response = gnc_gconf_get_int(GCONF_WARNINGS_TEMP, gconf_key, NULL);
+    response = gnc_prefs_get_int(GNC_PREFS_GROUP_WARNINGS_TEMP, pref_name);
     if (response != 0)
         return response;
 
@@ -972,26 +552,54 @@ gnc_dialog_run (GtkDialog *dialog, const gchar *gconf_key)
             : _("Don't tell me again this _session."));
     gtk_widget_show(perm);
     gtk_widget_show(temp);
-    gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), perm);
-    gtk_box_pack_start_defaults(GTK_BOX(dialog->vbox), temp);
+    gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (dialog)), perm, TRUE, TRUE, 0);
+    gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (dialog)), temp, TRUE, TRUE, 0);
     g_signal_connect(perm, "clicked", G_CALLBACK(gnc_perm_button_cb), temp);
 
     /* OK. Present the dialog. */
     response = gtk_dialog_run(dialog);
     if ((response == GTK_RESPONSE_NONE) || (response == GTK_RESPONSE_DELETE_EVENT))
     {
-        return GTK_RESPONSE_NO;
+        return GTK_RESPONSE_CANCEL;
     }
 
-    /* Save the answer? */
-    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(perm)))
+    if (response != GTK_RESPONSE_CANCEL)
     {
-        gnc_gconf_set_int(GCONF_WARNINGS_PERM, gconf_key, response, NULL);
+        /* Save the answer? */
+        if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(perm)))
+        {
+            gnc_prefs_set_int(GNC_PREFS_GROUP_WARNINGS_PERM, pref_name, response);
+        }
+        else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(temp)))
+        {
+            gnc_prefs_set_int(GNC_PREFS_GROUP_WARNINGS_TEMP, pref_name, response);
+        }
     }
-    else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(temp)))
-    {
-        gnc_gconf_set_int(GCONF_WARNINGS_TEMP, gconf_key, response, NULL);
-    }
-
     return response;
+}
+
+/* If this is a new book, this function can be used to display book options
+ * dialog so user can specify options, before any transactions can be
+ * imported/entered, since they can affect how transactions are created
+ * Note: This dialog is modal! */
+gboolean
+gnc_new_book_option_display (GtkWidget *parent)
+{
+    GtkWidget *window;
+    gint result = GTK_RESPONSE_HELP;
+
+    window = gnc_book_options_dialog_cb (TRUE, _( "New Book Options"));
+    if (parent)
+        gtk_window_set_transient_for (GTK_WINDOW(window), GTK_WINDOW(parent));
+
+    if (window)
+    {
+        /* close dialog and proceed unless help button selected */
+        while (result == GTK_RESPONSE_HELP)
+        {
+            result = gtk_dialog_run(GTK_DIALOG(window));
+        }
+        return FALSE;
+    }
+    return TRUE;
 }

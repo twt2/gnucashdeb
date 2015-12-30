@@ -44,6 +44,25 @@
 ;; after midnight gives different dates than just before!  Referencing
 ;; all times to noon seems to fix this.  Subtracting 1 year sometimes
 ;; subtracts 2!  see "(to-value"
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; This program is free software; you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License as
+;; published by the Free Software Foundation; either version 2 of
+;; the License, or (at your option) any later version.
+;;
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with this program; if not, contact:
+;;
+;; Free Software Foundation           Voice:  +1-617-542-5942
+;; 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652
+;; Boston, MA  02110-1301,  USA       gnu@gnu.org
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 ;; depends must be outside module scope -- and should eventually go away.
 
@@ -51,6 +70,8 @@
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (srfi srfi-1))
 (use-modules (gnucash printf))
+(use-modules (gnucash core-utils)) ; for gnc:version
+(use-modules (gnucash gettext))
 
 (use-modules (gnucash gnc-module))
 (gnc:module-load "gnucash/tax/de_DE" 0)
@@ -113,9 +134,10 @@
 (define (lx-collector level action arg1 arg2)
   ((vector-ref levelx-collector (- level 1)) action arg1 arg2))
 
-;; IRS asked congress to make the tax quarters the same as real quarters
-;;   This is the year it is effective.  THIS IS A Y10K BUG!
-(define tax-qtr-real-qtr-year 10000)
+;; Unlike to the US the German tax quarters are real quarters.
+;; To allow for easily incorporating changes from the US version
+;; we simply set  tax-qtr-real-qtr-year to 0.
+(define tax-qtr-real-qtr-year 0)
 
 (define (tax-options-generator)
   (define options (gnc:new-options))
@@ -130,40 +152,40 @@
   (gnc:register-tax-option
    (gnc:make-multichoice-option
     gnc:pagename-general (N_ "Alternate Period")
-    "c" (N_ "Override or modify From: & To:")
+    "c" (N_ "Override or modify From: & To:.")
     (if after-tax-day 'from-to 'last-year)
     (list (list->vector
-           (list 'from-to (N_ "Use From - To") (N_ "Use From - To period")))
+           (list 'from-to (N_ "Use From - To") (N_ "Use From - To period.")))
           (list->vector
-           (list '1st-est (N_ "1st Est Tax Quarter") (N_ "Jan 1 - Mar 31")))
+           (list '1st-est (N_ "1st Est Tax Quarter") (N_ "Jan 1 - Mar 31.")))
           (list->vector
-           (list '2nd-est (N_ "2nd Est Tax Quarter") (N_ "Apr 1 - May 31")))
+           (list '2nd-est (N_ "2nd Est Tax Quarter") (N_ "Apr 1 - May 31.")))
           (list->vector
 	   ;; Translators: The US tax quarters are different from
 	   ;; actual year's quarters! See the definition of
 	   ;; tax-qtr-real-qtr-year variable above.
-           (list '3rd-est (N_ "3rd Est Tax Quarter") (N_ "Jun 1 - Aug 31")))
+           (list '3rd-est (N_ "3rd Est Tax Quarter") (N_ "Jun 1 - Aug 31.")))
           (list->vector
-           (list '4th-est (N_ "4th Est Tax Quarter") (N_ "Sep 1 - Dec 31")))
+           (list '4th-est (N_ "4th Est Tax Quarter") (N_ "Sep 1 - Dec 31.")))
           (list->vector
-           (list 'last-year (N_ "Last Year") (N_ "Last Year")))
+           (list 'last-year (N_ "Last Year") (N_ "Last Year.")))
           (list->vector
            (list '1st-last (N_ "Last Yr 1st Est Tax Qtr")
-                 (N_ "Jan 1 - Mar 31, Last year")))
+                 (N_ "Jan 1 - Mar 31, Last year.")))
           (list->vector
            (list '2nd-last (N_ "Last Yr 2nd Est Tax Qtr")
-                 (N_ "Apr 1 - May 31, Last year")))
+                 (N_ "Apr 1 - May 31, Last year.")))
           (list->vector
            (list '3rd-last (N_ "Last Yr 3rd Est Tax Qtr")
-                 (N_ "Jun 1 - Aug 31, Last year")))
+                 (N_ "Jun 1 - Aug 31, Last year.")))
           (list->vector
            (list '4th-last (N_ "Last Yr 4th Est Tax Qtr")
-                 (N_ "Sep 1 - Dec 31, Last year"))))))
+                 (N_ "Sep 1 - Dec 31, Last year."))))))
 
   (gnc:register-tax-option
    (gnc:make-account-list-option
     gnc:pagename-accounts (N_ "Select Accounts (none = all)")
-    "d" (N_ "Select accounts")
+    "d" (N_ "Select accounts.")
     (lambda () '())
     #f #t))
   
@@ -175,7 +197,7 @@
   (gnc:register-tax-option
    (gnc:make-simple-boolean-option
     gnc:pagename-display (N_ "Print Full account names")
-    "g" (N_ "Print all Parent account names") #f))
+    "g" (N_ "Print all Parent account names.") #f))
 
   (gnc:options-set-default-section options gnc:pagename-general)
 

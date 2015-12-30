@@ -154,15 +154,9 @@ gnc_plugin_budget_init(GncPluginBudget *plugin)
 static void
 gnc_plugin_budget_finalize(GObject *object)
 {
-    GncPluginBudget *plugin;
-    GncPluginBudgetPrivate *priv;
-
     g_return_if_fail(GNC_IS_PLUGIN_BUDGET (object));
 
     ENTER(" ");
-    plugin = GNC_PLUGIN_BUDGET(object);
-    priv = GNC_PLUGIN_BUDGET_GET_PRIVATE(plugin);
-
     (parent_class->finalize)(object);
     LEAVE(" ");
 
@@ -301,7 +295,7 @@ gnc_budget_gui_select_budget(QofBook *book)
     tm = gnc_tree_model_budget_new(book);
     gnc_tree_view_budget_set_model(tv, tm);
     g_object_unref(tm);
-    gtk_container_add(GTK_CONTAINER(dlg->vbox), GTK_WIDGET(tv));
+    gtk_container_add(GTK_CONTAINER (gtk_dialog_get_content_area (dlg)), GTK_WIDGET(tv));
     gtk_widget_show_all(GTK_WIDGET(dlg));
 
     bgt = NULL;

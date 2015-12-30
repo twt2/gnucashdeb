@@ -36,7 +36,7 @@
 #include "gnc-plugin-page-register.h"
 #include "search-param.h"
 
-#define GCONF_SECTION "dialogs/find"
+#define GNC_PREFS_GROUP_SEARCH "dialogs.find"
 
 struct _ftd_data
 {
@@ -94,6 +94,8 @@ gnc_ui_find_transactions_dialog_create(GNCLedgerDisplay * orig_ledg)
     struct _ftd_data *ftd;
     static GList *params = NULL;
     QofQuery *start_q, *show_q = NULL;
+    gboolean num_action =
+                qof_book_use_split_action_for_num_field(gnc_get_current_book());
 
     /* Build parameter list in reverse order */
     if (params == NULL)
@@ -108,6 +110,9 @@ gnc_ui_find_transactions_dialog_create(GNCLedgerDisplay * orig_ledg)
         params = gnc_search_param_prepend (params, N_("Balanced"), NULL,
                                            type, SPLIT_TRANS, TRANS_IS_BALANCED,
                                            NULL);
+        params = gnc_search_param_prepend (params, N_("Closing Entries"), NULL,
+                                           type, SPLIT_TRANS, TRANS_IS_CLOSING,
+                                           NULL);
         params = gnc_search_param_prepend (params, N_("Reconcile"), RECONCILED_MATCH_TYPE,
                                            type, SPLIT_RECONCILE, NULL);
         params = gnc_search_param_prepend (params, N_("Share Price"), NULL,
@@ -119,17 +124,58 @@ gnc_ui_find_transactions_dialog_create(GNCLedgerDisplay * orig_ledg)
         params = gnc_search_param_prepend (params, N_("Date Posted"), NULL,
                                            type, SPLIT_TRANS, TRANS_DATE_POSTED,
                                            NULL);
-        params = gnc_search_param_prepend (params, N_("Notes"), NULL,
-                                           type, SPLIT_TRANS, TRANS_NOTES, NULL);
-        params = gnc_search_param_prepend (params, N_("Action"), NULL,
+        params = gnc_search_param_prepend (params, (num_action
+                                                    ? N_("Number/Action")
+                                                    : N_("Action")), NULL,
                                            type, SPLIT_ACTION, NULL);
-        params = gnc_search_param_prepend (params, N_("Number"), NULL,
+        params = gnc_search_param_prepend (params, (num_action
+                                                    ? N_("Transaction Number")
+                                                    : N_("Number")), NULL,
                                            type, SPLIT_TRANS, TRANS_NUM, NULL);
+        {
+            GList *params2 = NULL;
+            params2 = gnc_search_param_prepend (params2, "", NULL,
+                                               type, SPLIT_MEMO, NULL);
+            params2 = gnc_search_param_prepend (params2, "", NULL,
+                                               type, SPLIT_TRANS, TRANS_DESCRIPTION,
+                                               NULL);
+            params2 = gnc_search_param_prepend (params2, "", NULL,
+                                               type, SPLIT_TRANS, TRANS_NOTES, NULL);
+            params = gnc_search_param_prepend_compound (params, 
+                                                        N_("Description, Notes, or Memo"),
+                                                        params2,
+                                                        GTK_JUSTIFY_LEFT, SEARCH_PARAM_ANY);
+        }
         params = gnc_search_param_prepend (params, N_("Memo"), NULL,
                                            type, SPLIT_MEMO, NULL);
+        params = gnc_search_param_prepend (params, N_("Notes"), NULL,
+                                           type, SPLIT_TRANS, TRANS_NOTES, NULL);
         params = gnc_search_param_prepend (params, N_("Description"), NULL,
                                            type, SPLIT_TRANS, TRANS_DESCRIPTION,
                                            NULL);
+    }
+    else
+    {
+        GList *l;
+        for (l = params; l; l = l->next)
+        {
+            GNCSearchParam *param = l->data;
+
+            if (num_action)
+            {
+                if (strcmp (param->title, N_("Action")) == 0)
+                    gnc_search_param_set_title (param, N_("Number/Action"));
+                if (strcmp (param->title, N_("Number")) == 0)
+                    gnc_search_param_set_title (param, N_("Transaction Number"));
+            }
+            else
+            {
+                if (strcmp (param->title, N_("Number/Action")) == 0)
+                    gnc_search_param_set_title (param, N_("Action"));
+                if (strcmp (param->title, N_("Transaction Number")) == 0)
+                    gnc_search_param_set_title (param, N_("Number"));
+            }
+        }
     }
 
     ftd = g_new0 (struct _ftd_data, 1);
@@ -162,7 +208,10 @@ gnc_ui_find_transactions_dialog_create(GNCLedgerDisplay * orig_ledg)
 
             tRoot = gnc_book_get_template_root( gnc_get_current_book() );
             al = gnc_account_get_descendants( tRoot );
-            xaccQueryAddAccountMatch( start_q, al, QOF_GUID_MATCH_NONE, QOF_QUERY_AND );
+
+            if (g_list_length(al) != 0)
+                xaccQueryAddAccountMatch( start_q, al, QOF_GUID_MATCH_NONE, QOF_QUERY_AND );
+
             g_list_free (al);
             al = NULL;
             tRoot = NULL;
@@ -174,7 +223,7 @@ gnc_ui_find_transactions_dialog_create(GNCLedgerDisplay * orig_ledg)
     ftd->sw = gnc_search_dialog_create (type, _("Find Transaction"),
                                         params, NULL, start_q, show_q,
                                         NULL, do_find_cb, NULL,
-                                        ftd, free_ftd_cb, GCONF_SECTION, NULL);
+                                        ftd, free_ftd_cb, GNC_PREFS_GROUP_SEARCH, NULL);
 
     if (!ftd->sw)
     {

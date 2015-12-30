@@ -29,6 +29,13 @@
 (define-module (gnucash report view-column))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (gnucash gnc-module))
+(use-modules (gnucash gettext))
+(cond-expand
+  (guile-2
+    (eval-when
+      (compile load eval expand)
+      (load-extension "libgncmod-report-system" "scm_init_sw_report_system_module")))
+  (else ))
 (use-modules (sw_report_system))
 
 (use-modules (gnucash printf))
@@ -49,7 +56,7 @@
     (opt-register
      (gnc:make-number-range-option 
       (N_ "General") (N_ "Number of columns") "a"
-      (N_ "Number of columns before wrapping to a new row")
+      (N_ "Number of columns before wrapping to a new row.")
       1 0 20 0 1))
     
     options))

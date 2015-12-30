@@ -46,7 +46,7 @@
 #define DIALOG_NEW_JOB_CM_CLASS "dialog-new-job"
 #define DIALOG_EDIT_JOB_CM_CLASS "dialog-edit-job"
 
-#define GCONF_SECTION_SEARCH "dialogs/business/job_search"
+#define GNC_PREFS_GROUP_SEARCH "dialogs.business.job-search"
 
 void gnc_job_window_ok_cb (GtkWidget *widget, gpointer data);
 void gnc_job_window_cancel_cb (GtkWidget *widget, gpointer data);
@@ -101,6 +101,8 @@ static void gnc_ui_to_job (JobWindow *jw, GncJob *job)
     gnc_suspend_gui_refresh ();
     gncJobBeginEdit (job);
 
+    qof_event_gen(QOF_INSTANCE(job), QOF_EVENT_ADD, NULL);
+
     gncJobSetID (job, gtk_editable_get_chars (GTK_EDITABLE (jw->id_entry),
                  0, -1));
     gncJobSetName (job, gtk_editable_get_chars (GTK_EDITABLE (jw->name_entry),
@@ -128,7 +130,7 @@ gnc_job_verify_ok (JobWindow *jw)
 
     /* Check for valid name */
     res = gtk_entry_get_text (GTK_ENTRY (jw->name_entry));
-    if (safe_strcmp (res, "") == 0)
+    if (g_strcmp0 (res, "") == 0)
     {
         const char *message = _("The Job must be given a name.");
         gnc_error_dialog(jw->dialog, "%s", message);
@@ -138,7 +140,7 @@ gnc_job_verify_ok (JobWindow *jw)
     /* Check for owner */
     gnc_owner_get_owner (jw->cust_edit, &(jw->owner));
     res = gncOwnerGetName (&(jw->owner));
-    if (res == NULL || safe_strcmp (res, "") == 0)
+    if (res == NULL || g_strcmp0 (res, "") == 0)
     {
         const char *message = _("You must choose an owner for this job.");
         gnc_error_dialog(jw->dialog, "%s", message);
@@ -147,7 +149,7 @@ gnc_job_verify_ok (JobWindow *jw)
 
     /* Set a valid id if one was not created */
     res = gtk_entry_get_text (GTK_ENTRY (jw->id_entry));
-    if (safe_strcmp (res, "") == 0)
+    if (g_strcmp0 (res, "") == 0)
     {
         string = gncJobNextID(jw->book);
         gtk_entry_set_text (GTK_ENTRY (jw->id_entry), string);
@@ -196,7 +198,7 @@ gnc_job_window_cancel_cb (GtkWidget *widget, gpointer data)
 void
 gnc_job_window_help_cb (GtkWidget *widget, gpointer data)
 {
-    gnc_gnome_help(HF_HELP, HL_USAGE);
+    gnc_gnome_help(HF_HELP, HL_USAGE_BSNSS);
 }
 
 
@@ -299,7 +301,7 @@ static JobWindow *
 gnc_job_new_window (QofBook *bookp, GncOwner *owner, GncJob *job)
 {
     JobWindow *jw;
-    GladeXML *xml;
+    GtkBuilder *builder;
     GtkWidget *owner_box, *owner_label;
 
     /*
@@ -327,26 +329,26 @@ gnc_job_new_window (QofBook *bookp, GncOwner *owner, GncJob *job)
     jw->book = bookp;
     gncOwnerCopy (owner, &(jw->owner)); /* save it off now, we know it's valid */
 
-    /* Load the XML */
-    xml = gnc_glade_xml_new ("job.glade", "Job Dialog");
+    /* Load the Glade File */
+    builder = gtk_builder_new();
+    gnc_builder_add_from_file (builder, "dialog-job.glade", "Job Dialog");
 
     /* Find the dialog */
-    jw->dialog = glade_xml_get_widget (xml, "Job Dialog");
-    g_object_set_data (G_OBJECT (jw->dialog), "dialog_info", jw);
+    jw->dialog = GTK_WIDGET(gtk_builder_get_object (builder, "Job Dialog"));
 
     /* Get entry points */
-    jw->id_entry  = glade_xml_get_widget (xml, "id_entry");
-    jw->name_entry = glade_xml_get_widget (xml, "name_entry");
-    jw->desc_entry = glade_xml_get_widget (xml, "desc_entry");
-    jw->active_check = glade_xml_get_widget (xml, "active_check");
+    jw->id_entry  = GTK_WIDGET(gtk_builder_get_object (builder, "id_entry"));
+    jw->name_entry = GTK_WIDGET(gtk_builder_get_object (builder, "name_entry"));
+    jw->desc_entry = GTK_WIDGET(gtk_builder_get_object (builder, "desc_entry"));
+    jw->active_check = GTK_WIDGET(gtk_builder_get_object (builder, "active_check"));
 
-    owner_box = glade_xml_get_widget (xml, "customer_hbox");
-    owner_label = glade_xml_get_widget (xml, "owner_label");
+    owner_box = GTK_WIDGET(gtk_builder_get_object (builder, "customer_hbox"));
+    owner_label = GTK_WIDGET(gtk_builder_get_object (builder, "owner_label"));
 
     /* Setup signals */
-    glade_xml_signal_autoconnect_full( xml,
-                                       gnc_glade_autoconnect_full_func,
-                                       jw);
+    gtk_builder_connect_signals_full (builder, gnc_builder_connect_full_func, jw);
+
+
     /* Set initial entries */
     if (job != NULL)
     {
@@ -399,6 +401,16 @@ gnc_job_new_window (QofBook *bookp, GncOwner *owner, GncJob *job)
                                          QOF_EVENT_MODIFY | QOF_EVENT_DESTROY);
 
     gtk_widget_show_all (jw->dialog);
+
+    // The job name should have keyboard focus
+    gtk_widget_grab_focus(jw->name_entry);
+    // Or should the owner field have focus?
+//    if (GNC_IS_GENERAL_SEARCH(jw->cust_edit))
+//    {
+//        gnc_general_search_grab_focus(GNC_GENERAL_SEARCH(jw->cust_edit));
+//    }
+
+    g_object_unref(G_OBJECT(builder));
 
     return jw;
 }
@@ -532,15 +544,15 @@ gnc_job_search (GncJob *start, GncOwner *owner, QofBook *book)
     static GList *columns = NULL;
     static GNCSearchCallbackButton buttons[] =
     {
-        { N_("View/Edit Job"), edit_job_cb},
-        { N_("View Invoices"), invoice_job_cb},
-        { N_("Process Payment"), payment_job_cb},
+        { N_("View/Edit Job"), edit_job_cb, NULL, TRUE},
+        { N_("View Invoices"), invoice_job_cb, NULL, TRUE},
+        { N_("Process Payment"), payment_job_cb, NULL, FALSE},
         { NULL },
     };
 
     g_return_val_if_fail (book, NULL);
 
-    /* Build parameter list in reverse order*/
+    /* Build parameter list in reverse order */
     if (params == NULL)
     {
         params = gnc_search_param_prepend (params, _("Owner's Name"), NULL, type,
@@ -616,7 +628,7 @@ gnc_job_search (GncJob *start, GncOwner *owner, QofBook *book)
     return gnc_search_dialog_create (type, _("Find Job"),
                                      params, columns, q, q2, buttons, NULL,
                                      new_job_cb, sw, free_userdata_cb,
-                                     GCONF_SECTION_SEARCH, NULL);
+                                     GNC_PREFS_GROUP_SEARCH, NULL);
 }
 
 /* Functions for widgets for job selection */

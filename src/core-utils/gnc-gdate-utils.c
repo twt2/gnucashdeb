@@ -23,10 +23,26 @@
 
 #include "config.h"
 #include <glib.h>
-#include <time.h>
 
 #include "gnc-gdate-utils.h"
 
+void
+gnc_gdate_set_today (GDate* gd)
+{
+    GDate *today = gnc_g_date_new_today ();
+    g_date_set_julian (gd, g_date_get_julian (today));
+    g_date_free (today);
+}
+
+void
+gnc_gdate_set_time64 (GDate* gd, time64 time)
+{
+    GDateTime *gdt = gnc_g_date_time_new_from_unix_local (time);
+    gint y, m, d;
+    g_date_time_get_ymd (gdt, &y, &m, &d);
+    g_date_set_dmy (gd, d, m, y);
+    g_date_time_unref (gdt);
+}
 
 gboolean
 gnc_gdate_equal(gconstpointer gda, gconstpointer gdb)
@@ -44,25 +60,25 @@ gnc_gdate_hash( gconstpointer gd )
 }
 
 
-time_t
-gnc_timet_get_day_start_gdate (GDate *date)
+time64
+gnc_time64_get_day_start_gdate (const GDate *date)
 {
     struct tm stm;
-    time_t secs;
+    time64 secs;
 
     /* First convert to a 'struct tm' */
-    g_date_to_struct_tm(date, &stm);
+    g_date_to_struct_tm (date, &stm);
 
     /* Then convert to number of seconds */
-    secs = mktime (&stm);
+    secs = gnc_mktime (&stm);
     return secs;
 }
 
-time_t
-gnc_timet_get_day_end_gdate (GDate *date)
+time64
+gnc_time64_get_day_end_gdate (const GDate *date)
 {
     struct tm stm;
-    time_t secs;
+    time64 secs;
 
     /* First convert to a 'struct tm' */
     g_date_to_struct_tm(date, &stm);
@@ -74,7 +90,7 @@ gnc_timet_get_day_end_gdate (GDate *date)
     stm.tm_isdst = -1;
 
     /* Then convert to number of seconds */
-    secs = mktime (&stm);
+    secs = gnc_mktime (&stm);
     return secs;
 }
 

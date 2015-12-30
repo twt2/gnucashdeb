@@ -22,7 +22,6 @@
 
 #include <glib.h>
 
-#include "GNCId.h"
 #include "qof.h"
 
 
@@ -105,7 +104,7 @@ typedef gboolean (*GNCComponentFindHandler) (gpointer find_data,
  *
  * Return: TRUE if the callback did something
  */
-typedef gboolean (*GNCComponentHandler) (const char *class,
+typedef gboolean (*GNCComponentHandler) (const char *component_class,
         gint component_id,
         gpointer user_data,
         gpointer iter_data);
@@ -172,19 +171,6 @@ void gnc_gui_component_set_session (gint component_id, gpointer session);
 void gnc_gui_component_watch_entity (gint component_id,
                                      const GncGUID *entity,
                                      QofEventId event_mask);
-
-/* gnc_gui_component_watch_entity_direct
- *   Add an entity to the list of those being watched by the component.
- *   Only entities with refresh handlers should add watches.
- *
- * component_id: id of component which is watching the entity
- * entity:       id of entity to watch
- * event_mask:   mask which determines which kinds of events are watched
- *               setting the mask to 0 turns off watching for the entity.
- */
-void gnc_gui_component_watch_entity_direct (gint component_id,
-        GncGUID entity,
-        QofEventId event_mask);
 
 /* gnc_gui_component_watch_entity_type
  *   Watch all entities of a particular type.

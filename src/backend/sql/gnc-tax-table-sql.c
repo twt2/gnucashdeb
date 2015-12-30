@@ -46,8 +46,6 @@
 
 static QofLogModule log_module = G_LOG_DOMAIN;
 
-static void set_invisible( gpointer data, gboolean value );
-
 typedef struct
 {
     GncSqlBackend* be;
@@ -56,7 +54,6 @@ typedef struct
 
 static gpointer get_obj_guid( gpointer pObject, const QofParam* param );
 static void set_obj_guid( gpointer pObject, gpointer pValue );
-static gpointer get_child( gpointer pObject, const QofParam* param );
 static gpointer bt_get_parent( gpointer pObject );
 static void tt_set_parent( gpointer pObject, gpointer pValue );
 static void tt_set_parent_guid( gpointer pObject, gpointer pValue );
@@ -70,11 +67,8 @@ static GncSqlColumnTableEntry tt_col_table[] =
 {
     { "guid",      CT_GUID,        0,            COL_NNUL | COL_PKEY, "guid" },
     { "name",      CT_STRING,      MAX_NAME_LEN, COL_NNUL,          "name" },
-    { "refcount",  CT_INT64,       0,            COL_NNUL,          NULL, GNC_TT_REFCOUNT },
-    {
-        "invisible", CT_BOOLEAN,     0,            COL_NNUL,          NULL, NULL,
-        (QofAccessFunc)gncTaxTableGetInvisible, (QofSetterFunc)set_invisible
-    },
+    { "refcount",  CT_INT64,       0,            COL_NNUL,          "ref-count" },
+    { "invisible", CT_BOOLEAN,     0,            COL_NNUL,          "invisible" },
     /*	{ "child",     CT_TAXTABLEREF, 0,			 0,                 NULL, NULL,
     			get_child, (QofSetterFunc)gncTaxTableSetChild }, */
     {
@@ -144,31 +138,6 @@ static void
 set_obj_guid( gpointer pObject, gpointer pValue )
 {
     // Nowhere to put the GncGUID
-}
-
-static void
-set_invisible( gpointer data, gboolean value )
-{
-    GncTaxTable* tt = GNC_TAXTABLE(data);
-
-    g_return_if_fail( data != NULL );
-    g_return_if_fail( GNC_IS_TAXTABLE(data) );
-
-    if ( value )
-    {
-        gncTaxTableMakeInvisible( tt );
-    }
-}
-
-static gpointer
-get_child( gpointer pObject, const QofParam* param )
-{
-    GncTaxTable* tt = GNC_TAXTABLE(pObject);
-
-    g_return_val_if_fail( pObject != NULL, NULL );
-    g_return_val_if_fail( GNC_IS_TAXTABLE(pObject), NULL );
-
-    return gncTaxTableGetChild( tt );
 }
 
 static /*@ null @*//*@ dependent @*/ gpointer
@@ -253,7 +222,6 @@ load_taxtable_entries( GncSqlBackend* be, GncTaxTable* tt )
     GValue value;
     gchar* buf;
     GncSqlStatement* stmt;
-    GError* error = NULL;
 
     g_return_if_fail( be != NULL );
     g_return_if_fail( tt != NULL );
@@ -292,10 +260,10 @@ load_single_taxtable( GncSqlBackend* be, GncSqlRow* row,
     g_return_if_fail( row != NULL );
 
     guid = gnc_sql_load_guid( be, row );
-    tt = gncTaxTableLookup( be->primary_book, guid );
+    tt = gncTaxTableLookup( be->book, guid );
     if ( tt == NULL )
     {
-        tt = gncTaxTableCreate( be->primary_book );
+        tt = gncTaxTableCreate( be->book );
     }
     gnc_sql_load_object( be, row, GNC_ID_TAXTABLE, tt, tt_col_table );
     gnc_sql_slots_load( be, QOF_INSTANCE(tt) );
@@ -358,8 +326,6 @@ load_all_taxtables( GncSqlBackend* be )
         if ( tt_needing_parents != NULL )
         {
             gboolean progress_made = TRUE;
-            GncTaxTable* root;
-            Account* pParent;
             GList* elem;
 
             while ( progress_made )
@@ -528,7 +494,7 @@ write_taxtables( GncSqlBackend* be )
 
     data.be = be;
     data.is_ok = TRUE;
-    qof_object_foreach( GNC_ID_TAXTABLE, be->primary_book, save_next_taxtable, &data );
+    qof_object_foreach( GNC_ID_TAXTABLE, be->book, save_next_taxtable, &data );
 
     return data.is_ok;
 }
@@ -552,7 +518,7 @@ load_taxtable_guid( const GncSqlBackend* be, GncSqlRow* row,
     if ( val != NULL && G_VALUE_HOLDS_STRING( val ) && g_value_get_string( val ) != NULL )
     {
         string_to_guid( g_value_get_string( val ), &guid );
-        taxtable = gncTaxTableLookup( be->primary_book, &guid );
+        taxtable = gncTaxTableLookup( be->book, &guid );
         if ( taxtable != NULL )
         {
             if ( table_row->gobj_param_name != NULL )

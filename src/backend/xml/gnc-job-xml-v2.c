@@ -66,6 +66,7 @@ static xmlNodePtr
 job_dom_tree_create (GncJob *job)
 {
     xmlNodePtr ret;
+    kvp_frame *kf;
 
     ret = xmlNewNode(NULL, BAD_CAST gnc_job_string);
     xmlSetProp(ret, BAD_CAST "version", BAD_CAST job_version_string);
@@ -86,6 +87,16 @@ job_dom_tree_create (GncJob *job)
 
     xmlAddChild(ret, int_to_dom_tree(job_active_string,
                                      gncJobGetActive (job)));
+
+    kf = qof_instance_get_slots (QOF_INSTANCE(job));
+    if (kf)
+    {
+        xmlNodePtr kvpnode = kvp_frame_to_dom_tree(job_slots_string, kf);
+        if (kvpnode)
+        {
+            xmlAddChild(ret, kvpnode);
+        }
+    }
 
     return ret;
 }
@@ -193,7 +204,10 @@ job_active_handler (xmlNodePtr node, gpointer job_pdata)
 static gboolean
 job_slots_handler (xmlNodePtr node, gpointer job_pdata)
 {
-    return TRUE;
+    struct job_pdata *pdata = job_pdata;
+
+    return dom_tree_to_kvp_frame_given
+           (node, xaccAccountGetSlots (pdata->job));
 }
 
 static struct dom_tree_handler job_handlers_v2[] =
@@ -239,13 +253,10 @@ gnc_job_end_handler(gpointer data_for_children,
                     gpointer parent_data, gpointer global_data,
                     gpointer *result, const gchar *tag)
 {
-    int successful;
     GncJob *job;
     xmlNodePtr tree = (xmlNodePtr)data_for_children;
     gxpf_data *gdata = (gxpf_data*)global_data;
     QofBook *book = gdata->bookdata;
-
-    successful = TRUE;
 
     if (parent_data)
     {

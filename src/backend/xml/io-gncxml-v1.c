@@ -166,15 +166,6 @@ gnc_parser_configure_for_input_version(GNCParseStatus *status, gint64 version)
         sixtp_add_sub_parser(status->gnc_parser, "ledger-data", ledger_data_pr);
     }
 
-#if 0
-    /* add <query-server> */
-    {
-        sixtp *query_server_pr = query_server_parser_new();
-        g_return_val_if_fail(query_server_pr, FALSE);
-        sixtp_add_sub_parser(status->gnc_parser, "query-server", query_server_pr);
-    }
-#endif
-
     return(TRUE);
 }
 
@@ -259,12 +250,6 @@ gnc_parser_before_child_handler(gpointer data_for_children,
         }
     }
 
-#if 0
-    if (strcmp(child_tag, "query-server") == 0)
-    {
-        if (pstatus->query) return(FALSE);
-    }
-#endif
     return(TRUE);
 }
 
@@ -290,15 +275,6 @@ gnc_parser_after_child_handler(gpointer data_for_children,
         child_result->should_cleanup = FALSE;
     }
 
-#if 0
-    if (strcmp(child_tag, "query-server") == 0)
-    {
-        g_return_val_if_fail(child_result, FALSE);
-        g_return_val_if_fail(child_result->data, FALSE);
-        pstatus->query = (Query *) child_result->data;
-        child_result->should_cleanup = FALSE;
-    }
-#endif
     return(TRUE);
 }
 
@@ -782,7 +758,7 @@ binary_kvp_value_parser_new(void)
                              SIXTP_NO_MORE_HANDLERS),
                TRUE,
                "hex", hex_binary_kvp_value_parser_new(),
-               0);
+               NULL, NULL);
 }
 
 /*********************************/
@@ -1107,7 +1083,7 @@ kvp_frame_parser_new(void)
     if (!(sixtp_add_some_sub_parsers(
                 top_level, TRUE,
                 "s", kvp_frame_slot_parser_new(top_level),
-                0)))
+                NULL, NULL)))
     {
         return NULL;
     }
@@ -1270,7 +1246,7 @@ ledger_data_parser_new(void)
                 "pricedb", gnc_pricedb_parser_new(),
                 "account", gnc_account_parser_new(),
                 "transaction", gnc_transaction_parser_new(),
-                0))
+                NULL, NULL))
     {
         return NULL;
     }
@@ -1819,9 +1795,9 @@ gnc_account_parser_new(void)
                 "parent", sixtp_add_some_sub_parsers(
                     parent_lookup_parser_new(), TRUE,
                     "guid", generic_guid_parser_new(),
-                    0),
+                    NULL, NULL),
                 "slots", kvp_frame_parser_new(),
-                0))
+                NULL, NULL))
     {
         sixtp_destroy(ret);
         return NULL;
@@ -1937,10 +1913,9 @@ commodity_restore_after_child_handler(gpointer data_for_children,
     if (strcmp(child_result->tag, "fraction") == 0)
     {
         gint64 frac;
-        gboolean conv_ok;
 
         if (cpi->seen_fraction) return(FALSE);
-        conv_ok = string_to_gint64((gchar *) child_result->data, &frac);
+        string_to_gint64((gchar *) child_result->data, &frac);
         cpi->fraction = frac;
         cpi->seen_fraction = TRUE;
         child_result->should_cleanup = TRUE;
@@ -2037,7 +2012,7 @@ commodity_restore_parser_new(void)
                 "name", simple_chars_only_parser_new(NULL),
                 "xcode", simple_chars_only_parser_new(NULL),
                 "fraction", simple_chars_only_parser_new(NULL),
-                0))
+                NULL, NULL))
     {
         return NULL;
     }
@@ -2084,7 +2059,7 @@ commodity_restore_parser_new(void)
 
 typedef struct
 {
-    gchar *namespace;
+    gchar *name_space;
     gchar *id;
 } CommodityLookupParseInfo;
 
@@ -2120,8 +2095,8 @@ generic_gnc_commodity_lookup_after_child_handler(gpointer data_for_children,
 
     if (strcmp(child_result->tag, "space") == 0)
     {
-        if (cpi->namespace) return(FALSE);
-        cpi->namespace = (gchar *) child_result->data;
+        if (cpi->name_space) return(FALSE);
+        cpi->name_space = (gchar *) child_result->data;
         child_result->should_cleanup = FALSE;
     }
     else if (strcmp(child_result->tag, "id") == 0)
@@ -2152,14 +2127,14 @@ generic_gnc_commodity_lookup_end_handler(gpointer data_for_children,
 
     g_return_val_if_fail(cpi, FALSE);
 
-    if (cpi->namespace && cpi->id)
+    if (cpi->name_space && cpi->id)
     {
         gnc_commodity_table *table;
         gnc_commodity *com;
 
         table = gnc_commodity_table_get_table (pstatus->book);
 
-        com = gnc_commodity_table_lookup(table, cpi->namespace, cpi->id);
+        com = gnc_commodity_table_lookup(table, cpi->name_space, cpi->id);
 
         if (com)
         {
@@ -2168,7 +2143,7 @@ generic_gnc_commodity_lookup_end_handler(gpointer data_for_children,
         }
     }
 
-    g_free(cpi->namespace);
+    g_free(cpi->name_space);
     g_free(cpi->id);
     g_free(cpi);
 
@@ -2198,7 +2173,7 @@ generic_gnc_commodity_lookup_parser_new(void)
                 top_level, TRUE,
                 "space", simple_chars_only_parser_new(NULL),
                 "id", simple_chars_only_parser_new(NULL),
-                0))
+                NULL, NULL))
     {
         return NULL;
     }
@@ -2206,530 +2181,6 @@ generic_gnc_commodity_lookup_parser_new(void)
     return(top_level);
 }
 
-#if 0
-/***********************************************************************/
-/* <query-server> (parent <gnc-data>)
-
-   On failure or on normal cleanup, the query will be killed,
-   so if you want it, you better set should_cleanup to false
-
-   input: NA
-   to-children-via-*result: new Query*
-   returns: a Query*
-   start: creates the query and puts it into *result
-   characters: NA
-   end: finishes up the query and leaves it in result.
-   cleanup-result: deletes the query (use should_cleanup to avoid).
-   cleanup-chars: NA
-   fail: deletes the query in *result.
-   result-fail: same as cleanup-result.
-   chars-fail: NA
-
-*/
-
-
-static gboolean
-query_server_start_handler(GSList* sibling_data,
-                           gpointer parent_data,
-                           gpointer global_data,
-                           gpointer *data_for_children,
-                           gpointer *result,
-                           const gchar *tag,
-                           gchar **attrs)
-{
-    return(TRUE);
-}
-
-static gboolean
-query_server_end_handler(gpointer data_for_children,
-                         GSList  *data_from_children, GSList *sibling_data,
-                         gpointer parent_data, gpointer global_data,
-                         gpointer *result, const gchar *tag)
-{
-    Query *q;
-    sixtp_child_result *cr;
-
-    g_return_val_if_fail(data_from_children, FALSE);
-
-    cr = (sixtp_child_result *) data_from_children->data;
-    g_return_val_if_fail(cr, FALSE);
-
-    q = (Query *) (cr->data);
-    g_return_val_if_fail(q, FALSE);
-
-    *result = q;
-    return(TRUE);
-}
-
-
-/* ================================================================= */
-/* <query> (parent <query-server>)
-
-   This block does nothing.
-   It generates no data of its own, so it doesn't need any cleanup.
-
-   input: NA
-   to-children-via-*result: NA
-   returns: NA
-   start: NA.
-   characters: NA
-   end: NA
-   cleanup-result: NA
-   cleanup-chars: NA
-   fail: NA
-   result-fail: NA
-   chars-fail: NA
-
- */
-
-static gboolean
-query_start_handler(GSList* sibling_data, gpointer parent_data,
-                    gpointer global_data, gpointer *data_for_children,
-                    gpointer *result, const gchar *tag, gchar **attrs)
-{
-    return(TRUE);
-}
-
-static gboolean
-query_end_handler(gpointer data_for_children,
-                  GSList  *data_from_children, GSList *sibling_data,
-                  gpointer parent_data, gpointer global_data,
-                  gpointer *result, const gchar *tag)
-{
-    Query *q;
-    sixtp_child_result *cr;
-
-    g_return_val_if_fail(data_from_children, FALSE);
-
-    cr = (sixtp_child_result *) data_from_children->data;
-    g_return_val_if_fail(cr, FALSE);
-
-    q = (Query *) (cr->data);
-    g_return_val_if_fail(q, FALSE);
-
-    *result = q;
-    return(TRUE);
-}
-
-/* ================================================================= */
-/* <restore> (lineage <query> <query-server>)
-
-   restores a given query.  We allocate the new query in the
-   start block, the children modify it, and in the end block, we see
-   if the resultant query is OK, and if so, we're done.
-
-   input: Query*
-   to-children-via-*result: new Query*
-   returns: NA
-   start: create new Query*, and leave in for children.
-   characters: NA
-   end: clear *result
-   cleanup-result: NA
-   cleanup-chars: NA
-   fail: delete Query*
-   result-fail: NA
-   chars-fail: NA
-
- */
-
-static gboolean
-query_restore_start_handler(GSList* sibling_data, gpointer parent_data,
-                            gpointer global_data, gpointer *data_for_children,
-                            gpointer *result, const gchar *tag, gchar **attrs)
-{
-    Query *q;
-    q = qof_query_create_for(GNC_ID_SPLIT);
-    g_return_val_if_fail(q, FALSE);
-    *data_for_children = q;
-    *result = q;
-    return(q != NULL);
-}
-
-static gboolean
-query_restore_end_handler(gpointer data_for_children,
-                          GSList  *data_from_children, GSList *sibling_data,
-                          gpointer parent_data, gpointer global_data,
-                          gpointer *result, const gchar *tag)
-{
-    sixtp_child_result *cr;
-    Query *qand, *qret;
-    Query *q = (Query *) data_for_children;
-    g_return_val_if_fail(q, FALSE);
-
-    g_return_val_if_fail(data_from_children, FALSE);
-    cr = (sixtp_child_result *) data_from_children->data;
-    g_return_val_if_fail(cr, FALSE);
-
-    qand = (Query *) (cr->data);
-    g_return_val_if_fail(qand, FALSE);
-
-    /* append the and terms by or'ing them in ... */
-    qret = qof_query_merge (q, qand, QOF_QUERY_OR);
-    if (!qret)
-    {
-        qof_query_destroy(qand);
-        *result = q;
-        g_return_val_if_fail(qret, FALSE);
-    }
-
-    qof_query_destroy(q);
-    qof_query_destroy(qand);
-
-    *result = qret;
-    return(TRUE);
-}
-
-static gboolean
-query_restore_after_child_handler(gpointer data_for_children,
-                                  GSList* data_from_children,
-                                  GSList* sibling_data,
-                                  gpointer parent_data,
-                                  gpointer global_data,
-                                  gpointer *result,
-                                  const gchar *tag,
-                                  const gchar *child_tag,
-                                  sixtp_child_result *child_result)
-{
-    return(TRUE);
-}
-
-static void
-query_restore_fail_handler(gpointer data_for_children,
-                           GSList* data_from_children,
-                           GSList* sibling_data,
-                           gpointer parent_data,
-                           gpointer global_data,
-                           gpointer *result,
-                           const gchar *tag)
-{
-    Query *q = (Query *) data_for_children;
-    if (q) qof_query_destroy(q);
-}
-
-/* ================================================================= */
-/* <and-terms> (lineage <restore> <query> <query-server>)
-
-   restores a given query.  We allocate the new query in the
-   start block, the children modify it, and in the end block, we see
-   if the resultant query is OK, and if so, we're done.
-
-   input: Query*
-   to-children-via-*result: new Query*
-   returns: NA
-   start: create new Query*, and leave in for children.
-   characters: NA
-   end: clear *result
-   cleanup-result: NA
-   cleanup-chars: NA
-   fail: delete Query*
-   result-fail: NA
-   chars-fail: NA
-
- */
-
-static gboolean
-query_and_start_handler(GSList* sibling_data, gpointer parent_data,
-                        gpointer global_data, gpointer *data_for_children,
-                        gpointer *result, const gchar *tag, gchar **attrs)
-{
-    Query *q;
-
-    /* note this malloc freed in the node higher up (query_restore_end_handler) */
-    q = qof_query_create_for(GNC_ID_SPLIT);
-    g_return_val_if_fail(q, FALSE);
-    *data_for_children = q;
-    *result = q;
-    return(q != NULL);
-}
-
-static gboolean
-query_and_end_handler(gpointer data_for_children,
-                      GSList  *data_from_children, GSList *sibling_data,
-                      gpointer parent_data, gpointer global_data,
-                      gpointer *result, const gchar *tag)
-{
-    Query *q = (Query *) data_for_children;
-    g_return_val_if_fail(q, FALSE);
-    *result = q;
-    return(TRUE);
-}
-
-static void
-query_and_fail_handler(gpointer data_for_children,
-                       GSList* data_from_children,
-                       GSList* sibling_data,
-                       gpointer parent_data,
-                       gpointer global_data,
-                       gpointer *result,
-                       const gchar *tag)
-{
-    Query *q = (Query *) data_for_children;
-    if (q) qof_query_destroy(q);
-}
-
-/* ================================================================= */
-
-#define CVT_INT(to) {							\
-  gint32 val;								\
-  gboolean ok;								\
-  gchar *txt = NULL;							\
-									\
-  txt = concatenate_child_result_chars(data_from_children);		\
-  g_return_val_if_fail(txt, FALSE);					\
-									\
-  ok = (gboolean) string_to_gint32(txt, &val);				\
-  g_free(txt);								\
-  g_return_val_if_fail(ok, FALSE);					\
-  (to) = val;								\
-}
-
-#define CVT_DATE(to) {							\
-  TimespecParseInfo *info = (TimespecParseInfo *) data_for_children;	\
-  									\
-  g_return_val_if_fail(info, FALSE);					\
-  if(!timespec_parse_ok(info)) {					\
-    g_free(info);							\
-    return(FALSE);							\
-  }									\
-									\
-  to = info->ts;							\
-  g_free(info);								\
-}
-
-/* ================================================================= */
-
-static gboolean
-qrestore_genericpred_end_handler(gpointer data_for_children,
-                                 GSList  *data_from_children, GSList *sibling_data,
-                                 gpointer parent_data, gpointer global_data,
-                                 gpointer *result, const gchar *tag)
-{
-    Query *q = (Query *) parent_data;
-    PredicateData *dp = (PredicateData *) data_for_children;
-
-    g_return_val_if_fail(q, FALSE);
-    g_return_val_if_fail(dp, FALSE);
-
-    xaccQueryAddPredicate (q, dp, QOF_QUERY_AND);
-
-    return(TRUE);
-}
-
-/* ================================================================= */
-/* <datepred> (lineage <and-terms> <restore> <query> <query-server>)
-   Restores a given date predicate.
-
-   from parent: Query*
-   for children: NA
-   result: NA
-   -----------
-   start: malloc a date predicate
-   chars: allow and ignore only whitespace.
-   end: AddDateMatch to Query
-   cleanup-result: NA
-   cleanup-chars: NA
-   fail: ??
-   result-fail: NA
-   chars-fail: NA
- */
-
-static gboolean
-qrestore_datepred_start_handler(GSList* sibling_data, gpointer parent_data,
-                                gpointer global_data,
-                                gpointer *data_for_children,
-                                gpointer *result, const gchar *tag,
-                                gchar **attrs)
-{
-    DatePredicateData *dp = g_new0 (DatePredicateData, 1);
-    g_return_val_if_fail(dp, FALSE);
-    dp->type = PD_DATE;
-    dp->term_type = PR_DATE;
-    *data_for_children = dp;
-    return(TRUE);
-}
-
-static void
-qrestore_datepred_fail_handler(gpointer data_for_children,
-                               GSList* data_from_children,
-                               GSList* sibling_data,
-                               gpointer parent_data,
-                               gpointer global_data,
-                               gpointer *result,
-                               const gchar *tag)
-{
-    // g_free (data_for_children);
-}
-
-/* ================================================================= */
-/* <end-date> (lineage <date-pred> <and-terms> <restore> <query>)
-   restores a given query's end-date.
-   Just uses a generic_timespec parser, but with our own end handler.
-   end: set end-date.
- */
-
-static gboolean
-datepred_use_start_end_handler(gpointer data_for_children,
-                               GSList  *data_from_children, GSList *sibling_data,
-                               gpointer parent_data, gpointer global_data,
-                               gpointer *result, const gchar *tag)
-{
-    DatePredicateData *dp = (DatePredicateData *) parent_data;
-    CVT_INT(dp->use_start);
-    return(TRUE);
-}
-
-static gboolean
-datepred_use_end_end_handler(gpointer data_for_children,
-                             GSList  *data_from_children, GSList *sibling_data,
-                             gpointer parent_data, gpointer global_data,
-                             gpointer *result, const gchar *tag)
-{
-    DatePredicateData *dp = (DatePredicateData *) parent_data;
-    CVT_INT(dp->use_end);
-    return(TRUE);
-}
-
-static gboolean
-datepred_start_date_end_handler(gpointer data_for_children,
-                                GSList  *data_from_children, GSList *sibling_data,
-                                gpointer parent_data, gpointer global_data,
-                                gpointer *result, const gchar *tag)
-{
-    DatePredicateData *dp = (DatePredicateData *) parent_data;
-    CVT_DATE (dp->start);
-    return(TRUE);
-}
-
-static gboolean
-datepred_end_date_end_handler(gpointer data_for_children,
-                              GSList  *data_from_children, GSList *sibling_data,
-                              gpointer parent_data, gpointer global_data,
-                              gpointer *result, const gchar *tag)
-{
-    DatePredicateData *dp = (DatePredicateData *) parent_data;
-    CVT_DATE (dp->end);
-    return(TRUE);
-}
-
-static gboolean
-generic_pred_sense_end_handler(gpointer data_for_children,
-                               GSList  *data_from_children, GSList *sibling_data,
-                               gpointer parent_data, gpointer global_data,
-                               gpointer *result, const gchar *tag)
-{
-    PredicateData *dp = (PredicateData *) parent_data;
-    CVT_INT(dp->base.sense);
-    return(TRUE);
-}
-
-static sixtp*
-pred_parser_new(sixtp_end_handler ender)
-{
-    return sixtp_set_any(simple_chars_only_parser_new(NULL), FALSE,
-                         SIXTP_END_HANDLER_ID, ender,
-                         SIXTP_NO_MORE_HANDLERS);
-}
-
-/* ================================================================= */
-
-static sixtp*
-qrestore_datepred_parser_new(void)
-{
-    return sixtp_add_some_sub_parsers(
-               sixtp_new(), TRUE,
-               "sense", pred_parser_new(generic_pred_sense_end_handler),
-               "use-start", pred_parser_new(datepred_use_start_end_handler),
-               "use-end", pred_parser_new(datepred_use_end_end_handler),
-               "start-date",
-               generic_timespec_parser_new(datepred_start_date_end_handler),
-               "end-date",
-               generic_timespec_parser_new(datepred_end_date_end_handler),
-               0);
-}
-
-static sixtp*
-query_server_parser_new (void)
-{
-    sixtp *top_level;
-    sixtp *query_pr;
-    sixtp *restore_pr;
-    sixtp *and_pr;
-    sixtp *date_pred_pr;
-
-    /* <query_server> */
-    if (!(top_level =
-                sixtp_set_any(sixtp_new(), FALSE,
-                              SIXTP_START_HANDLER_ID, query_server_start_handler,
-                              SIXTP_CHARACTERS_HANDLER_ID,
-                              allow_and_ignore_only_whitespace,
-                              SIXTP_END_HANDLER_ID, query_server_end_handler,
-                              SIXTP_NO_MORE_HANDLERS)))
-    {
-        return NULL;
-    }
-
-    /* <query_server> <query> */
-    if (!(query_pr =
-                sixtp_set_any(sixtp_new(), FALSE,
-                              SIXTP_START_HANDLER_ID, query_start_handler,
-                              SIXTP_CHARACTERS_HANDLER_ID,
-                              allow_and_ignore_only_whitespace,
-                              SIXTP_END_HANDLER_ID, query_end_handler,
-                              SIXTP_NO_MORE_HANDLERS)))
-    {
-        sixtp_destroy(top_level);
-        return (NULL);
-    }
-    sixtp_add_sub_parser(top_level, "query", query_pr);
-
-    /* <query> <restore> */
-    if (!(restore_pr = sixtp_set_any(
-                           sixtp_new(), FALSE,
-                           SIXTP_START_HANDLER_ID, query_restore_start_handler,
-                           SIXTP_END_HANDLER_ID, query_restore_end_handler,
-                           SIXTP_FAIL_HANDLER_ID, query_restore_fail_handler,
-                           SIXTP_AFTER_CHILD_HANDLER_ID, query_restore_after_child_handler,
-                           SIXTP_NO_MORE_HANDLERS)))
-    {
-        sixtp_destroy(top_level);
-        return(NULL);
-    }
-    sixtp_add_sub_parser(query_pr, "restore", restore_pr);
-
-    /* <query> <restore> <and-terms> */
-    if (!(and_pr =
-                sixtp_set_any(sixtp_new(), FALSE,
-                              SIXTP_START_HANDLER_ID, query_and_start_handler,
-                              SIXTP_CHARACTERS_HANDLER_ID,
-                              allow_and_ignore_only_whitespace,
-                              SIXTP_END_HANDLER_ID, query_and_end_handler,
-                              SIXTP_FAIL_HANDLER_ID, query_and_fail_handler,
-                              SIXTP_NO_MORE_HANDLERS)))
-    {
-        sixtp_destroy(top_level);
-        return (NULL);
-    }
-    sixtp_add_sub_parser(restore_pr, "and-terms", and_pr);
-
-    if (!(date_pred_pr =
-                sixtp_set_any(qrestore_datepred_parser_new(), FALSE,
-                              SIXTP_START_HANDLER_ID, qrestore_datepred_start_handler,
-                              SIXTP_CHARACTERS_HANDLER_ID,
-                              allow_and_ignore_only_whitespace,
-                              SIXTP_END_HANDLER_ID, qrestore_genericpred_end_handler,
-                              SIXTP_FAIL_HANDLER_ID, qrestore_datepred_fail_handler,
-                              SIXTP_NO_MORE_HANDLERS)))
-    {
-        sixtp_destroy(top_level);
-        return NULL;
-    }
-    sixtp_add_sub_parser(and_pr, "date-pred", date_pred_pr);
-
-    return(top_level);
-}
-#endif /* 0 */
-
-/***********************************************************************/
 /****************************************************************************/
 /* <transaction> (parent <ledger-data>)
 
@@ -3513,7 +2964,7 @@ gnc_txn_restore_split_parser_new(void)
                 "quantity", generic_gnc_numeric_parser_new(),
                 "value", generic_gnc_numeric_parser_new(),
                 "slots", kvp_frame_parser_new(),
-                0))
+                NULL, NULL))
     {
         return NULL;
     }
@@ -3568,7 +3019,7 @@ gnc_transaction_parser_new(void)
                 generic_timespec_parser_new(txn_rest_date_entered_end_handler),
                 "slots", kvp_frame_parser_new(),
                 "split", gnc_txn_restore_split_parser_new(),
-                0)))
+                NULL, NULL)))
     {
         sixtp_destroy(top_level);
         return NULL;
@@ -3632,46 +3083,46 @@ price_parse_xml_sub_node(GNCPrice *p, xmlNodePtr sub_node, QofBook *book)
 
     gnc_price_begin_edit (p);
 
-    if (safe_strcmp("price:id", (char*)sub_node->name) == 0)
+    if (g_strcmp0("price:id", (char*)sub_node->name) == 0)
     {
         GncGUID *c = dom_tree_to_guid(sub_node);
         if (!c) return FALSE;
         gnc_price_set_guid(p, c);
         g_free(c);
     }
-    else if (safe_strcmp("price:commodity", (char*)sub_node->name) == 0)
+    else if (g_strcmp0("price:commodity", (char*)sub_node->name) == 0)
     {
         gnc_commodity *c = dom_tree_to_commodity_ref(sub_node, book);
         if (!c) return FALSE;
         gnc_price_set_commodity(p, c);
     }
-    else if (safe_strcmp("price:currency", (char*)sub_node->name) == 0)
+    else if (g_strcmp0("price:currency", (char*)sub_node->name) == 0)
     {
         gnc_commodity *c = dom_tree_to_commodity_ref(sub_node, book);
         if (!c) return FALSE;
         gnc_price_set_currency(p, c);
     }
-    else if (safe_strcmp("price:time", (char*)sub_node->name) == 0)
+    else if (g_strcmp0("price:time", (char*)sub_node->name) == 0)
     {
         Timespec t = dom_tree_to_timespec(sub_node);
         if (!dom_tree_valid_timespec(&t, sub_node->name)) return FALSE;
         gnc_price_set_time(p, t);
     }
-    else if (safe_strcmp("price:source", (char*)sub_node->name) == 0)
+    else if (g_strcmp0("price:source", (char*)sub_node->name) == 0)
     {
         char *text = dom_tree_to_text(sub_node);
         if (!text) return FALSE;
-        gnc_price_set_source(p, text);
+        gnc_price_set_source_string(p, text);
         g_free(text);
     }
-    else if (safe_strcmp("price:type", (char*)sub_node->name) == 0)
+    else if (g_strcmp0("price:type", (char*)sub_node->name) == 0)
     {
         char *text = dom_tree_to_text(sub_node);
         if (!text) return FALSE;
         gnc_price_set_typestr(p, text);
         g_free(text);
     }
-    else if (safe_strcmp("price:value", (char*)sub_node->name) == 0)
+    else if (g_strcmp0("price:value", (char*)sub_node->name) == 0)
     {
         gnc_numeric *value = dom_tree_to_gnc_numeric(sub_node);
         if (!value) return FALSE;

@@ -54,6 +54,8 @@
 #include "qofutil.h"
 #include "qofid.h"
 #include "guid.h"
+#include "qofquery.h"
+#include "qofquerycore.h"
 #include "gnc-module/gnc-module.h"
 #include "engine/gnc-engine.h"
 #include "Transaction.h"
@@ -63,17 +65,21 @@
 #include "gnc-lot.h"
 #include "gnc-numeric.h"
 #include "gncCustomer.h"
+#include "gncCustomerP.h"
 #include "gncEmployee.h"
 #include "gncVendor.h"
+#include "gncVendorP.h"
 #include "gncAddress.h"
 #include "gncBillTerm.h"
 #include "gncOwner.h"
 #include "gncInvoice.h"
+#include "gncInvoiceP.h"
 #include "gncJob.h"
 #include "gncEntry.h"
 #include "gncTaxTable.h"
 #include "gncIDSearch.h"
 #include "engine/gnc-pricedb.h"
+#include "app-utils/gnc-prefs-utils.h"
 %}
 
 %include <timespec.i>
@@ -93,6 +99,10 @@
 
 %include <qofid.h>
 
+%include <qofquery.h>
+
+%include <qofquerycore.h>
+
 /* SWIG doesn't like this macro, so redefine it to simply mean const */
 #define G_CONST_RETURN const
 %include <guid.h>
@@ -106,8 +116,6 @@
 %include <gnc-numeric.h>
 
 %include <gnc-commodity.h>
-
-%include <gncOwner.h>
 
 %typemap(out) GncOwner * {
     GncOwnerType owner_type = gncOwnerGetType($1);
@@ -140,7 +148,7 @@
 
 
 %typemap(in) GncOwner * {
-    GncOwner * temp_owner = gncOwnerCreate();
+    GncOwner * temp_owner = gncOwnerNew();
     void * pointer_to_real_thing;
     if ((SWIG_ConvertPtr($input, &pointer_to_real_thing,
                          $descriptor(GncCustomer *),
@@ -176,19 +184,23 @@
 }
 
 %typemap(freearg) GncOwner * {
-    gncOwnerDestroy($1);
+    gncOwnerFree($1);
 }
 
 
 %include <gnc-lot.h>
 
-//business-core includes
+//core business includes
+%include <gncOwner.h>
 %include <gncCustomer.h>
+%include <gncCustomerP.h>
 %include <gncEmployee.h>
 %include <gncVendor.h>
+%include <gncVendorP.h>
 %include <gncAddress.h>
 %include <gncBillTerm.h>
 %include <gncInvoice.h>
+%include <gncInvoiceP.h>
 %include <gncJob.h>
 %include <gncEntry.h>
 %include <gncTaxTable.h>
@@ -197,12 +209,14 @@
 // Commodity prices includes and stuff
 %include <gnc-pricedb.h>
 
-
 %init %{
+gnc_environment_setup();
 qof_log_init();
 qof_init();
+qof_query_init();
 gnc_module_system_init();
 char * no_args[1] = { NULL };
 gnc_engine_init(0, no_args);
+gnc_prefs_init();
 %}
 

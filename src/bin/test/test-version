@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/bash
 GUILE_WARN_DEPRECATED="no"
 export GUILE_WARN_DEPRECATED
 

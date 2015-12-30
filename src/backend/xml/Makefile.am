@@ -15,8 +15,7 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/libqof/qof \
   -I$(top_srcdir)/src \
   ${LIBXML2_CFLAGS} \
-  ${GLIB_CFLAGS} \
-  ${GCONF_CFLAGS}
+  ${GLIB_CFLAGS}
 
 libgnc_backend_xml_utils_la_SOURCES = \
   gnc-account-xml-v2.c \
@@ -40,6 +39,7 @@ libgnc_backend_xml_utils_la_SOURCES = \
   gnc-tax-table-xml-v2.c \
   gnc-transaction-xml-v2.c \
   gnc-vendor-xml-v2.c \
+  gnc-xml-helper.c \
   io-example-account.c \
   io-gncxml-gen.c \
   io-gncxml-v1.c \
@@ -85,7 +85,6 @@ noinst_HEADERS = \
 
 libgnc_backend_xml_utils_la_LIBADD = \
    ${GLIB_LIBS} \
-   ${GCONF_LIBS} \
    ${LIBXML2_LIBS} \
    ${ZLIB_LIBS} \
    ${top_builddir}/src/engine/libgncmod-engine.la \
@@ -95,7 +94,6 @@ libgnc_backend_xml_utils_la_LIBADD = \
 libgncmod_backend_xml_la_LDFLAGS = -module -avoid-version
 libgncmod_backend_xml_la_LIBADD = \
    ${GLIB_LIBS} \
-   ${GCONF_LIBS} \
    ${LIBXML2_LIBS} \
    ${ZLIB_LIBS} \
    ${top_builddir}/src/engine/libgncmod-engine.la \
@@ -103,4 +101,4 @@ libgncmod_backend_xml_la_LIBADD = \
    libgnc-backend-xml-utils.la \
    ${top_builddir}/src/libqof/qof/libgnc-qof.la
 
-INCLUDES = -DG_LOG_DOMAIN=\"gnc.backend.xml\"
+AM_CPPFLAGS += -DG_LOG_DOMAIN=\"gnc.backend.xml\"

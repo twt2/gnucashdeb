@@ -25,13 +25,22 @@
 #include "config.h"
 
 #include <glib.h>
+#include <glib/gstdio.h>
 #include <gtk/gtk.h>
 #include <libguile.h>
 #include <stdio.h>
 #include <string.h>
 #include "gfec.h"
+#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
 
+#include "gnc-filepath-utils.h"
+#include "gnc-guile-utils.h"
 #include "gnc-report.h"
+#include "gnc-engine.h"
+
+static QofLogModule log_module = GNC_MOD_GUI;
 
 /* Fow now, this is global, like it was in guile.  It _should_ be per-book. */
 static GHashTable *reports = NULL;
@@ -81,7 +90,7 @@ gint gnc_report_add(SCM report)
     value = scm_call_1(get_id, report);
     if (scm_is_number(value))
     {
-        id = scm_num2int(value, SCM_ARG1, G_STRFUNC);
+        id = scm_to_int(value);
         if (!g_hash_table_lookup(reports, &id))
         {
             key = g_new(gint, 1);
@@ -142,7 +151,7 @@ error_handler(const char *str)
 gboolean
 gnc_run_report (gint report_id, char ** data)
 {
-    const gchar *free_data;
+    gchar *free_data;
     SCM scm_text;
     gchar *str;
 
@@ -156,8 +165,7 @@ gnc_run_report (gint report_id, char ** data)
     if (scm_text == SCM_UNDEFINED || !scm_is_string (scm_text))
         return FALSE;
 
-    free_data = scm_to_locale_string (scm_text);
-    *data = g_strdup (free_data);
+    *data = gnc_scm_to_utf8_string (scm_text);
 
     return TRUE;
 }
@@ -184,16 +192,11 @@ gchar*
 gnc_report_name( SCM report )
 {
     SCM    get_name = scm_c_eval_string("gnc:report-name");
-    SCM    value;
 
     if (report == SCM_BOOL_F)
         return NULL;
 
-    value = scm_call_1(get_name, report);
-    if (!scm_is_string(value))
-        return NULL;
-
-    return g_strdup(scm_to_locale_string(value));
+    return gnc_scm_call_1_to_string(get_name, report);
 }
 
 gchar*
@@ -210,10 +213,97 @@ gnc_get_default_report_font_family(void)
     g_list_free(top_list);
     top_widget_style = gtk_rc_get_style(top_widget);
     default_font_family =
-	pango_font_description_get_family(top_widget_style->font_desc);
+        pango_font_description_get_family(top_widget_style->font_desc);
 
     if (default_font_family == NULL)
         return g_strdup("Arial");
     else
         return g_strdup(default_font_family);
+}
+
+static gboolean
+gnc_saved_reports_write_internal (const gchar *file, const gchar *contents, gboolean overwrite)
+{
+    gboolean success = TRUE;
+    gint fd;
+    extern int errno;
+    ssize_t written;
+    gint length;
+    gint flags = O_WRONLY | O_CREAT | (overwrite ? O_TRUNC : O_APPEND);
+
+    fd = g_open (file, flags, 0666);
+    if (fd == -1)
+    {
+        PWARN("Cannot open file %s: %s\n", file, strerror(errno));
+        return FALSE;
+    }
+
+    length = strlen (contents);
+    written = write(fd, contents, length);
+    if (written == -1 )
+    {
+        success = FALSE;
+        PWARN("Cannot write to file %s: %s\n", file, strerror(errno));
+        close(fd);
+    }
+    else if (written != length)
+    {
+        success = FALSE;
+        PWARN("File %s truncated (provided %d, written %d)",
+                file, length, (int)written);
+        /* Ignore errors on close */
+        close(fd);
+    }
+    else if (close(fd) == -1)
+        PWARN("Close failed for file %s: %s", file, strerror(errno));
+
+    return success;
+}
+
+
+gboolean gnc_saved_reports_backup (void)
+{
+    gboolean success = FALSE;
+    gchar *saved_rpts_path     = gnc_build_dotgnucash_path (SAVED_REPORTS_FILE);
+    gchar *saved_rpts_bkp_path = g_strconcat (saved_rpts_path, "-backup", NULL);
+    gchar *contents = NULL;
+    GError *save_error = NULL;
+
+    if (g_file_test (saved_rpts_path, G_FILE_TEST_EXISTS))
+    {
+        if (!g_file_get_contents (saved_rpts_path, &contents, NULL, &save_error))
+        {
+            PWARN ("Couldn't read contents of %s.\nReason: %s", saved_rpts_path, save_error->message);
+            g_error_free (save_error);
+        }
+    }
+
+    if (contents)
+    {
+        DEBUG ("creating backup of file %s", saved_rpts_bkp_path);
+        success = gnc_saved_reports_write_internal (saved_rpts_bkp_path, contents, TRUE);
+    }
+
+    g_free (saved_rpts_path);
+    g_free (saved_rpts_bkp_path);
+    g_free (contents);
+
+    return success;
+}
+
+gboolean
+gnc_saved_reports_write_to_file (const gchar* report_def, gboolean overwrite)
+{
+    gboolean success = FALSE;
+    gchar *saved_rpts_path     = gnc_build_dotgnucash_path (SAVED_REPORTS_FILE);
+
+    if (report_def)
+    {
+        DEBUG ("writing to %s", saved_rpts_path);
+        success = gnc_saved_reports_write_internal (saved_rpts_path, report_def, overwrite);
+    }
+
+    g_free (saved_rpts_path);
+
+    return success;
 }

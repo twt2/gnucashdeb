@@ -4,8 +4,9 @@
  * Copyright (C) 2006 Joshua Sled <jsled@asynchronous.org>          *
  *                                                                  *
  * This program is free software; you can redistribute it and/or    *
- * modify it under the terms of version 2 and/or version 3 of the GNU General Public *
- * License as published by the Free Software Foundation.            *
+ * modify it under the terms of version 2 and/or version 3 of the   *
+ * GNU General Public License as published by the Free Software     *
+ * Foundation.                                                      *
  *                                                                  *
  * This program is distributed in the hope that it will be useful,  *
  * but WITHOUT ANY WARRANTY; without even the implied warranty of   *
@@ -29,6 +30,10 @@
 
 #include "gnc-sx-instance-model.h"
 #include "gnc-plugin-page-sx-list.h"
+
+#define GNC_PREFS_GROUP_STARTUP "dialogs.sxs.since-last-run"
+#define GNC_PREF_RUN_AT_FOPEN   "show-at-file-open"
+#define GNC_PREF_SHOW_AT_FOPEN  "show-notify-window-at-file-open"
 
 typedef struct _GncSxSlrTreeModelAdapter GncSxSlrTreeModelAdapter;
 typedef struct _GncSxSinceLastRunDialog GncSxSinceLastRunDialog;

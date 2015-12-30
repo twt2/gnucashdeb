@@ -5,6 +5,27 @@
 ;;  Copyright (c) 2001 Linux Developers Group, Inc. 
 ;;  Copyright (c) Phil Longstaff <plongstaff@rogers.com>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; This program is free software; you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License as
+;; published by the Free Software Foundation; either version 2 of
+;; the License, or (at your option) any later version.
+;;
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with this program; if not, contact:
+;;
+;; Free Software Foundation           Voice:  +1-617-542-5942
+;; 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652
+;; Boston, MA  02110-1301,  USA       gnu@gnu.org
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(use-modules (gnucash gettext))
 
 ;; Converts a font name to css style information
 (define (font-name-to-style-info font-name)
@@ -65,17 +86,17 @@
         (opt-register
             (gnc:make-font-option
                 (N_ "Fonts")
-                (N_ "Title") "a" (N_ "Font info for the report title")
+                (N_ "Title") "a" (N_ "Font info for the report title.")
                 (string-append font-family " Bold 15")))
         (opt-register
             (gnc:make-font-option
                 (N_ "Fonts")
-                (N_ "Account link") "b" (N_ "Font info for account name")
+                (N_ "Account link") "b" (N_ "Font info for account name.")
                 (string-append font-family " Italic 10")))
         (opt-register
             (gnc:make-font-option
                 (N_ "Fonts")
-                (N_ "Number cell") "c" (N_ "Font info for regular number cells")
+                (N_ "Number cell") "c" (N_ "Font info for regular number cells.")
                 (string-append font-family " 10")))
         (opt-register
             (gnc:make-simple-boolean-option
@@ -85,27 +106,27 @@
         (opt-register
             (gnc:make-font-option
                 (N_ "Fonts")
-                (N_ "Number header") "e" (N_ "Font info for number headers")
+                (N_ "Number header") "e" (N_ "Font info for number headers.")
                 (string-append font-family " 10")))
         (opt-register
             (gnc:make-font-option
                 (N_ "Fonts")
-                (N_ "Text cell") "f" (N_ "Font info for regular text cells")
+                (N_ "Text cell") "f" (N_ "Font info for regular text cells.")
                 (string-append font-family " 10")))
         (opt-register
             (gnc:make-font-option
                 (N_ "Fonts")
-                (N_ "Total number cell") "g" (N_ "Font info for number cells containing a total")
+                (N_ "Total number cell") "g" (N_ "Font info for number cells containing a total.")
                 (string-append font-family " Bold 12")))
         (opt-register
             (gnc:make-font-option
                 (N_ "Fonts")
-                (N_ "Total label cell") "h" (N_ "Font info for cells containing total labels")
+                (N_ "Total label cell") "h" (N_ "Font info for cells containing total labels.")
                 (string-append font-family " Bold 12")))
         (opt-register
             (gnc:make-font-option
                 (N_ "Fonts")
-                (N_ "Centered label cell") "i" (N_ "Font info for centered label cells")
+                (N_ "Centered label cell") "i" (N_ "Font info for centered label cells.")
                 (string-append font-family " Bold 12")))
     )
 )

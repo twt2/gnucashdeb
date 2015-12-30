@@ -36,10 +36,10 @@
 
 G_BEGIN_DECLS
 
-#define GNC_TYPE_PERIOD_SELECT	    (gnc_period_select_get_type())
-#define GNC_PERIOD_SELECT(o)	    (G_TYPE_CHECK_INSTANCE_CAST ((o), GNC_TYPE_PERIOD_SELECT, GncPeriodSelect))
+#define GNC_TYPE_PERIOD_SELECT      (gnc_period_select_get_type())
+#define GNC_PERIOD_SELECT(o)        (G_TYPE_CHECK_INSTANCE_CAST ((o), GNC_TYPE_PERIOD_SELECT, GncPeriodSelect))
 #define GNC_PERIOD_SELECT_CLASS(k)  (G_TYPE_CHECK_CLASS_CAST ((k), GNC_TYPE_PERIOD_SELECT, GncPeriodSelectClass))
-#define GNC_IS_PERIOD_SELECT(o)	    (G_TYPE_CHECK_INSTANCE_TYPE ((o), GNC_TYPE_PERIOD_SELECT))
+#define GNC_IS_PERIOD_SELECT(o)     (G_TYPE_CHECK_INSTANCE_TYPE ((o), GNC_TYPE_PERIOD_SELECT))
 
 /* typedefs & structures */
 typedef struct
@@ -63,14 +63,6 @@ typedef struct
 /** Returns the GType of a GncPeriodSelect widget.
  */
 GType gnc_period_select_get_type (void);
-
-
-/** Tells a GncPeriodSelect object to emit a "changed" signal.
- *
- *  @param period The GncPeriodSelect object that should emit the
- *  signal.
- */
-void gnc_period_select_changed (GncPeriodSelect *period);
 
 
 /** Create a new GncPeriodSelect widget which is used to select a
@@ -181,17 +173,6 @@ GncAccountingPeriod gnc_period_select_get_active (GncPeriodSelect *period);
  *
  *  @return The starting/ending time. */
 GDate *gnc_period_select_get_date (GncPeriodSelect *period);
-
-/** Get the currently selected accounting period choice from a
- *  GncPeriodSelect widget.  This is used to retrieve the user's
- *  selection in the form of an timestamp.
- *
- *  @param period The selection widget to query.
- *
- *  @return The starting/ending time (in seconds since 1970-01-01) of
- *  the accounting period selected by the user.
- */
-time_t gnc_period_select_get_time (GncPeriodSelect *period);
 
 G_END_DECLS
 

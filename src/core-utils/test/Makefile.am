@@ -5,7 +5,7 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/test-core \
   -I${top_srcdir}/src/libqof/qof \
   -I${top_srcdir}/src/core-utils \
-  ${GUILE_INCS} \
+  ${GUILE_CFLAGS} \
   ${GLIB_CFLAGS}
 
 LDADD = \
@@ -27,7 +27,7 @@ GNC_TEST_DEPS = \
 
 TESTS_ENVIRONMENT = \
   SRCDIR=${srcdir} \
-  $(shell ${top_srcdir}/src/gnc-test-env --no-exports ${GNC_TEST_DEPS})
+  $(shell ${abs_top_srcdir}/src/gnc-test-env.pl --noexports ${GNC_TEST_DEPS})
 
 check_PROGRAMS = \
   test-gnc-uri-utils \

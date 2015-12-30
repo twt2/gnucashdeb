@@ -5,6 +5,7 @@ noinst_HEADERS = \
   gmtime_r.h \
   localtime_r.h \
   setenv.h \
+  strfmon.h \
   strptime.h \
   pow.h
 
@@ -15,6 +16,7 @@ EXTRA_libc_missing_la_SOURCES = \
   gmtime_r.c \
   localtime_r.c \
   setenv.c \
+  strfmon.c \
   strptime.c
 
 # This will automatically be filled in with the necessary object file
@@ -28,10 +30,6 @@ libc_missing_la_LIBADD = $(LTLIBOBJS)
 if OS_WIN32
   AM_CPPFLAGS = -DOS_WIN32
 endif
-
-# Not currently used.  If added to AC_REPLACE_FUNCS then this line
-# should be removed.
-EXTRA_DIST = scm_strptime.c
 
 print_libobjs: Makefile
 	@echo "LIBOBJS = $(LIBOBJS)"

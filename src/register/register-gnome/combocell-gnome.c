@@ -35,18 +35,19 @@
 
 #include "config.h"
 
-#include <gnome.h>
 #include <string.h>
+#include <gdk/gdkkeysyms.h>
 
 #include "QuickFill.h"
 #include "combocell.h"
-#include "gnc-gconf-utils.h"
+#include "gnc-prefs.h"
 #include "gnucash-item-edit.h"
 #include "gnucash-item-list.h"
 #include "gnucash-sheet.h"
+#include "gnucash-sheetP.h"
 #include "table-allgui.h"
 
-#define KEY_AUTO_RAISE_LISTS	"auto_raise_lists"
+#define GNC_PREF_AUTO_RAISE_LISTS "auto-raise-lists"
 
 typedef struct _PopBox
 {
@@ -89,24 +90,22 @@ static gboolean auto_pop_combos = FALSE;
 
 
 static void
-gnc_combo_cell_set_autopop (GConfEntry *entry, gpointer user_data)
+gnc_combo_cell_set_autopop (gpointer prefs, gchar *pref, gpointer user_data)
 {
-    GConfValue *value;
-
-    value = gconf_entry_get_value(entry);
-    auto_pop_combos = gconf_value_get_bool(value);
+    auto_pop_combos = gnc_prefs_get_bool (GNC_PREFS_GROUP_GENERAL_REGISTER,
+                                          GNC_PREF_AUTO_RAISE_LISTS);
 }
 
 static gpointer
 gnc_combo_cell_autopop_init (gpointer unused)
 {
-    auto_pop_combos = gnc_gconf_get_bool (GCONF_GENERAL_REGISTER,
-                                          KEY_AUTO_RAISE_LISTS,
-                                          NULL);
+    auto_pop_combos = gnc_prefs_get_bool (GNC_PREFS_GROUP_GENERAL_REGISTER,
+                                          GNC_PREF_AUTO_RAISE_LISTS);
 
-    gnc_gconf_general_register_cb(KEY_AUTO_RAISE_LISTS,
-                                  gnc_combo_cell_set_autopop,
-                                  NULL);
+    gnc_prefs_register_cb (GNC_PREFS_GROUP_GENERAL_REGISTER,
+                           GNC_PREF_AUTO_RAISE_LISTS,
+                           gnc_combo_cell_set_autopop,
+                           NULL);
     return NULL;
 }
 
@@ -205,7 +204,7 @@ key_press_item_cb (GncItemList *item_list, GdkEventKey *event, gpointer data)
 
     switch (event->keyval)
     {
-    case GDK_Escape:
+    case GDK_KEY_Escape:
         gnc_item_edit_hide_popup (box->item_edit);
         box->list_popped = FALSE;
         break;
@@ -605,7 +604,7 @@ gnc_combo_cell_direct_update (BasicCell *bcell,
     unicode_value = gdk_keyval_to_unicode(event->keyval);
     switch (event->keyval)
     {
-    case GDK_slash:
+    case GDK_KEY_slash:
         if (!(event->state & GDK_MOD1_MASK))
         {
             if (unicode_value == box->complete_char)
@@ -614,9 +613,9 @@ gnc_combo_cell_direct_update (BasicCell *bcell,
             return FALSE;
         }
         keep_on_going = TRUE;
-        /* Fall through */
-    case GDK_Tab:
-    case GDK_ISO_Left_Tab:
+        /* fall through */
+    case GDK_KEY_Tab:
+    case GDK_KEY_ISO_Left_Tab:
         if (!(event->state & GDK_CONTROL_MASK) &&
                 !keep_on_going)
             return FALSE;
@@ -746,8 +745,7 @@ static void
 gnc_combo_cell_gui_realize (BasicCell *bcell, gpointer data)
 {
     GnucashSheet *sheet = data;
-    GnomeCanvasItem *item = sheet->item_editor;
-    GncItemEdit *item_edit = GNC_ITEM_EDIT (item);
+    GncItemEdit *item_edit = gnucash_sheet_get_item_edit (sheet);
     ComboCell *cell = (ComboCell *) bcell;
     PopBox *box = cell->cell.gui_private;
 
@@ -835,7 +833,9 @@ static int
 popup_get_width (GnomeCanvasItem *item,
                  gpointer user_data)
 {
-    return GTK_WIDGET (GNC_ITEM_LIST (item)->tree_view)->allocation.width;
+    GtkAllocation alloc;
+    gtk_widget_get_allocation (GTK_WIDGET (GNC_ITEM_LIST (item)->tree_view), &alloc);
+    return alloc.width;
 }
 
 static gboolean
@@ -961,8 +961,3 @@ gnc_combo_cell_set_autosize (ComboCell *cell, gboolean autosize)
     box->autosize = autosize;
 }
 
-/*
-  Local Variables:
-  c-basic-offset: 8
-  End:
-*/

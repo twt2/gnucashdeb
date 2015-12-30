@@ -28,6 +28,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include <stdio.h>
 #include <sys/types.h>
 #ifdef _MSC_VER
 typedef int ssize_t;
@@ -49,7 +50,7 @@ is_child_result_from_node_named(sixtp_child_result *cr, const char *tag)
 {
     return((cr->type == SIXTP_CHILD_RESULT_NODE)
            &&
-           (safe_strcmp(cr->tag, tag) == 0));
+           (g_strcmp0(cr->tag, tag) == 0));
 }
 
 void
@@ -511,13 +512,13 @@ sixtp_sax_end_handler(void *user_data, const xmlChar *name)
 
     /* time to make sure we got the right closing tag.  Is this really
        necessary? */
-    if (safe_strcmp(current_frame->tag, (gchar*) name) != 0)
+    if (g_strcmp0(current_frame->tag, (gchar*) name) != 0)
     {
         g_warning("bad closing tag (start <%s>, end <%s>)", current_frame->tag, name);
         pdata->parsing_ok = FALSE;
 
         /* See if we're just off by one and try to recover */
-        if (safe_strcmp(parent_frame->tag, (gchar*) name) == 0)
+        if (g_strcmp0(parent_frame->tag, (gchar*) name) == 0)
         {
             pdata->stack = sixtp_pop_and_destroy_frame(pdata->stack);
             current_frame = (sixtp_stack_frame *) pdata->stack->data;
@@ -695,6 +696,7 @@ sixtp_parse_file_common(sixtp *sixtp,
                         gpointer *parse_result)
 {
     sixtp_parser_context *ctxt;
+    int parse_ret;
 
     if (!(ctxt = sixtp_context_new(sixtp, global_data, data_for_top_level)))
     {
@@ -706,12 +708,12 @@ sixtp_parse_file_common(sixtp *sixtp,
     ctxt->data.saxParserCtxt->sax = &ctxt->handler;
     ctxt->data.saxParserCtxt->userData = &ctxt->data;
     ctxt->data.bad_xml_parser = sixtp_dom_parser_new(gnc_bad_xml_end_handler, NULL, NULL);
-    xmlParseDocument( ctxt->data.saxParserCtxt );
+    parse_ret = xmlParseDocument( ctxt->data.saxParserCtxt );
     //xmlSAXUserParseFile(&ctxt->handler, &ctxt->data, filename);
 
     sixtp_context_run_end_handler(ctxt);
 
-    if (ctxt->data.parsing_ok)
+    if (parse_ret == 0 && ctxt->data.parsing_ok)
     {
         if (parse_result)
             *parse_result = ctxt->top_frame->frame_data;
@@ -753,6 +755,34 @@ sixtp_parse_file(sixtp *sixtp,
 #else
     context = xmlCreateFileParserCtxt(filename);
 #endif
+    ret = sixtp_parse_file_common(sixtp, context, data_for_top_level,
+                                  global_data, parse_result);
+    return ret;
+}
+
+/* Call back function for libxml2 to read from compressed or uncompressed stream */
+static int
+sixtp_parser_read(void *context, char *buffer, int len)
+{
+    int ret;
+    
+    ret = fread(&buffer[0], sizeof(char), len, (FILE *) context);
+    if (ret < 0)
+        g_warning("Error reading XML file");
+    return ret;
+}
+
+gboolean
+sixtp_parse_fd(sixtp *sixtp,
+               FILE *fd,
+               gpointer data_for_top_level,
+               gpointer global_data,
+               gpointer *parse_result)
+{
+    gboolean ret;
+    xmlParserCtxtPtr context = xmlCreateIOParserCtxt( NULL, NULL, 
+                                                     sixtp_parser_read, NULL /*no close */, fd, 
+                                                     XML_CHAR_ENCODING_NONE);
     ret = sixtp_parse_file_common(sixtp, context, data_for_top_level,
                                   global_data, parse_result);
     return ret;
@@ -894,6 +924,7 @@ QofBookFileType
 gnc_is_our_first_xml_chunk(char *chunk, gboolean *with_encoding)
 {
     char *cursor = NULL;
+    size_t n;
 
     if (with_encoding)
     {
@@ -909,8 +940,6 @@ gnc_is_our_first_xml_chunk(char *chunk, gboolean *with_encoding)
 
     if (strncmp(cursor, "<?xml", 5) == 0)
     {
-        char *tag_compare;
-
         if (!search_for('>', &cursor))
         {
             return GNC_BOOK_NOT_OURS;
@@ -921,9 +950,14 @@ gnc_is_our_first_xml_chunk(char *chunk, gboolean *with_encoding)
             return GNC_BOOK_NOT_OURS;
         }
 
-        tag_compare = g_strdup_printf("<%s\n", gnc_v2_xml_version_string);
+        if (*cursor != '<')
+        {
+            return GNC_BOOK_NOT_OURS;
+        }
 
-        if (strncmp(cursor, tag_compare, strlen(tag_compare)) == 0)
+        n = strlen(gnc_v2_xml_version_string);
+        if ((strncmp(cursor + 1, gnc_v2_xml_version_string, n) == 0)
+                && isspace(*(cursor + 1 + n)))
         {
             if (with_encoding)
             {
@@ -938,13 +972,10 @@ gnc_is_our_first_xml_chunk(char *chunk, gboolean *with_encoding)
                     }
                 }
             }
-            g_free (tag_compare);
             return GNC_BOOK_XML2_FILE;
         }
 
-        g_free (tag_compare);
-
-        if (strncmp(cursor, "<gnc>\n", strlen("<gnc>\n")) == 0)
+        if (strncmp(cursor, "<gnc>", strlen("<gnc>")) == 0)
             return GNC_BOOK_XML1_FILE;
 
         /* If it doesn't match any of the above but has '<gnc-v...', it must */

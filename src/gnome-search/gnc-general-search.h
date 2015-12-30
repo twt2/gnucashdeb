@@ -88,10 +88,7 @@ gpointer   gnc_general_search_get_selected   (GNCGeneralSearch *gsl);
 
 GType      gnc_general_search_get_type       (void);
 
-#endif
+void	   gnc_general_search_grab_focus (GNCGeneralSearch *gsl);
 
-/*
-  Local Variables:
-  c-basic-offset: 8
-  End:
-*/
+
+#endif

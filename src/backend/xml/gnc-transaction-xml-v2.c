@@ -74,21 +74,25 @@ split_to_dom_tree(const gchar *tag, Split *spl)
     xmlAddChild(ret, guid_to_dom_tree("split:id", xaccSplitGetGUID(spl)));
 
     {
-        const char *memo = xaccSplitGetMemo(spl);
+        char *memo = g_strdup (xaccSplitGetMemo(spl));
 
-        if (memo && safe_strcmp(memo, "") != 0)
+        if (memo && g_strcmp0(memo, "") != 0)
         {
-            xmlNewTextChild(ret, NULL, BAD_CAST "split:memo", (xmlChar*)memo);
+            xmlNewTextChild(ret, NULL, BAD_CAST "split:memo",
+			    checked_char_cast (memo));
         }
+	g_free (memo);
     }
 
     {
-        const char *action = xaccSplitGetAction(spl);
+        char *action = g_strdup (xaccSplitGetAction(spl));
 
-        if (action && safe_strcmp(action, "") != 0)
+        if (action && g_strcmp0(action, "") != 0)
         {
-            xmlNewTextChild(ret, NULL, BAD_CAST "split:action", (xmlChar*)action);
+            xmlNewTextChild(ret, NULL, BAD_CAST "split:action",
+			    checked_char_cast (action));
         }
+	g_free (action);
     }
 
     {
@@ -97,7 +101,8 @@ split_to_dom_tree(const gchar *tag, Split *spl)
         tmp[0] = xaccSplitGetReconcile(spl);
         tmp[1] = '\0';
 
-        xmlNewTextChild(ret, NULL, BAD_CAST "split:reconciled-state", (xmlChar*)tmp);
+        xmlNewTextChild(ret, NULL, BAD_CAST "split:reconciled-state",
+			BAD_CAST tmp);
     }
 
     add_timespec(ret, "split:reconcile-date",
@@ -153,31 +158,37 @@ xmlNodePtr
 gnc_transaction_dom_tree_create(Transaction *trn)
 {
     xmlNodePtr ret;
+    gchar *str = NULL;
 
     ret = xmlNewNode(NULL, BAD_CAST "gnc:transaction");
 
-    xmlSetProp(ret, BAD_CAST "version", BAD_CAST transaction_version_string);
+    xmlSetProp(ret, BAD_CAST "version",
+	       BAD_CAST transaction_version_string);
 
     xmlAddChild(ret, guid_to_dom_tree("trn:id", xaccTransGetGUID(trn)));
 
     xmlAddChild(ret, commodity_ref_to_dom_tree("trn:currency",
                 xaccTransGetCurrency(trn)));
-
-    if (xaccTransGetNum(trn) && (safe_strcmp(xaccTransGetNum(trn), "") != 0))
+    str = g_strdup (xaccTransGetNum(trn));
+    if (str && (g_strcmp0(str, "") != 0))
     {
-        xmlNewTextChild(ret, NULL, BAD_CAST "trn:num", (xmlChar*)xaccTransGetNum(trn));
+        xmlNewTextChild(ret, NULL, BAD_CAST "trn:num",
+			checked_char_cast (str));
     }
+    g_free (str);
 
     add_timespec(ret, "trn:date-posted", xaccTransRetDatePostedTS(trn), TRUE);
 
     add_timespec(ret, "trn:date-entered",
                  xaccTransRetDateEnteredTS(trn), TRUE);
 
-    if (xaccTransGetDescription(trn))
+    str = g_strdup (xaccTransGetDescription(trn));
+    if (str)
     {
         xmlNewTextChild(ret, NULL, BAD_CAST "trn:description",
-                        (xmlChar*)xaccTransGetDescription(trn));
+                        checked_char_cast (str));
     }
+    g_free (str);
 
     {
         xmlNodePtr kvpnode = kvp_frame_to_dom_tree("trn:slots",
@@ -537,10 +548,10 @@ trn_splits_handler(xmlNodePtr node, gpointer trans_pdata)
     {
         Split *spl;
 
-        if (safe_strcmp("text", (char*)mark->name) == 0)
+        if (g_strcmp0("text", (char*)mark->name) == 0)
             continue;
 
-        if (safe_strcmp("trn:split", (char*)mark->name))
+        if (g_strcmp0("trn:split", (char*)mark->name))
         {
             return FALSE;
         }
@@ -579,7 +590,6 @@ gnc_transaction_end_handler(gpointer data_for_children,
                             gpointer *result, const gchar *tag)
 {
     Transaction *trn = NULL;
-    gboolean successful = FALSE;
     xmlNodePtr tree = (xmlNodePtr)data_for_children;
     gxpf_data *gdata = (gxpf_data*)global_data;
 
@@ -601,7 +611,6 @@ gnc_transaction_end_handler(gpointer data_for_children,
     if (trn != NULL)
     {
         gdata->cb(tag, gdata->parsedata, trn);
-        successful = TRUE;
     }
 
     xmlFreeNode(tree);

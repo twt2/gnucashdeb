@@ -1,7 +1,7 @@
 AM_CPPFLAGS = \
   -I${top_srcdir}/src \
   -I${top_srcdir}/src/gnc-module \
-  ${GUILE_INCS} \
+  ${GUILE_CFLAGS} \
   ${GLIB_CFLAGS}
 
 PWD := $(shell pwd)
@@ -22,9 +22,16 @@ libgncmodbar_la_LIBADD=libbar.la \
   $(GUILE_LIBS) \
   $(GLIB_LIBS)
 
-if BUILDING_FROM_SVN
+if BUILDING_FROM_VCS
 swig-bar.c: bar.i
 	$(SWIG) -guile $(SWIG_ARGS) -Linkage module -o $@ $<
+if ! OS_WIN32
+if ! SWIG_DIST_FAIL
+	if ! `grep "define scm_from_utf8_string" $@ > /dev/null 2>&1`; then \
+	  patch $@ $(top_srcdir)/src/swig-utf8.patch; \
+	fi
+endif
+endif
 endif
 
 EXTRA_DIST = \

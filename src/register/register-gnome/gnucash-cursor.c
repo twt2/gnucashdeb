@@ -29,11 +29,13 @@
  */
 
 #include "config.h"
+#include <libgnomecanvas/libgnomecanvas.h>
 
 #include "gnucash-color.h"
 #include "gnucash-cursor.h"
 #include "gnucash-grid.h"
 #include "gnucash-sheet.h"
+#include "gnucash-sheetP.h"
 #include "gnucash-style.h"
 
 static GnomeCanvasItem *gnucash_cursor_parent_class;
@@ -265,6 +267,7 @@ gnucash_item_cursor_draw (GnomeCanvasItem *item, GdkDrawable *drawable,
 
         gdk_draw_rectangle (drawable, cursor->gc, FALSE,
                             dx, dy, dw, dh);
+        break;
     }
 }
 
@@ -298,14 +301,12 @@ gnucash_cursor_set_block (GnucashCursor *cursor, VirtualCellLocation vcell_loc)
 static void
 gnucash_cursor_set_cell (GnucashCursor *cursor, gint cell_row, gint cell_col)
 {
-    GnucashSheet *sheet;
     GnucashItemCursor *item_cursor;
     SheetBlockStyle *style;
 
     g_return_if_fail (cursor != NULL);
     g_return_if_fail (GNUCASH_IS_CURSOR (cursor));
 
-    sheet = cursor->sheet;
     item_cursor = GNUCASH_ITEM_CURSOR(cursor->cursor[GNUCASH_CURSOR_CELL]);
     style = cursor->style;
 
@@ -371,7 +372,7 @@ gnucash_cursor_realize (GnomeCanvasItem *item)
         (*GNOME_CANVAS_ITEM_CLASS
          (gnucash_cursor_parent_class)->realize)(item);
 
-    window = GTK_WIDGET (item->canvas)->window;
+    window = gtk_widget_get_window (GTK_WIDGET (item->canvas));
 
     cursor->gc = gdk_gc_new (window);
 }
@@ -395,15 +396,13 @@ gnucash_cursor_unrealize (GnomeCanvasItem *item)
 
 
 static void
-gnucash_item_cursor_class_init (GnucashItemCursorClass *class)
+gnucash_item_cursor_class_init (GnucashItemCursorClass *klass)
 {
-    GObjectClass  *object_class;
     GnomeCanvasItemClass *item_class;
 
-    object_class = G_OBJECT_CLASS (class);
-    item_class = GNOME_CANVAS_ITEM_CLASS (class);
+    item_class = GNOME_CANVAS_ITEM_CLASS (klass);
 
-    gnucash_item_cursor_parent_class = g_type_class_peek_parent (class);
+    gnucash_item_cursor_parent_class = g_type_class_peek_parent (klass);
 
     /* GnomeCanvasItem method overrides */
     item_class->draw = gnucash_item_cursor_draw;
@@ -446,10 +445,8 @@ gnucash_cursor_set_property (GObject         *object,
                              const GValue    *value,
                              GParamSpec      *pspec)
 {
-    GnomeCanvasItem *item;
     GnucashCursor *cursor;
 
-    item = GNOME_CANVAS_ITEM (object);
     cursor = GNUCASH_CURSOR (object);
 
     switch (prop_id)
@@ -468,25 +465,27 @@ gnucash_cursor_set_property (GObject         *object,
 }
 
 
+/* Note that g_value_set_object() refs the object, as does
+ * g_object_get(). But g_object_get() only unrefs once when it disgorges
+ * the object, leaving an unbalanced ref, which leaks. So instead of
+ * using g_value_set_object(), use g_value_take_object() which doesn't
+ * ref the object when used in get_property().
+ */
 static void
 gnucash_cursor_get_property (GObject         *object,
                              guint            prop_id,
                              GValue          *value,
                              GParamSpec      *pspec)
 {
-    GnomeCanvasItem *item;
-    GnucashCursor *cursor;
-
-    item = GNOME_CANVAS_ITEM (object);
-    cursor = GNUCASH_CURSOR (object);
+    GnucashCursor *cursor = GNUCASH_CURSOR (object);
 
     switch (prop_id)
     {
     case PROP_SHEET:
-        g_value_set_object (value, cursor->sheet);
+        g_value_take_object (value, cursor->sheet);
         break;
     case PROP_GRID:
-        g_value_set_object (value, cursor->grid);
+        g_value_take_object (value, cursor->grid);
         break;
     default:
         break;
@@ -507,15 +506,15 @@ gnucash_cursor_init (GnucashCursor *cursor)
 
 
 static void
-gnucash_cursor_class_init (GnucashCursorClass *class)
+gnucash_cursor_class_init (GnucashCursorClass *klass)
 {
     GObjectClass  *object_class;
     GnomeCanvasItemClass *item_class;
 
-    object_class = G_OBJECT_CLASS (class);
-    item_class = GNOME_CANVAS_ITEM_CLASS (class);
+    object_class = G_OBJECT_CLASS (klass);
+    item_class = GNOME_CANVAS_ITEM_CLASS (klass);
 
-    gnucash_cursor_parent_class = g_type_class_peek_parent (class);
+    gnucash_cursor_parent_class = g_type_class_peek_parent (klass);
 
     /* GObject method overrides */
     object_class->set_property = gnucash_cursor_set_property;
@@ -614,8 +613,3 @@ gnucash_cursor_new (GnomeCanvasGroup *parent)
 }
 
 
-/*
-  Local Variables:
-  c-basic-offset: 8
-  End:
-*/

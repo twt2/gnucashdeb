@@ -1,4 +1,4 @@
-SUBDIRS = . test-core test 
+SUBDIRS = . test-core test
 
 pkglib_LTLIBRARIES = libgncmod-engine.la
 
@@ -10,12 +10,11 @@ AM_CPPFLAGS = \
 	-I${top_srcdir}/src/gnc-module \
 	-I${top_srcdir}/src/libqof/qof \
 	${GLIB_CFLAGS} \
-	${GUILE_INCS}
+	${GUILE_CFLAGS}
 
 libgncmod_engine_la_SOURCES = \
   Account.c \
   Recurrence.c \
-  Period.c \
   Query.c \
   SchedXaction.c \
   SX-book.c \
@@ -23,12 +22,12 @@ libgncmod_engine_la_SOURCES = \
   Scrub.c \
   Scrub2.c \
   Scrub3.c \
+  ScrubBusiness.c \
   Split.c \
   TransLog.c \
   Transaction.c \
   cap-gains.c \
   cashobjects.c \
-  gnc-associate-account.c \
   gnc-budget.c \
   gnc-commodity.c \
   gnc-engine.c \
@@ -37,14 +36,12 @@ libgncmod_engine_la_SOURCES = \
   gnc-lot.c \
   gnc-pricedb.c \
   gnc-session.c \
-  gnc-session-scm.c \
   gncmod-engine.c \
   swig-engine.c \
   kvp-scm.c \
   engine-helpers.c \
   glib-helpers.c  \
   policy.c \
-  swig-business-core.c \
   gncBusGuile.c \
   gncBusiness.c \
   gncAddress.c \
@@ -67,8 +64,6 @@ gncinclude_HEADERS = \
   Account.h \
   FreqSpec.h \
   Recurrence.h \
-  GNCId.h \
-  Period.h \
   SchedXaction.h \
   SX-book.h \
   SX-ttinfo.h \
@@ -76,14 +71,15 @@ gncinclude_HEADERS = \
   Scrub.h \
   Scrub2.h \
   Scrub3.h \
+  ScrubBusiness.h \
   Split.h \
   TransLog.h \
   Transaction.h \
   cap-gains.h \
   cashobjects.h \
   engine-helpers.h \
+  engine-helpers-guile.h \
   glib-helpers.h \
-  gnc-associate-account.h \
   gnc-budget.h \
   gnc-commodity.h \
   gnc-engine.h \
@@ -91,7 +87,6 @@ gncinclude_HEADERS = \
   gnc-hooks.h \
   gnc-pricedb.h \
   gnc-session.h \
-  gnc-session-scm.h \
   kvp-scm.h \
   policy.h \
   gncAddress.h \
@@ -133,10 +128,10 @@ noinst_HEADERS = \
   gnc-pricedb-p.h \
   policy-p.h
 
-noinst_SCRIPTS = iso-currencies-to-c
-
 libgncmod_engine_la_LDFLAGS = -avoid-version
-
+if CLANG
+libgncmod_engine_la_CFLAGS = -Wno-invalid-source-encoding
+endif
 libgncmod_engine_la_LIBADD = \
   ../gnc-module/libgnc-module.la \
   ../core-utils/libgnc-core-utils.la \
@@ -146,10 +141,11 @@ libgncmod_engine_la_LIBADD = \
   ${GLIB_LIBS} \
   ${top_builddir}/lib/libc/libc-missing.la
 
-gncmoddir = ${GNC_SHAREDIR}/guile-modules/gnucash
-gncmod_DATA = engine.scm 
+gncscmmoddir = ${GNC_SCM_INSTALL_DIR}/gnucash
+gncscmmod_DATA = engine.scm \
+  business-core.scm
 
-gncscmdir = ${GNC_SHAREDIR}/scm
+gncscmdir = ${GNC_SCM_INSTALL_DIR}
 gncscm_DATA = \
   commodity-table.scm \
   engine-interface.scm \
@@ -160,25 +156,24 @@ EXTRA_DIST = \
   README.query-api \
   design.txt \
   extensions.txt \
-  iso-4217-currencies.scm \
-  iso-currencies-to-c \
+  iso-4217-currencies.xml \
+  iso-currencies-to-c.xsl \
   kvp_doc.txt \
   SX-book-p.h \
   engine.i \
+  engine-common.i \
   business-core.i \
-  ${gncmod_DATA} \
+  ${gncscmmod_DATA} \
   ${gncscm_DATA}
 
 if GNUCASH_SEPARATE_BUILDDIR
-#For compiling
-SCM_FILE_LINKS = iso-4217-currencies.scm
 #For executing test cases
-SCM_FILE_LINKS += \
-  ${gncmod_DATA} \
+SCM_FILE_LINKS = \
+  ${gncscmmod_DATA} \
   ${gncscm_DATA}
 endif
 
-.scm-links: 
+.scm-links:
 	$(RM) -rf gnucash
 	mkdir -p  gnucash
 if GNUCASH_SEPARATE_BUILDDIR
@@ -186,43 +181,75 @@ if GNUCASH_SEPARATE_BUILDDIR
 	  $(LN_S) -f ${srcdir}/$$X . ; \
 	done
 endif
-	( cd gnucash; for A in $(gncmod_DATA) ; do $(LN_S) -f ../$$A . ; done )
+	( cd gnucash; for A in $(gncscmmod_DATA) ; do $(LN_S) -f ../$$A . ; done )
 if ! OS_WIN32
 # Windows knows no "ln -s" but uses "cp": must copy every time (see bug #566567).
 	touch .scm-links
 endif
 
-noinst_DATA = .scm-links
+if GNC_HAVE_GUILE_2
+GUILE_COMPILE_ENV = \
+  --guile-load-dir ${top_builddir}/src/gnc-module \
+  --library-dir    ${top_builddir}/src/engine \
+  --library-dir    ${top_builddir}/src/gnc-module \
+  --library-dir    ${top_builddir}/src/core-utils \
+  --library-dir    ${top_builddir}/src/libqof/qof
 
-if BUILDING_FROM_SVN
 
-# The generated file depends on various libqof headers. Out of
-# laziness I only include one here - more might be needed
-# subsequently.
-QOFHEADERS = ${top_srcdir}/src/libqof/qof/qofbook.h
+%.go : %.scm .scm-links $(pkglib_LTLIBRARIES)
+	GNC_UNINSTALLED=yes \
+	GNC_BUILDDIR=${top_builddir} \
+	$(shell ${abs_top_srcdir}/src/gnc-test-env.pl --noexports ${GUILE_COMPILE_ENV}) \
+	$(GUILD) compile -o $@ $<
 
-swig-engine.c: engine.i ${top_srcdir}/src/base-typemaps.i \
-               ${QOFHEADERS} \
-               ${gncinclude_HEADERS} ${noinst_HEADERS}
-	$(SWIG) -guile $(SWIG_ARGS) -Linkage module \
-	-I${top_srcdir}/src/libqof/qof -I${top_srcdir}/src -o $@ $<
-swig-business-core.c: business-core.i ${noinst_HEADERS} \
-                      ${top_srcdir}/src/base-typemaps.i
-	$(SWIG) -guile $(SWIG_ARGS) -Linkage module \
-	-I${top_srcdir}/src -o $@ $<
+gncscmmodcachedir = ${pkglibdir}/scm/ccache/@GUILE_EFFECTIVE_VERSION@/gnucash
+gncscmmodcache_DATA = $(gncscmmod_DATA:.scm=.go)
+
+gncscmcachedir = ${pkglibdir}/scm/ccache/@GUILE_EFFECTIVE_VERSION@
+gncscmcache_DATA = $(gncscm_DATA:.scm=.go)
 endif
 
-iso-4217-currencies.c: iso-4217-currencies.scm iso-currencies-to-c
-	-chmod u+x ${srcdir}/iso-currencies-to-c
-	${srcdir}/iso-currencies-to-c "${srcdir}"
+noinst_DATA = .scm-links
+
+if BUILDING_FROM_VCS
+
+# The generated file depends on various libqof headers. Out of
+# laziness I only include a few here - more might be needed
+# subsequently.
+QOFHEADERS = \
+  $(top_srcdir)/src/libqof/qof/qofbook.h \
+  $(top_srcdir)/src/libqof/qof/qofbookslots.h
+
+swig-engine.c: engine.i $(top_srcdir)/src/base-typemaps.i \
+               $(QOFHEADERS) \
+               $(gncinclude_HEADERS) $(noinst_HEADERS)
+	$(SWIG) -guile $(SWIG_ARGS) -Linkage module \
+	-I${top_srcdir}/src/libqof/qof -I${top_srcdir}/src -o $@ $<
+if ! OS_WIN32
+if ! SWIG_DIST_FAIL
+	if ! `grep "define scm_from_utf8_string" $@ > /dev/null 2>&1`; then \
+	  patch $@ $(top_srcdir)/src/swig-utf8.patch; \
+	fi
+endif
+endif
+endif
+
+
+iso-4217-currencies.c: iso-4217-currencies.xml iso-currencies-to-c.xsl
+	$(XSLTPROC) -o $@ $(srcdir)/iso-currencies-to-c.xsl $<
 
 BUILT_SOURCES = iso-4217-currencies.c
 
-CLEANFILES = $(BUILT_SOURCES) .scm-links \
-	${SCM_FILE_LINKS}
-MAINTAINERCLEANFILES = swig-engine.c swig-business-core.c
+CLEANFILES = \
+	$(BUILT_SOURCES) \
+	.scm-links \
+	${SCM_FILE_LINKS} \
+	${gncscmmodcache_DATA} \
+	${gncscmcache_DATA}
+
+MAINTAINERCLEANFILES = swig-engine.c
 
 clean-local:
 	rm -rf gnucash
 
-INCLUDES = -DG_LOG_DOMAIN=\"gnc.engine\"
+AM_CPPFLAGS += -DG_LOG_DOMAIN=\"gnc.engine\"

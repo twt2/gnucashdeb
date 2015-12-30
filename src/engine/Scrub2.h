@@ -53,7 +53,7 @@
  *   not in a lot will be used to close the oldest open lot(s).
  *   If there are no open lots, a new lot will be started.
  *   By trying to close the oldest lots, this effectively
- *   implements a FIFO acounting policy.
+ *   implements a FIFO accounting policy.
  */
 void xaccAccountAssignLots (Account *acc);
 
@@ -80,28 +80,6 @@ void xaccLotFill (GNCLot *lot);
  */
 void xaccLotScrubDoubleBalance (GNCLot *lot);
 
-/** If a split has been pulled apart to make it fit into two (or more)
- * lots, then it becomes theoretically possible for each subsplit to
- * have a distinct price.  But this would be wrong: each subsplit should
- * have the same price, within rounding errors.  This routine will
- * examine the indicated split for sub-splits, and adjust the value
- * of each so that they all have the same price.
- *
- * There is a bit of a problem with the interpretation of 'rounding
- * errors' because there are pathological corner cases of small
- * amounts.  So this routine is loose, hopefully loose enough so
- * that the user can manually fine tune without having this routine
- * clobber thier work.
- *
- * This routine ignores price differences smaller than 1/maxmult.
- * This routine ignores price differences when the split with a crazy
- * price involes only a small amount: specifically, an amount that
- * is less than maxamtscu/amount.denom.
- *
- * Reasonable/recommended values might be maxmult=3, maxamtscu = 2.
- */
-void xaccScrubSubSplitPrice (Split *split, int maxmult, int maxamtscu);
-
 /** The xaccScrubMergeSubSplits() routine will merge together
  *    all of the splits that were at one time split off from this
  *    split, but are no longer needed to be kept separate.  Splits
@@ -111,17 +89,26 @@ void xaccScrubSubSplitPrice (Split *split, int maxmult, int maxamtscu);
  *    the same lot, or in no lot.  Note that, by definition, all
  *    subsplits belong to the same transaction.
  *
+ *    There are two ways to find matching subsplits. The first
+ *    way will consider splits to be subsplits only if they
+ *    are explicitly marked as such while splitting the original
+ *    split. Set strict to TRUE for this matching algorhythm.
+ *
+ *    The second way is more relaxed. It will consider any two
+ *    splits that happen to be part of the same lot and the
+ *    same transaction to be subsplits. Set strict to FALSE for
+ *    this matching algorhythm.
+ *
  *    The routine returns TRUE if a merger was performed, else
  *    it returns FALSE.
- *
- *  The xaccScrubMergeTransSubSplits() routine does the same, except
- *    that it does it for all of the splits in the transaction.
- *  The xaccScrubMergeLotSubSplits() routine does the same, except
- *    that it does it for all of the splits in the lot.
  */
-gboolean xaccScrubMergeSubSplits (Split *split);
-gboolean xaccScrubMergeTransSubSplits (Transaction *txn);
-gboolean xaccScrubMergeLotSubSplits (GNCLot *lot);
+gboolean xaccScrubMergeSubSplits (Split *split, gboolean strict);
+
+/** The xaccScrubMergeLotSubSplits() routine does the same as
+ *    the xaccScrubMergSubSplits, except that it does it
+ *    for all of the splits in the lot.
+ */
+gboolean xaccScrubMergeLotSubSplits (GNCLot *lot, gboolean strict);
 
 #endif /* XACC_SCRUB2_H */
 /** @} */

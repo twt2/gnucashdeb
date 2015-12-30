@@ -36,32 +36,50 @@
 #include <locale.h>
 
 #include "Account.h"
+#include "gncOwner.h"
 #include "qof.h"
 
 
 typedef QofSession * (*QofSessionCB) (void);
 
 
+gchar *gnc_normalize_account_separator (const gchar* separator);
 gboolean gnc_reverse_balance(const Account *account);
-gboolean gnc_reverse_balance_type(GNCAccountType type);
 
 /* Default directory sections ***************************************/
-#define GCONF_DIR_OPEN_SAVE "dialogs/open_save"
-#define GCONF_DIR_EXPORT "dialogs/export_accounts"
-#define GCONF_DIR_REPORT "dialogs/report"
+#define GNC_PREFS_GROUP_OPEN_SAVE    "dialogs.open-save"
+#define GNC_PREFS_GROUP_EXPORT       "dialogs.export-accounts"
+#define GNC_PREFS_GROUP_REPORT       "dialogs.report"
+#define GNC_PREF_AUTO_DECIMAL_POINT  "auto-decimal-point"
+#define GNC_PREF_AUTO_DECIMAL_PLACES "auto-decimal-places"
 
 /* Default directories **********************************************/
 
-gchar *gnc_get_default_directory (const gchar *gconf_section);
-void gnc_set_default_directory (const gchar *gconf_section,
+gchar *gnc_get_default_directory (const gchar *section);
+void gnc_set_default_directory (const gchar *section,
                                 const gchar *directory);
 
 /* Engine enhancements & i18n ***************************************/
 QofBook * gnc_get_current_book (void);
+
+/* If there is no current session, there is no book and we must be dealing
+ * with a new book. When gnucash is started with --nofile, there is
+ * initially no session (and no book), but by the time we check, one
+ * could have been created (for example, if an empty account tree tab is
+ * opened, a session is created which creates a new, but empty, book).
+ * A session is created and a book is loaded from a backend when gnucash is
+ * started with a file, but selecting 'new file' keeps a session open. So we
+ * need to check as well for a book with no accounts (root with no children). */
+gboolean gnc_is_new_book (void);
+
 void gnc_set_current_book_tax_name (const gchar *tax_name);
 const gchar * gnc_get_current_book_tax_name (void);
 void gnc_set_current_book_tax_type (const gchar *tax_type);
 const gchar * gnc_get_current_book_tax_type (void);
+/** Calls gnc_book_option_num_field_source_change to initiate registered
+  * callbacks when num_field_source book option changes so that
+  * registers/reports can update themselves; sets feature flag */
+void gnc_book_option_num_field_source_change_cb (gboolean num_action);
 Account * gnc_get_current_root_account (void);
 gnc_commodity_table * gnc_get_current_commodities (void);
 
@@ -75,11 +93,11 @@ gnc_commodity_table * gnc_get_current_commodities (void);
 gchar *gnc_get_account_name_for_register(const Account *account);
 
 /**
- * Retrieve the account matching the given name starting from the descandants of
+ * Retrieve the account matching the given name starting from the descendants of
  * base_account.
  * @a name is either considered to be the name of the leaf in the account tree
  * or to be the full account path, depending on the configuration parameter
- * general/register/show_leaf_account_names.
+ * general.register/show_leaf_account_names.
  *
  * @param base_account The account to start the search at.
  * @param name The name to search for.
@@ -106,82 +124,9 @@ Account *gnc_account_lookup_for_register(const Account *base_account, const
  *                  of things like stock account values from share
  *                  values to an amount the requested currency.
  */
-gnc_numeric
-gnc_ui_account_get_balance_full (xaccGetBalanceInCurrencyFn fn,
-                                 const Account *account,
-                                 gboolean recurse,
-                                 gboolean *negative,
-                                 const gnc_commodity *commodity);
-
-/**
- * This routine retrives the total balance in an account, possibly
- * including all sub-accounts under the specified account.
- *
- * @param account           The account to retrieve data about.
- * @param include_children  Include all sub-accounts of this account.
- */
-gnc_numeric gnc_ui_account_get_balance (const Account *account,
-                                        gboolean include_children);
-
-gnc_numeric gnc_ui_account_get_balance_in_currency (const Account *account,
-        const gnc_commodity *currency,
-        gboolean recurse);
-/**
- * This routine retrives the reconciled balance in an account,
- * possibly including all sub-accounts under the specified account.
- *
- * @param account           The account to retrieve data about.
- * @param include_children  Include all sub-accounts of this account.
- */
-gnc_numeric gnc_ui_account_get_reconciled_balance(const Account *account,
-        gboolean include_children);
-
-/**
- * Wrapper around gnc_ui_account_get_balance_internal that converts
- * the resulting number to a character string.  The number is
- * formatted according to the specification of the account currency.
- *
- * @param fn        The underlying function in Account.c to call to retrieve
- *                  a specific balance from the account.
- * @param account   The account to retrieve data about.
- * @param recurse   Include all sub-accounts of this account.
- * @param negative  An indication of whether or not the returned value
- *                  is negative.  This can be used by the caller to
- *                  easily decode whether or not to color the output.
- */
-gchar *
-gnc_ui_account_get_print_balance (xaccGetBalanceInCurrencyFn fn,
-                                  const Account *account,
-                                  gboolean recurse,
-                                  gboolean *negative);
-
-/**
- * Wrapper around gnc_ui_account_get_balance_internal that converts
- * the resulting number to a character string.  The number is
- * formatted according to the specification of the default reporting
- * currency.
- *
- * @param fn        The underlying function in Account.c to call to retrieve
- *                  a specific balance from the account.
- * @param account   The account to retrieve data about.
- * @param recurse   Include all sub-accounts of this account.
- * @param negative  An indication of whether or not the returned value
- *                  is negative.  This can be used by the caller to
- *                  easily decode whether or not to color the output.
- */
-gchar *
-gnc_ui_account_get_print_report_balance (xaccGetBalanceInCurrencyFn fn,
-        const Account *account,
-        gboolean recurse,
-        gboolean *negative);
-
 char *gnc_ui_account_get_tax_info_string (const Account *account);
 
 char *gnc_ui_account_get_tax_info_sub_acct_string (const Account *account);
-
-gnc_numeric gnc_ui_account_get_balance_as_of_date (Account *account,
-        time_t date,
-        gboolean include_children);
 
 const char * gnc_get_reconcile_str (char reconciled_flag);
 const char * gnc_get_reconcile_valid_flags (void);
@@ -199,7 +144,7 @@ Account * gnc_find_or_create_equity_account (Account *root,
         gnc_commodity *currency);
 gboolean gnc_account_create_opening_balance (Account *account,
         gnc_numeric balance,
-        time_t date,
+        time64 date,
         QofBook *book);
 
 /* Locale functions *************************************************/
@@ -226,6 +171,30 @@ const char * gnc_locale_default_iso_currency_code (void);
  */
 gnc_commodity * gnc_default_currency (void);
 
+/** Returns a gnc_commodity that is a currency, suitable for being a
+Transaction's currency. The gnc_commodity is taken either from the current
+account, or from the next parent account that has a gnc_commodity that is a
+currency, or from gnc_default_currency().
+
+If the given account or any of its parent account have a commodity that is a
+currency, it is returned and the gboolean currency_from_account_found is set to
+TRUE (if non-NULL). If neither this account nor any of its parent accounts have
+such a commodity, gnc_default_currency() is returned and the gboolean
+currency_from_account_found is set to FALSE (if non-NULL). This can be used to
+show an appropriate warning message.
+
+If account is NULL, gnc_default_currency() is returned and
+currency_from_account_found is set to FALSE.
+
+@param account The account where the currency should be looked up. May be NULL.
+
+@param currency_from_account_found A gboolean pointer that takes the output
+argument of whether the returned currency was found in the account. May be
+NULL.
+
+@return A currency pointer (and never NULL).
+*/
+gnc_commodity * gnc_account_or_default_currency(const Account* account, gboolean * currency_from_account_found);
 
 /** Return the default currency for use in reports, as set by the
  *  user.  If the user's preference is invalid, then this routine will
@@ -325,13 +294,6 @@ xaccParseAmountExtended (const char * in_str, gboolean monetary,
 /* Initialization ***************************************************/
 
 void gnc_ui_util_init (void);
-
-/* Missing functions ************************************************/
-
-#ifndef HAVE_TOWUPPER
-gint32 towupper (gint32 wc);
-int iswlower (gint32 wc);
-#endif
 
 #endif
 /** @} */

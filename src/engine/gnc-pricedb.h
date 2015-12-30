@@ -153,9 +153,28 @@ GType gnc_pricedb_get_type(void);
  @{ */
 
 /** */
-typedef struct gnc_price_lookup_s GNCPriceLookup;
 typedef GList PriceList;
 
+/** Price source enum. Be sure to keep in sync with the source_name array in
+ * gnc-pricedb.c. These are in preference order, so for example a quote with
+ * PRICE_SOURCE_EDIT_DLG will overwrite one with PRICE_SOURCE_FQ but not the
+ * other way around.
+ */
+typedef enum
+{
+    PRICE_SOURCE_EDIT_DLG,         // "user:price-editor"
+    PRICE_SOURCE_FQ,               // "Finance::Quote"
+    PRICE_SOURCE_USER_PRICE,       // "user:price"
+    PRICE_SOURCE_XFER_DLG_VAL,     // "user:xfer-dialog"
+    PRICE_SOURCE_SPLIT_REG,        // "user:split-register"
+    PRICE_SOURCE_STOCK_SPLIT,      // "user:stock-split"
+    PRICE_SOURCE_INVOICE,          // "user:invoice-post"
+    PRICE_SOURCE_INVALID,
+} PriceSource;
+
+#define PRICE_TYPE_LAST "last"
+#define PRICE_TYPE_UNK "unknown"
+#define PRICE_TYPE_TRN "transaction"
 /* ------------------ */
 /** @name Constructors
     @{ */
@@ -202,7 +221,8 @@ void gnc_price_commit_edit (GNCPrice *p);
 void gnc_price_set_commodity(GNCPrice *p, gnc_commodity *c);
 void gnc_price_set_currency(GNCPrice *p, gnc_commodity *c);
 void gnc_price_set_time(GNCPrice *p, Timespec t);
-void gnc_price_set_source(GNCPrice *p, const char *source);
+void gnc_price_set_source(GNCPrice *p, PriceSource source);
+void gnc_price_set_source_string(GNCPrice *p, const char* s);
 void gnc_price_set_typestr(GNCPrice *p, const char* type);
 void gnc_price_set_value(GNCPrice *p, gnc_numeric value);
 /** @} */
@@ -213,13 +233,14 @@ void gnc_price_set_value(GNCPrice *p, gnc_numeric value);
     to the GNCPrice, not copies, so don't free these values.
     @{ */
 
-GNCPrice *      gnc_price_lookup (const GncGUID *guid, QofBook *book);
+    GNCPrice *      gnc_price_lookup (const GncGUID *guid, QofBook *book);
 /*@ dependent @*/
 gnc_commodity * gnc_price_get_commodity(const GNCPrice *p);
 /*@ dependent @*/
 gnc_commodity * gnc_price_get_currency(const GNCPrice *p);
 Timespec        gnc_price_get_time(const GNCPrice *p);
-const char *    gnc_price_get_source(const GNCPrice *p);
+PriceSource     gnc_price_get_source(const GNCPrice *p);
+const char *    gnc_price_get_source_string(const GNCPrice *p);
 const char *    gnc_price_get_typestr(const GNCPrice *p);
 gnc_numeric     gnc_price_get_value(const GNCPrice *p);
 gboolean        gnc_price_equal(const GNCPrice *p1, const GNCPrice *p2);
@@ -234,6 +255,15 @@ gboolean        gnc_price_equal(const GNCPrice *p1, const GNCPrice *p2);
 /** This simple function can be useful for debugging the price code */
 void gnc_price_print(GNCPrice *db, FILE *f, int indent);
 /** @} */
+/** @name Denominator Constants Price policy: In order to avoid rounding
+ * problems, currency prices (often called exchange rates) are saved in terms of
+ * the smaller currency, so that price > 1, with a fixed denominator of
+ * 1/1000. Commodity prices in currency are always expressed as value per unit
+ * of the commodity with a fixed denominator of the pricing currency's
+ * SCU * 10000.
+ */
+#define CURRENCY_DENOM 10000
+#define COMMODITY_DENOM_MULT 10000
 
 /* ================================================================ */
 /** @name GNCPrice lists
@@ -346,27 +376,14 @@ PriceList * gnc_pricedb_lookup_at_time(GNCPriceDB *db,
                                        const gnc_commodity *currency,
                                        Timespec t);
 
-/** gnc_pricedb_lookup_at_time_any_currency - return all prices that match the
-     given commodity and timespec in any available currency.  Prices will be
-     returned as a GNCPrice list (see above). */
-PriceList * gnc_pricedb_lookup_at_time_any_currency(GNCPriceDB *db,
-        const gnc_commodity *c,
-        Timespec t);
+/** gnc_pricedb_lookup_day - return the price that matchex the given
+     commodity, currency, and timespec which is on the same day.
+     If no prices are on that day, returns a null value. */
+GNCPrice * gnc_pricedb_lookup_day(GNCPriceDB *db,
+                                  const gnc_commodity *commodity,
+                                  const gnc_commodity *currency,
+                                  Timespec t);
 
-/** gnc_pricedb_lookup_day - return all prices that match the given
-     commodity, currency, and timespec.  Prices will be returned as a
-     GNCPrice list (see above). */
-PriceList * gnc_pricedb_lookup_day(GNCPriceDB *db,
-                                   const gnc_commodity *commodity,
-                                   const gnc_commodity *currency,
-                                   Timespec t);
-
-/** gnc_pricedb_lookup_day_any_currency - return all prices that match the
-     given commodity and timespec in any available currency.  Prices will be
-     returned as a GNCPrice list (see above). */
-PriceList * gnc_pricedb_lookup_day_any_currency(GNCPriceDB *db,
-        const gnc_commodity *c,
-        Timespec t);
 
 /** gnc_pricedb_lookup_nearest_in_time - return the price for the given
      commodity in the given currency nearest to the given time t. */
@@ -413,16 +430,6 @@ gnc_pricedb_convert_balance_nearest_price(GNCPriceDB *pdb,
         const gnc_commodity *new_currency,
         Timespec t);
 
-/** gnc_pricedb_convert_balance_latest_before - Convert a balance from one currency
-    to another using the lastest price prior to Timespec t. */
-gnc_numeric
-gnc_pricedb_convert_balance_latest_before(GNCPriceDB *pdb,
-        gnc_numeric balance,
-        gnc_commodity *balance_currency,
-        gnc_commodity *new_currency,
-        Timespec t);
-
-
 /** gnc_pricedb_foreach_price - call f once for each price in db, until
      and unless f returns FALSE.  If stable_order is not FALSE, make
      sure the ordering of the traversal is stable (i.e. the same order
@@ -434,10 +441,11 @@ gboolean     gnc_pricedb_foreach_price(GNCPriceDB *db,
                                        gpointer user_data,
                                        gboolean stable_order);
 
+/* The following two convenience functions are used to test the xml backend */
 /** gnc_pricedb_get_num_prices - return the number of prices
    in the database. */
 guint gnc_pricedb_get_num_prices(GNCPriceDB *db);
-
+/** gnc_pricedb_equal - test equality of two pricedbs */
 gboolean gnc_pricedb_equal (GNCPriceDB *db1, GNCPriceDB *db2);
 
 /** @name Internal/Debugging

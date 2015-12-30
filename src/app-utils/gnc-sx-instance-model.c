@@ -48,6 +48,7 @@
 #include "gnc-sx-instance-model.h"
 #include "gnc-ui-util.h"
 #include "qof.h"
+#include <gnc-gdate-utils.h>
 
 #undef G_LOG_DOMAIN
 #define G_LOG_DOMAIN "gnc.app-utils.sx"
@@ -192,6 +193,7 @@ _get_vars_helper(Transaction *txn, void *var_hash_data)
         gnc_commodity *split_cmdty = NULL;
         GncGUID *acct_guid;
         Account *acct;
+        gboolean split_is_marker = TRUE;
 
         s = (Split*)split_list->data;
         kvpf = xaccSplitGetSlots(s);
@@ -202,12 +204,41 @@ _get_vars_helper(Transaction *txn, void *var_hash_data)
         acct_guid = kvp_value_get_guid(kvp_val);
         acct = xaccAccountLookup(acct_guid, gnc_get_current_book());
         split_cmdty = xaccAccountGetCommodity(acct);
-        if (first_cmdty == NULL)
+        // existing... ------------------------------------------
+        kvp_val = kvp_frame_get_slot_path(kvpf,
+                                          GNC_SX_ID,
+                                          GNC_SX_CREDIT_FORMULA,
+                                          NULL);
+        if (kvp_val != NULL)
+        {
+            str = kvp_value_get_string(kvp_val);
+            if (str && strlen(str) != 0)
+            {
+                gnc_sx_parse_vars_from_formula(str, var_hash, NULL);
+                split_is_marker = FALSE;
+            }
+        }
+
+        kvp_val = kvp_frame_get_slot_path(kvpf,
+                                          GNC_SX_ID,
+                                          GNC_SX_DEBIT_FORMULA,
+                                          NULL);
+        if (kvp_val != NULL)
+        {
+            str = kvp_value_get_string(kvp_val);
+            if (str && strlen(str) != 0)
+            {
+                gnc_sx_parse_vars_from_formula(str, var_hash, NULL);
+                split_is_marker = FALSE;
+            }
+        }
+        if (!split_is_marker && first_cmdty == NULL)
         {
             first_cmdty = split_cmdty;
         }
 
-        if (! gnc_commodity_equal(split_cmdty, first_cmdty))
+        if (!split_is_marker &&
+            ! gnc_commodity_equal(split_cmdty, first_cmdty))
         {
             GncSxVariable *var;
             GString *var_name;
@@ -224,32 +255,6 @@ _get_vars_helper(Transaction *txn, void *var_hash_data)
             g_string_free(var_name, TRUE);
         }
 
-        // existing... ------------------------------------------
-        kvp_val = kvp_frame_get_slot_path(kvpf,
-                                          GNC_SX_ID,
-                                          GNC_SX_CREDIT_FORMULA,
-                                          NULL);
-        if (kvp_val != NULL)
-        {
-            str = kvp_value_get_string(kvp_val);
-            if (str && strlen(str) != 0)
-            {
-                gnc_sx_parse_vars_from_formula(str, var_hash, NULL);
-            }
-        }
-
-        kvp_val = kvp_frame_get_slot_path(kvpf,
-                                          GNC_SX_ID,
-                                          GNC_SX_DEBIT_FORMULA,
-                                          NULL);
-        if (kvp_val != NULL)
-        {
-            str = kvp_value_get_string(kvp_val);
-            if (str && strlen(str) != 0)
-            {
-                gnc_sx_parse_vars_from_formula(str, var_hash, NULL);
-            }
-        }
     }
 
     return 0;
@@ -278,7 +283,7 @@ gnc_sx_get_variables(SchedXaction *sx, GHashTable *var_hash)
 static void
 _set_var_to_random_value(gchar *key, GncSxVariable *var, gpointer unused_user_data)
 {
-    var->value = double_to_gnc_numeric(rand() + 2, 1,
+    var->value = double_to_gnc_numeric(g_random_int() + 2, 1,
                                        GNC_NUMERIC_RND_MASK
                                        | GNC_HOW_RND_FLOOR);
 }
@@ -426,7 +431,7 @@ gnc_sx_get_current_instances(void)
 {
     GDate now;
     g_date_clear(&now, 1);
-    g_date_set_time_t(&now, time(NULL));
+    gnc_gdate_set_time64 (&now, gnc_time (NULL));
     return gnc_sx_get_instances(&now, FALSE);
 }
 
@@ -688,10 +693,8 @@ _gnc_sx_instance_event_handler(QofInstance *ent, QofEventId event_type, gpointer
     }
     else if (GNC_IS_SXES(ent))
     {
-        SchedXactions *sxes = GNC_SXES(ent);
         SchedXaction *sx = GNC_SX(evt_data);
 
-        sxes = NULL;
         if (event_type & GNC_EVENT_ITEM_REMOVED)
         {
             GList *instances_link;
@@ -731,7 +734,8 @@ _find_unreferenced_vars(gchar *key,
                         gpointer value,
                         HashListPair *cb_pair)
 {
-    if (!g_hash_table_lookup_extended(cb_pair->hash, key, NULL, NULL))
+    if (cb_pair->hash ==  NULL ||
+        !g_hash_table_lookup_extended(cb_pair->hash, key, NULL, NULL))
     {
         g_debug("variable [%s] not found", key);
         cb_pair->list = g_list_append(cb_pair->list, key);
@@ -805,20 +809,27 @@ gnc_sx_instance_model_update_sx_instances(GncSxInstanceModel *model, SchedXactio
 
     // handle variables
     {
-        HashListPair removed_cb_data, added_cb_data;
         GList *removed_var_names = NULL, *added_var_names = NULL;
         GList *inst_iter = NULL;
 
-        removed_cb_data.hash = new_instances->variable_names;
-        removed_cb_data.list = NULL;
-        g_hash_table_foreach(existing->variable_names, (GHFunc)_find_unreferenced_vars, &removed_cb_data);
-        removed_var_names = removed_cb_data.list;
+        if (existing->variable_names != NULL)
+        {
+            HashListPair removed_cb_data;
+            removed_cb_data.hash = new_instances->variable_names;
+            removed_cb_data.list = NULL;
+            g_hash_table_foreach(existing->variable_names, (GHFunc)_find_unreferenced_vars, &removed_cb_data);
+            removed_var_names = removed_cb_data.list;
+        }
         g_debug("%d removed variables", g_list_length(removed_var_names));
 
-        added_cb_data.hash = existing->variable_names;
-        added_cb_data.list = NULL;
-        g_hash_table_foreach(new_instances->variable_names, (GHFunc)_find_unreferenced_vars, &added_cb_data);
-        added_var_names = added_cb_data.list;
+        if (new_instances->variable_names != NULL)
+        {
+            HashListPair added_cb_data;
+            added_cb_data.hash = existing->variable_names;
+            added_cb_data.list = NULL;
+            g_hash_table_foreach(new_instances->variable_names, (GHFunc)_find_unreferenced_vars, &added_cb_data);
+            added_var_names = added_cb_data.list;
+        }
         g_debug("%d added variables", g_list_length(added_var_names));
 
         if (existing->variable_names != NULL)
@@ -1043,6 +1054,8 @@ create_each_transaction_helper(Transaction *template_txn, void *user_data)
             xaccTransGetDescription(new_txn),
             xaccSchedXactionGetName(creation_data->instance->parent->sx));
 
+    g_debug("template txn currency is %s", gnc_commodity_get_mnemonic(xaccTransGetCurrency (template_txn)));
+
     /* clear any copied KVP data */
     qof_instance_set_slots(QOF_INSTANCE(new_txn), kvp_frame_new());
 
@@ -1095,9 +1108,15 @@ create_each_transaction_helper(Transaction *template_txn, void *user_data)
         split_cmdty = xaccAccountGetCommodity(split_acct);
         if (first_cmdty == NULL)
         {
-            first_cmdty = split_cmdty;
-            xaccTransSetCurrency(new_txn, first_cmdty);
+            /* Set new_txn currency to template_txn if we have one, else first split */
+            if (xaccTransGetCurrency(template_txn))
+                xaccTransSetCurrency(new_txn, xaccTransGetCurrency(template_txn));
+            else
+                xaccTransSetCurrency(new_txn, split_cmdty);
+
+            first_cmdty = xaccTransGetCurrency(new_txn);
         }
+        g_debug("new txn currency is %s", gnc_commodity_get_mnemonic(first_cmdty));
 
         xaccSplitSetAccount(copying_split, split_acct);
 
@@ -1128,7 +1147,8 @@ create_each_transaction_helper(Transaction *template_txn, void *user_data)
             }
 
             xaccSplitSetValue(copying_split, final);
-            if (! gnc_commodity_equal(split_cmdty, first_cmdty))
+            g_debug("value is %s for memo split '%s'", gnc_numeric_to_string (final), xaccSplitGetMemo (copying_split));
+            if (! gnc_commodity_equal(split_cmdty, xaccTransGetCurrency (new_txn)))
             {
                 GString *exchange_rate_var_name = g_string_sized_new(16);
                 GncSxVariable *exchange_rate_var;
@@ -1154,9 +1174,9 @@ create_each_transaction_helper(Transaction *template_txn, void *user_data)
                   }
                   else
                   {
-                  exchange = gnc_numeric_div(gnc_numeric_create(1,1),
-                  gnc_price_get_value(price),
-                  1000, GNC_HOW_RND_ROUND_HALF_UP);
+                  exchange = gnc_numeric_invert(gnc_price_get_value(price));
+                  exchange = gnc_numeric_convert(exchange, 1000,
+                                                 GNC_HOW_RND_ROUND_HALF_UP);
                   }
                   }
                   else
@@ -1165,20 +1185,32 @@ create_each_transaction_helper(Transaction *template_txn, void *user_data)
                   }
                 */
 
-                exchange_rate = gnc_numeric_zero();
+                exchange_rate = gnc_numeric_create (1, 1);
                 g_string_printf(exchange_rate_var_name, "%s -> %s",
-                                gnc_commodity_get_mnemonic(split_cmdty),
-                                gnc_commodity_get_mnemonic(first_cmdty));
+                                gnc_commodity_get_mnemonic(first_cmdty),
+                                gnc_commodity_get_mnemonic(split_cmdty));
+
+                g_debug("var_name is %s -> %s", gnc_commodity_get_mnemonic(first_cmdty),
+                                                gnc_commodity_get_mnemonic(split_cmdty));
+
                 exchange_rate_var = (GncSxVariable*)g_hash_table_lookup(creation_data->instance->variable_bindings,
                                     exchange_rate_var_name->str);
+
                 if (exchange_rate_var != NULL)
                 {
                     exchange_rate = exchange_rate_var->value;
+                    g_debug("exchange_rate is %s", gnc_numeric_to_string (exchange_rate));
                 }
                 g_string_free(exchange_rate_var_name, TRUE);
 
-                amt = gnc_numeric_mul(final, exchange_rate, 1000, GNC_HOW_RND_ROUND_HALF_UP);
-                xaccSplitSetAmount(copying_split, amt);
+                if (!gnc_commodity_is_currency (split_cmdty))
+                    amt = gnc_numeric_div(final, exchange_rate, gnc_commodity_get_fraction (split_cmdty), GNC_HOW_RND_ROUND_HALF_UP);
+                else
+                    amt = gnc_numeric_mul(final, exchange_rate, 1000, GNC_HOW_RND_ROUND_HALF_UP);
+
+
+                g_debug("amount is %s for memo split '%s'", gnc_numeric_to_string (amt), xaccSplitGetMemo (copying_split));
+                xaccSplitSetAmount(copying_split, amt); /* marks split dirty */
             }
 
             xaccSplitScrub(copying_split);
@@ -1197,7 +1229,11 @@ create_each_transaction_helper(Transaction *template_txn, void *user_data)
     {
         kvp_frame *txn_frame;
         txn_frame = xaccTransGetSlots(new_txn);
-        kvp_frame_set_guid(txn_frame, "from-sched-xaction", xaccSchedXactionGetGUID(creation_data->instance->parent->sx));
+        kvp_frame_set_guid(txn_frame, "from-sched-xaction",
+		  xaccSchedXactionGetGUID(creation_data->instance->parent->sx));
+/* The transaction was probably marked dirty by xaccTransSetCurrency,
+ * but just in case: */
+	qof_instance_set_dirty (QOF_INSTANCE (new_txn));
     }
 
     xaccTransCommitEdit(new_txn);
@@ -1235,6 +1271,13 @@ gnc_sx_instance_model_effect_change(GncSxInstanceModel *model,
                                     GList **creation_errors)
 {
     GList *iter;
+
+    if (qof_book_is_readonly(gnc_get_current_book()))
+    {
+        /* Is the book read-only? Then don't change anything here. */
+        return;
+    }
+
     for (iter = model->sx_instance_list; iter != NULL; iter = iter->next)
     {
         GList *instance_iter;
@@ -1287,7 +1330,8 @@ gnc_sx_instance_model_effect_change(GncSxInstanceModel *model,
             case SX_INSTANCE_STATE_POSTPONED:
                 if (inst->orig_state != SX_INSTANCE_STATE_POSTPONED)
                 {
-                    gnc_sx_add_defer_instance(instances->sx, inst->temporal_state);
+		     gnc_sx_add_defer_instance(instances->sx,
+					       gnc_sx_clone_temporal_state (inst->temporal_state));
                 }
                 increment_sx_state(inst, &last_occur_date, &instance_count, &remain_occur_count);
                 break;
@@ -1552,7 +1596,6 @@ create_cashflow_helper(Transaction *template_txn, void *user_data)
 {
     SxCashflowData *creation_data = user_data;
     GList *template_splits;
-    gboolean err_flag = FALSE;
     const gnc_commodity *first_cmdty = NULL;
 
     g_debug("Evaluating txn desc [%s] for sx [%s]",
@@ -1583,7 +1626,6 @@ create_cashflow_helper(Transaction *template_txn, void *user_data)
         if (!_get_template_split_account(creation_data->sx, template_split, &split_acct, creation_data->creation_errors))
         {
             g_debug("Could not find account for split");
-            err_flag = TRUE;
             break;
         }
 
@@ -1685,14 +1727,6 @@ instantiate_cashflow_internal(const SchedXaction* sx,
                                   &create_cashflow_data);
 }
 
-void gnc_sx_instantiate_cashflow(const SchedXaction* sx,
-                                 GHashTable* map, GList **creation_errors)
-{
-    /* Calculate ("Instantiate") the cash flow for exactly one
-     * occurrence */
-    instantiate_cashflow_internal(sx, map, creation_errors, 1);
-}
-
 typedef struct
 {
     GHashTable *hash;
@@ -1739,6 +1773,7 @@ void gnc_sx_all_instantiate_cashflow(GList *all_sxes,
     g_list_foreach(all_sxes, instantiate_cashflow_cb, &userdata);
 }
 
+
 GHashTable* gnc_sx_all_instantiate_cashflow_all(GDate range_start, GDate range_end)
 {
     GHashTable *result_map = gnc_g_hash_new_guid_numeric();
@@ -1748,11 +1783,3 @@ GHashTable* gnc_sx_all_instantiate_cashflow_all(GDate range_start, GDate range_e
                                     result_map, NULL);
     return result_map;
 }
-
-
-// Local Variables:
-// mode: c
-// indent-tabs-mode: nil
-// c-block-comment-prefix: "* "
-// eval: (c-add-style "gnc" '("k&r" (c-basic-offset . 4) (c-offsets-alist (case-label . +))) t)
-// End:

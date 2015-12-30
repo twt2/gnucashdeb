@@ -28,6 +28,7 @@
 (define-module (gnucash report standard-reports budget-flow))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (gnucash gnc-module))
+(use-modules (gnucash gettext))
 
 (use-modules (gnucash printf))
 
@@ -54,14 +55,21 @@
       options
       (gnc:make-budget-option
         gnc:pagename-general optname-budget
-        "a" (N_ "Budget")))
+        "a" (N_ "Budget to use.")))
 
     ;; Option to select Period of selected Budget
     (gnc:register-option
       options
       (gnc:make-number-range-option
         gnc:pagename-general optname-periods
-        "b" (N_ "Period") 1 1 12 0 1))
+        ;; FIXME: It would be nice if the max number of budget periods (60) was
+        ;; defined globally somewhere so we could reference it here.  However, it
+        ;; only appears to be defined currently in
+        ;; src/gnome/gtkbuilder/gnc-plugin-page-budget.glade.
+        ;; FIXME: It would be even nicer if the max number of budget
+        ;; periods was determined by the number of periods in the
+        ;; currently selected budget
+        "b" (N_ "Period number.") 1 1 60 0 1))
 
     ;; Option to select the currency the report will be shown in
     (gnc:options-add-currency!
@@ -78,7 +86,7 @@
       (gnc:make-account-list-option
         gnc:pagename-accounts optname-accounts
         (string-append "a" "c")
-        (N_ "Report on these accounts")
+        (N_ "Report on these accounts.")
         (lambda ()
           (gnc-account-get-descendants-sorted (gnc-get-current-root-account)))
         #f #t))
@@ -134,9 +142,9 @@
           (let* (
               ;; Retrive the budgeted and actual amount and convert to <gnc:monetary>
               (comm (xaccAccountGetCommodity acct))
-              (bgt-numeric (gnc-budget-get-account-period-value budget acct period))
+              (bgt-numeric (gnc-budget-get-account-period-value budget acct (- period 1)))
               (bgt-monetary (gnc:make-gnc-monetary comm bgt-numeric))
-              (act-numeric (gnc-budget-get-account-period-actual-value budget acct period))
+              (act-numeric (gnc-budget-get-account-period-actual-value budget acct (- period 1)))
               (act-monetary (gnc:make-gnc-monetary comm act-numeric))
             )
             
@@ -311,7 +319,7 @@
         (gnc:html-document-set-title!
           doc (sprintf #f (_ "%s: %s - %s")
             report-name (gnc-budget-get-name budget)
-            (gnc-print-date (gnc-budget-get-period-start-date budget period))))
+            (gnc-print-date (gnc-budget-get-period-start-date budget (- period 1)))))
 
         ;; Display accounts and totals
         (set! accounts-totals (gnc:html-table-add-budget-types! html-table split-up-accounts budget period exchange-fn report-currency))

@@ -30,7 +30,6 @@
 
 #include "gnc-commodity.h"
 #include "qof.h"
-#include "GNCId.h"
 
 typedef struct gnc_option GNCOption;
 typedef struct gnc_option_section GNCOptionSection;
@@ -47,7 +46,6 @@ typedef void (*GNCOptionChangeCallback) (gpointer user_data);
 
 /***** Prototypes ********************************************************/
 
-gboolean gnc_option_get_changed (GNCOption *option);
 void gnc_option_set_changed (GNCOption *option, gboolean changed);
 
 /** Returns an opaque pointer to the widget of this option. The actual
@@ -73,7 +71,7 @@ void          gnc_option_db_destroy(GNCOptionDB *odb);
  */
 GNCOptionDB * gnc_option_db_new_for_type(QofIdType id_type);
 void gnc_option_db_load_from_kvp(GNCOptionDB* odb, kvp_frame *slots);
-void gnc_option_db_save_to_kvp(GNCOptionDB* odb, kvp_frame *slots);
+void gnc_option_db_save_to_kvp(GNCOptionDB* odb, kvp_frame *slots, gboolean clear_kvp);
 
 void gnc_register_kvp_option_generator(QofIdType id_type, SCM generator);
 SCM gnc_make_kvp_options(QofIdType id_type);
@@ -184,7 +182,7 @@ char * gnc_option_db_lookup_multichoice_option(GNCOptionDB *odb,
         const char *name,
         const char *default_value);
 
-time_t gnc_option_db_lookup_date_option(GNCOptionDB *odb,
+time64 gnc_option_db_lookup_date_option(GNCOptionDB *odb,
                                         const char *section,
                                         const char *name,
                                         gboolean *is_relative,

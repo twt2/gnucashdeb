@@ -21,12 +21,17 @@
 #ifndef GNUCASH_CURSOR_H
 #define GNUCASH_CURSOR_H
 
-#include <gnome.h>
-
 #include "gnucash-grid.h"
 #include "gnucash-sheet.h"
+#include <libgnomecanvas/libgnomecanvas.h>
 
-
+/** @ingroup Register
+ * @addtogroup Gnome
+ * @{
+ */
+/** @file gnucash-cursor.h
+ * @brief Public declarations for GnucashCursor class
+ */
 #define GNUCASH_TYPE_CURSOR     (gnucash_cursor_get_type ())
 #define GNUCASH_CURSOR(obj)     (G_TYPE_CHECK_INSTANCE_CAST ((obj), GNUCASH_TYPE_CURSOR, GnucashCursor))
 #define GNUCASH_CURSOR_CLASS(k) (G_TYPE_CHECK_CLASS_CAST ((k), GNUCASH_TYPE_CURSOR, GnucashCursorClass))
@@ -104,12 +109,5 @@ void gnucash_cursor_set_style (GnucashCursor  *cursor, SheetBlockStyle *style);
 
 void gnucash_cursor_configure (GnucashCursor *cursor);
 
-
+/** @} */
 #endif /* GNUCASH_CURSOR_H */
-
-
-/*
-  Local Variables:
-  c-basic-offset: 8
-  End:
-*/

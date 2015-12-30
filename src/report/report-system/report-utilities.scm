@@ -73,7 +73,7 @@
 ;; one of the type identifiers in typelist.
 (define (gnc:filter-accountlist-type typelist accounts)
   (filter (lambda (a) 
-	    (member (xaccAccountGetType a) typelist))
+	    (and (not (null? a)) (member (xaccAccountGetType a) typelist)))
 	  accounts))
 
 ;; Decompose a given list of accounts 'accounts' into an alist
@@ -142,9 +142,6 @@
 (define (gnc:get-current-account-tree-depth)
   (let ((root (gnc-get-current-root-account)))
     (gnc-account-get-tree-depth root)))
-
-(define (gnc:split-get-corr-account-full-name split)
-  (xaccSplitGetCorrAccountFullName split))
 
 
 ;; Get all children of this list of accounts.
@@ -700,6 +697,8 @@
 			    0))
 
 (define (gnc:report-percent-done percent)
+  (if (> percent 100)
+      (gnc:warn "report more than 100% finished. " percent))
   (gnc-window-show-progress "" percent))
 
 (define (gnc:report-finished)
@@ -757,6 +756,74 @@
     total
     )
   )
+
+;; Filters the splits from the source to the target accounts
+;; returns a commodity collector
+;; does NOT do currency exchanges
+(define (gnc:account-get-total-flow direction target-account-list from-date-tp to-date-tp)
+
+  (let* (
+          (total-flow (gnc:make-commodity-collector))
+        )
+
+    ;; ------------------------------------------------------------------
+    ;; process all target accounts
+    ;; ------------------------------------------------------------------
+    (for-each
+      (lambda (target-account)
+        ;; -------------------------------------
+        ;; process all splits of current account
+        ;; -------------------------------------
+        (for-each
+          (lambda (target-account-split)
+            ;; ----------------------------------------------------
+            ;; only target account splits that are within the specified time range
+            ;; ----------------------------------------------------
+            (let* (
+                    (transaction (xaccSplitGetParent target-account-split))
+                    (transaction-date-posted (gnc-transaction-get-date-posted transaction))
+                  )
+              (if (and
+                    (gnc:timepair-le transaction-date-posted to-date-tp)
+                    (gnc:timepair-ge transaction-date-posted from-date-tp)
+                  )
+                ;; -------------------------------------------------------------
+                ;; get the split information
+                ;; -------------------------------------------------------------
+                (let* (
+                        (transaction-currency   (xaccTransGetCurrency transaction))
+                        (transaction-value (gnc-numeric-zero))
+                        (split-value       (xaccSplitGetAmount target-account-split))
+                      )
+                  ;; -------------------------------------------------------------
+                  ;; update the return value
+                  ;; -------------------------------------------------------------
+                  (case direction
+                    ((in)
+                      (if (gnc-numeric-positive-p split-value)
+                        (total-flow 'add transaction-currency split-value)
+                      )
+                    )
+                    ((out)
+                      (if (gnc-numeric-negative-p split-value)
+                        (total-flow 'add transaction-currency split-value)
+                      )
+                    )
+                    (else  (gnc:warn  "bad gnc:account-get-total-flow action: "  direction))
+                  )
+                )
+              )
+            )
+          )
+          (xaccAccountGetSplitList target-account)
+        )
+      )
+      target-account-list
+    )
+    total-flow ;; RETURN
+  )
+)
+
 ;; similar, but only counts transactions with non-negative shares and
 ;; *ignores* any closing entries
 (define (gnc:account-get-pos-trans-total-interval
@@ -820,7 +887,13 @@
   )
 
 ;; Return the splits that match an account list, date range, and (optionally) type
-;; where type is defined as an alist '((str "match me") (cased #f) (regexp #f))
+;; where type is defined as an alist like:
+;; '((str "match me") (cased #f) (regexp #f) (closing #f))
+;; where str, cased, and regexp define a pattern match on transaction deseriptions 
+;; and "closing" matches transactions created by the book close command.  If "closing"
+;; is given as #t then only closing transactions will be returned, if it is #f then
+;; only non-closing transactions will be returned, and if it is omitted then both
+;; kinds of transactions will be returned.
 (define (gnc:account-get-trans-type-splits-interval
          account-list type start-date-tp end-date-tp)
   (if (null? account-list)
@@ -828,6 +901,7 @@
       '()
       ;; The normal case: There are accounts given.
   (let* ((query (qof-query-create-for-splits))
+         (query2 #f)
 	 (splits #f)
 	 (get-val (lambda (alist key)
 		    (let ((lst (assoc-ref alist key)))
@@ -835,6 +909,7 @@
 	 (matchstr (get-val type 'str))
 	 (case-sens (if (get-val type 'cased) #t #f))
 	 (regexp (if (get-val type 'regexp) #t #f))
+	 (closing (if (get-val type 'closing) #t #f))
 	 )
     (qof-query-set-book query (gnc-get-current-book))
     (gnc:query-set-match-non-voids-only! query (gnc-get-current-book))
@@ -843,9 +918,16 @@
      query
      (and start-date-tp #t) start-date-tp
      (and end-date-tp #t) end-date-tp QOF-QUERY-AND)
-    (if type (xaccQueryAddDescriptionMatch
-              query matchstr case-sens regexp QOF-QUERY-AND))
-    
+    (if (or matchstr closing) 
+         (begin
+           (set! query2 (qof-query-create-for-splits))
+           (if matchstr (xaccQueryAddDescriptionMatch
+                         query2 matchstr case-sens regexp QOF-QUERY-OR))
+           (if closing (xaccQueryAddClosingTransMatch query2 1 QOF-QUERY-OR))
+           (qof-query-merge-in-place query query2 QOF-QUERY-AND)
+           (qof-query-destroy query2)
+    ))
+
     (set! splits (qof-query-run query))
     (qof-query-destroy query)
     splits

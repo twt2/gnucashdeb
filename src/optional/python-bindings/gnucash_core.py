@@ -40,7 +40,8 @@ from gnucash_core_c import gncInvoiceLookup, gncInvoiceGetInvoiceFromTxn, \
     gncInvoiceGetInvoiceFromLot, gncEntryLookup, gncInvoiceLookup, \
     gncCustomerLookup, gncVendorLookup, gncJobLookup, gncEmployeeLookup, \
     gncTaxTableLookup, gncTaxTableLookupByName, gnc_search_invoice_on_id, \
-    gnc_search_customer_on_id, gnc_search_bill_on_id , gnc_search_vendor_on_id
+    gnc_search_customer_on_id, gnc_search_bill_on_id , gnc_search_vendor_on_id, \
+    gncInvoiceNextID, gncCustomerNextID, gncTaxTableGetTables, gncVendorNextID
 
 class GnuCashCoreClass(ClassFromFunctions):
     _module = gnucash_core_c
@@ -61,11 +62,11 @@ class Session(GnuCashCoreClass):
     """A GnuCash book editing session
 
     To commit changes to the session you may need to call save,
-    (this is allways the case with the file backend).
+    (this is always the case with the file backend).
 
     When you're down with a session you may need to call end()
 
-    Every Session has a Book in the book attribute, which you'll definetely
+    Every Session has a Book in the book attribute, which you'll definitely
     be interested in, as every GnuCash entity (Transaction, Split, Vendor,
     Invoice..) is associated with a particular book where it is stored.
     """
@@ -101,7 +102,12 @@ class Session(GnuCashCoreClass):
         if book_uri is not None:
             try:
                 self.begin(book_uri, ignore_lock, is_new, force_new)
-                if not is_new:
+                # Take care of backend inconsistency
+                # New xml file can't be loaded, new sql store
+                # has to be loaded before it can be altered
+                # Any existing store obviously has to be loaded
+                # More background: https://bugzilla.gnome.org/show_bug.cgi?id=726891
+                if book_uri[:3] != "xml" or not is_new:
                     self.load()
             except GnuCashBackendException, backend_exception:
                 self.end()
@@ -157,7 +163,7 @@ class Book(GnuCashCoreClass):
     the book via the book property, 'my_session.book'
 
     If you would like to create a Book without any backing storage, call the
-    Book constructor wihout any parameters, 'Book()'. You can later merge
+    Book constructor without any parameters, 'Book()'. You can later merge
     such a book into a book with actual store by using merge_init.
 
     Methods of interest
@@ -204,6 +210,10 @@ class Book(GnuCashCoreClass):
         return self.do_lookup_create_oo_instance(
             gncTaxTableLookupByName, TaxTable, name)
 
+    def TaxTableGetTables(self):
+        from gnucash_business import TaxTable
+        return [ TaxTable(instance=item) for item in gncTaxTableGetTables(self.instance) ]
+
     def BillLoookupByID(self, id):
         from gnucash_business import Bill
         return self.do_lookup_create_oo_instance(
@@ -223,6 +233,27 @@ class Book(GnuCashCoreClass):
         from gnucash_business import Vendor
         return self.do_lookup_create_oo_instance(
             gnc_search_vendor_on_id, Vendor, id)
+            
+    def InvoiceNextID(self, customer):
+      ''' Return the next invoice ID. 
+      This works but I'm not entirely happy with it.  FIX ME'''
+      from gnucash.gnucash_core_c import gncInvoiceNextID
+      return gncInvoiceNextID(self.get_instance(),customer.GetEndOwner().get_instance()[1])
+      
+    def BillNextID(self, vendor):
+      ''' Return the next Bill ID. '''
+      from gnucash.gnucash_core_c import gncInvoiceNextID
+      return gncInvoiceNextID(self.get_instance(),vendor.GetEndOwner().get_instance()[1])
+
+    def CustomerNextID(self):
+      ''' Return the next Customer ID. '''
+      from gnucash.gnucash_core_c import gncCustomerNextID
+      return gncCustomerNextID(self.get_instance())
+    
+    def VendorNextID(self):
+      ''' Return the next Vendor ID. '''
+      from gnucash.gnucash_core_c import gncVendorNextID
+      return gncVendorNextID(self.get_instance())
 
 class GncNumeric(GnuCashCoreClass):
     """Object used by GnuCash to store all numbers. Always consists of a
@@ -286,7 +317,7 @@ class GncPrice(GnuCashCoreClass):
       commodity with respect to another commodity.
       For example, a given price might represent the value of LNUX in USD on 2001-02-03.
 
-      See also http://svn.gnucash.org/docs/head/group__Price.html
+      See also http://code.gnucash.org/docs/head/group__Price.html
     '''
     pass
 GncPrice.add_methods_with_prefix('gnc_price_')
@@ -305,7 +336,7 @@ class GncPriceDB(GnuCashCoreClass):
     Every QofBook contains a GNCPriceDB, accessible via gnc_pricedb_get_db.
 
     Definition in file gnc-pricedb.h.
-    See also http://svn.gnucash.org/docs/head/gnc-pricedb_8h.html
+    See also http://code.gnucash.org/docs/head/gnc-pricedb_8h.html
     '''
 
 GncPriceDB.add_methods_with_prefix('gnc_pricedb_')
@@ -315,7 +346,6 @@ PriceDB_dict =  {
                 'lookup_latest_before' : GncPrice,
                 'convert_balance_latest_price' : GncNumeric,
                 'convert_balance_nearest_price' : GncNumeric,
-                'convert_balance_latest_before' : GncNumeric,
                 }
 methods_return_instance(GncPriceDB,PriceDB_dict)
 GncPriceDB.get_prices = method_function_returns_instance_list(
@@ -325,11 +355,11 @@ GncPriceDB.get_prices = method_function_returns_instance_list(
 class GncCommodity(GnuCashCoreClass): pass
 
 class GncCommodityTable(GnuCashCoreClass):
-    """A CommodityTable provides a way to store and lookup commoditys.
-    Commoditys are primarily currencies, but other tradable things such as
-    stocks, mutual funds, and material substances are posible.
+    """A CommodityTable provides a way to store and lookup commodities.
+    Commodities are primarily currencies, but other tradable things such as
+    stocks, mutual funds, and material substances are possible.
 
-    Users of this library should not create thier own CommodityTable, instead
+    Users of this library should not create their own CommodityTable, instead
     the get_table method from the Book class should be used.
 
     This table is automatically populated with the GnuCash default commodity's
@@ -467,6 +497,7 @@ Book.add_method('gnc_book_get_root_account', 'get_root_account')
 Book.add_method('gnc_book_set_root_account', 'set_root_account')
 Book.add_method('gnc_commodity_table_get_table', 'get_table')
 Book.add_method('gnc_pricedb_get_db', 'get_price_db')
+Book.add_method('qof_book_increment_and_format_counter', 'increment_and_format_counter')
 
 #Functions that return Account
 Book.get_root_account = method_function_returns_instance(
@@ -553,7 +584,6 @@ Transaction.add_method('gncTransGetGUID', 'GetGUID');
 trans_dict =    {
                     'GetSplit': Split,
                     'FindSplitByAccount': Split,
-                    'GetNthSplit': Split,
                     'Clone': Transaction,
                     'Reverse': Transaction,
                     'GetReversedBy': Transaction,
@@ -616,8 +646,6 @@ account_dict =  {
                     'lookup_by_full_name' : Account,
                     'FindTransByDesc' : Transaction,
                     'FindSplitByDesc' : Split,
-                    'get_start_balance' : GncNumeric,
-                    'get_start_cleared_balance' : GncNumeric,
                     'GetBalance' : GncNumeric,
                     'GetClearedBalance' : GncNumeric,
                     'GetReconciledBalance' : GncNumeric,
@@ -639,6 +667,10 @@ account_dict =  {
 methods_return_instance(Account, account_dict)
 methods_return_instance_lists(
     Account, { 'GetSplitList': Split,
+               'get_children': Account,
+               'get_children_sorted': Account,
+               'get_descendants': Account,
+               'get_descendants_sorted': Account
                        })
 Account.name = property( Account.GetName, Account.SetName )
 
@@ -648,6 +680,10 @@ GUID.add_method('xaccAccountLookup', 'AccountLookup')
 GUID.add_method('xaccTransLookup', 'TransLookup')
 GUID.add_method('xaccSplitLookup', 'SplitLookup')
 
+## define addition methods for GUID object - do we need these
+GUID.add_method('guid_to_string', 'to_string')
+#GUID.add_method('string_to_guid', 'string_to_guid')
+
 guid_dict = {
                 'copy' : GUID,
                 'TransLookup': Transaction,
@@ -656,3 +692,61 @@ guid_dict = {
             }
 methods_return_instance(GUID, guid_dict)
 
+#GUIDString
+class GUIDString(GnuCashCoreClass):
+    pass
+
+GUIDString.add_constructor_and_methods_with_prefix('string_', 'to_guid')
+
+#Query
+from gnucash_core_c import \
+    QOF_QUERY_AND, \
+    QOF_QUERY_OR, \
+    QOF_QUERY_NAND, \
+    QOF_QUERY_NOR, \
+    QOF_QUERY_XOR
+
+from gnucash_core_c import \
+    QOF_STRING_MATCH_NORMAL, \
+    QOF_STRING_MATCH_CASEINSENSITIVE
+
+from gnucash_core_c import \
+    QOF_COMPARE_LT, \
+    QOF_COMPARE_LTE, \
+    QOF_COMPARE_EQUAL, \
+    QOF_COMPARE_GT, \
+    QOF_COMPARE_GTE, \
+    QOF_COMPARE_NEQ
+
+from gnucash_core_c import \
+    INVOICE_TYPE
+
+from gnucash_core_c import \
+    INVOICE_IS_PAID
+
+class Query(GnuCashCoreClass):
+    pass
+
+Query.add_constructor_and_methods_with_prefix('qof_query_', 'create')
+
+Query.add_method('qof_query_set_book', 'set_book')
+Query.add_method('qof_query_search_for', 'search_for')
+Query.add_method('qof_query_run', 'run')
+Query.add_method('qof_query_add_term', 'add_term')
+Query.add_method('qof_query_add_boolean_match', 'add_boolean_match')
+Query.add_method('qof_query_destroy', 'destroy')
+
+class QueryStringPredicate(GnuCashCoreClass):
+    pass
+
+QueryStringPredicate.add_constructor_and_methods_with_prefix('qof_query_', 'string_predicate')
+
+class QueryBooleanPredicate(GnuCashCoreClass):
+    pass
+
+QueryBooleanPredicate.add_constructor_and_methods_with_prefix('qof_query_', 'boolean_predicate')
+
+class QueryInt32Predicate(GnuCashCoreClass):
+    pass
+
+QueryInt32Predicate.add_constructor_and_methods_with_prefix('qof_query_', 'int32_predicate')

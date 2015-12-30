@@ -24,7 +24,7 @@
 
 #include "config.h"
 
-#include <gnome.h>
+#include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include <math.h>
 #ifdef G_OS_WIN32
@@ -41,6 +41,7 @@
 #include "gnc-commodity.h"
 #include "gnc-commodity-edit.h"
 #include "gnc-component-manager.h"
+#include "gnc-date-edit.h"
 #include "gnc-engine.h"
 #include "gnc-gui-query.h"
 #include "gnc-session.h"
@@ -52,7 +53,7 @@
 
 #define DIALOG_NEW_ACCOUNT_CM_CLASS "dialog-new-account"
 #define DIALOG_EDIT_ACCOUNT_CM_CLASS "dialog-edit-account"
-#define GCONF_SECTION "dialogs/account"
+#define GNC_PREFS_GROUP "dialogs.account"
 #define DEFAULT_COLOR "#ededececebeb"
 
 enum account_cols
@@ -144,6 +145,16 @@ static void gnc_account_window_set_name (AccountWindow *aw);
 void gnc_account_renumber_prefix_changed_cb (GtkEditable *editable, RenumberDialog *data);
 void gnc_account_renumber_interval_changed_cb (GtkSpinButton *spinbutton, RenumberDialog *data);
 void gnc_account_renumber_response_cb (GtkDialog *dialog, gint response, RenumberDialog *data);
+
+void gnc_account_window_destroy_cb (GtkWidget *object, gpointer data);
+void opening_equity_cb (GtkWidget *w, gpointer data);
+void gnc_account_name_changed_cb(GtkWidget *widget, gpointer data);
+void gnc_account_color_default_cb(GtkWidget *widget, gpointer data);
+void gnc_account_name_insert_text_cb (GtkWidget   *entry,
+                                      const gchar *text,
+                                      gint         length,
+                                      gint        *position,
+                                      gpointer     data);
 
 /** Implementation *******************************************************/
 
@@ -270,7 +281,7 @@ gnc_account_create_transfer_balance (QofBook *book,
                                      Account *account,
                                      Account *transfer,
                                      gnc_numeric balance,
-                                     time_t date)
+                                     time64 date)
 {
     Transaction *trans;
     Split *split;
@@ -288,8 +299,8 @@ gnc_account_create_transfer_balance (QofBook *book,
 
     xaccTransBeginEdit (trans);
 
-    xaccTransSetCurrency (trans, xaccAccountGetCommodity (account));
-    xaccTransSetDatePostedSecs (trans, date);
+    xaccTransSetCurrency (trans, gnc_account_or_default_currency (account, NULL));
+    xaccTransSetDatePostedSecsNormalized (trans, date);
     xaccTransSetDescription (trans, _("Opening Balance"));
 
     split = xaccMallocSplit (book);
@@ -330,7 +341,7 @@ gnc_ui_to_account(AccountWindow *aw)
     gboolean flag;
     gnc_numeric balance;
     gboolean use_equity, nonstd;
-    time_t date;
+    time64 date;
     gint index, old_scu, new_scu;
     GtkTextIter start, end;
 
@@ -357,26 +368,21 @@ gnc_ui_to_account(AccountWindow *aw)
 
     string = gtk_entry_get_text (GTK_ENTRY(aw->name_entry));
     old_string = xaccAccountGetName (account);
-    if (safe_strcmp (string, old_string) != 0)
+    if (g_strcmp0 (string, old_string) != 0)
         xaccAccountSetName (account, string);
 
     string = gtk_entry_get_text (GTK_ENTRY(aw->description_entry));
     old_string = xaccAccountGetDescription (account);
-    if (safe_strcmp (string, old_string) != 0)
+    if (g_strcmp0 (string, old_string) != 0)
         xaccAccountSetDescription (account, string);
 
     gtk_color_button_get_color(GTK_COLOR_BUTTON(aw->color_entry_button), &color );
-#ifdef HAVE_GTK_2_12
     string = gdk_color_to_string(&color);
-#else
-    /* gdk_color_to_string requires gtk >= 2.12 */
-    string = g_strdup_printf("#%04X%04X%04X", color.red, color.green, color.blue);
-#endif
-    if (safe_strcmp (string, DEFAULT_COLOR) == 0)
+    if (g_strcmp0 (string, DEFAULT_COLOR) == 0)
         string = "Not Set";
 
     old_string = xaccAccountGetColor (account);
-    if (safe_strcmp (string, old_string) != 0)
+    if (g_strcmp0 (string, old_string) != 0)
         xaccAccountSetColor (account, string);
 
     commodity = (gnc_commodity *)
@@ -402,7 +408,7 @@ gnc_ui_to_account(AccountWindow *aw)
 
     string = gtk_entry_get_text (GTK_ENTRY(aw->code_entry));
     old_string = xaccAccountGetCode (account);
-    if (safe_strcmp (string, old_string) != 0)
+    if (g_strcmp0 (string, old_string) != 0)
         xaccAccountSetCode (account, string);
 
     gtk_text_buffer_get_start_iter (aw->notes_text_buffer, &start);
@@ -415,17 +421,17 @@ gnc_ui_to_account(AccountWindow *aw)
     flag =
         gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (aw->tax_related_button));
     if (xaccAccountGetTaxRelated (account) != flag)
-	xaccAccountSetTaxRelated (account, flag);
+        xaccAccountSetTaxRelated (account, flag);
 
     flag =
         gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (aw->placeholder_button));
     if (xaccAccountGetPlaceholder (account) != flag)
-	xaccAccountSetPlaceholder (account, flag);
+        xaccAccountSetPlaceholder (account, flag);
 
     flag =
         gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (aw->hidden_button));
     if (xaccAccountGetHidden (account) != flag)
-	xaccAccountSetHidden (account, flag);
+        xaccAccountSetHidden (account, flag);
 
     parent_account = gnc_tree_view_account_get_selected_account (GNC_TREE_VIEW_ACCOUNT (aw->parent_tree));
 
@@ -448,8 +454,8 @@ gnc_ui_to_account(AccountWindow *aw)
     if (gnc_reverse_balance (account))
         balance = gnc_numeric_neg (balance);
 
-    date = gnome_date_edit_get_time (
-               GNOME_DATE_EDIT (aw->opening_balance_date_edit));
+    date = gnc_date_edit_get_date (
+               GNC_DATE_EDIT (aw->opening_balance_date_edit));
 
     use_equity = gtk_toggle_button_get_active
                  (GTK_TOGGLE_BUTTON (aw->opening_equity_radio));
@@ -660,7 +666,7 @@ verify_children_compatible (AccountWindow *aw)
         gint size;
         PangoFontDescription *font_desc;
 
-        size = pango_font_description_get_size (label->style->font_desc);
+        size = pango_font_description_get_size (gtk_widget_get_style (label)->font_desc);
         font_desc = pango_font_description_new ();
         pango_font_description_set_weight (font_desc, PANGO_WEIGHT_BOLD);
         pango_font_description_set_size (font_desc, size * PANGO_SCALE_LARGE);
@@ -689,16 +695,16 @@ verify_children_compatible (AccountWindow *aw)
 
     gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
-    gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), hbox,
+    gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), hbox,
                         TRUE, TRUE, 0);
 
     /* spacings */
     gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
     gtk_container_set_border_width (GTK_CONTAINER (hbox), 5);
-    gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 14);
+    gtk_box_set_spacing (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), 14);
     gtk_container_set_border_width (
-        GTK_CONTAINER (GTK_DIALOG (dialog)->action_area), 5);
-    gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->action_area), 6);
+        GTK_CONTAINER (gtk_dialog_get_action_area (GTK_DIALOG (dialog))), 5);
+    gtk_box_set_spacing (GTK_BOX (gtk_dialog_get_action_area (GTK_DIALOG (dialog))), 6);
 
     gtk_widget_show_all (hbox);
 
@@ -752,7 +758,7 @@ gnc_common_ok (AccountWindow *aw)
 
     /* check for valid name */
     name = gtk_entry_get_text(GTK_ENTRY(aw->name_entry));
-    if (safe_strcmp(name, "") == 0)
+    if (g_strcmp0(name, "") == 0)
     {
         const char *message = _("The account must be given a name.");
         gnc_error_dialog(aw->dialog, "%s", message);
@@ -963,8 +969,8 @@ gnc_account_window_response_cb (GtkDialog *dialog,
     LEAVE(" ");
 }
 
-static void
-gnc_account_window_destroy_cb (GtkObject *object, gpointer data)
+void
+gnc_account_window_destroy_cb (GtkWidget *object, gpointer data)
 {
     AccountWindow *aw = data;
     Account *account;
@@ -1172,7 +1178,7 @@ gnc_account_type_view_create (AccountWindow *aw)
     gnc_tree_model_account_types_set_selection(selection, 1 << aw->type);
 }
 
-static void
+void
 gnc_account_name_insert_text_cb (GtkWidget   *entry,
                                  const gchar *text,
                                  gint         length,
@@ -1202,7 +1208,7 @@ gnc_account_name_insert_text_cb (GtkWidget   *entry,
     g_strfreev ( strsplit );
 }
 
-static void
+void
 gnc_account_name_changed_cb(GtkWidget *widget, gpointer data)
 {
     AccountWindow *aw = data;
@@ -1210,7 +1216,7 @@ gnc_account_name_changed_cb(GtkWidget *widget, gpointer data)
     gnc_account_window_set_name (aw);
 }
 
-static void
+void
 gnc_account_color_default_cb(GtkWidget *widget, gpointer data)
 {
     GdkColor color;
@@ -1274,7 +1280,7 @@ account_commodity_filter (GtkTreeSelection *selection,
     return gnc_commodity_equiv (xaccAccountGetCommodity (account), commodity);
 }
 
-static void
+void
 opening_equity_cb (GtkWidget *w, gpointer data)
 {
     AccountWindow *aw = data;
@@ -1296,22 +1302,22 @@ static void
 gnc_account_window_create(AccountWindow *aw)
 {
     GtkWidget *amount;
+    GtkWidget *date_edit;
     GObject *awo;
     GtkWidget *box;
     GtkWidget *label;
-    GladeXML  *xml;
+    GtkBuilder  *builder;
     GtkTreeSelection *selection;
 
     ENTER("aw %p, modal %d", aw, aw->modal);
-    xml = gnc_glade_xml_new ("account.glade", "Account Dialog");
+    builder = gtk_builder_new();
+    gnc_builder_add_from_file (builder, "dialog-account.glade", "fraction_liststore");
+    gnc_builder_add_from_file (builder, "dialog-account.glade", "Account Dialog");
 
-    aw->dialog = glade_xml_get_widget (xml, "Account Dialog");
+    aw->dialog = GTK_WIDGET(gtk_builder_get_object (builder, "Account Dialog"));
     awo = G_OBJECT (aw->dialog);
 
     g_object_set_data (awo, "dialog_info", aw);
-
-    g_signal_connect (awo, "destroy",
-                      G_CALLBACK (gnc_account_window_destroy_cb), aw);
 
     if (!aw->modal)
         g_signal_connect (awo, "response",
@@ -1319,26 +1325,15 @@ gnc_account_window_create(AccountWindow *aw)
     else
         gtk_window_set_modal (GTK_WINDOW (aw->dialog), TRUE);
 
-    aw->notebook = glade_xml_get_widget (xml, "account_notebook");
+    aw->notebook = GTK_WIDGET(gtk_builder_get_object (builder, "account_notebook"));
+    aw->name_entry = GTK_WIDGET(gtk_builder_get_object (builder, "name_entry"));
+    aw->description_entry = GTK_WIDGET(gtk_builder_get_object (builder, "description_entry"));
+    aw->color_entry_button = GTK_WIDGET(gtk_builder_get_object (builder, "color_entry_button"));
+    aw->color_default_button = GTK_WIDGET(gtk_builder_get_object (builder, "color_default_button"));
+    aw->code_entry =        GTK_WIDGET(gtk_builder_get_object (builder, "code_entry"));
+    aw->notes_text_buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (GTK_WIDGET(gtk_builder_get_object (builder, "notes_text"))));
 
-    aw->name_entry = glade_xml_get_widget (xml, "name_entry");
-    g_signal_connect (G_OBJECT (aw->name_entry), "insert-text",
-                      G_CALLBACK (gnc_account_name_insert_text_cb), aw);
-    g_signal_connect (G_OBJECT (aw->name_entry), "changed",
-                      G_CALLBACK (gnc_account_name_changed_cb), aw);
-
-    aw->description_entry = glade_xml_get_widget (xml, "description_entry");
-
-    aw->color_entry_button = glade_xml_get_widget (xml, "color_entry_button");
-
-    aw->color_default_button = glade_xml_get_widget (xml, "color_default_button");
-    g_signal_connect (G_OBJECT (aw->color_default_button), "clicked",
-                      G_CALLBACK (gnc_account_color_default_cb), aw);
-
-    aw->code_entry =        glade_xml_get_widget (xml, "code_entry");
-    aw->notes_text_buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (glade_xml_get_widget (xml, "notes_text")));
-
-    box = glade_xml_get_widget (xml, "commodity_hbox");
+    box = GTK_WIDGET(gtk_builder_get_object (builder, "commodity_hbox"));
     aw->commodity_edit = gnc_general_select_new (GNC_GENERAL_SELECT_TYPE_SELECT,
                          gnc_commodity_edit_get_string,
                          gnc_commodity_edit_new_select,
@@ -1346,15 +1341,15 @@ gnc_account_window_create(AccountWindow *aw)
     gtk_box_pack_start(GTK_BOX(box), aw->commodity_edit, TRUE, TRUE, 0);
     gtk_widget_show (aw->commodity_edit);
 
-    label = glade_xml_get_widget (xml, "security_label");
+    label = GTK_WIDGET(gtk_builder_get_object (builder, "security_label"));
     gnc_general_select_make_mnemonic_target (GNC_GENERAL_SELECT(aw->commodity_edit), label);
 
     g_signal_connect (G_OBJECT (aw->commodity_edit), "changed",
                       G_CALLBACK (commodity_changed_cb), aw);
 
-    aw->account_scu = glade_xml_get_widget (xml, "account_scu");
+    aw->account_scu = GTK_WIDGET(gtk_builder_get_object (builder, "account_scu"));
 
-    box = glade_xml_get_widget (xml, "parent_scroll");
+    box = GTK_WIDGET(gtk_builder_get_object (builder, "parent_scroll"));
 
     aw->parent_tree = gnc_tree_view_account_new(TRUE);
     gtk_container_add(GTK_CONTAINER(box), GTK_WIDGET(aw->parent_tree));
@@ -1363,32 +1358,33 @@ gnc_account_window_create(AccountWindow *aw)
     g_signal_connect (G_OBJECT (selection), "changed",
                       G_CALLBACK (gnc_account_parent_changed_cb), aw);
 
-    aw->tax_related_button = glade_xml_get_widget (xml, "tax_related_button");
-    aw->placeholder_button = glade_xml_get_widget (xml, "placeholder_button");
-    aw->hidden_button = glade_xml_get_widget (xml, "hidden_button");
+    aw->tax_related_button = GTK_WIDGET(gtk_builder_get_object (builder, "tax_related_button"));
+    aw->placeholder_button = GTK_WIDGET(gtk_builder_get_object (builder, "placeholder_button"));
+    aw->hidden_button = GTK_WIDGET(gtk_builder_get_object (builder, "hidden_button"));
 
-    box = glade_xml_get_widget (xml, "opening_balance_box");
+    box = GTK_WIDGET(gtk_builder_get_object (builder, "opening_balance_box"));
     amount = gnc_amount_edit_new ();
     aw->opening_balance_edit = amount;
     gtk_box_pack_start(GTK_BOX(box), amount, TRUE, TRUE, 0);
     gnc_amount_edit_set_evaluate_on_enter (GNC_AMOUNT_EDIT (amount), TRUE);
     gtk_widget_show (amount);
 
-    label = glade_xml_get_widget (xml, "balance_label");
+    label = GTK_WIDGET(gtk_builder_get_object (builder, "balance_label"));
     gtk_label_set_mnemonic_widget (GTK_LABEL(label), amount);
 
-    box = glade_xml_get_widget (xml, "opening_balance_date_box");
-    aw->opening_balance_date_edit = glade_xml_get_widget (xml, "opening_balance_date_edit");
+    box = GTK_WIDGET(gtk_builder_get_object (builder, "opening_balance_date_box"));
+    date_edit = gnc_date_edit_new (gnc_time (NULL), 1, 1);
+    aw->opening_balance_date_edit = date_edit;
+    gtk_box_pack_start(GTK_BOX(box), date_edit, TRUE, TRUE, 0);
+    gtk_widget_show (date_edit);
 
     aw->opening_balance_page =
         gtk_notebook_get_nth_page (GTK_NOTEBOOK (aw->notebook), 1);
 
-    aw->opening_equity_radio = glade_xml_get_widget (xml,
-                               "opening_equity_radio");
-    g_signal_connect (G_OBJECT (aw->opening_equity_radio), "toggled",
-                      G_CALLBACK (opening_equity_cb), aw);
+    aw->opening_equity_radio = GTK_WIDGET(gtk_builder_get_object (builder,
+                                          "opening_equity_radio"));
 
-    box = glade_xml_get_widget (xml, "transfer_account_scroll");
+    box = GTK_WIDGET(gtk_builder_get_object (builder, "transfer_account_scroll"));
     aw->transfer_account_scroll = box;
 
     aw->transfer_tree = GTK_WIDGET(gnc_tree_view_account_new(FALSE));
@@ -1398,16 +1394,20 @@ gnc_account_window_create(AccountWindow *aw)
     gtk_container_add(GTK_CONTAINER(box), GTK_WIDGET(aw->transfer_tree));
     gtk_widget_show (GTK_WIDGET(aw->transfer_tree));
 
-    label = glade_xml_get_widget (xml, "parent_label");
+    label = GTK_WIDGET(gtk_builder_get_object (builder, "parent_label"));
     gtk_label_set_mnemonic_widget (GTK_LABEL(label), GTK_WIDGET(aw->parent_tree));
 
     /* This goes at the end so the select callback has good data. */
-    aw->type_view = glade_xml_get_widget (xml, "type_view");
+    aw->type_view = GTK_WIDGET(gtk_builder_get_object (builder, "type_view"));
     gnc_account_type_view_create (aw);
 
-    gnc_restore_window_size (GCONF_SECTION, GTK_WINDOW(aw->dialog));
+    gnc_restore_window_size (GNC_PREFS_GROUP, GTK_WINDOW(aw->dialog));
 
     gtk_widget_grab_focus(GTK_WIDGET(aw->name_entry));
+
+    gtk_builder_connect_signals(builder, aw);
+    g_object_unref(G_OBJECT(builder));
+
     LEAVE(" ");
 }
 
@@ -1483,7 +1483,7 @@ close_handler (gpointer user_data)
     AccountWindow *aw = user_data;
 
     ENTER("aw %p, modal %d", aw, aw->modal);
-    gnc_save_window_size (GCONF_SECTION, GTK_WINDOW(aw->dialog));
+    gnc_save_window_size (GNC_PREFS_GROUP, GTK_WINDOW(aw->dialog));
 
     gtk_widget_destroy (GTK_WIDGET (aw->dialog));
     LEAVE(" ");
@@ -1663,7 +1663,7 @@ gnc_split_account_name (QofBook *book, const char *in_name, Account **base_accou
         {
             account = node->data;
 
-            if (safe_strcmp(xaccAccountGetName (account), *ptr) == 0)
+            if (g_strcmp0(xaccAccountGetName (account), *ptr) == 0)
             {
                 /* We found an account. */
                 *base_account = account;
@@ -1901,18 +1901,31 @@ gnc_account_renumber_update_examples (RenumberDialog *data)
 {
     gchar *str;
     gchar *prefix;
-    gint interval, num_digits;
+    gint interval;
+    unsigned int num_digits = 1;
 
+    g_return_if_fail (data->num_children > 0);
     prefix = gtk_editable_get_chars(GTK_EDITABLE(data->prefix), 0, -1);
     interval = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(data->interval));
-    num_digits = log10(data->num_children * interval) + 1;
+    if (interval <= 0)
+	interval = 10;
+    num_digits = (unsigned int)log10((double)(data->num_children * interval)) + 1;
 
-    str = g_strdup_printf("%s-%0*d", prefix, num_digits, interval);
+    if (strlen (prefix))
+	str = g_strdup_printf("%s-%0*d", prefix, num_digits, interval);
+    else
+	str = g_strdup_printf("%0*d", num_digits, interval);
+
     gtk_label_set_text(GTK_LABEL(data->example1), str);
     g_free(str);
 
-    str = g_strdup_printf("%s-%0*d", prefix, num_digits,
-                          interval * data->num_children);
+    if (strlen (prefix))
+	str = g_strdup_printf("%s-%0*d", prefix, num_digits,
+			      interval * data->num_children);
+    else
+	str = g_strdup_printf("%0*d", num_digits,
+			      interval * data->num_children);
+
     gtk_label_set_text(GTK_LABEL(data->example2), str);
     g_free(str);
 
@@ -1938,24 +1951,37 @@ gnc_account_renumber_response_cb (GtkDialog *dialog,
                                   gint response,
                                   RenumberDialog *data)
 {
-    GList *children, *tmp;
+    GList *children = NULL, *tmp;
     gchar *str;
     gchar *prefix;
-    gint interval, num_digits, i;
+    gint interval;
+    unsigned int num_digits, i;
 
     if (response == GTK_RESPONSE_OK)
     {
         gtk_widget_hide(data->dialog);
-        children = gnc_account_get_children(data->parent);
+        children = gnc_account_get_children_sorted(data->parent);
+	if (children == NULL)
+	{
+	    PWARN ("Can't renumber children of an account with no children!");
+	    g_free (data);
+	    return;
+	}
         prefix = gtk_editable_get_chars(GTK_EDITABLE(data->prefix), 0, -1);
         interval =
             gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(data->interval));
-        num_digits = log10(data->num_children * interval) + 1;
+	if (interval <= 0)
+	    interval = 10;
+        num_digits = (unsigned int)log10 ((double)(data->num_children * interval) + 1);
 
         gnc_set_busy_cursor (NULL, TRUE);
         for (tmp = children, i = 1; tmp; tmp = g_list_next(tmp), i += 1)
         {
-            str = g_strdup_printf("%s-%0*d", prefix, num_digits, interval * i);
+	    if (strlen (prefix))
+		str = g_strdup_printf("%s-%0*d", prefix,
+				      num_digits, interval * i);
+	    else
+		str = g_strdup_printf("%0*d", num_digits, interval * i);
             xaccAccountSetCode(tmp->data, str);
             g_free(str);
         }
@@ -1971,37 +1997,46 @@ void
 gnc_account_renumber_create_dialog (GtkWidget *window, Account *account)
 {
     RenumberDialog *data;
-    GladeXML *xml;
+    GtkBuilder *builder;
     GtkWidget *widget;
     gchar *string;
 
+    /* This is a safety check; the menu item calling this dialog
+     * should be disabled if the account has no children.
+     */
+    g_return_if_fail (gnc_account_n_children (account) > 0);
     data = g_new(RenumberDialog, 1);
     data->parent = account;
     data->num_children = gnc_account_n_children(account);
 
-    xml = gnc_glade_xml_new ("account.glade", "Renumber Accounts");
-    data->dialog = glade_xml_get_widget (xml, "Renumber Accounts");
+    builder = gtk_builder_new();
+    gnc_builder_add_from_file (builder, "dialog-account.glade",
+			       "interval_adjustment");
+    gnc_builder_add_from_file (builder, "dialog-account.glade",
+			       "Renumber Accounts");
+    data->dialog = GTK_WIDGET(gtk_builder_get_object (builder,
+						      "Renumber Accounts"));
     gtk_window_set_transient_for(GTK_WINDOW(data->dialog), GTK_WINDOW(window));
-    g_object_set_data_full(G_OBJECT(data->dialog), "xml", xml, g_object_unref);
+    g_object_set_data_full(G_OBJECT(data->dialog), "builder", builder,
+			   g_object_unref);
 
-    widget = glade_xml_get_widget (xml, "header_label");
-    string = g_strdup_printf(_( "Renumber the immediate sub-accounts of %s?  "
+    widget = GTK_WIDGET(gtk_builder_get_object (builder, "header_label"));
+    string = g_strdup_printf(_( "Renumber the immediate sub-accounts of %s? "
                                 "This will replace the account code field of "
                                 "each child account with a newly generated code."),
                              gnc_account_get_full_name(account));
     gtk_label_set_text(GTK_LABEL(widget), string);
     g_free(string);
 
-    data->prefix = glade_xml_get_widget (xml, "prefix_entry");
-    data->interval = glade_xml_get_widget (xml, "interval_spin");
-    data->example1 = glade_xml_get_widget (xml, "example1_label");
-    data->example2 = glade_xml_get_widget (xml, "example2_label");
+    data->prefix = GTK_WIDGET(gtk_builder_get_object (builder, "prefix_entry"));
+    data->interval = GTK_WIDGET(gtk_builder_get_object (builder, "interval_spin"));
+    data->example1 = GTK_WIDGET(gtk_builder_get_object (builder, "example1_label"));
+    data->example2 = GTK_WIDGET(gtk_builder_get_object (builder, "example2_label"));
 
     gtk_entry_set_text(GTK_ENTRY(data->prefix), xaccAccountGetCode(account));
     gnc_account_renumber_update_examples(data);
 
-    glade_xml_signal_autoconnect_full(xml, gnc_glade_autoconnect_full_func,
-                                      data);
+    gtk_builder_connect_signals(builder, data);
 
     gtk_widget_show_all(data->dialog);
 }

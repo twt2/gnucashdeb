@@ -30,6 +30,7 @@
 (export gnc:make-general-journal-report)
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (gnucash gnc-module))
+(use-modules (gnucash gettext))
 
 (gnc:module-load "gnucash/report/report-system" 0)
 
@@ -104,7 +105,9 @@
      ;; One list per option here with: option-name, default-value
      (list
       (list (N_ "Date") #t)
-      (list (N_ "Num") #f)
+      (if (qof-book-use-split-action-for-num-field (gnc-get-current-book))
+          (list (N_ "Num/Action") #f)
+          (list (N_ "Num") #f))
       (list (N_ "Description") #t)
       (list (N_ "Account") #t)
       (list (N_ "Shares") #f)

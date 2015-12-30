@@ -55,7 +55,7 @@
 #define DIALOG_NEW_CUSTOMER_CM_CLASS "dialog-new-customer"
 #define DIALOG_EDIT_CUSTOMER_CM_CLASS "dialog-edit-customer"
 
-#define GCONF_SECTION_SEARCH "dialogs/business/customer_search"
+#define GNC_PREFS_GROUP_SEARCH "dialogs.business.customer-search"
 
 void gnc_customer_taxtable_check_cb (GtkToggleButton *togglebutton,
                                      gpointer user_data);
@@ -65,6 +65,9 @@ void gnc_customer_window_cancel_cb (GtkWidget *widget, gpointer data);
 void gnc_customer_window_help_cb (GtkWidget *widget, gpointer data);
 void gnc_customer_window_destroy_cb (GtkWidget *widget, gpointer data);
 void gnc_customer_name_changed_cb (GtkWidget *widget, gpointer data);
+void gnc_customer_terms_changed_cb (GtkWidget *widget, gpointer data);
+void gnc_customer_taxincluded_changed_cb (GtkWidget *widget, gpointer data);
+void gnc_customer_taxtable_changed_cb (GtkWidget *widget, gpointer data);
 void gnc_customer_addr2_insert_cb(GtkEditable *editable,
                                   gchar *new_text, gint new_text_length,
                                   gint *position, gpointer user_data);
@@ -207,6 +210,9 @@ static void gnc_ui_to_customer (CustomerWindow *cw, GncCustomer *cust)
 
     gncCustomerBeginEdit (cust);
 
+    if (cw->dialog_type == NEW_CUSTOMER)
+        qof_event_gen(QOF_INSTANCE(cust), QOF_EVENT_ADD, NULL);
+
     gncCustomerSetID (cust, gtk_editable_get_chars
                       (GTK_EDITABLE (cw->id_entry), 0, -1));
     gncCustomerSetName (cust, gtk_editable_get_chars
@@ -302,7 +308,7 @@ static gboolean check_entry_nonempty (GtkWidget *dialog, GtkWidget *entry,
                                       const char * error_message)
 {
     const char *res = gtk_entry_get_text (GTK_ENTRY (entry));
-    if (safe_strcmp (res, "") == 0)
+    if (g_strcmp0 (res, "") == 0)
     {
         if (error_message)
             gnc_error_dialog (dialog, "%s", error_message);
@@ -352,7 +358,7 @@ gnc_customer_window_ok_cb (GtkWidget *widget, gpointer data)
         return;
 
     /* Set the customer id if one has not been chosen */
-    if (safe_strcmp (gtk_entry_get_text (GTK_ENTRY (cw->id_entry)), "") == 0)
+    if (g_strcmp0 (gtk_entry_get_text (GTK_ENTRY (cw->id_entry)), "") == 0)
     {
         string = gncCustomerNextID (cw->book);
         gtk_entry_set_text (GTK_ENTRY (cw->id_entry), string);
@@ -384,7 +390,7 @@ gnc_customer_window_cancel_cb (GtkWidget *widget, gpointer data)
 void
 gnc_customer_window_help_cb (GtkWidget *widget, gpointer data)
 {
-    gnc_gnome_help(HF_HELP, HL_USAGE);
+    gnc_gnome_help(HF_HELP, HL_USAGE_CUSTOMER);
 }
 
 void
@@ -440,6 +446,42 @@ gnc_customer_name_changed_cb (GtkWidget *widget, gpointer data)
     g_free (title);
 }
 
+void
+gnc_customer_terms_changed_cb (GtkWidget *widget, gpointer data)
+{
+    GtkComboBox *cbox = GTK_COMBO_BOX (widget);
+    CustomerWindow *cw = data;
+
+    if (!cw) return;
+    if (!cbox) return;
+
+    cw->terms = gnc_simple_combo_get_value (cbox);
+}
+
+void
+gnc_customer_taxincluded_changed_cb (GtkWidget *widget, gpointer data)
+{
+    GtkComboBox *cbox = GTK_COMBO_BOX (widget);
+    CustomerWindow *cw = data;
+
+    if (!cw) return;
+    if (!cbox) return;
+
+    cw->taxincluded = GPOINTER_TO_INT (gnc_simple_combo_get_value (cbox));
+}
+
+void
+gnc_customer_taxtable_changed_cb (GtkWidget *widget, gpointer data)
+{
+    GtkComboBox *cbox = GTK_COMBO_BOX (widget);
+    CustomerWindow *cw = data;
+
+    if (!cw) return;
+    if (!cbox) return;
+
+    cw->taxtable = gnc_simple_combo_get_value (cbox);
+}
+
 static void
 gnc_customer_window_close_handler (gpointer user_data)
 {
@@ -489,7 +531,7 @@ static CustomerWindow *
 gnc_customer_new_window (QofBook *bookp, GncCustomer *cust)
 {
     CustomerWindow *cw;
-    GladeXML *xml;
+    GtkBuilder *builder;
     GtkWidget *hbox, *edit;
     gnc_commodity *currency;
     GNCPrintAmountInfo print_info;
@@ -526,48 +568,52 @@ gnc_customer_new_window (QofBook *bookp, GncCustomer *cust)
     cw->book = bookp;
 
     /* Find the dialog */
-    xml = gnc_glade_xml_new ("customer.glade", "Customer Dialog");
-    cw->dialog = glade_xml_get_widget (xml, "Customer Dialog");
+    builder = gtk_builder_new();
+    gnc_builder_add_from_file (builder, "dialog-customer.glade", "terms_store");
+    gnc_builder_add_from_file (builder, "dialog-customer.glade", "tax_included_store");
+    gnc_builder_add_from_file (builder, "dialog-customer.glade", "taxtable_store");
+    gnc_builder_add_from_file (builder, "dialog-customer.glade", "Customer Dialog");
+    cw->dialog = GTK_WIDGET (gtk_builder_get_object (builder, "Customer Dialog"));
 
     g_object_set_data (G_OBJECT (cw->dialog), "dialog_info", cw);
 
     /* Get entry points */
-    cw->id_entry = glade_xml_get_widget (xml, "id_entry");
-    cw->company_entry = glade_xml_get_widget (xml, "company_entry");
+    cw->id_entry = GTK_WIDGET (gtk_builder_get_object (builder, "id_entry"));
+    cw->company_entry = GTK_WIDGET (gtk_builder_get_object (builder, "company_entry"));
 
-    cw->name_entry = glade_xml_get_widget (xml, "name_entry");
-    cw->addr1_entry = glade_xml_get_widget (xml, "addr1_entry");
-    cw->addr2_entry = glade_xml_get_widget (xml, "addr2_entry");
-    cw->addr3_entry = glade_xml_get_widget (xml, "addr3_entry");
-    cw->addr4_entry = glade_xml_get_widget (xml, "addr4_entry");
-    cw->phone_entry = glade_xml_get_widget (xml, "phone_entry");
-    cw->fax_entry = glade_xml_get_widget (xml, "fax_entry");
-    cw->email_entry = glade_xml_get_widget (xml, "email_entry");
+    cw->name_entry = GTK_WIDGET (gtk_builder_get_object (builder, "name_entry"));
+    cw->addr1_entry = GTK_WIDGET (gtk_builder_get_object (builder, "addr1_entry"));
+    cw->addr2_entry = GTK_WIDGET (gtk_builder_get_object (builder, "addr2_entry"));
+    cw->addr3_entry = GTK_WIDGET (gtk_builder_get_object (builder, "addr3_entry"));
+    cw->addr4_entry = GTK_WIDGET (gtk_builder_get_object (builder, "addr4_entry"));
+    cw->phone_entry = GTK_WIDGET (gtk_builder_get_object (builder, "phone_entry"));
+    cw->fax_entry = GTK_WIDGET (gtk_builder_get_object (builder, "fax_entry"));
+    cw->email_entry = GTK_WIDGET (gtk_builder_get_object (builder, "email_entry"));
 
-    cw->shipname_entry = glade_xml_get_widget (xml, "shipname_entry");
-    cw->shipaddr1_entry = glade_xml_get_widget (xml, "shipaddr1_entry");
-    cw->shipaddr2_entry = glade_xml_get_widget (xml, "shipaddr2_entry");
-    cw->shipaddr3_entry = glade_xml_get_widget (xml, "shipaddr3_entry");
-    cw->shipaddr4_entry = glade_xml_get_widget (xml, "shipaddr4_entry");
-    cw->shipphone_entry = glade_xml_get_widget (xml, "shipphone_entry");
-    cw->shipfax_entry = glade_xml_get_widget (xml, "shipfax_entry");
-    cw->shipemail_entry = glade_xml_get_widget (xml, "shipemail_entry");
+    cw->shipname_entry = GTK_WIDGET (gtk_builder_get_object (builder, "shipname_entry"));
+    cw->shipaddr1_entry = GTK_WIDGET (gtk_builder_get_object (builder, "shipaddr1_entry"));
+    cw->shipaddr2_entry = GTK_WIDGET (gtk_builder_get_object (builder, "shipaddr2_entry"));
+    cw->shipaddr3_entry = GTK_WIDGET (gtk_builder_get_object (builder, "shipaddr3_entry"));
+    cw->shipaddr4_entry = GTK_WIDGET (gtk_builder_get_object (builder, "shipaddr4_entry"));
+    cw->shipphone_entry = GTK_WIDGET (gtk_builder_get_object (builder, "shipphone_entry"));
+    cw->shipfax_entry = GTK_WIDGET (gtk_builder_get_object (builder, "shipfax_entry"));
+    cw->shipemail_entry = GTK_WIDGET (gtk_builder_get_object (builder, "shipemail_entry"));
 
-    cw->active_check = glade_xml_get_widget (xml, "active_check");
-    cw->taxincluded_menu = glade_xml_get_widget (xml, "tax_included_menu");
-    cw->notes_text = glade_xml_get_widget (xml, "notes_text");
+    cw->active_check = GTK_WIDGET (gtk_builder_get_object (builder, "active_check"));
+    cw->taxincluded_menu = GTK_WIDGET (gtk_builder_get_object (builder, "tax_included_menu"));
+    cw->notes_text = GTK_WIDGET (gtk_builder_get_object (builder, "notes_text"));
 
-    cw->terms_menu = glade_xml_get_widget (xml, "terms_menu");
+    cw->terms_menu = GTK_WIDGET (gtk_builder_get_object (builder, "terms_menu"));
 
-    cw->taxtable_check = glade_xml_get_widget (xml, "taxtable_button");
-    cw->taxtable_menu = glade_xml_get_widget (xml, "taxtable_menu");
+    cw->taxtable_check = GTK_WIDGET (gtk_builder_get_object (builder, "taxtable_button"));
+    cw->taxtable_menu = GTK_WIDGET (gtk_builder_get_object (builder, "taxtable_menu"));
 
     /* Currency */
     edit = gnc_currency_edit_new();
     gnc_currency_edit_set_currency (GNC_CURRENCY_EDIT(edit), currency);
     cw->currency_edit = edit;
 
-    hbox = glade_xml_get_widget (xml, "currency_box");
+    hbox = GTK_WIDGET (gtk_builder_get_object (builder, "currency_box"));
     gtk_box_pack_start (GTK_BOX (hbox), edit, TRUE, TRUE, 0);
 
     /* DISCOUNT: Percentage Value */
@@ -580,7 +626,7 @@ gnc_customer_new_window (QofBook *bookp, GncCustomer *cust)
     cw->discount_amount = edit;
     gtk_widget_show (edit);
 
-    hbox = glade_xml_get_widget (xml, "discount_box");
+    hbox = GTK_WIDGET (gtk_builder_get_object (builder, "discount_box"));
     gtk_box_pack_start (GTK_BOX (hbox), edit, TRUE, TRUE, 0);
 
     /* CREDIT: Monetary Value */
@@ -593,13 +639,13 @@ gnc_customer_new_window (QofBook *bookp, GncCustomer *cust)
     cw->credit_amount = edit;
     gtk_widget_show (edit);
 
-    hbox = glade_xml_get_widget (xml, "credit_box");
+    hbox = GTK_WIDGET (gtk_builder_get_object (builder, "credit_box"));
     gtk_box_pack_start (GTK_BOX (hbox), edit, TRUE, TRUE, 0);
 
     /* Setup signals */
-    glade_xml_signal_autoconnect_full( xml,
-                                       gnc_glade_autoconnect_full_func,
-                                       cw);
+    gtk_builder_connect_signals_full( builder,
+                                      gnc_builder_connect_full_func,
+                                      cw);
 
     /* Setup initial values */
     if (cust != NULL)
@@ -672,11 +718,11 @@ gnc_customer_new_window (QofBook *bookp, GncCustomer *cust)
     /* I know that cust exists here -- either passed in or just created */
 
     cw->taxincluded = gncCustomerGetTaxIncluded (cust);
-    gnc_ui_taxincluded_optionmenu (cw->taxincluded_menu, &cw->taxincluded);
-    gnc_ui_billterms_optionmenu (cw->terms_menu, bookp, TRUE, &cw->terms);
+    gnc_taxincluded_combo (GTK_COMBO_BOX(cw->taxincluded_menu), cw->taxincluded);
+    gnc_billterms_combo (GTK_COMBO_BOX(cw->terms_menu), bookp, TRUE, cw->terms);
 
     cw->taxtable = gncCustomerGetTaxTable (cust);
-    gnc_ui_taxtables_optionmenu (cw->taxtable_menu, bookp, TRUE, &cw->taxtable);
+    gnc_taxtables_combo (GTK_COMBO_BOX(cw->taxtable_menu), bookp, TRUE, cw->taxtable);
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cw->taxtable_check),
                                   gncCustomerGetTaxTableOverride (cust));
     gnc_customer_taxtable_check_cb (GTK_TOGGLE_BUTTON (cw->taxtable_check), cw);
@@ -697,6 +743,7 @@ gnc_customer_new_window (QofBook *bookp, GncCustomer *cust)
                                          QOF_EVENT_MODIFY | QOF_EVENT_DESTROY);
 
     gtk_widget_show_all (cw->dialog);
+    g_object_unref(G_OBJECT(builder));
 
     return cw;
 }
@@ -853,18 +900,18 @@ gnc_customer_search (GncCustomer *start, QofBook *book)
     static GList *columns = NULL;
     static GNCSearchCallbackButton buttons[] =
     {
-        { N_("View/Edit Customer"), edit_customer_cb},
-        { N_("Customer's Jobs"), jobs_customer_cb},
-        //    { N_("Customer's Orders"), order_customer_cb},
-        { N_("Customer's Invoices"), invoice_customer_cb},
-        { N_("Process Payment"), payment_customer_cb},
+        { N_("View/Edit Customer"), edit_customer_cb, NULL, TRUE},
+        { N_("Customer's Jobs"), jobs_customer_cb, NULL, TRUE},
+        //    { N_("Customer's Orders"), order_customer_cb, NULL, TRUE},
+        { N_("Customer's Invoices"), invoice_customer_cb, NULL, TRUE},
+        { N_("Process Payment"), payment_customer_cb, NULL, FALSE},
         { NULL },
     };
     (void)order_customer_cb;
 
     g_return_val_if_fail (book, NULL);
 
-    /* Build parameter list in reverse order*/
+    /* Build parameter list in reverse order */
     if (params == NULL)
     {
         params = gnc_search_param_prepend (params, _("Shipping Contact"), NULL, type,
@@ -910,7 +957,7 @@ gnc_customer_search (GncCustomer *start, QofBook *book)
     return gnc_search_dialog_create (type, _("Find Customer"),
                                      params, columns, q, q2, buttons, NULL,
                                      new_customer_cb, sw, free_userdata_cb,
-                                     GCONF_SECTION_SEARCH, NULL);
+                                     GNC_PREFS_GROUP_SEARCH, NULL);
 }
 
 GNCSearchWindow *
@@ -1022,7 +1069,6 @@ gnc_customer_addr_common_insert_cb(GtkEditable *editable,
     CustomerWindow *wdata = user_data;
     gchar *concatenated_text;
     QuickFill *match;
-    const gchar *match_str;
     gint prefix_len, concatenated_text_len;
 
     if (new_text_length <= 0)
@@ -1225,8 +1271,8 @@ gnc_customer_common_key_press_cb( GtkEntry *entry,
      */
     switch ( event->keyval )
     {
-    case GDK_Tab:
-    case GDK_ISO_Left_Tab:
+    case GDK_KEY_Tab:
+    case GDK_KEY_ISO_Left_Tab:
         if ( !( event->state & GDK_SHIFT_MASK) )    /* Complete on Tab,
                                                   * but not Shift-Tab */
         {

@@ -31,18 +31,18 @@ import gnucash_core_c
 from function_class import \
      ClassFromFunctions, extract_attributes_with_prefix, \
      default_arguments_decorator, method_function_returns_instance, \
-     methods_return_instance
+     methods_return_instance, methods_return_instance_lists
 
 from gnucash_core import \
      GnuCashCoreClass, GncNumeric, GncCommodity, Transaction, \
      Split, Book, GncLot, Account
 
 from gnucash_core_c import GNC_OWNER_CUSTOMER, GNC_OWNER_JOB, \
-    GNC_OWNER_EMPLOYEE, GNC_OWNER_VENDOR, gncOwnerApplyPayment, \
+    GNC_OWNER_EMPLOYEE, GNC_OWNER_VENDOR, \
     GNC_PAYMENT_CASH, GNC_PAYMENT_CARD, \
     GNC_DISC_PRETAX, GNC_DISC_SAMETIME, GNC_DISC_POSTTAX, \
     GNC_TAXINCLUDED_YES, GNC_TAXINCLUDED_NO, GNC_TAXINCLUDED_USEGLOBAL, \
-    GNC_AMT_TYPE_VALUE, GNC_AMT_TYPE_PERCENT
+    GNC_AMT_TYPE_VALUE, GNC_AMT_TYPE_PERCENT, GNC_ID_INVOICE
 
 import datetime
 
@@ -56,34 +56,18 @@ class GnuCashBusinessEntity(GnuCashCoreClass):
                     "with either a book, id, and currency, or an existing "
                     "low level swig proxy in the argument instance")
             GnuCashCoreClass.__init__(self, book)
+            self.BeginEdit()
             self.SetID(id)
             self.SetCurrency(currency)
             if name != None:
                 self.SetName(name)
+            self.CommitEdit()
         else:
             GnuCashCoreClass.__init__(self, instance=instance)
 
-    def ApplyPayment(self, invoice, posted_acc, xfer_acc, amount,
-                     exch, date, memo, num):
-        if invoice != None:
-            invoice = invoice.get_instance()
-        trans = gncOwnerApplyPayment(
-            self.get_instance(), invoice, posted_acc.get_instance(),
-            xfer_acc.get_instance(), amount.get_instance(),
-            exch.get_instance(), date, memo, num)
-        if trans != None:
-            trans = Transaction(instance=trans)
-        return trans
-            
-
 class Customer(GnuCashBusinessEntity): pass
                          
-class Employee(GnuCashBusinessEntity):
-    def SetName(self, name):
-        self.GetAddr().SetName(name)
-    
-    def GetName(self):
-        return self.GetAddr().GetName()
+class Employee(GnuCashBusinessEntity): pass
 
 class Vendor(GnuCashBusinessEntity): pass
 
@@ -175,12 +159,14 @@ class Invoice(GnuCashCoreClass):
                     "with either a book, id, currency and owner, or an existing"
                     "low level swig proxy in the argument instance")
             GnuCashCoreClass.__init__(self, book)
+            self.BeginEdit()
             self.SetID(id)
             self.SetCurrency(currency)
             self.SetOwner(owner)
             if date_opened == None:
                 date_opened = datetime.date.today()
             self.SetDateOpened(date_opened)
+            self.CommitEdit()
         else:
             GnuCashCoreClass.__init__(self, instance=instance)
 
@@ -231,7 +217,35 @@ class Entry(GnuCashCoreClass):
             if invoice != None:
                 invoice.AddEntry(self)
         else:
-            GnuCashCoreClass.__init__(self, instance=instance)    
+
+            GnuCashCoreClass.__init__(self, instance=instance)
+
+    def test_type(self, invoice):
+        if invoice.GetTypeString() == "Invoice" and self.GetInvoice() == None:
+            raise Exception("Entry type error. Check that Entry type matches Invoice.")
+        if invoice.GetTypeString() == "Bill" and self.GetBill() == None:
+            raise Exception("Entry type error. Check that Entry type matches Bill.")
+
+
+# Owner
+GnuCashBusinessEntity.add_methods_with_prefix('gncOwner')
+
+owner_dict = {
+                    'GetCustomer' : Customer,
+                    'GetVendor' : Vendor,
+                    'GetEmployee' : Employee,
+                    'GetJob' : Job,
+                    'GetAddr' : Address,
+                    'GetCurrency' : GncCommodity,
+                    'GetEndOwner': GnuCashBusinessEntity,
+                    'GetBalanceInCurrency': GncNumeric,
+              }
+methods_return_instance(GnuCashBusinessEntity, owner_dict)
+
+methods_return_instance_lists(
+    GnuCashBusinessEntity, {
+        'GetCommoditiesList': GncCommodity
+    })
 
 # Customer
 Customer.add_constructor_and_methods_with_prefix('gncCustomer', 'Create')
@@ -309,6 +323,8 @@ taxtableentry_dict = {
 
 # Invoice
 Invoice.add_constructor_and_methods_with_prefix('gncInvoice', 'Create')
+methods_return_instance_lists(
+    Invoice, { 'GetEntries': Entry })
 
 # Bill
 Bill.add_methods_with_prefix('gncBill')
@@ -345,12 +361,10 @@ entry_dict = {
                  'GetBillPrice': GncNumeric,
                  'GetBillTaxTable': TaxTable,
                  'Copy': Entry,
-                 'ReturnValue': GncNumeric,
-                 'ReturnDiscountValue': GncNumeric,
-                 'ReturnTaxValue': GncNumeric,
                  'GetInvoice': Invoice,
                  'GetBill': Invoice
              }
+methods_return_instance(Entry, entry_dict)             
 Entry.decorate_functions(
     decorate_to_return_instance_instead_of_owner,
     'GetBillTo' )

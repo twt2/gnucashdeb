@@ -26,15 +26,12 @@
 
 (define-module (gnucash report aging))
 
-(use-modules (ice-9 slib))
 (use-modules (gnucash main))
 (use-modules (gnucash printf))
 (use-modules (gnucash gnc-module))
-
-(require 'hash-table)
+(use-modules (gnucash gettext))
 
 (gnc:module-load "gnucash/report/report-system" 0)
-(gnc:module-load "gnucash/business-core" 0)
 
 (use-modules (gnucash report standard-reports))
 (use-modules (gnucash report business-reports))
@@ -47,6 +44,8 @@
 (define optname-multicurrency-totals (N_ "Show Multi-currency Totals"))
 (define optname-show-zeros (N_ "Show zero balance items"))
 (define optname-date-driver (N_ "Due or Post Date"))
+
+(export optname-show-zeros)
 
 ;; The idea is:  have a hash with the key being the contact name
 ;; (In future this might be GUID'ed, but for now it's a string
@@ -184,7 +183,7 @@
 
   (define (do-update value)
     (let* ((transaction (xaccSplitGetParent split))
-	   (temp-owner (gncOwnerCreate))
+	   (temp-owner (gncOwnerNew))
 	   (owner (gnc:owner-from-split split temp-owner)))
 
       (if (not (null? owner))
@@ -213,7 +212,7 @@
 		     (gnc:error error-str)
 		     (cons #f (sprintf
 			       (_ "Transactions relating to '%s' contain \
-more than one currency.  This report is not designed to cope with this possibility.")  (gncOwnerGetName owner))))
+more than one currency. This report is not designed to cope with this possibility.")  (gncOwnerGetName owner))))
 		   (begin
 		     (gnc:debug "it's an old company")
 		     (if (gnc-numeric-negative-p value)
@@ -221,7 +220,7 @@ more than one currency.  This report is not designed to cope with this possibili
 			 (process-payment company-info value))
 		     (hash-set! hash guid company-info)
 		     (cons #t guid)))
-	       (gncOwnerDestroy temp-owner))
+	       (gncOwnerFree temp-owner))
 		 
 	     ;; if it's a new company
 	     (begin
@@ -233,7 +232,7 @@ more than one currency.  This report is not designed to cope with this possibili
 		 (hash-set! hash guid new-company))
 	       (cons #t guid))))
        ; else (no owner)
-       (gncOwnerDestroy temp-owner))))
+       (gncOwnerFree temp-owner))))
   
   ;; figure out if this split is part of a closed lot
   ;; also save the split value...
@@ -348,31 +347,31 @@ more than one currency.  This report is not designed to cope with this possibili
       gnc:pagename-general
       optname-sort-by
       "i"
-      (N_ "Sort companies by")
+      (N_ "Sort companies by.")
       'name
       (list 
-       (vector 'name (N_ "Name") (N_ "Name of the company"))
-       (vector 'total (N_ "Total Owed") (N_ "Total amount owed to/from Company"))
-       (vector 'oldest-bracket (N_ "Bracket Total Owed") (N_ "Amount owed in oldest bracket - if same go to next oldest")))))
+       (vector 'name (N_ "Name") (N_ "Name of the company."))
+       (vector 'total (N_ "Total Owed") (N_ "Total amount owed to/from Company."))
+       (vector 'oldest-bracket (N_ "Bracket Total Owed") (N_ "Amount owed in oldest bracket - if same go to next oldest.")))))
 
     (add-option 
      (gnc:make-multichoice-option
       gnc:pagename-general
        optname-sort-order
        "ia"
-       (N_ "Sort order")
+       (N_ "Sort order.")
        'increasing
        (list
-	(vector 'increasing (N_ "Increasing") (N_ "0 -> $999,999.99, A->Z"))
-	(vector 'decreasing (N_ "Decreasing") (N_ "$999,999.99 -> $0, Z->A")))))
+	(vector 'increasing (N_ "Increasing") (N_ "0 -> $999,999.99, A->Z."))
+	(vector 'decreasing (N_ "Decreasing") (N_ "$999,999.99 -> $0, Z->A.")))))
 
     (add-option
      (gnc:make-simple-boolean-option
       gnc:pagename-general
       optname-multicurrency-totals
       "i"
-      (N_ "Show multi-currency totals.  If not selected, convert all \
-totals to report currency")
+      (N_ "Show multi-currency totals. If not selected, convert all \
+totals to report currency.")
       #f))
 
     (add-option
@@ -388,11 +387,11 @@ totals to report currency")
        gnc:pagename-general
        optname-date-driver
        "k"
-       (N_ "Leading date")
+       (N_ "Leading date.")
        'duedate
        (list
-         (vector 'duedate (N_ "Due Date") (N_ "Due date is leading")) ;; Should be using standard label for due date?
-	 (vector 'postdate (N_ "Post Date") (N_ "Post date is leading"))))) ;; Should be using standard label for post date?
+         (vector 'duedate (N_ "Due Date") (N_ "Due date is leading.")) ;; Should be using standard label for due date?
+	 (vector 'postdate (N_ "Post Date") (N_ "Post date is leading."))))) ;; Should be using standard label for post date?
     
     (gnc:options-set-default-section options "General")      
     options))
@@ -462,13 +461,13 @@ totals to report currency")
   ;; more general interval scheme in this report
   (define (make-heading-list)
     (list 
-     (N_ "Company")
-     (N_ "Current")
-     (N_ "0-30 days")
-     (N_ "31-60 days")
-     (N_ "61-90 days")
-     (N_ "91+ days")
-     (N_ "Total")))
+     (_ "Company")
+     (_ "Current")
+     (_ "0-30 days")
+     (_ "31-60 days")
+     (_ "61-90 days")
+     (_ "91+ days")
+     (_ "Total")))
 
 
   ;;  Make a list of commodity collectors for column totals
@@ -658,7 +657,7 @@ totals to report currency")
 				    (gnc:owner-anchor-text owner)
 				    company-name))
 				  monetary-list))
-			  (gncOwnerDestroy owner)))
+			  (gncOwnerFree owner)))
 		      company-list)
 
 	    ;; add the totals
@@ -674,7 +673,7 @@ totals to report currency")
 	(gnc:html-document-add-object!
 	 document
 	 (gnc:make-html-text
-	  (_ "No valid account selected.  Click on the Options button and select the account to use."))))
+	  (_ "No valid account selected. Click on the Options button and select the account to use."))))
     (qof-query-destroy query)
     (gnc:report-finished)
     document))

@@ -1,10 +1,12 @@
+include $(top_srcdir)/test-templates/Makefile.decl
 SUBDIRS = . test
+TEST_SUBDIRS = test
 
 # Now a shared library AND a GModule
 lib_LTLIBRARIES = libgnc-backend-sql.la
 
 # "${top_srcdir}/src/debug" below is for the splint header
-AM_CFLAGS = \
+AM_CPPFLAGS = \
   -I.. -I../.. \
   -DLOCALE_DIR=\""$(datadir)/locale"\" \
   -I${top_srcdir}/src/backend \
@@ -14,8 +16,7 @@ AM_CFLAGS = \
   -I${top_srcdir}/lib/libc\
   -I${top_srcdir}/src/libqof/qof \
   ${GLIB_CFLAGS} \
-  ${GUILE_INCS} \
-  ${GCONF_CFLAGS} \
+  ${GUILE_CFLAGS} \
   ${WARN_CFLAGS}
 
 libgnc_backend_sql_la_SOURCES = \
@@ -71,8 +72,7 @@ noinst_HEADERS = \
 libgnc_backend_sql_la_LIBADD = \
    ${GLIB_LIBS} \
    ${GUILE_LIBS} \
-   ${GCONF_LIBS} \
    ${top_builddir}/src/engine/libgncmod-engine.la \
    ${top_builddir}/src/libqof/qof/libgnc-qof.la
 
-INCLUDES = -DG_LOG_DOMAIN=\"gnc.backend.sql\"
+AM_CPPFLAGS += -DG_LOG_DOMAIN=\"gnc.backend.sql\"

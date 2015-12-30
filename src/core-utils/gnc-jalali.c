@@ -42,7 +42,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <glib.h>
 
 int g_days_in_month[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -179,16 +178,16 @@ int
 main(void)
 {
     int y, m, d;
-    time_t bin_time;
-    struct tm *br_time;
+    time64 bin_time;
+    struct tm br_time;
 
-    time(&bin_time);
-    br_time = localtime(&bin_time);
+    gnc_time (&bin_time);
+    gnc_localtime_r (&bin_time, &br_time);
 
     gregorian_to_jalali(&y, &m, &d,
-                        1900 + br_time->tm_year,
-                        1 + br_time->tm_mon,
-                        br_time->tm_mday);
+                        1900 + br_time.tm_year,
+                        1 + br_time.tm_mon,
+                        br_time.tm_mday);
 
     printf("Current Jalali date: %d %s %d\n", d, j_month_name[m-1], y);
 

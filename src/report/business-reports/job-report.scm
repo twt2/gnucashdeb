@@ -30,11 +30,9 @@
 (use-modules (gnucash printf))
 (use-modules (gnucash gnc-module))
 (use-modules (gnucash main))		; for gnc:debug
+(use-modules (gnucash gettext))
 
 (gnc:module-load "gnucash/report/report-system" 0)
-(gnc:module-load "gnucash/business-utils" 0)
-(gnc:module-load "gnucash/business-gnome" 0)
-
 (use-modules (gnucash report standard-reports))
 (use-modules (gnucash report business-reports))
 
@@ -270,7 +268,7 @@
 	  (if (not (null? invoice))
 	      (set! due-date (gncInvoiceGetDateDue invoice)))
 
-	  (let ((row (make-row column-vector date due-date (xaccTransGetNum txn)
+	  (let ((row (make-row column-vector date due-date (gnc-get-num-action txn split)
 			       type-str (xaccSplitGetMemo split)
 			       (gnc:make-gnc-monetary currency value)))
 		(row-style (if odd-row? "normal-row" "alternate-row")))
@@ -365,7 +363,7 @@
 
   (gnc:register-inv-option
    (gnc:make-owner-option owner-page owner-string "v"
-			  (N_ "The job for this report")
+			  (N_ "The job for this report.")
 			  (lambda () '()) #f owner-type))
 
   (gnc:register-inv-option
@@ -373,7 +371,7 @@
 
   (gnc:register-inv-option
    (gnc:make-account-sel-limited-option owner-page acct-string "w"
-					(N_ "The account to search for transactions")
+					(N_ "The account to search for transactions.")
 					#f #f acct-type-list))
 
   (gnc:options-add-date-interval!
@@ -567,20 +565,24 @@
 			(opt-val gnc:pagename-general (N_ "To")))))
 	 (book (gnc-get-current-book)) ;XXX Grab this from elsewhere
 	 (type (opt-val "__reg" "owner-type"))
-	 (type-str ""))
+	 (type-str "")
+         (report-title-str ""))
 
     (cond
       ((eqv? type GNC-OWNER-CUSTOMER)
-       (set! type-str (N_ "Customer")))
+       (set! type-str (N_ "Customer"))
+       (set! report-title-str (_ "Customer Report")))
       ((eqv? type GNC-OWNER-JOB)
-       (set! type-str (N_ "Job")))
+       (set! type-str (N_ "Job"))
+       (set! report-title-str (_ "Job Report")))
       ((eqv? type GNC-OWNER-VENDOR)
-       (set! type-str (N_ "Vendor")))
+       (set! type-str (N_ "Vendor"))
+       (set! report-title-str (_ "Vendor Report")))
       ((eqv? type GNC-OWNER-EMPLOYEE)
-       (set! type-str (N_ "Employee"))))
+       (set! type-str (N_ "Employee"))
+       (set! report-title-str (_ "Employee Report"))))
 
-    (gnc:html-document-set-title!
-     document (string-append (_ type-str) " " (_ "Report")))
+    (gnc:html-document-set-title! document report-title-str)
 
     (if (gncOwnerIsValid owner)
 	(begin
@@ -588,13 +590,12 @@
 
 	  (gnc:html-document-set-title!
 	   document
-           (string-append (_ type-str ) " " (_ "Report:") " " (gncOwnerGetName owner)))
+           (string-append report-title-str ": " (gncOwnerGetName owner)))
 
            (gnc:html-document-set-headline!
             document (gnc:html-markup
                       "!" 
-                      (_ type-str )
-                      " " (_ "Report:") " "
+                      report-title-str ": "
                       (gnc:html-markup-anchor
 					   (gnc:job-anchor-text (gncOwnerGetJob owner))
                        (gncOwnerGetName owner))))
@@ -612,7 +613,7 @@
 	      (set!
 	       table
 	       (gnc:make-html-text
-		(_ "No valid account selected.  Click on the Options button and select the account to use."))))
+		(_ "No valid account selected. Click on the Options button and select the account to use."))))
 
 	  (gnc:html-document-add-object!
 	   document
@@ -643,7 +644,7 @@
 	 document
 	 (gnc:make-html-text
 	  (sprintf #f 
-		   (_ "No valid %s selected.  Click on the Options button to select a company.")
+		   (_ "No valid %s selected. Click on the Options button to select a company.")
 		   (_ type-str))))) ;; FIXME because of translations: Please change this string into full sentences instead of sprintf, because in non-english languages the "no valid" has different forms depending on the grammatical gender of the "%s".
 
     (qof-query-destroy query)

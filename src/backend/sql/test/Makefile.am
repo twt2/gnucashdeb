@@ -1,5 +1,8 @@
 SUBDIRS = .
 
+include $(top_srcdir)/test-templates/Makefile.decl
+MODULEPATH = src/backend/sql
+
 test_column_types_SOURCES = \
   test-column-types.c
 
@@ -18,10 +21,9 @@ GNC_TEST_DEPS = \
 TESTS_ENVIRONMENT = \
   GNC_ACCOUNT_PATH=${top_srcdir}/accounts/C \
   SRCDIR=${srcdir} \
-  $(shell ${top_srcdir}/src/gnc-test-env --no-exports ${GNC_TEST_DEPS})
+  $(shell ${abs_top_srcdir}/src/gnc-test-env.pl --noexports ${GNC_TEST_DEPS})
 
-check_PROGRAMS = \
-  test-column-types
+check_PROGRAMS = $(TESTS)
 
 #noinst_HEADERS = test-file-stuff.h
 
@@ -34,7 +36,7 @@ LDADD = ${top_builddir}/src/test-core/libtest-core.la \
         ${top_builddir}/src/libqof/qof/libgnc-qof.la \
         ${top_builddir}/lib/libc/libc-missing.la
 
-AM_CFLAGS = \
+AM_CPPFLAGS = \
   -I${top_srcdir}/lib/libc \
   -I${top_srcdir}/src \
   -I${top_srcdir}/src/core-utils \
@@ -45,7 +47,34 @@ AM_CFLAGS = \
   -I${top_srcdir}/src/backend/sql \
   -I${top_srcdir}/src/libqof/qof \
   ${GLIB_CFLAGS} \
-  ${GUILE_INCS} \
-  ${GCONF_CFLAGS}
+  ${GUILE_CFLAGS}
 
-INCLUDES = -DG_LOG_DOMAIN=\"gnc.backend.sql\"
+AM_CPPFLAGS += -DG_LOG_DOMAIN=\"gnc.backend.sql\"
+
+TEST_PROGS += test-sqlbe
+#test_sqlbedir = ${top_srcdir}/${MODULEPATH}/test
+
+noinst_PROGRAMS = $(TESTS) $(TEST_PROGS)
+
+test_sqlbe_SOURCES = \
+	test-sqlbe.c \
+	utest-gnc-backend-sql.c
+
+#test_sqlbe_HEADERS = \
+#	$(top_srcdir)/$(MODULEPATH)/gnc-backend-sql.h
+
+test_sqlbe_LDADD = \
+	$(top_builddir)/$(MODULEPATH)/libgnc-backend-sql.la \
+	$(top_builddir)/src/libqof/qof/libgnc-qof.la \
+	$(top_builddir)/src/test-core/libtest-core.la \
+	$(top_builddir)/src/core-utils/libgnc-core-utils.la \
+	$(GLIB_LIBS)
+
+test_sqlbe_CFLAGS = \
+	-DTESTPROG=test_sqlbe \
+	$(DEFAULT_INCLUDES) \
+	-I$(top_srcdir)/$(MODULEPATH)/ \
+	-I$(top_srcdir)/src/backend/dbi/ \
+	-I$(top_srcdir)/src/libqof/qof/ \
+	-I$(top_srcdir)/src/test-core/ \
+	$(GLIB_CFLAGS)

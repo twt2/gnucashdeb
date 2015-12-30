@@ -21,10 +21,14 @@
 #ifndef GNUCASH_STYLE_H
 #define GNUCASH_STYLE_H
 
-#include <gnome.h>
-
 #include "gnucash-sheet.h"
-
+/** @ingroup Register
+ * @addtogroup Gnome
+ * @{
+ */
+/** @file gnucash-style.h
+ * @brief Styling functions for RegisterGnome.
+ */
 typedef struct
 {
     gint pixel_height;
@@ -125,12 +129,5 @@ void gnucash_sheet_get_header_widths (GnucashSheet *sheet,
                                       GNCHeaderWidths widths);
 void gnucash_sheet_set_header_widths (GnucashSheet *sheet,
                                       GNCHeaderWidths widths);
-
+/** @} */
 #endif
-
-
-/*
-  Local Variables:
-  c-basic-offset: 8
-  End:
-*/

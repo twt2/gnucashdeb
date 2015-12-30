@@ -24,20 +24,13 @@
 #define SPLIT_REGISTER_MODEL_H
 
 #include "table-model.h"
-
+/** @addtogroup SplitRegister
+ * @{
+ */
+/** @file split-register-model.h
+ * @brief TableModels specialized for SplitRegister and template SplitRegister.
+ */
 TableModel * gnc_split_register_model_new (void);
 TableModel * gnc_template_register_model_new (void);
-
-typedef enum
-{
-    COLOR_UNKNOWN,
-    COLOR_HEADER,
-    COLOR_PRIMARY,
-    COLOR_PRIMARY_ACTIVE,
-    COLOR_SECONDARY,
-    COLOR_SECONDARY_ACTIVE,
-    COLOR_SPLIT,
-    COLOR_SPLIT_ACTIVE,
-} RegisterColor;
-
+/* @} */
 #endif

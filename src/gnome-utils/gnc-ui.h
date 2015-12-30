@@ -46,12 +46,18 @@
 #    define HF_GUIDE         "Gnucash Guide"
 #    define HF_HELP          "Gnucash Help"
 #else
-#    define HF_GUIDE         "gnucash-guide.xml"
-#    define HF_HELP          "gnucash-help.xml"
+#    define HF_GUIDE         "gnucash-guide"
+#    define HF_HELP          "gnucash-help"
 #endif
 
 /** Links in the Help Files *****************************************/
 #define HL_USAGE             "usage"
+#define HL_USAGE_BSNSS       "chapter_busnss"
+#define HL_USAGE_INVOICE     "busnss-ar-invoices1"
+#define HL_USAGE_BILL        "busnss-ap-bills1"
+#define HL_USAGE_CUSTOMER    "busnss-ar-customers1"
+#define HL_USAGE_VENDOR      "busnss-ap-vendors1"
+#define HL_USAGE_EMPLOYEE    "busnss-emply"
 #define HL_ACC               "acct-create"
 #define HL_ACCEDIT           "acct-edit"
 #define HL_COMMODITY         "tool-commodity"
@@ -60,7 +66,9 @@
 #define HL_PRINTCHECK        "print-check"
 #define HL_RECNWIN           "acct-reconcile"
 #define HL_SXEDITOR          "tool-sched"
-#define HL_GCONF             "gconf"
+#define HL_BOOK_OPTIONS      "book-options"
+#define HL_CLOSE_BOOK        "tool-close-book"
+#define HL_USAGE_CUSTOMREP   "report-custom"
 
 /* GTK Windows - Common Response Codes */
 
@@ -103,8 +111,6 @@ int      gnc_choose_radio_option_dialog (GtkWidget *parent,
         int default_value,
         GList *radio_list);
 
-gboolean gnc_dup_trans_dialog (GtkWidget *parent, time_t *date_p,
-                               const char *num, char **out_num);
 void     gnc_tax_info_dialog (GtkWidget *parent);
 void     gnc_stock_split_dialog (GtkWidget *parent, Account * initial);
 

@@ -34,8 +34,8 @@
 #include "gnc-date.h"
 #include "gnc-engine.h"
 #include "gnc-event.h"
-#include "gnc-gconf-utils.h"
 #include "gnc-ledger-display.h"
+#include "gnc-prefs.h"
 #include "gnc-ui-util.h"
 #include "split-register-control.h"
 #include "split-register-model.h"
@@ -45,6 +45,12 @@
 #define REGISTER_SUBACCOUNT_CM_CLASS "register-subaccount"
 #define REGISTER_GL_CM_CLASS         "register-gl"
 #define REGISTER_TEMPLATE_CM_CLASS   "register-template"
+
+#define GNC_PREF_DOUBLE_LINE_MODE         "double-line-mode"
+#define GNC_PREF_MAX_TRANS                "max-transactions"
+#define GNC_PREF_DEFAULT_STYLE_LEDGER     "default-style-ledger"
+#define GNC_PREF_DEFAULT_STYLE_AUTOLEDGER "default-style-autoledger"
+#define GNC_PREF_DEFAULT_STYLE_JOURNAL    "default-style-journal"
 
 
 struct gnc_ledger_display
@@ -193,32 +199,13 @@ static SplitRegisterStyle
 gnc_get_default_register_style (GNCAccountType type)
 {
     SplitRegisterStyle new_style = REG_STYLE_LEDGER;
-    gchar *style_string;
 
-    switch (type)
-    {
-#if 0
-    case ACCT_TYPE_PAYABLE:
-    case ACCT_TYPE_RECEIVABLE:
-        new_style = REG_STYLE_LEDGER;
-        break;
-#endif
-
-    default:
-        style_string = gnc_gconf_get_string(GCONF_GENERAL_REGISTER,
-                                            "default_style", NULL);
-        if (safe_strcmp(style_string, "journal") == 0)
-            new_style = REG_STYLE_JOURNAL;
-        else if (safe_strcmp(style_string, "auto_ledger") == 0)
-            new_style = REG_STYLE_AUTO_LEDGER;
-        else
-            new_style = REG_STYLE_LEDGER;
-
-        if (style_string != NULL)
-            g_free(style_string);
-
-        break;
-    }
+    if (gnc_prefs_get_bool (GNC_PREFS_GROUP_GENERAL_REGISTER,
+                            GNC_PREF_DEFAULT_STYLE_JOURNAL))
+        new_style = REG_STYLE_JOURNAL;
+    else if (gnc_prefs_get_bool (GNC_PREFS_GROUP_GENERAL_REGISTER,
+                                 GNC_PREF_DEFAULT_STYLE_AUTOLEDGER))
+        new_style = REG_STYLE_AUTO_LEDGER;
 
     return new_style;
 }
@@ -348,7 +335,7 @@ gboolean
 gnc_ledger_display_default_double_line (GNCLedgerDisplay *gld)
 {
     return (gld->use_double_line_default ||
-            gnc_gconf_get_bool(GCONF_GENERAL_REGISTER, "double_line_mode", NULL));
+            gnc_prefs_get_bool(GNC_PREFS_GROUP_GENERAL_REGISTER, GNC_PREF_DOUBLE_LINE_MODE));
 }
 
 /* Opens up a register window to display a single account */
@@ -406,7 +393,7 @@ GNCLedgerDisplay *
 gnc_ledger_display_gl (void)
 {
     Query *query;
-    time_t start;
+    time64 start;
     struct tm tm;
     GNCLedgerDisplay *ld;
 
@@ -428,7 +415,10 @@ gnc_ledger_display_gl (void)
 
         tRoot = gnc_book_get_template_root( gnc_get_current_book() );
         al = gnc_account_get_descendants( tRoot );
-        xaccQueryAddAccountMatch( query, al, QOF_GUID_MATCH_NONE, QOF_QUERY_AND );
+
+        if (g_list_length(al) != 0)
+            xaccQueryAddAccountMatch( query, al, QOF_GUID_MATCH_NONE, QOF_QUERY_AND );
+
         g_list_free (al);
         al = NULL;
         tRoot = NULL;
@@ -436,7 +426,7 @@ gnc_ledger_display_gl (void)
 
     gnc_tm_get_today_start(&tm);
     tm.tm_mon--; /* Default the register to the last month's worth of transactions. */
-    start = mktime (&tm);
+    start = gnc_mktime (&tm);
     xaccQueryAddDateMatchTT (query,
                              TRUE, start,
                              FALSE, 0,
@@ -694,13 +684,13 @@ gnc_ledger_display_internal (Account *lead_account, Query *q,
 {
     GNCLedgerDisplay *ld;
     gint limit;
-    const char *class;
+    const char *klass;
     GList *splits;
 
     switch (ld_type)
     {
     case LD_SINGLE:
-        class = REGISTER_SINGLE_CM_CLASS;
+        klass = REGISTER_SINGLE_CM_CLASS;
 
         if (reg_type >= NUM_SINGLE_REGISTER_TYPES)
         {
@@ -720,14 +710,14 @@ gnc_ledger_display_internal (Account *lead_account, Query *q,
             q = NULL;
         }
 
-        ld = gnc_find_first_gui_component (class, find_by_leader, lead_account);
+        ld = gnc_find_first_gui_component (klass, find_by_leader, lead_account);
         if (ld)
             return ld;
 
         break;
 
     case LD_SUBACCOUNT:
-        class = REGISTER_SUBACCOUNT_CM_CLASS;
+        klass = REGISTER_SUBACCOUNT_CM_CLASS;
 
         if (!lead_account)
         {
@@ -741,14 +731,14 @@ gnc_ledger_display_internal (Account *lead_account, Query *q,
             q = NULL;
         }
 
-        ld = gnc_find_first_gui_component (class, find_by_leader, lead_account);
+        ld = gnc_find_first_gui_component (klass, find_by_leader, lead_account);
         if (ld)
             return ld;
 
         break;
 
     case LD_GL:
-        class = REGISTER_GL_CM_CLASS;
+        klass = REGISTER_GL_CM_CLASS;
 
         if (!q)
         {
@@ -773,7 +763,7 @@ gnc_ledger_display_internal (Account *lead_account, Query *q,
     ld->get_parent = NULL;
     ld->user_data = NULL;
 
-    limit = gnc_gconf_get_float(GCONF_GENERAL_REGISTER, "max_transactions", NULL);
+    limit = gnc_prefs_get_float(GNC_PREFS_GROUP_GENERAL_REGISTER, GNC_PREF_MAX_TRANS);
 
     /* set up the query filter */
     if (q)
@@ -781,7 +771,7 @@ gnc_ledger_display_internal (Account *lead_account, Query *q,
     else
         gnc_ledger_display_make_query (ld, limit, reg_type);
 
-    ld->component_id = gnc_register_gui_component (class,
+    ld->component_id = gnc_register_gui_component (klass,
                        refresh_handler,
                        close_handler, ld);
 

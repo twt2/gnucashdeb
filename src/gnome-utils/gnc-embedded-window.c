@@ -30,6 +30,7 @@
 #include "gnc-embedded-window.h"
 
 #include "gnc-engine.h"
+#include "gnc-filepath-utils.h"
 #include "gnc-gnome-utils.h"
 #include "gnc-gobject-utils.h"
 #include "gnc-gui-query.h"
@@ -250,16 +251,10 @@ gnc_embedded_window_init (GncEmbeddedWindow *window,
 static void
 gnc_embedded_window_finalize (GObject *object)
 {
-    GncEmbeddedWindow *window;
-    GncEmbeddedWindowPrivate *priv;
-
     g_return_if_fail (object != NULL);
     g_return_if_fail (GNC_IS_EMBEDDED_WINDOW (object));
 
     ENTER("object %p", object);
-    window = GNC_EMBEDDED_WINDOW (object);
-    priv = GNC_EMBEDDED_WINDOW_GET_PRIVATE(window);
-
     gnc_gobject_tracking_forget(object);
     G_OBJECT_CLASS (parent_class)->finalize (object);
     LEAVE(" ");
@@ -331,7 +326,7 @@ gnc_embedded_window_setup_window (GncEmbeddedWindow *window)
 
     priv->menu_dock = gtk_vbox_new (FALSE, 0);
     gtk_widget_show (priv->menu_dock);
-    gtk_box_pack_start (GTK_BOX (window), priv->menu_dock, TRUE, TRUE, 0);
+    gtk_box_pack_start (GTK_BOX (window), priv->menu_dock, FALSE, TRUE, 0);
 
     priv->statusbar = gtk_statusbar_new ();
     gtk_statusbar_set_has_resize_grip (GTK_STATUSBAR(priv->statusbar), FALSE);
@@ -370,7 +365,8 @@ gnc_embedded_window_new (const gchar *action_group_name,
     priv = GNC_EMBEDDED_WINDOW_GET_PRIVATE(window);
 
     /* Determine the full pathname of the ui file */
-    ui_fullname = gnc_gnome_locate_ui_file(ui_filename);
+    ui_fullname = gnc_filepath_locate_ui_file (ui_filename);
+    g_return_val_if_fail (ui_fullname != NULL, NULL);
 
     priv->parent_window = enclosing_win;
 

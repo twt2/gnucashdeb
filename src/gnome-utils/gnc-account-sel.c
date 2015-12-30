@@ -29,10 +29,8 @@
 #include <glib/gi18n.h>
 
 #include "dialog-account.h"
-#include "GNCId.h"
 #include "gnc-account-sel.h"
 #include "gnc-commodity.h"
-#include "gnc-exp-parser.h"
 #include "gnc-gtk-utils.h"
 #include "gnc-ui-util.h"
 #include "qof.h"
@@ -155,18 +153,16 @@ gnc_account_sel_init (GNCAccountSel *gas)
     g_object_set(gas, "spacing", 2, (gchar*)NULL);
 
     gas->store = gtk_list_store_new(NUM_ACCT_COLS, G_TYPE_STRING, G_TYPE_POINTER);
-    widget =
-        gtk_combo_box_entry_new_with_model(GTK_TREE_MODEL(gas->store), ACCT_COL_NAME);
-    gas->combo = GTK_COMBO_BOX_ENTRY(widget);
-    gtk_combo_box_set_model(GTK_COMBO_BOX(widget),
-                            GTK_TREE_MODEL(gas->store));
+    widget = gtk_combo_box_new_with_model_and_entry(GTK_TREE_MODEL(gas->store));
+    gas->combo = GTK_COMBO_BOX(widget);
+    gtk_combo_box_set_entry_text_column(GTK_COMBO_BOX(widget), ACCT_COL_NAME);
     g_object_unref(gas->store);
     g_signal_connect_swapped(gas->combo, "changed",
                              G_CALLBACK(combo_changed_cb), gas);
     gtk_container_add( GTK_CONTAINER(gas), widget );
 
     /* Add completion. */
-    gnc_cbe_require_list_item(GTK_COMBO_BOX_ENTRY(widget));
+    gnc_cbwe_require_list_item(GTK_COMBO_BOX(widget));
 
     /* Get the accounts, place into combo list */
     gas_populate_list( gas );
@@ -200,6 +196,8 @@ gas_populate_list( GNCAccountSel *gas )
     currentSel = gtk_editable_get_chars(
                      GTK_EDITABLE(entry), 0, -1 );
 
+    g_signal_handlers_block_by_func( gas->combo, combo_changed_cb , gas );
+
     root = gnc_book_get_root_account( gnc_get_current_book() );
     accts = gnc_account_get_descendants_sorted( root );
 
@@ -231,6 +229,8 @@ gas_populate_list( GNCAccountSel *gas )
      * reset to it. */
     if (active != -1)
         gtk_combo_box_set_active(GTK_COMBO_BOX(gas->combo), active);
+
+    g_signal_handlers_unblock_by_func( gas->combo, combo_changed_cb , gas );
 
     g_list_free( filteredAccts );
     if ( currentSel )
@@ -318,14 +318,19 @@ gnc_account_sel_set_account( GNCAccountSel *gas, Account *acct, gboolean set_def
     if (set_default_acct)
     {
         gtk_combo_box_set_active(GTK_COMBO_BOX(gas->combo), 0);
+        if ( !acct )
+            return;
     }
     else
     {
         gtk_combo_box_set_active( GTK_COMBO_BOX(gas->combo), -1 );
+        if ( !acct )
+        {
+            GtkEntry *entry = GTK_ENTRY(gtk_bin_get_child(GTK_BIN(gas->combo)));
+            gtk_editable_delete_text(GTK_EDITABLE(entry), 0, -1);
+            return;
+        }
     }
-    if ( acct == NULL )
-        return;
-
     data.gas = gas;
     data.acct = acct;
     gtk_tree_model_foreach(GTK_TREE_MODEL(gas->store),
@@ -352,9 +357,6 @@ gnc_account_sel_get_account( GNCAccountSel *gas )
 void
 gnc_account_sel_set_acct_filters( GNCAccountSel *gas, GList *typeFilters, GList *commodityFilters )
 {
-    GList *src = NULL;
-    GList *dest = NULL;
-    gnc_commodity* commClone = NULL;
 
     if ( gas->acctTypeFilters != NULL )
     {

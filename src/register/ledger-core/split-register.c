@@ -28,14 +28,16 @@
 #include <glib/gi18n.h>
 #include <libguile.h>
 
+#include <gnc-gdate-utils.h>
 #include "combocell.h"
 #include "datecell.h"
 #include "dialog-utils.h"
 #include "gnc-component-manager.h"
-#include "gnc-gconf-utils.h"
 #include "split-register-p.h"
 #include "gnc-ledger-display.h"
+#include "gnc-prefs.h"
 #include "gnc-ui.h"
+#include "gnome-utils/gnc-warnings.h"
 #include "guile-util.h"
 #include "numcell.h"
 #include "pricecell.h"
@@ -48,6 +50,9 @@
 #include "split-register-model-save.h"
 #include "table-allgui.h"
 #include "dialog-account.h"
+#include "dialog-dup-trans.h"
+#include "engine-helpers.h"
+#include "qofbookslots.h"
 
 
 /** static variables ******************************************************/
@@ -59,8 +64,9 @@ static QofLogModule log_module = GNC_MOD_LEDGER;
 static CursorClass copied_class = CURSOR_CLASS_NONE;
 static SCM copied_item = SCM_UNDEFINED;
 static GncGUID copied_leader_guid;
-
-
+/* A denominator representing number of digits to the right of the decimal point
+ * displayed in a price cell. */
+static int PRICE_CELL_DENOM = 1000000;
 /** static prototypes *****************************************************/
 
 static gboolean gnc_split_register_save_to_scm (SplitRegister *reg,
@@ -182,6 +188,7 @@ gnc_split_register_begin_edit_or_warn(SRInfo *info, Transaction *trans)
         }
     }
     LEAVE(" ");
+    return FALSE;  /* to satisfy static code analysis */
 }
 
 void
@@ -458,7 +465,7 @@ gnc_split_register_duplicate_current (SplitRegister *reg)
                 "%s", message);
         gtk_dialog_add_button(GTK_DIALOG(dialog),
                               _("_Record"), GTK_RESPONSE_ACCEPT);
-        response = gnc_dialog_run(GTK_DIALOG(dialog), "transaction_duplicated");
+        response = gnc_dialog_run(GTK_DIALOG(dialog), GNC_PREF_WARN_REG_TRANS_DUP);
         gtk_widget_destroy(dialog);
 
         if (response != GTK_RESPONSE_ACCEPT)
@@ -483,21 +490,74 @@ gnc_split_register_duplicate_current (SplitRegister *reg)
     if (cursor_class == CURSOR_CLASS_SPLIT)
     {
         Split *new_split;
+        char *out_num;
+        gboolean new_act_num = FALSE;
 
         /* We are on a split in an expanded transaction.
-         * Just copy the split and add it to the transaction. */
+         * Just copy the split and add it to the transaction.
+         * However, if the split-action field is being used as the register
+         * number, and the action field is a number, request a new value or
+         * cancel. Need to get next number and update account last num from
+         * split account not register account, which may be the same or not */
+
+        if (!reg->use_tran_num_for_num_field
+            && gnc_strisnum (gnc_get_num_action (NULL, split)))
+        {
+            Account *account = xaccSplitGetAccount (split);
+            const char *in_num = NULL;
+            const char* title = _("New Split Information");
+            time64 date = info->last_date_entered;
+
+            if (account)
+                in_num = xaccAccountGetLastNum (account);
+            else
+                in_num = gnc_get_num_action (NULL, split);
+            if (!gnc_dup_trans_dialog (gnc_split_register_get_parent (reg),
+                                   title, FALSE, &date, in_num, &out_num, NULL, NULL))
+            {
+                gnc_resume_gui_refresh ();
+                LEAVE("dup cancelled");
+                return NULL;
+            }
+            new_act_num = TRUE;
+        }
 
         new_split = xaccMallocSplit (gnc_get_current_book ());
 
         xaccTransBeginEdit (trans);
         xaccSplitSetParent (new_split, trans);
         gnc_copy_split_onto_split (split, new_split, FALSE);
+        if (new_act_num) /* if new number supplied by user dialog */
+            gnc_set_num_action (NULL, new_split, out_num, NULL);
         xaccTransCommitEdit (trans);
+
+        if (new_act_num && gnc_strisnum (out_num))
+        {
+            Account *account = xaccSplitGetAccount (new_split);
+
+            /* If current register is for account, set last num */
+            if (xaccAccountEqual(account,
+                                    gnc_split_register_get_default_account(reg),
+                                    TRUE))
+            {
+                NumCell *num_cell;
+                num_cell = (NumCell *) gnc_table_layout_get_cell (reg->table->layout,
+                       NUM_CELL);
+                if (gnc_num_cell_set_last_num (num_cell, out_num))
+                    gnc_split_register_set_last_num (reg, out_num);
+            }
+            else
+            {
+                xaccAccountSetLastNum (account, out_num);
+            }
+        }
 
         return_split = new_split;
 
         info->cursor_hint_split = new_split;
         info->cursor_hint_cursor_class = CURSOR_CLASS_SPLIT;
+        if (new_act_num)
+            g_free (out_num);
     }
     else
     {
@@ -506,28 +566,58 @@ gnc_split_register_duplicate_current (SplitRegister *reg)
         int trans_split_index;
         int split_index;
         const char *in_num = NULL;
-        char *out_num;
-        time_t date;
+        const char *in_tnum = NULL;
+        char *out_num = NULL;
+        char *out_tnum = NULL;
+        time64 date;
+        gboolean use_autoreadonly = qof_book_uses_autoreadonly(gnc_get_current_book());
 
         /* We are on a transaction row. Copy the whole transaction. */
 
         date = info->last_date_entered;
-        if (gnc_strisnum (xaccTransGetNum (trans)))
+        if (gnc_strisnum (gnc_get_num_action (trans, trans_split)))
         {
             Account *account = gnc_split_register_get_default_account (reg);
 
             if (account)
                 in_num = xaccAccountGetLastNum (account);
             else
-                in_num = xaccTransGetNum (trans);
+                in_num = gnc_get_num_action (trans, trans_split);
+            in_tnum = (reg->use_tran_num_for_num_field
+                                        ? NULL
+                                        : gnc_get_num_action (trans, NULL));
         }
 
-        if (!gnc_dup_trans_dialog (gnc_split_register_get_parent (reg),
-                                   &date, in_num, &out_num))
+        if (!gnc_dup_trans_dialog (gnc_split_register_get_parent (reg), NULL,
+                                   TRUE, &date, in_num, &out_num, in_tnum, &out_tnum))
         {
             gnc_resume_gui_refresh ();
             LEAVE("dup cancelled");
             return NULL;
+        }
+
+        if (use_autoreadonly)
+        {
+            GDate d;
+            GDate *readonly_threshold = qof_book_get_autoreadonly_gdate(gnc_get_current_book());
+            gnc_gdate_set_time64 (&d, date);
+            if (g_date_compare(&d, readonly_threshold) < 0)
+            {
+                GtkWidget *dialog = gtk_message_dialog_new(NULL,
+                                    0,
+                                    GTK_MESSAGE_ERROR,
+                                    GTK_BUTTONS_OK,
+                                    "%s", _("Cannot store a transaction at this date"));
+                gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog),
+                        "%s", _("The entered date of the duplicated transaction is older than the \"Read-Only Threshold\" set for this book. "
+                                "This setting can be changed in File -> Properties -> Accounts."));
+                gtk_dialog_run(GTK_DIALOG(dialog));
+                gtk_widget_destroy(dialog);
+
+                g_date_free(readonly_threshold);
+                return NULL;
+            }
+            g_date_free(readonly_threshold);
         }
 
         split_index = xaccTransGetSplitIndex(trans, split);
@@ -545,8 +635,24 @@ gnc_split_register_duplicate_current (SplitRegister *reg)
 
         xaccTransBeginEdit (new_trans);
         gnc_copy_trans_onto_trans (trans, new_trans, FALSE, FALSE);
-        xaccTransSetDatePostedSecs (new_trans, date);
-        xaccTransSetNum (new_trans, out_num);
+        xaccTransSetDatePostedSecsNormalized (new_trans, date);
+        /* We also must set a new DateEntered on the new entry
+         * because otherwise the ordering is not deterministic */
+        xaccTransSetDateEnteredSecs(new_trans, gnc_time(NULL));
+
+        /* set per book option */
+        gnc_set_num_action (new_trans, NULL, out_num, out_tnum);
+        if (!reg->use_tran_num_for_num_field)
+        {
+            /* find split in new_trans that equals trans_split and set
+             * split_action to out_num */
+            gnc_set_num_action (NULL,
+                                xaccTransGetSplit (new_trans, trans_split_index),
+                                out_num, NULL);
+            /* note that if the transaction has multiple splits to the register
+             * account, only the anchor split will be set with user input. The
+             * user will have to adjust other splits manually. */
+        }
         xaccTransCommitEdit (new_trans);
 
         num_cell = (NumCell *) gnc_table_layout_get_cell (reg->table->layout,
@@ -555,6 +661,8 @@ gnc_split_register_duplicate_current (SplitRegister *reg)
             gnc_split_register_set_last_num (reg, out_num);
 
         g_free (out_num);
+        if (!reg->use_tran_num_for_num_field)
+            g_free (out_tnum);
 
         /* This shouldn't happen, but be paranoid. */
         if (split_index >= xaccTransCountSplits (new_trans))
@@ -898,6 +1006,7 @@ gnc_split_register_paste_current (SplitRegister *reg)
             blank_split = xaccTransGetSplit(trans, 0);
             info->blank_split_guid = *xaccSplitGetGUID (blank_split);
             info->blank_split_edited = TRUE;
+            info->auto_complete = FALSE;
             DEBUG("replacement blank_split=%p", blank_split);
 
             /* NOTE: At this point, the blank transaction virtual cell is still
@@ -1012,6 +1121,7 @@ gnc_split_register_delete_current_trans (SplitRegister *reg)
     {
         DEBUG("deleting blank split");
         info->blank_split_guid = *guid_null();
+        info->auto_complete = FALSE;
     }
     else
     {
@@ -1285,7 +1395,21 @@ gnc_split_register_save_to_scm (SplitRegister *reg,
         const char *value;
 
         value = gnc_table_layout_get_cell_value (reg->table->layout, NUM_CELL);
-        gnc_trans_scm_set_num (trans_scm, value);
+        if (reg->use_tran_num_for_num_field)
+            gnc_trans_scm_set_num (trans_scm, value);
+     /* else this contains the same as ACTN_CELL which is already handled below *
+      * and the TNUM_CELL contains transaction number which is handled in next  *
+      * if statement. */
+    }
+
+    if (gnc_table_layout_get_cell_changed (reg->table->layout, TNUM_CELL, TRUE))
+    {
+        const char *value;
+
+        value = gnc_table_layout_get_cell_value (reg->table->layout, TNUM_CELL);
+        if (!reg->use_tran_num_for_num_field)
+            gnc_trans_scm_set_num (trans_scm, value);
+     /* else this cell is not used */
     }
 
     if (gnc_table_layout_get_cell_changed (reg->table->layout, DESC_CELL, TRUE))
@@ -1504,6 +1628,7 @@ gnc_split_register_save (SplitRegister *reg, gboolean do_commit)
                 info->last_date_entered = xaccTransGetDate (trans);
                 info->blank_split_guid = *guid_null ();
                 info->blank_split_edited = FALSE;
+                info->auto_complete = FALSE;
             }
 
             /* We have to clear the pending guid *before* committing the
@@ -1607,7 +1732,7 @@ gnc_split_register_save (SplitRegister *reg, gboolean do_commit)
         account = gnc_split_register_get_default_account(reg);
         if (account)
             xaccSplitSetAccount(blank_split, account);
-        xaccTransSetDateEnteredSecs(trans, time(NULL));
+        xaccTransSetDateEnteredSecs(trans, gnc_time (NULL));
     }
 
     if (split == NULL)
@@ -1668,6 +1793,7 @@ gnc_split_register_save (SplitRegister *reg, gboolean do_commit)
         if (do_commit)
         {
             info->blank_split_guid = *guid_null ();
+            info->auto_complete = FALSE;
             blank_split = NULL;
             info->last_date_entered = xaccTransGetDate (trans);
         }
@@ -1731,7 +1857,7 @@ gnc_split_register_get_account_by_name (SplitRegister *reg, BasicCell * bcell,
 
     /* Now have the account. */
     account_name = gnc_get_account_name_for_register (account);
-    if (safe_strcmp(account_name, gnc_basic_cell_get_value(bcell)))
+    if (g_strcmp0(account_name, gnc_basic_cell_get_value(bcell)))
     {
         /* The name has changed. Update the cell. */
         gnc_combo_cell_set_value (cell, account_name);
@@ -1766,15 +1892,245 @@ gnc_split_register_get_account (SplitRegister *reg, const char * cell_name)
     return gnc_split_register_get_account_by_name (reg, cell, name);
 }
 
+static gnc_numeric
+calculate_value (SplitRegister *reg)
+{
+    gnc_numeric credit;
+    gnc_numeric debit;
+
+    PriceCell *cell = (PriceCell*)gnc_table_layout_get_cell (reg->table->layout,
+                                                             CRED_CELL);
+    credit = gnc_price_cell_get_value (cell);
+
+    cell = (PriceCell*)gnc_table_layout_get_cell (reg->table->layout,
+                                                  DEBT_CELL);
+    debit = gnc_price_cell_get_value (cell);
+
+    return gnc_numeric_sub_fixed (debit, credit);
+}
+
+
+static int
+recalc_message_box (SplitRegister *reg, gboolean shares_changed,
+                    gboolean price_changed, gboolean value_changed)
+{
+    int choice;
+    int default_value;
+    GList *node;
+    GList *radio_list = NULL;
+    const char *title = _("Recalculate Transaction");
+    const char *message = _("The values entered for this transaction "
+                            "are inconsistent. Which value would you "
+                            "like to have recalculated?");
+
+    if (shares_changed)
+        radio_list = g_list_append (radio_list, g_strdup_printf ("%s (%s)",
+                                                                 _("_Shares"),
+                                                                 _("Changed")));
+    else
+        radio_list = g_list_append (radio_list, g_strdup (_("_Shares")));
+
+    if (price_changed)
+        radio_list = g_list_append (radio_list, g_strdup_printf ("%s (%s)",
+                                                                 _("_Price"),
+                                                                 _("Changed")));
+    else
+        radio_list = g_list_append (radio_list, g_strdup (_("_Price")));
+
+    if (value_changed)
+        radio_list = g_list_append (radio_list, g_strdup_printf ("%s (%s)",
+                                                                 _("_Value"),
+                                                                 _("Changed")));
+    else
+        radio_list = g_list_append (radio_list, g_strdup (_("_Value")));
+
+    if (price_changed) default_value = 2;  /* change the value */
+    else  default_value = 1;  /* change the value */
+
+    choice = gnc_choose_radio_option_dialog
+        (gnc_split_register_get_parent (reg),
+         title,
+         message,
+         _("_Recalculate"),
+         default_value,
+         radio_list);
+
+    for (node = radio_list; node; node = node->next)
+        g_free (node->data);
+
+    g_list_free (radio_list);
+
+    return choice;
+}
+
+static void
+recalculate_shares (Split* split, SplitRegister *reg,
+               gnc_numeric value, gnc_numeric price, gboolean value_changed)
+{
+    gint64 denom = gnc_split_get_amount_denom (split);
+    gnc_numeric amount = gnc_numeric_div (value, price, denom,
+                                          GNC_HOW_RND_ROUND_HALF_UP);
+
+    BasicCell *cell = gnc_table_layout_get_cell (reg->table->layout, SHRS_CELL);
+    gnc_price_cell_set_value ((PriceCell *) cell, amount);
+    gnc_basic_cell_set_changed (cell, TRUE);
+
+    if (value_changed)
+    {
+        cell = gnc_table_layout_get_cell (reg->table->layout, PRIC_CELL);
+        gnc_basic_cell_set_changed (cell, FALSE);
+    }
+}
+
+static void
+recalculate_price (Split *split, SplitRegister *reg,
+              gnc_numeric value, gnc_numeric amount)
+{
+    BasicCell *price_cell;
+    gnc_numeric price = gnc_numeric_div (value, amount,
+                                         GNC_DENOM_AUTO,
+                                         GNC_HOW_DENOM_EXACT);
+
+    if (gnc_numeric_negative_p (price))
+    {
+        BasicCell *debit_cell;
+        BasicCell *credit_cell;
+
+        debit_cell = gnc_table_layout_get_cell (reg->table->layout,
+                                                DEBT_CELL);
+
+        credit_cell = gnc_table_layout_get_cell (reg->table->layout,
+                                                 CRED_CELL);
+
+        price = gnc_numeric_neg (price);
+
+        gnc_price_cell_set_debt_credit_value ((PriceCell *) debit_cell,
+                                              (PriceCell *) credit_cell,
+                                              gnc_numeric_neg (value));
+
+        gnc_basic_cell_set_changed (debit_cell, TRUE);
+        gnc_basic_cell_set_changed (credit_cell, TRUE);
+    }
+
+    price_cell = gnc_table_layout_get_cell (reg->table->layout, PRIC_CELL);
+    gnc_price_cell_set_value ((PriceCell *) price_cell, price);
+    gnc_basic_cell_set_changed (price_cell, TRUE);
+}
+
+static void
+recalculate_value (Split *split, SplitRegister *reg,
+              gnc_numeric price, gnc_numeric amount, gboolean shares_changed)
+{
+    BasicCell *debit_cell = gnc_table_layout_get_cell (reg->table->layout,
+                                                       DEBT_CELL);
+    BasicCell *credit_cell = gnc_table_layout_get_cell (reg->table->layout,
+                                                        CRED_CELL);
+    gint64 denom = gnc_split_get_value_denom (split);
+    gnc_numeric value = gnc_numeric_mul (price, amount, denom,
+                                         GNC_HOW_RND_ROUND_HALF_UP);
+
+    gnc_price_cell_set_debt_credit_value ((PriceCell *) debit_cell,
+                                          (PriceCell *) credit_cell, value);
+
+    gnc_basic_cell_set_changed (debit_cell, TRUE);
+    gnc_basic_cell_set_changed (credit_cell, TRUE);
+
+    if (shares_changed)
+    {
+        BasicCell *cell = gnc_table_layout_get_cell (reg->table->layout,
+                                                     PRIC_CELL);
+        gnc_basic_cell_set_changed (cell, FALSE);
+    }
+}
+
+static void
+record_price (SplitRegister *reg, Account *account, gnc_numeric value,
+              PriceSource source)
+{
+    Transaction *trans = gnc_split_register_get_current_trans (reg);
+    QofBook *book = qof_instance_get_book (QOF_INSTANCE (account));
+    GNCPriceDB *pricedb = gnc_pricedb_get_db (book);
+    gnc_commodity *comm = xaccAccountGetCommodity (account);
+    gnc_commodity *curr = xaccTransGetCurrency (trans);
+    GNCPrice *price;
+    gnc_numeric price_value;
+    int scu = gnc_commodity_get_fraction(curr);
+    Timespec ts;
+    BasicCell *cell = gnc_table_layout_get_cell (reg->table->layout, DATE_CELL);
+    gboolean swap = FALSE;
+
+    /* Only record the price for account types that don't have a
+     * "rate" cell. They'll get handled later by
+     * gnc_split_register_handle_exchange.
+     */
+    if (gnc_split_reg_has_rate_cell (reg->type))
+        return;
+    gnc_date_cell_get_date ((DateCell*)cell, &ts);
+    price = gnc_pricedb_lookup_day (pricedb, comm, curr, ts);
+    if (!price)
+    {
+        price = gnc_pricedb_lookup_day (pricedb, curr, comm, ts);
+        if (price)
+/* It might be better to raise an error here: We shouldn't be creating
+ * currency->commodity prices.
+ */
+            swap = TRUE;
+    }
+    if (price)
+    {
+        price_value = gnc_price_get_value(price);
+        if (gnc_numeric_equal(swap ? gnc_numeric_invert(value) : value,
+                              price_value))
+        {
+            gnc_price_unref (price);
+            return;
+        }
+        if (gnc_price_get_source(price) < PRICE_SOURCE_XFER_DLG_VAL)
+        {
+            /* Existing price is preferred over this one. */
+            gnc_price_unref(price);
+            return;
+        }
+        if (swap)
+        {
+            value = gnc_numeric_invert(value);
+            scu = gnc_commodity_get_fraction(comm);
+        }
+        value = gnc_numeric_convert(value, scu * COMMODITY_DENOM_MULT,
+                                    GNC_HOW_RND_ROUND_HALF_UP);
+        gnc_price_begin_edit (price);
+        gnc_price_set_time (price, ts);
+        gnc_price_set_source (price, source);
+        gnc_price_set_typestr (price, PRICE_TYPE_TRN);
+        gnc_price_set_value (price, value);
+        gnc_price_commit_edit (price);
+        gnc_price_unref (price);
+        return;
+    }
+
+    value = gnc_numeric_convert(value, scu * COMMODITY_DENOM_MULT,
+                                GNC_HOW_RND_ROUND_HALF_UP);
+    price = gnc_price_create (book);
+    gnc_price_begin_edit (price);
+    gnc_price_set_commodity (price, comm);
+    gnc_price_set_currency (price, curr);
+    gnc_price_set_time (price, ts);
+    gnc_price_set_source (price, source);
+    gnc_price_set_typestr (price, PRICE_TYPE_TRN);
+    gnc_price_set_value (price, value);
+    gnc_pricedb_add_price (pricedb, price);
+    gnc_price_commit_edit (price);
+}
+
 static gboolean
 gnc_split_register_auto_calc (SplitRegister *reg, Split *split)
 {
-    PriceCell *cell;
+    PriceCell *cell = NULL;
     gboolean recalc_shares = FALSE;
     gboolean recalc_price = FALSE;
     gboolean recalc_value = FALSE;
     gboolean price_changed;
-    gboolean amount_changed;  /* please s/amount_changed/value_changed/ */
+    gboolean value_changed;
     gboolean shares_changed;
     gnc_numeric calc_value;
     gnc_numeric value;
@@ -1782,10 +2138,12 @@ gnc_split_register_auto_calc (SplitRegister *reg, Split *split)
     gnc_numeric amount;
     Account *account;
     int denom;
+    int choice;
+    PriceSource source = PRICE_SOURCE_USER_PRICE;
 
     if (STOCK_REGISTER    != reg->type &&
-            CURRENCY_REGISTER != reg->type &&
-            PORTFOLIO_LEDGER  != reg->type)
+        CURRENCY_REGISTER != reg->type &&
+        PORTFOLIO_LEDGER  != reg->type)
         return TRUE;
 
     account = gnc_split_register_get_account (reg, XFRM_CELL);
@@ -1801,14 +2159,14 @@ gnc_split_register_auto_calc (SplitRegister *reg, Split *split)
 
     price_changed = gnc_table_layout_get_cell_changed (reg->table->layout,
                     PRIC_CELL, TRUE);
-    amount_changed = (gnc_table_layout_get_cell_changed (reg->table->layout,
+    value_changed = (gnc_table_layout_get_cell_changed (reg->table->layout,
                       DEBT_CELL, TRUE) ||
                       gnc_table_layout_get_cell_changed (reg->table->layout,
                               CRED_CELL, TRUE));
     shares_changed = gnc_table_layout_get_cell_changed (reg->table->layout,
                      SHRS_CELL, TRUE);
 
-    if (!price_changed && !amount_changed && !shares_changed)
+    if (!price_changed && !value_changed && !shares_changed)
         return TRUE;
 
     /* If we are using commodity trading accounts then the value may
@@ -1840,21 +2198,8 @@ gnc_split_register_auto_calc (SplitRegister *reg, Split *split)
     else
         price = xaccSplitGetSharePrice (split);
 
-    if (amount_changed)
-    {
-        gnc_numeric credit;
-        gnc_numeric debit;
-
-        cell = (PriceCell *) gnc_table_layout_get_cell (reg->table->layout,
-                CRED_CELL);
-        credit = gnc_price_cell_get_value (cell);
-
-        cell = (PriceCell *) gnc_table_layout_get_cell (reg->table->layout,
-                DEBT_CELL);
-        debit = gnc_price_cell_get_value (cell);
-
-        value = gnc_numeric_sub_fixed (debit, credit);
-    }
+    if (value_changed)
+        value = calculate_value (reg);
     else
         value = xaccSplitGetValue (split);
 
@@ -1865,7 +2210,6 @@ gnc_split_register_auto_calc (SplitRegister *reg, Split *split)
     if (gnc_numeric_zero_p(amount) && gnc_numeric_zero_p(price) &&
             !gnc_numeric_zero_p(value))
     {
-        /* XXX: should we ask the user? */
         return TRUE;
     }
 
@@ -1893,18 +2237,19 @@ gnc_split_register_auto_calc (SplitRegister *reg, Split *split)
             (!recalc_price)  &&
             (!recalc_value))
     {
-        if (price_changed && amount_changed)
+        if (price_changed && value_changed)
         {
             if (!shares_changed)
                 recalc_shares = TRUE;
         }
-        else if (amount_changed && shares_changed)
+        else if (value_changed && shares_changed)
             recalc_price = TRUE;
         else if (price_changed && shares_changed)
             recalc_value = TRUE;
     }
 
-    calc_value = gnc_numeric_mul (price, amount, GNC_DENOM_AUTO, GNC_HOW_DENOM_LCD);
+    calc_value = gnc_numeric_mul (price, amount,
+                                  GNC_DENOM_AUTO, GNC_HOW_DENOM_LCD);
 
     denom = gnc_split_get_value_denom (split);
 
@@ -1913,56 +2258,13 @@ gnc_split_register_auto_calc (SplitRegister *reg, Split *split)
      *  help from the user. */
 
     if (!recalc_shares &&
-            !recalc_price &&
-            !recalc_value &&
-            !gnc_numeric_same (value, calc_value, denom, GNC_HOW_RND_ROUND_HALF_UP))
+        !recalc_price &&
+        !recalc_value &&
+        !gnc_numeric_same (value, calc_value, denom, GNC_HOW_RND_ROUND_HALF_UP))
     {
-        int choice;
-        int default_value;
-        GList *node;
-        GList *radio_list = NULL;
-        const char *title = _("Recalculate Transaction");
-        const char *message = _("The values entered for this transaction "
-                                "are inconsistent. Which value would you "
-                                "like to have recalculated?");
-
-        if (shares_changed)
-            radio_list = g_list_append (radio_list,
-                                        g_strdup_printf ("%s (%s)",
-                                                _("_Shares"), _("Changed")));
-        else
-            radio_list = g_list_append (radio_list, g_strdup (_("_Shares")));
-
-        if (price_changed)
-            radio_list = g_list_append (radio_list,
-                                        g_strdup_printf ("%s (%s)",
-                                                _("_Price"), _("Changed")));
-        else
-            radio_list = g_list_append (radio_list, g_strdup (_("_Price")));
-
-        if (amount_changed)
-            radio_list = g_list_append (radio_list,
-                                        g_strdup_printf ("%s (%s)",
-                                                _("_Value"), _("Changed")));
-        else
-            radio_list = g_list_append (radio_list, g_strdup (_("_Value")));
-
-        if (price_changed) default_value = 2;  /* change the value */
-        else  default_value = 1;  /* change the value */
-
-        choice = gnc_choose_radio_option_dialog
-                 (gnc_split_register_get_parent (reg),
-                  title,
-                  message,
-                  _("_Recalculate"),
-                  default_value,
-                  radio_list);
-
-        for (node = radio_list; node; node = node->next)
-            g_free (node->data);
-
-        g_list_free (radio_list);
-
+        choice = recalc_message_box(reg, shares_changed,
+                                    price_changed,
+                                    value_changed);
         switch (choice)
         {
         case 0: /* Modify number of shares */
@@ -1979,88 +2281,26 @@ gnc_split_register_auto_calc (SplitRegister *reg, Split *split)
         }
     }
 
-    if (recalc_shares)
-        if (!gnc_numeric_zero_p (price))
-        {
-            BasicCell *cell;
+    if (recalc_shares && !gnc_numeric_zero_p (price))
+        recalculate_shares (split, reg, value, price, value_changed);
 
-            denom = gnc_split_get_amount_denom (split);
-
-            amount = gnc_numeric_div (value, price, denom, GNC_HOW_RND_ROUND_HALF_UP);
-
-            cell = gnc_table_layout_get_cell (reg->table->layout, SHRS_CELL);
-            gnc_price_cell_set_value ((PriceCell *) cell, amount);
-            gnc_basic_cell_set_changed (cell, TRUE);
-
-            if (amount_changed)
-            {
-                cell = gnc_table_layout_get_cell (reg->table->layout, PRIC_CELL);
-                gnc_basic_cell_set_changed (cell, FALSE);
-            }
-        }
-
-    if (recalc_price)
-        if (!gnc_numeric_zero_p (amount))
-        {
-            BasicCell *price_cell;
-
-            price = gnc_numeric_div (value, amount,
-                                     GNC_DENOM_AUTO,
-                                     GNC_HOW_DENOM_EXACT);
-
-            if (gnc_numeric_negative_p (price))
-            {
-                BasicCell *debit_cell;
-                BasicCell *credit_cell;
-
-                debit_cell = gnc_table_layout_get_cell (reg->table->layout,
-                                                        DEBT_CELL);
-
-                credit_cell = gnc_table_layout_get_cell (reg->table->layout,
-                              CRED_CELL);
-
-                price = gnc_numeric_neg (price);
-
-                gnc_price_cell_set_debt_credit_value ((PriceCell *) debit_cell,
-                                                      (PriceCell *) credit_cell,
-                                                      gnc_numeric_neg (value));
-
-                gnc_basic_cell_set_changed (debit_cell, TRUE);
-                gnc_basic_cell_set_changed (credit_cell, TRUE);
-            }
-
-            price_cell = gnc_table_layout_get_cell (reg->table->layout, PRIC_CELL);
-            gnc_price_cell_set_value ((PriceCell *) price_cell, price);
-            gnc_basic_cell_set_changed (price_cell, TRUE);
-        }
-
-    if (recalc_value)
+    if (recalc_price && !gnc_numeric_zero_p (amount))
     {
-        BasicCell *debit_cell;
-        BasicCell *credit_cell;
-
-        debit_cell = gnc_table_layout_get_cell (reg->table->layout, DEBT_CELL);
-        credit_cell = gnc_table_layout_get_cell (reg->table->layout, CRED_CELL);
-
-        denom = gnc_split_get_value_denom (split);
-
-        value = gnc_numeric_mul (price, amount, denom, GNC_HOW_RND_ROUND_HALF_UP);
-
-        gnc_price_cell_set_debt_credit_value ((PriceCell *) debit_cell,
-                                              (PriceCell *) credit_cell, value);
-
-        gnc_basic_cell_set_changed (debit_cell, TRUE);
-        gnc_basic_cell_set_changed (credit_cell, TRUE);
-
-        if (shares_changed)
-        {
-            BasicCell *cell;
-
-            cell = gnc_table_layout_get_cell (reg->table->layout, PRIC_CELL);
-            gnc_basic_cell_set_changed (cell, FALSE);
-        }
+        recalculate_price (split, reg, value, amount);
+        price_changed = TRUE;
+        source = PRICE_SOURCE_SPLIT_REG;
     }
+    if (recalc_value)
+        recalculate_value (split, reg, price, amount, shares_changed);
 
+    if (price_changed)
+    {
+        cell = (PriceCell *) gnc_table_layout_get_cell (reg->table->layout,
+                PRIC_CELL);
+        price = gnc_price_cell_get_value (cell);
+	if (gnc_numeric_positive_p(price))
+	    record_price (reg, account, price, source);
+    }
     return TRUE;
 }
 
@@ -2358,7 +2598,8 @@ gnc_split_register_config_cells (SplitRegister *reg)
     /* Use 6 decimal places for prices and "exchange rates"  */
     gnc_price_cell_set_fraction
     ((PriceCell *)
-     gnc_table_layout_get_cell (reg->table->layout, PRIC_CELL), 1000000);
+     gnc_table_layout_get_cell (reg->table->layout, PRIC_CELL),
+     PRICE_CELL_DENOM);
 
     /* Initialize shares and share balance cells */
     gnc_price_cell_set_print_info
@@ -2402,12 +2643,12 @@ gnc_split_register_config_cells (SplitRegister *reg)
 }
 
 static void
-split_register_gconf_changed (GConfEntry *entry, gpointer user_data)
+split_register_pref_changed (gpointer prefs, gchar *pref, gpointer user_data)
 {
     SplitRegister * reg = user_data;
     SRInfo *info;
 
-    g_return_if_fail(entry && entry->key);
+    g_return_if_fail(pref);
     if (reg == NULL)
         return;
 
@@ -2415,7 +2656,7 @@ split_register_gconf_changed (GConfEntry *entry, gpointer user_data)
     if (!info)
         return;
 
-    if (g_str_has_suffix(entry->key, KEY_ACCOUNTING_LABELS))
+    if (g_str_has_suffix(pref, GNC_PREF_ACCOUNTING_LABELS))
     {
         /* Release current strings. Will be reloaded at next reference. */
         g_free (info->debit_str);
@@ -2429,14 +2670,26 @@ split_register_gconf_changed (GConfEntry *entry, gpointer user_data)
         info->tcredit_str = NULL;
 
     }
-    else if (g_str_has_suffix(entry->key, KEY_ACCOUNT_SEPARATOR))
+    else if (g_str_has_suffix(pref, GNC_PREF_ACCOUNT_SEPARATOR))
     {
         info->separator_changed = TRUE;
     }
     else
     {
-        g_warning("split_register_gconf_changed: Unknown gconf key %s", entry->key);
+        g_warning("split_register_pref_changed: Unknown preference %s", pref);
     }
+}
+
+static void
+split_register_book_option_changed (gpointer new_val, gpointer user_data)
+{
+    SplitRegister * reg = user_data;
+    gboolean *new_data = (gboolean*)new_val;
+
+    if (reg == NULL)
+        return;
+
+    reg->use_tran_num_for_num_field = (*new_data ? FALSE : TRUE);
 }
 
 static void
@@ -2452,12 +2705,17 @@ gnc_split_register_init (SplitRegister *reg,
     TableControl *control;
 
     /* Register 'destroy' callback */
-    gnc_gconf_general_register_cb(KEY_ACCOUNTING_LABELS,
-                                  split_register_gconf_changed,
-                                  reg);
-    gnc_gconf_general_register_cb(KEY_ACCOUNT_SEPARATOR,
-                                  split_register_gconf_changed,
-                                  reg);
+    gnc_prefs_register_cb (GNC_PREFS_GROUP_GENERAL,
+                           GNC_PREF_ACCOUNTING_LABELS,
+                           split_register_pref_changed,
+                           reg);
+    gnc_prefs_register_cb (GNC_PREFS_GROUP_GENERAL,
+                           GNC_PREF_ACCOUNT_SEPARATOR,
+                           split_register_pref_changed,
+                           reg);
+    gnc_book_option_register_cb(OPTION_NAME_NUM_FIELD_SOURCE,
+                                split_register_book_option_changed,
+                                reg);
 
     reg->sr_info = NULL;
 
@@ -2466,6 +2724,9 @@ gnc_split_register_init (SplitRegister *reg,
     reg->use_double_line = use_double_line;
     reg->do_auto_complete = do_auto_complete;
     reg->is_template = is_template;
+    reg->use_tran_num_for_num_field =
+                (qof_book_use_split_action_for_num_field(gnc_get_current_book())
+                    ? FALSE : TRUE);
 
     layout = gnc_split_register_layout_new (reg);
 
@@ -2672,6 +2933,7 @@ gnc_split_register_cleanup (SplitRegister *reg)
             pending_trans = NULL;
         }
         info->blank_split_guid = *guid_null ();
+        info->auto_complete = FALSE;
         blank_split = NULL;
     }
 
@@ -2706,11 +2968,16 @@ gnc_split_register_destroy (SplitRegister *reg)
 
     ENTER("reg=%p", reg);
 
-    gnc_gconf_general_remove_cb(KEY_ACCOUNTING_LABELS,
-                                split_register_gconf_changed,
-                                reg);
-    gnc_gconf_general_remove_cb(KEY_ACCOUNT_SEPARATOR,
-                                split_register_gconf_changed,
+    gnc_prefs_remove_cb_by_func (GNC_PREFS_GROUP_GENERAL,
+                                 GNC_PREF_ACCOUNTING_LABELS,
+                                 split_register_pref_changed,
+                                 reg);
+    gnc_prefs_remove_cb_by_func (GNC_PREFS_GROUP_GENERAL,
+                                 GNC_PREF_ACCOUNT_SEPARATOR,
+                                 split_register_pref_changed,
+                                 reg);
+    gnc_book_option_remove_cb(OPTION_NAME_NUM_FIELD_SOURCE,
+                                split_register_book_option_changed,
                                 reg);
     gnc_split_register_cleanup (reg);
 

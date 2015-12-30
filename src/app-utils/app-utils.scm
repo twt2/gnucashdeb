@@ -16,19 +16,34 @@
 ;; Boston, MA  02110-1301,  USA       gnu@gnu.org
 
 (define-module (gnucash app-utils))
+(cond-expand
+  (guile-2
+    (eval-when
+      (compile load eval expand)
+      (load-extension "libgncmod-app-utils" "scm_init_sw_app_utils_module")))
+  (else ))
 (use-modules (sw_app_utils))
 (use-modules (srfi srfi-1))
 (use-modules (gnucash main)) ;; FIXME: delete after we finish modularizing.
 (use-modules (gnucash gnc-module))
+(use-modules (gnucash gettext))
 
-(gnc:module-load "gnucash/engine" 0)
+;; Guile 2 needs to find the symbols from the c module at compile time already
+(cond-expand
+  (guile-2
+    (eval-when
+      (compile load eval expand)
+      (gnc:module-load "gnucash/engine" 0)))
+  (else
+    (gnc:module-load "gnucash/engine" 0)))
+
+;; gettext.scm
+(re-export gnc:gettext)
+(re-export _)
+(re-export N_)
 
 ;; c-interface.scm
 (export gnc:error->string)
-(export gnc:gettext)
-(export gnc:_)
-(export _)
-(export-syntax N_)
 (export gnc:make-string-database)
 
 ;; options.scm
@@ -152,6 +167,7 @@
 (export gnc:secs->timepair)
 (export gnc:timepair->date)
 (export gnc:date->timepair)
+(export gnc:timepair?)
 (export gnc:date-get-year)
 (export gnc:date-get-quarter)
 (export gnc:date-get-month-day)
@@ -215,6 +231,7 @@
 (export gnc:timepair-start-day-time)
 (export gnc:timepair-end-day-time)
 (export gnc:timepair-previous-day)
+(export gnc:timepair-next-day)
 (export gnc:reldate-get-symbol)
 (export gnc:reldate-get-string)
 (export gnc:reldate-get-desc)
@@ -273,11 +290,48 @@
 (define gnc:*kvp-option-path* (list KVP-OPTION-PATH))
 (export gnc:*kvp-option-path*)
 
-(load-from-path "c-interface.scm")
-(load-from-path "config-var.scm")
-(load-from-path "options.scm")
-(load-from-path "hooks.scm")
-(load-from-path "prefs.scm")
-(load-from-path "date-utilities.scm")
-(load-from-path "simple-obj.scm")
+(load-from-path "c-interface")
+(load-from-path "config-var")
+(load-from-path "options")
+(load-from-path "hooks")
+(load-from-path "prefs")
+(load-from-path "date-utilities")
+(load-from-path "simple-obj")
 
+;; Business options
+(define gnc:*business-label* (N_ "Business"))
+(define gnc:*company-name* (N_ "Company Name"))
+(define gnc:*company-addy* (N_ "Company Address"))
+(define gnc:*company-id* (N_ "Company ID"))
+(define gnc:*company-phone* (N_ "Company Phone Number"))
+(define gnc:*company-fax* (N_ "Company Fax Number"))
+(define gnc:*company-url* (N_ "Company Website URL"))
+(define gnc:*company-email* (N_ "Company Email Address"))
+(define gnc:*company-contact* (N_ "Company Contact Person"))
+
+(define (gnc:company-info key)
+  ;; Access company info from key-value pairs for current book
+  (kvp-frame-get-slot-path-gslist
+    (qof-book-get-slots (gnc-get-current-book))
+    (append gnc:*kvp-option-path* (list gnc:*business-label* key))))
+
+(export gnc:*business-label* gnc:*company-name*  gnc:*company-addy* 
+        gnc:*company-id*     gnc:*company-phone* gnc:*company-fax* 
+        gnc:*company-url*    gnc:*company-email* gnc:*company-contact*
+        gnc:company-info)
+
+(define gnc:*option-section-accounts* OPTION-SECTION-ACCOUNTS)
+(define gnc:*option-name-trading-accounts* OPTION-NAME-TRADING-ACCOUNTS)
+(define gnc:*option-name-auto-readonly-days* OPTION-NAME-AUTO-READONLY-DAYS)
+(define gnc:*option-name-num-field-source* OPTION-NAME-NUM-FIELD-SOURCE)
+
+(export gnc:*option-section-accounts* gnc:*option-name-trading-accounts*
+        gnc:*option-name-auto-readonly-days* gnc:*option-name-num-field-source*)
+
+(define gnc:*option-section-budgeting* OPTION-SECTION-BUDGETING)
+(define gnc:*option-name-default-budget* OPTION-NAME-DEFAULT-BUDGET)
+
+(export gnc:*option-section-budgeting* gnc:*option-name-default-budget*)
+
+(load-from-path "business-options")
+(load-from-path "business-prefs")

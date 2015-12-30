@@ -30,11 +30,15 @@
 
 #include "Account.h"
 #include "engine-helpers.h"
+#include "engine-helpers-guile.h"
 #include "glib-helpers.h"
 #include "gnc-date.h"
 #include "gnc-engine.h"
+#include "gnc-session.h"
 #include "guile-mappings.h"
+#include "gnc-guile-utils.h"
 #include "qof.h"
+#include "qofbookslots.h"
 /** \todo Code dependent on the private query headers
 qofquery-p.h and qofquerycore-p.h may need to be modified.
 These files are temporarily exported for QOF 0.6.0 but
@@ -71,21 +75,198 @@ gnc_split_get_date_reconciled(const Split *s)
 }
 
 void
-gnc_transaction_set_date_posted(Transaction *t, const Timespec d)
-{
-    xaccTransSetDatePostedTS(t, &d);
-}
-
-void
-gnc_transaction_set_date_entered(Transaction *t, const Timespec d)
-{
-    xaccTransSetDateEnteredTS(t, &d);
-}
-
-void
 gnc_transaction_set_date(Transaction *t, Timespec ts)
 {
     xaccTransSetDatePostedTS(t, &ts);
+}
+
+/** Gets the transaction Number or split Action based on book option:
+  * if the book option is TRUE (split action is used for NUM) and a
+  * split is provided, split-action is returned; if book option is FALSE
+  * (tran-num is used for NUM) and a trans is provided, transaction-num
+  * is returned; if split is provided and tran is NULL, split-action is
+  * returned; if tran is provided and split is NULL, transaction-num is
+  * returned. Otherwise NULL is returned.*/
+const char *
+gnc_get_num_action (const Transaction *trans, const Split *split)
+{
+    gboolean num_action = qof_book_use_split_action_for_num_field
+                           (qof_session_get_book(gnc_get_current_session ()));
+
+    if (trans && !split)
+        return xaccTransGetNum(trans);
+    if (split && !trans)
+        return xaccSplitGetAction(split);
+    if (trans && split)
+    {
+        if (num_action)
+            return xaccSplitGetAction(split);
+        else
+            return xaccTransGetNum(trans);
+    }
+    else return NULL;
+}
+
+/** Opposite of 'gnc_get_num_action'; if the book option is TRUE (split action
+  * is used for NUM) and a trans is provided, transaction-num is returned; if
+  * book option is FALSE (tran-num is used for NUM) and a split is provided,
+  * split-action is returned; if split is provided and tran is NULL,
+  * split-action is returned; if tran is provided and split is NULL,
+  * transaction-num is returned. Otherwise NULL is returned.*/
+const char *
+gnc_get_action_num (const Transaction *trans, const Split *split)
+{
+    gboolean num_action = qof_book_use_split_action_for_num_field
+                           (qof_session_get_book(gnc_get_current_session ()));
+
+    if (trans && !split)
+        return xaccTransGetNum(trans);
+    if (split && !trans)
+        return xaccSplitGetAction(split);
+    if (trans && split)
+    {
+        if (num_action)
+            return xaccTransGetNum(trans);
+        else
+            return xaccSplitGetAction(split);
+    }
+    else return NULL;
+}
+
+/** Sets the transaction Number and/or split Action based on book option:
+  * if the book option is TRUE (split action is to be used for NUM) then 'num'
+  * sets split-action and, if 'tran' and 'action' are provided, 'action'
+  * sets transaction-num; if book option is FALSE (tran-num is to be used for NUM)
+  * then 'num' sets transaction-num and, if 'split' and 'action' are
+  * provided, 'action' sets 'split-action'. If any arguments are NULL (#f, for
+  * the guile version), no change is made to the field that would otherwise be
+  * affected. If 'tran' and 'num' are passed with 'split and 'action' set to
+  * NULL, it is xaccTransSetNum (trans, num). Likewise, if 'split and 'action'
+  * are passed with 'tran' and 'num' set to NULL, it is xaccSplitSetAction (split,
+  * action). */
+void
+gnc_set_num_action (Transaction *trans, Split *split,
+                    const char *num, const char *action)
+{
+    gboolean num_action = qof_book_use_split_action_for_num_field
+                           (qof_session_get_book(gnc_get_current_session ()));
+
+    if (trans && num && !split && !action)
+    {
+        xaccTransSetNum (trans, num);
+        return;
+    }
+
+    if (!trans && !num && split && action)
+    {
+        xaccSplitSetAction (split, action);
+        return;
+    }
+
+    if (trans)
+    {
+        if (!num_action && num)
+            xaccTransSetNum (trans, num);
+        if (num_action && action)
+            xaccTransSetNum (trans, action);
+    }
+
+    if (split)
+    {
+        if (!num_action && action)
+            xaccSplitSetAction (split, action);
+        if (num_action && num)
+           xaccSplitSetAction (split, num);
+    }
+}
+
+/************************************************************/
+/*           Notification of Book Option Changes            */
+/************************************************************/
+
+static GOnce bo_init_once = G_ONCE_INIT;
+static GHashTable *bo_callback_hash = NULL;
+static GHookList *bo_final_hook_list = NULL;
+
+static gpointer
+bo_init (gpointer unused)
+{
+    bo_callback_hash = g_hash_table_new(g_str_hash, g_str_equal);
+
+    bo_final_hook_list = g_malloc(sizeof(GHookList));
+    g_hook_list_init(bo_final_hook_list, sizeof(GHook));
+    return NULL;
+}
+
+static void
+bo_call_hook (GHook *hook, gpointer data)
+{
+    ((GFunc)hook->func)(data, hook->data);
+}
+
+/** Calls registered callbacks when num_field_source book option changes so that
+  * registers/reports can update themselves */
+void
+gnc_book_option_num_field_source_change (gboolean num_action)
+{
+    GHookList *hook_list;
+    const gchar *key = OPTION_NAME_NUM_FIELD_SOURCE;
+
+    g_once(&bo_init_once, bo_init, NULL);
+
+    hook_list = g_hash_table_lookup(bo_callback_hash, key);
+    if (hook_list != NULL)
+        g_hook_list_marshal(hook_list, TRUE, bo_call_hook, &num_action);
+    g_hook_list_invoke(bo_final_hook_list, TRUE);
+}
+
+void
+gnc_book_option_register_cb (gchar *key, GncBOCb func, gpointer user_data)
+{
+    GHookList *hook_list;
+    GHook *hook;
+
+    g_once(&bo_init_once, bo_init, NULL);
+    hook_list = g_hash_table_lookup(bo_callback_hash, key);
+    if (hook_list == NULL)
+    {
+        hook_list = g_malloc(sizeof(GHookList));
+        g_hook_list_init(hook_list, sizeof(GHook));
+        g_hash_table_insert(bo_callback_hash, (gpointer)key, hook_list);
+    }
+
+    hook = g_hook_find_func_data(hook_list, TRUE, func, user_data);
+    if (hook != NULL)
+    {
+        return;
+    }
+
+    hook = g_hook_alloc(hook_list);
+    hook->func = func;
+    hook->data = user_data;
+    g_hook_append(hook_list, hook);
+}
+
+void
+gnc_book_option_remove_cb (gchar *key, GncBOCb func, gpointer user_data)
+{
+    GHookList *hook_list;
+    GHook *hook;
+
+    g_once(&bo_init_once, bo_init, NULL);
+    hook_list = g_hash_table_lookup(bo_callback_hash, key);
+    if (hook_list == NULL)
+        return;
+    hook = g_hook_find_func_data(hook_list, TRUE, func, user_data);
+    if (hook == NULL)
+        return;
+
+    g_hook_destroy_link(hook_list, hook);
+    if (hook_list->hooks == NULL)
+    {
+        g_hash_table_remove(bo_callback_hash, key);
+        g_free(hook_list);
+    }
 }
 
 SCM
@@ -94,8 +275,8 @@ gnc_timespec2timepair(Timespec t)
     SCM secs;
     SCM nsecs;
 
-    secs = gnc_gint64_to_scm(t.tv_sec);
-    nsecs = scm_long2num(t.tv_nsec);
+    secs = scm_from_int64(t.tv_sec);
+    nsecs = scm_from_long (t.tv_nsec);
     return(scm_cons(secs, nsecs));
 }
 
@@ -105,8 +286,8 @@ gnc_timepair2timespec(SCM x)
     Timespec result = {0, 0};
     if (gnc_timepair_p (x))
     {
-        result.tv_sec = gnc_scm_to_gint64(SCM_CAR(x));
-        result.tv_nsec = scm_num2long(SCM_CDR(x), SCM_ARG1, G_STRFUNC);
+        result.tv_sec = scm_to_int64(SCM_CAR(x));
+        result.tv_nsec = scm_to_long(SCM_CDR(x));
     }
     return(result);
 }
@@ -133,22 +314,23 @@ gnc_guid2scm(GncGUID guid)
     if (!guid_to_string_buff(&guid, string))
         return SCM_BOOL_F;
 
-    return scm_makfrom0str(string);
+    return scm_from_utf8_string(string);
 }
 
 GncGUID
 gnc_scm2guid(SCM guid_scm)
 {
     GncGUID guid;
-    const gchar * str;
+    gchar * str;
 
     if (!scm_is_string(guid_scm)
-        || (GUID_ENCODING_LENGTH != scm_c_string_length (guid_scm)))
+            || (GUID_ENCODING_LENGTH != scm_c_string_length (guid_scm)))
     {
         return *guid_null();
     }
-    str = scm_to_locale_string (guid_scm);
+    str = gnc_scm_to_utf8_string (guid_scm);
     string_to_guid(str, &guid);
+    g_free (str);
     return guid;
 }
 
@@ -156,7 +338,8 @@ int
 gnc_guid_p(SCM guid_scm)
 {
     GncGUID guid;
-    const gchar * str;
+    gchar * str;
+    int return_int;
 
     if (!scm_is_string(guid_scm))
         return FALSE;
@@ -165,9 +348,10 @@ gnc_guid_p(SCM guid_scm)
     {
         return FALSE;
     }
-    str = scm_to_locale_string (guid_scm);
-
-    return string_to_guid(str, &guid);
+    str = gnc_scm_to_utf8_string (guid_scm);
+    return_int = string_to_guid(str, &guid);
+    g_free (str);
+    return return_int;
 }
 
 
@@ -211,61 +395,63 @@ typedef enum
 static QofQueryCompare
 gnc_query_scm2compare (SCM how_scm)
 {
-    return scm_num2int(how_scm, SCM_ARG1, G_STRFUNC);
+    return scm_to_int(how_scm);
 }
 
 /* QofStringMatch */
 static QofStringMatch
 gnc_query_scm2string (SCM how_scm)
 {
-    return scm_num2int(how_scm, SCM_ARG1, G_STRFUNC);
+    return scm_to_int(how_scm);
 }
 
 /* QofDateMatch */
 static QofDateMatch
 gnc_query_scm2date (SCM how_scm)
 {
-    return scm_num2int(how_scm, SCM_ARG1, G_STRFUNC);
+    return scm_to_int(how_scm);
 }
 
 /* QofNumericMatch */
 static QofNumericMatch
 gnc_query_scm2numericop (SCM how_scm)
 {
-    return scm_num2int(how_scm, SCM_ARG1, G_STRFUNC);
+    return scm_to_int(how_scm);
 }
 
 /* QofGuidMatch */
 static QofGuidMatch
 gnc_query_scm2guid (SCM how_scm)
 {
-    return scm_num2int(how_scm, SCM_ARG1, G_STRFUNC);
+    return scm_to_int(how_scm);
 }
 
 /* QofCharMatch */
 static QofCharMatch
 gnc_query_scm2char (SCM how_scm)
 {
-    return scm_num2int(how_scm, SCM_ARG1, G_STRFUNC);
+    return scm_to_int(how_scm);
 }
 
 static QofGuidMatch
 gnc_scm2acct_match_how (SCM how_scm)
 {
     QofGuidMatch res;
-    const gchar *how = SCM_SYMBOL_CHARS (how_scm);
+    gchar *how = gnc_scm_symbol_to_locale_string (how_scm);
 
-    if (!safe_strcmp (how, "acct-match-all"))
+    if (!g_strcmp0 (how, "acct-match-all"))
         res = QOF_GUID_MATCH_ALL;
-    else if (!safe_strcmp (how, "acct-match-any"))
+    else if (!g_strcmp0 (how, "acct-match-any"))
         res = QOF_GUID_MATCH_ANY;
-    else if (!safe_strcmp (how, "acct-match-none"))
+    else if (!g_strcmp0 (how, "acct-match-none"))
         res = QOF_GUID_MATCH_NONE;
     else
     {
         PINFO ("invalid account match: %s", how);
         res = QOF_GUID_MATCH_NULL;
     }
+
+    g_free (how);
     return res;
 }
 
@@ -273,13 +459,13 @@ static QofQueryCompare
 gnc_scm2amt_match_how (SCM how_scm)
 {
     QofQueryCompare res;
-    const gchar *how = SCM_SYMBOL_CHARS (how_scm);
+    gchar *how = gnc_scm_symbol_to_locale_string (how_scm);
 
-    if (!safe_strcmp (how, "amt-match-atleast"))
+    if (!g_strcmp0 (how, "amt-match-atleast"))
         res = QOF_COMPARE_GTE;
-    else if (!safe_strcmp (how, "amt-match-atmost"))
+    else if (!g_strcmp0 (how, "amt-match-atmost"))
         res = QOF_COMPARE_LTE;
-    else if (!safe_strcmp (how, "amt-match-exactly"))
+    else if (!g_strcmp0 (how, "amt-match-exactly"))
         res = QOF_COMPARE_EQUAL;
     else
     {
@@ -287,6 +473,7 @@ gnc_scm2amt_match_how (SCM how_scm)
         res = QOF_COMPARE_EQUAL;
     }
 
+    g_free (how);
     return res;
 }
 
@@ -294,23 +481,25 @@ static QofQueryCompare
 gnc_scm2kvp_match_how (SCM how_scm)
 {
     QofQueryCompare res;
-    const gchar *how = SCM_SYMBOL_CHARS (how_scm);
+    gchar *how = gnc_scm_symbol_to_locale_string (how_scm);
 
-    if (!safe_strcmp (how, "kvp-match-lt"))
+    if (!g_strcmp0 (how, "kvp-match-lt"))
         res = QOF_COMPARE_LT;
-    else if (!safe_strcmp (how, "kvp-match-lte"))
+    else if (!g_strcmp0 (how, "kvp-match-lte"))
         res = QOF_COMPARE_LTE;
-    else if (!safe_strcmp (how, "kvp-match-eq"))
+    else if (!g_strcmp0 (how, "kvp-match-eq"))
         res = QOF_COMPARE_EQUAL;
-    else if (!safe_strcmp (how, "kvp-match-gte"))
+    else if (!g_strcmp0 (how, "kvp-match-gte"))
         res = QOF_COMPARE_GTE;
-    else if (!safe_strcmp (how, "kvp-match-gt"))
+    else if (!g_strcmp0 (how, "kvp-match-gt"))
         res = QOF_COMPARE_GT;
     else
     {
         PINFO ("invalid kvp match: %s", how);
         res = QOF_COMPARE_EQUAL;
     }
+
+    g_free (how);
     return res;
 }
 
@@ -330,7 +519,7 @@ gnc_scm2bitfield (SCM field_scm)
         scm = SCM_CAR (field_scm);
         field_scm = SCM_CDR (field_scm);
 
-        bit = scm_num2int(scm, SCM_ARG2, G_STRFUNC);
+        bit = scm_to_int(scm);
         field |= bit;
     }
 
@@ -346,7 +535,7 @@ gnc_scm2cleared_match_how (SCM how_scm)
 static gboolean
 gnc_scm2balance_match_how (SCM how_scm, gboolean *resp)
 {
-    const gchar *how;
+    gchar *how;
 
     if (!scm_is_list (how_scm))
         return FALSE;
@@ -358,13 +547,14 @@ gnc_scm2balance_match_how (SCM how_scm, gboolean *resp)
     if (!scm_is_null (SCM_CDR (how_scm)))
         return FALSE;
 
-    how = SCM_SYMBOL_CHARS (SCM_CAR(how_scm));
+    how = gnc_scm_symbol_to_locale_string (SCM_CAR(how_scm));
 
-    if (!safe_strcmp (how, "balance-match-balanced"))
+    if (!g_strcmp0 (how, "balance-match-balanced"))
         *resp = TRUE;
     else
         *resp = FALSE;
 
+    g_free (how);
     return TRUE;
 }
 
@@ -372,24 +562,26 @@ static QofIdType
 gnc_scm2kvp_match_where (SCM where_scm)
 {
     QofIdType res;
-    const gchar *where;
+    gchar *where;
 
     if (!scm_is_list (where_scm))
         return NULL;
 
-    where = SCM_SYMBOL_CHARS (SCM_CAR(where_scm));
+    where = gnc_scm_symbol_to_locale_string (SCM_CAR(where_scm));
 
-    if (!safe_strcmp (where, "kvp-match-split"))
+    if (!g_strcmp0 (where, "kvp-match-split"))
         res = GNC_ID_SPLIT;
-    else if (!safe_strcmp (where, "kvp-match-trans"))
+    else if (!g_strcmp0 (where, "kvp-match-trans"))
         res = GNC_ID_TRANS;
-    else if (!safe_strcmp (where, "kvp-match-account"))
+    else if (!g_strcmp0 (where, "kvp-match-account"))
         res = GNC_ID_ACCOUNT;
     else
     {
         PINFO ("Unknown kvp-match-where: %s", where);
         res = NULL;
     }
+
+    g_free (where);
     return res;
 }
 
@@ -451,8 +643,8 @@ gnc_guid_glist_free (GList *guids)
 static SCM
 gnc_query_numeric2scm (gnc_numeric val)
 {
-    return scm_cons (gnc_gint64_to_scm (val.num),
-                     gnc_gint64_to_scm (val.denom));
+    return scm_cons (scm_from_int64 (val.num),
+                     scm_from_int64 (val.denom));
 }
 
 static gboolean
@@ -470,8 +662,8 @@ gnc_query_scm2numeric (SCM pair)
     num = SCM_CAR (pair);
     denom = SCM_CDR (pair);
 
-    return gnc_numeric_create (gnc_scm_to_gint64 (num),
-                               gnc_scm_to_gint64 (denom));
+    return gnc_numeric_create (scm_to_int64 (num),
+                               scm_to_int64 (denom));
 }
 
 static SCM
@@ -485,7 +677,7 @@ gnc_query_path2scm (const GSList *path)
         const char *key = node->data;
 
         if (key)
-            path_scm = scm_cons (scm_makfrom0str (key), path_scm);
+            path_scm = scm_cons (scm_from_utf8_string (key), path_scm);
     }
 
     return scm_reverse (path_scm);
@@ -502,15 +694,14 @@ gnc_query_scm2path (SCM path_scm)
     while (!scm_is_null (path_scm))
     {
         SCM key_scm = SCM_CAR (path_scm);
+        char *str;
         char *key;
 
         if (!scm_is_string (key_scm))
             break;
 
-        key = g_strdup (scm_to_locale_string (key_scm));
-
+        key = gnc_scm_to_utf8_string(key_scm);
         path = g_slist_prepend (path, key);
-
         path_scm = SCM_CDR (path_scm);
     }
 
@@ -529,9 +720,9 @@ gnc_query_path_free (GSList *path)
 }
 
 static KvpValueType
-gnc_scm2KvpValueTypeype (SCM value_type_scm)
+gnc_scm2KvpValueType (SCM value_type_scm)
 {
-    return scm_num2int(value_type_scm, SCM_ARG1, G_STRFUNC);
+    return scm_to_int(value_type_scm);
 }
 
 static SCM gnc_kvp_frame2scm (KvpFrame *frame);
@@ -542,25 +733,27 @@ gnc_kvp_value2scm (const KvpValue *value)
     SCM value_scm = SCM_EOL;
     KvpValueType value_t;
     SCM scm;
+    const gchar *string;
 
     if (!value) return SCM_BOOL_F;
 
     value_t = kvp_value_get_type (value);
 
-    value_scm = scm_cons (scm_long2num (value_t), value_scm);
+    value_scm = scm_cons (scm_from_long  (value_t), value_scm);
 
     switch (value_t)
     {
     case KVP_TYPE_GINT64:
-        scm = gnc_gint64_to_scm (kvp_value_get_gint64 (value));
+        scm = scm_from_int64 (kvp_value_get_gint64 (value));
         break;
 
     case KVP_TYPE_DOUBLE:
-        scm = scm_make_real (kvp_value_get_double (value));
+        scm = scm_from_double  (kvp_value_get_double (value));
         break;
 
     case KVP_TYPE_STRING:
-        scm = scm_makfrom0str (kvp_value_get_string (value));
+        string = kvp_value_get_string (value);
+        scm = string ? scm_from_utf8_string (string) : SCM_BOOL_F;
         break;
 
     case KVP_TYPE_GUID:
@@ -620,7 +813,7 @@ kvp_frame_slot2scm (const char *key, KvpValue *value, gpointer data)
     SCM key_scm;
     SCM pair;
 
-    key_scm = scm_makfrom0str (key);
+    key_scm = key ? scm_from_utf8_string (key) : SCM_BOOL_F;
     value_scm = gnc_kvp_value2scm (value);
     pair = scm_cons (key_scm, value_scm);
 
@@ -655,7 +848,7 @@ gnc_scm2KvpValue (SCM value_scm)
         return NULL;
 
     type_scm = SCM_CAR (value_scm);
-    value_t = gnc_scm2KvpValueTypeype (type_scm);
+    value_t = gnc_scm2KvpValueType (type_scm);
 
     value_scm = SCM_CDR (value_scm);
     if (!scm_is_list (value_scm) || scm_is_null (value_scm))
@@ -666,17 +859,19 @@ gnc_scm2KvpValue (SCM value_scm)
     switch (value_t)
     {
     case KVP_TYPE_GINT64:
-        value = kvp_value_new_gint64 (gnc_scm_to_gint64 (val_scm));
+        value = kvp_value_new_gint64 (scm_to_int64 (val_scm));
         break;
 
     case KVP_TYPE_DOUBLE:
-        value = kvp_value_new_double (scm_num2dbl (val_scm, G_STRFUNC));
+        value = kvp_value_new_double (scm_to_double (val_scm));
         break;
 
     case KVP_TYPE_STRING:
     {
-        const gchar * str = scm_to_locale_string (val_scm);
+        gchar * str;
+        str = gnc_scm_to_utf8_string (val_scm);
         value = kvp_value_new_string (str);
+        g_free (str);
         break;
     }
 
@@ -777,7 +972,7 @@ gnc_scm2KvpFrame (SCM frame_scm)
         KvpValue *value;
         SCM key_scm;
         SCM val_scm;
-        const gchar *key;
+        gchar *key;
 
         if (!scm_is_pair (pair))
             continue;
@@ -788,14 +983,26 @@ gnc_scm2KvpFrame (SCM frame_scm)
         if (!scm_is_string (key_scm))
             continue;
 
-        key = scm_to_locale_string (key_scm);
+        key = scm_to_utf8_string (key_scm); /* key should be freed with free !
+                                                 This is automatically taken care
+                                                 of by scm_dynwind_free below. */
+        scm_dynwind_begin (0);
+        scm_dynwind_free (key); /* free key whenever the dynwind context ends */
         if (!key)
+        {
+            scm_dynwind_end ();
             continue;
-
-        value = gnc_scm2KvpValue (val_scm);
-        if (!value) continue;
-
+        }
+        value = gnc_scm2KvpValue (val_scm); /* can exit non-locally so justifies
+                                               the use of scm_dynwind context
+                                               protection */
+        if (!value)
+        {
+            scm_dynwind_end ();
+            continue;
+        }
         kvp_frame_set_slot_nc (frame, key, value);
+        scm_dynwind_end ();
     }
 
     return frame;
@@ -812,72 +1019,72 @@ gnc_queryterm2scm (const QofQueryTerm *qt)
     qt_scm = scm_cons (SCM_BOOL (qof_query_term_is_inverted (qt)), qt_scm);
 
     pd = qof_query_term_get_pred_data (qt);
-    qt_scm = scm_cons (scm_str2symbol (pd->type_name), qt_scm);
-    qt_scm = scm_cons (scm_long2num (pd->how), qt_scm);
+    qt_scm = scm_cons (scm_from_locale_symbol (pd->type_name), qt_scm);
+    qt_scm = scm_cons (scm_from_long  (pd->how), qt_scm);
 
-    if (!safe_strcmp (pd->type_name, QOF_TYPE_STRING))
+    if (!g_strcmp0 (pd->type_name, QOF_TYPE_STRING))
     {
         query_string_t pdata = (query_string_t) pd;
 
-        qt_scm = scm_cons (scm_long2num (pdata->options), qt_scm);
+        qt_scm = scm_cons (scm_from_long  (pdata->options), qt_scm);
         qt_scm = scm_cons (SCM_BOOL (pdata->is_regex), qt_scm);
-        qt_scm = scm_cons (scm_makfrom0str (pdata->matchstring), qt_scm);
+        qt_scm = scm_cons (pdata->matchstring ? scm_from_utf8_string (pdata->matchstring) : SCM_BOOL_F, qt_scm);
 
     }
-    else if (!safe_strcmp (pd->type_name, QOF_TYPE_DATE))
+    else if (!g_strcmp0 (pd->type_name, QOF_TYPE_DATE))
     {
         query_date_t pdata = (query_date_t) pd;
 
-        qt_scm = scm_cons (scm_long2num (pdata->options), qt_scm);
+        qt_scm = scm_cons (scm_from_long  (pdata->options), qt_scm);
         qt_scm = scm_cons (gnc_timespec2timepair (pdata->date), qt_scm);
 
     }
-    else if (!safe_strcmp (pd->type_name, QOF_TYPE_NUMERIC))
+    else if (!g_strcmp0 (pd->type_name, QOF_TYPE_NUMERIC))
     {
         query_numeric_t pdata = (query_numeric_t) pd;
 
-        qt_scm = scm_cons (scm_long2num (pdata->options), qt_scm);
+        qt_scm = scm_cons (scm_from_long  (pdata->options), qt_scm);
         qt_scm = scm_cons (gnc_query_numeric2scm (pdata->amount), qt_scm);
 
     }
-    else if (!safe_strcmp (pd->type_name, QOF_TYPE_GUID))
+    else if (!g_strcmp0 (pd->type_name, QOF_TYPE_GUID))
     {
         query_guid_t pdata = (query_guid_t) pd;
 
-        qt_scm = scm_cons (scm_long2num (pdata->options), qt_scm);
+        qt_scm = scm_cons (scm_from_long  (pdata->options), qt_scm);
         qt_scm = scm_cons (gnc_guid_glist2scm (pdata->guids), qt_scm);
 
     }
-    else if (!safe_strcmp (pd->type_name, QOF_TYPE_INT64))
+    else if (!g_strcmp0 (pd->type_name, QOF_TYPE_INT64))
     {
         query_int64_t pdata = (query_int64_t) pd;
 
-        qt_scm = scm_cons (gnc_gint64_to_scm (pdata->val), qt_scm);
+        qt_scm = scm_cons (scm_from_int64 (pdata->val), qt_scm);
 
     }
-    else if (!safe_strcmp (pd->type_name, QOF_TYPE_DOUBLE))
+    else if (!g_strcmp0 (pd->type_name, QOF_TYPE_DOUBLE))
     {
         query_double_t pdata = (query_double_t) pd;
 
-        qt_scm = scm_cons (scm_make_real (pdata->val), qt_scm);
+        qt_scm = scm_cons (scm_from_double  (pdata->val), qt_scm);
 
     }
-    else if (!safe_strcmp (pd->type_name, QOF_TYPE_BOOLEAN))
+    else if (!g_strcmp0 (pd->type_name, QOF_TYPE_BOOLEAN))
     {
         query_boolean_t pdata = (query_boolean_t) pd;
 
         qt_scm = scm_cons (SCM_BOOL (pdata->val), qt_scm);
 
     }
-    else if (!safe_strcmp (pd->type_name, QOF_TYPE_CHAR))
+    else if (!g_strcmp0 (pd->type_name, QOF_TYPE_CHAR))
     {
         query_char_t pdata = (query_char_t) pd;
 
-        qt_scm = scm_cons (scm_long2num (pdata->options), qt_scm);
-        qt_scm = scm_cons (scm_makfrom0str (pdata->char_list), qt_scm);
+        qt_scm = scm_cons (scm_from_long  (pdata->options), qt_scm);
+        qt_scm = scm_cons (pdata->char_list ? scm_from_utf8_string (pdata->char_list) : SCM_BOOL_F, qt_scm);
 
     }
-    else if (!safe_strcmp (pd->type_name, QOF_TYPE_KVP))
+    else if (!g_strcmp0 (pd->type_name, QOF_TYPE_KVP))
     {
         query_kvp_t pdata = (query_kvp_t) pd;
 
@@ -900,7 +1107,7 @@ gnc_scm2query_term_query_v2 (SCM qt_scm)
     QofQuery *q = NULL;
     QofQueryPredData *pd = NULL;
     SCM scm;
-    const gchar *type = NULL;
+    gchar *type = NULL;
     GSList *path = NULL;
     gboolean inverted = FALSE;
     QofQueryCompare compare_how;
@@ -929,7 +1136,7 @@ gnc_scm2query_term_query_v2 (SCM qt_scm)
         qt_scm = SCM_CDR (qt_scm);
         if (!scm_is_symbol (scm))
             break;
-        type = SCM_SYMBOL_CHARS (scm);
+        type = gnc_scm_symbol_to_locale_string (scm);
 
         /* QofCompareFunc */
         scm = SCM_CAR (qt_scm);
@@ -940,11 +1147,11 @@ gnc_scm2query_term_query_v2 (SCM qt_scm)
 
         /* Now compute the predicate */
 
-        if (!safe_strcmp (type, QOF_TYPE_STRING))
+        if (!g_strcmp0 (type, QOF_TYPE_STRING))
         {
             QofStringMatch options;
             gboolean is_regex;
-            const gchar *matchstring;
+            gchar *matchstring;
 
             scm = SCM_CAR (qt_scm);
             qt_scm = SCM_CDR (qt_scm);
@@ -960,12 +1167,13 @@ gnc_scm2query_term_query_v2 (SCM qt_scm)
             qt_scm = SCM_CDR (qt_scm);
             if (!scm_is_string (scm)) break;
 
-            matchstring = scm_to_locale_string (scm);
+            matchstring = gnc_scm_to_utf8_string (scm);
 
             pd = qof_query_string_predicate (compare_how, matchstring,
                                              options, is_regex);
+            g_free (matchstring);
         }
-        else if (!safe_strcmp (type, QOF_TYPE_DATE))
+        else if (!g_strcmp0 (type, QOF_TYPE_DATE))
         {
             QofDateMatch options;
             Timespec date;
@@ -985,7 +1193,7 @@ gnc_scm2query_term_query_v2 (SCM qt_scm)
             pd = qof_query_date_predicate (compare_how, options, date);
 
         }
-        else if (!safe_strcmp (type, QOF_TYPE_NUMERIC))
+        else if (!g_strcmp0 (type, QOF_TYPE_NUMERIC))
         {
             QofNumericMatch options;
             gnc_numeric val;
@@ -1005,7 +1213,7 @@ gnc_scm2query_term_query_v2 (SCM qt_scm)
             pd = qof_query_numeric_predicate (compare_how, options, val);
 
         }
-        else if (!safe_strcmp (type, QOF_TYPE_GUID))
+        else if (!g_strcmp0 (type, QOF_TYPE_GUID))
         {
             QofGuidMatch options;
             GList *guids;
@@ -1027,7 +1235,7 @@ gnc_scm2query_term_query_v2 (SCM qt_scm)
             gnc_guid_glist_free (guids);
 
         }
-        else if (!safe_strcmp (type, QOF_TYPE_INT64))
+        else if (!g_strcmp0 (type, QOF_TYPE_INT64))
         {
             gint64 val;
 
@@ -1035,12 +1243,12 @@ gnc_scm2query_term_query_v2 (SCM qt_scm)
             qt_scm = SCM_CDR (qt_scm);
             if (scm_is_null (scm))
                 break;
-            val = gnc_scm_to_gint64 (scm);
+            val = scm_to_int64 (scm);
 
             pd = qof_query_int64_predicate (compare_how, val);
 
         }
-        else if (!safe_strcmp (type, QOF_TYPE_DOUBLE))
+        else if (!g_strcmp0 (type, QOF_TYPE_DOUBLE))
         {
             double val;
 
@@ -1048,12 +1256,12 @@ gnc_scm2query_term_query_v2 (SCM qt_scm)
             qt_scm = SCM_CDR (qt_scm);
             if (!scm_is_number (scm))
                 break;
-            val = scm_num2dbl (scm, G_STRFUNC);
+            val = scm_to_double (scm);
 
             pd = qof_query_double_predicate (compare_how, val);
 
         }
-        else if (!safe_strcmp (type, QOF_TYPE_BOOLEAN))
+        else if (!g_strcmp0 (type, QOF_TYPE_BOOLEAN))
         {
             gboolean val;
 
@@ -1066,10 +1274,10 @@ gnc_scm2query_term_query_v2 (SCM qt_scm)
             pd = qof_query_boolean_predicate (compare_how, val);
 
         }
-        else if (!safe_strcmp (type, QOF_TYPE_CHAR))
+        else if (!g_strcmp0 (type, QOF_TYPE_CHAR))
         {
             QofCharMatch options;
-            const gchar *char_list;
+            gchar *char_list;
 
             scm = SCM_CAR (qt_scm);
             qt_scm = SCM_CDR (qt_scm);
@@ -1081,11 +1289,12 @@ gnc_scm2query_term_query_v2 (SCM qt_scm)
             qt_scm = SCM_CDR (qt_scm);
             if (!scm_is_string (scm))
                 break;
-            char_list = scm_to_locale_string (scm);
+            char_list = gnc_scm_to_utf8_string (scm);
 
             pd = qof_query_char_predicate (options, char_list);
+            g_free (char_list);
         }
-        else if (!safe_strcmp (type, QOF_TYPE_KVP))
+        else if (!g_strcmp0 (type, QOF_TYPE_KVP))
         {
             GSList *kvp_path;
             KvpValue *value;
@@ -1116,6 +1325,8 @@ gnc_scm2query_term_query_v2 (SCM qt_scm)
             break;
         }
 
+        g_free (type);
+
     }
     while (FALSE);
 
@@ -1142,8 +1353,8 @@ static QofQuery *
 gnc_scm2query_term_query_v1 (SCM query_term_scm)
 {
     gboolean ok = FALSE;
-    const gchar * pd_type = NULL;
-    const gchar * pr_type = NULL;
+    gchar * pd_type = NULL;
+    gchar * pr_type = NULL;
     gboolean sense = FALSE;
     QofQuery *q = NULL;
     SCM scm;
@@ -1160,7 +1371,7 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
         /* pd_type */
         scm = SCM_CAR (query_term_scm);
         query_term_scm = SCM_CDR (query_term_scm);
-        pd_type = SCM_SYMBOL_CHARS (scm);
+        pd_type = gnc_scm_symbol_to_locale_string (scm);
 
         /* pr_type */
         if (scm_is_null (query_term_scm))
@@ -1170,7 +1381,7 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
         }
         scm = SCM_CAR (query_term_scm);
         query_term_scm = SCM_CDR (query_term_scm);
-        pr_type = SCM_SYMBOL_CHARS (scm);
+        pr_type = gnc_scm_symbol_to_locale_string (scm);
 
         /* sense */
         if (scm_is_null (query_term_scm))
@@ -1184,7 +1395,7 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
 
         q = qof_query_create_for(GNC_ID_SPLIT);
 
-        if (!safe_strcmp (pd_type, "pd-date"))
+        if (!g_strcmp0 (pd_type, "pd-date"))
         {
             gboolean use_start;
             gboolean use_end;
@@ -1231,7 +1442,7 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
             ok = TRUE;
 
         }
-        else if (!safe_strcmp (pd_type, "pd-amount"))
+        else if (!g_strcmp0 (pd_type, "pd-amount"))
         {
             QofQueryCompare how;
             QofNumericMatch amt_sgn;
@@ -1257,24 +1468,24 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
                 break;
             scm = SCM_CAR (query_term_scm);
             query_term_scm = SCM_CDR (query_term_scm);
-            amount = scm_num2dbl (scm, G_STRFUNC);
+            amount = scm_to_double (scm);
 
             val = double_to_gnc_numeric (amount, GNC_DENOM_AUTO,
                                          GNC_HOW_DENOM_SIGFIGS(6) | GNC_HOW_RND_ROUND_HALF_UP);
 
-            if (!safe_strcmp (pr_type, "pr-price"))
+            if (!g_strcmp0 (pr_type, "pr-price"))
             {
                 xaccQueryAddSharePriceMatch (q, val, how, QOF_QUERY_OR);
                 ok = TRUE;
 
             }
-            else if (!safe_strcmp (pr_type, "pr-shares"))
+            else if (!g_strcmp0 (pr_type, "pr-shares"))
             {
                 xaccQueryAddSharesMatch (q, val, how, QOF_QUERY_OR);
                 ok = TRUE;
 
             }
-            else if (!safe_strcmp (pr_type, "pr-value"))
+            else if (!g_strcmp0 (pr_type, "pr-value"))
             {
                 xaccQueryAddValueMatch (q, val, amt_sgn, how, QOF_QUERY_OR);
                 ok = TRUE;
@@ -1286,7 +1497,7 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
             }
 
         }
-        else if (!safe_strcmp (pd_type, "pd-account"))
+        else if (!g_strcmp0 (pd_type, "pd-account"))
         {
             QofGuidMatch how;
             GList *account_guids;
@@ -1321,11 +1532,11 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
             ok = TRUE;
 
         }
-        else if (!safe_strcmp (pd_type, "pd-string"))
+        else if (!g_strcmp0 (pd_type, "pd-string"))
         {
             gboolean case_sens;
             gboolean use_regexp;
-            const gchar *matchstring;
+            gchar *matchstring;
 
             /* case_sens */
             if (scm_is_null (query_term_scm))
@@ -1349,30 +1560,30 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
 
             scm = SCM_CAR (query_term_scm);
             query_term_scm = SCM_CDR (query_term_scm);
-            matchstring = scm_to_locale_string (scm);
+            matchstring = gnc_scm_to_utf8_string (scm);
 
-            if (!safe_strcmp (pr_type, "pr-action"))
+            if (!g_strcmp0 (pr_type, "pr-action"))
             {
                 xaccQueryAddActionMatch (q, matchstring, case_sens, use_regexp,
                                          QOF_QUERY_OR);
                 ok = TRUE;
 
             }
-            else if (!safe_strcmp (pr_type, "pr-desc"))
+            else if (!g_strcmp0 (pr_type, "pr-desc"))
             {
                 xaccQueryAddDescriptionMatch (q, matchstring, case_sens,
                                               use_regexp, QOF_QUERY_OR);
                 ok = TRUE;
 
             }
-            else if (!safe_strcmp (pr_type, "pr-memo"))
+            else if (!g_strcmp0 (pr_type, "pr-memo"))
             {
                 xaccQueryAddMemoMatch (q, matchstring, case_sens, use_regexp,
                                        QOF_QUERY_OR);
                 ok = TRUE;
 
             }
-            else if (!safe_strcmp (pr_type, "pr-num"))
+            else if (!g_strcmp0 (pr_type, "pr-num"))
             {
                 xaccQueryAddNumberMatch (q, matchstring, case_sens, use_regexp,
                                          QOF_QUERY_OR);
@@ -1383,9 +1594,10 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
             {
                 PINFO ("Unknown string predicate: %s", pr_type);
             }
+            g_free (matchstring);
 
         }
-        else if (!safe_strcmp (pd_type, "pd-cleared"))
+        else if (!g_strcmp0 (pd_type, "pd-cleared"))
         {
             cleared_match_t how;
 
@@ -1401,7 +1613,7 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
             ok = TRUE;
 
         }
-        else if (!safe_strcmp (pd_type, "pd-balance"))
+        else if (!g_strcmp0 (pd_type, "pd-balance"))
         {
             gboolean how;
 
@@ -1418,7 +1630,7 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
             ok = TRUE;
 
         }
-        else if (!safe_strcmp (pd_type, "pd-guid"))
+        else if (!g_strcmp0 (pd_type, "pd-guid"))
         {
             GncGUID guid;
             QofIdType id_type;
@@ -1434,13 +1646,14 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
             /* id type */
             scm = SCM_CAR (query_term_scm);
             query_term_scm = SCM_CDR (query_term_scm);
-            id_type = g_strdup (scm_to_locale_string (scm));
+            id_type = (QofIdType) gnc_scm_to_utf8_string (scm);
 
             xaccQueryAddGUIDMatch (q, &guid, id_type, QOF_QUERY_OR);
+            g_free ((void *) id_type);
             ok = TRUE;
 
         }
-        else if (!safe_strcmp (pd_type, "pd-kvp"))
+        else if (!g_strcmp0 (pd_type, "pd-kvp"))
         {
             GSList *path;
             KvpValue *value;
@@ -1486,6 +1699,9 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
         {
             PINFO ("Unknown Predicate: %s", pd_type);
         }
+
+        g_free (pd_type);
+        g_free (pr_type);
 
     }
     while (FALSE);
@@ -1645,7 +1861,7 @@ gnc_query_sort2scm (const QofQuerySort *qs)
         return SCM_BOOL_F;
 
     sort_scm = scm_cons (gnc_query_path2scm (path), sort_scm);
-    sort_scm = scm_cons (scm_int2num (qof_query_sort_get_sort_options (qs)), sort_scm);
+    sort_scm = scm_cons (scm_from_int  (qof_query_sort_get_sort_options (qs)), sort_scm);
     sort_scm = scm_cons (SCM_BOOL (qof_query_sort_get_increasing (qs)), sort_scm);
 
     return scm_reverse (sort_scm);
@@ -1685,7 +1901,7 @@ gnc_query_scm2sort (SCM sort_scm, GSList **path, gint *options, gboolean *inc)
         gnc_query_path_free (p);
         return FALSE;
     }
-    o = scm_num2int (val, SCM_ARG1, G_STRFUNC);
+    o = scm_to_int (val);
 
     /* increasing */
     val = SCM_CAR (sort_scm);
@@ -1719,18 +1935,14 @@ gnc_query2scm (QofQuery *q)
 
     if (!q) return SCM_BOOL_F;
 
-#ifndef HAVE_GUILE18
-    ++scm_block_gc;
-#endif
-
     /* terms */
     pair = scm_cons (gnc_query_terms2scm (qof_query_get_terms (q)), SCM_EOL);
-    pair = scm_cons (scm_str2symbol ("terms"), pair);
+    pair = scm_cons (scm_from_locale_symbol ("terms"), pair);
     query_scm = scm_cons (pair, query_scm);
 
     /* search-for */
-    pair = scm_cons (scm_str2symbol (qof_query_get_search_for (q)), SCM_EOL);
-    pair = scm_cons (scm_str2symbol ("search-for"), pair);
+    pair = scm_cons (scm_from_locale_symbol (qof_query_get_search_for (q)), SCM_EOL);
+    pair = scm_cons (scm_from_locale_symbol ("search-for"), pair);
     query_scm = scm_cons (pair, query_scm);
 
     /* sorts... */
@@ -1738,30 +1950,27 @@ gnc_query2scm (QofQuery *q)
 
     /* primary-sort */
     pair = scm_cons (gnc_query_sort2scm (s1), SCM_EOL);
-    pair = scm_cons (scm_str2symbol ("primary-sort"), pair);
+    pair = scm_cons (scm_from_locale_symbol ("primary-sort"), pair);
     query_scm = scm_cons (pair, query_scm);
 
     /* secondary-sort */
     pair = scm_cons (gnc_query_sort2scm (s2), SCM_EOL);
-    pair = scm_cons (scm_str2symbol ("secondary-sort"), pair);
+    pair = scm_cons (scm_from_locale_symbol ("secondary-sort"), pair);
     query_scm = scm_cons (pair, query_scm);
 
     /* tertiary-sort */
     pair = scm_cons (gnc_query_sort2scm (s3), SCM_EOL);
-    pair = scm_cons (scm_str2symbol ("tertiary-sort"), pair);
+    pair = scm_cons (scm_from_locale_symbol ("tertiary-sort"), pair);
     query_scm = scm_cons (pair, query_scm);
 
     /* max results */
-    pair = scm_cons (scm_int2num (qof_query_get_max_results (q)), SCM_EOL);
-    pair = scm_cons (scm_str2symbol ("max-results"), pair);
+    pair = scm_cons (scm_from_int  (qof_query_get_max_results (q)), SCM_EOL);
+    pair = scm_cons (scm_from_locale_symbol ("max-results"), pair);
     query_scm = scm_cons (pair, query_scm);
 
     /* Reverse this list; tag it as 'query-v2' */
     pair = scm_reverse (query_scm);
-#ifndef HAVE_GUILE18
-    --scm_block_gc;
-#endif
-    return scm_cons (scm_str2symbol ("query-v2"), pair);
+    return scm_cons (scm_from_locale_symbol ("query-v2"), pair);
 }
 
 static GSList *
@@ -1772,79 +1981,79 @@ gnc_query_sort_to_list (const gchar * symbol)
     if (!symbol)
         return NULL;
 
-    if (!safe_strcmp (symbol, "by-none"))
+    if (!g_strcmp0 (symbol, "by-none"))
     {
         path = NULL;
     }
-    else if (!safe_strcmp (symbol, "by-standard"))
+    else if (!g_strcmp0 (symbol, "by-standard"))
     {
         path = g_slist_prepend (path, QUERY_DEFAULT_SORT);
 
     }
-    else if (!safe_strcmp (symbol, "by-date") ||
-             !safe_strcmp (symbol, "by-date-rounded"))
+    else if (!g_strcmp0 (symbol, "by-date") ||
+             !g_strcmp0 (symbol, "by-date-rounded"))
     {
         path = g_slist_prepend (path, TRANS_DATE_POSTED);
         path = g_slist_prepend (path, SPLIT_TRANS);
 
     }
-    else if (!safe_strcmp (symbol, "by-date-entered") ||
-             !safe_strcmp (symbol, "by-date-entered-rounded"))
+    else if (!g_strcmp0 (symbol, "by-date-entered") ||
+             !g_strcmp0 (symbol, "by-date-entered-rounded"))
     {
         path = g_slist_prepend (path, TRANS_DATE_ENTERED);
         path = g_slist_prepend (path, SPLIT_TRANS);
 
     }
-    else if (!safe_strcmp (symbol, "by-date-reconciled") ||
-             !safe_strcmp (symbol, "by-date-reconciled-rounded"))
+    else if (!g_strcmp0 (symbol, "by-date-reconciled") ||
+             !g_strcmp0 (symbol, "by-date-reconciled-rounded"))
     {
         path = g_slist_prepend (path, SPLIT_DATE_RECONCILED);
 
     }
-    else if (!safe_strcmp (symbol, "by-num"))
+    else if (!g_strcmp0 (symbol, "by-num"))
     {
         path = g_slist_prepend (path, TRANS_NUM);
         path = g_slist_prepend (path, SPLIT_TRANS);
 
     }
-    else if (!safe_strcmp (symbol, "by-amount"))
+    else if (!g_strcmp0 (symbol, "by-amount"))
     {
         path = g_slist_prepend (path, SPLIT_VALUE);
 
     }
-    else if (!safe_strcmp (symbol, "by-memo"))
+    else if (!g_strcmp0 (symbol, "by-memo"))
     {
         path = g_slist_prepend (path, SPLIT_MEMO);
 
     }
-    else if (!safe_strcmp (symbol, "by-desc"))
+    else if (!g_strcmp0 (symbol, "by-desc"))
     {
         path = g_slist_prepend (path, TRANS_DESCRIPTION);
         path = g_slist_prepend (path, SPLIT_TRANS);
 
     }
-    else if (!safe_strcmp (symbol, "by-reconcile"))
+    else if (!g_strcmp0 (symbol, "by-reconcile"))
     {
         path = g_slist_prepend (path, SPLIT_RECONCILE);
 
     }
-    else if (!safe_strcmp (symbol, "by-account-full-name"))
+    else if (!g_strcmp0 (symbol, "by-account-full-name"))
     {
         path = g_slist_prepend (path, SPLIT_ACCT_FULLNAME);
 
     }
-    else if (!safe_strcmp (symbol, "by-account-code"))
+    else if (!g_strcmp0 (symbol, "by-account-code"))
     {
         path = g_slist_prepend (path, ACCOUNT_CODE_);
         path = g_slist_prepend (path, SPLIT_ACCOUNT);
 
     }
-    else if (!safe_strcmp (symbol, "by-corr-account-full-name"))
+    else if (!g_strcmp0 (symbol, "by-corr-account-full-name"))
     {
         path = g_slist_prepend (path, SPLIT_CORR_ACCT_NAME);
 
     }
-    else if (!safe_strcmp (symbol, "by-corr-account-code"))
+    else if (!g_strcmp0 (symbol, "by-corr-account-code"))
     {
         path = g_slist_prepend (path, SPLIT_CORR_ACCT_CODE);
 
@@ -1862,9 +2071,9 @@ gnc_scm2query_v1 (SCM query_scm)
 {
     QofQuery *q = NULL;
     gboolean ok = TRUE;
-    const gchar * primary_sort = NULL;
-    const gchar * secondary_sort = NULL;
-    const gchar * tertiary_sort = NULL;
+    gchar * primary_sort = NULL;
+    gchar * secondary_sort = NULL;
+    gchar * tertiary_sort = NULL;
     gboolean primary_increasing = TRUE;
     gboolean secondary_increasing = TRUE;
     gboolean tertiary_increasing = TRUE;
@@ -1872,7 +2081,7 @@ gnc_scm2query_v1 (SCM query_scm)
 
     while (!scm_is_null (query_scm))
     {
-        const gchar *symbol;
+        gchar *symbol;
         SCM sym_scm;
         SCM value;
         SCM pair;
@@ -1897,7 +2106,7 @@ gnc_scm2query_v1 (SCM query_scm)
             break;
         }
 
-        symbol = SCM_SYMBOL_CHARS (sym_scm);
+        symbol = gnc_scm_symbol_to_locale_string (sym_scm);
         if (!symbol)
         {
             PERR ("No string found");
@@ -1905,7 +2114,7 @@ gnc_scm2query_v1 (SCM query_scm)
             break;
         }
 
-        if (safe_strcmp ("terms", symbol) == 0)
+        if (g_strcmp0 ("terms", symbol) == 0)
         {
             if (q)
                 qof_query_destroy (q);
@@ -1919,7 +2128,7 @@ gnc_scm2query_v1 (SCM query_scm)
             }
 
         }
-        else if (safe_strcmp ("primary-sort", symbol) == 0)
+        else if (g_strcmp0 ("primary-sort", symbol) == 0)
         {
             if (!scm_is_symbol (value))
             {
@@ -1928,10 +2137,10 @@ gnc_scm2query_v1 (SCM query_scm)
                 break;
             }
 
-            primary_sort = SCM_SYMBOL_CHARS (value);
+            primary_sort = gnc_scm_symbol_to_locale_string (value);
 
         }
-        else if (safe_strcmp ("secondary-sort", symbol) == 0)
+        else if (g_strcmp0 ("secondary-sort", symbol) == 0)
         {
             if (!scm_is_symbol (value))
             {
@@ -1940,10 +2149,10 @@ gnc_scm2query_v1 (SCM query_scm)
                 break;
             }
 
-            secondary_sort = SCM_SYMBOL_CHARS (value);
+            secondary_sort = gnc_scm_symbol_to_locale_string (value);
 
         }
-        else if (safe_strcmp ("tertiary-sort", symbol) == 0)
+        else if (g_strcmp0 ("tertiary-sort", symbol) == 0)
         {
             if (!scm_is_symbol (value))
             {
@@ -1952,25 +2161,25 @@ gnc_scm2query_v1 (SCM query_scm)
                 break;
             }
 
-            tertiary_sort = SCM_SYMBOL_CHARS (value);
+            tertiary_sort = gnc_scm_symbol_to_locale_string (value);
 
         }
-        else if (safe_strcmp ("primary-increasing", symbol) == 0)
+        else if (g_strcmp0 ("primary-increasing", symbol) == 0)
         {
             primary_increasing = scm_is_true (value);
 
         }
-        else if (safe_strcmp ("secondary-increasing", symbol) == 0)
+        else if (g_strcmp0 ("secondary-increasing", symbol) == 0)
         {
             secondary_increasing = scm_is_true (value);
 
         }
-        else if (safe_strcmp ("tertiary-increasing", symbol) == 0)
+        else if (g_strcmp0 ("tertiary-increasing", symbol) == 0)
         {
             tertiary_increasing = scm_is_true (value);
 
         }
-        else if (safe_strcmp ("max-splits", symbol) == 0)
+        else if (g_strcmp0 ("max-splits", symbol) == 0)
         {
             if (!scm_is_number (value))
             {
@@ -1979,7 +2188,7 @@ gnc_scm2query_v1 (SCM query_scm)
                 break;
             }
 
-            max_splits = scm_num2int (value, SCM_ARG1, G_STRFUNC);
+            max_splits = scm_to_int (value);
 
         }
         else
@@ -1988,6 +2197,8 @@ gnc_scm2query_v1 (SCM query_scm)
             ok = FALSE;
             break;
         }
+
+        g_free (symbol);
     }
 
     if (ok)
@@ -2001,12 +2212,18 @@ gnc_scm2query_v1 (SCM query_scm)
         qof_query_set_sort_increasing (q, primary_increasing, secondary_increasing,
                                        tertiary_increasing);
         qof_query_set_max_results (q, max_splits);
-
-        return q;
+    }
+    else
+    {
+        qof_query_destroy (q);
+        q = NULL;
     }
 
-    qof_query_destroy (q);
-    return NULL;
+    g_free (primary_sort);
+    g_free (secondary_sort);
+    g_free (tertiary_sort);
+
+    return q;
 }
 
 static QofQuery *
@@ -2014,19 +2231,15 @@ gnc_scm2query_v2 (SCM query_scm)
 {
     QofQuery *q = NULL;
     gboolean ok = TRUE;
-    const gchar * search_for = NULL;
+    gchar * search_for = NULL;
     GSList *sp1 = NULL, *sp2 = NULL, *sp3 = NULL;
     gint so1 = 0, so2 = 0, so3 = 0;
     gboolean si1 = TRUE, si2 = TRUE, si3 = TRUE;
     int max_results = -1;
 
-#ifndef HAVE_GUILE18
-    ++scm_block_gc;
-#endif
-
     while (!scm_is_null (query_scm))
     {
-        const gchar *symbol;
+        gchar *symbol;
         SCM sym_scm;
         SCM value;
         SCM pair;
@@ -2049,14 +2262,14 @@ gnc_scm2query_v2 (SCM query_scm)
             break;
         }
 
-        symbol = SCM_SYMBOL_CHARS (sym_scm);
+        symbol = gnc_scm_symbol_to_locale_string (sym_scm);
         if (!symbol)
         {
             ok = FALSE;
             break;
         }
 
-        if (!safe_strcmp ("terms", symbol))
+        if (!g_strcmp0 ("terms", symbol))
         {
             if (q)
                 qof_query_destroy (q);
@@ -2069,17 +2282,17 @@ gnc_scm2query_v2 (SCM query_scm)
             }
 
         }
-        else if (!safe_strcmp ("search-for", symbol))
+        else if (!g_strcmp0 ("search-for", symbol))
         {
             if (!scm_is_symbol (value))
             {
                 ok = FALSE;
                 break;
             }
-            search_for = SCM_SYMBOL_CHARS (value);
+            search_for = gnc_scm_symbol_to_locale_string (value);
 
         }
-        else if (safe_strcmp ("primary-sort", symbol) == 0)
+        else if (g_strcmp0 ("primary-sort", symbol) == 0)
         {
             if (! gnc_query_scm2sort (value, &sp1, &so1, &si1))
             {
@@ -2088,7 +2301,7 @@ gnc_scm2query_v2 (SCM query_scm)
             }
 
         }
-        else if (!safe_strcmp ("secondary-sort", symbol))
+        else if (!g_strcmp0 ("secondary-sort", symbol))
         {
             if (! gnc_query_scm2sort (value, &sp2, &so2, &si2))
             {
@@ -2097,7 +2310,7 @@ gnc_scm2query_v2 (SCM query_scm)
             }
 
         }
-        else if (!safe_strcmp ("tertiary-sort", symbol))
+        else if (!g_strcmp0 ("tertiary-sort", symbol))
         {
             if (! gnc_query_scm2sort (value, &sp3, &so3, &si3))
             {
@@ -2106,7 +2319,7 @@ gnc_scm2query_v2 (SCM query_scm)
             }
 
         }
-        else if (!safe_strcmp ("max-results", symbol))
+        else if (!g_strcmp0 ("max-results", symbol))
         {
             if (!scm_is_number (value))
             {
@@ -2114,7 +2327,7 @@ gnc_scm2query_v2 (SCM query_scm)
                 break;
             }
 
-            max_results = scm_num2int (value, SCM_ARG1, G_STRFUNC);
+            max_results = scm_to_int (value);
 
         }
         else
@@ -2122,11 +2335,9 @@ gnc_scm2query_v2 (SCM query_scm)
             ok = FALSE;
             break;
         }
-    }
 
-#ifndef HAVE_GUILE18
-    --scm_block_gc;
-#endif
+        g_free (symbol);
+    }
 
     if (ok && search_for)
     {
@@ -2135,19 +2346,23 @@ gnc_scm2query_v2 (SCM query_scm)
         qof_query_set_sort_options (q, so1, so2, so3);
         qof_query_set_sort_increasing (q, si1, si2, si3);
         qof_query_set_max_results (q, max_results);
-
-        return q;
+    }
+    else
+    {
+        qof_query_destroy (q);
+        q = NULL;
     }
 
-    qof_query_destroy (q);
-    return NULL;
+    g_free (search_for);
+
+    return q;
 }
 
 QofQuery *
 gnc_scm2query (SCM query_scm)
 {
     SCM q_type;
-    const gchar *type;
+    gchar *type;
     QofQuery *q = NULL;
 
     /* Not a list or NULL?  No need to go further */
@@ -2171,97 +2386,15 @@ gnc_scm2query (SCM query_scm)
     }
 
     /* Ok, the LHS is the version and the RHS is the actual query list */
-    type = SCM_SYMBOL_CHARS (q_type);
+    type = gnc_scm_symbol_to_locale_string (q_type);
     if (!type)
         return NULL;
 
-    if (!safe_strcmp (type, "query-v2"))
+    if (!g_strcmp0 (type, "query-v2"))
         q = gnc_scm2query_v2 (SCM_CDR (query_scm));
 
+    g_free (type);
     return q;
-}
-
-SCM
-gnc_gint64_to_scm(const gint64 x)
-{
-#if GUILE_LONG_LONG_OK
-    return scm_long_long2num(x);
-#else
-    const gchar negative_p = (x < 0);
-    const guint64 magnitude = negative_p ? -x : x;
-    const guint32 lower_half = (guint32) (magnitude & 0xFFFFFFFF);
-    const guint32 upper_half = (guint32) (magnitude >> 32);
-    SCM result;
-
-    result = scm_sum(scm_ash(scm_ulong2num(upper_half), SCM_MAKINUM(32)),
-                     scm_ulong2num(lower_half));
-
-    if (negative_p)
-    {
-        return scm_difference(SCM_INUM0, result);
-    }
-    else
-    {
-        return result;
-    }
-#endif
-}
-
-gint64
-gnc_scm_to_gint64(SCM num)
-{
-#if GUILE_LONG_LONG_OK
-#ifdef SCM_MINOR_VERSION
-    /* Guile 1.6 and later have the SCM_XXX_VERSION macro */
-    return scm_num2long_long(num, SCM_ARG1, "gnc_scm_to_gint64");
-#else
-    return scm_num2long_long(num, (char *) SCM_ARG1, "gnc_scm_to_gint64");
-#endif
-#else
-    static SCM bits00to15_mask = SCM_BOOL_F;
-    SCM magnitude  = scm_abs(num);
-    SCM bits;
-    unsigned long c_bits;
-    long long     c_result = 0;
-    int                i;
-
-    /* This doesn't work -- atm (bit-extract 4000 0 32) proves it */
-    /*
-    SCM lower = scm_bit_extract(magnitude, SCM_MAKINUM(0), SCM_MAKINUM(32));
-    */
-
-    if (bits00to15_mask == SCM_BOOL_F)
-    {
-        bits00to15_mask = scm_ulong2num(0xFFFF);
-        scm_gc_protect_object (bits00to15_mask);
-    }
-
-    /*
-     * This isn't very complicated (IMHO).  We work from the "top" of
-     * the number downwards.  We assume this is no more than a 64-bit
-     * number, otherwise it will fail right away.  Anyways, we keep
-     * taking the top 16 bits of the number and move it to c_result.
-     * Then we 'remove' those bits from the original number and continue
-     * with the next 16 bits down, and so on.  -- warlord@mit.edu
-     * 2001/02/13
-     */
-    for (i = 48; i >= 0; i -= 16)
-    {
-        bits = scm_ash(magnitude, SCM_MAKINUM(-i));
-        c_bits = scm_num2ulong(scm_logand(bits, bits00to15_mask), SCM_ARG1, G_STRFUNC);
-        c_result += ((long long)c_bits << i);
-        magnitude = scm_difference(magnitude, scm_ash(bits, SCM_MAKINUM(i)));
-    }
-
-    if (scm_negative_p(num) != SCM_BOOL_F)
-    {
-        return(- c_result);
-    }
-    else
-    {
-        return(c_result);
-    }
-#endif
 }
 
 int
@@ -2282,11 +2415,11 @@ gnc_gh_gint64_p(SCM num)
         tmp = 0x7FFFFFFF;
         tmp <<= 32;
         tmp |= 0xFFFFFFFF;
-        maxval = gnc_gint64_to_scm(tmp);
+        maxval = scm_from_int64(tmp);
 
         tmp = 0x80000000;
         tmp <<= 32;
-        minval = gnc_gint64_to_scm(tmp);
+        minval = scm_from_int64(tmp);
 
         scm_gc_protect_object(maxval);
         scm_gc_protect_object(minval);
@@ -2313,8 +2446,8 @@ gnc_scm_to_numeric(SCM gncnum)
         get_denom = scm_c_eval_string("gnc:gnc-numeric-denom");
     }
 
-    return gnc_numeric_create(gnc_scm_to_gint64(scm_call_1(get_num, gncnum)),
-                              gnc_scm_to_gint64(scm_call_1(get_denom, gncnum)));
+    return gnc_numeric_create(scm_to_int64(scm_call_1(get_num, gncnum)),
+                              scm_to_int64(scm_call_1(get_denom, gncnum)));
 }
 
 SCM
@@ -2327,8 +2460,8 @@ gnc_numeric_to_scm(gnc_numeric arg)
         maker = scm_c_eval_string("gnc:make-gnc-numeric");
     }
 
-    return scm_call_2(maker, gnc_gint64_to_scm(gnc_numeric_num(arg)),
-                      gnc_gint64_to_scm(gnc_numeric_denom(arg)));
+    return scm_call_2(maker, scm_from_int64(gnc_numeric_num(arg)),
+                      scm_from_int64(gnc_numeric_denom(arg)));
 }
 
 int
@@ -2406,10 +2539,4 @@ SCM
 gnc_book_to_scm (const QofBook *book)
 {
     return gnc_generic_to_scm(book, "_p_QofBook");
-}
-
-SCM
-qof_session_to_scm (const QofSession *session)
-{
-    return gnc_generic_to_scm(session, "_p_QofSession");
 }

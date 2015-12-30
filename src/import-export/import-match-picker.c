@@ -36,13 +36,12 @@
 
 #include "qof.h"
 #include "gnc-ui-util.h"
-#include <glade/glade.h>
 #include "dialog-utils.h"
 /********************************************************************\
  *   Constants   *
 \********************************************************************/
 
-#define GCONF_SECTION "dialogs/import/generic_matcher/match_picker"
+#define GNC_PREFS_GROUP "dialogs.import.generic.match-picker"
 
 enum downloaded_cols
 {
@@ -401,7 +400,7 @@ gnc_import_match_picker_init_match_view (GNCImportMatchPicker * matcher)
 static void
 init_match_picker_gui(GNCImportMatchPicker * matcher)
 {
-    GladeXML *xml;
+    GtkBuilder *builder;
 
     /* DEBUG("Begin..."); */
 
@@ -409,12 +408,13 @@ init_match_picker_gui(GNCImportMatchPicker * matcher)
     matcher->user_settings = gnc_import_Settings_new ();
 
     /* load the interface */
-    xml = gnc_glade_xml_new ("generic-import.glade", "match_picker");
-    g_return_if_fail (xml != NULL);
+    builder = gtk_builder_new();
+    gnc_builder_add_from_file (builder, "dialog-import.glade", "match_picker");
+    g_return_if_fail (builder != NULL);
 
-    matcher->transaction_matcher = glade_xml_get_widget (xml, "match_picker");
-    matcher->downloaded_view = (GtkTreeView *)glade_xml_get_widget (xml, "downloaded_view");
-    matcher->match_view = (GtkTreeView *)glade_xml_get_widget (xml, "matched_view");
+    matcher->transaction_matcher = GTK_WIDGET(gtk_builder_get_object (builder, "match_picker"));
+    matcher->downloaded_view = (GtkTreeView *)GTK_WIDGET(gtk_builder_get_object (builder, "download_view"));
+    matcher->match_view = (GtkTreeView *)GTK_WIDGET(gtk_builder_get_object (builder, "matched_view"));
 
     gnc_import_match_picker_init_downloaded_view(matcher);
     gnc_import_match_picker_init_match_view(matcher);
@@ -426,9 +426,11 @@ init_match_picker_gui(GNCImportMatchPicker * matcher)
        ", add_threshold:",matcher->add_threshold,
        ", display_threshold:",matcher->display_threshold); */
 
-    gnc_restore_window_size(GCONF_SECTION,
+    gnc_restore_window_size(GNC_PREFS_GROUP,
                             GTK_WINDOW (matcher->transaction_matcher));
     gtk_widget_show(matcher->transaction_matcher);
+
+    g_object_unref(G_OBJECT(builder));
 
 }/* end init_match_picker_gui */
 
@@ -460,7 +462,7 @@ gnc_import_match_picker_run_and_close (GNCImportTransInfo *transaction_info)
     /*DEBUG("Right before run and close");*/
     gtk_window_set_modal(GTK_WINDOW(matcher->transaction_matcher), TRUE);
     response = gtk_dialog_run (GTK_DIALOG (matcher->transaction_matcher));
-    gnc_save_window_size(GCONF_SECTION,
+    gnc_save_window_size(GNC_PREFS_GROUP,
                          GTK_WINDOW (matcher->transaction_matcher));
     gtk_widget_destroy (matcher->transaction_matcher);
     /*DEBUG("Right after run and close");*/

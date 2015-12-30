@@ -25,18 +25,19 @@
 
 #include "config.h"
 
-#include <gnome.h>
+#include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include <libguile.h>
 #include "swig-runtime.h"
 
 #include "qof.h"
 
+#include <gnc-gdate-utils.h>
 #include "dialog-utils.h"
 #include "gnc-component-manager.h"
 #include "gnc-ui.h"
-#include "gnc-gconf-utils.h"
 #include "gnc-gui-query.h"
+#include "gnc-prefs.h"
 #include "gnc-ui-util.h"
 #include "gnc-date-edit.h"
 #include "gnc-amount-edit.h"
@@ -45,6 +46,7 @@
 #include "dialog-search.h"
 #include "search-param.h"
 #include "gnc-session.h"
+#include "gncOwner.h"
 #include "gncInvoice.h"
 #include "gncInvoiceP.h"
 
@@ -61,8 +63,9 @@
 #include "dialog-billterms.h"
 #include "dialog-account.h"
 #include "guile-mappings.h"
+#include "dialog-dup-trans.h"
 
-#include "dialog-query-list.h"
+#include "dialog-query-view.h"
 
 #include "gnc-plugin-business.h"
 #include "gnc-plugin-page-invoice.h"
@@ -82,18 +85,24 @@
 #define DIALOG_NEW_INVOICE_CM_CLASS "dialog-new-invoice"
 #define DIALOG_VIEW_INVOICE_CM_CLASS "dialog-view-invoice"
 
-#define GCONF_SECTION_SEARCH  "dialogs/business/invoice_search"
+#define GNC_PREFS_GROUP_SEARCH   "dialogs.business.invoice-search"
+#define GNC_PREF_NOTIFY_WHEN_DUE "notify-when-due"
+#define GNC_PREF_ACCUM_SPLITS    "accumulate-splits"
+#define GNC_PREF_DAYS_IN_ADVANCE "days-in-advance"
 
 #define LAST_POSTED_TO_ACCT "last-posted-to-acct"
 
 void gnc_invoice_window_ok_cb (GtkWidget *widget, gpointer data);
 void gnc_invoice_window_cancel_cb (GtkWidget *widget, gpointer data);
 void gnc_invoice_window_help_cb (GtkWidget *widget, gpointer data);
+void gnc_invoice_type_toggled_cb (GtkWidget *widget, gpointer data);
 void gnc_invoice_id_changed_cb (GtkWidget *widget, gpointer data);
+void gnc_invoice_terms_changed_cb (GtkWidget *widget, gpointer data);
 
 #define ENUM_INVOICE_TYPE(_) \
   _(NEW_INVOICE, )  \
   _(MOD_INVOICE, )  \
+  _(DUP_INVOICE, )  \
   _(EDIT_INVOICE, ) \
   _(VIEW_INVOICE, )
 
@@ -112,6 +121,7 @@ struct _invoice_select_window
     GncOwner	owner_def;
 };
 
+static QofLogModule log_module = G_LOG_DOMAIN; //G_LOG_BUSINESS;
 
 /** This data structure does double duty.  It is used to maintain
  *  information for the "New Invoice" dialog, and it is also used to
@@ -120,7 +130,7 @@ struct _invoice_select_window
  */
 struct _invoice_window
 {
-    GladeXML   * xml;
+    GtkBuilder   * builder;
 
     GtkWidget  * dialog;         /* Used by 'New Invoice Window' */
     GncPluginPage *page;        /* Used by 'Edit Invoice' Page */
@@ -133,6 +143,11 @@ struct _invoice_window
     GtkWidget  * total_tax_label;
 
     /* Data Widgets */
+    GtkWidget  * info_label; /*Default in glade is "Invoice Information"*/
+    GtkWidget  * id_label; /* Default in glade is Invoice ID */
+    GtkWidget  * type_label;
+    GtkWidget  * type_hbox;
+    GtkWidget  * type_choice;
     GtkWidget  * id_entry;
     GtkWidget  * notes_text;
     GtkWidget  * opened_date;
@@ -170,6 +185,7 @@ struct _invoice_window
 
     InvoiceDialogType   dialog_type;
     GncGUID      invoice_guid;
+    gboolean     is_credit_note;
     gint         component_id;
     QofBook    * book;
     GncInvoice * created_invoice;
@@ -220,38 +236,31 @@ gnc_invoice_get_register(InvoiceWindow *iw)
 static gboolean
 iw_ask_unpost (InvoiceWindow *iw)
 {
-    GtkWidget *dialog, *toggle, *pixmap;
-    GladeXML *xml;
+    GtkWidget *dialog;
+    GtkToggleButton *toggle;
+    GtkBuilder *builder;
     gint response;
-    char *s;
 
-    xml = gnc_glade_xml_new ("invoice.glade", "Unpost Message Dialog");
-    dialog = glade_xml_get_widget (xml, "Unpost Message Dialog");
-    toggle = glade_xml_get_widget (xml, "yes_tt_reset");
-    pixmap = glade_xml_get_widget (xml, "q_pixmap");
+    builder = gtk_builder_new();
+    gnc_builder_add_from_file (builder, "dialog-invoice.glade", "Unpost Message Dialog");
+    dialog = GTK_WIDGET (gtk_builder_get_object (builder, "Unpost Message Dialog"));
+    toggle = GTK_TOGGLE_BUTTON(gtk_builder_get_object (builder, "yes_tt_reset"));
 
     gtk_window_set_transient_for (GTK_WINDOW(dialog),
                                   GTK_WINDOW(iw_get_window(iw)));
 
     iw->reset_tax_tables = FALSE;
 
-    s = gnome_program_locate_file (NULL,
-                                   GNOME_FILE_DOMAIN_PIXMAP,
-                                   "gnome-question.png", TRUE, NULL);
-    if (s)
-    {
-        pixmap = gtk_image_new_from_file(s);
-        g_free(s);
-    }
-
     gtk_widget_show_all(dialog);
 
     response = gtk_dialog_run(GTK_DIALOG(dialog));
     if (response == GTK_RESPONSE_OK)
         iw->reset_tax_tables =
-            gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(toggle));
+            gtk_toggle_button_get_active(toggle);
 
     gtk_widget_destroy(dialog);
+    g_object_unref(G_OBJECT(builder));
+
     return (response == GTK_RESPONSE_OK);
 }
 
@@ -267,12 +276,22 @@ iw_get_invoice (InvoiceWindow *iw)
     return gncInvoiceLookup (iw->book, &iw->invoice_guid);
 }
 
+static void
+set_gncEntry_switch_type (gpointer data, gpointer user_data)
+{
+    GncEntry *entry = data;
+    //g_warning("Modifying date for entry with desc=\"%s\"", gncEntryGetDescription(entry));
+
+    gncEntrySetQuantity (entry, gnc_numeric_neg (gncEntryGetQuantity (entry)));
+}
+
 static void gnc_ui_to_invoice (InvoiceWindow *iw, GncInvoice *invoice)
 {
     GtkTextBuffer* text_buffer;
     GtkTextIter start, end;
     gchar *text;
     Timespec ts;
+    gboolean is_credit_note = gncInvoiceGetIsCreditNote (invoice);
 
     if (iw->dialog_type == VIEW_INVOICE)
         return;
@@ -327,6 +346,19 @@ static void gnc_ui_to_invoice (InvoiceWindow *iw, GncInvoice *invoice)
             gncInvoiceSetBillTo (invoice, &iw->proj_cust);
     }
 
+    /* Document type can only be modified for a new or duplicated invoice/credit note */
+    if (iw->dialog_type == NEW_INVOICE || iw->dialog_type == DUP_INVOICE)
+        gncInvoiceSetIsCreditNote (invoice, iw->is_credit_note);
+
+    /* If the document type changed on a duplicated invoice,
+     * its entries should be updated
+     */
+    if (iw->dialog_type == DUP_INVOICE && iw->is_credit_note != is_credit_note)
+    {
+        g_list_foreach(gncInvoiceGetEntries(invoice),
+                       &set_gncEntry_switch_type, NULL);
+    }
+
     gncInvoiceCommitEdit (invoice);
     gnc_resume_gui_refresh ();
 }
@@ -344,7 +376,7 @@ gnc_invoice_window_verify_ok (InvoiceWindow *iw)
     /* Check the Owner */
     gnc_owner_get_owner (iw->owner_choice, &(iw->owner));
     res = gncOwnerGetName (&(iw->owner));
-    if (res == NULL || safe_strcmp (res, "") == 0)
+    if (res == NULL || g_strcmp0 (res, "") == 0)
     {
         gnc_error_dialog (iw_get_window(iw), "%s",
                           /* Translators: In this context,
@@ -358,7 +390,7 @@ gnc_invoice_window_verify_ok (InvoiceWindow *iw)
 
     /* Check the ID; set one if necessary */
     res = gtk_entry_get_text (GTK_ENTRY (iw->id_entry));
-    if (safe_strcmp (res, "") == 0)
+    if (g_strcmp0 (res, "") == 0)
     {
         /* Invoices and bills have separate counters.
            Therefore we pass the GncOwer to gncInvoiceNextID
@@ -401,11 +433,12 @@ gnc_invoice_window_ok_cb (GtkWidget *widget, gpointer data)
     /* Ok, we don't need this anymore */
     iw->invoice_guid = *guid_null ();
 
-    /* if this is a NEW_INVOICE, and created_invoice is NON-NULL, then
-     * open up a new window with the invoice.  This used to be done
+    /* if this is a new or duplicated invoice, and created_invoice is NON-NULL,
+     * then open up a new window with the invoice.  This used to be done
      * in gnc_ui_invoice_new() but cannot be done anymore
      */
-    if (iw->dialog_type == NEW_INVOICE && iw->created_invoice)
+    if ((iw->dialog_type == NEW_INVOICE || iw->dialog_type == DUP_INVOICE)
+            && iw->created_invoice)
         gnc_ui_invoice_edit (iw->created_invoice);
 
     gnc_close_gui_component (iw->component_id);
@@ -422,7 +455,7 @@ gnc_invoice_window_cancel_cb (GtkWidget *widget, gpointer data)
 void
 gnc_invoice_window_help_cb (GtkWidget *widget, gpointer data)
 {
-    gnc_gnome_help(HF_HELP, HL_USAGE);
+    gnc_gnome_help(HF_HELP, HL_USAGE_INVOICE);
 }
 
 void
@@ -433,8 +466,10 @@ gnc_invoice_window_destroy_cb (GtkWidget *widget, gpointer data)
 
     gnc_suspend_gui_refresh ();
 
-    if (iw->dialog_type == NEW_INVOICE && invoice != NULL)
+    if ((iw->dialog_type == NEW_INVOICE || iw->dialog_type == DUP_INVOICE)
+         && invoice != NULL)
     {
+        gncInvoiceRemoveEntries (invoice);
         gncInvoiceBeginEdit (invoice);
         gncInvoiceDestroy (invoice);
         iw->invoice_guid = *guid_null ();
@@ -471,7 +506,7 @@ gnc_invoice_window_duplicateInvoiceCB (GtkWidget *widget, gpointer data)
     GncInvoice *invoice = iw_get_invoice (iw);
 
     if (invoice)
-        gnc_ui_invoice_duplicate (invoice);
+        gnc_ui_invoice_duplicate (invoice, TRUE, NULL);
 }
 
 void gnc_invoice_window_entryUpCB (GtkWidget *widget, gpointer data)
@@ -601,52 +636,140 @@ gnc_invoice_window_blankCB (GtkWidget *widget, gpointer data)
     }
 }
 
-void
-gnc_invoice_window_printCB (GtkWidget *widget, gpointer data)
+static void
+gnc_invoice_window_print_invoice(GncInvoice *invoice)
 {
-    InvoiceWindow *iw = data;
-    GncInvoice *invoice = iw_get_invoice (iw);
-    SCM func, arg;
+    SCM func, arg, arg2;
     SCM args = SCM_EOL;
     int report_id;
+    const char *reportname = gnc_plugin_business_get_invoice_printreport();
 
     g_return_if_fail (invoice);
+    if (!reportname)
+        reportname = "5123a759ceb9483abf2182d01c140e8d"; // fallback if the option lookup failed
 
     func = scm_c_eval_string ("gnc:invoice-report-create");
     g_return_if_fail (scm_is_procedure (func));
 
     arg = SWIG_NewPointerObj(invoice, SWIG_TypeQuery("_p__gncInvoice"), 0);
-    args = scm_cons (arg, args);
+    arg2 = scm_from_utf8_string(reportname);
+    args = scm_cons2 (arg, arg2, args);
 
     /* scm_gc_protect_object(func); */
 
     arg = scm_apply (func, args, SCM_EOL);
     g_return_if_fail (scm_is_exact (arg));
-    report_id = scm_num2int (arg, SCM_ARG1, G_STRFUNC);
+    report_id = scm_to_int (arg);
 
     /* scm_gc_unprotect_object(func); */
     if (report_id >= 0)
         reportWindow (report_id);
 }
-
 void
-gnc_invoice_window_postCB (GtkWidget *widget, gpointer data)
+gnc_invoice_window_printCB (GtkWidget *unused_widget, gpointer data)
 {
     InvoiceWindow *iw = data;
+    gnc_invoice_window_print_invoice(iw_get_invoice (iw));
+}
+
+static gboolean
+gnc_dialog_post_invoice(InvoiceWindow *iw, char *message,
+                        Timespec *ddue, Timespec *postdate,
+                        char **memo, Account **acc, gboolean *accumulate)
+{
     GncInvoice *invoice;
-    char *message, *memo, *ddue_label, *post_label, *acct_label, *question_label;
-    Account *acc = NULL;
+    char *ddue_label, *post_label, *acct_label, *question_label;
     GList * acct_types = NULL;
     GList * acct_commodities = NULL;
+    QofInstance *owner_inst;
+    KvpFrame *kvpf;
+    EntryList *entries, *entries_iter;
+
+    invoice = iw_get_invoice (iw);
+    if (!invoice)
+        return FALSE;
+
+    ddue_label = _("Due Date");
+    post_label = _("Post Date");
+    acct_label = _("Post to Account");
+    question_label = _("Accumulate Splits?");
+
+    /* Determine the type of account to post to */
+    acct_types = gncOwnerGetAccountTypesList (&(iw->owner));
+
+    /* Determine which commodity we're working with */
+    acct_commodities = gncOwnerGetCommoditiesList(&(iw->owner));
+
+    /* Get the invoice entries */
+    entries = gncInvoiceGetEntries (invoice);
+
+    /* Find the most suitable post date.
+     * For Customer Invoices that would be today.
+     * For Vendor Bills and Employee Vouchers
+     * that would be the date of the most recent invoice entry.
+     * Failing that, today is used as a fallback */
+    *postdate = timespec_now();
+
+    if (entries && ((gncInvoiceGetOwnerType (invoice) == GNC_OWNER_VENDOR) ||
+                    (gncInvoiceGetOwnerType (invoice) == GNC_OWNER_EMPLOYEE)))
+    {
+        *postdate = gncEntryGetDate ((GncEntry*)entries->data);
+        for (entries_iter = entries; entries_iter != NULL; entries_iter = g_list_next(entries_iter))
+        {
+            Timespec entrydate;
+
+            entrydate = gncEntryGetDate ((GncEntry*)entries_iter->data);
+            if (timespec_cmp(&entrydate, postdate) > 0)
+                *postdate = entrydate;
+        }
+    }
+
+    /* Get the due date and posted account */
+    *ddue = *postdate;
+    *memo = NULL;
+
+    owner_inst = qofOwnerGetOwner (gncOwnerGetEndOwner (&(iw->owner)));
+    kvpf = qof_instance_get_slots (owner_inst);
+    *acc = xaccAccountLookup (kvp_frame_get_guid (kvpf, LAST_POSTED_TO_ACCT),
+                              iw->book);
+
+    /* Get the default for the accumulate option */
+    *accumulate = gnc_prefs_get_bool(GNC_PREFS_GROUP_INVOICE, GNC_PREF_ACCUM_SPLITS);
+
+    if (!gnc_dialog_dates_acct_question_parented (iw_get_window(iw), message, ddue_label,
+            post_label, acct_label, question_label, TRUE, TRUE,
+            acct_types, acct_commodities, iw->book, iw->terms,
+            ddue, postdate, memo, acc, accumulate))
+        return FALSE;
+
+    return TRUE;
+}
+
+struct post_invoice_params
+{
+    Timespec ddue;          /* Due date */
+    Timespec postdate;      /* Date posted */
+    char *memo;             /* Memo for posting transaction */
+    Account *acc;           /* Account to post to */
+    gboolean accumulate;    /* Whether to accumulate splits */
+};
+
+static void
+gnc_invoice_post(InvoiceWindow *iw, struct post_invoice_params *post_params)
+{
+    GncInvoice *invoice;
+    char *message, *memo;
+    Account *acc = NULL;
     Timespec ddue, postdate;
     gboolean accumulate;
     QofInstance *owner_inst;
     KvpFrame *kvpf;
     KvpValue *kvp_val;
     const char *text;
-    EntryList *entries, *entries_iter;
-    GncEntry* entry;
-    gboolean is_cust_doc;
+    GHashTable *foreign_currs;
+    GHashTableIter foreign_currs_iter;
+    gpointer key,value;
+    gboolean is_cust_doc, auto_pay;
     gboolean show_dialog = TRUE;
     gboolean post_ok = TRUE;
 
@@ -668,78 +791,25 @@ gnc_invoice_window_postCB (GtkWidget *widget, gpointer data)
 
     is_cust_doc = (gncInvoiceGetOwnerType (invoice) == GNC_OWNER_CUSTOMER);
 
-    /* Make sure that the invoice has a positive balance */
-    if (gnc_numeric_negative_p(gncInvoiceGetTotal(invoice)))
-    {
-        gnc_error_dialog(iw_get_window(iw), "%s",
-                         _("You may not post an invoice with a negative total value."));
-        return;
-    }
-
-    if (iw->total_cash_label &&
-            gnc_numeric_negative_p(gncInvoiceGetTotalOf(invoice, GNC_PAYMENT_CASH)))
-    {
-        gnc_error_dialog(iw_get_window(iw), "%s",
-                         _("You may not post an expense voucher with a negative total cash value."));
-        return;
-    }
-
     /* Ok, we can post this invoice.  Ask for verification, set the due date,
      * post date, and posted account
      */
-    message = _("Do you really want to post the invoice?");
-    ddue_label = _("Due Date");
-    post_label = _("Post Date");
-    acct_label = _("Post to Account");
-    question_label = _("Accumulate Splits?");
-
-    /* Determine the type of account to post to */
-    acct_types = gnc_business_account_types (&(iw->owner));
-
-    /* Determine which commodity we're working with */
-    acct_commodities = gnc_business_commodities(&(iw->owner));
-
-    /* Get the invoice entries */
-    entries = gncInvoiceGetEntries (invoice);
-
-    /* Find the most suitable post date.
-     * For Customer Invoices that would be today.
-     * For Vendor Bills and Employee Vouchers
-     * that would be the date of the most recent invoice entry.
-     * Failing that, today is used as a fallback */
-    postdate = timespec_now();
-
-    if (entries && ((gncInvoiceGetOwnerType (invoice) == GNC_OWNER_VENDOR) ||
-                    (gncInvoiceGetOwnerType (invoice) == GNC_OWNER_EMPLOYEE)))
+    if (post_params)
     {
-        postdate = gncEntryGetDate ((GncEntry*)entries->data);
-        for (entries_iter = entries; entries_iter != NULL; entries_iter = g_list_next(entries_iter))
-        {
-            Timespec entrydate;
-
-            entrydate = gncEntryGetDate ((GncEntry*)entries_iter->data);
-            if (timespec_cmp(&entrydate, &postdate) > 0)
-                postdate = entrydate;
-        }
+        ddue = post_params->ddue;
+        postdate = post_params->postdate;
+        // Dup it since it will free it below
+        memo = g_strdup (post_params->memo);
+        acc = post_params->acc;
+        accumulate = post_params->accumulate;
     }
-
-    /* Get the due date and posted account */
-    ddue = postdate;
-    memo = NULL;
-
-    owner_inst = qofOwnerGetOwner (gncOwnerGetEndOwner (&(iw->owner)));
-    kvpf = qof_instance_get_slots (owner_inst);
-    acc = xaccAccountLookup (kvp_frame_get_guid (kvpf, LAST_POSTED_TO_ACCT),
-                             iw->book);
-
-    /* Get the default for the accumulate option */
-    accumulate = gnc_gconf_get_bool(GCONF_SECTION_INVOICE, "accumulate_splits", NULL);
-
-    if (!gnc_dialog_dates_acct_question_parented (iw_get_window(iw), message, ddue_label,
-            post_label, acct_label, question_label, TRUE, TRUE,
-            acct_types, acct_commodities, iw->book, iw->terms,
-            &ddue, &postdate, &memo, &acc, &accumulate))
-        return;
+    else
+    {
+        message = _("Do you really want to post the invoice?");
+        if (!gnc_dialog_post_invoice(iw, message,
+                                     &ddue, &postdate, &memo, &acc, &accumulate))
+            return;
+    }
 
     /* Yep, we're posting.  So, save the invoice...
      * Note that we can safely ignore the return value; we checked
@@ -750,105 +820,106 @@ gnc_invoice_window_postCB (GtkWidget *widget, gpointer data)
     gnc_invoice_window_ok_save (iw);
 
     /* Fill in the conversion prices with feedback from the user */
-    text = _("One or more of the entries are for accounts different from the invoice/bill currency.  You will be asked a conversion rate for each.");
+    text = _("One or more of the entries are for accounts different from the invoice/bill currency. You will be asked a conversion rate for each.");
 
-    for (entries_iter = entries; entries_iter != NULL; entries_iter = g_list_next(entries_iter))
+    /* Ask the user for conversion rates for all foreign currencies
+     * (relative to the invoice currency) */
+    foreign_currs = gncInvoiceGetForeignCurrencies (invoice);
+    g_hash_table_iter_init (&foreign_currs_iter, foreign_currs);
+    while (g_hash_table_iter_next (&foreign_currs_iter, &key, &value))
     {
-        Account *this_acc;
-        gnc_commodity *account_currency;
+        GNCPrice *convprice;
+        gnc_commodity *account_currency = (gnc_commodity*)key;
+        gnc_numeric *amount = (gnc_numeric*)value;
+        Timespec pricedate;
+        XferDialog *xfer;
+        gnc_numeric exch_rate;
 
-        entry = (GncEntry*)entries_iter->data;
-        this_acc = (is_cust_doc ? gncEntryGetInvAccount (entry) :
-                    gncEntryGetBillAccount (entry));
-        account_currency = xaccAccountGetCommodity (this_acc);
 
-        if (this_acc &&
-            !gnc_commodity_equal (gncInvoiceGetCurrency (invoice), account_currency))
+        /* Explain to the user we're about to ask for an exchange rate.
+         * Only show this dialog once, right before the first xfer dialog pops up.
+         */
+        if (show_dialog)
         {
-            GNCPrice *convprice;
+            gnc_info_dialog(iw_get_window(iw), "%s", text);
+            show_dialog = FALSE;
+        }
 
-            if (show_dialog)
+        /* Note some twisted logic here:
+         * We ask the exchange rate
+         *  FROM invoice currency
+         *  TO other account currency
+         *  Because that's what happens logically.
+         *  But the internal posting logic works backwards:
+         *  It searches for an exchange rate
+         *  FROM other account currency
+         *  TO invoice currency
+         *  So we will store the inverted exchange rate
+         */
+
+        /* create the exchange-rate dialog */
+        xfer = gnc_xfer_dialog (iw_get_window(iw), acc);
+        gnc_xfer_dialog_is_exchange_dialog(xfer, &exch_rate);
+        gnc_xfer_dialog_select_to_currency(xfer, account_currency);
+        gnc_xfer_dialog_set_date (xfer, timespecToTime64 (postdate));
+        /* Even if amount is 0 ask for an exchange rate. It's required
+         * for the transaction generating code. Use an amount of 1 in
+         * that case as the dialog won't allow to specify an exchange
+         * rate for 0. */
+        gnc_xfer_dialog_set_amount(xfer, gnc_numeric_zero_p (*amount) ?
+                                         (gnc_numeric){1, 1} : *amount);
+        /* If we already had an exchange rate from a previous post operation,
+         * set it here */
+        convprice = gncInvoiceGetPrice (invoice, account_currency);
+        if (convprice)
+        {
+            exch_rate = gnc_price_get_value (convprice);
+            /* Invert the exchange rate as explained above */
+            if (!gnc_numeric_zero_p (exch_rate))
             {
-                gnc_info_dialog(iw_get_window(iw), "%s", text);
-                show_dialog = FALSE;
+                exch_rate = gnc_numeric_div ((gnc_numeric){1, 1}, exch_rate,
+                            GNC_DENOM_AUTO, GNC_HOW_RND_ROUND_HALF_UP);
+                gnc_xfer_dialog_set_price_edit (xfer, exch_rate);
             }
+        }
 
-            convprice = gncInvoiceGetPrice(invoice, account_currency);
-            if (convprice == NULL)
-            {
-                XferDialog *xfer;
-                gnc_numeric exch_rate;
-                Timespec date;
-                gnc_numeric amount = gnc_numeric_create(1, 1);
-                gnc_numeric value;
-                gnc_numeric tax;
+        /* All we want is the exchange rate so prevent the user from thinking
+           it makes sense to mess with other stuff */
+        gnc_xfer_dialog_set_from_show_button_active(xfer, FALSE);
+        gnc_xfer_dialog_set_to_show_button_active(xfer, FALSE);
+        gnc_xfer_dialog_hide_from_account_tree(xfer);
+        gnc_xfer_dialog_hide_to_account_tree(xfer);
+        if (gnc_xfer_dialog_run_until_done(xfer))
+        {
+            /* User finished the transfer dialog successfully */
 
-                /* Note some twisted logic here:
-                 * We ask the exchange rate
-                 *  FROM invoice currency
-                 *  TO other account currency
-                 *  Because that's what happens logically.
-                 *  But the internal posting logic works backwards:
-                 *  It searches for an exchange rate
-                 *  FROM other account currency
-                 *  TO invoice currency
-                 *  So we will store the inverted exchange rate
-                 */
-
-                /* Obtain the Entry's total value (net + tax) */
-                gncEntryGetValue (entry, is_cust_doc, &value, NULL, &tax, NULL);
-                amount = gnc_numeric_add (value, tax,
-                        gnc_commodity_get_fraction (account_currency),
-                        GNC_HOW_RND_ROUND_HALF_UP );
-
-                /* create the exchange-rate dialog */
-                xfer = gnc_xfer_dialog (iw_get_window(iw), acc);
-                gnc_xfer_dialog_select_to_account(xfer, this_acc);
-                gnc_xfer_dialog_set_amount(xfer, amount);
-
-                /* All we want is the exchange rate so prevent the user from thinking
-                   it makes sense to mess with other stuff */
-                gnc_xfer_dialog_set_from_show_button_active(xfer, FALSE);
-                gnc_xfer_dialog_set_to_show_button_active(xfer, FALSE);
-                gnc_xfer_dialog_hide_from_account_tree(xfer);
-                gnc_xfer_dialog_hide_to_account_tree(xfer);
-                gnc_xfer_dialog_is_exchange_dialog(xfer, &exch_rate);
-                if (gnc_xfer_dialog_run_until_done(xfer))
-                {
-                    /* User finished the transfer dialog successfully */
-
-                    /* Invert the exchange rate as explained above */
-                    if (!gnc_numeric_zero_p (exch_rate))
-                        exch_rate = gnc_numeric_div ((gnc_numeric) {1, 1}, exch_rate,
-                                                      GNC_DENOM_AUTO, GNC_HOW_RND_ROUND_HALF_UP);
-                    convprice = gnc_price_create(iw->book);
-                    gnc_price_begin_edit (convprice);
-                    gnc_price_set_commodity (convprice, account_currency);
-                    gnc_price_set_currency (convprice, gncInvoiceGetCurrency (invoice));
-                    date.tv_sec = time (NULL);
-                    date.tv_nsec = 0;
-                    gnc_price_set_time (convprice, date);
-                    gnc_price_set_source (convprice, "user:invoice-post");
-
-                    /* Yes, magic strings are evil but I can't find any defined constants
-                       for this..*/
-                    gnc_price_set_typestr (convprice, "last");
-                    gnc_price_set_value (convprice, exch_rate);
-                    gncInvoiceAddPrice(invoice, convprice);
-                    gnc_price_commit_edit (convprice);
-                }
-                else
-                {
-                    /* User canceled the transfer dialog, abort posting */
-                    post_ok = FALSE;
-                    goto cleanup;
-                }
-            }
+            /* Invert the exchange rate as explained above */
+            if (!gnc_numeric_zero_p (exch_rate))
+                exch_rate = gnc_numeric_div ((gnc_numeric){1, 1}, exch_rate,
+            GNC_DENOM_AUTO, GNC_HOW_RND_ROUND_HALF_UP);
+            convprice = gnc_price_create(iw->book);
+            gnc_price_begin_edit (convprice);
+            gnc_price_set_commodity (convprice, account_currency);
+            gnc_price_set_currency (convprice, gncInvoiceGetCurrency (invoice));
+            gnc_price_set_time (convprice, postdate);
+            gnc_price_set_source (convprice, PRICE_SOURCE_INVOICE);
+            gnc_price_set_typestr (convprice, PRICE_TYPE_LAST);
+            gnc_price_set_value (convprice, exch_rate);
+            gncInvoiceAddPrice(invoice, convprice);
+            gnc_price_commit_edit (convprice);
+        }
+        else
+        {
+            /* User canceled the transfer dialog, abort posting */
+            post_ok = FALSE;
+            goto cleanup;
         }
     }
 
 
     /* Save account as last used account in the kvp frame of the invoice owner */
+    owner_inst = qofOwnerGetOwner (gncOwnerGetEndOwner (&(iw->owner)));
+    kvpf = qof_instance_get_slots (owner_inst);
     kvp_val = kvp_value_new_guid (qof_instance_get_guid (QOF_INSTANCE (acc)));;
     qof_begin_edit (owner_inst);
     kvp_frame_set_slot_nc (kvpf, LAST_POSTED_TO_ACCT, kvp_val);
@@ -856,10 +927,16 @@ gnc_invoice_window_postCB (GtkWidget *widget, gpointer data)
     qof_commit_edit (owner_inst);
 
     /* ... post it ... */
-    gncInvoicePostToAccount (invoice, acc, &postdate, &ddue, memo, accumulate);
+    if (is_cust_doc)
+        auto_pay = gnc_prefs_get_bool (GNC_PREFS_GROUP_INVOICE, GNC_PREF_AUTO_PAY);
+    else
+        auto_pay = gnc_prefs_get_bool (GNC_PREFS_GROUP_BILL, GNC_PREF_AUTO_PAY);
+
+    gncInvoicePostToAccount (invoice, acc, &postdate, &ddue, memo, accumulate, auto_pay);
 
 cleanup:
     gncInvoiceCommitEdit (invoice);
+    g_hash_table_unref (foreign_currs);
     gnc_resume_gui_refresh ();
 
     if (memo)
@@ -880,6 +957,13 @@ cleanup:
     /* ... and redisplay here. */
     gnc_invoice_update_window (iw, NULL);
     gnc_table_refresh_gui (gnc_entry_ledger_get_table (iw->ledger), FALSE);
+}
+
+void
+gnc_invoice_window_postCB (GtkWidget *unused_widget, gpointer data)
+{
+    InvoiceWindow *iw =data;
+    gnc_invoice_post(iw, NULL);
 }
 
 void
@@ -976,7 +1060,7 @@ void gnc_business_call_owner_report (GncOwner *owner, Account *acc)
     /* Apply the function to the args */
     arg = scm_apply (func, args, SCM_EOL);
     g_return_if_fail (scm_is_exact (arg));
-    id = scm_num2int (arg, SCM_ARG1, G_STRFUNC);
+    id = scm_to_int (arg);
 
     if (id >= 0)
         reportWindow (id);
@@ -1014,26 +1098,26 @@ gnc_invoice_window_sort (InvoiceWindow *iw, invoice_sort_type_t sort_code)
 
     switch (sort_code)
     {
-    case BY_STANDARD:
+    case INVSORT_BY_STANDARD:
         p1 = standard;
         break;
-    case BY_DATE:
+    case INVSORT_BY_DATE:
         p1 = g_slist_prepend (p1, ENTRY_DATE);
         p2 = standard;
         break;
-    case BY_DATE_ENTERED:
+    case INVSORT_BY_DATE_ENTERED:
         p1 = g_slist_prepend (p1, ENTRY_DATE_ENTERED);
         p2 = standard;
         break;
-    case BY_DESC:
+    case INVSORT_BY_DESC:
         p1 = g_slist_prepend (p1, ENTRY_DESC);
         p2 = standard;
         break;
-    case BY_QTY:
+    case INVSORT_BY_QTY:
         p1 = g_slist_prepend (p1, ENTRY_QTY);
         p2 = standard;
         break;
-    case BY_PRICE:
+    case INVSORT_BY_PRICE:
         p1 = g_slist_prepend (p1, ((iw->owner.type == GNC_OWNER_CUSTOMER) ?
                                    ENTRY_IPRICE : ENTRY_BPRICE));
         p2 = standard;
@@ -1041,6 +1125,7 @@ gnc_invoice_window_sort (InvoiceWindow *iw, invoice_sort_type_t sort_code)
     default:
         g_slist_free (standard);
         g_return_if_fail (FALSE);
+        break;
     }
 
     qof_query_set_sort_order (query, p1, p2, p3);
@@ -1126,7 +1211,7 @@ gnc_invoice_window_create_summary_bar (InvoiceWindow *iw)
 {
     GtkWidget *summarybar;
 
-    iw->total_label	    = NULL;
+    iw->total_label           = NULL;
     iw->total_cash_label      = NULL;
     iw->total_charge_label    = NULL;
     iw->total_subtotal_label  = NULL;
@@ -1134,7 +1219,7 @@ gnc_invoice_window_create_summary_bar (InvoiceWindow *iw)
 
     summarybar = gtk_hbox_new (FALSE, 4);
 
-    iw->total_label	    = add_summary_label (summarybar, _("Total:"));
+    iw->total_label           = add_summary_label (summarybar, _("Total:"));
 
     switch (gncOwnerGetType (&iw->owner))
     {
@@ -1161,7 +1246,6 @@ static int
 gnc_invoice_job_changed_cb (GtkWidget *widget, gpointer data)
 {
     InvoiceWindow *iw = data;
-    GncInvoice *invoice;
     char const *msg = "";
 
     if (!iw)
@@ -1171,7 +1255,6 @@ gnc_invoice_job_changed_cb (GtkWidget *widget, gpointer data)
         return FALSE;
 
     gnc_owner_get_owner (iw->job_choice, &(iw->job));
-    invoice = iw_get_invoice (iw);
 
     if (iw->dialog_type == EDIT_INVOICE)
         return FALSE;
@@ -1213,7 +1296,6 @@ gnc_invoice_update_job_choice (InvoiceWindow *iw)
     if (iw->owner.owner.undefined == NULL)
     {
         iw->job_choice = NULL;
-
     }
     else
         switch (iw->dialog_type)
@@ -1225,6 +1307,7 @@ gnc_invoice_update_job_choice (InvoiceWindow *iw)
             break;
         case NEW_INVOICE:
         case MOD_INVOICE:
+        case DUP_INVOICE:
             iw->job_choice =
                 gnc_general_search_new (GNC_JOB_MODULE_NAME, _("Select..."), TRUE,
                                         gnc_invoice_select_job_cb, iw, iw->book);
@@ -1296,6 +1379,7 @@ gnc_invoice_update_proj_job (InvoiceWindow *iw)
         break;
     case NEW_INVOICE:
     case MOD_INVOICE:
+    case DUP_INVOICE:
         if (iw->proj_cust.owner.undefined == NULL)
         {
             iw->proj_job_choice = NULL;
@@ -1342,11 +1426,8 @@ gnc_invoice_owner_changed_cb (GtkWidget *widget, gpointer data)
     /* If this owner really changed, then reset ourselves */
     if (!gncOwnerEqual (&owner, &(iw->owner)))
     {
-        GncInvoice *invoice;
-
         gncOwnerCopy (&owner, &(iw->owner));
         gncOwnerInitJob (&(iw->job), NULL);
-        invoice = iw_get_invoice (iw);
         gnc_entry_ledger_reset_query (iw->ledger);
     }
 
@@ -1371,7 +1452,7 @@ gnc_invoice_owner_changed_cb (GtkWidget *widget, gpointer data)
 
     /* XXX: I'm not sure -- should we change the terms if this happens? */
     iw->terms = term;
-    gnc_ui_optionmenu_set_value (iw->terms_menu, iw->terms);
+    gnc_simple_combo_set_value (GTK_COMBO_BOX(iw->terms_menu), iw->terms);
 
     gnc_invoice_update_job_choice (iw);
 
@@ -1525,7 +1606,7 @@ gnc_invoice_window_refresh_handler (GHashTable *changes, gpointer user_data)
     InvoiceWindow *iw = user_data;
     const EventInfo *info;
     GncInvoice *invoice = iw_get_invoice (iw);
-    GncOwner *owner;
+    const GncOwner *owner;
 
     /* If there isn't an invoice behind us, close down */
     if (!invoice)
@@ -1601,6 +1682,7 @@ gnc_invoice_update_window (InvoiceWindow *iw, GtkWidget *widget)
         break;
     case NEW_INVOICE:
     case MOD_INVOICE:
+    case DUP_INVOICE:
         iw->owner_choice =
             gnc_owner_select_create (iw->owner_label, iw->owner_box, iw->book,
                                      &(iw->owner));
@@ -1617,6 +1699,10 @@ gnc_invoice_update_window (InvoiceWindow *iw, GtkWidget *widget)
         break;
     }
 
+    /* Set the type label */
+    gtk_label_set_text (GTK_LABEL(iw->type_label), iw->is_credit_note ? _("Credit Note")
+                        : gtk_label_get_text (GTK_LABEL(iw->type_label)));
+
     if (iw->owner_choice)
         gtk_widget_show_all (iw->owner_choice);
     if (iw->proj_cust_choice)
@@ -1627,19 +1713,18 @@ gnc_invoice_update_window (InvoiceWindow *iw, GtkWidget *widget)
 
     /* Hide the project frame for customer invoices */
     if (iw->owner.type == GNC_OWNER_CUSTOMER)
-        gtk_widget_hide_all (iw->proj_frame);
+        gtk_widget_hide (iw->proj_frame);
 
     /* Hide the "job" label and entry for employee invoices */
     if (iw->owner.type == GNC_OWNER_EMPLOYEE)
     {
-        gtk_widget_hide_all (iw->job_label);
-        gtk_widget_hide_all (iw->job_box);
+        gtk_widget_hide (iw->job_label);
+        gtk_widget_hide (iw->job_box);
     }
 
-    acct_entry = glade_xml_get_widget (iw->xml, "acct_entry");
+    acct_entry = GTK_WIDGET (gtk_builder_get_object (iw->builder, "acct_entry"));
 
     /* We know that "invoice" (and "owner") exist now */
-    do
     {
         GtkTextBuffer* text_buffer;
         const char *string;
@@ -1663,16 +1748,37 @@ gnc_invoice_update_window (InvoiceWindow *iw, GtkWidget *widget)
         ts = gncInvoiceGetDateOpened (invoice);
         if (timespec_equal (&ts, &ts_zero))
         {
-            gnc_date_edit_set_time (GNC_DATE_EDIT (iw->opened_date), time(NULL));
+            gnc_date_edit_set_time (GNC_DATE_EDIT (iw->opened_date),
+                                    gnc_time (NULL));
         }
         else
         {
             gnc_date_edit_set_time_ts (GNC_DATE_EDIT (iw->opened_date), ts);
         }
 
-        /* fill in the terms menu */
+        /* fill in the terms text */
         iw->terms = gncInvoiceGetTerms (invoice);
-        gnc_ui_optionmenu_set_value (iw->terms_menu, iw->terms);
+        //DEBUG("iw->dialog_type: %d",iw->dialog_type);
+        switch (iw->dialog_type)
+        {
+            case NEW_INVOICE:
+            case MOD_INVOICE:
+            case DUP_INVOICE: //??
+                gnc_simple_combo_set_value (GTK_COMBO_BOX(iw->terms_menu), iw->terms);
+                break;
+
+            case EDIT_INVOICE:
+            case VIEW_INVOICE:
+                // Fill in the invoice view version
+                if(gncBillTermGetName (iw->terms) != NULL)
+                    gtk_entry_set_text (GTK_ENTRY (iw->terms_menu),gncBillTermGetName (iw->terms));
+                else
+                    gtk_entry_set_text (GTK_ENTRY (iw->terms_menu),"None");
+                break;
+
+            default:
+                break;
+        }
 
         /*
          * Next, figure out if we've been posted, and if so set the
@@ -1681,30 +1787,30 @@ gnc_invoice_update_window (InvoiceWindow *iw, GtkWidget *widget)
          */
 
         acct = gncInvoiceGetPostedAcc (invoice);
-        if (!acct)
-            break;
+        if (acct)
+        {
+            /* Ok, it's definitely posted. Setup the 'posted-invoice' fields now */
+            is_posted = TRUE;
 
-        /* Ok, it's definitely posted. Setup the 'posted-invoice' fields now */
-        is_posted = TRUE;
+            /* Can we unpost this invoice?
+             * XXX: right now we always can, but there
+             * may be times in the future when we cannot.
+             */
+            can_unpost = TRUE;
 
-        /* Can we unpost this invoice?
-         * XXX: right now we always can, but there
-         * may be times in the future when we cannot.
-         */
-        can_unpost = TRUE;
+            ts = gncInvoiceGetDatePosted (invoice);
+            gnc_date_edit_set_time_ts (GNC_DATE_EDIT (iw->posted_date), ts);
 
-        ts = gncInvoiceGetDatePosted (invoice);
-        gnc_date_edit_set_time_ts (GNC_DATE_EDIT (iw->posted_date), ts);
-
-        tmp_string = gnc_account_get_full_name (acct);
-        gtk_entry_set_text (GTK_ENTRY (acct_entry), tmp_string);
-        g_free(tmp_string);
-
+            tmp_string = gnc_account_get_full_name (acct);
+            gtk_entry_set_text (GTK_ENTRY (acct_entry), tmp_string);
+            g_free(tmp_string);
+        }
     }
-    while (FALSE);
 
     gnc_invoice_id_changed_cb(NULL, iw);
-    if (iw->dialog_type == NEW_INVOICE || iw->dialog_type == MOD_INVOICE)
+    if (iw->dialog_type == NEW_INVOICE ||
+            iw->dialog_type == DUP_INVOICE ||
+            iw->dialog_type == MOD_INVOICE)
     {
         if (widget)
             gtk_widget_show (widget);
@@ -1724,30 +1830,41 @@ gnc_invoice_update_window (InvoiceWindow *iw, GtkWidget *widget)
     /* Hide/show the appropriate widgets based on our posted/paid state */
 
     {
-        GtkWidget *hide;
+        GtkWidget *hide, *show;
 
         if (is_posted == TRUE)
         {
-            hide = glade_xml_get_widget (iw->xml, "hide3");
-            gtk_widget_hide_all (hide);
-            hide = glade_xml_get_widget (iw->xml, "hide4");
-            gtk_widget_hide_all (hide);
+            hide = GTK_WIDGET (gtk_builder_get_object (iw->builder, "hide3"));
+            gtk_widget_hide (hide);
+            hide = GTK_WIDGET (gtk_builder_get_object (iw->builder, "hide4"));
+            gtk_widget_hide (hide);
 
+            show = GTK_WIDGET (gtk_builder_get_object (iw->builder, "posted_label"));
+            gtk_widget_show (show);
+            gtk_widget_show (iw->posted_date_hbox);
+            show = GTK_WIDGET (gtk_builder_get_object (iw->builder, "acct_label"));
+            gtk_widget_show (show);
+            gtk_widget_show (acct_entry);
+
+            show = GTK_WIDGET (gtk_builder_get_object (iw->builder, "hide1"));
+            gtk_widget_show (show);
+            show = GTK_WIDGET (gtk_builder_get_object (iw->builder, "hide2"));
+            gtk_widget_show (show);
         }
-        else  			/* ! posted */
+        else           /* ! posted */
         {
-            hide = glade_xml_get_widget (iw->xml, "posted_label");
-            gtk_widget_hide_all (hide);
-            gtk_widget_hide_all (iw->posted_date_hbox);
+            hide = GTK_WIDGET (gtk_builder_get_object (iw->builder, "posted_label"));
+            gtk_widget_hide (hide);
+            gtk_widget_hide (iw->posted_date_hbox);
 
-            hide = glade_xml_get_widget (iw->xml, "acct_label");
-            gtk_widget_hide_all (hide);
-            gtk_widget_hide_all (acct_entry);
+            hide = GTK_WIDGET (gtk_builder_get_object (iw->builder, "acct_label"));
+            gtk_widget_hide (hide);
+            gtk_widget_hide (acct_entry);
 
-            hide = glade_xml_get_widget (iw->xml, "hide1");
-            gtk_widget_hide_all (hide);
-            hide = glade_xml_get_widget (iw->xml, "hide2");
-            gtk_widget_hide_all (hide);
+            hide = GTK_WIDGET (gtk_builder_get_object (iw->builder, "hide1"));
+            gtk_widget_hide (hide);
+            hide = GTK_WIDGET (gtk_builder_get_object (iw->builder, "hide2"));
+            gtk_widget_hide (hide);
         }
     }
 
@@ -1768,7 +1885,7 @@ gnc_invoice_update_window (InvoiceWindow *iw, GtkWidget *widget)
     }
     else
     {
-        gtk_widget_hide_all (iw->to_charge_frame);
+        gtk_widget_hide (iw->to_charge_frame);
     }
 
     if (is_posted)
@@ -1802,14 +1919,18 @@ gnc_invoice_get_title (InvoiceWindow *iw)
         switch (iw->dialog_type)
         {
         case NEW_INVOICE:
-            wintitle = _("New Invoice");
+            wintitle = iw->is_credit_note ? _("New Credit Note")
+                       : _("New Invoice");
             break;
         case MOD_INVOICE:
+        case DUP_INVOICE:
         case EDIT_INVOICE:
-            wintitle = _("Edit Invoice");
+            wintitle = iw->is_credit_note ? _("Edit Credit Note")
+                       : _("Edit Invoice");
             break;
         case VIEW_INVOICE:
-            wintitle = _("View Invoice");
+            wintitle = iw->is_credit_note ? _("View Credit Note")
+                       : _("View Invoice");
             break;
         }
         break;
@@ -1817,14 +1938,18 @@ gnc_invoice_get_title (InvoiceWindow *iw)
         switch (iw->dialog_type)
         {
         case NEW_INVOICE:
-            wintitle = _("New Bill");
+            wintitle = iw->is_credit_note ? _("New Credit Note")
+                       : _("New Bill");
             break;
         case MOD_INVOICE:
+        case DUP_INVOICE:
         case EDIT_INVOICE:
-            wintitle = _("Edit Bill");
+            wintitle = iw->is_credit_note ? _("Edit Credit Note")
+                       : _("Edit Bill");
             break;
         case VIEW_INVOICE:
-            wintitle = _("View Bill");
+            wintitle = iw->is_credit_note ? _("View Credit Note")
+                       : _("View Bill");
             break;
         }
         break;
@@ -1832,14 +1957,18 @@ gnc_invoice_get_title (InvoiceWindow *iw)
         switch (iw->dialog_type)
         {
         case NEW_INVOICE:
-            wintitle = _("New Expense Voucher");
+            wintitle = iw->is_credit_note ? _("New Credit Note")
+                       : _("New Expense Voucher");
             break;
         case MOD_INVOICE:
+        case DUP_INVOICE:
         case EDIT_INVOICE:
-            wintitle = _("Edit Expense Voucher");
+            wintitle = iw->is_credit_note ? _("Edit Credit Note")
+                       : _("Edit Expense Voucher");
             break;
         case VIEW_INVOICE:
-            wintitle = _("View Expense Voucher");
+            wintitle = iw->is_credit_note ? _("View Credit Note")
+                       : _("View Expense Voucher");
             break;
         }
         break;
@@ -1852,6 +1981,15 @@ gnc_invoice_get_title (InvoiceWindow *iw)
     if (id && *id)
         return g_strconcat (wintitle, " - ", id, (char *)NULL);
     return g_strdup (wintitle);
+}
+
+void
+gnc_invoice_type_toggled_cb (GtkWidget *widget, gpointer data)
+{
+    InvoiceWindow *iw = data;
+
+    if (!iw) return;
+    iw->is_credit_note = !gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget));
 }
 
 void
@@ -1873,6 +2011,18 @@ gnc_invoice_id_changed_cb (GtkWidget *unused, gpointer data)
     }
 }
 
+void
+gnc_invoice_terms_changed_cb (GtkWidget *widget, gpointer data)
+{
+    GtkComboBox *cbox = GTK_COMBO_BOX (widget);
+    InvoiceWindow *iw = data;
+
+    if (!iw) return;
+    if (!cbox) return;
+
+    iw->terms = gnc_simple_combo_get_value (cbox);
+}
+
 
 static gboolean
 find_handler (gpointer find_data, gpointer user_data)
@@ -1885,14 +2035,14 @@ find_handler (gpointer find_data, gpointer user_data)
 
 static InvoiceWindow *
 gnc_invoice_new_page (QofBook *bookp, InvoiceDialogType type,
-                      GncInvoice *invoice, GncOwner *owner,
+                      GncInvoice *invoice, const GncOwner *owner,
                       GncMainWindow *window)
 {
     InvoiceWindow *iw;
     GncOwner *billto;
     GncPluginPage *new_page;
 
-    g_assert (type != NEW_INVOICE && type != MOD_INVOICE);
+    g_assert (type != NEW_INVOICE && type != MOD_INVOICE && type != DUP_INVOICE);
     g_assert (invoice != NULL);
 
     /*
@@ -1920,6 +2070,7 @@ gnc_invoice_new_page (QofBook *bookp, InvoiceDialogType type,
     iw->book = bookp;
     iw->dialog_type = type;
     iw->invoice_guid = *gncInvoiceGetGUID (invoice);
+    iw->is_credit_note = gncInvoiceGetIsCreditNote (invoice);
     iw->width = -1;
 
     /* Save this for later */
@@ -2056,49 +2207,67 @@ gnc_invoice_save_page (InvoiceWindow *iw,
     g_key_file_set_string(key_file, group_name, KEY_INVOICE_GUID,
                           guid_to_string(&iw->invoice_guid));
 
-    g_key_file_set_string(key_file, group_name, KEY_OWNER_TYPE,
+    if (gncOwnerGetJob (&(iw->job)))
+    {
+        g_key_file_set_string(key_file, group_name, KEY_OWNER_TYPE,
+                          qofOwnerGetType(&iw->job));
+        g_key_file_set_string(key_file, group_name, KEY_OWNER_GUID,
+                          guid_to_string(gncOwnerGetGUID(&iw->job)));
+    }
+    else
+    {
+        g_key_file_set_string(key_file, group_name, KEY_OWNER_TYPE,
                           qofOwnerGetType(&iw->owner));
-    g_key_file_set_string(key_file, group_name, KEY_OWNER_GUID,
+        g_key_file_set_string(key_file, group_name, KEY_OWNER_GUID,
                           guid_to_string(gncOwnerGetGUID(&iw->owner)));
+    }
 }
 
 GtkWidget *
 gnc_invoice_create_page (InvoiceWindow *iw, gpointer page)
 {
     GncInvoice *invoice;
-    GladeXML *xml;
+    GtkBuilder *builder;
+    GtkWidget *id_label;
     GtkWidget *dialog, *hbox;
     GncEntryLedger *entry_ledger = NULL;
     GncOwnerType owner_type;
     GncEntryLedgerType ledger_type;
-    const gchar *gconf_section = NULL;
+    const gchar *prefs_group = NULL;
+    gboolean is_credit_note = FALSE;
 
-    invoice = gncInvoiceLookup(iw->book, &iw->invoice_guid);
+    invoice = gncInvoiceLookup (iw->book, &iw->invoice_guid);
+    is_credit_note = gncInvoiceGetIsCreditNote (invoice);
 
     iw->page = page;
 
     /* Find the dialog */
-    iw->xml = xml = gnc_glade_xml_new ("invoice.glade", "invoice_entry_vbox");
-    dialog = glade_xml_get_widget (xml, "invoice_entry_vbox");
+    iw->builder = builder = gtk_builder_new();
+    gnc_builder_add_from_file (builder, "dialog-invoice.glade", "terms_store");
+    gnc_builder_add_from_file (builder, "dialog-invoice.glade", "invoice_entry_vbox");
+    dialog = GTK_WIDGET (gtk_builder_get_object (builder, "invoice_entry_vbox"));
 
     /* Autoconnect all the signals */
-    glade_xml_signal_autoconnect_full (xml, gnc_glade_autoconnect_full_func, iw);
+    gtk_builder_connect_signals_full (builder, gnc_builder_connect_full_func, iw);
 
     /* Grab the widgets */
-    iw->id_entry = glade_xml_get_widget (xml, "id_entry");
-    iw->billing_id_entry = glade_xml_get_widget (xml, "billing_id_entry");
-    iw->terms_menu = glade_xml_get_widget (xml, "terms_menu");
-    iw->notes_text = glade_xml_get_widget (xml, "notes_text");
-    iw->active_check = glade_xml_get_widget (xml, "active_check");
-    iw->owner_box = glade_xml_get_widget (xml, "owner_hbox");
-    iw->owner_label = glade_xml_get_widget (xml, "owner_label");
-    iw->job_label = glade_xml_get_widget (xml, "job_label");
-    iw->job_box = glade_xml_get_widget (xml, "job_hbox");
+    iw->id_label = GTK_WIDGET (gtk_builder_get_object (builder, "label3"));
+    iw->type_label = GTK_WIDGET (gtk_builder_get_object (builder, "page_type_label"));
+    iw->info_label = GTK_WIDGET (gtk_builder_get_object (builder, "label25"));
+    iw->id_entry = GTK_WIDGET (gtk_builder_get_object (builder, "page_id_entry"));
+    iw->billing_id_entry = GTK_WIDGET (gtk_builder_get_object (builder, "page_billing_id_entry"));
+    iw->terms_menu = GTK_WIDGET (gtk_builder_get_object (builder, "page_terms_menu"));
+    iw->notes_text = GTK_WIDGET (gtk_builder_get_object (builder, "page_notes_text"));
+    iw->active_check = GTK_WIDGET (gtk_builder_get_object (builder, "active_check"));
+    iw->owner_box = GTK_WIDGET (gtk_builder_get_object (builder, "page_owner_hbox"));
+    iw->owner_label = GTK_WIDGET (gtk_builder_get_object (builder, "page_owner_label"));
+    iw->job_label = GTK_WIDGET (gtk_builder_get_object (builder, "page_job_label"));
+    iw->job_box = GTK_WIDGET (gtk_builder_get_object (builder, "page_job_hbox"));
 
     /* grab the project widgets */
-    iw->proj_frame = glade_xml_get_widget (xml, "proj_frame");
-    iw->proj_cust_box = glade_xml_get_widget (xml, "proj_cust_hbox");
-    iw->proj_job_box = glade_xml_get_widget (xml, "proj_job_hbox");
+    iw->proj_frame = GTK_WIDGET (gtk_builder_get_object (builder, "page_proj_frame"));
+    iw->proj_cust_box = GTK_WIDGET (gtk_builder_get_object (builder, "page_proj_cust_hbox"));
+    iw->proj_job_box = GTK_WIDGET (gtk_builder_get_object (builder, "page_proj_job_hbox"));
 
     /* grab the to_charge widgets */
     {
@@ -2107,7 +2276,7 @@ gnc_invoice_create_page (InvoiceWindow *iw, gpointer page)
         gnc_commodity *currency = gncInvoiceGetCurrency (invoice);
         GNCPrintAmountInfo print_info;
 
-        iw->to_charge_frame = glade_xml_get_widget (xml, "to_charge_frame");
+        iw->to_charge_frame = GTK_WIDGET (gtk_builder_get_object (builder, "to_charge_frame"));
         edit = gnc_amount_edit_new();
         print_info = gnc_commodity_print_info (currency, FALSE);
         gnc_amount_edit_set_evaluate_on_enter (GNC_AMOUNT_EDIT (edit), TRUE);
@@ -2116,7 +2285,7 @@ gnc_invoice_create_page (InvoiceWindow *iw, gpointer page)
                                       gnc_commodity_get_fraction (currency));
         iw->to_charge_edit = edit;
         gtk_widget_show (edit);
-        hbox = glade_xml_get_widget (xml, "to_charge_box");
+        hbox = GTK_WIDGET (gtk_builder_get_object (builder, "to_charge_box"));
         gtk_box_pack_start (GTK_BOX (hbox), edit, TRUE, TRUE, 0);
 
         g_signal_connect(G_OBJECT(gnc_amount_edit_gtk_entry(GNC_AMOUNT_EDIT(edit))),
@@ -2126,13 +2295,13 @@ gnc_invoice_create_page (InvoiceWindow *iw, gpointer page)
                          G_CALLBACK(gnc_invoice_window_changed_to_charge_cb), iw);
     }
 
-    hbox = glade_xml_get_widget (xml, "date_opened_hbox");
-    iw->opened_date = gnc_date_edit_new (time(NULL), FALSE, FALSE);
+    hbox = GTK_WIDGET (gtk_builder_get_object (builder, "page_date_opened_hbox"));
+    iw->opened_date = gnc_date_edit_new (gnc_time (NULL), FALSE, FALSE);
     gtk_widget_show(iw->opened_date);
     gtk_box_pack_start (GTK_BOX(hbox), iw->opened_date, TRUE, TRUE, 0);
 
-    iw->posted_date_hbox = glade_xml_get_widget (xml, "date_posted_hbox");
-    iw->posted_date = gnc_date_edit_new (time(NULL), FALSE, FALSE);
+    iw->posted_date_hbox = GTK_WIDGET (gtk_builder_get_object (builder, "date_posted_hbox"));
+    iw->posted_date = gnc_date_edit_new (gnc_time (NULL), FALSE, FALSE);
     gtk_widget_show(iw->posted_date);
     gtk_box_pack_start (GTK_BOX(iw->posted_date_hbox), iw->posted_date,
                         TRUE, TRUE, 0);
@@ -2150,16 +2319,20 @@ gnc_invoice_create_page (InvoiceWindow *iw, gpointer page)
         switch (owner_type)
         {
         case GNC_OWNER_CUSTOMER:
-            ledger_type = GNCENTRY_INVOICE_ENTRY;
+            ledger_type = is_credit_note ? GNCENTRY_CUST_CREDIT_NOTE_ENTRY
+                          : GNCENTRY_INVOICE_ENTRY;
             break;
         case GNC_OWNER_VENDOR:
-            ledger_type = GNCENTRY_BILL_ENTRY;
+            ledger_type = is_credit_note ? GNCENTRY_VEND_CREDIT_NOTE_ENTRY
+                          : GNCENTRY_BILL_ENTRY;
             break;
         case GNC_OWNER_EMPLOYEE:
-            ledger_type = GNCENTRY_EXPVOUCHER_ENTRY;
+            ledger_type = is_credit_note ? GNCENTRY_EMPL_CREDIT_NOTE_ENTRY
+                          : GNCENTRY_EXPVOUCHER_ENTRY;
             break;
         default:
             g_warning ("Invalid owner type");
+            break;
         }
         break;
     case VIEW_INVOICE:
@@ -2167,21 +2340,42 @@ gnc_invoice_create_page (InvoiceWindow *iw, gpointer page)
         switch (owner_type)
         {
         case GNC_OWNER_CUSTOMER:
-            ledger_type = GNCENTRY_INVOICE_VIEWER;
-            gconf_section = GCONF_SECTION_INVOICE;
+            ledger_type = is_credit_note ? GNCENTRY_CUST_CREDIT_NOTE_VIEWER
+                          : GNCENTRY_INVOICE_VIEWER;
+            prefs_group   = GNC_PREFS_GROUP_INVOICE;
             break;
         case GNC_OWNER_VENDOR:
-            ledger_type = GNCENTRY_BILL_VIEWER;
-            gconf_section = GCONF_SECTION_BILL;
+            ledger_type = is_credit_note ? GNCENTRY_VEND_CREDIT_NOTE_VIEWER
+                          : GNCENTRY_BILL_VIEWER;
+            prefs_group   = GNC_PREFS_GROUP_BILL;
             break;
         case GNC_OWNER_EMPLOYEE:
-            ledger_type = GNCENTRY_EXPVOUCHER_VIEWER;
-            gconf_section = GCONF_SECTION_BILL;
+            ledger_type = is_credit_note ? GNCENTRY_EMPL_CREDIT_NOTE_VIEWER
+                          : GNCENTRY_EXPVOUCHER_VIEWER;
+            prefs_group   = GNC_PREFS_GROUP_BILL;
             break;
         default:
             g_warning ("Invalid owner type");
+            break;
         }
+        break;
     }
+    /* Default labels are for invoices, change them if they are anything else. */
+    switch (owner_type)
+        {
+        case GNC_OWNER_VENDOR:
+            gtk_label_set_text (GTK_LABEL(iw->info_label),  _("Bill Information"));
+            gtk_label_set_text (GTK_LABEL(iw->type_label),  _("Bill"));
+            gtk_label_set_text (GTK_LABEL(iw->id_label),  _("Bill ID"));
+            break;
+        case GNC_OWNER_EMPLOYEE:
+            gtk_label_set_text (GTK_LABEL(iw->info_label),  _("Voucher Information"));
+            gtk_label_set_text (GTK_LABEL(iw->type_label),  _("Voucher"));
+            gtk_label_set_text (GTK_LABEL(iw->id_label),  _("Voucher ID"));
+        default:
+            break;
+        }
+
     entry_ledger = gnc_entry_ledger_new (iw->book, ledger_type);
 
     /* Save the ledger... */
@@ -2191,8 +2385,8 @@ gnc_invoice_create_page (InvoiceWindow *iw, gpointer page)
     /* Set the entry_ledger's invoice */
     gnc_entry_ledger_set_default_invoice (entry_ledger, invoice);
 
-    /* Set the gconf section */
-    gnc_entry_ledger_set_gconf_section (entry_ledger, gconf_section);
+    /* Set the preferences group */
+    gnc_entry_ledger_set_prefs_group (entry_ledger, prefs_group);
 
     /* Setup initial values */
     iw->component_id =
@@ -2213,14 +2407,14 @@ gnc_invoice_create_page (InvoiceWindow *iw, gpointer page)
         regWidget = gnucash_register_new (gnc_entry_ledger_get_table
                                           (entry_ledger));
         gtk_widget_show(regWidget);
-        gnc_table_init_gui( regWidget, entry_ledger );
+        gnc_table_init_gui( regWidget, NULL);
 
-        frame = glade_xml_get_widget (xml, "ledger_frame");
+        frame = GTK_WIDGET (gtk_builder_get_object (builder, "ledger_frame"));
         gtk_container_add (GTK_CONTAINER (frame), regWidget);
 
         iw->reg = GNUCASH_REGISTER (regWidget);
         window = gnc_plugin_page_get_window(iw->page);
-        GNUCASH_SHEET (iw->reg->sheet)->window = window;
+        gnucash_sheet_set_window (gnucash_register_get_sheet (iw->reg), window);
 
         g_signal_connect (G_OBJECT (regWidget), "activate_cursor",
                           G_CALLBACK (gnc_invoice_window_recordCB), iw);
@@ -2231,7 +2425,6 @@ gnc_invoice_create_page (InvoiceWindow *iw, gpointer page)
     gnc_table_realize_gui (gnc_entry_ledger_get_table (entry_ledger));
 
     /* Now fill in a lot of the pieces and display properly */
-    gnc_ui_billterms_optionmenu (iw->terms_menu, iw->book, TRUE, &iw->terms);
     gnc_invoice_update_window (iw, dialog);
 
     gnc_table_refresh_gui (gnc_entry_ledger_get_table (iw->ledger), TRUE);
@@ -2243,13 +2436,19 @@ gnc_invoice_create_page (InvoiceWindow *iw, gpointer page)
 }
 
 static InvoiceWindow *
-gnc_invoice_window_new_invoice (QofBook *bookp, GncOwner *owner,
-                                GncInvoice *invoice)
+gnc_invoice_window_new_invoice (InvoiceDialogType dialog_type, QofBook *bookp,
+                                const GncOwner *owner, GncInvoice *invoice)
 {
     InvoiceWindow *iw;
-    GladeXML *xml;
+    GtkBuilder *builder;
     GtkWidget *hbox;
+    GtkWidget *invoice_radio;
     GncOwner *billto;
+    const GncOwner *start_owner;
+    GncBillTerm *owner_terms = NULL;
+    GncOwnerType owner_type;
+
+    g_assert (dialog_type == NEW_INVOICE || dialog_type == MOD_INVOICE || dialog_type == DUP_INVOICE);
 
     if (invoice)
     {
@@ -2274,52 +2473,127 @@ gnc_invoice_window_new_invoice (QofBook *bookp, GncOwner *owner,
      */
 
     iw = g_new0 (InvoiceWindow, 1);
+    iw->dialog_type = dialog_type;
 
-    if (invoice == NULL)
+    switch (dialog_type)
     {
-        iw->dialog_type = NEW_INVOICE;
+    case NEW_INVOICE:
+        g_assert (bookp);
+
         invoice = gncInvoiceCreate (bookp);
         gncInvoiceSetCurrency (invoice, gnc_default_currency ());
         iw->book = bookp;
-    }
-    else
-    {
-        iw->dialog_type = MOD_INVOICE;
-        owner = gncInvoiceGetOwner (invoice);
+        start_owner = owner;
+        switch (gncOwnerGetType (gncOwnerGetEndOwner (owner)))
+        {
+        case GNC_OWNER_CUSTOMER:
+            owner_terms = gncCustomerGetTerms (gncOwnerGetCustomer (gncOwnerGetEndOwner (owner)));
+            break;
+        case GNC_OWNER_VENDOR:
+            owner_terms = gncVendorGetTerms (gncOwnerGetVendor (gncOwnerGetEndOwner (owner)));
+            break;
+        default:
+            break;
+        }
+        if (owner_terms)
+            gncInvoiceSetTerms (invoice, owner_terms);
+        break;
+
+    case MOD_INVOICE:
+    case DUP_INVOICE:
+        start_owner = gncInvoiceGetOwner (invoice);
         iw->book = gncInvoiceGetBook (invoice);
+        break;
+    default:
+        /* The assert at the beginning of this function should prevent this switch case ! */
+        return NULL;
     }
 
     /* Save this for later */
-    gncOwnerCopy (gncOwnerGetEndOwner(owner), &(iw->owner));
-    gncOwnerInitJob (&(iw->job), gncOwnerGetJob (owner));
+    gncOwnerCopy (gncOwnerGetEndOwner(start_owner), &(iw->owner));
+    gncOwnerInitJob (&(iw->job), gncOwnerGetJob (start_owner));
 
     billto = gncInvoiceGetBillTo (invoice);
     gncOwnerCopy (gncOwnerGetEndOwner (billto), &(iw->proj_cust));
     gncOwnerInitJob (&iw->proj_job, gncOwnerGetJob (billto));
 
     /* Find the glade page layout */
-    iw->xml = xml = gnc_glade_xml_new ("invoice.glade", "New Invoice Dialog");
-    iw->dialog = glade_xml_get_widget (xml, "New Invoice Dialog");
+    iw->builder = builder = gtk_builder_new();
+    gnc_builder_add_from_file (builder, "dialog-invoice.glade", "terms_store");
+    gnc_builder_add_from_file (builder, "dialog-invoice.glade", "New Invoice Dialog");
+    iw->dialog = GTK_WIDGET (gtk_builder_get_object (builder, "New Invoice Dialog"));
 
     g_object_set_data (G_OBJECT (iw->dialog), "dialog_info", iw);
 
     /* Grab the widgets */
-    iw->id_entry = glade_xml_get_widget (xml, "id_entry");
-    iw->billing_id_entry = glade_xml_get_widget (xml, "billing_id_entry");
-    iw->terms_menu = glade_xml_get_widget (xml, "terms_menu");
-    iw->notes_text = glade_xml_get_widget (xml, "notes_text");
-    iw->owner_box = glade_xml_get_widget (xml, "owner_hbox");
-    iw->owner_label = glade_xml_get_widget (xml, "owner_label");
-    iw->job_label = glade_xml_get_widget (xml, "job_label");
-    iw->job_box = glade_xml_get_widget (xml, "job_hbox");
+    iw->type_label = GTK_WIDGET (gtk_builder_get_object (builder, "dialog_type_label"));
+    iw->id_label = GTK_WIDGET (gtk_builder_get_object (builder, "label14"));
+    iw->info_label = GTK_WIDGET (gtk_builder_get_object (builder, "label1"));
+    invoice_radio = GTK_WIDGET (gtk_builder_get_object (builder, "dialog_invoice_type"));
+
+    iw->type_hbox = GTK_WIDGET (gtk_builder_get_object (builder, "dialog_type_choice_hbox"));
+    iw->type_choice = GTK_WIDGET (gtk_builder_get_object (builder, "dialog_type_invoice"));
+
+    /* The default GUI lables are for invoices, so change them if it isn't. */
+    owner_type = gncOwnerGetType (&iw->owner);
+    switch(owner_type)
+    {
+        case GNC_OWNER_VENDOR:
+            gtk_label_set_text (GTK_LABEL(iw->info_label),  _("Bill Information"));
+            gtk_label_set_text (GTK_LABEL(iw->type_label),  _("Bill"));
+            gtk_button_set_label (GTK_BUTTON(invoice_radio),  _("Bill"));
+            gtk_label_set_text (GTK_LABEL(iw->id_label),  _("Bill ID"));
+
+            break;
+        case GNC_OWNER_EMPLOYEE:
+            gtk_label_set_text (GTK_LABEL(iw->info_label),  _("Voucher Information"));
+            gtk_label_set_text (GTK_LABEL(iw->type_label),  _("Voucher"));
+            gtk_button_set_label (GTK_BUTTON(invoice_radio),  _("Voucher"));
+            gtk_label_set_text (GTK_LABEL(iw->id_label),  _("Voucher ID"));
+        default:
+        break;
+    }
+
+    /* configure the type related widgets based on dialog type and invoice type */
+    switch (dialog_type)
+    {
+    case NEW_INVOICE:
+    case DUP_INVOICE:
+        gtk_widget_show_all (iw->type_hbox);
+        gtk_widget_hide (iw->type_label);
+        break;
+    case MOD_INVOICE:
+        gtk_widget_hide (iw->type_hbox);
+        gtk_widget_show (iw->type_label);
+        break;
+    default:
+        break;
+    }
+
+    if (dialog_type == DUP_INVOICE)
+    {
+        GtkWidget *invoice_radio = GTK_WIDGET (gtk_builder_get_object (builder, "dialog_invoice_type"));
+        GtkWidget *cn_radio = GTK_WIDGET (gtk_builder_get_object (builder, "dialog_creditnote_type"));
+
+        gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(cn_radio), gncInvoiceGetIsCreditNote (invoice));
+    }
+
+    iw->id_entry = GTK_WIDGET (gtk_builder_get_object (builder, "dialog_id_entry"));
+    iw->billing_id_entry = GTK_WIDGET (gtk_builder_get_object (builder, "dialog_billing_id_entry"));
+    iw->terms_menu = GTK_WIDGET (gtk_builder_get_object (builder, "dialog_terms_menu"));
+    iw->notes_text = GTK_WIDGET (gtk_builder_get_object (builder, "dialog_notes_text"));
+    iw->owner_box = GTK_WIDGET (gtk_builder_get_object (builder, "dialog_owner_hbox"));
+    iw->owner_label = GTK_WIDGET (gtk_builder_get_object (builder, "dialog_owner_label"));
+    iw->job_label = GTK_WIDGET (gtk_builder_get_object (builder, "dialog_job_label"));
+    iw->job_box = GTK_WIDGET (gtk_builder_get_object (builder, "dialog_job_hbox"));
 
     /* Grab the project widgets */
-    iw->proj_frame = glade_xml_get_widget (xml, "proj_frame");
-    iw->proj_cust_box = glade_xml_get_widget (xml, "proj_cust_hbox");
-    iw->proj_job_box = glade_xml_get_widget (xml, "proj_job_hbox");
+    iw->proj_frame = GTK_WIDGET (gtk_builder_get_object (builder, "dialog_proj_frame"));
+    iw->proj_cust_box = GTK_WIDGET (gtk_builder_get_object (builder, "dialog_proj_cust_hbox"));
+    iw->proj_job_box = GTK_WIDGET (gtk_builder_get_object (builder, "dialog_proj_job_hbox"));
 
-    hbox = glade_xml_get_widget (xml, "date_opened_hbox");
-    iw->opened_date = gnc_date_edit_new (time(NULL), FALSE, FALSE);
+    hbox = GTK_WIDGET (gtk_builder_get_object (builder, "dialog_date_opened_hbox"));
+    iw->opened_date = gnc_date_edit_new (gnc_time (NULL), FALSE, FALSE);
     gtk_widget_show(iw->opened_date);
     gtk_box_pack_start (GTK_BOX(hbox), iw->opened_date, TRUE, TRUE, 0);
 
@@ -2327,11 +2601,13 @@ gnc_invoice_window_new_invoice (QofBook *bookp, GncOwner *owner,
     gtk_widget_set_sensitive (iw->notes_text, (iw->dialog_type == NEW_INVOICE));
 
     /* Setup signals */
-    glade_xml_signal_autoconnect_full( xml,
-                                       gnc_glade_autoconnect_full_func,
-                                       iw);
+    gtk_builder_connect_signals_full( builder,
+                                      gnc_builder_connect_full_func,
+                                      iw);
+
     /* Setup initial values */
     iw->invoice_guid = *gncInvoiceGetGUID (invoice);
+    iw->is_credit_note = gncInvoiceGetIsCreditNote (invoice);
 
     iw->component_id =
         gnc_register_gui_component (DIALOG_NEW_INVOICE_CM_CLASS,
@@ -2344,9 +2620,31 @@ gnc_invoice_window_new_invoice (QofBook *bookp, GncOwner *owner,
                                          QOF_EVENT_MODIFY | QOF_EVENT_DESTROY);
 
     /* Now fill in a lot of the pieces and display properly */
-    gnc_ui_billterms_optionmenu (iw->terms_menu, iw->book, TRUE, &iw->terms);
+    switch(dialog_type)
+    {
+        case NEW_INVOICE:
+        case MOD_INVOICE:
+        case DUP_INVOICE:
+            gnc_billterms_combo (GTK_COMBO_BOX(iw->terms_menu), iw->book, TRUE, iw->terms);
+            break;
+        case EDIT_INVOICE:
+        case VIEW_INVOICE:
+            // Fill in the invoice view version
+            if(gncBillTermGetName (iw->terms) != NULL)
+                gtk_entry_set_text (GTK_ENTRY (iw->terms_menu),gncBillTermGetName (iw->terms));
+            else
+                gtk_entry_set_text (GTK_ENTRY (iw->terms_menu),"None");
+        break;
+    }
+
     gnc_invoice_update_window (iw, iw->dialog);
     gnc_table_refresh_gui (gnc_entry_ledger_get_table (iw->ledger), TRUE);
+
+    // The customer choice widget should have keyboard focus
+    if (GNC_IS_GENERAL_SEARCH(iw->owner_choice))
+    {
+        gnc_general_search_grab_focus(GNC_GENERAL_SEARCH(iw->owner_choice));
+    }
 
     return iw;
 }
@@ -2377,7 +2675,7 @@ gnc_ui_invoice_modify (GncInvoice *invoice)
     InvoiceWindow *iw;
     if (!invoice) return NULL;
 
-    iw = gnc_invoice_window_new_invoice (NULL, NULL, invoice);
+    iw = gnc_invoice_window_new_invoice (MOD_INVOICE, NULL, NULL, invoice);
     return iw;
 }
 
@@ -2385,23 +2683,22 @@ static void
 set_gncEntry_date(gpointer data, gpointer user_data)
 {
     GncEntry *entry = data;
-    const Timespec* new_date = user_data;
+    const GDate* new_date = user_data;
     //g_warning("Modifying date for entry with desc=\"%s\"", gncEntryGetDescription(entry));
 
-    gncEntrySetDate(entry, *new_date);
+    gncEntrySetDateGDate(entry, new_date);
     /*gncEntrySetDateEntered(entry, *new_date); - don't modify this
      * because apparently it defines the ordering of the entries,
      * which we don't want to change. */
 }
 
 
-InvoiceWindow * gnc_ui_invoice_duplicate (GncInvoice *old_invoice)
+InvoiceWindow * gnc_ui_invoice_duplicate (GncInvoice *old_invoice, gboolean open_properties, const GDate *new_date)
 {
     InvoiceWindow *iw;
     GncInvoice *new_invoice = NULL;
-    Timespec new_date;
     gchar *new_id;
-    GList *node;
+    GDate new_date_gdate;
 
     g_assert(old_invoice);
 
@@ -2428,21 +2725,34 @@ InvoiceWindow * gnc_ui_invoice_duplicate (GncInvoice *old_invoice)
     g_free(new_id);
 
     // Modify the date to today
-    timespecFromTime_t(&new_date, gnc_timet_get_today_start());
-    gncInvoiceSetDateOpened(new_invoice, new_date);
+    if (new_date)
+    {
+        new_date_gdate = *new_date;
+    }
+    else
+    {
+        GDate *tmp = gnc_g_date_new_today();
+        new_date_gdate = *tmp;
+        g_date_free(tmp);
+    }
+    gncInvoiceSetDateOpenedGDate(new_invoice, &new_date_gdate);
 
     // Also modify the date of all entries to today
     //g_warning("We have %d entries", g_list_length(gncInvoiceGetEntries(new_invoice)));
     g_list_foreach(gncInvoiceGetEntries(new_invoice),
-                   &set_gncEntry_date, &new_date);
+                   &set_gncEntry_date, &new_date_gdate);
 
-    // Now open that newly created invoice in the "edit" window
-    iw = gnc_ui_invoice_edit (new_invoice);
 
-    // And also open the "properties" pop-up... however, changing the
-    // invoice ID won't be copied over to the tab title even though
-    // it's correctly copied into the invoice.
-    iw = gnc_invoice_window_new_invoice (NULL, NULL, new_invoice);
+    if (open_properties)
+    {
+        // Open the "properties" pop-up for the invoice...
+        iw = gnc_invoice_window_new_invoice (DUP_INVOICE, NULL, NULL, new_invoice);
+    }
+    else
+    {
+        // Open the newly created invoice in the "edit" window
+        iw = gnc_ui_invoice_edit (new_invoice);
+    }
 
     return iw;
 }
@@ -2463,7 +2773,7 @@ gnc_ui_invoice_new (GncOwner *ownerp, QofBook *bookp)
     /* Make sure required options exist */
     if (!bookp) return NULL;
 
-    iw = gnc_invoice_window_new_invoice (bookp, &owner, NULL);
+    iw = gnc_invoice_window_new_invoice (NEW_INVOICE, bookp, &owner, NULL);
 
     return iw;
 }
@@ -2504,21 +2814,117 @@ pay_invoice_cb (gpointer *invoice_p, gpointer user_data)
         return;
     pay_invoice_direct (*invoice_p, user_data);
 }
-
-static void
-duplicate_invoice_direct (gpointer invoice, gpointer user_data)
+struct multi_duplicate_invoice_data
 {
-    g_return_if_fail (invoice);
-    gnc_ui_invoice_duplicate (invoice);
+    GDate date;
+};
+
+static void multi_duplicate_invoice_one(gpointer data, gpointer user_data)
+{
+    GncInvoice *old_invoice = data;
+    struct multi_duplicate_invoice_data *dup_user_data = user_data;
+
+    g_assert(dup_user_data);
+    if (old_invoice)
+    {
+        GncInvoice *new_invoice;
+        // In this simplest form, we just use the existing duplication
+        // algorithm, only without opening the "edit invoice" window for editing
+        // the number etc. for each of the invoices.
+        InvoiceWindow *iw = gnc_ui_invoice_duplicate(old_invoice, FALSE, &dup_user_data->date);
+        // FIXME: Now we could use this invoice and manipulate further data.
+        g_assert(iw);
+        new_invoice = iw_get_invoice(iw);
+        g_assert(new_invoice);
+    }
 }
 
 static void
-duplicate_invoice_cb (gpointer *invoice_p, gpointer user_data)
+multi_duplicate_invoice_cb (GList *invoice_list, gpointer user_data)
 {
-    g_return_if_fail (invoice_p && user_data);
-    if (! *invoice_p)
+    g_return_if_fail (invoice_list);
+    switch (g_list_length(invoice_list))
+    {
+    case 0:
         return;
-    duplicate_invoice_direct (*invoice_p, user_data);
+    case 1:
+    {
+        // Duplicate exactly one invoice
+        GncInvoice *old_invoice = invoice_list->data;
+        gnc_ui_invoice_duplicate(old_invoice, TRUE, NULL);
+        return;
+    }
+    default:
+    {
+        // Duplicate multiple invoices. We ask for a date first.
+        struct multi_duplicate_invoice_data dup_user_data;
+        gboolean dialog_ok;
+
+        // Default date: Today
+        gnc_gdate_set_time64(&dup_user_data.date, gnc_time (NULL));
+        dialog_ok = gnc_dup_date_dialog (NULL, _("Date of duplicated entries"), &dup_user_data.date);
+        if (!dialog_ok)
+        {
+            // User pressed cancel, so don't duplicate anything here.
+            return;
+        }
+
+        // Note: If we want to have a more sophisticated duplication, we might want
+        // to ask for particular data right here, then insert this data upon
+        // duplication.
+        g_list_foreach(invoice_list, multi_duplicate_invoice_one, &dup_user_data);
+        return;
+    }
+    }
+}
+
+static void post_one_invoice_cb(gpointer data, gpointer user_data)
+{
+    GncInvoice *invoice = data;
+    struct post_invoice_params *post_params = user_data;
+    InvoiceWindow *iw = gnc_ui_invoice_edit(invoice);
+    gnc_invoice_post(iw, post_params);
+}
+
+static void
+multi_post_invoice_cb (GList *invoice_list, gpointer user_data)
+{
+    struct post_invoice_params post_params;
+    InvoiceWindow *iw;
+
+    if (g_list_length(invoice_list) == 0)
+        return;
+
+    // Get the posting parameters for these invoices
+    iw = gnc_ui_invoice_edit(invoice_list->data);
+    if (!gnc_dialog_post_invoice(iw, _("Do you really want to post these invoices?"),
+                                 &post_params.ddue, &post_params.postdate,
+                                 &post_params.memo, &post_params.acc,
+                                 &post_params.accumulate))
+        return;
+
+    // Turn off GUI refresh for the duration.  This is more than just an
+    // optimization.  If the search that got us here is based on the "posted"
+    // status of an invoice, the updating the GUI will change the list we're
+    // working on which leads to bad things happening.
+    gnc_suspend_gui_refresh ();
+    g_list_foreach(invoice_list, post_one_invoice_cb, &post_params);
+    gnc_resume_gui_refresh ();
+}
+
+static void print_one_invoice_cb(gpointer data, gpointer user_data)
+{
+    GncInvoice *invoice = data;
+    gnc_invoice_window_print_invoice(invoice); // that's all!
+}
+
+static void
+multi_print_invoice_cb (GList *invoice_list, gpointer user_data)
+{
+    if (g_list_length(invoice_list) == 0)
+        return;
+
+    g_list_foreach(invoice_list, print_one_invoice_cb, user_data);
 }
 
 static gpointer
@@ -2557,25 +2963,31 @@ gnc_invoice_search (GncInvoice *start, GncOwner *owner, QofBook *book)
     static GNCSearchCallbackButton *buttons;
     static GNCSearchCallbackButton inv_buttons[] =
     {
-        { N_("View/Edit Invoice"), edit_invoice_cb},
-        { N_("Process Payment"), pay_invoice_cb},
-        { N_("Duplicate"), duplicate_invoice_cb},
+        { N_("View/Edit Invoice"), edit_invoice_cb, NULL, TRUE},
+        { N_("Process Payment"), pay_invoice_cb, NULL, FALSE},
+        { N_("Duplicate"), NULL, multi_duplicate_invoice_cb, FALSE},
+        { N_("Post"), NULL, multi_post_invoice_cb, FALSE},
+        { N_("Printable Report"), NULL, multi_print_invoice_cb, TRUE},
         { NULL },
     };
     static GNCSearchCallbackButton bill_buttons[] =
     {
-        { N_("View/Edit Bill"), edit_invoice_cb},
-        { N_("Process Payment"), pay_invoice_cb},
-        { N_("Duplicate"), duplicate_invoice_cb},
+        { N_("View/Edit Bill"), edit_invoice_cb, NULL, TRUE},
+        { N_("Process Payment"), pay_invoice_cb, NULL, FALSE},
+        { N_("Duplicate"), NULL, multi_duplicate_invoice_cb, FALSE},
+        { N_("Post"), NULL, multi_post_invoice_cb, FALSE},
+        { N_("Printable Report"), NULL, multi_print_invoice_cb, TRUE},
         { NULL },
     };
     static GNCSearchCallbackButton emp_buttons[] =
     {
         /* Translators: The terms 'Voucher' and 'Expense Voucher' are used
            interchangeably in gnucash and mean the same thing. */
-        { N_("View/Edit Voucher"), edit_invoice_cb},
-        { N_("Process Payment"), pay_invoice_cb},
-        { N_("Duplicate"), duplicate_invoice_cb},
+        { N_("View/Edit Voucher"), edit_invoice_cb, NULL, TRUE},
+        { N_("Process Payment"), pay_invoice_cb, NULL, FALSE},
+        { N_("Duplicate"), NULL, multi_duplicate_invoice_cb, FALSE},
+        { N_("Post"), NULL, multi_post_invoice_cb, FALSE},
+        { N_("Printable Report"), NULL, multi_print_invoice_cb, TRUE},
         { NULL },
     };
 
@@ -2691,7 +3103,7 @@ gnc_invoice_search (GncInvoice *start, GncOwner *owner, QofBook *book)
         columns = gnc_search_param_prepend (columns, _("Billing ID"), NULL, type,
                                             INVOICE_BILLINGID, NULL);
         columns = gnc_search_param_prepend (columns, _("Type"), NULL, type,
-                                            INVOICE_TYPE, NULL);
+                                            INVOICE_TYPE_STRING, NULL);
         columns = gnc_search_param_prepend_with_justify (columns, _("Paid"),
                   GTK_JUSTIFY_CENTER, NULL, type,
                   INVOICE_IS_PAID, NULL);
@@ -2722,15 +3134,8 @@ gnc_invoice_search (GncInvoice *start, GncOwner *owner, QofBook *book)
      */
     if (owner)
     {
-        GncOwner *tmp = owner;
-
         /* First, figure out the type of owner here.. */
-        owner_type = gncOwnerGetType(owner);
-        while (owner_type == GNC_OWNER_JOB)
-        {
-            tmp = gncOwnerGetEndOwner(tmp);
-            owner_type = gncOwnerGetType(tmp);
-        }
+        owner_type = gncOwnerGetType (gncOwnerGetEndOwner (owner));
 
         /* Then if there's an actual owner add it to the query
          * and limit the search to this owner
@@ -2748,33 +3153,35 @@ gnc_invoice_search (GncInvoice *start, GncOwner *owner, QofBook *book)
                                       (g_slist_prepend (NULL, OWNER_PARENTG),
                                        INVOICE_OWNER),
                                       gncOwnerGetGUID (owner), QOF_QUERY_OR);
-
             qof_query_merge_in_place (q, q2, QOF_QUERY_AND);
             qof_query_destroy (q2);
+
+            /* Use this base query as pre-fill query.
+             * This will pre-fill the search dialog with the query results
+             */
             q2 = qof_query_copy (q);
+
         }
         else
         {
-            QofQueryPredData *inv_type_pred;
-            GSList *param_list = NULL;
-            inv_type_pred = qof_query_string_predicate(QOF_COMPARE_EQUAL,
-                            gncInvoiceGetTypeFromOwnerType(owner_type),
-                            QOF_STRING_MATCH_NORMAL, FALSE);
-            param_list = g_slist_prepend (param_list, INVOICE_TYPE);
-            qof_query_add_term (q, param_list, inv_type_pred, QOF_QUERY_AND);
+            QofQuery *q3 = qof_query_create ();
+            QofQueryPredData *inv_type_pred = NULL;
+            GList *type_list = NULL, *node = NULL;
+
+            type_list = gncInvoiceGetTypeListForOwnerType(owner_type);
+            for (node = type_list; node; node = node->next)
+            {
+                inv_type_pred = qof_query_int32_predicate(QOF_COMPARE_EQUAL,
+                                GPOINTER_TO_INT(node->data));
+                qof_query_add_term (q3, g_slist_prepend (NULL, INVOICE_TYPE), inv_type_pred, QOF_QUERY_OR);
+            }
+            qof_query_merge_in_place (q, q3, QOF_QUERY_AND);
+            qof_query_destroy (q3);
+
+            /* Don't set a pre-fill query in this case, the result set would be too long */
+            q2 = NULL;
         }
     }
-
-#if 0
-    if (start)
-    {
-        if (q2 == NULL)
-            q2 = qof_query_copy (q);
-
-        qof_query_add_guid_match (q2, g_slist_prepend (NULL, QOF_PARAM_GUID),
-                                  gncInvoiceGetGUID (start), QOF_QUERY_AND);
-    }
-#endif
 
     /* Launch select dialog and return the result */
     sw = g_new0 (struct _invoice_select_window, 1);
@@ -2810,50 +3217,24 @@ gnc_invoice_search (GncInvoice *start, GncOwner *owner, QofBook *book)
     }
     return gnc_search_dialog_create (type, title, params, columns, q, q2,
                                      buttons, NULL, new_invoice_cb,
-                                     sw, free_invoice_cb, GCONF_SECTION_SEARCH,
+                                     sw, free_invoice_cb, GNC_PREFS_GROUP_SEARCH,
                                      label);
 }
 
-GNCSearchWindow *
-gnc_invoice_search_select (gpointer start, gpointer book)
-{
-    GncInvoice *i = start;
-    GncOwner owner, *ownerp;
-
-    if (!book) return NULL;
-
-    if (i)
-    {
-        ownerp = gncInvoiceGetOwner (i);
-        gncOwnerCopy (ownerp, &owner);
-    }
-    else
-        gncOwnerInitCustomer (&owner, NULL); /* XXX */
-
-    return gnc_invoice_search (start, NULL, book);
-}
-
-GNCSearchWindow *
-gnc_invoice_search_edit (gpointer start, gpointer book)
-{
-    if (start)
-        gnc_ui_invoice_edit (start);
-
-    return NULL;
-}
-
-DialogQueryList *
+DialogQueryView *
 gnc_invoice_show_bills_due (QofBook *book, double days_in_advance)
 {
     QofIdType type = GNC_INVOICE_MODULE_NAME;
     Query *q;
     QofQueryPredData* pred_data;
-    time_t end_date;
+    time64 end_date;
     GList *res;
+    gchar *message;
+    DialogQueryView *dialog;
     gint len;
     Timespec ts;
     static GList *param_list = NULL;
-    static GNCDisplayListButton buttons[] =
+    static GNCDisplayViewButton buttons[] =
     {
         { N_("View/Edit Bill"), edit_invoice_direct },
         { N_("Process Payment"), pay_invoice_direct },
@@ -2863,6 +3244,10 @@ gnc_invoice_show_bills_due (QofBook *book, double days_in_advance)
     /* Create the param list (in reverse order) */
     if (param_list == NULL)
     {
+        /* Translators: This abbreviation is the column heading for
+	   the condition "Is this invoice a Credit Note?" */
+        param_list = gnc_search_param_prepend (param_list, _("CN?"), NULL, type,
+                                               INVOICE_IS_CN, NULL);
         param_list = gnc_search_param_prepend (param_list, _("Amount"), NULL, type,
                                                INVOICE_POST_LOT, LOT_BALANCE, NULL);
         param_list = gnc_search_param_prepend (param_list, _("Company"), NULL, type,
@@ -2879,8 +3264,9 @@ gnc_invoice_show_bills_due (QofBook *book, double days_in_advance)
     /* We want to find all invoices where:
      *      invoice -> is_posted == TRUE
      * AND  invoice -> lot -> is_closed? == FALSE
-     * AND  invoice -> type != _("Invoice") // note: currently the translated form
-     * AND  invoice -> due >= (today - days_in_advance)
+     * AND  invoice -> type != customer invoice
+     * AND  invoice -> type != customer credit note
+     * AND  invoice -> due <= (today + days_in_advance)
      */
 
     qof_query_add_boolean_match (q, g_slist_prepend(NULL, INVOICE_IS_POSTED), TRUE,
@@ -2889,16 +3275,13 @@ gnc_invoice_show_bills_due (QofBook *book, double days_in_advance)
     qof_query_add_boolean_match (q, g_slist_prepend(g_slist_prepend(NULL, LOT_IS_CLOSED),
                                  INVOICE_POST_LOT), FALSE, QOF_QUERY_AND);
 
-    /* Bug#602091, #639365: The INVOICE_TYPE string unfortunately is
-     * stored in translated form due to the usage of gncInvoiceGetType
-     * for user-visible strings as well. Hence, as an exception we
-     * must also search for the translated here even though it's an
-     * internal flag. */
-    pred_data = qof_query_string_predicate (QOF_COMPARE_NEQ, _("Invoice"),
-                                            QOF_STRING_MATCH_NORMAL, FALSE);
+    pred_data = qof_query_int32_predicate (QOF_COMPARE_NEQ, GNC_INVOICE_CUST_INVOICE);
     qof_query_add_term (q, g_slist_prepend(NULL, INVOICE_TYPE), pred_data, QOF_QUERY_AND);
 
-    end_date = time(NULL);
+    pred_data = qof_query_int32_predicate (QOF_COMPARE_NEQ, GNC_INVOICE_CUST_CREDIT_NOTE);
+    qof_query_add_term (q, g_slist_prepend(NULL, INVOICE_TYPE), pred_data, QOF_QUERY_AND);
+
+    end_date = gnc_time (NULL);
     if (days_in_advance < 0)
         days_in_advance = 0;
     end_date += days_in_advance * 60 * 60 * 24;
@@ -2916,24 +3299,23 @@ gnc_invoice_show_bills_due (QofBook *book, double days_in_advance)
         return NULL;
     }
 
-    {
-        gchar *message = g_strdup_printf
-                         (/* Translators: %d is the number of bills due. This is a
-	                         ngettext(3) message. */
-                             ngettext("The following %d bill is due:",
-                                      "The following %d bills are due:",
-                                      len),
-                             len);
-        DialogQueryList *dialog =
-            gnc_dialog_query_list_create(param_list, q,
-                                         _("Due Bills Reminder"),
-                                         message,
-                                         TRUE, FALSE,
-                                         buttons, NULL);
-        g_free(message);
-        qof_query_destroy(q);
-        return dialog;
-    }
+    message = g_strdup_printf
+              (/* Translators: %d is the number of bills due. This is a
+                     ngettext(3) message. */
+                  ngettext("The following bill is due:",
+                           "The following %d bills are due:",
+                           len),
+                  len);
+    dialog = gnc_dialog_query_view_create(param_list, q,
+                                          _("Due Bills Reminder"),
+                                          message,
+                                          TRUE, FALSE,
+                                          1, GTK_SORT_ASCENDING,
+                                          buttons, NULL);
+
+    g_free(message);
+    qof_query_destroy(q);
+    return dialog;
 }
 
 void
@@ -2944,7 +3326,7 @@ gnc_invoice_remind_bills_due (void)
 
     if (!gnc_current_session_exist()) return;
     book = qof_session_get_book(gnc_get_current_session());
-    days = gnc_gconf_get_float(GCONF_SECTION_BILL, "days_in_advance", NULL);
+    days = gnc_prefs_get_float(GNC_PREFS_GROUP_BILL, GNC_PREF_DAYS_IN_ADVANCE);
 
     gnc_invoice_show_bills_due(book, days);
 }
@@ -2952,9 +3334,8 @@ gnc_invoice_remind_bills_due (void)
 void
 gnc_invoice_remind_bills_due_cb (void)
 {
-    if (!gnc_gconf_get_bool(GCONF_SECTION_BILL, "notify_when_due", NULL))
+    if (!gnc_prefs_get_bool(GNC_PREFS_GROUP_BILL, GNC_PREF_NOTIFY_WHEN_DUE))
         return;
 
     gnc_invoice_remind_bills_due();
 }
-

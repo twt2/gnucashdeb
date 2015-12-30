@@ -1,34 +1,34 @@
-/* gnc-recurrence.c:
- *
- */
+/********************************************************************
+ * gnc-recurrence.c -- GncRecurrence is a minimal GUI for           *
+ *                      specifying a Recurrence.                    *
+ *                                                                  *
+ * You see, small is _nice_.  :)                                    *
+ * Copyright (C) 2005, Chris Shoemaker <c.shoemaker@cox.net>        *
+ * Copyright (C) 2011, Robert Fewell                                *
+ *                                                                  *
+ * This program is free software; you can redistribute it and/or    *
+ * modify it under the terms of the GNU General Public License as   *
+ * published by the Free Software Foundation; either version 2 of   *
+ * the License, or (at your option) any later version.              *
+ *                                                                  *
+ * This program is distributed in the hope that it will be useful,  *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of   *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the    *
+ * GNU General Public License for more details.                     *
+ *                                                                  *
+ * You should have received a copy of the GNU General Public License*
+ * along with this program; if not, contact:                        *
+ *                                                                  *
+ * Free Software Foundation           Voice:  +1-617-542-5942       *
+ * 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652       *
+ * Boston, MA  02110-1301,  USA       gnu@gnu.org                   *
+ *******************************************************************/
 
-/* Copyright (C) 2005, Chris Shoemaker <c.shoemaker@cox.net>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, contact:
- *
- * Free Software Foundation           Voice:  +1-617-542-5942
- * 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652
- * Boston, MA  02110-1301,  USA       gnu@gnu.org
- */
-
+#include <gtk/gtk.h>
 #include "config.h"
-
-#include <gnome.h>
-#include <glade/glade.h>
-
 #include "dialog-utils.h"
 #include "gnc-recurrence.h"
+#include "gnc-date-edit.h"
 #include "Recurrence.h"
 #include "gnc-engine.h"
 #include "gnc-gdate-utils.h"
@@ -39,12 +39,11 @@ struct _GncRecurrence
 {
     GtkVBox widget;
 
-    GnomeDateEdit *gde_start;
+    GtkWidget *gde_start;
     GtkComboBox *gcb_period;
     GtkCheckButton *gcb_eom;
     GtkSpinButton *gsb_mult;
     GtkCheckButton *nth_weekday;
-    GladeXML *xml;
 
     Recurrence recurrence;
 };
@@ -71,10 +70,12 @@ typedef enum
 
 static GObjectClass *parent_class = NULL;
 
+
 static UIPeriodType get_pt_ui(GncRecurrence *gr)
 {
     return (gtk_combo_box_get_active(gr->gcb_period));
 }
+
 
 static void set_pt_ui(GncRecurrence *gr, PeriodType pt)
 {
@@ -110,6 +111,7 @@ static void set_pt_ui(GncRecurrence *gr, PeriodType pt)
         (pt == PERIOD_END_OF_MONTH || pt == PERIOD_LAST_WEEKDAY));
 }
 
+
 static gboolean
 is_ambiguous_relative(const GDate *date)
 {
@@ -122,6 +124,7 @@ is_ambiguous_relative(const GDate *date)
     return ((d - 1) / 7 == 3) && (dim - d < 7);
 }
 
+
 static gboolean
 is_ambiguous_absolute(const GDate *date)
 {
@@ -129,19 +132,18 @@ is_ambiguous_absolute(const GDate *date)
             (g_date_get_day(date) < 31));
 }
 
+
 static void
 something_changed( GtkWidget *wid, gpointer d )
 {
     UIPeriodType pt;
     GDate start;
-    time_t t;
     gboolean show_last, use_wd;
     GncRecurrence *gr = GNC_RECURRENCE(d);
 
 
     pt = get_pt_ui(gr);
-    t = gnome_date_edit_get_time(gr->gde_start);
-    g_date_set_time_t(&start, t);
+    gnc_date_edit_get_gdate(GNC_DATE_EDIT(gr->gde_start), &start);
 
     if (pt == GNCR_MONTH)
         g_object_set(G_OBJECT(gr->nth_weekday), "visible", TRUE, NULL);
@@ -174,35 +176,44 @@ something_changed( GtkWidget *wid, gpointer d )
     g_signal_emit_by_name(d, "changed");
 }
 
+
 static void
 gnc_recurrence_init( GncRecurrence *gr )
 {
     GtkVBox *vb;
+    GtkHBox *hb;
+    GtkWidget *w;
+    GtkBuilder *builder;
 
     recurrenceSet(&gr->recurrence, 1, PERIOD_MONTH, NULL, WEEKEND_ADJ_NONE);
 
-    gr->xml = gnc_glade_xml_new("budget.glade", "RecurrenceEntryVBox");
-    vb = GTK_VBOX(glade_xml_get_widget(gr->xml, "RecurrenceEntryVBox"));
-    gr->gde_start = GNOME_DATE_EDIT(glade_xml_get_widget(gr->xml,
-                                    "GDE_StartDate"));
+    /* Open up the builder file */
+    builder = gtk_builder_new();
+    gnc_builder_add_from_file (builder, "gnc-recurrence.glade", "GCB_PeriodType_liststore");
+    gnc_builder_add_from_file (builder, "gnc-recurrence.glade", "GSB_Mult_Adj");
+    gnc_builder_add_from_file (builder, "gnc-recurrence.glade", "RecurrenceEntryVBox");
+
+    vb = GTK_VBOX(gtk_builder_get_object (builder, "RecurrenceEntryVBox"));
+    hb = GTK_HBOX(gtk_builder_get_object (builder, "Startdate_hbox"));
+    w = gnc_date_edit_new (gnc_time (NULL), FALSE, FALSE);
+    gr->gde_start = w;
+    gtk_box_pack_start (GTK_BOX (hb), w, TRUE, TRUE, 0);
+    gtk_widget_show (w);
+
     gtk_widget_set_no_show_all(GTK_WIDGET(gr->gde_start), TRUE);
-    gr->gcb_period = GTK_COMBO_BOX(glade_xml_get_widget(gr->xml,
-                                   "GCB_PeriodType"));
-    gr->gsb_mult = GTK_SPIN_BUTTON(glade_xml_get_widget(gr->xml, "GSB_Mult"));
-    gr->gcb_eom = GTK_CHECK_BUTTON(glade_xml_get_widget(gr->xml,
-                                   "GCB_EndOfMonth"));
-    gr->nth_weekday = GTK_CHECK_BUTTON(glade_xml_get_widget(gr->xml,
-                                       "GCB_NthWeekday"));
+    gr->gcb_period = GTK_COMBO_BOX(gtk_builder_get_object (builder, "GCB_PeriodType"));
+    gr->gsb_mult = GTK_SPIN_BUTTON(gtk_builder_get_object (builder, "GSB_Mult"));
+    gr->gcb_eom = GTK_CHECK_BUTTON(gtk_builder_get_object (builder, "GCB_EndOfMonth"));
+    gr->nth_weekday = GTK_CHECK_BUTTON(gtk_builder_get_object (builder, "GCB_NthWeekday"));
     gtk_widget_set_no_show_all(GTK_WIDGET(gr->gcb_eom), TRUE);
     gtk_widget_set_no_show_all(GTK_WIDGET(gr->nth_weekday), TRUE);
-
 
     gtk_container_add( GTK_CONTAINER(&gr->widget), GTK_WIDGET(vb) );
 
     gnc_recurrence_set(gr, &gr->recurrence);
     something_changed( GTK_WIDGET(gr), gr);
 
-    /* respond to changes */
+    /* Setup the signals */
     g_signal_connect( G_OBJECT(gr->gde_start), "date_changed",
                       G_CALLBACK(something_changed), gr );
     g_signal_connect( G_OBJECT(gr->gcb_period), "changed",
@@ -215,7 +226,11 @@ gnc_recurrence_init( GncRecurrence *gr )
                       G_CALLBACK(something_changed), gr );
 
     gtk_widget_show_all( GTK_WIDGET(&gr->widget) );
+
+    gtk_builder_connect_signals(builder, gr);
+    g_object_unref(G_OBJECT(builder));
 }
+
 
 void
 gnc_recurrence_set(GncRecurrence *gr, const Recurrence *r)
@@ -233,18 +248,18 @@ gnc_recurrence_set(GncRecurrence *gr, const Recurrence *r)
 
     // is there some better way?
     {
-        time_t t;
-        t = gnc_timet_get_day_start_gdate (&start);
-        gnome_date_edit_set_time(gr->gde_start, t);
+        time64 t;
+        t = gnc_time64_get_day_start_gdate (&start);
+        gnc_date_edit_set_time (GNC_DATE_EDIT(gr->gde_start), t);
     }
 
     set_pt_ui(gr, pt);
 }
 
+
 const Recurrence *
 gnc_recurrence_get(GncRecurrence *gr)
 {
-    time_t t;
     guint mult;
     UIPeriodType period;
     PeriodType pt;
@@ -252,8 +267,7 @@ gnc_recurrence_get(GncRecurrence *gr)
     gboolean use_eom = FALSE, rel;
 
     mult = (guint) gtk_spin_button_get_value_as_int(gr->gsb_mult);
-    t = gnome_date_edit_get_time(gr->gde_start);
-    g_date_set_time_t(&start, t);
+    gnc_date_edit_get_gdate(GNC_DATE_EDIT(gr->gde_start), &start);
     period = get_pt_ui(gr);
 
     switch (period)
@@ -311,11 +325,11 @@ gnc_recurrence_get(GncRecurrence *gr)
         pt = PERIOD_INVALID;
     }
 
-
     recurrenceSet(&gr->recurrence, mult, pt, &start, WEEKEND_ADJ_NONE);
     return &gr->recurrence;
-
 }
+
+
 static void
 gnc_recurrence_finalize(GObject *o)
 {
@@ -325,27 +339,27 @@ gnc_recurrence_finalize(GObject *o)
         G_OBJECT_CLASS (parent_class)->finalize (o);
 }
 
+
 static void
 gnc_recurrence_class_init( GncRecurrenceClass *klass )
 {
     GObjectClass *object_class;
-    static gint signals[LAST_SIGNAL] = { 0 };
 
     object_class = G_OBJECT_CLASS (klass);
-    signals[GNCRECURRENCE_CHANGED] =
-        g_signal_new ("changed",
-                      G_OBJECT_CLASS_TYPE (object_class),
-                      G_SIGNAL_RUN_FIRST,
-                      G_STRUCT_OFFSET (GncRecurrenceClass, changed),
-                      NULL,
-                      NULL,
-                      g_cclosure_marshal_VOID__VOID,
-                      G_TYPE_NONE,
-                      0);
+    g_signal_new ("changed",
+		  G_OBJECT_CLASS_TYPE (object_class),
+		  G_SIGNAL_RUN_FIRST,
+		  G_STRUCT_OFFSET (GncRecurrenceClass, changed),
+		  NULL,
+		  NULL,
+		  g_cclosure_marshal_VOID__VOID,
+		  G_TYPE_NONE,
+		  0);
 
     parent_class = g_type_class_peek_parent (klass);
     object_class->finalize = gnc_recurrence_finalize;
 }
+
 
 GType
 gnc_recurrence_get_type()
@@ -370,6 +384,7 @@ gnc_recurrence_get_type()
     return type;
 }
 
+
 GtkWidget *
 gnc_recurrence_new()
 {
@@ -381,10 +396,10 @@ gnc_recurrence_new()
     return GTK_WIDGET(gr);
 }
 
+
 /* TODO: Maybe this stuff should go into another file.
  *
  */
-
 struct _GncRecurrenceComp
 {
     GtkScrolledWindow widget;
@@ -399,11 +414,13 @@ struct _GncRecurrenceComp
     GList *rlist;
 };
 
+
 typedef struct
 {
     GtkScrolledWindowClass parent_class;
     void (*changed) (GncRecurrenceComp *gr);
 } GncRecurrenceCompClass;
+
 
 typedef enum
 {
@@ -411,10 +428,13 @@ typedef enum
     GNCRC_LAST_SIGNAL
 } GNCRC_Signals;
 
+
 static void grc_changed(GtkWidget *w, gpointer data)
 {
     g_signal_emit_by_name(data, "changed");
 }
+
+
 static void addRecurrence(GncRecurrenceComp *grc, GncRecurrence *gr)
 {
 
@@ -429,6 +449,8 @@ static void addRecurrence(GncRecurrenceComp *grc, GncRecurrence *gr)
 
 
 }
+
+
 static void removeRecurrence(GncRecurrenceComp *grc)
 {
     GList *children, *last;
@@ -446,6 +468,7 @@ static void removeRecurrence(GncRecurrenceComp *grc)
 
 }
 
+
 static void addClicked(GtkButton *b, gpointer data)
 {
     GncRecurrenceComp *grc = data;
@@ -455,6 +478,7 @@ static void addClicked(GtkButton *b, gpointer data)
     addRecurrence(grc, gr);
 }
 
+
 static void removeClicked(GtkButton *b, gpointer data)
 {
     GncRecurrenceComp *grc = data;
@@ -462,6 +486,7 @@ static void removeClicked(GtkButton *b, gpointer data)
     if (grc->num_rec > 1)
         removeRecurrence(grc);
 }
+
 
 void
 gnc_recurrence_comp_set_list(GncRecurrenceComp *grc, const GList *rlist)
@@ -481,6 +506,7 @@ gnc_recurrence_comp_set_list(GncRecurrenceComp *grc, const GList *rlist)
         addRecurrence(grc, gr);
     }
 }
+
 
 GList *
 gnc_recurrence_comp_get_list(GncRecurrenceComp *grc)
@@ -540,27 +566,27 @@ gnc_recurrence_comp_init(GncRecurrenceComp *grc)
     addClicked(NULL, grc);
 }
 
+
 static void
 gnc_recurrence_comp_class_init( GncRecurrenceCompClass *klass )
 {
     GObjectClass *object_class;
-    static gint signals[GNCRC_LAST_SIGNAL] = { 0 };
 
     object_class = G_OBJECT_CLASS (klass);
-    signals[GNCRECURRENCECOMP_CHANGED] =
-        g_signal_new ("changed",
-                      G_OBJECT_CLASS_TYPE (object_class),
-                      G_SIGNAL_RUN_FIRST,
-                      G_STRUCT_OFFSET (GncRecurrenceCompClass, changed),
-                      NULL,
-                      NULL,
-                      g_cclosure_marshal_VOID__VOID,
-                      G_TYPE_NONE,
-                      0);
+    g_signal_new ("changed",
+		  G_OBJECT_CLASS_TYPE (object_class),
+		  G_SIGNAL_RUN_FIRST,
+		  G_STRUCT_OFFSET (GncRecurrenceCompClass, changed),
+		  NULL,
+		  NULL,
+		  g_cclosure_marshal_VOID__VOID,
+		  G_TYPE_NONE,
+		  0);
 
     //parent_class = g_type_class_peek_parent (klass);
     //object_class->finalize = gnc_recurrence_finalize;
 }
+
 
 GType
 gnc_recurrence_comp_get_type()
@@ -584,6 +610,7 @@ gnc_recurrence_comp_get_type()
     }
     return type;
 }
+
 
 GtkWidget *
 gnc_recurrence_comp_new()

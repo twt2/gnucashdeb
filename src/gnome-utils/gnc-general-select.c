@@ -47,7 +47,7 @@ enum
 
 
 static void gnc_general_select_init         (GNCGeneralSelect      *gsl);
-static void gnc_general_select_class_init   (GNCGeneralSelectClass *class);
+static void gnc_general_select_class_init   (GNCGeneralSelectClass *klass);
 static void gnc_general_select_dispose      (GObject               *object);
 static void gnc_general_select_finalize     (GObject               *object);
 
@@ -58,7 +58,7 @@ static guint general_select_signals[LAST_SIGNAL];
 /**
  * gnc_general_select_get_type:
  *
- * Returns the GtkType for the GNCGeneralSelect widget
+ * Returns the GType for the GNCGeneralSelect widget
  */
 GType
 gnc_general_select_get_type (void)
@@ -149,13 +149,8 @@ gnc_general_select_init (GNCGeneralSelect *gsl)
 static void
 gnc_general_select_finalize (GObject *object)
 {
-    GNCGeneralSelect *gsl;
-
     g_return_if_fail (object != NULL);
     g_return_if_fail (GNC_IS_GENERAL_SELECT (object));
-
-    gsl = GNC_GENERAL_SELECT (object);
-
 
     if (G_OBJECT_CLASS (parent_class)->finalize)
         G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -334,8 +329,3 @@ gnc_general_select_make_mnemonic_target (GNCGeneralSelect *gsl, GtkWidget *label
     gtk_label_set_mnemonic_widget (GTK_LABEL(label), gsl->entry);
 }
 
-/*
-  Local Variables:
-  c-basic-offset: 8
-  End:
-*/

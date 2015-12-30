@@ -5,7 +5,7 @@ pkglib_LTLIBRARIES = libgncmod-backend-dbi.la
 
 
 # "${top_srcdir}/src/debug" below is for the splint header
-AM_CFLAGS = \
+AM_CPPFLAGS = \
   -I.. -I../.. \
   -DLOCALE_DIR=\""$(datadir)/locale"\" \
   -I${top_srcdir}/src/backend \
@@ -16,7 +16,6 @@ AM_CFLAGS = \
   -I${top_srcdir}/lib/libc \
   -I${top_srcdir}/src/libqof/qof \
   ${GLIB_CFLAGS} \
-  ${GCONF_CFLAGS} \
   ${WARN_CFLAGS}
 
 libgncmod_backend_dbi_la_SOURCES = \
@@ -26,14 +25,13 @@ noinst_HEADERS = \
   gnc-backend-dbi.h \
   gnc-backend-dbi-priv.h
 
-libgncmod_backend_dbi_la_LDFLAGS = -module -avoid-version
+libgncmod_backend_dbi_la_LDFLAGS = -shared -avoid-version
 libgncmod_backend_dbi_la_LIBADD = \
    ${GLIB_LIBS} \
-   ${GCONF_LIBS} \
    ${top_builddir}/src/backend/sql/libgnc-backend-sql.la \
    ${top_builddir}/src/engine/libgncmod-engine.la \
    ${top_builddir}/src/core-utils/libgnc-core-utils.la \
    ${top_builddir}/src/libqof/qof/libgnc-qof.la \
    ${LIBDBI_LIBS}
 
-INCLUDES = -DG_LOG_DOMAIN=\"gnc.backend.dbi\"
+AM_CPPFLAGS += -DG_LOG_DOMAIN=\"gnc.backend.dbi\"

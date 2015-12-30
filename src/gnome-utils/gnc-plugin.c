@@ -39,7 +39,7 @@
 
 #include "gnc-plugin.h"
 #include "gnc-engine.h"
-#include "gnc-gconf-utils.h"
+#include "gnc-filepath-utils.h"
 #include "gnc-gnome-utils.h"
 #include "gnc-gobject-utils.h"
 
@@ -141,13 +141,7 @@ gnc_plugin_init (GncPlugin *plugin_page, GncPluginClass *klass)
 static void
 gnc_plugin_finalize (GObject *object)
 {
-    GncPlugin *plugin;
-    GncPluginPrivate *priv;
-
     g_return_if_fail (GNC_IS_PLUGIN (object));
-
-    plugin = GNC_PLUGIN (object);
-    priv = GNC_PLUGIN_GET_PRIVATE (plugin);
 
     gnc_gobject_tracking_forget(object);
     G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -155,9 +149,8 @@ gnc_plugin_finalize (GObject *object)
 
 
 /** Add the specified plugin from the specified window.  This function
- *  will add the page's user interface from the window, set up gconf
- *  notifications if the page uses gconf, and call the plugin to
- *  perform any plugin specific actions.
+ *  will add the page's user interface from the window and call the
+ *  plugin to perform any plugin specific actions.
  *
  *  See gnc-plugin.h for documentation on the function arguments. */
 void
@@ -165,44 +158,34 @@ gnc_plugin_add_to_window (GncPlugin *plugin,
                           GncMainWindow *window,
                           GQuark type)
 {
-    GncPluginClass *class;
+    GncPluginClass *klass;
     GtkActionGroup *action_group;
 
     g_return_if_fail (GNC_IS_PLUGIN (plugin));
-    class = GNC_PLUGIN_GET_CLASS (plugin);
+    klass = GNC_PLUGIN_GET_CLASS (plugin);
     ENTER (": plugin %s(%p), window %p", gnc_plugin_get_name(plugin),
            plugin, window);
 
     /*
      * Update window with additional UI items
      */
-    if (class->actions_name)
+    if (klass->actions_name)
     {
         DEBUG ("%s: %d actions to merge with gui from %s",
-               class->actions_name, (class->n_actions + class->n_toggle_actions), class->ui_filename);
-        gnc_main_window_merge_actions (window, class->actions_name,
-                                       class->actions, class->n_actions,
-                                       class->toggle_actions, class->n_toggle_actions,
-                                       class->ui_filename, plugin);
+               klass->actions_name, (klass->n_actions + klass->n_toggle_actions), klass->ui_filename);
+        gnc_main_window_merge_actions (window, klass->actions_name,
+                                       klass->actions, klass->n_actions,
+                                       klass->toggle_actions, klass->n_toggle_actions,
+                                       klass->ui_filename, plugin);
 
 
-        if (class->important_actions)
+        if (klass->important_actions)
         {
             action_group =
-                gnc_main_window_get_action_group(window, class->actions_name);
+                gnc_main_window_get_action_group(window, klass->actions_name);
             gnc_plugin_set_important_actions(action_group,
-                                             class->important_actions);
+                                             klass->important_actions);
         }
-    }
-
-    /*
-     * Setup gconf notifications if requested
-     */
-    if (class->gconf_section && class->gconf_notifications)
-    {
-        DEBUG ("Requesting notification for section %s", class->gconf_section);
-        gnc_gconf_add_notification(G_OBJECT(window), class->gconf_section,
-                                   class->gconf_notifications, GNC_PLUGIN_NAME);
     }
 
     /*
@@ -219,8 +202,7 @@ gnc_plugin_add_to_window (GncPlugin *plugin,
 
 /*  Remove the specified plugin from the specified window.  This
  *  function will call the plugin to perform any plugin specific
- *  actions, remove any gconf notifications that were set up for the
- *  page, and remove the page's user interface from the window.
+ *  actions and remove the page's user interface from the window.
  *
  *  See gnc-plugin.h for documentation on the function arguments. */
 void
@@ -228,10 +210,10 @@ gnc_plugin_remove_from_window (GncPlugin *plugin,
                                GncMainWindow *window,
                                GQuark type)
 {
-    GncPluginClass *class;
+    GncPluginClass *klass;
 
     g_return_if_fail (GNC_IS_PLUGIN (plugin));
-    class = GNC_PLUGIN_GET_CLASS (plugin);
+    klass = GNC_PLUGIN_GET_CLASS (plugin);
     ENTER (": plugin %s(%p), window %p", gnc_plugin_get_name(plugin),
            plugin, window);
 
@@ -246,23 +228,13 @@ gnc_plugin_remove_from_window (GncPlugin *plugin,
     }
 
     /*
-     * Remove any gconf notifications
-     */
-    if (class->gconf_section && class->gconf_notifications)
-    {
-        DEBUG ("Remove notification for section %s", class->gconf_section);
-        gnc_gconf_remove_notification (G_OBJECT(window), class->gconf_section,
-                                       GNC_PLUGIN_NAME);
-    }
-
-    /*
      * Update window to remove UI items
      */
-    if (class->actions_name)
+    if (klass->actions_name)
     {
         DEBUG ("%s: %d actions to unmerge",
-               class->actions_name, (class->n_actions + class->n_toggle_actions));
-        gnc_main_window_unmerge_actions (window, class->actions_name);
+               klass->actions_name, (klass->n_actions + klass->n_toggle_actions));
+        gnc_main_window_unmerge_actions (window, klass->actions_name);
     }
     LEAVE ("");
 }
@@ -353,7 +325,16 @@ gnc_plugin_update_actions (GtkActionGroup *action_group,
     for (i = 0; action_names[i]; i++)
     {
         action = gtk_action_group_get_action (action_group, action_names[i]);
-        g_object_set_property (G_OBJECT(action), property_name, &gvalue);
+        if (action)
+        {
+            g_object_set_property (G_OBJECT(action), property_name, &gvalue);
+        }
+        else
+        {
+            g_warning("No such action with name '%s' in action group %s (size %d)",
+                      action_names[i], gtk_action_group_get_name(action_group),
+                      g_list_length(gtk_action_group_list_actions(action_group)));
+        }
     }
 }
 
@@ -378,7 +359,7 @@ gnc_plugin_add_actions (GtkUIManager *ui_merge,
           ui_merge, action_group, filename);
     gtk_ui_manager_insert_action_group (ui_merge, action_group, 0);
 
-    pathname = gnc_gnome_locate_ui_file (filename);
+    pathname = gnc_filepath_locate_ui_file (filename);
     if (pathname == NULL)
     {
         LEAVE("fail");

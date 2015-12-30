@@ -1,2 +1,2 @@
-#!/bin/sh
-guile -l $SRCDIR/test-create-account.scm -c "(exit (run-test))"
+#!/bin/bash
+${GUILE} -l $SRCDIR/test-create-account.scm -c "(exit (run-test))"

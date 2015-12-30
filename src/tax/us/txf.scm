@@ -6,6 +6,8 @@
 ;;
 ;; See also http://www.turbotax.com/txf/
 ;;
+;; Updated Feb 2013 & Jan 2014. J. Alex Aycinena
+;; Added updated tax line info
 ;; Updated Oct 2009. J. Alex Aycinena
 ;; Added 'txf-tax-entity-types' and related getter functions
 ;; Added 'tax-entity-type' argument to tax code getter functions
@@ -16,6 +18,25 @@
 ;;    tax entity types
 ;; Added 'None' type for no income tax options
 ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; This program is free software; you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License as
+;; published by the Free Software Foundation; either version 2 of
+;; the License, or (at your option) any later version.
+;;
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with this program; if not, contact:
+;;
+;; Free Software Foundation           Voice:  +1-617-542-5942
+;; 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652
+;; Boston, MA  02110-1301,  USA       gnu@gnu.org
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 (use-modules (gnucash app-utils))
 
@@ -146,13 +167,13 @@
     (cons 'N291 #(not-impl "Sched C" "Schedule C" 1 #t ""))
     (cons 'N292 #(not-impl "Sched C" "Spouse" 0 #t "" ((1980 ""))))
     (cons 'N319 #(not-impl "Sched C" "Principal business/prof" 2 #t "" ((1980 "A"))))
-    (cons 'N293 #(none "Sched C" "Gross receipts or sales" 1 #t "" ((2011 "1b") (1989 "1") (1980 "1a"))))
+    (cons 'N293 #(none "Sched C" "Gross receipts or sales" 1 #t "" ((2012 "1") (2011 "1b") (1989 "1") (1980 "1a"))))
     (cons 'N303 #(none "Sched C" "Other business income" 1 #t "" ((1989 "6") (1987 "4") (1981 "4b") (1980 "4"))))
 
     (cons 'N497 #(not-impl "Sched C-EZ" "Schedule C-EZ" 1 #t ""))
     (cons 'N498 #(not-impl "Sched C-EZ" "Spouse" 0 #t "" ((1992 ""))))
     (cons 'N501 #(not-impl "Sched C-EZ" "Principal business/prof" 2 #t "" ((1992 "A"))))
-    (cons 'N499 #(none "Sched C-EZ" "Gross receipts" 1 #t "" ((2011 "1b") (1992 "1"))))
+    (cons 'N499 #(none "Sched C-EZ" "Gross receipts" 1 #t "" ((2012 "1") (2011 "1b") (1992 "1"))))
 
     (cons 'N320 #(not-impl "Sched D" "Schedule D" 1 #f ""))
     (cons 'N321 #(not-impl "Sched D" "Short Term gain/loss - security" 4 #f "" ((1993 "1") (1991 "1a") (1986 "2a") (1985 "1b") (1980 "1"))))
@@ -170,28 +191,28 @@
 
     (cons 'N325 #(not-impl "Sched E" "Schedule E" 1 #t ""))
     (cons 'N342 #(not-impl "Sched E" "Kind/location of property" 2 #t "" ((1985 "1") (1984 "2") (1982 "") (1981 "V(a)") (1980 "V"))))
-    (cons 'N326 #(none "Sched E" "Rents received" 1 #t "" ((2011 "3b") (1990 "3") (1987 "4") (1981 "3a") (1980 "8(b)"))))
-    (cons 'N327 #(none "Sched E" "Royalties received" 1 #t "" ((2011 "3b") (1990 "4") (1987 "5") (1981 "3b") (1980 "8(c)"))))
+    (cons 'N326 #(none "Sched E" "Rents received" 1 #t "" ((2012 "3") (2011 "3b") (1990 "3") (1987 "4") (1981 "3a") (1980 "8(b)"))))
+    (cons 'N327 #(none "Sched E" "Royalties received" 1 #t "" ((2012 "4") (2011 "3b") (1990 "4") (1987 "5") (1981 "3b") (1980 "8(c)"))))
 
     (cons 'N343 #(not-impl "Sched F" "Schedule F" 1 #t ""))
     (cons 'N514 #(not-impl "Sched F" "Spouse" 0 #t "" ((1990 ""))))
     (cons 'N379 #(not-impl "Sched F" "Principal product" 2 #t "" ((1990 "A"))))
-    (cons 'N369 #(none "Sched F" "Resales of livestock" 1 #t "" ((2011 "1b") (1990 "1"))))
-    (cons 'N368 #(none "Sched F" "Sales livestock/crops raised" 1 #t "" ((2011 "2a") (1990 "4"))))
+    (cons 'N369 #(none "Sched F" "Resales of livestock" 1 #t "" ((2012 "1a") (2011 "1b") (1990 "1"))))
+    (cons 'N368 #(none "Sched F" "Sales livestock/crops raised" 1 #t "" ((2012 "2") (2011 "2a") (1990 "4"))))
     (cons 'N371 #(none "Sched F" "Coop. distributions" 1 #t "" ((2011 "3a") (1990 "5a"))))
     (cons 'N372 #(none "Sched F" "Agricultural program payments" 1 #t "" ((2011 "4a") (1990 "6a"))))
     (cons 'N373 #(none "Sched F" "CCC loans reported/election" 1 #t "" ((2011 "5a") (1990 "7a"))))
     (cons 'N374 #(none "Sched F" "CCC loans forfeited or repaid" 1 #t "" ((2011 "5b") (1990 "7b"))))
     (cons 'N375 #(none "Sched F" "Crop insurance proceeds received" 1 #t "" ((2011 "6a") (1990 "8a"))))
     (cons 'N376 #(none "Sched F" "Crop insurance proceeds deferred" 1 #t "" ((2011 "6d") (1990 "8d"))))
-    (cons 'N370 #(none "Sched F" "Custom hire (machine work)" 1 #t "" ((2011 "7a or b") (1990 "9"))))
-    (cons 'N377 #(none "Sched F" "Other farm income" 1 #t "" ((2011 "8a or b") (1990 "10"))))
+    (cons 'N370 #(none "Sched F" "Custom hire (machine work)" 1 #t "" ((2012 "7") (2011 "7a or b") (1990 "9"))))
+    (cons 'N377 #(none "Sched F" "Other farm income" 1 #t "" ((2012 "8") (2011 "8a or b") (1990 "10"))))
 
     (cons 'N380 #(not-impl "F2106" "Form 2106" 1 #t ""))
     (cons 'N387 #(none "F2106" "Emp. expense reimb." 1 #t "" ((2009 "7") (1990 "7,A"))))
     (cons 'N388 #(none "F2106" "Emp. meal exp reimb" 1 #t "" ((2009 "7") (1990 "7,B"))))
 
-    (cons 'N392 #(not-impl "HomeWks" "Home Sale Worksheets" 1 #t ""))
+    (cons 'N392 #(not-impl "HomeWks" "Home Sale Worksheets, Pub 523" 1 #t ""))
     (cons 'N525 #(not-impl "HomeWks" "Spouse" 0 #t "" ((2000 "")) 2000))
     (cons 'N398 #(not-impl "HomeWks" "Date old home sold" 2 #t "" ((2002 ""))))
     (cons 'N399 #(not-impl "HomeWks" "Date moved into new home" 2 #t "" ((2000 "11a")) 2000))
@@ -304,8 +325,8 @@
 
     (cons 'N657 #(not-impl "F1099-OID" "1099 OID" 1 #f ""))
     (cons 'N658 #(current "F1099-OID" "Other periodic int,OID" 3 #t "" ((1990 "2"))))
-    (cons 'N661 #(not-impl "F1099-OID" "Description" 2 #t "" ((1990 "5"))))
-    (cons 'N662 #(current "F1099-OID" "OID, US treas obligl" 3 #t "" ((1999 "6"))))
+    (cons 'N661 #(not-impl "F1099-OID" "Description" 2 #t "" ((2013 "7") (1990 "5"))))
+    (cons 'N662 #(current "F1099-OID" "OID, US treas obligl" 3 #t "" ((2013 "8") (1999 "6"))))
 
     (cons 'N473 #(not-impl "F1099-R" "1099R" 1 #t ""))
     (cons 'N474 #(not-impl "F1099-R" "Spouse" 0 #t "" ((1990 ""))))
@@ -343,8 +364,8 @@
    (list
     (cons 'N000 #(none "" "Tax Report Only - No TXF Export" 0 #f ""))
 
-    (cons 'N1617 #(none "F1065" "Gross receipts or sales" 1 #f "" ((2011 "1b") (1990 "1a"))))
-    (cons 'N1619 #(none "F1065" "Returns and allowances" 1 #f "" ((2011 "1d") (1990 "1b"))))
+    (cons 'N1617 #(none "F1065" "Gross receipts or sales" 1 #f "" ((2012 "1a") (2011 "1b") (1990 "1a"))))
+    (cons 'N1619 #(none "F1065" "Returns and allowances" 1 #f "" ((2012 "1b") (2011 "1d") (1990 "1b"))))
     (cons 'N1629 #(none "F1065" "Other income" 1 #f "" ((1990 "7"))))
 
     (cons 'N1804 #(none "F1065" "Income-rental" 1 #f "" ((1990 "K3a"))))
@@ -362,16 +383,16 @@
     (cons 'N343 #(not-impl "Sched F" "Schedule F" 1 #t ""))
     (cons 'N514 #(not-impl "Sched F" "Spouse" 0 #t "" ((1990 ""))))
     (cons 'N379 #(not-impl "Sched F" "Principal product" 2 #t "" ((1990 "A"))))
-    (cons 'N369 #(none "Sched F" "Resales of livestock" 1 #t "" ((2011 "1b") (1990 "1"))))
-    (cons 'N368 #(none "Sched F" "Sales livestock/crops raised" 1 #t "" ((2011 "2a") (1990 "4"))))
+    (cons 'N369 #(none "Sched F" "Resales of livestock" 1 #t "" ((2012 "1a") (2011 "1b") (1990 "1"))))
+    (cons 'N368 #(none "Sched F" "Sales livestock/crops raised" 1 #t "" ((2012 "2") (2011 "2a") (1990 "4"))))
     (cons 'N371 #(none "Sched F" "Coop. distributions" 1 #t "" ((2011 "3a") (1990 "5a"))))
     (cons 'N372 #(none "Sched F" "Agricultural program payments" 1 #t "" ((2011 "4a") (1990 "6a"))))
     (cons 'N373 #(none "Sched F" "CCC loans reported/election" 1 #t "" ((2011 "5a") (1990 "7a"))))
     (cons 'N374 #(none "Sched F" "CCC loans forfeited or repaid" 1 #t "" ((2011 "5b") (1990 "7b"))))
     (cons 'N375 #(none "Sched F" "Crop insurance proceeds received" 1 #t "" ((2011 "6a") (1990 "8a"))))
     (cons 'N376 #(none "Sched F" "Crop insurance proceeds deferred" 1 #t "" ((2011 "6d") (1990 "8d"))))
-    (cons 'N370 #(none "Sched F" "Custom hire (machine work)" 1 #t "" ((2011 "7a or b") (1990 "9"))))
-    (cons 'N377 #(none "Sched F" "Other farm income" 1 #t "" ((2011 "8a or b") (1990 "10"))))
+    (cons 'N370 #(none "Sched F" "Custom hire (machine work)" 1 #t "" ((2012 "7") (2011 "7a or b") (1990 "9"))))
+    (cons 'N377 #(none "Sched F" "Other farm income" 1 #t "" ((2012 "8") (2011 "8a or b") (1990 "10"))))
 
     (cons 'N418 #(not-impl "F4797" "Form 4797" 1 #f ""))
     (cons 'N420 #(not-impl "F4797" "LT dep. gain - business" 5 #f "" ((1990 "2"))))
@@ -408,8 +429,8 @@
    (list
     (cons 'N000 #(none "" "Tax Report Only - No TXF Export" 0 #f ""))
 
-    (cons 'N1003 #(none "F1120" "Gross receipts or sales" 1 #f "" ((2011 "1b") (1990 "1a"))))
-    (cons 'N1005 #(none "F1120" "Returns and allowances" 1 #f "" ((2011 "1d") (1990 "1b"))))
+    (cons 'N1003 #(none "F1120" "Gross receipts or sales" 1 #f "" ((2012 "1a") (2011 "1b") (1990 "1a"))))
+    (cons 'N1005 #(none "F1120" "Returns and allowances" 1 #f "" ((2012 "1b") (2011 "1d") (1990 "1b"))))
     (cons 'N1007 #(none "F1120" "Interest income" 1 #f "" ((1990 "5"))))
     (cons 'N1009 #(none "F1120" "Gross rents" 1 #f "" ((1990 "6"))))
     (cons 'N1011 #(none "F1120" "Gross royalties" 1 #f "" ((1990 "7"))))
@@ -448,8 +469,8 @@
    (list
     (cons 'N000 #(none "" "Tax Report Only - No TXF Export" 0 #f ""))
 
-    (cons 'N1259 #(none "F1120S" "Gross receipts or sales" 1 #f "" ((2011 "1b") (1990 "1a"))))
-    (cons 'N1261 #(none "F1120S" "Returns and allowances" 1 #f "" ((2011 "1d") (1990 "1b"))))
+    (cons 'N1259 #(none "F1120S" "Gross receipts or sales" 1 #f "" ((2012 "1a") (2011 "1b") (1990 "1a"))))
+    (cons 'N1261 #(none "F1120S" "Returns and allowances" 1 #f "" ((2012 "1b") (2011 "1d") (1990 "1b"))))
     (cons 'N1269 #(none "F1120S" "Other income" 1 #f "" ((1990 "5"))))
 
     (cons 'N1492 #(none "F1120S" "Income-rental" 1 #f "" ((1990 "K3a"))))
@@ -525,14 +546,14 @@
     (cons 'N262 #(none "F1040" "IRA contribution, self" 1 #f "IRA Contrib" ((2005 "32") (2004 "25") (2002 "24") (1997 "23") (1994 "23a") (1990 "24a") (1989 "24") (1987 "25a") (1985 "26") (1983 "26a") (1982 "25") (1981 "24") (1980 "25"))))
     (cons 'N481 #(none "F1040" "IRA contribution, spouse" 1 #f "" ((2005 "32") (2004 "25") (2002 "24") (1997 "23") (1994 "23b") (1990 "24b") (1989 "25") (1987 "25b") (1983 "26a") (1982 "25") (1981 "24") (1980 "25"))))
     (cons 'N636 #(none "F1040" "Student loan interest" 1 #f "Student loan in" ((2005 "33") (2004 "26") (2002 "25") (1998 "24"))))
-    (cons 'N613 #(none "F1040" "Fed tax withheld, RR retire, self" 1 #f "Tax:Fed wh, RR" ((2011 "62") (2009 "61") (2008 "62") (2005 "64") (2004 "63") (2003 "61") (2002 "62") (2001 "59") (2000 "58") (1998 "57") (1997 "54") (1996 "52") (1995 "55") (1991 "54") (1990 "55") (1989 "56") (1987 "54") (1986 "56") (1983 "57") (1982 "60") (1980 "55"))))
-    (cons 'N614 #(none "F1040" "Fed tax withheld, RR retire, spouse" 1 #f "Tax Spouse:Fed" ((2011 "62") (2009 "61") (2008 "62") (2005 "64") (2004 "63") (2003 "61") (2002 "62") (2001 "59") (2000 "58") (1998 "57") (1997 "54") (1996 "52") (1995 "55") (1991 "54") (1990 "55") (1989 "56") (1987 "54") (1986 "56") (1983 "57") (1982 "60") (1980 "55"))))
-    (cons 'N611 #(none "F1040" "Fed tax withheld, Soc. Sec., self" 1 #f "Tax:Fed wh, Soc" ((2011 "62") (2009 "61") (2008 "62") (2005 "64") (2004 "63") (2003 "61") (2002 "62") (2001 "59") (2000 "58") (1998 "57") (1997 "54") (1996 "52") (1995 "55") (1991 "54") (1990 "55") (1989 "56") (1987 "54") (1986 "56") (1983 "57") (1982 "60") (1980 "55"))))
-    (cons 'N612 #(none "F1040" "Fed tax withheld, Soc. Sec., spouse" 1 #f "Tax Spouse:Fed" ((2011 "62") (2009 "61") (2008 "62") (2005 "64") (2004 "63") (2003 "61") (2002 "62") (2001 "59") (2000 "58") (1998 "57") (1997 "54") (1996 "52") (1995 "55") (1991 "54") (1990 "55") (1989 "56") (1987 "54") (1986 "56") (1983 "57") (1982 "60") (1980 "55"))))
-    (cons 'N615 #(current "F1040" "Fed tax withheld, dividend income" 3 #f "" ((2011 "62") (2009 "61") (2008 "62") (2005 "64") (2004 "63") (2003 "61") (2002 "62") (2001 "59") (2000 "58") (1998 "57") (1997 "54") (1996 "52") (1995 "55") (1991 "54") (1990 "55") (1989 "56") (1987 "54") (1986 "56") (1983 "57") (1982 "60") (1980 "55"))))
-    (cons 'N616 #(current "F1040" "Fed tax withheld, interest income" 3 #f "" ((2011 "62") (2009 "61") (2008 "62") (2005 "64") (2004 "63") (2003 "61") (2002 "62") (2001 "59") (2000 "58") (1998 "57") (1997 "54") (1996 "52") (1995 "55") (1991 "54") (1990 "55") (1989 "56") (1987 "54") (1986 "56") (1983 "57") (1982 "60") (1980 "55"))))
-    (cons 'N521 #(none "F1040" "Federal estimated tax, qrtrly" 6 #f "Tax:Fed Estimat" ((2011 "63") (2009 "62") (2008 "63") (2005 "65") (2004 "64") (2003 "62") (2002 "63") (2001 "60") (2000 "59") (1998 "58") (1997 "55") (1996 "53") (1995 "56") (1991 "55") (1990 "56") (1989 "57") (1987 "55") (1986 "57") (1983 "58") (1982 "61") (1980 "56"))))
-    (cons 'N268 #(none "F1040" "Fed. estimated tax" 1 #f "" ((2011 "63") (2009 "62") (2008 "63") (2005 "65") (2004 "64") (2003 "62") (2002 "63") (2001 "60") (2000 "59") (1998 "58") (1997 "55") (1996 "53") (1995 "56") (1991 "55") (1990 "56") (1989 "57") (1987 "55") (1986 "57") (1983 "58") (1982 "61") (1980 "56"))))
+    (cons 'N613 #(none "F1040" "Fed tax withheld, RR retire, self" 1 #f "Tax:Fed wh, RR" ((2014 "64") (2011 "62") (2009 "61") (2008 "62") (2005 "64") (2004 "63") (2003 "61") (2002 "62") (2001 "59") (2000 "58") (1998 "57") (1997 "54") (1996 "52") (1995 "55") (1991 "54") (1990 "55") (1989 "56") (1987 "54") (1986 "56") (1983 "57") (1982 "60") (1980 "55"))))
+    (cons 'N614 #(none "F1040" "Fed tax withheld, RR retire, spouse" 1 #f "Tax Spouse:Fed" ((2014 "64") (2011 "62") (2009 "61") (2008 "62") (2005 "64") (2004 "63") (2003 "61") (2002 "62") (2001 "59") (2000 "58") (1998 "57") (1997 "54") (1996 "52") (1995 "55") (1991 "54") (1990 "55") (1989 "56") (1987 "54") (1986 "56") (1983 "57") (1982 "60") (1980 "55"))))
+    (cons 'N611 #(none "F1040" "Fed tax withheld, Soc. Sec., self" 1 #f "Tax:Fed wh, Soc" ((2014 "64") (2011 "62") (2009 "61") (2008 "62") (2005 "64") (2004 "63") (2003 "61") (2002 "62") (2001 "59") (2000 "58") (1998 "57") (1997 "54") (1996 "52") (1995 "55") (1991 "54") (1990 "55") (1989 "56") (1987 "54") (1986 "56") (1983 "57") (1982 "60") (1980 "55"))))
+    (cons 'N612 #(none "F1040" "Fed tax withheld, Soc. Sec., spouse" 1 #f "Tax Spouse:Fed" ((2014 "64") (2011 "62") (2009 "61") (2008 "62") (2005 "64") (2004 "63") (2003 "61") (2002 "62") (2001 "59") (2000 "58") (1998 "57") (1997 "54") (1996 "52") (1995 "55") (1991 "54") (1990 "55") (1989 "56") (1987 "54") (1986 "56") (1983 "57") (1982 "60") (1980 "55"))))
+    (cons 'N615 #(current "F1040" "Fed tax withheld, dividend income" 3 #f "" ((2014 "64") (2011 "62") (2009 "61") (2008 "62") (2005 "64") (2004 "63") (2003 "61") (2002 "62") (2001 "59") (2000 "58") (1998 "57") (1997 "54") (1996 "52") (1995 "55") (1991 "54") (1990 "55") (1989 "56") (1987 "54") (1986 "56") (1983 "57") (1982 "60") (1980 "55"))))
+    (cons 'N616 #(current "F1040" "Fed tax withheld, interest income" 3 #f "" ((2014 "64") (2011 "62") (2009 "61") (2008 "62") (2005 "64") (2004 "63") (2003 "61") (2002 "62") (2001 "59") (2000 "58") (1998 "57") (1997 "54") (1996 "52") (1995 "55") (1991 "54") (1990 "55") (1989 "56") (1987 "54") (1986 "56") (1983 "57") (1982 "60") (1980 "55"))))
+    (cons 'N521 #(none "F1040" "Federal estimated tax, qrtrly" 6 #f "Tax:Fed Estimat" ((2014 "65") (2011 "63") (2009 "62") (2008 "63") (2005 "65") (2004 "64") (2003 "62") (2002 "63") (2001 "60") (2000 "59") (1998 "58") (1997 "55") (1996 "53") (1995 "56") (1991 "55") (1990 "56") (1989 "57") (1987 "55") (1986 "57") (1983 "58") (1982 "61") (1980 "56"))))
+    (cons 'N268 #(none "F1040" "Fed. estimated tax" 1 #f "" ((2014 "65") (2011 "63") (2009 "62") (2008 "63") (2005 "65") (2004 "64") (2003 "62") (2002 "63") (2001 "60") (2000 "59") (1998 "58") (1997 "55") (1996 "53") (1995 "56") (1991 "55") (1990 "56") (1989 "57") (1987 "55") (1986 "57") (1983 "58") (1982 "61") (1980 "56"))))
 
     (cons 'N270 #(not-impl "Sched A" "Schedule A" 1 #f ""))
     (cons 'N273 #(none "Sched A" "Medicine and drugs" 1 #f "Medical:Medicin" ((1990 "1") (1987 "1a") (1982 "1") (1980 "2"))))
@@ -581,8 +602,8 @@
     (cons 'N294 #(none "Sched C" "Meals and entertainment" 1 #t "" ((1990 "24b") (1989 "25b") (1987 "26b") (1986 "26") (1985 "27") (1982 "26") (1981 "27") (1980 "29"))))
     (cons 'N318 #(none "Sched C" "Utilities" 1 #t "" ((1990 "25") (1989 "26") (1986 "27") (1985 "28") (1982 "27") (1981 "28") (1980 "30"))))
     (cons 'N297 #(none "Sched C" "Wages paid" 1 #t "" ((1990 "26") (1989 "27") (1986 "28a") (1985 "29a") (1982 "28a") (1981 "29a") (1980 "31a"))))
-    (cons 'N302 #(current "Sched C" "Other business expenses" 3 #t "" ((1993 "27") (1990 "27b") (1989 "28") (1987 "29") (1986 "30") (1985 "31") (1982 "30") (1981 "31") (1980 "32"))))
-    (cons 'N305 #(none "Sched C" "Bad debts" 1 #t "" ((2003 "27") (1989 "9") (1982 "7") (1980 "8"))))
+    (cons 'N302 #(current "Sched C" "Other business expenses" 3 #t "" ((2011 "27a") (1993 "27") (1990 "27b") (1989 "28") (1987 "29") (1986 "30") (1985 "31") (1982 "30") (1981 "31") (1980 "32"))))
+    (cons 'N305 #(none "Sched C" "Bad debts" 1 #t "" ((2011 "27a") (2003 "27") (1989 "9") (1982 "7") (1980 "8"))))
     (cons 'N493 #(none "Sched C" "Purchases, cost of goods" 1 #t "" ((1996 "36") (1991 "34") (1990 "32") (1989 "33") (1983 "III,2") (1982 "C-1,2") (1980 "C-1,2a"))))
     (cons 'N295 #(none "Sched C" "Cost of goods sold" 1 #t "" ((1990 "37") (1989 "36") (1988 "III,5") (1980 "C-1,5")) 1992))
     (cons 'N494 #(none "Sched C" "Labor, cost of goods sold" 1 #t "" ((1996 "37") (1991 "35") (1990 "33") (1989 "34") (1983 "III,3") (1980 "C-1,3"))))
@@ -610,7 +631,7 @@
     (cons 'N341 #(current "Sched E" "Other expenses" 3 #t "" ((2011 "19") (1990 "18") (1987 "19") (1985 "17") (1981 "16") (1980 "VII"))))
 
     (cons 'N343 #(not-impl "Sched F" "Schedule F" 1 #t ""))
-    (cons 'N378 #(none "Sched F" "Cost of resale livestock/items" 1 #t "" ((2011 "1d") (1990 "2"))))
+    (cons 'N378 #(none "Sched F" "Cost of resale livestock/items" 1 #t "" ((2012 "1b") (2011 "1d") (1990 "2"))))
     (cons 'N354 #(none "Sched F" "Breeding fees" 1 #t "" ((1990 "12")) 1991))
     (cons 'N543 #(none "Sched F" "Car and truck expenses" 1 #t "" ((2011 "10") (1992 "12") (1991 "13") (1990 "34"))))
     (cons 'N366 #(none "Sched F" "Chemicals" 1 #t "" ((2011 "11") (1992 "13") (1991 "14") (1990 "13"))))
@@ -640,7 +661,7 @@
     (cons 'N565 #(not-impl "Sched H" "Schedule H" 1 #t ""))
     (cons 'N566 #(not-impl "Sched H" "Spouse" 0 #t "" ((1995 "")) 1995))
     (cons 'N567 #(parent "Sched H" "Cash wages paid" 1 #t "" ((1995 "1"))))
-    (cons 'N568 #(parent "Sched H" "Federal tax withheld" 1 #t "" ((1995 "5"))))
+    (cons 'N568 #(parent "Sched H" "Federal tax withheld" 1 #t "" ((2013 "7") (1995 "5"))))
 
     (cons 'N380 #(not-impl "F2106" "Form 2106" 1 #t ""))
     (cons 'N382 #(none "F2106" "Automobile expenses" 1 #t "" ((1990 "1"))))
@@ -653,7 +674,7 @@
     (cons 'N391 #(none "F2106" "Employee home office expenses" 1 #t "" ((1990 "4"))))
     (cons 'N386 #(none "F2106" "Meal/entertainment expenses" 1 #t "" ((1990 "5"))))
 
-    (cons 'N392 #(not-impl "HomeWks" "Home Sale Worksheets" 1 #t ""))
+    (cons 'N392 #(not-impl "HomeWks" "Home Sale Worksheets, Pub 523" 1 #t ""))
     (cons 'N394 #(none "HomeWks" "Expense of sale" 1 #t "" ((2002 "2"))))
     (cons 'N395 #(none "HomeWks" "Basis of home sold" 1 #t "" ((2002 "4"))))
     (cons 'N396 #(none "HomeWks" "Fixing-up expenses" 1 #t "" ((2000 "8")) 2000))
@@ -737,8 +758,8 @@
     (cons 'N622 #(none "F8839" "Other expenses" 1 #f "" ((1998 "5") (1997 "3"))))
 
     (cons 'N639 #(not-impl "F8863" "Form 8863" 1 #f ""))
-    (cons 'N637 #(none "F8863" "Hope cr. qual. expenses" 1 #f "" ((1998 "1c"))))
-    (cons 'N638 #(none "F8863" "Lifetime cr. qual. expenses" 1 #f "" ((2005 "3c") (1998 "4c"))))
+    (cons 'N637 #(none "F8863" "Hope cr. qual. expenses" 1 #f "" ((2012 "1") (1998 "1c"))))
+    (cons 'N638 #(none "F8863" "Lifetime cr. qual. expenses" 1 #f "" ((2012 "10") (2005 "3c") (1998 "4c"))))
 
     (cons 'N446 #(not-impl "Sched K-1" "Schedule K-1 Worksheet" 1 #t ""))
     (cons 'N448 #(parent "Sched K-1" "Ordinary income or loss" 1 #t "" ((1990 "1"))))
@@ -764,8 +785,8 @@
     (cons 'N509 #(parent "W-2" "Local tax withheld, spouse" 1 #t "" ((2001 "19") (1993 "21") (1990 "27"))))
 
     (cons 'N547 #(not-impl "W-2G" "W-2G" 1 #t ""))
-    (cons 'N550 #(parent "W-2G" "Federal tax withheld" 1 #t "" ((1990 "2"))))
-    (cons 'N551 #(parent "W-2G" "State tax withheld" 1 #t "" ((1990 "14"))))
+    (cons 'N550 #(parent "W-2G" "Federal tax withheld" 1 #t "" ((2013 "4") (1990 "2"))))
+    (cons 'N551 #(parent "W-2G" "State tax withheld" 1 #t "" ((2013 "15") (1990 "14"))))
 
     (cons 'N643 #(not-impl "F1099-DIV" "1099 Div" 1 #f ""))
     (cons 'N648 #(current "F1099-DIV" "Investment Expense, div" 3 #t "" ((1998 "5") (1990 "1e"))))
@@ -789,7 +810,7 @@
     (cons 'N657 #(not-impl "F1099-OID" "1099 OID" 1 #f ""))
     (cons 'N659 #(current "F1099-OID" "Early wdrawal pen, OID" 3 #t "" ((1990 "3"))))
     (cons 'N660 #(current "F1099-OID" "Fed tax wheld, OID" 3 #t "" ((1990 "4"))))
-    (cons 'N663 #(current "F1099-OID" "Investment Expense, OID" 3 #t "" ((1999 "7"))))
+    (cons 'N663 #(current "F1099-OID" "Investment Expense, OID" 3 #t "" ((2013 "9") (1999 "7"))))
 
     (cons 'N473 #(not-impl "F1099-R" "1099R" 1 #t ""))
     (cons 'N665 #(not-impl "F1099-R" "Taxable not determined" 2 #t "" ((1991 "2b"))))
@@ -853,7 +874,7 @@
     (cons 'N1920 #(none "F1065" "Other decreases to partners' cap accts" 1 #f "" ((1991 "M-2,7") (1990 "M(e)"))))
 
     (cons 'N343 #(not-impl "Sched F" "Schedule F" 1 #t ""))
-    (cons 'N378 #(none "Sched F" "Cost of resale livestock/items" 1 #t "" ((2011 "1d") (1990 "2"))))
+    (cons 'N378 #(none "Sched F" "Cost of resale livestock/items" 1 #t "" ((2012 "1b") (2011 "1d") (1990 "2"))))
     (cons 'N354 #(none "Sched F" "Breeding fees" 1 #t "" ((1990 "12")) 1991))
     (cons 'N543 #(none "Sched F" "Car and truck expenses" 1 #t "" ((2011 "10") (1992 "12") (1991 "13") (1990 "34"))))
     (cons 'N366 #(none "Sched F" "Chemicals" 1 #t "" ((2011 "11") (1992 "13") (1991 "14") (1990 "13"))))
@@ -925,7 +946,6 @@
     (cons 'N1785 #(parent "F8825" "Wages and salaries – C" 1 #t "" ((1990 "13C"))))
     (cons 'N1786 #(parent "F8825" "Other miscellaneous expenses – C" 1 #t "" ((1990 "15C"))))
 
-    (cons 'N1789 #(parent "F8825" "Gross rents – D" 1 #t "" ((1990 "2D"))))
     (cons 'N1790 #(parent "F8825" "Advertising – D" 1 #t "" ((1990 "3D"))))
     (cons 'N1791 #(parent "F8825" "Auto and travel – D" 1 #t "" ((1990 "4D"))))
     (cons 'N1792 #(parent "F8825" "Cleaning and maintenance – D" 1 #t "" ((1990 "5D"))))
@@ -948,7 +968,7 @@
     (cons 'N674 #(none "Sched K-1" "28% rate gain(loss)" 1 #t "" ((2004 "9b") (2003 "25") (2001 "4e2") (1997 "4e1"))))
     (cons 'N456 #(parent "Sched K-1" "Net Section 1231 gain or loss" 1 #t "" ((2004 "10") (2003 "6b") (1998 "6") (1997 "6b") (1990 "6"))))
     (cons 'N676 #(none "Sched K-1" "Other Income (loss)" 1 #t "" ((2004 "11") (1990 "7"))))
-    (cons 'N679 #(none "Sched K-1" "Total Foreign Taxes" 1 #t "" ((2004 "16") (2001 "17g") (2000 "17f") (1990 "17e"))))
+    (cons 'N679 #(none "Sched K-1" "Total Foreign Taxes" 1 #t "" ((2004 "16l") (2001 "17g") (2000 "17f") (1990 "17e"))))
    )
   )
   (cons 'F1120
@@ -1106,12 +1126,12 @@
     (cons 'N448 #(parent "Sched K-1" "Ordinary income or loss" 1 #t "" ((1990 "1"))))
     (cons 'N449 #(parent "Sched K-1" "Rental RE income or loss" 1 #t "" ((1990 "2"))))
     (cons 'N450 #(parent "Sched K-1" "Other rental income or loss" 1 #t "" ((1990 "3"))))
-    (cons 'N453 #(parent "Sched K-1" "Net ST capital gain or loss" 1 #t "" ((2004 "8") (2003 "4d2") (1990 "4d"))))
-    (cons 'N454 #(parent "Sched K-1" "Net LT capital gain or loss" 1 #t "" ((2004 "9a") (2003 "4e2") (2001 "4e1") (1997 "4e2") (1990 "4e"))))
-    (cons 'N674 #(none "Sched K-1" "28% rate gain(loss)" 1 #t "" ((2004 "9b") (2003 "25") (2001 "4e2") (1997 "4e1"))))
-    (cons 'N456 #(parent "Sched K-1" "Net Section 1231 gain or loss" 1 #t "" ((2004 "10") (2003 "6b") (1998 "6") (1997 "6b") (1990 "6"))))
-    (cons 'N676 #(none "Sched K-1" "Other Income (loss)" 1 #t "" ((2004 "11") (1990 "7"))))
-    (cons 'N679 #(none "Sched K-1" "Total Foreign Taxes" 1 #t "" ((2004 "16") (2001 "17g") (2000 "17f") (1990 "17e"))))
+    (cons 'N453 #(parent "Sched K-1" "Net ST capital gain or loss" 1 #t "" ((2004 "7") (2003 "4d2") (1990 "4d"))))
+    (cons 'N454 #(parent "Sched K-1" "Net LT capital gain or loss" 1 #t "" ((2004 "8a") (2003 "4e2") (2001 "4e1") (1997 "4e2") (1990 "4e"))))
+    (cons 'N674 #(none "Sched K-1" "28% rate gain(loss)" 1 #t "" ((2004 "8b") (2003 "25") (2001 "4e2") (1997 "4e1"))))
+    (cons 'N456 #(parent "Sched K-1" "Net Section 1231 gain or loss" 1 #t "" ((2004 "9") (2003 "6b") (1998 "6") (1997 "6b") (1990 "6"))))
+    (cons 'N676 #(none "Sched K-1" "Other Income (loss)" 1 #t "" ((2004 "10") (1990 "7"))))
+    (cons 'N679 #(none "Sched K-1" "Total Foreign Taxes" 1 #t "" ((2004 "14") (2001 "17g") (2000 "17f") (1990 "17e"))))
    )
   )
   (cons 'Other

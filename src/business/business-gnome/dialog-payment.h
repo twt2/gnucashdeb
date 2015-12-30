@@ -31,11 +31,23 @@ typedef struct _payment_window PaymentWindow;
 
 /* Create a payment window */
 PaymentWindow * gnc_ui_payment_new (GncOwner *owner, QofBook *book);
-PaymentWindow * gnc_ui_payment_new_with_invoice (GncOwner *owner,
+PaymentWindow * gnc_ui_payment_new_with_invoice (const GncOwner *owner,
         QofBook *book,
         GncInvoice *invoice);
+PaymentWindow * gnc_ui_payment_new_with_txn (GncOwner *owner, Transaction *txn);
+
+/** Returns TRUE if the given transaction (to be used with gnc_ui_payment_new_with_txn() )
+ * is for a customer, or FALSE if it's from a vendor or employee voucher. */
+gboolean gnc_ui_payment_is_customer_payment(const Transaction *txn);
 
 /* Destroy a payment window */
 void gnc_ui_payment_window_destroy (PaymentWindow *pw);
+
+void gnc_ui_payment_window_set_num (PaymentWindow *pw, const char* num);
+void gnc_ui_payment_window_set_memo (PaymentWindow *pw, const char* memo);
+void gnc_ui_payment_window_set_date (PaymentWindow *pw, const GDate *date);
+void gnc_ui_payment_window_set_amount (PaymentWindow *pw, gnc_numeric amount);
+void gnc_ui_payment_window_set_postaccount (PaymentWindow *pw, const Account* account);
+void gnc_ui_payment_window_set_xferaccount (PaymentWindow *pw, const Account* account);
 
 #endif /* _DIALOG_PAYMENT_H */

@@ -106,14 +106,28 @@ xaccLotFill (GNCLot *lot)
     ENTER ("(lot=%s, acc=%s)", gnc_lot_get_title(lot), xaccAccountGetName(acc));
 
     /* If balance already zero, we have nothing to do. */
-    if (gnc_lot_is_closed (lot)) return;
-
+    if (gnc_lot_is_closed (lot))
+    {
+	LEAVE ("Lot Closed (lot=%s, acc=%s)", gnc_lot_get_title(lot),
+	       xaccAccountGetName(acc));
+	return;
+    }
     split = pcy->PolicyGetSplit (pcy, lot);
-    if (!split) return;   /* Handle the common case */
+    if (!split)
+    {
+	LEAVE ("No Split (lot=%s, acc=%s)", gnc_lot_get_title(lot),
+	       xaccAccountGetName(acc));
+	return;   /* Handle the common case */
+    }
 
     /* Reject voided transactions */
     if (gnc_numeric_zero_p(split->amount) &&
-            xaccTransGetVoidStatus(split->parent)) return;
+            xaccTransGetVoidStatus(split->parent))
+    {
+	LEAVE ("Voided transaction (lot=%s, acc=%s)",
+	       gnc_lot_get_title(lot), xaccAccountGetName(acc));
+	return;
+    }
 
     xaccAccountBeginEdit (acc);
 
@@ -166,7 +180,11 @@ xaccLotScrubDoubleBalance (GNCLot *lot)
     }
 
     /* We double-check only closed lots */
-    if (FALSE == gnc_lot_is_closed (lot)) return;
+    if (FALSE == gnc_lot_is_closed (lot))
+    {
+	LEAVE ("lot=%s is closed", gnc_lot_get_title(lot));
+	return;
+    }
 
     for (snode = gnc_lot_get_split_list(lot); snode; snode = snode->next)
     {
@@ -239,73 +257,6 @@ is_subsplit (Split *split)
 
 /* ================================================================= */
 
-void
-xaccScrubSubSplitPrice (Split *split, int maxmult, int maxamtscu)
-{
-    gnc_numeric src_amt, src_val;
-    SplitList *node;
-
-    if (FALSE == is_subsplit (split)) return;
-
-    ENTER (" ");
-    /* Get 'price' of the indicated split */
-    src_amt = xaccSplitGetAmount (split);
-    src_val = xaccSplitGetValue (split);
-
-    /* Loop over splits, adjust each so that it has the same
-     * ratio (i.e. price).  Change the value to get things
-     * right; do not change the amount */
-    for (node = split->parent->splits; node; node = node->next)
-    {
-        Split *s = node->data;
-        Transaction *txn = s->parent;
-        gnc_numeric dst_amt, dst_val, target_val;
-        gnc_numeric frac, delta;
-        int scu;
-
-        /* Skip the reference split */
-        if (s == split) continue;
-
-        scu = gnc_commodity_get_fraction (txn->common_currency);
-
-        dst_amt = xaccSplitGetAmount (s);
-        dst_val = xaccSplitGetValue (s);
-        frac = gnc_numeric_div (dst_amt, src_amt,
-                                GNC_DENOM_AUTO, GNC_HOW_DENOM_REDUCE);
-        target_val = gnc_numeric_mul (frac, src_val,
-                                      scu, GNC_HOW_DENOM_EXACT | GNC_HOW_RND_ROUND_HALF_UP);
-        if (gnc_numeric_check (target_val))
-        {
-            PERR ("Numeric overflow of value\n"
-                  "\tAcct=%s txn=%s\n"
-                  "\tdst_amt=%s src_val=%s src_amt=%s\n",
-                  xaccAccountGetName (s->acc),
-                  xaccTransGetDescription(txn),
-                  gnc_num_dbg_to_string(dst_amt),
-                  gnc_num_dbg_to_string(src_val),
-                  gnc_num_dbg_to_string(src_amt));
-            continue;
-        }
-
-        /* If the required price changes are 'small', do nothing.
-         * That is a case that the user will have to deal with
-         * manually.  This routine is really intended only for
-         * a gross level of synchronization.
-         */
-        delta = gnc_numeric_sub_fixed (target_val, dst_val);
-        delta = gnc_numeric_abs (delta);
-        if (maxmult * delta.num  < delta.denom) continue;
-
-        /* If the amount is small, pass on that too */
-        if ((-maxamtscu < dst_amt.num) && (dst_amt.num < maxamtscu)) continue;
-
-        /* Make the actual adjustment */
-        xaccTransBeginEdit (txn);
-        xaccSplitSetValue (s, target_val);
-        xaccTransCommitEdit (txn);
-    }
-    LEAVE (" ");
-}
 
 /* ================================================================= */
 
@@ -393,7 +344,7 @@ merge_splits (Split *sa, Split *sb)
 }
 
 gboolean
-xaccScrubMergeSubSplits (Split *split)
+xaccScrubMergeSubSplits (Split *split, gboolean strict)
 {
     gboolean rc = FALSE;
     Transaction *txn;
@@ -401,7 +352,7 @@ xaccScrubMergeSubSplits (Split *split)
     GNCLot *lot;
     const GncGUID *guid;
 
-    if (FALSE == is_subsplit (split)) return FALSE;
+    if (strict && (FALSE == is_subsplit (split))) return FALSE;
 
     txn = split->parent;
     lot = xaccSplitGetLot (split);
@@ -415,18 +366,21 @@ restart:
         if (s == split) continue;
         if (qof_instance_get_destroying(s)) continue;
 
-        /* OK, this split is in the same lot (and thus same account)
-         * as the indicated split.  Make sure it is really a subsplit
-         * of the split we started with.  It's possible to have two
-         * splits in the same lot and transaction that are not subsplits
-         * of each other, the test-period test suite does this, for
-         * example.  Only worry about adjacent sub-splits.  By
-         * repeatedly merging adjacent subsplits, we'll get the non-
-         * adjacent ones too. */
-        guid = qof_instance_get_guid(s);
-        if (gnc_kvp_bag_find_by_guid (split->inst.kvp_data, "lot-split",
-                                      "peer_guid", guid) == NULL)
-            continue;
+        if (strict)
+        {
+            /* OK, this split is in the same lot (and thus same account)
+             * as the indicated split.  Make sure it is really a subsplit
+             * of the split we started with.  It's possible to have two
+             * splits in the same lot and transaction that are not subsplits
+             * of each other, the test-period test suite does this, for
+             * example.  Only worry about adjacent sub-splits.  By
+             * repeatedly merging adjacent subsplits, we'll get the non-
+             * adjacent ones too. */
+            guid = qof_instance_get_guid(s);
+            if (gnc_kvp_bag_find_by_guid (split->inst.kvp_data, "lot-split",
+                                          "peer_guid", guid) == NULL)
+                continue;
+        }
 
         merge_splits (split, s);
         rc = TRUE;
@@ -441,29 +395,7 @@ restart:
 }
 
 gboolean
-xaccScrubMergeTransSubSplits (Transaction *txn)
-{
-    gboolean rc = FALSE;
-    SplitList *node;
-
-    if (!txn) return FALSE;
-
-    ENTER (" ");
-restart:
-    for (node = txn->splits; node; node = node->next)
-    {
-        Split *s = node->data;
-        if (!xaccScrubMergeSubSplits(s)) continue;
-
-        rc = TRUE;
-        goto restart;
-    }
-    LEAVE (" splits merged=%d", rc);
-    return rc;
-}
-
-gboolean
-xaccScrubMergeLotSubSplits (GNCLot *lot)
+xaccScrubMergeLotSubSplits (GNCLot *lot, gboolean strict)
 {
     gboolean rc = FALSE;
     SplitList *node;
@@ -475,7 +407,7 @@ restart:
     for (node = gnc_lot_get_split_list(lot); node; node = node->next)
     {
         Split *s = node->data;
-        if (!xaccScrubMergeSubSplits(s)) continue;
+        if (!xaccScrubMergeSubSplits(s, strict)) continue;
 
         rc = TRUE;
         goto restart;

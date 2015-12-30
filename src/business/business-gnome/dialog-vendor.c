@@ -50,7 +50,7 @@
 #define DIALOG_NEW_VENDOR_CM_CLASS "dialog-new-vendor"
 #define DIALOG_EDIT_VENDOR_CM_CLASS "dialog-edit-vendor"
 
-#define GCONF_SECTION_SEARCH "dialogs/business/vendor_search"
+#define GNC_PREFS_GROUP_SEARCH "dialogs.business.vendor-search"
 
 void gnc_vendor_taxtable_check_cb (GtkToggleButton *togglebutton, gpointer user_data);
 void gnc_vendor_window_ok_cb (GtkWidget *widget, gpointer data);
@@ -58,6 +58,9 @@ void gnc_vendor_window_cancel_cb (GtkWidget *widget, gpointer data);
 void gnc_vendor_window_help_cb (GtkWidget *widget, gpointer data);
 void gnc_vendor_window_destroy_cb (GtkWidget *widget, gpointer data);
 void gnc_vendor_name_changed_cb (GtkWidget *widget, gpointer data);
+void gnc_vendor_terms_changed_cb (GtkWidget *widget, gpointer data);
+void gnc_vendor_taxincluded_changed_cb (GtkWidget *widget, gpointer data);
+void gnc_vendor_taxtable_changed_cb (GtkWidget *widget, gpointer data);
 
 typedef enum
 {
@@ -140,6 +143,9 @@ static void gnc_ui_to_vendor (VendorWindow *vw, GncVendor *vendor)
     gnc_suspend_gui_refresh ();
     gncVendorBeginEdit (vendor);
 
+    if (vw->dialog_type == NEW_VENDOR)
+        qof_event_gen(QOF_INSTANCE(vendor), QOF_EVENT_ADD, NULL);
+
     gncVendorSetID (vendor, gtk_editable_get_chars
                     (GTK_EDITABLE (vw->id_entry), 0, -1));
     gncVendorSetName (vendor, gtk_editable_get_chars
@@ -188,7 +194,7 @@ static gboolean check_entry_nonempty (GtkWidget *dialog, GtkWidget *entry,
                                       const char * error_message)
 {
     const char *res = gtk_entry_get_text (GTK_ENTRY (entry));
-    if (safe_strcmp (res, "") == 0)
+    if (g_strcmp0 (res, "") == 0)
     {
         if (error_message)
             gnc_error_dialog (dialog, "%s", error_message);
@@ -223,7 +229,7 @@ gnc_vendor_window_ok_cb (GtkWidget *widget, gpointer data)
     }
 
     /* Check for valid id and set one if necessary */
-    if (safe_strcmp (gtk_entry_get_text (GTK_ENTRY (vw->id_entry)), "") == 0)
+    if (g_strcmp0 (gtk_entry_get_text (GTK_ENTRY (vw->id_entry)), "") == 0)
     {
         string = gncVendorNextID(vw->book);
         gtk_entry_set_text (GTK_ENTRY (vw->id_entry), string);
@@ -255,7 +261,7 @@ gnc_vendor_window_cancel_cb (GtkWidget *widget, gpointer data)
 void
 gnc_vendor_window_help_cb (GtkWidget *widget, gpointer data)
 {
-    gnc_gnome_help(HF_HELP, HL_USAGE);
+    gnc_gnome_help(HF_HELP, HL_USAGE_VENDOR);
 }
 
 void
@@ -309,6 +315,42 @@ gnc_vendor_name_changed_cb (GtkWidget *widget, gpointer data)
     g_free (title);
 }
 
+void
+gnc_vendor_terms_changed_cb (GtkWidget *widget, gpointer data)
+{
+    GtkComboBox *cbox = GTK_COMBO_BOX (widget);
+    VendorWindow *vw = data;
+
+    if (!vw) return;
+    if (!cbox) return;
+
+    vw->terms = gnc_simple_combo_get_value (cbox);
+}
+
+void
+gnc_vendor_taxincluded_changed_cb (GtkWidget *widget, gpointer data)
+{
+    GtkComboBox *cbox = GTK_COMBO_BOX (widget);
+    VendorWindow *vw = data;
+
+    if (!vw) return;
+    if (!cbox) return;
+
+    vw->taxincluded = GPOINTER_TO_INT (gnc_simple_combo_get_value (cbox));
+}
+
+void
+gnc_vendor_taxtable_changed_cb (GtkWidget *widget, gpointer data)
+{
+    GtkComboBox *cbox = GTK_COMBO_BOX (widget);
+    VendorWindow *vw = data;
+
+    if (!vw) return;
+    if (!cbox) return;
+
+    vw->taxtable = gnc_simple_combo_get_value (cbox);
+}
+
 static void
 gnc_vendor_window_close_handler (gpointer user_data)
 {
@@ -356,7 +398,7 @@ static VendorWindow *
 gnc_vendor_new_window (QofBook *bookp, GncVendor *vendor)
 {
     VendorWindow *vw;
-    GladeXML *xml;
+    GtkBuilder *builder;
     GtkWidget *edit, *hbox;
     gnc_commodity *currency;
 
@@ -385,49 +427,53 @@ gnc_vendor_new_window (QofBook *bookp, GncVendor *vendor)
         currency = gnc_default_currency ();
 
     /*
-     * No existing employee window found.  Build a new one.
+     * No existing vendor window found.  Build a new one.
      */
     vw = g_new0 (VendorWindow, 1);
 
     vw->book = bookp;
 
     /* Find the dialog */
-    xml = gnc_glade_xml_new ("vendor.glade", "Vendor Dialog");
-    vw->dialog = glade_xml_get_widget (xml, "Vendor Dialog");
+    builder = gtk_builder_new();
+    gnc_builder_add_from_file (builder, "dialog-vendor.glade", "terms_store");
+    gnc_builder_add_from_file (builder, "dialog-vendor.glade", "tax_included_store");
+    gnc_builder_add_from_file (builder, "dialog-vendor.glade", "taxtable_store");
+    gnc_builder_add_from_file (builder, "dialog-vendor.glade", "Vendor Dialog");
+    vw->dialog = GTK_WIDGET (gtk_builder_get_object (builder, "Vendor Dialog"));
 
     /* Get entry points */
-    vw->id_entry = glade_xml_get_widget (xml, "id_entry");
-    vw->company_entry = glade_xml_get_widget (xml, "company_entry");
+    vw->id_entry = GTK_WIDGET (gtk_builder_get_object (builder, "id_entry"));
+    vw->company_entry = GTK_WIDGET (gtk_builder_get_object (builder, "company_entry"));
 
-    vw->name_entry = glade_xml_get_widget (xml, "name_entry");
-    vw->addr1_entry = glade_xml_get_widget (xml, "addr1_entry");
-    vw->addr2_entry = glade_xml_get_widget (xml, "addr2_entry");
-    vw->addr3_entry = glade_xml_get_widget (xml, "addr3_entry");
-    vw->addr4_entry = glade_xml_get_widget (xml, "addr4_entry");
-    vw->phone_entry = glade_xml_get_widget (xml, "phone_entry");
-    vw->fax_entry = glade_xml_get_widget (xml, "fax_entry");
-    vw->email_entry = glade_xml_get_widget (xml, "email_entry");
+    vw->name_entry = GTK_WIDGET (gtk_builder_get_object (builder, "name_entry"));
+    vw->addr1_entry = GTK_WIDGET (gtk_builder_get_object (builder, "addr1_entry"));
+    vw->addr2_entry = GTK_WIDGET (gtk_builder_get_object (builder, "addr2_entry"));
+    vw->addr3_entry = GTK_WIDGET (gtk_builder_get_object (builder, "addr3_entry"));
+    vw->addr4_entry = GTK_WIDGET (gtk_builder_get_object (builder, "addr4_entry"));
+    vw->phone_entry = GTK_WIDGET (gtk_builder_get_object (builder, "phone_entry"));
+    vw->fax_entry = GTK_WIDGET (gtk_builder_get_object (builder, "fax_entry"));
+    vw->email_entry = GTK_WIDGET (gtk_builder_get_object (builder, "email_entry"));
 
-    vw->active_check = glade_xml_get_widget (xml, "active_check");
-    vw->taxincluded_menu = glade_xml_get_widget (xml, "tax_included_menu");
-    vw->notes_text = glade_xml_get_widget (xml, "notes_text");
-    vw->terms_menu = glade_xml_get_widget (xml, "terms_menu");
+    vw->active_check = GTK_WIDGET (gtk_builder_get_object (builder, "active_check"));
+    vw->taxincluded_menu = GTK_WIDGET (gtk_builder_get_object (builder, "tax_included_menu"));
+    vw->notes_text = GTK_WIDGET (gtk_builder_get_object (builder, "notes_text"));
+    vw->terms_menu = GTK_WIDGET (gtk_builder_get_object (builder, "terms_menu"));
 
-    vw->taxtable_check = glade_xml_get_widget (xml, "taxtable_button");
-    vw->taxtable_menu = glade_xml_get_widget (xml, "taxtable_menu");
+    vw->taxtable_check = GTK_WIDGET (gtk_builder_get_object (builder, "taxtable_button"));
+    vw->taxtable_menu = GTK_WIDGET (gtk_builder_get_object (builder, "taxtable_menu"));
 
     /* Currency */
     edit = gnc_currency_edit_new();
     gnc_currency_edit_set_currency (GNC_CURRENCY_EDIT(edit), currency);
     vw->currency_edit = edit;
 
-    hbox = glade_xml_get_widget (xml, "currency_box");
+    hbox = GTK_WIDGET (gtk_builder_get_object (builder, "currency_box"));
     gtk_box_pack_start (GTK_BOX (hbox), edit, TRUE, TRUE, 0);
 
     /* Setup signals */
-    glade_xml_signal_autoconnect_full( xml,
-                                       gnc_glade_autoconnect_full_func,
-                                       vw);
+    gtk_builder_connect_signals_full( builder,
+                                      gnc_builder_connect_full_func,
+                                      vw);
 
     /* Setup initial values */
     if (vendor != NULL)
@@ -490,11 +536,11 @@ gnc_vendor_new_window (QofBook *bookp, GncVendor *vendor)
     /* I know that vendor exists here -- either passed in or just created */
 
     vw->taxincluded = gncVendorGetTaxIncluded (vendor);
-    gnc_ui_taxincluded_optionmenu (vw->taxincluded_menu, &vw->taxincluded);
-    gnc_ui_billterms_optionmenu (vw->terms_menu, bookp, TRUE, &vw->terms);
+    gnc_taxincluded_combo (GTK_COMBO_BOX(vw->taxincluded_menu), vw->taxincluded);
+    gnc_billterms_combo (GTK_COMBO_BOX(vw->terms_menu), bookp, TRUE, vw->terms);
 
     vw->taxtable = gncVendorGetTaxTable (vendor);
-    gnc_ui_taxtables_optionmenu (vw->taxtable_menu, bookp, TRUE, &vw->taxtable);
+    gnc_taxtables_combo (GTK_COMBO_BOX(vw->taxtable_menu), bookp, TRUE, vw->taxtable);
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (vw->taxtable_check),
                                   gncVendorGetTaxTableOverride (vendor));
     gnc_vendor_taxtable_check_cb (GTK_TOGGLE_BUTTON (vw->taxtable_check), vw);
@@ -504,6 +550,7 @@ gnc_vendor_new_window (QofBook *bookp, GncVendor *vendor)
                                          QOF_EVENT_MODIFY | QOF_EVENT_DESTROY);
 
     gtk_widget_show_all (vw->dialog);
+    g_object_unref(G_OBJECT(builder));
 
     return vw;
 }
@@ -658,18 +705,18 @@ gnc_vendor_search (GncVendor *start, QofBook *book)
     static GList *columns = NULL;
     static GNCSearchCallbackButton buttons[] =
     {
-        { N_("View/Edit Vendor"), edit_vendor_cb},
-        { N_("Vendor's Jobs"), jobs_vendor_cb},
-        //    { N_("Vendor Orders"), order_vendor_cb},
-        { N_("Vendor's Bills"), invoice_vendor_cb},
-        { N_("Pay Bill"), payment_vendor_cb},
+        { N_("View/Edit Vendor"), edit_vendor_cb, NULL, TRUE},
+        { N_("Vendor's Jobs"), jobs_vendor_cb, NULL, TRUE},
+        //    { N_("Vendor Orders"), order_vendor_cb, NULL, TRUE},
+        { N_("Vendor's Bills"), invoice_vendor_cb, NULL, TRUE},
+        { N_("Pay Bill"), payment_vendor_cb, NULL, FALSE},
         { NULL },
     };
     (void)order_vendor_cb;
 
     g_return_val_if_fail (book, NULL);
 
-    /* Build parameter list in reverse order*/
+    /* Build parameter list in reverse order */
     if (params == NULL)
     {
         params = gnc_search_param_prepend (params, _("Billing Contact"), NULL, type,
@@ -712,7 +759,7 @@ gnc_vendor_search (GncVendor *start, QofBook *book)
     return gnc_search_dialog_create (type, _("Find Vendor"),
                                      params, columns, q, q2, buttons, NULL,
                                      new_vendor_cb, sw, free_vendor_cb,
-                                     GCONF_SECTION_SEARCH, NULL);
+                                     GNC_PREFS_GROUP_SEARCH, NULL);
 }
 
 GNCSearchWindow *

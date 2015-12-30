@@ -26,6 +26,7 @@
 
 #include <glib.h>
 #include <glib/gi18n.h>
+#include <gio/gio.h>
 #include <libguile.h>
 #include <ctype.h>
 #include <errno.h>
@@ -43,7 +44,7 @@
 
 #include "qof.h"
 #include "guile-mappings.h"
-#include "core-utils/gnc-gconf-utils.h"
+#include "gnc-prefs.h"
 #include "gnc-module/gnc-module.h"
 #include "engine/Account.h"
 #include "engine/Transaction.h"
@@ -51,11 +52,18 @@
 #include "app-utils/gnc-euro.h"
 #include "engine/gnc-hooks.h"
 #include "engine/gnc-session.h"
+#include "engine-helpers.h"
 #include "gnc-locale-utils.h"
+#include "gnc-component-manager.h"
+#include "gnc-features.h"
+#include "gnc-guile-utils.h"
 
-#define KEY_CURRENCY_CHOICE "currency_choice"
-#define KEY_CURRENCY_OTHER  "currency_other"
-#define KEY_REVERSED_ACCOUNTS "reversed_accounts"
+#define GNC_PREF_CURRENCY_CHOICE_LOCALE "currency-choice-locale"
+#define GNC_PREF_CURRENCY_CHOICE_OTHER  "currency-choice-other"
+#define GNC_PREF_CURRENCY_OTHER         "currency-other"
+#define GNC_PREF_REVERSED_ACCTS_NONE    "reversed-accounts-none"
+#define GNC_PREF_REVERSED_ACCTS_CREDIT  "reversed-accounts-credit"
+#define GNC_PREF_REVERSED_ACCTS_INC_EXP "reversed-accounts-incomeexpense"
 
 static QofLogModule log_module = GNC_MOD_GUI;
 
@@ -65,12 +73,31 @@ static int auto_decimal_places = 2;    /* default, can be changed */
 static gboolean reverse_balance_inited = FALSE;
 static gboolean reverse_type[NUM_ACCOUNT_TYPES];
 
-/* Cache currency ISO codes and only look them up in gconf when
+/* Cache currency ISO codes and only look them up in the settings when
  * absolutely necessary. Can't cache a pointer to the data structure
  * as that will change any time the book changes. */
 static gchar *user_default_currency = NULL;
 static gchar *user_report_currency = NULL;
 
+gchar *gnc_normalize_account_separator (const gchar* separator)
+{
+    gchar *new_sep=NULL;
+
+    if (!separator || !*separator || g_strcmp0(separator, "colon") == 0)
+            new_sep = g_strdup (":");
+        else if (g_strcmp0(separator, "slash") == 0)
+            new_sep = g_strdup ("/");
+        else if (g_strcmp0(separator, "backslash") == 0)
+            new_sep = g_strdup ("\\");
+        else if (g_strcmp0(separator, "dash") == 0)
+            new_sep = g_strdup ("-");
+        else if (g_strcmp0(separator, "period") == 0)
+            new_sep = g_strdup (".");
+        else
+            new_sep = g_strdup (separator);
+
+    return new_sep;
+}
 /********************************************************************\
  * gnc_configure_account_separator                                  *
  *   updates the current account separator character                *
@@ -80,63 +107,43 @@ static gchar *user_report_currency = NULL;
 static void
 gnc_configure_account_separator (void)
 {
-    const gchar *separator;
+    gchar *separator;
     char *string;
 
-    string = gnc_gconf_get_string(GCONF_GENERAL, KEY_ACCOUNT_SEPARATOR, NULL);
-
-    if (!string || !*string || safe_strcmp(string, "colon") == 0)
-        separator = ":";
-    else if (safe_strcmp(string, "slash") == 0)
-        separator = "/";
-    else if (safe_strcmp(string, "backslash") == 0)
-        separator = "\\";
-    else if (safe_strcmp(string, "dash") == 0)
-        separator = "-";
-    else if (safe_strcmp(string, "period") == 0)
-        separator = ".";
-    else
-        separator = string;
+    string = gnc_prefs_get_string(GNC_PREFS_GROUP_GENERAL, GNC_PREF_ACCOUNT_SEPARATOR);
+    separator = gnc_normalize_account_separator (string);
 
     gnc_set_account_separator(separator);
 
-    if (string != NULL)
-        free(string);
+    g_free(string);
+    g_free(separator);
 }
 
 
 static void
 gnc_configure_reverse_balance (void)
 {
-    gchar *choice;
     gint i;
 
     for (i = 0; i < NUM_ACCOUNT_TYPES; i++)
         reverse_type[i] = FALSE;
 
-    choice = gnc_gconf_get_string(GCONF_GENERAL, KEY_REVERSED_ACCOUNTS, NULL);
-
-    if (safe_strcmp (choice, "none") == 0)
-    {
-    }
-    else if (safe_strcmp (choice, "income_expense") == 0)
+    if (gnc_prefs_get_bool (GNC_PREFS_GROUP_GENERAL, GNC_PREF_REVERSED_ACCTS_INC_EXP))
     {
         reverse_type[ACCT_TYPE_INCOME]  = TRUE;
         reverse_type[ACCT_TYPE_EXPENSE] = TRUE;
     }
-    else
+    else if (gnc_prefs_get_bool (GNC_PREFS_GROUP_GENERAL, GNC_PREF_REVERSED_ACCTS_CREDIT))
     {
-        if (safe_strcmp (choice, "credit") != 0)
-            PERR("bad value '%s'", choice ? choice : "(null)");
         reverse_type[ACCT_TYPE_LIABILITY] = TRUE;
         reverse_type[ACCT_TYPE_PAYABLE]   = TRUE;
         reverse_type[ACCT_TYPE_EQUITY]    = TRUE;
         reverse_type[ACCT_TYPE_INCOME]    = TRUE;
         reverse_type[ACCT_TYPE_CREDIT]    = TRUE;
     }
+    else if (!gnc_prefs_get_bool (GNC_PREFS_GROUP_GENERAL, GNC_PREF_REVERSED_ACCTS_NONE))
+        PWARN("no reversed account preference set, using none");
 
-    if (choice != NULL)
-        free (choice);
 }
 
 static void
@@ -144,18 +151,6 @@ gnc_reverse_balance_init (void)
 {
     gnc_configure_reverse_balance ();
     reverse_balance_inited = TRUE;
-}
-
-gboolean
-gnc_reverse_balance_type (GNCAccountType type)
-{
-    if ((type < 0) || (type >= NUM_ACCOUNT_TYPES))
-        return FALSE;
-
-    if (!reverse_balance_inited)
-        gnc_reverse_balance_init ();
-
-    return reverse_type[type];
 }
 
 gboolean
@@ -178,11 +173,11 @@ gnc_reverse_balance (const Account *account)
 
 
 gchar *
-gnc_get_default_directory (const gchar *gconf_section)
+gnc_get_default_directory (const gchar *section)
 {
     gchar *dir;
 
-    dir = gnc_gconf_get_string (gconf_section, KEY_LAST_PATH, NULL);
+    dir = gnc_prefs_get_string (section, GNC_PREF_LAST_PATH);
     if (!dir)
 #ifdef G_OS_WIN32
         dir = g_strdup (g_get_user_data_dir ()); /* equivalent of "My Documents" */
@@ -194,15 +189,34 @@ gnc_get_default_directory (const gchar *gconf_section)
 }
 
 void
-gnc_set_default_directory (const gchar *gconf_section, const gchar *directory)
+gnc_set_default_directory (const gchar *section, const gchar *directory)
 {
-    gnc_gconf_set_string(gconf_section, KEY_LAST_PATH, directory, NULL);
+    gnc_prefs_set_string(section, GNC_PREF_LAST_PATH, directory);
 }
 
 QofBook *
 gnc_get_current_book (void)
 {
     return qof_session_get_book (gnc_get_current_session ());
+}
+
+/* If there is no current session, there is no book and we must be dealing
+ * with a new book. When gnucash is started with --nofile, there is
+ * initially no session (and no book), but by the time we check, one
+ * could have been created (for example, if an empty account tree tab is
+ * opened, a session is created which creates a new, but empty, book).
+ * A session is created and a book is loaded from a backend when gnucash is
+ * started with a file, but selecting 'new file' keeps a session open. So we
+ * need to check as well for a book with no accounts (root with no children). */
+gboolean
+gnc_is_new_book (void)
+{
+    return ((!gnc_current_session_exist() ||
+                            (gnc_current_session_exist() &&
+                                !gnc_account_get_children(
+                                    gnc_book_get_root_account(
+                                        gnc_get_current_book()))))
+                            ? TRUE : FALSE);
 }
 
 #define OPTION_TAXUS_NAME "book/tax_US/name"
@@ -232,6 +246,26 @@ gnc_get_current_book_tax_type (void)
     return qof_book_get_string_option(gnc_get_current_book(), OPTION_TAXUS_TYPE);
 }
 
+/** Calls gnc_book_option_num_field_source_change to initiate registered
+  * callbacks when num_field_source book option changes so that
+  * registers/reports can update themselves; sets feature flag */
+void
+gnc_book_option_num_field_source_change_cb (gboolean num_action)
+{
+    gnc_suspend_gui_refresh ();
+    if (num_action)
+    {
+    /* Set a feature flag in the book for use of the split action field as number.
+     * This will prevent older GnuCash versions that don't support this feature
+     * from opening this file. */
+        gnc_features_set_used (gnc_get_current_book(),
+                                                GNC_FEATURE_NUM_FIELD_SOURCE);
+    }
+    gnc_book_option_num_field_source_change (num_action);
+    gnc_resume_gui_refresh ();
+    gnc_gui_refresh_all ();
+}
+
 Account *
 gnc_get_current_root_account (void)
 {
@@ -248,8 +282,8 @@ gchar *
 gnc_get_account_name_for_register(const Account *account)
 {
     gboolean show_leaf_accounts;
-    show_leaf_accounts = gnc_gconf_get_bool(GCONF_GENERAL_REGISTER,
-                                            KEY_SHOW_LEAF_ACCOUNT_NAMES, NULL);
+    show_leaf_accounts = gnc_prefs_get_bool(GNC_PREFS_GROUP_GENERAL_REGISTER,
+                                            GNC_PREF_SHOW_LEAF_ACCT_NAMES);
 
     if (show_leaf_accounts)
         return g_strdup (xaccAccountGetName (account));
@@ -261,8 +295,8 @@ Account *
 gnc_account_lookup_for_register(const Account *base_account, const char *name)
 {
     gboolean show_leaf_accounts;
-    show_leaf_accounts = gnc_gconf_get_bool(GCONF_GENERAL_REGISTER,
-                                            KEY_SHOW_LEAF_ACCOUNT_NAMES, NULL);
+    show_leaf_accounts = gnc_prefs_get_bool(GNC_PREFS_GROUP_GENERAL_REGISTER,
+                                            GNC_PREF_SHOW_LEAF_ACCT_NAMES);
 
     if (show_leaf_accounts)
         return gnc_account_lookup_by_name (base_account, name);
@@ -270,190 +304,6 @@ gnc_account_lookup_for_register(const Account *base_account, const char *name)
         return gnc_account_lookup_by_full_name (base_account, name);
 }
 
-
-/*
- * This is a wrapper routine around an xaccGetBalanceInCurrency
- * function that handles additional needs of the gui.
- *
- * @param fn        The underlying function in Account.c to call to retrieve
- *                  a specific balance from the account.
- * @param account   The account to retrieve data about.
- * @param recurse   Include all sub-accounts of this account.
- * @param negative  An indication of whether or not the returned value
- *                  is negative.  This can be used by the caller to
- *                  easily decode whether or not to color the output.
- * @param commodity The commodity in which the account balance should
- *                  be returned. If NULL, the value will be returned in
- *                  the commodity of the account. This is normally used
- *                  to specify a currency, which forces the conversion
- *                  of things like stock account values from share
- *                  values to an amount the requested currency.
- */
-gnc_numeric
-gnc_ui_account_get_balance_full (xaccGetBalanceInCurrencyFn fn,
-                                 const Account *account,
-                                 gboolean recurse,
-                                 gboolean *negative,
-                                 const gnc_commodity *commodity)
-{
-    gnc_numeric balance;
-
-    balance = fn(account, commodity, recurse);
-
-    /* reverse sign if needed */
-    if (gnc_reverse_balance (account))
-        balance = gnc_numeric_neg (balance);
-
-    /* Record whether the balance is negative. */
-    if (negative)
-        *negative = gnc_numeric_negative_p(balance);
-
-    return balance;
-}
-
-/*
- * This routine retrives the total balance in an account, possibly
- * including all sub-accounts under the specified account.
- */
-gnc_numeric
-gnc_ui_account_get_balance (const Account *account, gboolean recurse)
-{
-    return gnc_ui_account_get_balance_full (xaccAccountGetBalanceInCurrency,
-                                            account, recurse, NULL, NULL);
-}
-
-/*
- * This routine retrives the total balance in an account converted to
- * a given currency, possibly including all sub-accounts under the
- * specified account.
- */
-gnc_numeric
-gnc_ui_account_get_balance_in_currency (const Account *account,
-                                        const gnc_commodity *currency,
-                                        gboolean recurse)
-{
-    return gnc_ui_account_get_balance_full (xaccAccountGetBalanceInCurrency,
-                                            account, recurse, NULL, currency);
-}
-
-/*
- * This routine retrives the reconciled balance in an account,
- * possibly including all sub-accounts under the specified account.
- */
-gnc_numeric
-gnc_ui_account_get_reconciled_balance (const Account *account,
-                                       gboolean recurse)
-{
-    return gnc_ui_account_get_balance_full (xaccAccountGetReconciledBalanceInCurrency,
-                                            account, recurse, NULL, NULL);
-}
-
-
-/**
- * Wrapper around gnc_ui_account_get_balance_full that converts
- * the resulting number to a character string.  The number is
- * formatted according to the specification of the account currency.
- * The caller is responsible for g_free'ing the returned memory.
- *
- * @param fn        The underlying function in Account.c to call to retrieve
- *                  a specific balance from the account.
- * @param account   The account to retrieve data about.
- * @param recurse   Include all sub-accounts of this account.
- * @param negative  An indication of whether or not the returned value
- *                  is negative.  This can be used by the caller to
- *                  easily decode whether or not to color the output.
- */
-gchar *
-gnc_ui_account_get_print_balance (xaccGetBalanceInCurrencyFn fn,
-                                  const Account *account,
-                                  gboolean recurse,
-                                  gboolean *negative)
-{
-    GNCPrintAmountInfo print_info;
-    gnc_numeric balance;
-
-    balance = gnc_ui_account_get_balance_full(fn, account, recurse,
-              negative, NULL);
-    print_info = gnc_account_print_info(account, TRUE);
-    return g_strdup(xaccPrintAmount(balance, print_info));
-}
-
-
-/**
- * Wrapper around gnc_ui_account_get_balance_full that converts
- * the resulting number to a character string.  The number is
- * formatted according to the specification of the default reporting
- * currency.
- *
- * @param fn        The underlying function in Account.c to call to retrieve
- *                  a specific balance from the account.
- * @param account   The account to retrieve data about.
- * @param recurse   Include all sub-accounts of this account.
- * @param negative  An indication of whether or not the returned value
- *                  is negative.  This can be used by the caller to
- *                  easily decode whether or not to color the output.
- */
-gchar *
-gnc_ui_account_get_print_report_balance (xaccGetBalanceInCurrencyFn fn,
-        const Account *account,
-        gboolean recurse,
-        gboolean *negative)
-{
-    GNCPrintAmountInfo print_info;
-    gnc_numeric balance;
-    gnc_commodity *report_commodity;
-
-    report_commodity = gnc_default_report_currency();
-    balance = gnc_ui_account_get_balance_full(fn, account, recurse,
-              negative, report_commodity);
-    print_info = gnc_commodity_print_info(report_commodity, TRUE);
-    return g_strdup(xaccPrintAmount(balance, print_info));
-}
-
-
-gnc_numeric
-gnc_ui_account_get_balance_as_of_date (Account *account,
-                                       time_t date,
-                                       gboolean include_children)
-{
-    gnc_numeric balance;
-    gnc_commodity *currency;
-
-    if (account == NULL)
-        return gnc_numeric_zero ();
-
-    currency = xaccAccountGetCommodity (account);
-    balance = xaccAccountGetBalanceAsOfDate (account, date);
-
-    if (include_children)
-    {
-        GList *children, *node;
-
-        children = gnc_account_get_descendants(account);
-
-        for (node = children; node; node = node->next)
-        {
-            Account *child;
-            gnc_commodity *child_currency;
-            gnc_numeric child_balance;
-
-            child = node->data;
-            child_currency = xaccAccountGetCommodity (child);
-            child_balance = xaccAccountGetBalanceAsOfDate (child, date);
-            child_balance = xaccAccountConvertBalanceToCurrency (child,
-                            child_balance, child_currency, currency);
-            balance = gnc_numeric_add_fixed (balance, child_balance);
-        }
-
-        g_list_free(children);
-    }
-
-    /* reverse sign if needed */
-    if (gnc_reverse_balance (account))
-        balance = gnc_numeric_neg (balance);
-
-    return balance;
-}
 
 /* Caller is responsible for g_free'ing returned memory */
 char *
@@ -464,14 +314,6 @@ gnc_ui_account_get_tax_info_string (const Account *account)
 
     gboolean tax_related = FALSE;
     const char *code;
-    const gchar *tax_type;
-    GNCAccountType atype;
-    SCM category;
-    SCM code_scm;
-    SCM tax_entity_type;
-    const gchar *form, *desc, *copy_txt;
-    gint64 copy_number;
-    SCM scm;
 
     if (!account)
         return NULL;
@@ -498,15 +340,20 @@ gnc_ui_account_get_tax_info_string (const Account *account)
     }
     else  /* with tax code */
     {
-        const gchar *num_code = NULL;
+        const gchar *tax_type;
+        GNCAccountType atype;
+        SCM tax_entity_type;
+        SCM category;
+        gchar *num_code = NULL;
         const gchar *prefix = "N";
+        gchar *return_string = NULL;
 
         tax_type = gnc_get_current_book_tax_type ();
-        if (tax_type == NULL || (safe_strcmp (tax_type, "") == 0))
+        if (tax_type == NULL || (g_strcmp0 (tax_type, "") == 0))
             return g_strdup (_("Tax entity type not specified"));
+
         atype = xaccAccountGetType (account);
-        /*    tax_entity_type = scm_from_locale_string (tax_type); <- requires guile 1.8*/
-        tax_entity_type = scm_makfrom0str (tax_type); /* <-guile 1.6  */
+        tax_entity_type = scm_from_utf8_string (tax_type);
 
         if (get_form == SCM_UNDEFINED)
         {
@@ -536,7 +383,8 @@ gnc_ui_account_get_tax_info_string (const Account *account)
 
             g_return_val_if_fail (module, NULL);
 
-            get_form = scm_c_eval_string ("(false-if-exception gnc:txf-get-form)");
+            get_form = scm_c_eval_string
+                       ("(false-if-exception gnc:txf-get-form)");
             get_desc = scm_c_eval_string
                        ("(false-if-exception gnc:txf-get-description)");
         }
@@ -561,89 +409,139 @@ gnc_ui_account_get_tax_info_string (const Account *account)
                                           (atype == ACCT_TYPE_PAYABLE)) ?
                                          "txf-liab-eq-categories" : ""))));
 
-        num_code = g_strdup (code);
-        if (g_str_has_prefix (num_code, prefix))
-            num_code++; /* to lose the leading N */
+        if (g_str_has_prefix (code, prefix))
+        {
+            const gchar *num_code_tmp;
+            num_code_tmp = g_strdup (code);
+            num_code_tmp++; /* to lose the leading N */
+            num_code = g_strdup (num_code_tmp);
+            num_code_tmp--;
+            g_free ((gpointer *) num_code_tmp);
+        }
+        else
+        {
+            num_code = g_strdup (code);
+        }
 
         if (category == SCM_UNDEFINED)
         {
             if (tax_related)
-                return g_strdup_printf
-                       (_("Tax type %s: invalid code %s for account type"),
-                        tax_type, num_code);
+                return_string = g_strdup_printf
+                                (_("Tax type %s: invalid code %s for account type"),
+                                 tax_type, num_code);
             else
-                return g_strdup_printf
-                       (_("Not tax-related; tax type %s: invalid code %s for account type"),
-                        tax_type, num_code);
-        }
-
-        code_scm = scm_str2symbol (code);
-        scm = scm_call_3 (get_form, category, code_scm, tax_entity_type);
-        if (!scm_is_string (scm))
-        {
-            if (tax_related)
-                return g_strdup_printf
-                       (_("Invalid code %s for tax type %s"),
-                        num_code, tax_type);
-            else
-                return g_strdup_printf
-                       (_("Not tax-related; invalid code %s for tax type %s"),
-                        num_code, tax_type);
-        }
-
-        form = scm_to_locale_string (scm);
-        if (!form)
-        {
-            if (tax_related)
-                return g_strdup_printf
-                       (_("No form: code %s, tax type %s"), num_code, tax_type);
-            else
-                return g_strdup_printf
-                       (_("Not tax-related; no form: code %s, tax type %s"),
-                        num_code, tax_type);
-        }
-
-        scm = scm_call_3 (get_desc, category, code_scm, tax_entity_type);
-        if (!scm_is_string (scm))
-        {
-            if (tax_related)
-                return g_strdup_printf
-                       (_("No description: form %s, code %s, tax type %s"),
-                        form, num_code, tax_type);
-            else
-                return g_strdup_printf
-                       (_("Not tax-related; no description: form %s, code %s, tax type %s"),
-                        form, num_code, tax_type);
-        }
-
-        desc = scm_to_locale_string (scm);
-        if (!desc)
-        {
-            if (tax_related)
-                return g_strdup_printf
-                       (_("No description: form %s, code %s, tax type %s"),
-                        form, num_code, tax_type);
-            else
-                return g_strdup_printf
-                       (_("Not tax-related; no description: form %s, code %s, tax type %s"),
-                        form, num_code, tax_type);
-        }
-
-        copy_number = xaccAccountGetTaxUSCopyNumber (account);
-        copy_txt = (copy_number == 1) ? "" : g_strdup_printf ("(%d)",
-                   (gint) copy_number);
-
-        if (tax_related)
-        {
-            if (safe_strcmp (form, "") == 0)
-                return g_strdup_printf ("%s", desc);
-            else
-                return g_strdup_printf ("%s%s: %s", form, copy_txt, desc);
+                return_string = g_strdup_printf
+                                (_("Not tax-related; tax type %s: invalid code %s for account type"),
+                                 tax_type, num_code);
         }
         else
-            return g_strdup_printf
-                   (_("Not tax-related; %s%s: %s (code %s, tax type %s)"),
-                    form, copy_txt, desc, num_code, tax_type);
+        {
+            SCM code_scm;
+            SCM form_scm;
+            code_scm = scm_from_locale_symbol (code);
+            form_scm = scm_call_3 (get_form, category, code_scm, tax_entity_type);
+            if (!scm_is_string (form_scm))
+            {
+                if (tax_related)
+                    return_string =  g_strdup_printf
+                                     (_("Invalid code %s for tax type %s"),
+                                      num_code, tax_type);
+                else
+                    return_string =  g_strdup_printf
+                                     (_("Not tax-related; invalid code %s for tax type %s"),
+                                      num_code, tax_type);
+            }
+            else
+            {
+                gchar *form = NULL;
+
+                /* Note: using scm_to_utf8_string directly here instead
+                   of our wrapper gnc_scm_to_utf8_string. 'form' should
+                   be freed with 'free' instead of 'g_free'. This will
+                   be taken care of automatically during scm_dynwind_end,
+                   because we inform guile of this memory allocation via
+                   scm_dynwind_free a little further. */
+                form = scm_to_utf8_string (form_scm);
+                if (!form)
+                {
+                    if (tax_related)
+                        return_string = g_strdup_printf
+                                        (_("No form: code %s, tax type %s"), num_code,
+                                         tax_type);
+                    else
+                        return_string = g_strdup_printf
+                                        (_("Not tax-related; no form: code %s, tax type %s"),
+                                         num_code, tax_type);
+                }
+                else
+                {
+                    SCM desc_scm;
+
+                    /* Create a dynwind context because we will be calling (scm) functions
+                       that potentially exit non-locally */
+                    scm_dynwind_begin (0);
+                    scm_dynwind_free (form);
+                    desc_scm = scm_call_3 (get_desc, category, code_scm,
+                                           tax_entity_type);
+                    if (!scm_is_string (desc_scm))
+                    {
+                        if (tax_related)
+                            return_string = g_strdup_printf
+                                            (_("No description: form %s, code %s, tax type %s"),
+                                             form, num_code, tax_type);
+                        else
+                            return_string = g_strdup_printf
+                                            (_("Not tax-related; no description: form %s, code %s, tax type %s"),
+                                             form, num_code, tax_type);
+                    }
+                    else
+                    {
+                        gchar *desc = NULL;
+                        desc = gnc_scm_to_utf8_string (desc_scm);
+                        if (!desc)
+                        {
+                            if (tax_related)
+                                return_string = g_strdup_printf
+                                                (_("No description: form %s, code %s, tax type %s"),
+                                                 form, num_code, tax_type);
+                            else
+                                return_string = g_strdup_printf
+                                                (_("Not tax-related; no description: form %s, code %s, tax type %s"),
+                                                 form, num_code, tax_type);
+                        }
+                        else
+                        {
+                            gint64 copy_number;
+                            gchar *copy_txt = NULL;
+                            copy_number = xaccAccountGetTaxUSCopyNumber (account);
+                            copy_txt = (copy_number == 1) ?
+                                       g_strdup ("") :
+                                       g_strdup_printf ("(%d)",
+                                                        (gint) copy_number);
+                            if (tax_related)
+                            {
+                                if (g_strcmp0 (form, "") == 0)
+                                    return_string = g_strdup_printf ("%s", desc);
+                                else
+                                    return_string = g_strdup_printf ("%s%s: %s",
+                                                                     form, copy_txt, desc);
+                            }
+                            else
+                            {
+                                return_string = g_strdup_printf
+                                                (_("Not tax-related; %s%s: %s (code %s, tax type %s)"),
+                                                 form, copy_txt, desc, num_code, tax_type);
+                            }
+                            g_free (copy_txt);
+                        }
+                        g_free (desc);
+                    }
+                    scm_dynwind_end ();
+                }
+            }
+        }
+        g_free (num_code);
+        return return_string;
     }
 }
 
@@ -677,12 +575,12 @@ gnc_ui_account_get_tax_info_sub_acct_string (const Account *account)
          * account generally corresponds to a specific line number
          * on a paper form and each form has a unique
          * identification (e.g., Form 1040, Schedule A). */
-        return (sub_acct_tax_number == 0) ? g_strdup ("") :
+        return (sub_acct_tax_number == 0) ? NULL :
                g_strdup_printf (_("(Tax-related subaccounts: %d)"),
                                 sub_acct_tax_number);
     }
     else
-        return g_strdup ("");
+        return NULL;
 }
 
 static const char *
@@ -703,7 +601,7 @@ string_after_colon (const char *msgstr)
  * gnc_get_reconcile_str                                            *
  *   return the i18n'd string for the given reconciled flag         *
  *                                                                  *
- * Args: reconciled_flag - the flag to stringize                    *
+ * Args: reconciled_flag - the flag to convert into a string        *
  * Returns: the i18n'd reconciled string                            *
 \********************************************************************/
 const char *
@@ -751,7 +649,7 @@ gnc_get_reconcile_valid_flags (void)
  * gnc_get_reconcile_flag_order                                     *
  *   return a string containing the reconciled-flag change order    *
  *                                                                  *
- * Args: reconciled_flag - the flag to stringize                    *
+ * Args: reconciled_flag - the flag to convert into a string        *
  * Returns: the i18n'd reconciled string                            *
 \********************************************************************/
 const char *
@@ -870,7 +768,7 @@ gnc_find_or_create_equity_account (Account *root,
 gboolean
 gnc_account_create_opening_balance (Account *account,
                                     gnc_numeric balance,
-                                    time_t date,
+                                    time64 date,
                                     QofBook *book)
 {
     Account *equity_account;
@@ -896,8 +794,8 @@ gnc_account_create_opening_balance (Account *account,
 
     xaccTransBeginEdit (trans);
 
-    xaccTransSetCurrency (trans, xaccAccountGetCommodity (account));
-    xaccTransSetDatePostedSecs (trans, date);
+    xaccTransSetCurrency (trans, gnc_account_or_default_currency (account, NULL));
+    xaccTransSetDatePostedSecsNormalized (trans, date);
     xaccTransSetDescription (trans, _("Opening Balance"));
 
     split = xaccMallocSplit (book);
@@ -925,6 +823,7 @@ gnc_account_create_opening_balance (Account *account,
     return TRUE;
 }
 
+#if 0 /* Not Used */
 static void
 gnc_lconv_set_utf8 (char **p_value, char *default_value)
 {
@@ -968,7 +867,7 @@ gnc_lconv_set_char (char *p_value, char default_value)
     if ((p_value != NULL) && (*p_value == CHAR_MAX))
         *p_value = default_value;
 }
-
+#endif /* Not Used */
 
 gnc_commodity *
 gnc_locale_default_currency_nodefault (void)
@@ -985,7 +884,7 @@ gnc_locale_default_currency_nodefault (void)
     /* Some very old locales (notably on win32) still announce a euro
        currency as default, although it has been replaced by EUR in
        2001. We use EUR as default in that case, but the user can always
-       override from gconf. */
+       override from gsettings. */
     if (gnc_is_euro_currency (currency))
         currency = gnc_get_euro();
 
@@ -1005,26 +904,24 @@ gnc_locale_default_currency (void)
 
 static gnc_commodity *
 gnc_default_currency_common (gchar *requested_currency,
-                             const gchar *gconf_section)
+                             const gchar *section)
 {
     gnc_commodity *currency = NULL;
-    gchar *choice, *mnemonic;
+    gchar  *mnemonic;
 
     if (requested_currency)
         return gnc_commodity_table_lookup(gnc_get_current_commodities(),
                                           GNC_COMMODITY_NS_CURRENCY,
                                           requested_currency);
 
-    choice = gnc_gconf_get_string(gconf_section, KEY_CURRENCY_CHOICE, NULL);
-    if (g_strcmp0(choice, "other") == 0)
+    if (gnc_prefs_get_bool (section, GNC_PREF_CURRENCY_CHOICE_OTHER))
     {
-        mnemonic = gnc_gconf_get_string(gconf_section, KEY_CURRENCY_OTHER, NULL);
+        mnemonic = gnc_prefs_get_string(section, GNC_PREF_CURRENCY_OTHER);
         currency = gnc_commodity_table_lookup(gnc_get_current_commodities(),
                                               GNC_COMMODITY_NS_CURRENCY, mnemonic);
         DEBUG("mnemonic %s, result %p", mnemonic ? mnemonic : "(null)", currency);
         g_free(mnemonic);
     }
-    g_free(choice);
 
     if (!currency)
         currency = gnc_locale_default_currency ();
@@ -1041,17 +938,44 @@ gnc_default_currency_common (gchar *requested_currency,
 gnc_commodity *
 gnc_default_currency (void)
 {
-    return gnc_default_currency_common (user_default_currency, GCONF_GENERAL);
+    return gnc_default_currency_common (user_default_currency, GNC_PREFS_GROUP_GENERAL);
 }
+
+gnc_commodity * gnc_account_or_default_currency(const Account* account, gboolean * currency_from_account_found)
+{
+    gnc_commodity *currency;
+    if (!account)
+    {
+        if (currency_from_account_found)
+            *currency_from_account_found = FALSE;
+        return gnc_default_currency();
+    }
+
+    currency = gnc_account_get_currency_or_parent(account);
+    if (currency)
+    {
+        if (currency_from_account_found)
+            *currency_from_account_found = TRUE;
+    }
+    else
+    {
+        if (currency_from_account_found)
+            *currency_from_account_found = FALSE;
+        currency = gnc_default_currency();
+    }
+    return currency;
+}
+
+
 
 gnc_commodity *
 gnc_default_report_currency (void)
 {
-    return gnc_default_currency_common (user_report_currency, GCONF_GENERAL_REPORT);
+    return gnc_default_currency_common (user_report_currency, GNC_PREFS_GROUP_GENERAL_REPORT);
 }
 
 static void
-gnc_currency_changed_cb (GConfEntry *entry, gpointer user_data)
+gnc_currency_changed_cb (GSettings *settings, gchar *key, gpointer user_data)
 {
     user_default_currency = NULL;
     user_report_currency = NULL;
@@ -1305,7 +1229,7 @@ PrintAmountInternal(char *buf, gnc_numeric val, const GNCPrintAmountInfo *info)
         return 0;
     }
 
-    /* Print the absolute value, but remember negativity */
+    /* Print the absolute value, but remember sign */
     value_is_negative = gnc_numeric_negative_p (val);
     val = gnc_numeric_abs (val);
 
@@ -1530,37 +1454,7 @@ xaccSPrintAmount (char * bufp, gnc_numeric val, GNCPrintAmountInfo info)
         return 0;
 
     lc = gnc_localeconv();
-
-    if (info.use_symbol)
-    {
-        /* There was a bug here: don't use gnc_locale_default_currency */
-        if (gnc_commodity_equiv (info.commodity,
-                                 gnc_locale_default_currency_nodefault ()))
-        {
-            currency_symbol = lc->currency_symbol;
-        }
-        else
-        {
-            if (info.commodity && !gnc_commodity_is_iso (info.commodity))
-                is_shares = TRUE;
-
-            currency_symbol = gnc_commodity_get_mnemonic (info.commodity);
-            info.use_locale = 0;
-        }
-
-        if (currency_symbol == NULL)
-            currency_symbol = "";
-    }
-    else
-        currency_symbol = NULL;
-
-    if (!info.use_locale)
-    {
-        cs_precedes = is_shares ? 0 : 1;
-        sep_by_space = 1;
-    }
-    else
-    {
+    if (info.use_locale)
         if (gnc_numeric_negative_p (val))
         {
             cs_precedes  = lc->n_cs_precedes;
@@ -1571,7 +1465,23 @@ xaccSPrintAmount (char * bufp, gnc_numeric val, GNCPrintAmountInfo info)
             cs_precedes  = lc->p_cs_precedes;
             sep_by_space = lc->p_sep_by_space;
         }
+    else
+    {
+        cs_precedes = TRUE;
+        sep_by_space = TRUE;
     }
+
+    if (info.commodity && info.use_symbol)
+    {
+        currency_symbol = gnc_commodity_get_nice_symbol (info.commodity);
+        if (!gnc_commodity_is_iso (info.commodity))
+        {
+            cs_precedes  = FALSE;
+            sep_by_space = TRUE;
+        }
+    }
+    else /* !info.use_symbol || !info.commodity */
+        currency_symbol = "";
 
     if (gnc_numeric_negative_p (val))
     {
@@ -1709,10 +1619,10 @@ static gchar *big_numbers[] =
        thousands. */
     "Million",
     /* Translators: This is the word for the number 10^9, one thousand
-       millions. WATCH OUT: In British english and many other languages
+       millions. WATCH OUT: In British English and many other languages
        this word is used for 10^12 which is one million millions! In
        contrast to this, here in GnuCash this is used in the American
-       english meaning of 10^9.  */
+       English meaning of 10^9.  */
     "Billion",
     /* Translators: This is the word for the number 10^12, one million
        millions. */
@@ -1834,7 +1744,6 @@ printable_value (gdouble val, gint denom)
     info = gnc_share_print_info_places(log10(denom));
     return xaccPrintAmount (num, info);
 }
-
 
 /********************************************************************\
  * xaccParseAmount                                                  *
@@ -2355,31 +2264,27 @@ xaccParseAmountExtended (const char * in_str, gboolean monetary,
 
 /* enable/disable the auto_decimal_enabled option */
 static void
-gnc_set_auto_decimal_enabled (GConfEntry *entry, gpointer user_data)
+gnc_set_auto_decimal_enabled (gpointer settings, gchar *key, gpointer user_data)
 {
-    GConfValue *value;
-
-    value = gconf_entry_get_value(entry);
-    auto_decimal_enabled = gconf_value_get_bool(value);
+    auto_decimal_enabled =
+            gnc_prefs_get_bool (GNC_PREFS_GROUP_GENERAL, GNC_PREF_AUTO_DECIMAL_POINT);
 }
 
 /* set the number of auto decimal places to use */
 static void
-gnc_set_auto_decimal_places  (GConfEntry *entry, gpointer user_data)
+gnc_set_auto_decimal_places (gpointer settings, gchar *key, gpointer user_data)
 {
-    GConfValue *value;
-
-    value = gconf_entry_get_value(entry);
-    auto_decimal_places = gconf_value_get_float(value);
+    auto_decimal_places =
+            gnc_prefs_get_int (GNC_PREFS_GROUP_GENERAL, GNC_PREF_AUTO_DECIMAL_PLACES);
 }
 
 static void
 gnc_auto_decimal_init (void)
 {
     auto_decimal_enabled =
-        gnc_gconf_get_bool(GCONF_GENERAL, "auto_decimal_point", NULL);
+        gnc_prefs_get_bool (GNC_PREFS_GROUP_GENERAL, GNC_PREF_AUTO_DECIMAL_POINT);
     auto_decimal_places =
-        gnc_gconf_get_float(GCONF_GENERAL, "auto_decimal_places", NULL);
+        gnc_prefs_get_int (GNC_PREFS_GROUP_GENERAL, GNC_PREF_AUTO_DECIMAL_PLACES);
 }
 
 void
@@ -2388,42 +2293,29 @@ gnc_ui_util_init (void)
     gnc_configure_account_separator ();
     gnc_auto_decimal_init();
 
-    gnc_gconf_general_register_cb(KEY_ACCOUNT_SEPARATOR,
-                                  (GncGconfGeneralCb)gnc_configure_account_separator,
-                                  NULL);
-    gnc_gconf_general_register_cb(KEY_REVERSED_ACCOUNTS,
-                                  (GncGconfGeneralCb)gnc_configure_reverse_balance,
-                                  NULL);
-    gnc_gconf_general_register_cb(KEY_CURRENCY_CHOICE,
-                                  gnc_currency_changed_cb, NULL);
-    gnc_gconf_general_register_cb(KEY_CURRENCY_OTHER,
-                                  gnc_currency_changed_cb, NULL);
-    gnc_gconf_general_register_cb("auto_decimal_point",
-                                  gnc_set_auto_decimal_enabled,
-                                  NULL);
-    gnc_gconf_general_register_cb("auto_decimal_places",
-                                  gnc_set_auto_decimal_places,
-                                  NULL);
+    gnc_prefs_register_cb(GNC_PREFS_GROUP_GENERAL, GNC_PREF_ACCOUNT_SEPARATOR,
+                          gnc_configure_account_separator, NULL);
+    gnc_prefs_register_cb(GNC_PREFS_GROUP_GENERAL, GNC_PREF_REVERSED_ACCTS_NONE,
+                          gnc_configure_reverse_balance, NULL);
+    gnc_prefs_register_cb(GNC_PREFS_GROUP_GENERAL, GNC_PREF_REVERSED_ACCTS_CREDIT,
+                          gnc_configure_reverse_balance, NULL);
+    gnc_prefs_register_cb(GNC_PREFS_GROUP_GENERAL, GNC_PREF_REVERSED_ACCTS_INC_EXP,
+                          gnc_configure_reverse_balance, NULL);
+    gnc_prefs_register_cb(GNC_PREFS_GROUP_GENERAL, GNC_PREF_CURRENCY_CHOICE_LOCALE,
+                          gnc_currency_changed_cb, NULL);
+    gnc_prefs_register_cb(GNC_PREFS_GROUP_GENERAL, GNC_PREF_CURRENCY_CHOICE_OTHER,
+                          gnc_currency_changed_cb, NULL);
+    gnc_prefs_register_cb(GNC_PREFS_GROUP_GENERAL, GNC_PREF_CURRENCY_OTHER,
+                          gnc_currency_changed_cb, NULL);
+    gnc_prefs_register_cb(GNC_PREFS_GROUP_GENERAL_REPORT, GNC_PREF_CURRENCY_CHOICE_LOCALE,
+                          gnc_currency_changed_cb, NULL);
+    gnc_prefs_register_cb(GNC_PREFS_GROUP_GENERAL_REPORT, GNC_PREF_CURRENCY_CHOICE_OTHER,
+                          gnc_currency_changed_cb, NULL);
+    gnc_prefs_register_cb(GNC_PREFS_GROUP_GENERAL_REPORT, GNC_PREF_CURRENCY_OTHER,
+                          gnc_currency_changed_cb, NULL);
+    gnc_prefs_register_cb(GNC_PREFS_GROUP_GENERAL, GNC_PREF_AUTO_DECIMAL_POINT,
+                          gnc_set_auto_decimal_enabled, NULL);
+    gnc_prefs_register_cb(GNC_PREFS_GROUP_GENERAL, GNC_PREF_AUTO_DECIMAL_PLACES,
+                          gnc_set_auto_decimal_places, NULL);
 
 }
-
-/* These implementations are rather lame. */
-#ifndef HAVE_TOWUPPER
-gint32
-towupper (gint32 wc)
-{
-    if (wc > 127)
-        return wc;
-
-    return toupper ((int) wc);
-}
-
-int
-iswlower (gint32 wc)
-{
-    if (wc > 127)
-        return 1;
-
-    return islower ((int) wc);
-}
-#endif

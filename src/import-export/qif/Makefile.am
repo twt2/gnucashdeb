@@ -34,6 +34,6 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/import-export \
   -I${top_srcdir}/src/libqof/qof \
   ${GLIB_CFLAGS} \
-  ${GUILE_INCS}
+  ${GUILE_CFLAGS}
 
-INCLUDES = -DG_LOG_DOMAIN=\"gnc.import.qif\"
+AM_CPPFLAGS += -DG_LOG_DOMAIN=\"gnc.import.qif\"

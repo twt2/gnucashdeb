@@ -31,7 +31,6 @@
 #include "qofid-p.h"
 
 static QofLogModule log_module = QOF_MOD_ENGINE;
-static gboolean qof_alt_dirty_mode = FALSE;
 
 struct QofCollection_s
 {
@@ -41,20 +40,6 @@ struct QofCollection_s
     GHashTable * hash_of_entities;
     gpointer     data;       /* place where object class can hang arbitrary data */
 };
-
-/* =============================================================== */
-
-gboolean
-qof_get_alt_dirty_mode (void)
-{
-    return qof_alt_dirty_mode;
-}
-
-void
-qof_set_alt_dirty_mode (gboolean enabled)
-{
-    qof_alt_dirty_mode = enabled;
-}
 
 /* =============================================================== */
 
@@ -102,8 +87,6 @@ qof_collection_remove_entity (QofInstance *ent)
     if (!col) return;
     guid = qof_instance_get_guid(ent);
     g_hash_table_remove (col->hash_of_entities, guid);
-    if (!qof_alt_dirty_mode)
-        qof_collection_mark_dirty(col);
     qof_instance_set_collection(ent, NULL);
 }
 
@@ -118,8 +101,6 @@ qof_collection_insert_entity (QofCollection *col, QofInstance *ent)
     g_return_if_fail (col->e_type == ent->e_type);
     qof_collection_remove_entity (ent);
     g_hash_table_insert (col->hash_of_entities, (gpointer)guid, ent);
-    if (!qof_alt_dirty_mode)
-        qof_collection_mark_dirty(col);
     qof_instance_set_collection(ent, col);
 }
 
@@ -146,31 +127,9 @@ qof_collection_add_entity (QofCollection *coll, QofInstance *ent)
         return FALSE;
     }
     g_hash_table_insert (coll->hash_of_entities, (gpointer)guid, ent);
-    if (!qof_alt_dirty_mode)
-        qof_collection_mark_dirty(coll);
     return TRUE;
 }
 
-static void
-collection_merge_cb (QofInstance *ent, gpointer data)
-{
-    QofCollection *target;
-
-    target = (QofCollection*)data;
-    qof_collection_add_entity(target, ent);
-}
-
-gboolean
-qof_collection_merge (QofCollection *target, QofCollection *merge)
-{
-    if (!target || !merge)
-    {
-        return FALSE;
-    }
-    g_return_val_if_fail (target->e_type == merge->e_type, FALSE);
-    qof_collection_foreach(merge, collection_merge_cb, target);
-    return TRUE;
-}
 
 static void
 collection_compare_cb (QofInstance *ent, gpointer user_data)
@@ -345,7 +304,8 @@ struct _iterate
     gpointer                data;
 };
 
-static void foreach_cb (gpointer key, gpointer item, gpointer arg)
+static void
+foreach_cb (gpointer item, gpointer arg)
 {
     struct _iterate *iter = arg;
     QofInstance *ent = item;
@@ -358,6 +318,7 @@ qof_collection_foreach (const QofCollection *col, QofInstanceForeachCB cb_func,
                         gpointer user_data)
 {
     struct _iterate iter;
+    GList *entries;
 
     g_return_if_fail (col);
     g_return_if_fail (cb_func);
@@ -365,7 +326,12 @@ qof_collection_foreach (const QofCollection *col, QofInstanceForeachCB cb_func,
     iter.fcn = cb_func;
     iter.data = user_data;
 
-    g_hash_table_foreach (col->hash_of_entities, foreach_cb, &iter);
-}
+    PINFO("Hash Table size of %s before is %d", col->e_type, g_hash_table_size(col->hash_of_entities));
 
+    entries = g_hash_table_get_values (col->hash_of_entities);
+    g_list_foreach (entries, foreach_cb, &iter);
+    g_list_free (entries);
+
+    PINFO("Hash Table size of %s after is %d", col->e_type, g_hash_table_size(col->hash_of_entities));
+}
 /* =============================================================== */

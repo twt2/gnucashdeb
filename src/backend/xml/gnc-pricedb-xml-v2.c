@@ -32,6 +32,7 @@
 #include "sixtp-dom-parsers.h"
 #include "sixtp-dom-generators.h"
 #include "io-gncxml-gen.h"
+#include "io-gncxml-v2.h"
 
 #include "gnc-pricedb.h"
 #include "gnc-pricedb-p.h"
@@ -90,46 +91,46 @@ price_parse_xml_sub_node(GNCPrice *p, xmlNodePtr sub_node, QofBook *book)
     if (!p || !sub_node) return FALSE;
 
     gnc_price_begin_edit (p);
-    if (safe_strcmp("price:id", (char*)sub_node->name) == 0)
+    if (g_strcmp0("price:id", (char*)sub_node->name) == 0)
     {
         GncGUID *c = dom_tree_to_guid(sub_node);
         if (!c) return FALSE;
         gnc_price_set_guid(p, c);
         g_free(c);
     }
-    else if (safe_strcmp("price:commodity", (char*)sub_node->name) == 0)
+    else if (g_strcmp0("price:commodity", (char*)sub_node->name) == 0)
     {
         gnc_commodity *c = dom_tree_to_commodity_ref(sub_node, book);
         if (!c) return FALSE;
         gnc_price_set_commodity(p, c);
     }
-    else if (safe_strcmp("price:currency", (char*)sub_node->name) == 0)
+    else if (g_strcmp0("price:currency", (char*)sub_node->name) == 0)
     {
         gnc_commodity *c = dom_tree_to_commodity_ref(sub_node, book);
         if (!c) return FALSE;
         gnc_price_set_currency(p, c);
     }
-    else if (safe_strcmp("price:time", (char*)sub_node->name) == 0)
+    else if (g_strcmp0("price:time", (char*)sub_node->name) == 0)
     {
         Timespec t = dom_tree_to_timespec(sub_node);
         if (!dom_tree_valid_timespec(&t, sub_node->name)) return FALSE;
         gnc_price_set_time(p, t);
     }
-    else if (safe_strcmp("price:source", (char*)sub_node->name) == 0)
+    else if (g_strcmp0("price:source", (char*)sub_node->name) == 0)
     {
         char *text = dom_tree_to_text(sub_node);
         if (!text) return FALSE;
-        gnc_price_set_source(p, text);
+        gnc_price_set_source_string(p, text);
         g_free(text);
     }
-    else if (safe_strcmp("price:type", (char*)sub_node->name) == 0)
+    else if (g_strcmp0("price:type", (char*)sub_node->name) == 0)
     {
         char *text = dom_tree_to_text(sub_node);
         if (!text) return FALSE;
         gnc_price_set_typestr(p, text);
         g_free(text);
     }
-    else if (safe_strcmp("price:value", (char*)sub_node->name) == 0)
+    else if (g_strcmp0("price:value", (char*)sub_node->name) == 0)
     {
         gnc_numeric *value = dom_tree_to_gnc_numeric(sub_node);
         if (!value) return FALSE;
@@ -282,6 +283,8 @@ pricedb_after_child_handler(gpointer data_for_children,
                             const gchar *child_tag,
                             sixtp_child_result *child_result)
 {
+    gxpf_data *gdata = global_data;
+    sixtp_gdv2 *gd = gdata->parsedata;
     GNCPriceDB *db = (GNCPriceDB *) * result;
 
     g_return_val_if_fail(db, FALSE);
@@ -296,9 +299,8 @@ pricedb_after_child_handler(gpointer data_for_children,
 
         g_return_val_if_fail(p, FALSE);
         gnc_pricedb_add_price(db, p);
-        /* can't do this because the v1 parser doesn't use this data
-           structure as global data */
-        /* ((sixtp_gdv2*)global_data)->counter.prices_loaded++; */
+        gd->counter.prices_loaded++;
+        run_callback(gd, "prices");
         return TRUE;
     }
     else
@@ -438,7 +440,7 @@ gnc_price_to_dom_tree(const xmlChar *tag, GNCPrice *price)
     tmpnode = timespec_to_dom_tree("price:time", &timesp);
     if (!add_child_or_kill_parent(price_xml, tmpnode)) return NULL;
 
-    sourcestr = gnc_price_get_source(price);
+    sourcestr = gnc_price_get_source_string(price);
     if (sourcestr && (strlen(sourcestr) != 0))
     {
         tmpnode = text_to_dom_tree("price:source", sourcestr);

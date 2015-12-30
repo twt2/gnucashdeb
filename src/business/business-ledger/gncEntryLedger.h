@@ -28,30 +28,32 @@
 #include "gncEntry.h"
 #include "gncOrder.h"
 #include "table-allgui.h"
-
+/** @ingroup Register
+ * @addtogroup BusinessRegister Business Register
+ * @brief A specialized register for Accounts Payable and Accounts Receivable.
+ * @{
+ */
+/** @file gncEntryLedger.h
+ */
 typedef enum
 {
+    GNC_ENTRY_ORDER_NONE = -1, //Force clang to use int representation of enum.
     GNCENTRY_ORDER_ENTRY,
     GNCENTRY_ORDER_VIEWER,
     GNCENTRY_INVOICE_ENTRY,
     GNCENTRY_INVOICE_VIEWER,
+    GNCENTRY_CUST_CREDIT_NOTE_ENTRY,
+    GNCENTRY_CUST_CREDIT_NOTE_VIEWER,
     GNCENTRY_BILL_ENTRY,
     GNCENTRY_BILL_VIEWER,
+    GNCENTRY_VEND_CREDIT_NOTE_ENTRY,
+    GNCENTRY_VEND_CREDIT_NOTE_VIEWER,
     GNCENTRY_EXPVOUCHER_ENTRY,
     GNCENTRY_EXPVOUCHER_VIEWER,
+    GNCENTRY_EMPL_CREDIT_NOTE_ENTRY,
+    GNCENTRY_EMPL_CREDIT_NOTE_VIEWER,
     GNCENTRY_NUM_REGISTER_TYPES
 } GncEntryLedgerType;
-
-typedef struct entry_ledger_colors
-{
-    guint32 header_bg_color;
-
-    guint32 primary_bg_color;
-    guint32 secondary_bg_color;
-
-    guint32 primary_active_bg_color;
-    guint32 secondary_active_bg_color;
-} GncEntryLedgerColors;
 
 #define ENTRY_IACCT_CELL	"inv-account"
 #define ENTRY_BACCT_CELL	"bill-account"
@@ -76,31 +78,31 @@ typedef struct entry_ledger_colors
 
 typedef struct GncEntryLedger_s GncEntryLedger;
 
-/** Prototypes ***************************************************/
+/* Prototypes ***************************************************/
 
-/* Create and return a new GncEntry Ledger */
+/** Create and return a new GncEntry Ledger */
 GncEntryLedger * gnc_entry_ledger_new (QofBook *book, GncEntryLedgerType type);
 
-/* Set the default order for this ledger */
+/** Set the default order for this ledger */
 void gnc_entry_ledger_set_default_order (GncEntryLedger *ledger,
         GncOrder *order);
 
-/* Set the default invoice for this ledger */
+/** Set the default invoice for this ledger */
 void gnc_entry_ledger_set_default_invoice (GncEntryLedger *ledger,
         GncInvoice *invoice);
 
-/* Destroy the GncEntry Ledger */
+/** Destroy the GncEntry Ledger */
 void gnc_entry_ledger_destroy (GncEntryLedger *ledger);
 
-/* Returns the Entry where the cursor is currently located. */
+/** Returns the Entry where the cursor is currently located. */
 GncEntry * gnc_entry_ledger_get_current_entry (GncEntryLedger *ledger);
 
-/* Copy GncEntry information from the list to the rows of the Ledger. */
+/** Copy GncEntry information from the list to the rows of the Ledger. */
 void gnc_entry_ledger_load (GncEntryLedger *ledger, GList *entry_list);
 
 void gnc_entry_ledger_display_refresh (GncEntryLedger *ledger);
 
-/* Get the Table */
+/** Get the Table */
 Table * gnc_entry_ledger_get_table (GncEntryLedger *ledger);
 
 void gnc_entry_ledger_set_parent (GncEntryLedger *ledger, GtkWidget *parent);
@@ -111,10 +113,10 @@ gboolean gnc_entry_ledger_changed (GncEntryLedger *ledger);
 
 void gnc_entry_ledger_cancel_cursor_changes (GncEntryLedger *ledger);
 
-/* This will act just like hitting 'return' to record an entry */
+/** This will act just like hitting 'return' to record an entry */
 gboolean gnc_entry_ledger_commit_entry (GncEntryLedger *ledger);
 
-/* This will ask the user if they really want to make a change */
+/** This will ask the user if they really want to make a change */
 gboolean gnc_entry_ledger_check_close (GtkWidget *parent, GncEntryLedger *ledger);
 
 void gnc_entry_ledger_reset_query (GncEntryLedger *ledger);
@@ -150,6 +152,6 @@ void gnc_entry_ledger_move_current_entry_updown (GncEntryLedger *ledger,
 
 QofQuery * gnc_entry_ledger_get_query (GncEntryLedger *ledger);
 
-void gnc_entry_ledger_set_gconf_section (GncEntryLedger *ledger, const gchar *string);
-
+void gnc_entry_ledger_set_prefs_group (GncEntryLedger *ledger, const gchar *string);
+/** @} */
 #endif /* GNC_ENTRY_LEDGER_H */
