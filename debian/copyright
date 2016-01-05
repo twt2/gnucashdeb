@@ -1,84 +1,88 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: gnucash
 Source: http://sourceforge.net/projects/gnucash/files/gnucash%20(stable)/
-Comment: 
+Comment:
  This work was initially packaged for Debian by:
     Tyson Dowd <trd@cs.mu.oz.au> on Wed, 10 Mar 1999 13:00:52 +1100
  The packaging was completely revamped for gnucash 2.4.0-1 by:
     Micha Lenk <micha@debian.org> on Sun, 26 Dec 2010 15:23:56 +0100
 
 Files: *
-Copyright: 2001                     Almer S. Tigelaar <almer@gnome.org>
-           2003                     Andreas J. Guelzow <aguelzow@taliesin.ca>
-           2006-2008                Andreas Koehler <andi5.py@gmx.net>
-           2011                     Andy Clayton
-           1991-1993,1996,1999-2001 Aubrey Jaffer and Radey Shouman
-           2003,2009                Andy Wingo <wingo@pobox.com>
-           2009                     Andrew Sackville-West <andrew@swclan.homelinux.org>
-           2001                     Ben Stanley <bds02@uow.edu.au>
-           2002-2003                Benoit Grégoire <bock@step.polymtl.ca>
-           2004                     Bernd Wagner
-           2007                     Benny Sperisen <lasindi@gmail.com>
-           2000-2001                Bill Gribble <grib@billgribble.com>
-           2000-2001                Bill Gribble <grib@gnumatic.com>
-           2008                     Charles Day <cedayiv@gmail.com>
-           2009                     Chris Dennis chris@starsoftanalysis.co.uk
-           2005-2006                Chris Shoemaker <c.shoemaker@cox.net>
-           2001-2005,2007,2011      Christian Stimming <stimming@tuhh.de>
-           2010-2012                Christian Stimming <christian@cstimming.de>
-           2001                     Christian Stimming <stimming@tu-harburg.de>
-           2010                     Cristian KLEIN
-           2003                     Darin Willits <darin@willits.ca>
-           1999-2001                Dave Peticolas <dave@krondo.com>
-           2000                     Dave Peticolas <peticola@cs.ucdavis.edu>
-           2003,2005-2007           David Hampton <hampton@employees.org>
-           2004                     David Montenegro <sunrise2000@comcast.net>
-           2000-2003,2006           Derek Atkins <warlord@MIT.EDU>
-           2002-2005,2007-2008,2011 Derek Atkins <derek@ihtfp.com>
-           2006                     Eskil Bylund <eskil.bylund@gmail.com>
-           2006                     Florian Steinel
-           2010                     Geert Janssens <janssens-geert@telenet.be>
-           2011-2015                Geert Janssens <geert@kobaltwit.be>
-           1998                     Gerald Combs
-           1999-2000                Heath Martin <martinh@pegasus.cc.ucf.edu>
-           2000,2009                Herbert Thoma <herbie@hthoma.de>
-           2003                     Jan Arne Petersen <jpetersen@uni-bonn.de>
-           2003                     Jan-Pascal van Best <janpascal@vanbest.org>
-           2001                     James LewisMoss <dres@debian.org>
-           2004                     James Strandboge <jstrand1@rochester.rr.com>
-           1998-1999,2001           Jeremy Collins
-           2011-2013                John Ralls <jralls@ceridwen.us>
-           2001-2002,2004-2007      Joshua Sled <jsled@asynchronous.org>
-           1997-2004                Linas Vepstas <linas@linas.org>
-           1991                     Marc Feeley
-           1997                     Martin Jones <mjones@kde.org>
-           2001-2002                Mikael Hallendal <micke@imendio.com>
-           2003                     Morten Welinder <terra@gnome.org>
-           2011                     Muslim Chochlov <muslim.chochlov@gmail.com>
-           2004-2006                Neil Williams <linux@codehelp.co.uk>
-           2006-2010                Phil Longstaff <plongstaff@rogers.com>
-           2012-2013                Phil Longstaff <phil.longstaff@yahoo.ca>
-           1998                     Radey Shouman
-           2001-2002                Richard Hult <richard@imendio.com>
-           1998-2001                Rob Browning <rlb@cs.utexas.edu>
-           2011-2012                Robert Fewell
-           2000-2001                Robert Merkel <rgmerk@mira.net>
-           1997                     Robin D. Clark <rclark@cs.hmc.edu>
-           2009                     Sebastian Held <sebastian.held@gmx.de>
-           2008                     Sven Henkel <shenkel@gmail.com>
-           1990-2000                Terry D. Boldt
-           1997                     Torben Weis <weis@kde.org>
-           2001-2002                CodeFactory AB
-           2001                   Free Software Foundation
-           1994-2015              Free Software Foundation, Inc
-           2000-2001              Gnumatic Incorporated
-           2005                   GnuCash team
-           1999                   Helix Code, Inc
-           2005                   Imendio AB
-           2001                   Linux Developers Group
-           2001                   Linux Developers Group, Inc.
-           2008-2010              ParIT Worker Co-operative <paritinfo@parit.ca>
-           2010                   ParIT Worker Co-operative <transparency@parit.ca>
+Copyright:
+    2001                     Almer S. Tigelaar <almer@gnome.org>
+    2003                     Andreas J. Guelzow <aguelzow@taliesin.ca>
+    2006-2008                Andreas Koehler <andi5.py@gmx.net>
+    2009                     Andrew Sackville-West <andrew@swclan.homelinux.org>
+    2011                     Andy Clayton
+    1991-1993,1996,1999-2001 Aubrey Jaffer and Radey Shouman
+    2003,2009                Andy Wingo <wingo@pobox.com>
+    2001                     Ben Stanley <bds02@uow.edu.au>
+    2007                     Benny Sperisen <lasindi@gmail.com>
+    2002-2003                Benoit Grégoire <bock@step.polymtl.ca>
+    2004                     Bernd Wagner
+    2000-2001                Bill Gribble <grib@billgribble.com>
+    2000-2001                Bill Gribble <grib@gnumatic.com>
+    2008                     Charles Day <cedayiv@gmail.com>
+    2009                     Chris Dennis <chris@starsoftanalysis.co.uk>
+    2005-2007                Chris Shoemaker <c.shoemaker@cox.net>
+    2010-2012                Christian Stimming <christian@cstimming.de>
+    2001                     Christian Stimming <stimming@tu-harburg.de>
+    2001-2005,2007,2011      Christian Stimming <stimming@tuhh.de>
+    2001-2002                CodeFactory AB
+    2010                     Cristian KLEIN
+    2003                     Darin Willits <darin@willits.ca>
+    1999-2001                Dave Peticolas <dave@krondo.com>
+    2000                     Dave Peticolas <peticola@cs.ucdavis.edu>
+    2003,2005-2007           David Hampton <hampton@employees.org>
+    2004                     David Montenegro <sunrise2000@comcast.net>
+    2002-2005,2007-2008,2011 Derek Atkins <derek@ihtfp.com>
+    2000-2003,2006           Derek Atkins <warlord@MIT.EDU>
+    2012                     Dmitry Smirnov <onlyjob@member.fsf.org>
+    2001                     Eazel, Inc
+    2006                     Eskil Bylund <eskil.bylund@gmail.com>
+    2006                     Florian Steinel
+    2001                     Free Software Foundation
+    1994-2015                Free Software Foundation, Inc
+    2011-2015                Geert Janssens <geert@kobaltwit.be>
+    2010                     Geert Janssens <janssens-geert@telenet.be>
+    1998                     Gerald Combs
+    2005                     GnuCash team
+    2000-2001                Gnumatic Incorporated
+    1999-2000                Heath Martin <martinh@pegasus.cc.ucf.edu>
+    1999                     Helix Code, Inc
+    2000,2009                Herbert Thoma <herbie@hthoma.de>
+    2005                     Imendio AB
+    2003                     Jakub 'jimmac' Steiner
+    2001                     James LewisMoss <dres@debian.org>
+    2004                     James Strandboge <jstrand1@rochester.rr.com>
+    2003                     Jan Arne Petersen <jpetersen@uni-bonn.de>
+    2003                     Jan-Pascal van Best <janpascal@vanbest.org>
+    1998-1999,2001           Jeremy Collins
+    2011-2013                John Ralls <jralls@ceridwen.us>
+    2001-2002,2004-2007      Joshua Sled <jsled@asynchronous.org>
+    1997-2004                Linas Vepstas <linas@linas.org>
+    1991                     Marc Feeley
+    2001                     Linux Developers Group
+    2001                     Linux Developers Group, Inc.
+    1997                     Martin Jones <mjones@kde.org>
+    2001-2002                Mikael Hallendal <micke@imendio.com>
+    2003                     Morten Welinder <terra@gnome.org>
+    2011                     Muslim Chochlov <muslim.chochlov@gmail.com>
+    2004-2006                Neil Williams <linux@codehelp.co.uk>
+    2008-2010                ParIT Worker Co-operative <paritinfo@parit.ca>
+    2010                     ParIT Worker Co-operative <transparency@parit.ca>
+    2012-2013                Phil Longstaff <phil.longstaff@yahoo.ca>
+    2006-2010                Phil Longstaff <plongstaff@rogers.com>
+    1998                     Radey Shouman
+    2001-2002                Richard Hult <richard@imendio.com>
+    1998-2001                Rob Browning <rlb@cs.utexas.edu>
+    2011-2012                Robert Fewell
+    2000-2001                Robert Merkel <rgmerk@mira.net>
+    1997                     Robin D. Clark <rclark@cs.hmc.edu>
+    2009                     Sebastian Held <sebastian.held@gmx.de>
+    2008                     Sven Henkel <shenkel@gmail.com>
+    1990-2000                Terry D. Boldt
+    1997                     Torben Weis <weis@kde.org>
 License: GPL-2+
 Comment: 
  Other contributors are listed in file AUTHORS
@@ -90,12 +94,47 @@ Comment:
 Files: debian/*
 Copyright: 2009-2012 Micha Lenk <micha@debian.org>
            2011-2014 Sébastien Villemot <sebastien@debian.org>
-           2012-2015 Dmitry Smirnov <onlyjob@debian.org>
+           2012-2016 Dmitry Smirnov <onlyjob@debian.org>
            2004-2009 Thomas Bushnell, BSG <tb@debian.org>
            2002-2004 James A. Treacy <treacy@debian.org>
            2000-2001 John Goerzen <jgoerzen@complete.org>
            1999-2000 Tyson Dowd <trd@cs.mu.oz.au>
 License: GPL-3+
+
+Files:
+    lib/libc/strfmon.c
+    lib/libc/strfmon.h
+    src/python/pycons/ishell.py
+Copyright:
+    2001      Alexey Zelkin <phantom@FreeBSD.org>
+    2007      IBM Corporation
+License: BSD-2-Clause
+
+Files:
+    src/python/pycons/__init__.py
+    src/python/pycons/console.py
+    src/python/pycons/pycons
+    src/python/pycons/setup.py
+    src/python/pycons/shell.py
+Copyright:
+    2008      Nicolas Rougier
+License: BSD-3-Clause
+
+Files:
+    src/report/jqplot/plugins/*
+Copyright:
+    2009-2013 Chris Leonello
+License: Expat or GPL-2
+
+Files:
+    macros/ltoptions.m4
+    macros/ltsugar.m4
+    macros/ltversion.m4
+    macros/lt~obsolete.m4
+Copyright:
+    2004-2005,2007-2009 Free Software Foundation
+    2004-2005,2007-2009 Free Software Foundation, Inc
+License: FSFULLR
 
 Files: 
  src/doc/design/gnucash-design.info
@@ -105,120 +144,208 @@ License: GFDL-NIV-1.1
 Comment: 
  http://www.debian.org/vote/2006/vote_001#outcome
 
-Files: 
- src/import-export/csv-imp/gnc-csv-gnumeric-popup.c
- src/import-export/csv-imp/gnc-csv-gnumeric-popup.h
+Files:
+    src/app-utils/gnc-sx-instance-model.h
+    src/gnome-utils/gnc-dense-cal-model.h
+    src/gnome-utils/gnc-dense-cal-store.h
+    src/gnome-utils/gnc-sx-instance-dense-cal-adapter.h
+    src/gnome-utils/gnc-sx-list-tree-model-adapter.h
+    src/gnome-utils/gnc-tree-view-sx-list.h
+    src/gnome/dialog-sx-editor.h
+    src/gnome/dialog-sx-editor2.h
+    src/gnome/dialog-sx-since-last-run.h
+Copyright:
+    2006      Josh Sled <jsled@asynchronous.org>
+    2001,2006-2007 Joshua Sled <jsled@asynchronous.org>
+License: GPL-2 or GPL-3
+
+Files:
+    src/app-utils/gnc-sx-instance-model.c
+    src/gnome-utils/gnc-dense-cal-model.c
+    src/gnome-utils/gnc-dense-cal-store.c
+    src/gnome-utils/gnc-sx-instance-dense-cal-adapter.c
+    src/gnome-utils/gnc-sx-list-tree-model-adapter.c
+    src/gnome-utils/gnc-tree-view-sx-list.c
+    src/gnome/dialog-sx-editor.c
+    src/gnome/dialog-sx-editor2.c
+    src/gnome/dialog-sx-since-last-run.c
+    src/gnome/gnc-plugin-page-sx-list.c
+    src/gnome/gnc-plugin-page-sx-list.h
+Copyright:
+    2006      Josh Sled <jsled@asynchronous.org>
+    2001-2002,2006-2007 Joshua Sled <jsled@asynchronous.org>
+    2011      Robert Fewell
+License: GPL-2 or GPL-3 and exception-OpenSSL
+
+
+Files:
+    macros/ax_pkg_swig.m4
+    macros/ax_swig_python.m4
+Copyright:
+    2008      Alan W. Irwin
+    2008      Andrew Collier
+    2011      Murray Cumming <murrayc@openismus.com>
+    2008      Rafael Laboissiere <rafael@laboissiere.net>
+    2008      Sebastian Huber <sebastian-huber@web.de>
+License: GPL-2+ and exception-Autoconf
+
+Files:
+    src/import-export/csv-imp/gnc-csv-gnumeric-popup.c
+    src/import-export/csv-imp/gnc-csv-gnumeric-popup.h
 Copyright: Gnumeric authors
 License: GPL-2 or GPL-3
 
-Files: 
- src/app-utils/gnc-sx-instance-model.c
- src/app-utils/gnc-sx-instance-model.h
- src/gnome/dialog-sx-editor.c
- src/gnome/dialog-sx-editor.h
- src/gnome/dialog-sx-editor2.c
- src/gnome/dialog-sx-editor2.h
- src/gnome/dialog-sx-since-last-run.c
- src/gnome/dialog-sx-since-last-run.h
- src/gnome/gnc-plugin-page-sx-list.c
- src/gnome/gnc-plugin-page-sx-list.h
- src/gnome-utils/gnc-dense-cal.h
- src/gnome-utils/gnc-sx-instance-dense-cal-adapter.c
- src/gnome-utils/gnc-sx-instance-dense-cal-adapter.h
- src/gnome-utils/gnc-sx-list-tree-model-adapter.c
- src/gnome-utils/gnc-sx-list-tree-model-adapter.h
-Copyright: 2001-2002,2006 Joshua Sled <jsled@asynchronous.org>
-License: GPL-2 or GPL-3
+Files:
+    macros/ax_python_devel.m4
+Copyright:
+    2009      Alan W. Irwin
+    2009      Andrew Collier
+    2013      Daniel Mullner <muellner@math.stanford.edu>
+    2009      Horst Knorr <hk_classes@knoda.org>
+    2009      Matteo Settenvini <matteo@member.fsf.org>
+    2009      Rafael Laboissiere <rafael@laboissiere.net>
+    2009      Sebastian Huber <sebastian-huber@web.de>
+License: GPL-3+ and exception-Autoconf
 
-Files: 
- lib/libc/strptime.c
- src/gnome-search/gnc-general-search.h
- src/gnome-utils/gnc-commodity-edit.c
- src/gnome-utils/gnc-commodity-edit.h
- src/gnome-utils/gnc-currency-edit.c
- src/gnome-utils/gnc-currency-edit.h
- src/gnome-utils/gnc-date-delta.c
- src/gnome-utils/gnc-date-delta.h
- src/gnome-utils/gnc-date-edit.c
- src/gnome-utils/gnc-date-edit.h
- src/gnome-utils/gnc-general-select.c
- src/gnome-utils/gnc-general-select.h
- src/app-utils/gnc-accounting-period.c
- src/app-utils/gnc-accounting-period.h
- src/gnome-utils/gnc-period-select.c
- src/gnome-utils/gnc-period-select.h
- src/gnome-utils/gnc-amount-edit.c
- src/gnome-utils/gnc-amount-edit.h
- src/gnome-utils/gnc-account-sel.c
- src/gnome-utils/gnc-account-sel.h
- src/gnome-utils/gnc-date-format.c
- src/gnome-utils/gnc-date-format.h
-Copyright: 2005-2006 David Hampton <hampton@employees.org>
-           2000      Dave Peticolas <dave@krondo.com>
-           2002      Joshua Sled <jsled@asynchronous.org>
-           2003      Derek Atkins <derek@ihtfp.com>
-           1996-2001 Free Software Foundation
+Files:
+    src/doc/design/texinfo.tex
+Copyright: 1985-1986,1988,1990-2013 Free Software Foundation, Inc.
+License: GPL-3+ and exception-GPL3-Tex
+
+Files:
+    lib/libc/strptime.c
+    src/app-utils/gnc-accounting-period.c
+    src/app-utils/gnc-accounting-period.h
+    src/gnome-search/gnc-general-search.h
+    src/gnome-utils/gnc-account-sel.c
+    src/gnome-utils/gnc-account-sel.h
+    src/gnome-utils/gnc-amount-edit.c
+    src/gnome-utils/gnc-amount-edit.h
+    src/gnome-utils/gnc-commodity-edit.c
+    src/gnome-utils/gnc-commodity-edit.h
+    src/gnome-utils/gnc-currency-edit.c
+    src/gnome-utils/gnc-currency-edit.h
+    src/gnome-utils/gnc-date-delta.c
+    src/gnome-utils/gnc-date-delta.h
+    src/gnome-utils/gnc-date-edit.c
+    src/gnome-utils/gnc-date-edit.h
+    src/gnome-utils/gnc-date-format.h
+    src/gnome-utils/gnc-general-select.c
+    src/gnome-utils/gnc-general-select.h
+    src/gnome-utils/gnc-period-select.c
+    src/gnome-utils/gnc-period-select.h
+Copyright:
+    2000      Dave Peticolas <dave@krondo.com>
+    2005-2006 David Hampton <hampton@employees.org>
+    2003      Derek Atkins <derek@ihtfp.com>
+    1997-2001 Free Software Foundation
+    1996-2000 Free Software Foundation, Inc
+    2002      Joshua Sled <jsled@asynchronous.org>
 License: LGPL-2+
 
-Files: src/core-utils/gnc-jalali.c
-Copyright: 2001 Mohammad Toossi <mohammad@bamdad.org>
-           2001 Roozbeh Pournader <roozbeh@sharif.edu>
+Files:
+    src/core-utils/gnc-jalali.c
+    src/optional/gtkmm/gncmm/wrap_init.hpp
+    util/guile.c
+Copyright:
+    1996-1997,2000-2001,2006,2008 Free Software Foundation, Inc
+    2001      Mohammad Toossi <mohammad@bamdad.org>
+    2001      Roozbeh Pournader <roozbeh@sharif.edu>
+    2007      the gtkmm development team
 License: LGPL-2.1+
 
-Files: src/optional/gtkmm/gncmm/wrap_init.hpp
-Copyright: 2007 The gtkmm development team
-License: LGPL-2.1+
-
-Files: src/python/pycons/__init__.py
-       src/python/pycons/console.py
-       src/python/pycons/ishell.py
-       src/python/pycons/pycons
-       src/python/pycons/setup.py
-       src/python/pycons/shell.py
-Copyright: 2008 Nicolas Rougier
-           2007 IBM Corporation
-License: BSD-3-clause
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are met:
- .
-     * Redistributions of source code must retain the above copyright
-       notice, this list of conditions and the following disclaimer.
-     * Redistributions in binary form must reproduce the above copyright
-       notice, this list of conditions and the following disclaimer in the
-       documentation and/or other materials provided with the distribution.
-     * Neither the name of the University of California, Berkeley nor the
-       names of its contributors may be used to endorse or promote products
-       derived from this software without specific prior written permission.
- .
- THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND ANY
- EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- DISCLAIMED. IN NO EVENT SHALL THE AUTHOR AND CONTRIBUTORS BE LIABLE FOR ANY
- DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-Files: src/report/jqplot/plugins/*
-Copyright: 2009-2013 Chris Leonello
-License: GPL-2
-
-Files: 
- src/app-utils/gfec.c
- src/app-utils/gfec.h
-Copyright: not applicable
-License: public-domain
- This code is in the public domain.
-
-Files: po/Makefile.in.in
-Copyright: 1995-1997 Ulrich Drepper <drepper@gnu.ai.mit.edu>
-           2004-2008 Rodney Dawes <dobey.pwns@gmail.com>
-License: other
+Files:
+    po/Makefile.in.in
+Copyright:
+    2004-2008 Rodney Dawes <dobey.pwns@gmail.com>
+    1995-1997 Ulrich Drepper <drepper@gnu.ai.mit.edu>
+License: Permissive-gettext
  This file may be copied and used freely without restrictions.  It may
  be used in projects which are not available under a GNU Public License,
  but which still want to provide support for the GNU gettext functionality.
+
+Files:
+    src/app-utils/gfec.c
+    src/app-utils/gfec.h
+    src/report/jqplot/plugins/jqplot.json2.js
+Copyright:
+    Not-Applicable
+License: public-domain
+ This code is in the public domain.
+
+License: BSD-2-Clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ ․
+  1. Redistributions of source code must retain the above copyright notice,
+     this list of conditions and the following disclaimer.
+ ․
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+ ․
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+
+License: BSD-3-Clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ ․
+  1. Redistributions of source code must retain the above copyright notice,
+     this list of conditions and the following disclaimer.
+ ․
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+ ․
+  3. Neither the name of the copyright holder nor the names of its
+     contributors may be used to endorse or promote products derived from
+     this software without specific prior written permission.
+ ․
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+
+License: Expat
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ ․
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ ․
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+
+License: FSFULLR
+ This file is free software; the Free Software Foundation
+ gives unlimited permission to copy and/or distribute it,
+ with or without modifications, as long as this notice is preserved.
 
 License: GFDL-NIV-1.1
  Permission is granted to copy, distribute and/or modify this document under
@@ -629,8 +756,8 @@ License: GPL-2
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
  .
- On Debian systems, the complete text of the GNU General
- Public License 2 can be found in "/usr/share/common-licenses/GPL-2".
+ On Debian systems, the complete text of the GNU General Public
+ License Version 2 can be found in "/usr/share/common-licenses/GPL-2".
 
 License: GPL-2+
  This program is free software: you can redistribute it and/or modify
@@ -638,26 +765,26 @@ License: GPL-2+
  the Free Software Foundation, either version 2 of the License, or
  (at your option) any later version.
  .
- This package is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
  .
- On Debian systems, the complete text of the GNU General Public License
- version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+ On Debian systems, the complete text of the GNU General Public
+ License Version 2 can be found in "/usr/share/common-licenses/GPL-2".
 
 License: GPL-3
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation, version 3 of the License.
  .
- This package is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
  .
- On Debian systems, the complete text of the GNU General
- Public License version 3 can be found in `/usr/share/common-licenses/GPL-3'.
+ On Debian systems, the complete text of the GNU General Public
+ License Version 3 can be found in "/usr/share/common-licenses/GPL-3".
 
 License: GPL-3+
  This program is free software: you can redistribute it and/or modify
@@ -665,13 +792,13 @@ License: GPL-3+
  the Free Software Foundation, either version 3 of the License, or
  (at your option) any later version.
  .
- This package is distributed in the hope that it will be useful,
+ This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
  .
- On Debian systems, the complete text of the GNU General
- Public License version 3 can be found in `/usr/share/common-licenses/GPL-3'.
+ On Debian systems, the complete text of the GNU General Public
+ License Version 3 can be found in "/usr/share/common-licenses/GPL-3".
 
 License: LGPL-2+
  This library is free software; you can redistribute it and/or
@@ -684,9 +811,8 @@ License: LGPL-2+
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  Library General Public License for more details.
  .
- On Debian systems, the complete text of the GNU Library General
- Public License version 2 can be found in
- "/usr/share/common-licenses/LGPL-2".
+ On Debian systems, the complete text of the GNU Library General Public
+ License Version 2 can be found in "/usr/share/common-licenses/LGPL-2".
 
 License: LGPL-2.1+
  This library is free software; you can redistribute it and/or
@@ -699,6 +825,38 @@ License: LGPL-2.1+
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  Lesser General Public License for more details.
  .
- On Debian systems, the complete text of the GNU Lesser General
- Public License version 2.1 can be found in
- "/usr/share/common-licenses/LGPL-2.1".
+ On Debian systems, the complete text of the GNU Lesser General Public
+ License Version 2.1 can be found in "/usr/share/common-licenses/LGPL-2.1".
+
+License: exception-Autoconf
+ As a special exception, the respective Autoconf Macro's copyright owner
+ gives unlimited permission to copy, distribute and modify the configure
+ scripts that are the output of Autoconf when processing the Macro. You
+ need not follow the terms of the GNU General Public License when using
+ or distributing such scripts, even though portions of the text of the
+ Macro appear in them. The GNU General Public License (GPL) does govern
+ all other use of the material that constitutes the Autoconf Macro.
+ ․
+ This special exception to the GPL applies to versions of the Autoconf
+ Macro released by the Autoconf Archive. When you make and distribute a
+ modified version of the Autoconf Macro, you may extend this special
+ exception to the GPL to apply to your modified version as well.
+
+License: exception-GPL3-Tex
+ As a special exception, when this file is read by TeX when processing
+ a Texinfo source document, you may use the result without
+ restriction. This Exception is an additional permission under section 7
+ of the GNU General Public License, version 3 ("GPLv3").
+
+License: exception-OpenSSL
+ As a special exception, permission is granted to link the binary
+ module resultant from this code with the OpenSSL project's
+ "OpenSSL" library (or modified versions of it that use the same
+ license as the "OpenSSL" library), and distribute the linked
+ executable.  You must obey the GNU General Public License in all
+ respects for all of the code used other than "OpenSSL". If you
+ modify this file, you may extend this exception to your version
+ of the file, but you are not obligated to do so. If you do not
+ wish to do so, delete this exception statement from your version
+ of this file.
+

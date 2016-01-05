@@ -1,3 +1,10 @@
+gnucash (1:2.6.10-1) unstable; urgency=medium
+
+  * New upstream release [December 2015].
+  * Dropped .menu file (command-in-menu-file-and-desktop-file).
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Tue, 05 Jan 2016 12:31:45 +1100
+
 gnucash (1:2.6.9-1) unstable; urgency=medium
 
   * New upstream release [October 2015].
