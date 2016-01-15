@@ -894,7 +894,9 @@ maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
+@PLATFORM_OSX_QUARTZ_TRUE@install-data-hook:
 @PLATFORM_WIN32_TRUE@install-data-hook:
+@PLATFORM_OSX_QUARTZ_TRUE@uninstall-hook:
 @PLATFORM_WIN32_TRUE@uninstall-hook:
 clean: clean-recursive
 
@@ -999,17 +1001,17 @@ uninstall-am: uninstall-gncincludeHEADERS uninstall-pkglibLTLIBRARIES
 @BUILDING_FROM_VCS_TRUE@@OS_WIN32_FALSE@@SWIG_DIST_FAIL_FALSE@	  patch $@ $(top_srcdir)/src/swig-utf8.patch; \
 @BUILDING_FROM_VCS_TRUE@@OS_WIN32_FALSE@@SWIG_DIST_FAIL_FALSE@	fi
 
-# FIXME: Symlinking directories only works on non-win32.
+# We do this only for the gnome help tool on Linux and MacPorts.
 #
 # I hate inconsistent standards. Autotools puts help files into
 # ${datadir}/gnome/help/${program} while the gnome2 libraries expect
 # them in ${pkgdatadir}/gnome/help/${program}.
 #
-@PLATFORM_WIN32_FALSE@install-data-hook:
-@PLATFORM_WIN32_FALSE@	$(LN_S) -f ../gnome ${DESTDIR}${pkgdatadir}
+@PLATFORM_OSX_QUARTZ_FALSE@@PLATFORM_WIN32_FALSE@install-data-hook:
+@PLATFORM_OSX_QUARTZ_FALSE@@PLATFORM_WIN32_FALSE@	$(LN_S) -f ../gnome ${DESTDIR}${pkgdatadir}
 
-@PLATFORM_WIN32_FALSE@uninstall-hook:
-@PLATFORM_WIN32_FALSE@	rm -f ${DESTDIR}${pkgdatadir}/gnome
+@PLATFORM_OSX_QUARTZ_FALSE@@PLATFORM_WIN32_FALSE@uninstall-hook:
+@PLATFORM_OSX_QUARTZ_FALSE@@PLATFORM_WIN32_FALSE@	rm -f ${DESTDIR}${pkgdatadir}/gnome
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

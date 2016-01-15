@@ -4836,6 +4836,66 @@ PRICE_DATE = _gnucash_core_c.PRICE_DATE
 PRICE_SOURCE = _gnucash_core_c.PRICE_SOURCE
 PRICE_TYPE = _gnucash_core_c.PRICE_TYPE
 PRICE_VALUE = _gnucash_core_c.PRICE_VALUE
+
+def xaccSplitGetCapGains(*args):
+  """xaccSplitGetCapGains(Split * arg1) -> _gnc_numeric"""
+  return _gnucash_core_c.xaccSplitGetCapGains(*args)
+
+def xaccAccountHasTrades(*args):
+  """xaccAccountHasTrades(Account const * arg1) -> gboolean"""
+  return _gnucash_core_c.xaccAccountHasTrades(*args)
+
+def xaccAccountFindEarliestOpenLot(*args):
+  """xaccAccountFindEarliestOpenLot(Account * acc, _gnc_numeric sign, gnc_commodity * currency) -> GNCLot *"""
+  return _gnucash_core_c.xaccAccountFindEarliestOpenLot(*args)
+
+def xaccAccountFindLatestOpenLot(*args):
+  """xaccAccountFindLatestOpenLot(Account * acc, _gnc_numeric sign, gnc_commodity * currency) -> GNCLot *"""
+  return _gnucash_core_c.xaccAccountFindLatestOpenLot(*args)
+
+def xaccAccountGetDefaultGainAccount(*args):
+  """xaccAccountGetDefaultGainAccount(Account const * acc, gnc_commodity const * currency) -> Account *"""
+  return _gnucash_core_c.xaccAccountGetDefaultGainAccount(*args)
+
+def xaccAccountSetDefaultGainAccount(*args):
+  """xaccAccountSetDefaultGainAccount(Account * acc, Account const * gains_acct)"""
+  return _gnucash_core_c.xaccAccountSetDefaultGainAccount(*args)
+
+def xaccSplitGetCapGainsSplit(*args):
+  """xaccSplitGetCapGainsSplit(Split const * arg1) -> Split *"""
+  return _gnucash_core_c.xaccSplitGetCapGainsSplit(*args)
+
+def xaccSplitGetGainsSourceSplit(*args):
+  """xaccSplitGetGainsSourceSplit(Split const * arg1) -> Split *"""
+  return _gnucash_core_c.xaccSplitGetGainsSourceSplit(*args)
+
+def xaccSplitAssign(*args):
+  """xaccSplitAssign(Split * split) -> gboolean"""
+  return _gnucash_core_c.xaccSplitAssign(*args)
+
+def xaccSplitAssignToLot(*args):
+  """xaccSplitAssignToLot(Split * split, GNCLot * lot) -> Split *"""
+  return _gnucash_core_c.xaccSplitAssignToLot(*args)
+
+def xaccSplitComputeCapGains(*args):
+  """xaccSplitComputeCapGains(Split * split, Account * gain_acc)"""
+  return _gnucash_core_c.xaccSplitComputeCapGains(*args)
+
+def xaccLotComputeCapGains(*args):
+  """xaccLotComputeCapGains(GNCLot * lot, Account * gain_acc)"""
+  return _gnucash_core_c.xaccLotComputeCapGains(*args)
+
+def xaccScrubLot(*args):
+  """xaccScrubLot(GNCLot * lot) -> gboolean"""
+  return _gnucash_core_c.xaccScrubLot(*args)
+
+def xaccAccountScrubLots(*args):
+  """xaccAccountScrubLots(Account * acc)"""
+  return _gnucash_core_c.xaccAccountScrubLots(*args)
+
+def xaccAccountTreeScrubLots(*args):
+  """xaccAccountTreeScrubLots(Account * acc)"""
+  return _gnucash_core_c.xaccAccountTreeScrubLots(*args)
 # This file is compatible with both classic and new-style classes.
 
 

@@ -3092,6 +3092,8 @@ static swig_module_info swig_module = {swig_types, 114, 0, 0, 0, 0};
 #include "gncIDSearch.h"
 #include "engine/gnc-pricedb.h"
 #include "app-utils/gnc-prefs-utils.h"
+#include "cap-gains.h"
+#include "Scrub3.h"
 
 
 static const GncGUID * gncSplitGetGUID(Split *x)
@@ -40493,6 +40495,481 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_xaccSplitGetCapGains(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Split *arg1 = (Split *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  gnc_numeric result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:xaccSplitGetCapGains",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Split, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccSplitGetCapGains" "', argument " "1"" of type '" "Split *""'"); 
+  }
+  arg1 = (Split *)(argp1);
+  result = xaccSplitGetCapGains(arg1);
+  resultobj = SWIG_NewPointerObj((gnc_numeric *)memcpy((gnc_numeric *)malloc(sizeof(gnc_numeric)),&result,sizeof(gnc_numeric)), SWIGTYPE_p__gnc_numeric, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_xaccAccountHasTrades(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Account *arg1 = (Account *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  gboolean result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:xaccAccountHasTrades",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Account, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccAccountHasTrades" "', argument " "1"" of type '" "Account const *""'"); 
+  }
+  arg1 = (Account *)(argp1);
+  result = xaccAccountHasTrades((Account const *)arg1);
+  {
+    if (result == TRUE)
+    {
+      resultobj = Py_True;
+      Py_INCREF(resultobj);
+    }
+    else if (result == FALSE)
+    {
+      resultobj = Py_False;
+      Py_INCREF(resultobj);
+    }
+    else
+    {
+      PyErr_SetString(
+        PyExc_ValueError,
+        "function returning gboolean returned a value that wasn't "
+        "TRUE or FALSE.");
+      return NULL;
+    }
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_xaccAccountFindEarliestOpenLot(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Account *arg1 = (Account *) 0 ;
+  gnc_numeric arg2 ;
+  gnc_commodity *arg3 = (gnc_commodity *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  GNCLot *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:xaccAccountFindEarliestOpenLot",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Account, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccAccountFindEarliestOpenLot" "', argument " "1"" of type '" "Account *""'"); 
+  }
+  arg1 = (Account *)(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p__gnc_numeric,  0 );
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "xaccAccountFindEarliestOpenLot" "', argument " "2"" of type '" "gnc_numeric""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "xaccAccountFindEarliestOpenLot" "', argument " "2"" of type '" "gnc_numeric""'");
+    } else {
+      arg2 = *((gnc_numeric *)(argp2));
+    }
+  }
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_gnc_commodity, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "xaccAccountFindEarliestOpenLot" "', argument " "3"" of type '" "gnc_commodity *""'"); 
+  }
+  arg3 = (gnc_commodity *)(argp3);
+  result = (GNCLot *)xaccAccountFindEarliestOpenLot(arg1,arg2,arg3);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNCLot, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_xaccAccountFindLatestOpenLot(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Account *arg1 = (Account *) 0 ;
+  gnc_numeric arg2 ;
+  gnc_commodity *arg3 = (gnc_commodity *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  GNCLot *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:xaccAccountFindLatestOpenLot",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Account, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccAccountFindLatestOpenLot" "', argument " "1"" of type '" "Account *""'"); 
+  }
+  arg1 = (Account *)(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p__gnc_numeric,  0 );
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "xaccAccountFindLatestOpenLot" "', argument " "2"" of type '" "gnc_numeric""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "xaccAccountFindLatestOpenLot" "', argument " "2"" of type '" "gnc_numeric""'");
+    } else {
+      arg2 = *((gnc_numeric *)(argp2));
+    }
+  }
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_gnc_commodity, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "xaccAccountFindLatestOpenLot" "', argument " "3"" of type '" "gnc_commodity *""'"); 
+  }
+  arg3 = (gnc_commodity *)(argp3);
+  result = (GNCLot *)xaccAccountFindLatestOpenLot(arg1,arg2,arg3);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNCLot, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_xaccAccountGetDefaultGainAccount(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Account *arg1 = (Account *) 0 ;
+  gnc_commodity *arg2 = (gnc_commodity *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  Account *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:xaccAccountGetDefaultGainAccount",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Account, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccAccountGetDefaultGainAccount" "', argument " "1"" of type '" "Account const *""'"); 
+  }
+  arg1 = (Account *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_gnc_commodity, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "xaccAccountGetDefaultGainAccount" "', argument " "2"" of type '" "gnc_commodity const *""'"); 
+  }
+  arg2 = (gnc_commodity *)(argp2);
+  result = (Account *)xaccAccountGetDefaultGainAccount((Account const *)arg1,(gnc_commodity const *)arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Account, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_xaccAccountSetDefaultGainAccount(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Account *arg1 = (Account *) 0 ;
+  Account *arg2 = (Account *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:xaccAccountSetDefaultGainAccount",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Account, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccAccountSetDefaultGainAccount" "', argument " "1"" of type '" "Account *""'"); 
+  }
+  arg1 = (Account *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_Account, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "xaccAccountSetDefaultGainAccount" "', argument " "2"" of type '" "Account const *""'"); 
+  }
+  arg2 = (Account *)(argp2);
+  xaccAccountSetDefaultGainAccount(arg1,(Account const *)arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_xaccSplitGetCapGainsSplit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Split *arg1 = (Split *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  Split *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:xaccSplitGetCapGainsSplit",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Split, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccSplitGetCapGainsSplit" "', argument " "1"" of type '" "Split const *""'"); 
+  }
+  arg1 = (Split *)(argp1);
+  result = (Split *)xaccSplitGetCapGainsSplit((Split const *)arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Split, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_xaccSplitGetGainsSourceSplit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Split *arg1 = (Split *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  Split *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:xaccSplitGetGainsSourceSplit",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Split, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccSplitGetGainsSourceSplit" "', argument " "1"" of type '" "Split const *""'"); 
+  }
+  arg1 = (Split *)(argp1);
+  result = (Split *)xaccSplitGetGainsSourceSplit((Split const *)arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Split, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_xaccSplitAssign(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Split *arg1 = (Split *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  gboolean result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:xaccSplitAssign",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Split, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccSplitAssign" "', argument " "1"" of type '" "Split *""'"); 
+  }
+  arg1 = (Split *)(argp1);
+  result = xaccSplitAssign(arg1);
+  {
+    if (result == TRUE)
+    {
+      resultobj = Py_True;
+      Py_INCREF(resultobj);
+    }
+    else if (result == FALSE)
+    {
+      resultobj = Py_False;
+      Py_INCREF(resultobj);
+    }
+    else
+    {
+      PyErr_SetString(
+        PyExc_ValueError,
+        "function returning gboolean returned a value that wasn't "
+        "TRUE or FALSE.");
+      return NULL;
+    }
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_xaccSplitAssignToLot(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Split *arg1 = (Split *) 0 ;
+  GNCLot *arg2 = (GNCLot *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  Split *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:xaccSplitAssignToLot",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Split, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccSplitAssignToLot" "', argument " "1"" of type '" "Split *""'"); 
+  }
+  arg1 = (Split *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_GNCLot, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "xaccSplitAssignToLot" "', argument " "2"" of type '" "GNCLot *""'"); 
+  }
+  arg2 = (GNCLot *)(argp2);
+  result = (Split *)xaccSplitAssignToLot(arg1,arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Split, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_xaccSplitComputeCapGains(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Split *arg1 = (Split *) 0 ;
+  Account *arg2 = (Account *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:xaccSplitComputeCapGains",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Split, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccSplitComputeCapGains" "', argument " "1"" of type '" "Split *""'"); 
+  }
+  arg1 = (Split *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_Account, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "xaccSplitComputeCapGains" "', argument " "2"" of type '" "Account *""'"); 
+  }
+  arg2 = (Account *)(argp2);
+  xaccSplitComputeCapGains(arg1,arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_xaccLotComputeCapGains(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GNCLot *arg1 = (GNCLot *) 0 ;
+  Account *arg2 = (Account *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:xaccLotComputeCapGains",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNCLot, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccLotComputeCapGains" "', argument " "1"" of type '" "GNCLot *""'"); 
+  }
+  arg1 = (GNCLot *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_Account, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "xaccLotComputeCapGains" "', argument " "2"" of type '" "Account *""'"); 
+  }
+  arg2 = (Account *)(argp2);
+  xaccLotComputeCapGains(arg1,arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_xaccScrubLot(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GNCLot *arg1 = (GNCLot *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  gboolean result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:xaccScrubLot",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNCLot, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccScrubLot" "', argument " "1"" of type '" "GNCLot *""'"); 
+  }
+  arg1 = (GNCLot *)(argp1);
+  result = xaccScrubLot(arg1);
+  {
+    if (result == TRUE)
+    {
+      resultobj = Py_True;
+      Py_INCREF(resultobj);
+    }
+    else if (result == FALSE)
+    {
+      resultobj = Py_False;
+      Py_INCREF(resultobj);
+    }
+    else
+    {
+      PyErr_SetString(
+        PyExc_ValueError,
+        "function returning gboolean returned a value that wasn't "
+        "TRUE or FALSE.");
+      return NULL;
+    }
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_xaccAccountScrubLots(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Account *arg1 = (Account *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:xaccAccountScrubLots",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Account, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccAccountScrubLots" "', argument " "1"" of type '" "Account *""'"); 
+  }
+  arg1 = (Account *)(argp1);
+  xaccAccountScrubLots(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_xaccAccountTreeScrubLots(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Account *arg1 = (Account *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:xaccAccountTreeScrubLots",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Account, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccAccountTreeScrubLots" "', argument " "1"" of type '" "Account *""'"); 
+  }
+  arg1 = (Account *)(argp1);
+  xaccAccountTreeScrubLots(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
 	 { (char *)"gncSplitGetGUID", _wrap_gncSplitGetGUID, METH_VARARGS, (char *)"gncSplitGetGUID(Split * x) -> GncGUID"},
@@ -41642,6 +42119,21 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gnc_pricedb_get_num_prices", _wrap_gnc_pricedb_get_num_prices, METH_VARARGS, (char *)"gnc_pricedb_get_num_prices(GNCPriceDB * db) -> guint"},
 	 { (char *)"gnc_pricedb_equal", _wrap_gnc_pricedb_equal, METH_VARARGS, (char *)"gnc_pricedb_equal(GNCPriceDB * db1, GNCPriceDB * db2) -> gboolean"},
 	 { (char *)"gnc_pricedb_print_contents", _wrap_gnc_pricedb_print_contents, METH_VARARGS, (char *)"gnc_pricedb_print_contents(GNCPriceDB * db, FILE * f)"},
+	 { (char *)"xaccSplitGetCapGains", _wrap_xaccSplitGetCapGains, METH_VARARGS, (char *)"xaccSplitGetCapGains(Split * arg1) -> _gnc_numeric"},
+	 { (char *)"xaccAccountHasTrades", _wrap_xaccAccountHasTrades, METH_VARARGS, (char *)"xaccAccountHasTrades(Account const * arg1) -> gboolean"},
+	 { (char *)"xaccAccountFindEarliestOpenLot", _wrap_xaccAccountFindEarliestOpenLot, METH_VARARGS, (char *)"xaccAccountFindEarliestOpenLot(Account * acc, _gnc_numeric sign, gnc_commodity * currency) -> GNCLot *"},
+	 { (char *)"xaccAccountFindLatestOpenLot", _wrap_xaccAccountFindLatestOpenLot, METH_VARARGS, (char *)"xaccAccountFindLatestOpenLot(Account * acc, _gnc_numeric sign, gnc_commodity * currency) -> GNCLot *"},
+	 { (char *)"xaccAccountGetDefaultGainAccount", _wrap_xaccAccountGetDefaultGainAccount, METH_VARARGS, (char *)"xaccAccountGetDefaultGainAccount(Account const * acc, gnc_commodity const * currency) -> Account *"},
+	 { (char *)"xaccAccountSetDefaultGainAccount", _wrap_xaccAccountSetDefaultGainAccount, METH_VARARGS, (char *)"xaccAccountSetDefaultGainAccount(Account * acc, Account const * gains_acct)"},
+	 { (char *)"xaccSplitGetCapGainsSplit", _wrap_xaccSplitGetCapGainsSplit, METH_VARARGS, (char *)"xaccSplitGetCapGainsSplit(Split const * arg1) -> Split *"},
+	 { (char *)"xaccSplitGetGainsSourceSplit", _wrap_xaccSplitGetGainsSourceSplit, METH_VARARGS, (char *)"xaccSplitGetGainsSourceSplit(Split const * arg1) -> Split *"},
+	 { (char *)"xaccSplitAssign", _wrap_xaccSplitAssign, METH_VARARGS, (char *)"xaccSplitAssign(Split * split) -> gboolean"},
+	 { (char *)"xaccSplitAssignToLot", _wrap_xaccSplitAssignToLot, METH_VARARGS, (char *)"xaccSplitAssignToLot(Split * split, GNCLot * lot) -> Split *"},
+	 { (char *)"xaccSplitComputeCapGains", _wrap_xaccSplitComputeCapGains, METH_VARARGS, (char *)"xaccSplitComputeCapGains(Split * split, Account * gain_acc)"},
+	 { (char *)"xaccLotComputeCapGains", _wrap_xaccLotComputeCapGains, METH_VARARGS, (char *)"xaccLotComputeCapGains(GNCLot * lot, Account * gain_acc)"},
+	 { (char *)"xaccScrubLot", _wrap_xaccScrubLot, METH_VARARGS, (char *)"xaccScrubLot(GNCLot * lot) -> gboolean"},
+	 { (char *)"xaccAccountScrubLots", _wrap_xaccAccountScrubLots, METH_VARARGS, (char *)"xaccAccountScrubLots(Account * acc)"},
+	 { (char *)"xaccAccountTreeScrubLots", _wrap_xaccAccountTreeScrubLots, METH_VARARGS, (char *)"xaccAccountTreeScrubLots(Account * acc)"},
 	 { NULL, NULL, 0, NULL }
 };
 

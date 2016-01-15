@@ -81,11 +81,11 @@ build_triplet = @build@
 host_triplet = @host@
 noinst_PROGRAMS = gnc-guile$(EXEEXT)
 subdir = .
-DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog \
+DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog COPYING \
 	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
-	$(srcdir)/config.h.in depcomp $(dist_doc_DATA) COPYING TODO \
-	compile config.guess config.sub install-sh missing ltmain.sh
+	$(srcdir)/config.h.in depcomp $(dist_doc_DATA) TODO compile \
+	config.guess config.sub install-sh missing ltmain.sh
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/macros/as-scrub-include.m4 \
 	$(top_srcdir)/macros/ax_pkg_swig.m4 \
@@ -546,6 +546,10 @@ dist_doc_DATA = \
   ChangeLog.2005 \
   ChangeLog.2004 \
   ChangeLog.2003 \
+  ChangeLog.2002 \
+  ChangeLog.2001 \
+  ChangeLog.2000 \
+  ChangeLog.1999 \
   DOCUMENTERS \
   HACKING \
   INSTALL \
@@ -1284,7 +1288,7 @@ po/gnucash.pot: po/POTFILES.in
 @BUILDING_FROM_VCS_TRUE@	    --stringparam include-rev "yes" $(abs_srcdir)/macros/svn2cl.xsl - > $(abs_builddir)/$@ ; \
 @BUILDING_FROM_VCS_TRUE@	else \
 @BUILDING_FROM_VCS_TRUE@	  if test x$(VCS_TYPE) = xgit ; then \
-@BUILDING_FROM_VCS_TRUE@	    "$(GIT_CMD)" log --format="%ad %aN %n%n%x09* %s%d%n" --date=short --since=2013-01-01 > $(abs_builddir)/$@ ; \
+@BUILDING_FROM_VCS_TRUE@	    "$(GIT_CMD)" log --format="%ad %aN %n%n%x09* %s%d%n" --date=short --since=2016-01-01 > $(abs_builddir)/$@ ; \
 @BUILDING_FROM_VCS_TRUE@	  else \
 @BUILDING_FROM_VCS_TRUE@	    touch $(abs_builddir)/$@ ; \
 @BUILDING_FROM_VCS_TRUE@	    echo "Note: not in svn or git. ChangeLog not regenerated." ; \
