@@ -1,3 +1,9 @@
+gnucash (1:2.6.11-1~bpo8+1) jessie-backports; urgency=medium
+
+  * Rebuild for jessie-backports.
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Tue, 02 Feb 2016 00:10:19 +1100
+
 gnucash (1:2.6.11-1) unstable; urgency=medium
 
   * New upstream release [January 2016].
