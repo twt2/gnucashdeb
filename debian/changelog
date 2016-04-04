@@ -1,3 +1,11 @@
+gnucash (1:2.6.12-1) unstable; urgency=medium
+
+  * New upstream release [March 2016].
+  * Standards-Version: 3.9.7.
+  * Vcs-Browser URL to HTTPS.
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Mon, 04 Apr 2016 10:03:00 +1000
+
 gnucash (1:2.6.11-1) unstable; urgency=medium
 
   * New upstream release [January 2016].
