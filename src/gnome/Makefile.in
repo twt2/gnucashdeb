@@ -159,17 +159,17 @@ am_libgnc_gnome_la_OBJECTS = swig-gnome.lo assistant-acct-period.lo \
 	dialog-find-transactions2.lo dialog-lot-viewer.lo \
 	dialog-new-user.lo dialog-price-editor.lo \
 	dialog-price-edit-db.lo dialog-print-check.lo \
-	dialog-print-check2.lo dialog-progress.lo dialog-sx-editor.lo \
-	dialog-sx-editor2.lo dialog-sx-from-trans.lo \
-	dialog-sx-since-last-run.lo dialog-tax-info.lo \
-	gnc-budget-view.lo gnc-plugin-account-tree.lo \
-	gnc-plugin-basic-commands.lo gnc-plugin-budget.lo \
-	gnc-plugin-register.lo gnc-plugin-register2.lo \
-	gnc-plugin-page-account-tree.lo gnc-plugin-page-budget.lo \
-	gnc-plugin-page-sx-list.lo gnc-plugin-page-register.lo \
-	gnc-plugin-page-register2.lo gnc-split-reg.lo \
-	gnc-split-reg2.lo reconcile-view.lo top-level.lo \
-	window-reconcile.lo window-reconcile2.lo window-autoclear.lo
+	dialog-progress.lo dialog-sx-editor.lo dialog-sx-editor2.lo \
+	dialog-sx-from-trans.lo dialog-sx-since-last-run.lo \
+	dialog-tax-info.lo gnc-budget-view.lo \
+	gnc-plugin-account-tree.lo gnc-plugin-basic-commands.lo \
+	gnc-plugin-budget.lo gnc-plugin-register.lo \
+	gnc-plugin-register2.lo gnc-plugin-page-account-tree.lo \
+	gnc-plugin-page-budget.lo gnc-plugin-page-sx-list.lo \
+	gnc-plugin-page-register.lo gnc-plugin-page-register2.lo \
+	gnc-split-reg.lo gnc-split-reg2.lo reconcile-view.lo \
+	top-level.lo window-reconcile.lo window-reconcile2.lo \
+	window-autoclear.lo
 libgnc_gnome_la_OBJECTS = $(am_libgnc_gnome_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -573,7 +573,6 @@ libgnc_gnome_la_SOURCES = \
   dialog-price-editor.c \
   dialog-price-edit-db.c \
   dialog-print-check.c \
-  dialog-print-check2.c \
   dialog-progress.c \
   dialog-sx-editor.c \
   dialog-sx-editor2.c \
@@ -617,7 +616,6 @@ noinst_HEADERS = \
   dialog-lot-viewer.h \
   dialog-new-user.h \
   dialog-print-check.h \
-  dialog-print-check2.h \
   dialog-progress.h \
   dialog-sx-editor.h \
   dialog-sx-editor2.h \
@@ -762,7 +760,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-price-edit-db.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-price-editor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-print-check.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-print-check2.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-progress.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-sx-editor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dialog-sx-editor2.Plo@am__quote@

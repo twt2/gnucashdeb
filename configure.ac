@@ -20,7 +20,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 # Autoconf initialization
 AC_PREREQ(2.60)
-AC_INIT([GnuCash], [2.6.11], [gnucash-devel@gnucash.org])
+AC_INIT([GnuCash], [2.6.12], [gnucash-devel@gnucash.org])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_SRCDIR(src/engine/Transaction.h)
 AC_CONFIG_MACRO_DIR([macros])
@@ -91,11 +91,11 @@ AC_DEFINE_UNQUOTED(GNUCASH_LATEST_STABLE_SERIES, "$GNUCASH_LATEST_STABLE_SERIES"
     [Most recent stable GnuCash series])
 
 dnl Set of available languages.
-TP_LINGUAS="az ca cs da eu fa ja nl pt rw sk sr sv tr uk zh_CN"
+TP_LINGUAS="az ca cs da eu fa ja nl rw sk sr sv tr uk zh_CN"
 dnl already marked as external at TP:
-GC_LINGUAS="ar bg de el en_GB es fi fr gu he hi hu it kn ko lt lv mr nb ne pl pt_BR ro ru ta te ur vi zh_TW "
+GC_LINGUAS="ar bg de el en_GB es fi fr gu he hi hu it kn ko lt lv mr nb ne pl pt pt_BR ro ru ta te ur vi zh_TW "
 dnl not marked or no TP team:
-NEW_LINGUAS="as brx doi es_NI kok kok@latin ks mai mni mni@bengali pt_PT"
+NEW_LINGUAS="as brx doi es_NI kok kok@latin ks mai mni mni@bengali"
 
 ALL_LINGUAS="$TP_LINGUAS $GC_LINGUAS $NEW_LINGUAS"
 
@@ -452,33 +452,52 @@ AC_CHECK_FUNCS(gethostid link)
 ### --------------------------------------------------------------------------
 ### Guile version checks
 
+GUILE_EFFECTIVE_VERSION=0
 # - check minimum version
 # - determine GUILE_CFLAGS and GUILE_LIBS
-gnc_have_guile_2=no
-gnc_have_guile_www=no
-PKG_CHECK_MODULES(GUILE,
-                  [guile-2.0 >= 2.0.0],
-		  [gnc_have_guile_2=yes
-		  GUILE_EFFECTIVE_VERSION=2.0
-		  AC_PATH_PROG([GUILD], guild)],
-   [PKG_CHECK_MODULES(GUILE,
-                  [guile-1.8 >= 1.8.5],
-		  [GUILE_EFFECTIVE_VERSION=1.8],
-                  [AC_MSG_ERROR([
-    guile does not appear to be installed correctly, or is not in the
-    correct version range.  Perhaps you have not installed the guile
-    development packages?  Gnucash requires at least version 1.8.5 to build.
-  ])])
-])
 
-AM_CONDITIONAL(GNC_HAVE_GUILE_2, test "x${gnc_have_guile_2}" = xyes)
+AC_ARG_WITH([guile],
+    AS_HELP_STRING([--with-guile=1.8|2.0|auto],
+                   [which guile version to compile against @<:@default: auto@:>@]),
+    [],
+    [with_guile=auto]
+)
+
+AS_IF([test "$with_guile" = "2.0"],
+      [PKG_CHECK_MODULES(GUILE, [guile-2.0 >= 2.0.0],
+                         [GUILE_EFFECTIVE_VERSION=2.0
+                          AC_PATH_PROG([GUILD], guild)])],
+      [test "$with_guile" = "1.8"],
+      [PKG_CHECK_MODULES(GUILE, [guile-1.8 >= 1.8.5],
+                         [GUILE_EFFECTIVE_VERSION=1.8])],
+      [test "$with_guile" = "auto"],
+      [PKG_CHECK_MODULES(GUILE, [guile-2.0 >= 2.0.0],
+          [GUILE_EFFECTIVE_VERSION=2.0
+           AC_PATH_PROG([GUILD], guild)],
+          [PKG_CHECK_MODULES(GUILE, [guile-1.8 >= 1.8.5],
+                             [GUILE_EFFECTIVE_VERSION=1.8],
+                             [GUILE_EFFECTIVE_VERSION=0])
+          ])],
+      # else
+      [AC_MSG_ERROR([invalid guile version specified])]
+)
+
+AS_IF([test "$GUILE_EFFECTIVE_VERSION" = "0"],
+      [AC_MSG_ERROR([
+       guile does not appear to be installed correctly, or is not in the
+       correct version range.  Perhaps you have not installed the guile
+       development packages?  Gnucash requires at least version 1.8.5 to build.
+       ])]
+)
+
+AM_CONDITIONAL(GNC_HAVE_GUILE_2, [test "$GUILE_EFFECTIVE_VERSION" = "2.0"])
 AC_SUBST(GUILE_EFFECTIVE_VERSION)
 AC_SUBST(GUILE, [`pwd`/gnc-guile])
 
 AC_CHECK_HEADERS(ltdl.h,
          [],
          [AC_MSG_ERROR([ltdl.h not found. Perhaps you need to install
-the intltool-ltdl development packages ?])])
+the libtool(-ltdl) development package?])])
 
 ### --------------------------------------------------------------------------
 ### SWIG version checks (only when building from SCM)
@@ -498,7 +517,7 @@ if test "${BUILDING_FROM_VCS}" = yes
 then
     AX_PKG_SWIG(2.0.10, [gnc_have_swig_2_0_10=yes], [gnc_have_swig_2_0_10=no])
 
-    if test "${gnc_have_guile_2}" = yes
+    if test "${GUILE_EFFECTIVE_VERSION}" = "2.0"
     then
         if test "${gnc_have_swig_2_0_10}" = no
         then
@@ -1480,6 +1499,7 @@ AC_CONFIG_FILES(
   src/import-export/ofx/test/Makefile
   src/import-export/csv-imp/Makefile
   src/import-export/csv-imp/gschemas/Makefile
+  src/import-export/csv-imp/test/Makefile
   src/import-export/csv-exp/Makefile
   src/import-export/csv-exp/gschemas/Makefile
   src/import-export/log-replay/Makefile
@@ -1612,6 +1632,8 @@ AC_CONFIG_FILES([src/tax/us/test/test-load-module],
 
 # A few files need extra actions at creation time
 AC_CONFIG_FILES([src/bin/overrides/gnucash-make-guids], [chmod u+x src/bin/overrides/gnucash-make-guids])
+#Link (copy on Windows) test data files:
+AC_CONFIG_LINKS([src/import-export/csv-imp/test/sample1.csv:src/import-export/csv-imp/test/sample1.csv])
 LDFLAGS="${LDFLAGS} ${NOUNDEF}"
 AC_OUTPUT
 

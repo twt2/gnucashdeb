@@ -457,8 +457,8 @@ gnc_dotgnucash_dir (void)
     if (!gnc_validate_directory(tmp_dir, TRUE, &errmsg))
         exit(1);
     g_free(tmp_dir);
-    tmp_dir = g_build_filename(tmp_dir, "translog", (gchar *)NULL);
-    if (!gnc_validate_directory(dotgnucash, TRUE, &errmsg))
+    tmp_dir = g_build_filename(dotgnucash, "translog", (gchar *)NULL);
+    if (!gnc_validate_directory(tmp_dir, TRUE, &errmsg))
         exit(1);
     g_free(tmp_dir);
 
@@ -606,8 +606,10 @@ gnc_filepath_locate_pixmap (const gchar *name)
 {
     gchar *default_path;
     gchar *fullname;
+    gchar* pkgdatadir = gnc_path_get_pkgdatadir ();
 
-    default_path = g_build_filename (gnc_path_get_pkgdatadir (), "pixmaps", NULL);
+    default_path = g_build_filename (pkgdatadir, "pixmaps", NULL);
+    g_free(pkgdatadir);
     fullname = gnc_filepath_locate_file (default_path, name);
     g_free(default_path);
 
@@ -619,8 +621,10 @@ gnc_filepath_locate_ui_file (const gchar *name)
 {
     gchar *default_path;
     gchar *fullname;
+    gchar* pkgdatadir = gnc_path_get_pkgdatadir ();
 
-    default_path = g_build_filename (gnc_path_get_pkgdatadir (), "ui", NULL);
+    default_path = g_build_filename (pkgdatadir, "ui", NULL);
+    g_free(pkgdatadir);
     fullname = gnc_filepath_locate_file (default_path, name);
     g_free(default_path);
 

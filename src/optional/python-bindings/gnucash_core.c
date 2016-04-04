@@ -3022,10 +3022,11 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 #define SWIGTYPE_p_gunichar swig_types[109]
 #define SWIGTYPE_p_int swig_types[110]
 #define SWIGTYPE_p_p_GList swig_types[111]
-#define SWIGTYPE_p_unsigned_int swig_types[112]
-#define SWIGTYPE_p_void swig_types[113]
-static swig_type_info *swig_types[115];
-static swig_module_info swig_module = {swig_types, 114, 0, 0, 0, 0};
+#define SWIGTYPE_p_p_Transaction swig_types[112]
+#define SWIGTYPE_p_unsigned_int swig_types[113]
+#define SWIGTYPE_p_void swig_types[114]
+static swig_type_info *swig_types[116];
+static swig_module_info swig_module = {swig_types, 115, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -11780,6 +11781,50 @@ SWIGINTERN PyObject *_wrap_xaccTransStillHasSplit(PyObject *SWIGUNUSEDPARM(self)
       return NULL;
     }
   }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_xaccTransGetFirstPaymentAcctSplit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Transaction *arg1 = (Transaction *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  Split *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:xaccTransGetFirstPaymentAcctSplit",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Transaction, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccTransGetFirstPaymentAcctSplit" "', argument " "1"" of type '" "Transaction const *""'"); 
+  }
+  arg1 = (Transaction *)(argp1);
+  result = (Split *)xaccTransGetFirstPaymentAcctSplit((Transaction const *)arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Split, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_xaccTransGetFirstAPARAcctSplit(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Transaction *arg1 = (Transaction *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  Split *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:xaccTransGetFirstAPARAcctSplit",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Transaction, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccTransGetFirstAPARAcctSplit" "', argument " "1"" of type '" "Transaction const *""'"); 
+  }
+  arg1 = (Transaction *)(argp1);
+  result = (Split *)xaccTransGetFirstAPARAcctSplit((Transaction const *)arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_Split, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -25434,6 +25479,90 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_gncOwnerGetOwnerFromTxn(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Transaction *arg1 = (Transaction *) 0 ;
+  GncOwner *arg2 = (GncOwner *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  gboolean result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:gncOwnerGetOwnerFromTxn",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Transaction, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncOwnerGetOwnerFromTxn" "', argument " "1"" of type '" "Transaction *""'"); 
+  }
+  arg1 = (Transaction *)(argp1);
+  {
+    GncOwner * temp_owner = gncOwnerNew();
+    void * pointer_to_real_thing;
+    if ((SWIG_ConvertPtr(obj1, &pointer_to_real_thing,
+          SWIGTYPE_p__gncCustomer,
+          SWIG_POINTER_EXCEPTION)) == 0){
+      gncOwnerInitCustomer(temp_owner, (GncCustomer *)pointer_to_real_thing);
+      arg2 = temp_owner;
+    }
+    else if ((SWIG_ConvertPtr(obj1, &pointer_to_real_thing,
+          SWIGTYPE_p__gncJob,
+          SWIG_POINTER_EXCEPTION)) == 0){
+      gncOwnerInitJob(temp_owner, (GncJob *)pointer_to_real_thing);
+      arg2 = temp_owner;
+    }
+    else if ((SWIG_ConvertPtr(obj1, &pointer_to_real_thing,
+          SWIGTYPE_p__gncVendor,
+          SWIG_POINTER_EXCEPTION)) == 0){
+      gncOwnerInitVendor(temp_owner, (GncVendor *)pointer_to_real_thing);
+      arg2 = temp_owner;
+    }
+    else if ((SWIG_ConvertPtr(obj1, &pointer_to_real_thing,
+          SWIGTYPE_p__gncEmployee,
+          SWIG_POINTER_EXCEPTION)) == 0){
+      gncOwnerInitEmployee(temp_owner, (GncEmployee *)pointer_to_real_thing);
+      arg2 = temp_owner;
+    }
+    else {
+      PyErr_SetString(
+        PyExc_ValueError,
+        "Python object passed to function with GncOwner * argument "
+        "couldn't be converted back to pointer of that type");
+      return NULL;
+    }
+  }
+  result = gncOwnerGetOwnerFromTxn(arg1,arg2);
+  {
+    if (result == TRUE)
+    {
+      resultobj = Py_True;
+      Py_INCREF(resultobj);
+    }
+    else if (result == FALSE)
+    {
+      resultobj = Py_False;
+      Py_INCREF(resultobj);
+    }
+    else
+    {
+      PyErr_SetString(
+        PyExc_ValueError,
+        "function returning gboolean returned a value that wasn't "
+        "TRUE or FALSE.");
+      return NULL;
+    }
+  }
+  {
+    gncOwnerFree(arg2);
+  }
+  return resultobj;
+fail:
+  {
+    gncOwnerFree(arg2);
+  }
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_gncOwnerGetOwnerFromTypeGuid(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   QofBook *arg1 = (QofBook *) 0 ;
@@ -25591,7 +25720,7 @@ fail:
 SWIGINTERN PyObject *_wrap_gncOwnerCreatePaymentLot(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GncOwner *arg1 = (GncOwner *) 0 ;
-  Transaction *arg2 = (Transaction *) 0 ;
+  Transaction **arg2 = (Transaction **) 0 ;
   Account *arg3 = (Account *) 0 ;
   Account *arg4 = (Account *) 0 ;
   gnc_numeric arg5 ;
@@ -25662,11 +25791,11 @@ SWIGINTERN PyObject *_wrap_gncOwnerCreatePaymentLot(PyObject *SWIGUNUSEDPARM(sel
       return NULL;
     }
   }
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_Transaction, 0 |  0 );
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_p_Transaction, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gncOwnerCreatePaymentLot" "', argument " "2"" of type '" "Transaction *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gncOwnerCreatePaymentLot" "', argument " "2"" of type '" "Transaction **""'"); 
   }
-  arg2 = (Transaction *)(argp2);
+  arg2 = (Transaction **)(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_Account, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gncOwnerCreatePaymentLot" "', argument " "3"" of type '" "Account *""'"); 
@@ -25800,7 +25929,7 @@ fail:
 SWIGINTERN PyObject *_wrap_gncOwnerApplyPayment(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GncOwner *arg1 = (GncOwner *) 0 ;
-  Transaction *arg2 = (Transaction *) 0 ;
+  Transaction **arg2 = (Transaction **) 0 ;
   GList *arg3 = (GList *) 0 ;
   Account *arg4 = (Account *) 0 ;
   Account *arg5 = (Account *) 0 ;
@@ -25876,11 +26005,11 @@ SWIGINTERN PyObject *_wrap_gncOwnerApplyPayment(PyObject *SWIGUNUSEDPARM(self), 
       return NULL;
     }
   }
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_Transaction, 0 |  0 );
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_p_Transaction, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gncOwnerApplyPayment" "', argument " "2"" of type '" "Transaction *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gncOwnerApplyPayment" "', argument " "2"" of type '" "Transaction **""'"); 
   }
-  arg2 = (Transaction *)(argp2);
+  arg2 = (Transaction **)(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_GList, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gncOwnerApplyPayment" "', argument " "3"" of type '" "GList *""'"); 
@@ -41246,6 +41375,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"xaccTransGetSplitIndex", _wrap_xaccTransGetSplitIndex, METH_VARARGS, (char *)"xaccTransGetSplitIndex(Transaction const * trans, Split const * split) -> int"},
 	 { (char *)"xaccTransGetSplitList", _wrap_xaccTransGetSplitList, METH_VARARGS, (char *)"xaccTransGetSplitList(Transaction const * trans) -> SplitList *"},
 	 { (char *)"xaccTransStillHasSplit", _wrap_xaccTransStillHasSplit, METH_VARARGS, (char *)"xaccTransStillHasSplit(Transaction const * trans, Split const * s) -> gboolean"},
+	 { (char *)"xaccTransGetFirstPaymentAcctSplit", _wrap_xaccTransGetFirstPaymentAcctSplit, METH_VARARGS, (char *)"xaccTransGetFirstPaymentAcctSplit(Transaction const * trans) -> Split *"},
+	 { (char *)"xaccTransGetFirstAPARAcctSplit", _wrap_xaccTransGetFirstAPARAcctSplit, METH_VARARGS, (char *)"xaccTransGetFirstAPARAcctSplit(Transaction const * trans) -> Split *"},
 	 { (char *)"xaccTransSetReadOnly", _wrap_xaccTransSetReadOnly, METH_VARARGS, (char *)"xaccTransSetReadOnly(Transaction * trans, char const * reason)"},
 	 { (char *)"xaccTransClearReadOnly", _wrap_xaccTransClearReadOnly, METH_VARARGS, (char *)"xaccTransClearReadOnly(Transaction * trans)"},
 	 { (char *)"xaccTransGetReadOnly", _wrap_xaccTransGetReadOnly, METH_VARARGS, (char *)"xaccTransGetReadOnly(Transaction const * trans) -> char const *"},
@@ -41645,18 +41776,19 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gncOwnerLotMatchOwnerFunc", _wrap_gncOwnerLotMatchOwnerFunc, METH_VARARGS, (char *)"gncOwnerLotMatchOwnerFunc(GNCLot * lot, gpointer user_data) -> gboolean"},
 	 { (char *)"gncOwnerLotsSortFunc", _wrap_gncOwnerLotsSortFunc, METH_VARARGS, (char *)"gncOwnerLotsSortFunc(GNCLot * lotA, GNCLot * lotB) -> gint"},
 	 { (char *)"gncOwnerGetOwnerFromLot", _wrap_gncOwnerGetOwnerFromLot, METH_VARARGS, (char *)"gncOwnerGetOwnerFromLot(GNCLot * lot, GncOwner * owner) -> gboolean"},
+	 { (char *)"gncOwnerGetOwnerFromTxn", _wrap_gncOwnerGetOwnerFromTxn, METH_VARARGS, (char *)"gncOwnerGetOwnerFromTxn(Transaction * txn, GncOwner * owner) -> gboolean"},
 	 { (char *)"gncOwnerGetOwnerFromTypeGuid", _wrap_gncOwnerGetOwnerFromTypeGuid, METH_VARARGS, (char *)"gncOwnerGetOwnerFromTypeGuid(QofBook * book, GncOwner * owner, QofIdType type, GncGUID guid) -> gboolean"},
 	 { (char *)"gncOwnerGetSlots", _wrap_gncOwnerGetSlots, METH_VARARGS, (char *)"gncOwnerGetSlots(GncOwner * owner) -> KvpFrame *"},
 	 { (char *)"gncOwnerCreatePaymentLot", _wrap_gncOwnerCreatePaymentLot, METH_VARARGS, (char *)"\n"
-		"gncOwnerCreatePaymentLot(GncOwner const * owner, Transaction * txn, Account * posted_acc, Account * xfer_acc, \n"
+		"gncOwnerCreatePaymentLot(GncOwner const * owner, Transaction ** preset_txn, Account * posted_acc, Account * xfer_acc, \n"
 		"    _gnc_numeric amount, _gnc_numeric exch, Timespec date, char const * memo, \n"
 		"    char const * num) -> GNCLot *\n"
 		""},
 	 { (char *)"gncOwnerAutoApplyPaymentsWithLots", _wrap_gncOwnerAutoApplyPaymentsWithLots, METH_VARARGS, (char *)"gncOwnerAutoApplyPaymentsWithLots(GncOwner const * owner, GList * lots)"},
 	 { (char *)"gncOwnerApplyPayment", _wrap_gncOwnerApplyPayment, METH_VARARGS, (char *)"\n"
-		"gncOwnerApplyPayment(GncOwner const * owner, Transaction * txn, GList * lots, Account * posted_acc, Account * xfer_acc, \n"
-		"    _gnc_numeric amount, _gnc_numeric exch, Timespec date, char const * memo, \n"
-		"    char const * num, gboolean auto_pay)\n"
+		"gncOwnerApplyPayment(GncOwner const * owner, Transaction ** preset_txn, GList * lots, Account * posted_acc, \n"
+		"    Account * xfer_acc, _gnc_numeric amount, _gnc_numeric exch, Timespec date, \n"
+		"    char const * memo, char const * num, gboolean auto_pay)\n"
 		""},
 	 { (char *)"gncOwnerFindOffsettingSplit", _wrap_gncOwnerFindOffsettingSplit, METH_VARARGS, (char *)"gncOwnerFindOffsettingSplit(GNCLot * pay_lot, _gnc_numeric target_value) -> Split *"},
 	 { (char *)"gncOwnerReduceSplitTo", _wrap_gncOwnerReduceSplitTo, METH_VARARGS, (char *)"gncOwnerReduceSplitTo(Split * split, _gnc_numeric target_value) -> gboolean"},
@@ -42252,6 +42384,7 @@ static swig_type_info _swigt__p_guint8 = {"_p_guint8", "guint8 *", 0, 0, (void*)
 static swig_type_info _swigt__p_gunichar = {"_p_gunichar", "gunichar *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_int = {"_p_int", "int *|gint *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p_GList = {"_p_p_GList", "GList **|PriceList **", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_p_Transaction = {"_p_p_Transaction", "Transaction **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_int = {"_p_unsigned_int", "guint *|unsigned int *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_void = {"_p_void", "gpointer|void *", 0, 0, (void*)0, 0};
 
@@ -42368,6 +42501,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_gunichar,
   &_swigt__p_int,
   &_swigt__p_p_GList,
+  &_swigt__p_p_Transaction,
   &_swigt__p_unsigned_int,
   &_swigt__p_void,
 };
@@ -42484,6 +42618,7 @@ static swig_cast_info _swigc__p_guint8[] = {  {&_swigt__p_guint8, 0, 0, 0},{0, 0
 static swig_cast_info _swigc__p_gunichar[] = {  {&_swigt__p_gunichar, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_GList[] = {  {&_swigt__p_p_GList, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_p_Transaction[] = {  {&_swigt__p_p_Transaction, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_int[] = {  {&_swigt__p_unsigned_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_void[] = {  {&_swigt__p_void, 0, 0, 0},{0, 0, 0, 0}};
 
@@ -42600,6 +42735,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_gunichar,
   _swigc__p_int,
   _swigc__p_p_GList,
+  _swigc__p_p_Transaction,
   _swigc__p_unsigned_int,
   _swigc__p_void,
 };

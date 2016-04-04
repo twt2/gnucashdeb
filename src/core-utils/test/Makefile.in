@@ -13,6 +13,8 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
+
+# GLIB - Library of useful C routines
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -77,12 +79,13 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-TESTS = test-gnc-uri-utils$(EXEEXT) test-resolve-file-path$(EXEEXT)
-check_PROGRAMS = test-gnc-uri-utils$(EXEEXT) \
-	test-resolve-file-path$(EXEEXT)
-subdir = src/core-utils/test
-DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
+DIST_COMMON = $(top_srcdir)/test-templates/Makefile.decl \
+	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp $(top_srcdir)/test-driver
+TESTS = test-gnc-uri-utils$(EXEEXT) test-resolve-file-path$(EXEEXT) \
+	test-gnc-glib-utils$(EXEEXT)
+check_PROGRAMS = $(am__EXEEXT_1)
+subdir = src/core-utils/test
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/macros/as-scrub-include.m4 \
 	$(top_srcdir)/macros/ax_pkg_swig.m4 \
@@ -104,19 +107,33 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-test_gnc_uri_utils_SOURCES = test-gnc-uri-utils.c
-test_gnc_uri_utils_OBJECTS = test-gnc-uri-utils.$(OBJEXT)
-test_gnc_uri_utils_LDADD = $(LDADD)
+am__EXEEXT_1 = test-gnc-uri-utils$(EXEEXT) \
+	test-resolve-file-path$(EXEEXT) test-gnc-glib-utils$(EXEEXT)
+am_test_gnc_glib_utils_OBJECTS =  \
+	test_gnc_glib_utils-gnc-glib-utils.$(OBJEXT) \
+	test_gnc_glib_utils-test-gnc-glib-utils.$(OBJEXT)
+test_gnc_glib_utils_OBJECTS = $(am_test_gnc_glib_utils_OBJECTS)
 am__DEPENDENCIES_1 =
-test_gnc_uri_utils_DEPENDENCIES =  \
+test_gnc_glib_utils_DEPENDENCIES =  \
 	${top_builddir}/src/libqof/qof/libgnc-qof.la \
-	../libgnc-core-utils.la \
 	${top_builddir}/src/test-core/libtest-core.la \
 	$(am__DEPENDENCIES_1)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+test_gnc_glib_utils_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(test_gnc_glib_utils_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
+test_gnc_uri_utils_SOURCES = test-gnc-uri-utils.c
+test_gnc_uri_utils_OBJECTS = test-gnc-uri-utils.$(OBJEXT)
+test_gnc_uri_utils_LDADD = $(LDADD)
+test_gnc_uri_utils_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
+	../libgnc-core-utils.la \
+	${top_builddir}/src/test-core/libtest-core.la \
+	$(am__DEPENDENCIES_1)
 test_resolve_file_path_SOURCES = test-resolve-file-path.c
 test_resolve_file_path_OBJECTS = test-resolve-file-path.$(OBJEXT)
 test_resolve_file_path_LDADD = $(LDADD)
@@ -159,8 +176,10 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = test-gnc-uri-utils.c test-resolve-file-path.c
-DIST_SOURCES = test-gnc-uri-utils.c test-resolve-file-path.c
+SOURCES = $(test_gnc_glib_utils_SOURCES) test-gnc-uri-utils.c \
+	test-resolve-file-path.c
+DIST_SOURCES = $(test_gnc_glib_utils_SOURCES) test-gnc-uri-utils.c \
+	test-resolve-file-path.c
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -646,6 +665,11 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+GTESTER = gtester 			# for non-GLIB packages
+GTESTER_REPORT = gtester-report
+EXTRA_DIST = 
+TEST_PROGS = 
+MODULEPATH = src/core-utils
 AM_CPPFLAGS = \
   -I${top_srcdir} \
   -I${top_srcdir}/src \
@@ -669,12 +693,25 @@ TESTS_ENVIRONMENT = \
   SRCDIR=${srcdir} \
   $(shell ${abs_top_srcdir}/src/gnc-test-env.pl --noexports ${GNC_TEST_DEPS})
 
-EXTRA_DIST = 
+test_gnc_glib_utils_SOURCES = \
+  $(top_srcdir)/$(MODULEPATH)/gnc-glib-utils.c \
+  test-gnc-glib-utils.c
+
+test_gnc_glib_utils_LDADD = \
+        ${top_builddir}/src/libqof/qof/libgnc-qof.la \
+        ${top_builddir}/src/test-core/libtest-core.la \
+        $(GLIB_LIBS)
+
+test_gnc_glib_utils_CFLAGS = \
+        ${DEFAULT_INCLUDES} \
+        -I${top_srcdir}/${MODULEPATH} \
+        ${GLIB_CFLAGS}
+
 all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .log .o .obj .test .test$(EXEEXT) .trs
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/test-templates/Makefile.decl $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -695,6 +732,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
+$(top_srcdir)/test-templates/Makefile.decl:
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -714,6 +752,10 @@ clean-checkPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
+test-gnc-glib-utils$(EXEEXT): $(test_gnc_glib_utils_OBJECTS) $(test_gnc_glib_utils_DEPENDENCIES) $(EXTRA_test_gnc_glib_utils_DEPENDENCIES) 
+	@rm -f test-gnc-glib-utils$(EXEEXT)
+	$(AM_V_CCLD)$(test_gnc_glib_utils_LINK) $(test_gnc_glib_utils_OBJECTS) $(test_gnc_glib_utils_LDADD) $(LIBS)
+
 test-gnc-uri-utils$(EXEEXT): $(test_gnc_uri_utils_OBJECTS) $(test_gnc_uri_utils_DEPENDENCIES) $(EXTRA_test_gnc_uri_utils_DEPENDENCIES) 
 	@rm -f test-gnc-uri-utils$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_gnc_uri_utils_OBJECTS) $(test_gnc_uri_utils_LDADD) $(LIBS)
@@ -730,6 +772,8 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-gnc-uri-utils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-resolve-file-path.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_gnc_glib_utils-gnc-glib-utils.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_gnc_glib_utils-test-gnc-glib-utils.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -751,6 +795,34 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+test_gnc_glib_utils-gnc-glib-utils.o: $(top_srcdir)/$(MODULEPATH)/gnc-glib-utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_gnc_glib_utils_CFLAGS) $(CFLAGS) -MT test_gnc_glib_utils-gnc-glib-utils.o -MD -MP -MF $(DEPDIR)/test_gnc_glib_utils-gnc-glib-utils.Tpo -c -o test_gnc_glib_utils-gnc-glib-utils.o `test -f '$(top_srcdir)/$(MODULEPATH)/gnc-glib-utils.c' || echo '$(srcdir)/'`$(top_srcdir)/$(MODULEPATH)/gnc-glib-utils.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_gnc_glib_utils-gnc-glib-utils.Tpo $(DEPDIR)/test_gnc_glib_utils-gnc-glib-utils.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/$(MODULEPATH)/gnc-glib-utils.c' object='test_gnc_glib_utils-gnc-glib-utils.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_gnc_glib_utils_CFLAGS) $(CFLAGS) -c -o test_gnc_glib_utils-gnc-glib-utils.o `test -f '$(top_srcdir)/$(MODULEPATH)/gnc-glib-utils.c' || echo '$(srcdir)/'`$(top_srcdir)/$(MODULEPATH)/gnc-glib-utils.c
+
+test_gnc_glib_utils-gnc-glib-utils.obj: $(top_srcdir)/$(MODULEPATH)/gnc-glib-utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_gnc_glib_utils_CFLAGS) $(CFLAGS) -MT test_gnc_glib_utils-gnc-glib-utils.obj -MD -MP -MF $(DEPDIR)/test_gnc_glib_utils-gnc-glib-utils.Tpo -c -o test_gnc_glib_utils-gnc-glib-utils.obj `if test -f '$(top_srcdir)/$(MODULEPATH)/gnc-glib-utils.c'; then $(CYGPATH_W) '$(top_srcdir)/$(MODULEPATH)/gnc-glib-utils.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/$(MODULEPATH)/gnc-glib-utils.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_gnc_glib_utils-gnc-glib-utils.Tpo $(DEPDIR)/test_gnc_glib_utils-gnc-glib-utils.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$(top_srcdir)/$(MODULEPATH)/gnc-glib-utils.c' object='test_gnc_glib_utils-gnc-glib-utils.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_gnc_glib_utils_CFLAGS) $(CFLAGS) -c -o test_gnc_glib_utils-gnc-glib-utils.obj `if test -f '$(top_srcdir)/$(MODULEPATH)/gnc-glib-utils.c'; then $(CYGPATH_W) '$(top_srcdir)/$(MODULEPATH)/gnc-glib-utils.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/$(MODULEPATH)/gnc-glib-utils.c'; fi`
+
+test_gnc_glib_utils-test-gnc-glib-utils.o: test-gnc-glib-utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_gnc_glib_utils_CFLAGS) $(CFLAGS) -MT test_gnc_glib_utils-test-gnc-glib-utils.o -MD -MP -MF $(DEPDIR)/test_gnc_glib_utils-test-gnc-glib-utils.Tpo -c -o test_gnc_glib_utils-test-gnc-glib-utils.o `test -f 'test-gnc-glib-utils.c' || echo '$(srcdir)/'`test-gnc-glib-utils.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_gnc_glib_utils-test-gnc-glib-utils.Tpo $(DEPDIR)/test_gnc_glib_utils-test-gnc-glib-utils.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-gnc-glib-utils.c' object='test_gnc_glib_utils-test-gnc-glib-utils.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_gnc_glib_utils_CFLAGS) $(CFLAGS) -c -o test_gnc_glib_utils-test-gnc-glib-utils.o `test -f 'test-gnc-glib-utils.c' || echo '$(srcdir)/'`test-gnc-glib-utils.c
+
+test_gnc_glib_utils-test-gnc-glib-utils.obj: test-gnc-glib-utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_gnc_glib_utils_CFLAGS) $(CFLAGS) -MT test_gnc_glib_utils-test-gnc-glib-utils.obj -MD -MP -MF $(DEPDIR)/test_gnc_glib_utils-test-gnc-glib-utils.Tpo -c -o test_gnc_glib_utils-test-gnc-glib-utils.obj `if test -f 'test-gnc-glib-utils.c'; then $(CYGPATH_W) 'test-gnc-glib-utils.c'; else $(CYGPATH_W) '$(srcdir)/test-gnc-glib-utils.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_gnc_glib_utils-test-gnc-glib-utils.Tpo $(DEPDIR)/test_gnc_glib_utils-test-gnc-glib-utils.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-gnc-glib-utils.c' object='test_gnc_glib_utils-test-gnc-glib-utils.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_gnc_glib_utils_CFLAGS) $(CFLAGS) -c -o test_gnc_glib_utils-test-gnc-glib-utils.obj `if test -f 'test-gnc-glib-utils.c'; then $(CYGPATH_W) 'test-gnc-glib-utils.c'; else $(CYGPATH_W) '$(srcdir)/test-gnc-glib-utils.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -965,6 +1037,13 @@ test-resolve-file-path.log: test-resolve-file-path$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test-gnc-glib-utils.log: test-gnc-glib-utils$(EXEEXT)
+	@p='test-gnc-glib-utils$(EXEEXT)'; \
+	b='test-gnc-glib-utils'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 .test.log:
 	@p='$<'; \
 	$(am__set_b); \
@@ -1012,7 +1091,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
-	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS check-local
 check: check-am
 all-am: Makefile
 installdirs:
@@ -1122,21 +1201,104 @@ uninstall-am:
 
 .MAKE: check-am install-am install-strip
 
-.PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am clean \
-	clean-checkPROGRAMS clean-generic clean-libtool clean-local \
-	cscopelist-am ctags ctags-am distclean distclean-compile \
-	distclean-generic distclean-libtool distclean-local \
-	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am recheck tags tags-am uninstall \
-	uninstall-am
+.PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am \
+	check-local clean clean-checkPROGRAMS clean-generic \
+	clean-libtool clean-local cscopelist-am ctags ctags-am \
+	distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-local distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	recheck tags tags-am uninstall uninstall-am
 
+
+### testing rules
+
+# test: run all tests in cwd and subdirs
+test: test-nonrecursive
+@PLATFORM_WIN32_FALSE@	@ for subdir in $(SUBDIRS) . ; do \
+@PLATFORM_WIN32_FALSE@	    test "$$subdir" = "." -o "$$subdir" = "po" || \
+@PLATFORM_WIN32_FALSE@	    ( cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $@ ) || exit $? ; \
+@PLATFORM_WIN32_FALSE@	  done
+
+# test-nonrecursive: run tests only in cwd
+test-nonrecursive: ${TEST_PROGS}
+@PLATFORM_WIN32_FALSE@	@test -z "${TEST_PROGS}" || MALLOC_CHECK_=2 MALLOC_PERTURB_=$$(($${RANDOM:-256} % 256)) ${GTESTER} --verbose ${TEST_PROGS}
+
+# test-report: run tests in subdirs and generate report
+# perf-report: run tests in subdirs with -m perf and generate report
+# full-report: like test-report: with -m perf and -m slow
+test-report perf-report full-report:	${TEST_PROGS}
+	@test -z "${TEST_PROGS}" || { \
+	  case $@ in \
+	  test-report) test_options="-k";; \
+	  perf-report) test_options="-k -m=perf";; \
+	  full-report) test_options="-k -m=perf -m=slow";; \
+	  esac ; \
+	  if test -z "$$GTESTER_LOGDIR" ; then	\
+	    ${GTESTER} --verbose $$test_options -o test-report.xml ${TEST_PROGS} ; \
+	  elif test -n "${TEST_PROGS}" ; then \
+	    ${GTESTER} --verbose $$test_options -o `mktemp "$$GTESTER_LOGDIR/log-XXXXXX"` ${TEST_PROGS} ; \
+	  fi ; \
+	}
+	@ ignore_logdir=true ; \
+	  if test -z "$$GTESTER_LOGDIR" ; then \
+	    GTESTER_LOGDIR=`mktemp -d "\`pwd\`/.testlogs-XXXXXX"`; export GTESTER_LOGDIR ; \
+	    ignore_logdir=false ; \
+	  fi ; \
+	  if test -d "$(top_srcdir)/.git" ; then \
+	    REVISION=`git describe` ; \
+	  else \
+	    REVISION=$(VERSION) ; \
+	  fi ; \
+	  for subdir in $(SUBDIRS) . ; do \
+	    test "$$subdir" = "." -o "$$subdir" = "po" || \
+	    ( cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $@ ) || exit $? ; \
+	  done ; \
+	  $$ignore_logdir || { \
+	    echo '<?xml version="1.0"?>'              > $@.xml ; \
+	    echo '<report-collection>'               >> $@.xml ; \
+	    echo '<info>'                            >> $@.xml ; \
+	    echo '  <package>$(PACKAGE)</package>'   >> $@.xml ; \
+	    echo '  <version>$(VERSION)</version>'   >> $@.xml ; \
+	    echo "  <revision>$$REVISION</revision>" >> $@.xml ; \
+	    echo '</info>'                           >> $@.xml ; \
+	    for lf in `ls -L "$$GTESTER_LOGDIR"/.` ; do \
+	      sed '1,1s/^<?xml\b[^>?]*?>//' <"$$GTESTER_LOGDIR"/"$$lf" >> $@.xml ; \
+	    done ; \
+	    echo >> $@.xml ; \
+	    echo '</report-collection>' >> $@.xml ; \
+	    rm -rf "$$GTESTER_LOGDIR"/ ; \
+	    ${GTESTER_REPORT} --version 2>/dev/null 1>&2 ; test "$$?" != 0 || ${GTESTER_REPORT} $@.xml >$@.html ; \
+	  }
+.PHONY: test test-report perf-report full-report test-nonrecursive
+
+.PHONY: lcov genlcov lcov-clean
+# use recursive makes in order to ignore errors during check
+lcov:
+	-$(MAKE) $(AM_MAKEFLAGS) -k check
+	$(MAKE) $(AM_MAKEFLAGS) genlcov
+
+# we have to massage the lcov.info file slightly to hide the effect of libtool
+# placing the objects files in the .libs/ directory separate from the *.c
+# we also have to delete tests/.libs/libmoduletestplugin_*.gcda
+genlcov:
+	rm -f $(top_builddir)/tests/.libs/libmoduletestplugin_*.gcda
+	$(LTP) --directory $(top_builddir) --capture --output-file glib-lcov.info --test-name GLIB_PERF --no-checksum --compat-libtool
+	LANG=C $(LTP_GENHTML) --prefix $(top_builddir) --output-directory glib-lcov --title "GLib Code Coverage" --legend --show-details glib-lcov.info
+
+lcov-clean:
+	-$(LTP) --directory $(top_builddir) -z
+	-rm -rf glib-lcov.info glib-lcov
+	-find -name '*.gcda' -print | xargs rm
+
+# run tests in cwd as part of make check
+check-local: test-nonrecursive
 
 clean-local:
 	rm -f translog.*

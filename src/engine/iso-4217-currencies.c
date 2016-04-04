@@ -734,6 +734,24 @@
   }
 
   {
+    const char *fullname = "Belarussian Ruble";
+    gnc_commodity *c = gnc_commodity_new(book,
+                                         CUR_I18N(fullname),
+                                         "ISO4217",
+                                         "BYN",
+                                         "933",
+                                         1);
+    if(!c) {
+      PWARN("failed to create commodity for currency %s", fullname);
+    } else {
+      if(!gnc_commodity_table_insert(table, c)) {
+        PWARN("failed to insert %s into commodity table", fullname);
+      }
+    }
+    gnc_commodity_set_default_symbol(c, "Br");
+  }
+
+  {
     const char *fullname = "Belize Dollar";
     gnc_commodity *c = gnc_commodity_new(book,
                                          CUR_I18N(fullname),

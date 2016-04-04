@@ -521,7 +521,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = . gschemas
+SUBDIRS = . gschemas test
 pkglib_LTLIBRARIES = libgncmod-csv-import.la
 libgncmod_csv_import_la_SOURCES = \
   gncmod-csv-import.c \

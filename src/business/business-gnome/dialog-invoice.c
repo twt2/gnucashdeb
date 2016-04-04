@@ -814,10 +814,13 @@ gnc_invoice_post(InvoiceWindow *iw, struct post_invoice_params *post_params)
     /* Yep, we're posting.  So, save the invoice...
      * Note that we can safely ignore the return value; we checked
      * the verify_ok earlier, so we know it's ok.
+     * Additionally make sure the invoice has the owner's currency
+     * refer to https://bugzilla.gnome.org/show_bug.cgi?id=728074
      */
     gnc_suspend_gui_refresh ();
     gncInvoiceBeginEdit (invoice);
     gnc_invoice_window_ok_save (iw);
+    gncInvoiceSetCurrency (invoice, gncOwnerGetCurrency (gncInvoiceGetOwner (invoice)));
 
     /* Fill in the conversion prices with feedback from the user */
     text = _("One or more of the entries are for accounts different from the invoice/bill currency. You will be asked a conversion rate for each.");
@@ -2695,7 +2698,7 @@ set_gncEntry_date(gpointer data, gpointer user_data)
 
 InvoiceWindow * gnc_ui_invoice_duplicate (GncInvoice *old_invoice, gboolean open_properties, const GDate *new_date)
 {
-    InvoiceWindow *iw;
+    InvoiceWindow *iw = NULL;
     GncInvoice *new_invoice = NULL;
     GDate new_date_gdate;
 
@@ -2746,10 +2749,14 @@ InvoiceWindow * gnc_ui_invoice_duplicate (GncInvoice *old_invoice, gboolean open
     }
     else
     {
-        // Open the newly created invoice in the "edit" window
+         // Open the newly created invoice in the "edit" window
         iw = gnc_ui_invoice_edit (new_invoice);
+        // Check the ID; set one if necessary
+        if (g_strcmp0 (gtk_entry_get_text (GTK_ENTRY (iw->id_entry)), "") == 0)
+        {
+            gncInvoiceSetID (new_invoice, gncInvoiceNextID(iw->book, &(iw->owner)));
+        }
     }
-
     return iw;
 }
 
@@ -2882,17 +2889,41 @@ static void post_one_invoice_cb(gpointer data, gpointer user_data)
     gnc_invoice_post(iw, post_params);
 }
 
+static void gnc_invoice_is_posted(gpointer inv, gpointer test_value)
+{
+    GncInvoice *invoice = inv;
+    gboolean *test = (gboolean*)test_value;
+      
+    if (gncInvoiceIsPosted (invoice))
+    {
+        *test = TRUE;
+    }
+}
+
+
 static void
 multi_post_invoice_cb (GList *invoice_list, gpointer user_data)
 {
     struct post_invoice_params post_params;
+    gboolean test;
     InvoiceWindow *iw;
 
     if (g_list_length(invoice_list) == 0)
         return;
-
     // Get the posting parameters for these invoices
     iw = gnc_ui_invoice_edit(invoice_list->data);
+    test = FALSE;
+    gnc_suspend_gui_refresh (); // Turn off GUI refresh for the duration.
+    // Check if any of the selected invoices have already been posted.
+    g_list_foreach(invoice_list, gnc_invoice_is_posted, &test);
+    gnc_resume_gui_refresh ();
+    if (test)
+    {
+        gnc_error_dialog (iw_get_window(iw), "%s",
+                          _("One or more selected invoices have already been posted.\nRe-check you selection."));
+        return;
+    }
+    
     if (!gnc_dialog_post_invoice(iw, _("Do you really want to post these invoices?"),
                                  &post_params.ddue, &post_params.postdate,
                                  &post_params.memo, &post_params.acc,

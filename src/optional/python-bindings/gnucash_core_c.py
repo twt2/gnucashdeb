@@ -1187,6 +1187,14 @@ def xaccTransStillHasSplit(*args):
   """xaccTransStillHasSplit(Transaction const * trans, Split const * s) -> gboolean"""
   return _gnucash_core_c.xaccTransStillHasSplit(*args)
 
+def xaccTransGetFirstPaymentAcctSplit(*args):
+  """xaccTransGetFirstPaymentAcctSplit(Transaction const * trans) -> Split *"""
+  return _gnucash_core_c.xaccTransGetFirstPaymentAcctSplit(*args)
+
+def xaccTransGetFirstAPARAcctSplit(*args):
+  """xaccTransGetFirstAPARAcctSplit(Transaction const * trans) -> Split *"""
+  return _gnucash_core_c.xaccTransGetFirstAPARAcctSplit(*args)
+
 def xaccTransSetReadOnly(*args):
   """xaccTransSetReadOnly(Transaction * trans, char const * reason)"""
   return _gnucash_core_c.xaccTransSetReadOnly(*args)
@@ -2872,6 +2880,10 @@ def gncOwnerGetOwnerFromLot(*args):
   """gncOwnerGetOwnerFromLot(GNCLot * lot, GncOwner * owner) -> gboolean"""
   return _gnucash_core_c.gncOwnerGetOwnerFromLot(*args)
 
+def gncOwnerGetOwnerFromTxn(*args):
+  """gncOwnerGetOwnerFromTxn(Transaction * txn, GncOwner * owner) -> gboolean"""
+  return _gnucash_core_c.gncOwnerGetOwnerFromTxn(*args)
+
 def gncOwnerGetOwnerFromTypeGuid(*args):
   """gncOwnerGetOwnerFromTypeGuid(QofBook * book, GncOwner * owner, QofIdType type, GncGUID guid) -> gboolean"""
   return _gnucash_core_c.gncOwnerGetOwnerFromTypeGuid(*args)
@@ -2882,7 +2894,7 @@ def gncOwnerGetSlots(*args):
 
 def gncOwnerCreatePaymentLot(*args):
   """
-    gncOwnerCreatePaymentLot(GncOwner const * owner, Transaction * txn, Account * posted_acc, Account * xfer_acc, 
+    gncOwnerCreatePaymentLot(GncOwner const * owner, Transaction ** preset_txn, Account * posted_acc, Account * xfer_acc, 
         _gnc_numeric amount, _gnc_numeric exch, Timespec date, char const * memo, 
         char const * num) -> GNCLot *
     """
@@ -2894,9 +2906,9 @@ def gncOwnerAutoApplyPaymentsWithLots(*args):
 
 def gncOwnerApplyPayment(*args):
   """
-    gncOwnerApplyPayment(GncOwner const * owner, Transaction * txn, GList * lots, Account * posted_acc, Account * xfer_acc, 
-        _gnc_numeric amount, _gnc_numeric exch, Timespec date, char const * memo, 
-        char const * num, gboolean auto_pay)
+    gncOwnerApplyPayment(GncOwner const * owner, Transaction ** preset_txn, GList * lots, Account * posted_acc, 
+        Account * xfer_acc, _gnc_numeric amount, _gnc_numeric exch, Timespec date, 
+        char const * memo, char const * num, gboolean auto_pay)
     """
   return _gnucash_core_c.gncOwnerApplyPayment(*args)
 
