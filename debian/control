@@ -3,7 +3,7 @@ Section: gnome
 Priority: optional
 Maintainer: Dmitry Smirnov <onlyjob@debian.org>
 Standards-Version: 3.9.8
-Build-Depends: debhelper (>= 9), intltool, pkg-config, dh-autoreconf, dh-python,
+Build-Depends: debhelper (>= 9.20160403~), intltool, pkg-config, dh-autoreconf, dh-python,
  guile-2.0-dev,
  imagemagick,
  libaqbanking-dev (>= 5.6.0beta),
@@ -49,21 +49,6 @@ Description: personal and small-business financial-accounting software
  processing. It has an X based graphical user interface, double entry, a
  hierarchy of accounts, expense accounts (categories), and can import Quicken
  QIF files and OFX files.
-
-Package: gnucash-dbg
-Section: debug
-Priority: extra
-Architecture: any
-Depends: gnucash (= ${binary:Version}), ${misc:Depends}
-Description: debugging symbols for the accounting software Gnucash
- Gnucash provides accounting functions suitable for use by small businesses and
- individuals. It can track finances in multiple accounts, keeping running and
- reconciled balances. There is support for customer, vendor and employee
- processing. It has an X based graphical user interface, double entry, a
- hierarchy of accounts, expense accounts (categories), and can import Quicken
- QIF files and OFX files.
- .
- This package contains debugging symbols needed for debugging Gnucash.
 
 Package: gnucash-common
 Architecture: all
