@@ -740,7 +740,7 @@
                                          "ISO4217",
                                          "BYN",
                                          "933",
-                                         1);
+                                         100);
     if(!c) {
       PWARN("failed to create commodity for currency %s", fullname);
     } else {

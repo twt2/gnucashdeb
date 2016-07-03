@@ -409,7 +409,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 accountdir = ${GNC_ACCOUNTS_DIR}/sv_FI
 account_DATA = \
-	acctchrt_common.gnucash-xea \
+    acctchrt_common.gnucash-xea \
+    acctchrt_sbr-xbrl.gnucash-xea \
     acctchrt_rf.gnucash-xea
 
 EXTRA_DIST = \

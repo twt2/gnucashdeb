@@ -788,6 +788,98 @@ gnc_dbi_unlock( QofBackend *qbe )
     qof_backend_set_error( qbe, ERR_BACKEND_SERVER_ERR );
 }
 
+#define SQL_OPTION_TO_REMOVE "NO_ZERO_DATE"
+
+/* Given an sql_options string returns a copy of the string adjusted as
+ * necessary. In particular if the string contains SQL_OPTION_TO_REMOVE it is
+ * removed along with comma separator.
+ */
+gchar*
+adjust_sql_options_string (const gchar *str)
+{
+    GRegex* regex = NULL;
+    GError* err = NULL;
+    gchar* regex_str = NULL;
+    gchar* answer = NULL;
+
+    /* Build a regex string that will find the pattern at the beginning, end or
+     * within the string as a whole word, comma separated.
+     */
+    regex_str =  "(?:," SQL_OPTION_TO_REMOVE "$|\\b"
+        SQL_OPTION_TO_REMOVE "\\b,?)";
+
+    // compile the regular expression and check for errors
+    regex = g_regex_new (regex_str, 0, 0, &err);
+    if (err != NULL)
+    {
+        g_error_free (err);
+    } else
+    {
+        answer = g_regex_replace (regex, str, -1, 0, "", 0, NULL);
+    }
+    // in case of errors set the answer to the passed in string
+    if (!answer)
+    {
+        answer = g_strdup (str);
+    }
+    g_regex_unref (regex);
+    return answer;
+}
+
+/* checks mysql sql_options and adjusts if necessary */
+static void
+adjust_sql_options (dbi_conn connection)
+{
+    dbi_result result;
+    gint err;
+    const char* errmsg;
+
+    result = dbi_conn_query (connection, "SELECT @@sql_mode");
+    if (result)
+    {
+        const char* str;
+        dbi_result_first_row (result);
+        str = dbi_result_get_string_idx (result, 1);
+        if (str)
+        {
+            PINFO("Initial sql_mode: %s", str);
+            if (strstr (str, SQL_OPTION_TO_REMOVE))
+            {
+                gchar *adjusted_str;
+                gchar *set_str;
+                dbi_result set_result;
+
+                adjusted_str = adjust_sql_options_string (str);
+                PINFO("Setting sql_mode to %s", adjusted_str);
+                set_str = g_strdup_printf ("SET sql_mode='%s';", adjusted_str);
+                set_result = dbi_conn_query (connection, set_str);
+                if (set_result)
+                {
+                    dbi_result_free (set_result);
+                }
+                else
+                {
+                    err = dbi_conn_error (connection, &errmsg);
+                    PERR("Unable to set sql_mode %d : %s", err, errmsg );
+                }
+                g_free (adjusted_str);
+                g_free (set_str);
+            }
+        }
+        else
+        {
+            err = dbi_conn_error (connection, &errmsg);
+            PERR("Unable to get sql_mode %d : %s", err, errmsg);
+        }
+        dbi_result_free(result);
+    }
+    else
+    {
+        err = dbi_conn_error (connection, &errmsg);
+        PERR("Unable to read sql_mode %d : %s", err, errmsg );
+    }
+}
+
 static void
 gnc_dbi_mysql_session_begin( QofBackend* qbe, QofSession *session,
                              const gchar *book_id, gboolean ignore_lock,
@@ -848,6 +940,7 @@ gnc_dbi_mysql_session_begin( QofBackend* qbe, QofSession *session,
     result = dbi_conn_connect( be->conn );
     if ( result == 0 )
     {
+        adjust_sql_options( be->conn );
         dbi_test_result = conn_test_dbi_library( be->conn );
         switch ( dbi_test_result )
         {
@@ -907,6 +1000,7 @@ gnc_dbi_mysql_session_begin( QofBackend* qbe, QofSession *session,
                 qof_backend_set_error( qbe, ERR_BACKEND_SERVER_ERR );
                 goto exit;
             }
+            adjust_sql_options( be->conn );
             dresult = dbi_conn_queryf( be->conn, "CREATE DATABASE %s CHARACTER SET utf8", dbname );
             if ( dresult == NULL )
             {
@@ -944,6 +1038,7 @@ gnc_dbi_mysql_session_begin( QofBackend* qbe, QofSession *session,
                 qof_backend_set_error( qbe, ERR_BACKEND_SERVER_ERR );
                 goto exit;
             }
+            adjust_sql_options( be->conn );
             dbi_test_result = conn_test_dbi_library( be->conn );
             switch ( dbi_test_result )
             {

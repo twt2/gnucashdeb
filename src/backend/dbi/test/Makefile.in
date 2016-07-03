@@ -114,7 +114,8 @@ am_test_backend_dbi_OBJECTS =  \
 	test_backend_dbi-test-backend-dbi.$(OBJEXT) \
 	test_backend_dbi-test-backend-dbi-basic.$(OBJEXT) \
 	test_backend_dbi-test-dbi-stuff.$(OBJEXT) \
-	test_backend_dbi-test-dbi-business-stuff.$(OBJEXT)
+	test_backend_dbi-test-dbi-business-stuff.$(OBJEXT) \
+	test_backend_dbi-gnc-backend-dbi.$(OBJEXT)
 test_backend_dbi_OBJECTS = $(am_test_backend_dbi_OBJECTS)
 test_backend_dbi_LDADD = $(LDADD)
 test_backend_dbi_DEPENDENCIES =  \
@@ -124,7 +125,6 @@ test_backend_dbi_DEPENDENCIES =  \
 	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
 	${top_builddir}/src/core-utils/libgnc-core-utils.la \
 	${top_builddir}/src/libqof/qof/libgnc-qof.la \
-	../libgncmod-backend-dbi.la \
 	${top_builddir}/src/backend/sql/libgnc-backend-sql.la \
 	${top_builddir}/src/backend/xml/libgnc-backend-xml-utils.la \
 	${top_builddir}/lib/libc/libc-missing.la
@@ -475,7 +475,6 @@ LDADD = ${top_builddir}/src/test-core/libtest-core.la \
         ${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
         ${top_builddir}/src/core-utils/libgnc-core-utils.la \
         ${top_builddir}/src/libqof/qof/libgnc-qof.la \
-        ../libgncmod-backend-dbi.la \
         ${top_builddir}/src/backend/sql/libgnc-backend-sql.la \
         ${top_builddir}/src/backend/xml/libgnc-backend-xml-utils.la \
         ${top_builddir}/lib/libc/libc-missing.la
@@ -500,7 +499,8 @@ test_backend_dbi_SOURCES = \
     test-backend-dbi.c \
     test-backend-dbi-basic.c \
     test-dbi-stuff.c \
-    test-dbi-business-stuff.c
+    test-dbi-business-stuff.c \
+    ../gnc-backend-dbi.c
 
 test_backend_dbi_LDFLAGS = "-ldbi"
 test_backend_dbi_CPPFLAGS = \
@@ -562,6 +562,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_backend_dbi-gnc-backend-dbi.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_backend_dbi-test-backend-dbi-basic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_backend_dbi-test-backend-dbi.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_backend_dbi-test-dbi-business-stuff.Po@am__quote@
@@ -643,6 +644,20 @@ test_backend_dbi-test-dbi-business-stuff.obj: test-dbi-business-stuff.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-dbi-business-stuff.c' object='test_backend_dbi-test-dbi-business-stuff.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_backend_dbi_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_backend_dbi-test-dbi-business-stuff.obj `if test -f 'test-dbi-business-stuff.c'; then $(CYGPATH_W) 'test-dbi-business-stuff.c'; else $(CYGPATH_W) '$(srcdir)/test-dbi-business-stuff.c'; fi`
+
+test_backend_dbi-gnc-backend-dbi.o: ../gnc-backend-dbi.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_backend_dbi_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_backend_dbi-gnc-backend-dbi.o -MD -MP -MF $(DEPDIR)/test_backend_dbi-gnc-backend-dbi.Tpo -c -o test_backend_dbi-gnc-backend-dbi.o `test -f '../gnc-backend-dbi.c' || echo '$(srcdir)/'`../gnc-backend-dbi.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_backend_dbi-gnc-backend-dbi.Tpo $(DEPDIR)/test_backend_dbi-gnc-backend-dbi.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../gnc-backend-dbi.c' object='test_backend_dbi-gnc-backend-dbi.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_backend_dbi_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_backend_dbi-gnc-backend-dbi.o `test -f '../gnc-backend-dbi.c' || echo '$(srcdir)/'`../gnc-backend-dbi.c
+
+test_backend_dbi-gnc-backend-dbi.obj: ../gnc-backend-dbi.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_backend_dbi_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test_backend_dbi-gnc-backend-dbi.obj -MD -MP -MF $(DEPDIR)/test_backend_dbi-gnc-backend-dbi.Tpo -c -o test_backend_dbi-gnc-backend-dbi.obj `if test -f '../gnc-backend-dbi.c'; then $(CYGPATH_W) '../gnc-backend-dbi.c'; else $(CYGPATH_W) '$(srcdir)/../gnc-backend-dbi.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_backend_dbi-gnc-backend-dbi.Tpo $(DEPDIR)/test_backend_dbi-gnc-backend-dbi.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../gnc-backend-dbi.c' object='test_backend_dbi-gnc-backend-dbi.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_backend_dbi_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test_backend_dbi-gnc-backend-dbi.obj `if test -f '../gnc-backend-dbi.c'; then $(CYGPATH_W) '../gnc-backend-dbi.c'; else $(CYGPATH_W) '$(srcdir)/../gnc-backend-dbi.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

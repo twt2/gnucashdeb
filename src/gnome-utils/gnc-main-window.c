@@ -3953,7 +3953,10 @@ gnc_book_options_dialog_apply_cb(GNCOptionWin * optionwin,
     use_split_action_for_num_after =
         qof_book_use_split_action_for_num_field (gnc_get_current_book ());
     if (use_split_action_for_num_before != use_split_action_for_num_after)
+    {
         gnc_book_option_num_field_source_change_cb (use_split_action_for_num_after);
+        gnc_gui_refresh_all ();
+    }
 }
 
 static void

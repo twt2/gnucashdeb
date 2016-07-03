@@ -1313,14 +1313,16 @@ gnc_options_dialog_response_cb(GtkDialog *dialog, gint response, GNCOptionWin *w
 
     case GTK_RESPONSE_OK:
     case GTK_RESPONSE_APPLY:
-        gnc_options_dialog_changed_internal (window->dialog, FALSE);
         close_cb = window->close_cb;
         window->close_cb = NULL;
         if (window->apply_cb)
             window->apply_cb (window, window->apply_cb_data);
         window->close_cb = close_cb;
         if (response == GTK_RESPONSE_APPLY)
+        {
+            gnc_options_dialog_changed_internal (window->dialog, FALSE);
             break;
+        }
         /* fall through */
 
     default:
