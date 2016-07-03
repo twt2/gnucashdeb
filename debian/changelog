@@ -1,3 +1,11 @@
+gnucash (1:2.6.13-1) unstable; urgency=medium
+
+  * New upstream release [June 2016].
+  * Standards-Version: 3.9.8.
+  * Vcs-Git URL to HTTPS.
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Mon, 04 Jul 2016 03:04:31 +1000
+
 gnucash (1:2.6.12-1.1) unstable; urgency=medium
 
   * Non-maintainer upload.
