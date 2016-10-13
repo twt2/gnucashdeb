@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-27 21:50-0700\n"
+"POT-Creation-Date: 2016-09-16 11:33-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -726,7 +726,7 @@ msgstr ""
 msgid "Retained Earnings"
 msgstr ""
 
-#: ../src/app-utils/gnc-ui-util.c:743 ../src/engine/Account.c:3951
+#: ../src/app-utils/gnc-ui-util.c:743 ../src/engine/Account.c:3990
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2959
 #: ../src/import-export/qif-imp/qif-dialog-utils.scm:71
 #: ../src/import-export/qif-imp/qif-dialog-utils.scm:75
@@ -745,7 +745,7 @@ msgstr ""
 #: ../src/app-utils/guile-util.c:906
 #: ../src/business/business-gnome/gtkbuilder/dialog-payment.glade.h:8
 #: ../src/gnome/gnc-plugin-page-register2.c:2466
-#: ../src/gnome/gnc-plugin-page-register.c:2631
+#: ../src/gnome/gnc-plugin-page-register.c:2674
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3199
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3204
 #: ../src/register/ledger-core/split-register.c:2367
@@ -759,7 +759,7 @@ msgstr ""
 #: ../src/app-utils/guile-util.c:937
 #: ../src/business/business-gnome/gtkbuilder/dialog-payment.glade.h:9
 #: ../src/gnome/gnc-plugin-page-register2.c:2463
-#: ../src/gnome/gnc-plugin-page-register.c:2627
+#: ../src/gnome/gnc-plugin-page-register.c:2670
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2898
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2917
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2935
@@ -895,7 +895,7 @@ msgstr ""
 msgid "Charge"
 msgstr ""
 
-#: ../src/app-utils/prefs.scm:73 ../src/engine/Account.c:3950
+#: ../src/app-utils/prefs.scm:73 ../src/engine/Account.c:3989
 #: ../src/engine/gncInvoice.c:973
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3161
 #: ../src/report/business-reports/customer-summary.scm:462
@@ -910,7 +910,7 @@ msgstr ""
 #. page / name / orderkey / tooltip / default
 #: ../src/app-utils/prefs.scm:75
 #: ../src/business/business-gnome/business-gnome-utils.c:225
-#: ../src/business/business-gnome/dialog-invoice.c:3240
+#: ../src/business/business-gnome/dialog-invoice.c:3245
 #: ../src/business/business-gnome/gnc-plugin-page-invoice.c:383
 #: ../src/business/business-gnome/gtkbuilder/dialog-invoice.glade.h:1
 #: ../src/engine/gncInvoice.c:969 ../src/gnome-search/dialog-search.c:1069
@@ -971,7 +971,7 @@ msgstr ""
 msgid "Sell"
 msgstr ""
 
-#: ../src/app-utils/prefs.scm:89 ../src/engine/Account.c:3949
+#: ../src/app-utils/prefs.scm:89 ../src/engine/Account.c:3988
 #: ../src/engine/Scrub.c:393 ../src/gnome/gnc-budget-view.c:388
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2975
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3076
@@ -1003,7 +1003,7 @@ msgstr ""
 #: ../src/business/business-gnome/dialog-invoice.c:2371
 #: ../src/business/business-gnome/dialog-invoice.c:2546
 #: ../src/business/business-gnome/dialog-invoice.c:2547
-#: ../src/business/business-gnome/dialog-invoice.c:3228
+#: ../src/business/business-gnome/dialog-invoice.c:3233
 #: ../src/engine/gncInvoice.c:971 ../src/gnome-search/dialog-search.c:1053
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3098
 #: ../src/plugins/bi_import/gtkbuilder/dialog-bi-import-gui.glade.h:3
@@ -1367,10 +1367,10 @@ msgstr ""
 
 #: ../src/business/business-gnome/dialog-customer.c:907
 #: ../src/business/business-gnome/dialog-employee.c:712
-#: ../src/business/business-gnome/dialog-invoice.c:2994
-#: ../src/business/business-gnome/dialog-invoice.c:3003
-#: ../src/business/business-gnome/dialog-invoice.c:3014
-#: ../src/business/business-gnome/dialog-invoice.c:3267
+#: ../src/business/business-gnome/dialog-invoice.c:2999
+#: ../src/business/business-gnome/dialog-invoice.c:3008
+#: ../src/business/business-gnome/dialog-invoice.c:3019
+#: ../src/business/business-gnome/dialog-invoice.c:3272
 #: ../src/business/business-gnome/dialog-job.c:549
 #: ../src/business/business-gnome/gtkbuilder/dialog-payment.glade.h:1
 msgid "Process Payment"
@@ -1396,8 +1396,8 @@ msgstr ""
 
 #. FALL THROUGH
 #: ../src/business/business-gnome/dialog-customer.c:932
-#: ../src/business/business-gnome/dialog-invoice.c:3139
-#: ../src/business/business-gnome/dialog-invoice.c:3280
+#: ../src/business/business-gnome/dialog-invoice.c:3144
+#: ../src/business/business-gnome/dialog-invoice.c:3285
 #: ../src/business/business-gnome/dialog-job.c:575
 #: ../src/business/business-gnome/dialog-order.c:885
 #: ../src/business/business-gnome/dialog-vendor.c:735
@@ -1465,7 +1465,7 @@ msgid "Employee Username"
 msgstr ""
 
 #: ../src/business/business-gnome/dialog-employee.c:725
-#: ../src/business/business-gnome/dialog-invoice.c:3119
+#: ../src/business/business-gnome/dialog-invoice.c:3124
 #: ../src/gnome-utils/gnc-tree-view-owner.c:392
 msgid "Employee Name"
 msgstr ""
@@ -1476,7 +1476,7 @@ msgid "Username"
 msgstr ""
 
 #: ../src/business/business-gnome/dialog-employee.c:736
-#: ../src/gnome/dialog-sx-editor2.c:1757 ../src/gnome/dialog-sx-editor.c:1792
+#: ../src/gnome/dialog-sx-editor2.c:1762 ../src/gnome/dialog-sx-editor.c:1798
 #: ../src/gnome/dialog-tax-info.c:1153 ../src/gnome-utils/gnc-dense-cal.c:337
 #: ../src/gnome-utils/gnc-tree-model-budget.c:96
 #: ../src/gnome-utils/gnc-tree-view-commodity.c:396
@@ -1511,9 +1511,9 @@ msgid ""
 msgstr ""
 
 #: ../src/business/business-gnome/dialog-invoice.c:692
-#: ../src/business/business-gnome/dialog-invoice.c:3048
-#: ../src/business/business-gnome/dialog-invoice.c:3082
-#: ../src/business/business-gnome/dialog-invoice.c:3116
+#: ../src/business/business-gnome/dialog-invoice.c:3053
+#: ../src/business/business-gnome/dialog-invoice.c:3087
+#: ../src/business/business-gnome/dialog-invoice.c:3121
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2836
 #: ../src/register/ledger-core/split-register-model.c:231
 #: ../src/report/business-reports/aging.scm:406
@@ -1666,7 +1666,7 @@ msgstr ""
 
 #: ../src/business/business-gnome/dialog-invoice.c:2372
 #: ../src/business/business-gnome/dialog-invoice.c:2548
-#: ../src/business/business-gnome/dialog-invoice.c:3089
+#: ../src/business/business-gnome/dialog-invoice.c:3094
 msgid "Bill ID"
 msgstr ""
 
@@ -1677,76 +1677,76 @@ msgstr ""
 
 #: ../src/business/business-gnome/dialog-invoice.c:2377
 #: ../src/business/business-gnome/dialog-invoice.c:2555
-#: ../src/business/business-gnome/dialog-invoice.c:3123
+#: ../src/business/business-gnome/dialog-invoice.c:3128
 msgid "Voucher ID"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2868
+#: ../src/business/business-gnome/dialog-invoice.c:2873
 msgid "Date of duplicated entries"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2923
+#: ../src/business/business-gnome/dialog-invoice.c:2928
 msgid ""
 "One or more selected invoices have already been posted.\n"
-"Re-check you selection."
+"Re-check your selection."
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2927
+#: ../src/business/business-gnome/dialog-invoice.c:2932
 msgid "Do you really want to post these invoices?"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2993
+#: ../src/business/business-gnome/dialog-invoice.c:2998
 msgid "View/Edit Invoice"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2995
-#: ../src/business/business-gnome/dialog-invoice.c:3004
-#: ../src/business/business-gnome/dialog-invoice.c:3015
+#: ../src/business/business-gnome/dialog-invoice.c:3000
+#: ../src/business/business-gnome/dialog-invoice.c:3009
+#: ../src/business/business-gnome/dialog-invoice.c:3020
 #: ../src/business/business-gnome/gnc-plugin-page-invoice.c:261
 #: ../src/gnome/gnc-plugin-page-register2.c:480
-#: ../src/gnome/gnc-plugin-page-register.c:483
+#: ../src/gnome/gnc-plugin-page-register.c:485
 msgid "Duplicate"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2996
-#: ../src/business/business-gnome/dialog-invoice.c:3005
-#: ../src/business/business-gnome/dialog-invoice.c:3016
+#: ../src/business/business-gnome/dialog-invoice.c:3001
+#: ../src/business/business-gnome/dialog-invoice.c:3010
+#: ../src/business/business-gnome/dialog-invoice.c:3021
 #: ../src/business/business-gnome/gnc-plugin-page-invoice.c:265
 msgid "Post"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:2997
-#: ../src/business/business-gnome/dialog-invoice.c:3006
-#: ../src/business/business-gnome/dialog-invoice.c:3017
+#: ../src/business/business-gnome/dialog-invoice.c:3002
+#: ../src/business/business-gnome/dialog-invoice.c:3011
+#: ../src/business/business-gnome/dialog-invoice.c:3022
 msgid "Printable Report"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3002
-#: ../src/business/business-gnome/dialog-invoice.c:3266
+#: ../src/business/business-gnome/dialog-invoice.c:3007
+#: ../src/business/business-gnome/dialog-invoice.c:3271
 msgid "View/Edit Bill"
 msgstr ""
 
 #. Translators: The terms 'Voucher' and 'Expense Voucher' are used
 #. interchangeably in gnucash and mean the same thing.
-#: ../src/business/business-gnome/dialog-invoice.c:3013
+#: ../src/business/business-gnome/dialog-invoice.c:3018
 msgid "View/Edit Voucher"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3027
+#: ../src/business/business-gnome/dialog-invoice.c:3032
 msgid "Invoice Owner"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3030
+#: ../src/business/business-gnome/dialog-invoice.c:3035
 #: ../src/report/business-reports/easy-invoice.scm:339
 #: ../src/report/business-reports/fancy-invoice.scm:329
 #: ../src/report/business-reports/invoice.scm:314
 msgid "Invoice Notes"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3033
-#: ../src/business/business-gnome/dialog-invoice.c:3067
-#: ../src/business/business-gnome/dialog-invoice.c:3101
-#: ../src/business/business-gnome/dialog-invoice.c:3130
+#: ../src/business/business-gnome/dialog-invoice.c:3038
+#: ../src/business/business-gnome/dialog-invoice.c:3072
+#: ../src/business/business-gnome/dialog-invoice.c:3106
+#: ../src/business/business-gnome/dialog-invoice.c:3135
 #: ../src/business/business-gnome/dialog-job.c:562
 #: ../src/business/business-gnome/dialog-job.c:573
 #: ../src/business/business-gnome/dialog-order.c:883
@@ -1759,15 +1759,15 @@ msgstr ""
 msgid "Billing ID"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3036
-#: ../src/business/business-gnome/dialog-invoice.c:3070
-#: ../src/business/business-gnome/dialog-invoice.c:3104
+#: ../src/business/business-gnome/dialog-invoice.c:3041
+#: ../src/business/business-gnome/dialog-invoice.c:3075
+#: ../src/business/business-gnome/dialog-invoice.c:3109
 msgid "Is Paid?"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3039
-#: ../src/business/business-gnome/dialog-invoice.c:3073
-#: ../src/business/business-gnome/dialog-invoice.c:3107
+#: ../src/business/business-gnome/dialog-invoice.c:3044
+#: ../src/business/business-gnome/dialog-invoice.c:3078
+#: ../src/business/business-gnome/dialog-invoice.c:3112
 #: ../src/business/business-gnome/gtkbuilder/dialog-invoice.glade.h:5
 #: ../src/gnome/dialog-find-transactions2.c:125
 #: ../src/gnome/dialog-find-transactions.c:124
@@ -1775,48 +1775,48 @@ msgstr ""
 msgid "Date Posted"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3042
-#: ../src/business/business-gnome/dialog-invoice.c:3076
-#: ../src/business/business-gnome/dialog-invoice.c:3110
+#: ../src/business/business-gnome/dialog-invoice.c:3047
+#: ../src/business/business-gnome/dialog-invoice.c:3081
+#: ../src/business/business-gnome/dialog-invoice.c:3115
 msgid "Is Posted?"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3045
-#: ../src/business/business-gnome/dialog-invoice.c:3079
-#: ../src/business/business-gnome/dialog-invoice.c:3113
+#: ../src/business/business-gnome/dialog-invoice.c:3050
+#: ../src/business/business-gnome/dialog-invoice.c:3084
+#: ../src/business/business-gnome/dialog-invoice.c:3118
 #: ../src/business/business-gnome/dialog-order.c:872
 #: ../src/business/business-gnome/gtkbuilder/dialog-invoice.glade.h:4
 #: ../src/business/business-gnome/gtkbuilder/dialog-order.glade.h:3
 msgid "Date Opened"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3051
-#: ../src/business/business-gnome/dialog-invoice.c:3085
+#: ../src/business/business-gnome/dialog-invoice.c:3056
+#: ../src/business/business-gnome/dialog-invoice.c:3090
 msgid "Company Name "
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3055
+#: ../src/business/business-gnome/dialog-invoice.c:3060
 #: ../src/business/business-gnome/gtkbuilder/dialog-invoice.glade.h:3
 msgid "Invoice ID"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3061
+#: ../src/business/business-gnome/dialog-invoice.c:3066
 msgid "Bill Owner"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3064
+#: ../src/business/business-gnome/dialog-invoice.c:3069
 msgid "Bill Notes"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3095
+#: ../src/business/business-gnome/dialog-invoice.c:3100
 msgid "Voucher Owner"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3098
+#: ../src/business/business-gnome/dialog-invoice.c:3103
 msgid "Voucher Notes"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3132
+#: ../src/business/business-gnome/dialog-invoice.c:3137
 #: ../src/business/business-gnome/gtkbuilder/dialog-invoice.glade.h:2
 #: ../src/business/business-gnome/gtkbuilder/dialog-payment.glade.h:7
 #: ../src/gnome/dialog-lot-viewer.c:831 ../src/gnome/dialog-tax-info.c:1192
@@ -1825,7 +1825,7 @@ msgstr ""
 #: ../src/gnome-utils/gnc-tree-view-price.c:448
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2972
 #: ../src/import-export/csv-exp/csv-transactions-export.c:421
-#: ../src/register/ledger-core/split-register-model.c:346
+#: ../src/register/ledger-core/split-register-model.c:353
 #: ../src/report/business-reports/customer-summary.scm:69
 #: ../src/report/business-reports/job-report.scm:46
 #: ../src/report/business-reports/owner-report.scm:53
@@ -1834,28 +1834,28 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3134
+#: ../src/business/business-gnome/dialog-invoice.c:3139
 #: ../src/register/ledger-core/split-register-model.c:300
 msgid "Paid"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3137
+#: ../src/business/business-gnome/dialog-invoice.c:3142
 msgid "Posted"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3142
-#: ../src/business/business-gnome/dialog-invoice.c:3282
+#: ../src/business/business-gnome/dialog-invoice.c:3147
+#: ../src/business/business-gnome/dialog-invoice.c:3287
 #: ../src/report/business-reports/easy-invoice.scm:805
 msgid "Due"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3144
+#: ../src/business/business-gnome/dialog-invoice.c:3149
 #: ../src/business/business-gnome/dialog-order.c:890
 #: ../src/gnome/dialog-lot-viewer.c:837
 msgid "Opened"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3146
+#: ../src/business/business-gnome/dialog-invoice.c:3151
 #: ../src/business/business-gnome/dialog-order.c:892
 #: ../src/business/business-gnome/gtkbuilder/dialog-payment.glade.h:19
 #: ../src/gnome/dialog-lot-viewer.c:914 ../src/gnome/reconcile-view.c:381
@@ -1874,15 +1874,15 @@ msgstr ""
 msgid "Num"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3227
+#: ../src/business/business-gnome/dialog-invoice.c:3232
 msgid "Find Bill"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3233
+#: ../src/business/business-gnome/dialog-invoice.c:3238
 msgid "Find Expense Voucher"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3234
+#: ../src/business/business-gnome/dialog-invoice.c:3239
 #: ../src/gnome-search/dialog-search.c:1065
 #: ../src/report/business-reports/easy-invoice.scm:712
 #: ../src/report/business-reports/fancy-invoice.scm:811
@@ -1890,18 +1890,18 @@ msgstr ""
 msgid "Expense Voucher"
 msgstr ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3239
+#: ../src/business/business-gnome/dialog-invoice.c:3244
 msgid "Find Invoice"
 msgstr ""
 
 #. Translators: This abbreviation is the column heading for
 #. the condition "Is this invoice a Credit Note?"
-#: ../src/business/business-gnome/dialog-invoice.c:3276
+#: ../src/business/business-gnome/dialog-invoice.c:3281
 msgid "CN?"
 msgstr ""
 
 #. note the "Amount" multichoice option here
-#: ../src/business/business-gnome/dialog-invoice.c:3278
+#: ../src/business/business-gnome/dialog-invoice.c:3283
 #: ../src/gnome/dialog-lot-viewer.c:926 ../src/gnome/reconcile-view.c:373
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2992
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3004
@@ -1930,14 +1930,14 @@ msgstr ""
 
 #. Translators: %d is the number of bills due. This is a
 #. ngettext(3) message.
-#: ../src/business/business-gnome/dialog-invoice.c:3332
+#: ../src/business/business-gnome/dialog-invoice.c:3337
 #, c-format
 msgid "The following bill is due:"
 msgid_plural "The following %d bills are due:"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../src/business/business-gnome/dialog-invoice.c:3337
+#: ../src/business/business-gnome/dialog-invoice.c:3342
 msgid "Due Bills Reminder"
 msgstr ""
 
@@ -2386,7 +2386,7 @@ msgstr ""
 
 #: ../src/business/business-gnome/gnc-plugin-page-invoice.c:124
 #: ../src/gnome/gnc-plugin-page-register2.c:236
-#: ../src/gnome/gnc-plugin-page-register.c:241
+#: ../src/gnome/gnc-plugin-page-register.c:243
 #: ../src/gnome-utils/gnc-main-window.c:315
 #: ../src/report/report-gnome/gnc-plugin-page-report.c:1029
 msgid "_Paste"
@@ -2566,13 +2566,13 @@ msgstr ""
 
 #: ../src/business/business-gnome/gnc-plugin-page-invoice.c:258
 #: ../src/gnome/gnc-plugin-page-register2.c:477
-#: ../src/gnome/gnc-plugin-page-register.c:480
+#: ../src/gnome/gnc-plugin-page-register.c:482
 msgid "Enter"
 msgstr ""
 
 #: ../src/business/business-gnome/gnc-plugin-page-invoice.c:259
 #: ../src/gnome/gnc-plugin-page-register2.c:478
-#: ../src/gnome/gnc-plugin-page-register.c:481
+#: ../src/gnome/gnc-plugin-page-register.c:483
 #: ../src/gnome-utils/gnc-cell-renderer-date.c:158
 msgid "Cancel"
 msgstr ""
@@ -2581,7 +2581,7 @@ msgstr ""
 #: ../src/gnome/gnc-plugin-page-account-tree.c:345
 #: ../src/gnome/gnc-plugin-page-budget.c:177
 #: ../src/gnome/gnc-plugin-page-register2.c:479
-#: ../src/gnome/gnc-plugin-page-register.c:482
+#: ../src/gnome/gnc-plugin-page-register.c:484
 msgid "Delete"
 msgstr ""
 
@@ -2597,7 +2597,7 @@ msgstr ""
 
 #: ../src/business/business-gnome/gnc-plugin-page-invoice.c:264
 #: ../src/gnome/gnc-plugin-page-register2.c:483
-#: ../src/gnome/gnc-plugin-page-register.c:486
+#: ../src/gnome/gnc-plugin-page-register.c:488
 msgid "Blank"
 msgstr ""
 
@@ -2653,7 +2653,7 @@ msgstr ""
 #: ../src/gnome/gnc-plugin-page-account-tree.c:231
 #: ../src/gnome/gnc-plugin-page-budget.c:157
 #: ../src/gnome/gnc-plugin-page-register2.c:319
-#: ../src/gnome/gnc-plugin-page-register.c:333
+#: ../src/gnome/gnc-plugin-page-register.c:335
 #: ../src/gnome-utils/gnc-main-window.c:332
 msgid "_Filter By..."
 msgstr ""
@@ -3294,7 +3294,7 @@ msgstr ""
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2914
 #: ../src/import-export/csv-exp/csv-transactions-export.c:419
 #: ../src/import-export/csv-imp/gnc-csv-model.c:74
-#: ../src/register/ledger-core/split-register-model.c:468
+#: ../src/register/ledger-core/split-register-model.c:475
 #: ../src/report/business-reports/balsheet-eg.scm:301
 #: ../src/report/business-reports/taxinvoice.scm:91
 #: ../src/report/standard-reports/account-summary.scm:483
@@ -3630,7 +3630,7 @@ msgstr ""
 #: ../src/gnome/dialog-find-transactions.c:133
 #: ../src/gnome/dialog-find-transactions.c:168
 #: ../src/gnome/dialog-find-transactions.c:176
-#: ../src/gnome/gnc-plugin-page-register.c:1838
+#: ../src/gnome/gnc-plugin-page-register.c:1886
 #: ../src/gnome-search/dialog-search.c:894
 #: ../src/gnome-search/dialog-search.c:902
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2865
@@ -3677,7 +3677,7 @@ msgstr ""
 #: ../src/import-export/import-main-matcher.c:466
 #: ../src/import-export/import-match-picker.c:347
 #: ../src/import-export/import-match-picker.c:387
-#: ../src/register/ledger-core/split-register-model.c:339
+#: ../src/register/ledger-core/split-register-model.c:346
 #: ../src/report/standard-reports/general-ledger.scm:81
 #: ../src/report/standard-reports/general-ledger.scm:101
 #: ../src/report/standard-reports/register.scm:150
@@ -3745,13 +3745,11 @@ msgid "You have not selected an owner"
 msgstr ""
 
 #: ../src/business/business-gnome/search-owner.c:258
-#: ../src/gnome-search/search-boolean.c:181
 #: ../src/gnome-search/search-reconciled.c:189
 msgid "is"
 msgstr ""
 
 #: ../src/business/business-gnome/search-owner.c:259
-#: ../src/gnome-search/search-boolean.c:182
 #: ../src/gnome-search/search-reconciled.c:190
 msgid "is not"
 msgstr ""
@@ -3841,8 +3839,8 @@ msgid "sample:X"
 msgstr ""
 
 #: ../src/business/business-ledger/gncEntryLedgerLayout.c:80
-#: ../src/register/ledger-core/split-register-layout.c:618
-#: ../src/register/ledger-core/split-register-layout.c:626
+#: ../src/register/ledger-core/split-register-layout.c:637
+#: ../src/register/ledger-core/split-register-layout.c:645
 msgid "sample:12/12/2000"
 msgstr ""
 
@@ -3874,8 +3872,8 @@ msgstr ""
 
 #: ../src/business/business-ledger/gncEntryLedgerLayout.c:116
 #: ../src/business/business-ledger/gncEntryLedgerLayout.c:121
-#: ../src/register/ledger-core/split-register-layout.c:695
-#: ../src/register/ledger-core/split-register-layout.c:703
+#: ../src/register/ledger-core/split-register-layout.c:722
+#: ../src/register/ledger-core/split-register-layout.c:730
 msgid "sample:Expenses:Automobile:Gasoline"
 msgstr ""
 
@@ -3909,7 +3907,7 @@ msgstr ""
 
 #. oli-custom - make a string instead of a table
 #: ../src/business/business-ledger/gncEntryLedgerLoad.c:57
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:14
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:15
 #: ../src/report/business-reports/easy-invoice.scm:151
 #: ../src/report/business-reports/fancy-invoice.scm:163
 #: ../src/report/business-reports/invoice.scm:146
@@ -3932,7 +3930,7 @@ msgstr ""
 #: ../src/business/business-ledger/gncEntryLedgerLoad.c:132
 #: ../src/business/business-ledger/gncEntryLedgerModel.c:530
 #: ../src/business/business-ledger/gncEntryLedgerModel.c:1128
-#: ../src/engine/Account.c:3942
+#: ../src/engine/Account.c:3981
 #: ../src/report/report-system/report-utilities.scm:110
 msgid "Cash"
 msgstr ""
@@ -3952,7 +3950,7 @@ msgstr ""
 #: ../src/gnome/dialog-find-transactions.c:129
 #: ../src/gnome/dialog-find-transactions.c:166
 #: ../src/gnome/dialog-find-transactions.c:174
-#: ../src/gnome/gnc-plugin-page-register.c:1839
+#: ../src/gnome/gnc-plugin-page-register.c:1887
 #: ../src/gnome-search/dialog-search.c:892
 #: ../src/gnome-search/dialog-search.c:900
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2849
@@ -4047,7 +4045,7 @@ msgstr ""
 
 #: ../src/business/business-ledger/gncEntryLedgerModel.c:585
 #: ../src/gnome-utils/gnc-tree-util-split-reg.c:460
-#: ../src/register/ledger-core/split-register-model.c:889
+#: ../src/register/ledger-core/split-register-model.c:945
 msgid "%A %d %B %Y"
 msgstr ""
 
@@ -4213,7 +4211,7 @@ msgid ""
 "They must be at least 'rwx' for the user.\n"
 msgstr ""
 
-#: ../src/engine/Account.c:168
+#: ../src/engine/Account.c:169
 #, c-format
 msgid ""
 "The separator character \"%s\" is used in one or more account names.\n"
@@ -4225,50 +4223,50 @@ msgid ""
 "%s"
 msgstr ""
 
-#: ../src/engine/Account.c:3941 ../src/import-export/aqb/gnc-ab-utils.c:460
+#: ../src/engine/Account.c:3980 ../src/import-export/aqb/gnc-ab-utils.c:460
 #: ../src/report/report-system/report-utilities.scm:109
 msgid "Bank"
 msgstr ""
 
-#: ../src/engine/Account.c:3943
+#: ../src/engine/Account.c:3982
 msgid "Asset"
 msgstr ""
 
-#: ../src/engine/Account.c:3944
+#: ../src/engine/Account.c:3983
 msgid "Credit Card"
 msgstr ""
 
-#: ../src/engine/Account.c:3945
+#: ../src/engine/Account.c:3984
 msgid "Liability"
 msgstr ""
 
-#: ../src/engine/Account.c:3946
+#: ../src/engine/Account.c:3985
 msgid "Stock"
 msgstr ""
 
-#: ../src/engine/Account.c:3947
+#: ../src/engine/Account.c:3986
 msgid "Mutual Fund"
 msgstr ""
 
-#: ../src/engine/Account.c:3948 ../src/gnome-utils/dialog-commodity.c:817
+#: ../src/engine/Account.c:3987 ../src/gnome-utils/dialog-commodity.c:817
 #: ../src/gnome-utils/gnc-tree-view-owner.c:440
 #: ../src/gnome-utils/gnc-tree-view-price.c:430
 msgid "Currency"
 msgstr ""
 
-#: ../src/engine/Account.c:3952
+#: ../src/engine/Account.c:3991
 msgid "A/Receivable"
 msgstr ""
 
-#: ../src/engine/Account.c:3953
+#: ../src/engine/Account.c:3992
 msgid "A/Payable"
 msgstr ""
 
-#: ../src/engine/Account.c:3954
+#: ../src/engine/Account.c:3993
 msgid "Root"
 msgstr ""
 
-#: ../src/engine/Account.c:3955 ../src/engine/Scrub.c:401
+#: ../src/engine/Account.c:3994 ../src/engine/Scrub.c:401
 #: ../src/engine/Scrub.c:466
 #: ../src/report/standard-reports/income-statement.scm:621
 msgid "Trading"
@@ -4453,12 +4451,12 @@ msgid ""
 "Split"
 msgstr ""
 
-#: ../src/engine/Transaction.c:2506
+#: ../src/engine/Transaction.c:2503
 msgid "Voided transaction"
 msgstr ""
 
 #. Dirtying taken care of by SetReadOnly
-#: ../src/engine/Transaction.c:2517
+#: ../src/engine/Transaction.c:2514
 msgid "Transaction Voided"
 msgstr ""
 
@@ -4677,7 +4675,7 @@ msgstr ""
 #: ../src/import-export/import-main-matcher.c:462
 #: ../src/import-export/import-match-picker.c:343
 #: ../src/import-export/qif-imp/dialog-account-picker.c:369
-#: ../src/register/ledger-core/split-register-model.c:325
+#: ../src/register/ledger-core/split-register-model.c:332
 #: ../src/report/business-reports/job-report.scm:39
 #: ../src/report/business-reports/owner-report.scm:48
 #: ../src/report/standard-reports/advanced-portfolio.scm:1042
@@ -4702,7 +4700,7 @@ msgstr ""
 #: ../src/gnome/assistant-stock-split.c:582
 #: ../src/gnome/dialog-find-transactions2.c:121
 #: ../src/gnome/dialog-find-transactions.c:120
-#: ../src/register/ledger-core/split-register-model.c:396
+#: ../src/register/ledger-core/split-register-model.c:403
 #: ../src/report/standard-reports/advanced-portfolio.scm:1062
 #: ../src/report/standard-reports/general-journal.scm:113
 #: ../src/report/standard-reports/general-ledger.scm:88
@@ -4786,7 +4784,7 @@ msgstr ""
 #: ../src/gnome/dialog-find-transactions2.c:117
 #: ../src/gnome/dialog-find-transactions.c:116
 #: ../src/gnome/gnc-plugin-page-register2.c:484
-#: ../src/gnome/gnc-plugin-page-register.c:487
+#: ../src/gnome/gnc-plugin-page-register.c:489
 #: ../src/gnome/window-reconcile2.c:1315 ../src/gnome/window-reconcile.c:1352
 #: ../src/import-export/csv-exp/csv-transactions-export.c:423
 msgid "Reconcile"
@@ -4816,8 +4814,8 @@ msgstr ""
 #: ../src/gnome/dialog-find-transactions.c:128
 #: ../src/gnome/dialog-find-transactions.c:167
 #: ../src/gnome/dialog-find-transactions.c:173
-#: ../src/gnome/gnc-plugin-page-register.c:1834
-#: ../src/gnome/gnc-plugin-page-register.c:3112
+#: ../src/gnome/gnc-plugin-page-register.c:1882
+#: ../src/gnome/gnc-plugin-page-register.c:3156
 #: ../src/gnome-search/dialog-search.c:893
 #: ../src/gnome-search/dialog-search.c:899
 #: ../src/import-export/csv-exp/csv-transactions-export.c:422
@@ -4831,8 +4829,8 @@ msgstr ""
 #: ../src/gnome/dialog-find-transactions.c:132
 #: ../src/gnome/dialog-find-transactions.c:169
 #: ../src/gnome/dialog-find-transactions.c:175
-#: ../src/gnome/gnc-plugin-page-register.c:1833
-#: ../src/gnome/gnc-plugin-page-register.c:3111
+#: ../src/gnome/gnc-plugin-page-register.c:1881
+#: ../src/gnome/gnc-plugin-page-register.c:3155
 #: ../src/gnome-search/dialog-search.c:895
 #: ../src/gnome-search/dialog-search.c:901
 #: ../src/import-export/csv-exp/csv-transactions-export.c:418
@@ -4874,7 +4872,7 @@ msgstr ""
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3212
 #: ../src/import-export/csv-imp/gnc-csv-model.c:78
 #: ../src/register/ledger-core/split-register-model.c:311
-#: ../src/register/ledger-core/split-register-model.c:461
+#: ../src/register/ledger-core/split-register-model.c:468
 #: ../src/report/business-reports/customer-summary.scm:184
 #: ../src/report/business-reports/job-report.scm:221
 #: ../src/report/business-reports/owner-report.scm:308
@@ -4962,7 +4960,7 @@ msgstr ""
 
 #: ../src/gnome/dialog-print-check.c:1589
 #: ../src/gnome/dialog-print-check.c:2595
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:60
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:61
 #: ../src/gnome/gtkbuilder/dialog-print-check.glade.h:40
 #: ../src/gnome-utils/gtkbuilder/gnc-date-format.glade.h:20
 #: ../src/import-export/csv-exp/assistant-csv-export.glade.h:10
@@ -5088,7 +5086,7 @@ msgid ""
 "the changes?"
 msgstr ""
 
-#: ../src/gnome/dialog-sx-editor2.c:1784 ../src/gnome/dialog-sx-editor.c:1819
+#: ../src/gnome/dialog-sx-editor2.c:1789 ../src/gnome/dialog-sx-editor.c:1825
 #: ../src/gnome/gnc-plugin-page-sx-list.c:243
 #: ../src/gnome/gnc-plugin-page-sx-list.c:249
 msgid "Scheduled Transactions"
@@ -5134,7 +5132,7 @@ msgid ""
 "correct this situation."
 msgstr ""
 
-#: ../src/gnome/dialog-sx-from-trans.c:781
+#: ../src/gnome/dialog-sx-from-trans.c:782
 msgid ""
 "Cannot create a Scheduled Transaction from a Transaction currently being "
 "edited. Please Enter the Transaction before Scheduling."
@@ -5329,13 +5327,13 @@ msgstr ""
 
 #: ../src/gnome/gnc-plugin-basic-commands.c:141
 #: ../src/gnome/gnc-plugin-page-register2.c:246
-#: ../src/gnome/gnc-plugin-page-register.c:251
+#: ../src/gnome/gnc-plugin-page-register.c:253
 msgid "_Find..."
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-basic-commands.c:142
 #: ../src/gnome/gnc-plugin-page-register2.c:247
-#: ../src/gnome/gnc-plugin-page-register.c:252
+#: ../src/gnome/gnc-plugin-page-register.c:254
 msgid "Find transactions with a search"
 msgstr ""
 
@@ -5545,13 +5543,13 @@ msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-account-tree.c:214
 #: ../src/gnome/gnc-plugin-page-register2.c:241
-#: ../src/gnome/gnc-plugin-page-register.c:246
+#: ../src/gnome/gnc-plugin-page-register.c:248
 msgid "Edit _Account"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-account-tree.c:215
 #: ../src/gnome/gnc-plugin-page-register2.c:242
-#: ../src/gnome/gnc-plugin-page-register.c:247
+#: ../src/gnome/gnc-plugin-page-register.c:249
 msgid "Edit the selected account"
 msgstr ""
 
@@ -5573,19 +5571,19 @@ msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-account-tree.c:237
 #: ../src/gnome/gnc-plugin-page-register2.c:336
-#: ../src/gnome/gnc-plugin-page-register.c:345
+#: ../src/gnome/gnc-plugin-page-register.c:347
 msgid "_Reconcile..."
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-account-tree.c:238
 #: ../src/gnome/gnc-plugin-page-register2.c:337
-#: ../src/gnome/gnc-plugin-page-register.c:346
+#: ../src/gnome/gnc-plugin-page-register.c:348
 msgid "Reconcile the selected account"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-account-tree.c:242
 #: ../src/gnome/gnc-plugin-page-register2.c:341
-#: ../src/gnome/gnc-plugin-page-register.c:350
+#: ../src/gnome/gnc-plugin-page-register.c:352
 msgid "_Auto-clear..."
 msgstr ""
 
@@ -5595,7 +5593,7 @@ msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-account-tree.c:247
 #: ../src/gnome/gnc-plugin-page-register2.c:331
-#: ../src/gnome/gnc-plugin-page-register.c:340
+#: ../src/gnome/gnc-plugin-page-register.c:342
 #: ../src/gnome-utils/gnc-icons.c:43 ../src/gnome/window-reconcile2.c:2184
 #: ../src/gnome/window-reconcile.c:2224
 msgid "_Transfer..."
@@ -5603,32 +5601,32 @@ msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-account-tree.c:248
 #: ../src/gnome/gnc-plugin-page-register2.c:332
-#: ../src/gnome/gnc-plugin-page-register.c:341
+#: ../src/gnome/gnc-plugin-page-register.c:343
 #: ../src/gnome/window-reconcile2.c:2185 ../src/gnome/window-reconcile.c:2225
 msgid "Transfer funds from one account to another"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-account-tree.c:252
 #: ../src/gnome/gnc-plugin-page-register2.c:346
-#: ../src/gnome/gnc-plugin-page-register.c:355
+#: ../src/gnome/gnc-plugin-page-register.c:357
 msgid "Stoc_k Split..."
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-account-tree.c:253
 #: ../src/gnome/gnc-plugin-page-register2.c:347
-#: ../src/gnome/gnc-plugin-page-register.c:356
+#: ../src/gnome/gnc-plugin-page-register.c:358
 msgid "Record a stock split or a stock merger"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-account-tree.c:257
 #: ../src/gnome/gnc-plugin-page-register2.c:351
-#: ../src/gnome/gnc-plugin-page-register.c:360
+#: ../src/gnome/gnc-plugin-page-register.c:362
 msgid "View _Lots..."
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-account-tree.c:258
 #: ../src/gnome/gnc-plugin-page-register2.c:352
-#: ../src/gnome/gnc-plugin-page-register.c:361
+#: ../src/gnome/gnc-plugin-page-register.c:363
 msgid "Bring up the lot viewer/editor window"
 msgstr ""
 
@@ -5821,144 +5819,144 @@ msgstr ""
 #. Actions
 #. **********************************************************
 #: ../src/gnome/gnc-plugin-page-register2.c:190
-#: ../src/gnome/gnc-plugin-page-register.c:192
+#: ../src/gnome/gnc-plugin-page-register.c:194
 msgid "Cu_t Transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:191
-#: ../src/gnome/gnc-plugin-page-register.c:193
+#: ../src/gnome/gnc-plugin-page-register.c:195
 msgid "_Copy Transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:192
-#: ../src/gnome/gnc-plugin-page-register.c:194
+#: ../src/gnome/gnc-plugin-page-register.c:196
 msgid "_Paste Transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:193
-#: ../src/gnome/gnc-plugin-page-register.c:195
+#: ../src/gnome/gnc-plugin-page-register.c:197
 msgid "Dup_licate Transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:194
-#: ../src/gnome/gnc-plugin-page-register.c:196
+#: ../src/gnome/gnc-plugin-page-register.c:198
 #: ../src/gnome/gnc-split-reg.c:1335
 #: ../src/gnome-utils/gnc-tree-control-split-reg.c:1065
 msgid "_Delete Transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:195
-#: ../src/gnome/gnc-plugin-page-register.c:200
+#: ../src/gnome/gnc-plugin-page-register.c:202
 msgid "Cu_t Split"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:196
-#: ../src/gnome/gnc-plugin-page-register.c:201
+#: ../src/gnome/gnc-plugin-page-register.c:203
 msgid "_Copy Split"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:197
-#: ../src/gnome/gnc-plugin-page-register.c:202
+#: ../src/gnome/gnc-plugin-page-register.c:204
 msgid "_Paste Split"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:198
-#: ../src/gnome/gnc-plugin-page-register.c:203
+#: ../src/gnome/gnc-plugin-page-register.c:205
 msgid "Dup_licate Split"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:199
-#: ../src/gnome/gnc-plugin-page-register.c:204
+#: ../src/gnome/gnc-plugin-page-register.c:206
 #: ../src/gnome/gnc-split-reg.c:1295
 #: ../src/gnome-utils/gnc-tree-control-split-reg.c:1025
 msgid "_Delete Split"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:200
-#: ../src/gnome/gnc-plugin-page-register.c:205
+#: ../src/gnome/gnc-plugin-page-register.c:207
 msgid "Cut the selected transaction into clipboard"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:201
-#: ../src/gnome/gnc-plugin-page-register.c:206
+#: ../src/gnome/gnc-plugin-page-register.c:208
 msgid "Copy the selected transaction into clipboard"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:202
-#: ../src/gnome/gnc-plugin-page-register.c:207
+#: ../src/gnome/gnc-plugin-page-register.c:209
 msgid "Paste the transaction from the clipboard"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:203
-#: ../src/gnome/gnc-plugin-page-register.c:208
+#: ../src/gnome/gnc-plugin-page-register.c:210
 msgid "Make a copy of the current transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:204
-#: ../src/gnome/gnc-plugin-page-register.c:209
+#: ../src/gnome/gnc-plugin-page-register.c:211
 msgid "Delete the current transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:205
-#: ../src/gnome/gnc-plugin-page-register.c:213
+#: ../src/gnome/gnc-plugin-page-register.c:215
 msgid "Cut the selected split into clipboard"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:206
-#: ../src/gnome/gnc-plugin-page-register.c:214
+#: ../src/gnome/gnc-plugin-page-register.c:216
 msgid "Copy the selected split into clipboard"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:207
-#: ../src/gnome/gnc-plugin-page-register.c:215
+#: ../src/gnome/gnc-plugin-page-register.c:217
 msgid "Paste the split from the clipboard"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:208
-#: ../src/gnome/gnc-plugin-page-register.c:216
+#: ../src/gnome/gnc-plugin-page-register.c:218
 msgid "Make a copy of the current split"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:209
-#: ../src/gnome/gnc-plugin-page-register.c:217
+#: ../src/gnome/gnc-plugin-page-register.c:219
 msgid "Delete the current split"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:219
-#: ../src/gnome/gnc-plugin-page-register.c:224
+#: ../src/gnome/gnc-plugin-page-register.c:226
 msgid "_Print Checks..."
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:226
-#: ../src/gnome/gnc-plugin-page-register.c:231
+#: ../src/gnome/gnc-plugin-page-register.c:233
 #: ../src/gnome-utils/gnc-main-window.c:305
 #: ../src/report/report-gnome/gnc-plugin-page-report.c:1019
 msgid "Cu_t"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:227
-#: ../src/gnome/gnc-plugin-page-register.c:232
+#: ../src/gnome/gnc-plugin-page-register.c:234
 #: ../src/gnome-utils/gnc-main-window.c:306
 #: ../src/report/report-gnome/gnc-plugin-page-report.c:1020
 msgid "Cut the current selection and copy it to clipboard"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:231
-#: ../src/gnome/gnc-plugin-page-register.c:236
+#: ../src/gnome/gnc-plugin-page-register.c:238
 #: ../src/gnome-utils/gnc-main-window.c:310
 #: ../src/report/report-gnome/gnc-plugin-page-report.c:1024
 msgid "_Copy"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:232
-#: ../src/gnome/gnc-plugin-page-register.c:237
+#: ../src/gnome/gnc-plugin-page-register.c:239
 #: ../src/gnome-utils/gnc-main-window.c:311
 #: ../src/report/report-gnome/gnc-plugin-page-report.c:1025
 msgid "Copy the current selection to clipboard"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:237
-#: ../src/gnome/gnc-plugin-page-register.c:242
+#: ../src/gnome/gnc-plugin-page-register.c:244
 #: ../src/gnome-utils/gnc-main-window.c:316
 #: ../src/report/report-gnome/gnc-plugin-page-report.c:1030
 msgid "Paste the clipboard content at the cursor position"
@@ -5969,42 +5967,42 @@ msgid "Remo_ve All Splits"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:280
-#: ../src/gnome/gnc-plugin-page-register.c:285
+#: ../src/gnome/gnc-plugin-page-register.c:287
 msgid "Remove all splits in the current transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:284
-#: ../src/gnome/gnc-plugin-page-register.c:289
+#: ../src/gnome/gnc-plugin-page-register.c:291
 msgid "_Enter Transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:285
-#: ../src/gnome/gnc-plugin-page-register.c:290
+#: ../src/gnome/gnc-plugin-page-register.c:292
 msgid "Record the current transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:289
-#: ../src/gnome/gnc-plugin-page-register.c:294
+#: ../src/gnome/gnc-plugin-page-register.c:296
 msgid "Ca_ncel Transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:290
-#: ../src/gnome/gnc-plugin-page-register.c:295
+#: ../src/gnome/gnc-plugin-page-register.c:297
 msgid "Cancel the current transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:294
-#: ../src/gnome/gnc-plugin-page-register.c:299
+#: ../src/gnome/gnc-plugin-page-register.c:301
 msgid "_Void Transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:298
-#: ../src/gnome/gnc-plugin-page-register.c:303
+#: ../src/gnome/gnc-plugin-page-register.c:305
 msgid "_Unvoid Transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:302
-#: ../src/gnome/gnc-plugin-page-register.c:307
+#: ../src/gnome/gnc-plugin-page-register.c:309
 msgid "Add _Reversing Transaction"
 msgstr ""
 
@@ -6042,91 +6040,91 @@ msgid "Refresh this window"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:342
-#: ../src/gnome/gnc-plugin-page-register.c:351
+#: ../src/gnome/gnc-plugin-page-register.c:353
 msgid ""
 "Automatically clear individual transactions, so as to reach a certain "
 "cleared amount"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:356
-#: ../src/gnome/gnc-plugin-page-register.c:365
+#: ../src/gnome/gnc-plugin-page-register.c:367
 msgid "_Blank Transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:357
-#: ../src/gnome/gnc-plugin-page-register.c:366
+#: ../src/gnome/gnc-plugin-page-register.c:368
 msgid "Move to the blank transaction at the bottom of the register"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:361
-#: ../src/gnome/gnc-plugin-page-register.c:370
+#: ../src/gnome/gnc-plugin-page-register.c:372
 msgid "Edit E_xchange Rate"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:362
-#: ../src/gnome/gnc-plugin-page-register.c:371
+#: ../src/gnome/gnc-plugin-page-register.c:373
 msgid "Edit the exchange rate for the current transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:366
-#: ../src/gnome/gnc-plugin-page-register.c:375
+#: ../src/gnome/gnc-plugin-page-register.c:377
 #: ../src/gnome-utils/gnc-icons.c:45
 msgid "_Jump"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:367
-#: ../src/gnome/gnc-plugin-page-register.c:376
+#: ../src/gnome/gnc-plugin-page-register.c:378
 msgid "Jump to the corresponding transaction in the other account"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:371
-#: ../src/gnome/gnc-plugin-page-register.c:380
+#: ../src/gnome/gnc-plugin-page-register.c:382
 msgid "Sche_dule..."
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:372
-#: ../src/gnome/gnc-plugin-page-register.c:381
+#: ../src/gnome/gnc-plugin-page-register.c:383
 msgid ""
 "Create a Scheduled Transaction with the current transaction as a template"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:376
-#: ../src/gnome/gnc-plugin-page-register.c:385
+#: ../src/gnome/gnc-plugin-page-register.c:387
 msgid "_All transactions"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:380
-#: ../src/gnome/gnc-plugin-page-register.c:389
+#: ../src/gnome/gnc-plugin-page-register.c:391
 msgid "_This transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:387
-#: ../src/gnome/gnc-plugin-page-register.c:396
+#: ../src/gnome/gnc-plugin-page-register.c:398
 msgid "Account Report"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:388
-#: ../src/gnome/gnc-plugin-page-register.c:397
+#: ../src/gnome/gnc-plugin-page-register.c:399
 msgid "Open a register report for this Account"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:392
-#: ../src/gnome/gnc-plugin-page-register.c:401
+#: ../src/gnome/gnc-plugin-page-register.c:403
 msgid "Account Report - Single Transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:393
-#: ../src/gnome/gnc-plugin-page-register.c:402
+#: ../src/gnome/gnc-plugin-page-register.c:404
 msgid "Open a register report for the selected Transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:403
-#: ../src/gnome/gnc-plugin-page-register.c:412
+#: ../src/gnome/gnc-plugin-page-register.c:414
 msgid "_Double Line"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:404
-#: ../src/gnome/gnc-plugin-page-register.c:413
+#: ../src/gnome/gnc-plugin-page-register.c:415
 #: ../src/gnome/gschemas/org.gnucash.gschema.xml.in.in.h:89
 msgid "Show two lines of information for each transaction"
 msgstr ""
@@ -6140,72 +6138,72 @@ msgid "Show entered and reconciled dates"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:415
-#: ../src/gnome/gnc-plugin-page-register.c:418
+#: ../src/gnome/gnc-plugin-page-register.c:420
 #: ../src/gnome-utils/gnc-icons.c:44
 msgid "S_plit Transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:416
-#: ../src/gnome/gnc-plugin-page-register.c:419
+#: ../src/gnome/gnc-plugin-page-register.c:421
 msgid "Show all splits in the current transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:427
-#: ../src/gnome/gnc-plugin-page-register.c:430
+#: ../src/gnome/gnc-plugin-page-register.c:432
 msgid "_Basic Ledger"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:428
-#: ../src/gnome/gnc-plugin-page-register.c:431
+#: ../src/gnome/gnc-plugin-page-register.c:433
 msgid "Show transactions on one or two lines"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:432
-#: ../src/gnome/gnc-plugin-page-register.c:435
+#: ../src/gnome/gnc-plugin-page-register.c:437
 msgid "_Auto-Split Ledger"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:433
-#: ../src/gnome/gnc-plugin-page-register.c:436
+#: ../src/gnome/gnc-plugin-page-register.c:438
 msgid ""
 "Show transactions on one or two lines and expand the current transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:437
-#: ../src/gnome/gnc-plugin-page-register.c:440
+#: ../src/gnome/gnc-plugin-page-register.c:442
 #: ../src/gnome-utils/gtkbuilder/dialog-preferences.glade.h:141
 msgid "Transaction _Journal"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:438
-#: ../src/gnome/gnc-plugin-page-register.c:441
+#: ../src/gnome/gnc-plugin-page-register.c:443
 msgid "Show expanded transactions with all splits"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:476
-#: ../src/gnome/gnc-plugin-page-register.c:479
+#: ../src/gnome/gnc-plugin-page-register.c:481
 #: ../src/gnome-utils/gnc-tree-model-split-reg.c:2900
 #: ../src/register/ledger-core/split-register.c:2489
-#: ../src/register/ledger-core/split-register-layout.c:687
-#: ../src/register/ledger-core/split-register-model.c:332
+#: ../src/register/ledger-core/split-register-layout.c:714
+#: ../src/register/ledger-core/split-register-model.c:339
 #: ../src/report/standard-reports/register.scm:154
 msgid "Transfer"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:481
-#: ../src/gnome/gnc-plugin-page-register.c:484
+#: ../src/gnome/gnc-plugin-page-register.c:486
 #: ../src/gnome-search/dialog-search.c:1085
 msgid "Split"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:482
-#: ../src/gnome/gnc-plugin-page-register.c:485
+#: ../src/gnome/gnc-plugin-page-register.c:487
 #: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:24
 msgid "Schedule"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:485
-#: ../src/gnome/gnc-plugin-page-register.c:488
+#: ../src/gnome/gnc-plugin-page-register.c:490
 #: ../src/gnome/window-autoclear.c:92
 msgid "Auto-clear"
 msgstr ""
@@ -6223,13 +6221,13 @@ msgstr ""
 #. Translators: %s is the name
 #. of the tab page
 #: ../src/gnome/gnc-plugin-page-register2.c:1613
-#: ../src/gnome/gnc-plugin-page-register.c:1544
+#: ../src/gnome/gnc-plugin-page-register.c:1553
 #, c-format
 msgid "Save changes to %s?"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:1617
-#: ../src/gnome/gnc-plugin-page-register.c:1548
+#: ../src/gnome/gnc-plugin-page-register.c:1557
 msgid ""
 "This register has pending changes to a transaction. Would you like to save "
 "the changes to this transaction, discard the transaction, or cancel the "
@@ -6237,12 +6235,12 @@ msgid ""
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:1620
-#: ../src/gnome/gnc-plugin-page-register.c:1551
+#: ../src/gnome/gnc-plugin-page-register.c:1560
 msgid "_Discard Transaction"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:1624
-#: ../src/gnome/gnc-plugin-page-register.c:1555
+#: ../src/gnome/gnc-plugin-page-register.c:1564
 msgid "_Save Transaction"
 msgstr ""
 
@@ -6251,35 +6249,35 @@ msgstr ""
 #: ../src/gnome/gnc-plugin-page-register2.c:1700
 #: ../src/gnome/gnc-plugin-page-register2.c:1723
 #: ../src/gnome/gnc-plugin-page-register2.c:1773
-#: ../src/gnome/gnc-plugin-page-register.c:1587
-#: ../src/gnome/gnc-plugin-page-register.c:1622
-#: ../src/gnome/gnc-plugin-page-register.c:1634
-#: ../src/gnome/gnc-plugin-page-register.c:1657
-#: ../src/gnome/gnc-plugin-page-register.c:1707
-#: ../src/gnome/gnc-plugin-page-register.c:1751
+#: ../src/gnome/gnc-plugin-page-register.c:1596
+#: ../src/gnome/gnc-plugin-page-register.c:1631
+#: ../src/gnome/gnc-plugin-page-register.c:1643
+#: ../src/gnome/gnc-plugin-page-register.c:1666
+#: ../src/gnome/gnc-plugin-page-register.c:1716
+#: ../src/gnome/gnc-plugin-page-register.c:1799
 msgid "unknown"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:1674
 #: ../src/gnome/gnc-plugin-page-register2.c:2395
-#: ../src/gnome/gnc-plugin-page-register.c:758
-#: ../src/gnome/gnc-plugin-page-register.c:1608
-#: ../src/gnome/gnc-plugin-page-register.c:2563
+#: ../src/gnome/gnc-plugin-page-register.c:761
+#: ../src/gnome/gnc-plugin-page-register.c:1617
+#: ../src/gnome/gnc-plugin-page-register.c:2606
 #: ../src/report/standard-reports/general-ledger.scm:40
 msgid "General Ledger"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:1676
 #: ../src/gnome/gnc-plugin-page-register2.c:2401
-#: ../src/gnome/gnc-plugin-page-register.c:1610
-#: ../src/gnome/gnc-plugin-page-register.c:2569
+#: ../src/gnome/gnc-plugin-page-register.c:1619
+#: ../src/gnome/gnc-plugin-page-register.c:2612
 msgid "Portfolio"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:1678
 #: ../src/gnome/gnc-plugin-page-register2.c:2407
-#: ../src/gnome/gnc-plugin-page-register.c:1612
-#: ../src/gnome/gnc-plugin-page-register.c:2575
+#: ../src/gnome/gnc-plugin-page-register.c:1621
+#: ../src/gnome/gnc-plugin-page-register.c:2618
 msgid "Search Results"
 msgstr ""
 
@@ -6288,17 +6286,17 @@ msgid "General Ledger Report"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:2403
-#: ../src/gnome/gnc-plugin-page-register.c:2571
+#: ../src/gnome/gnc-plugin-page-register.c:2614
 msgid "Portfolio Report"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:2409
-#: ../src/gnome/gnc-plugin-page-register.c:2577
+#: ../src/gnome/gnc-plugin-page-register.c:2620
 msgid "Search Results Report"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:2413
-#: ../src/gnome/gnc-plugin-page-register.c:2581
+#: ../src/gnome/gnc-plugin-page-register.c:2624
 #: ../src/gnome-utils/gtkbuilder/dialog-preferences.glade.h:134
 #: ../src/report/standard-reports/general-journal.scm:38
 #: ../src/report/standard-reports/register.scm:894
@@ -6311,120 +6309,120 @@ msgid "Register Report"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:2431
-#: ../src/gnome/gnc-plugin-page-register.c:2599
+#: ../src/gnome/gnc-plugin-page-register.c:2642
 msgid "and subaccounts"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:2632
-#: ../src/gnome/gnc-plugin-page-register.c:2764
+#: ../src/gnome/gnc-plugin-page-register.c:2807
 msgid "Print checks from multiple accounts?"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:2634
-#: ../src/gnome/gnc-plugin-page-register.c:2766
+#: ../src/gnome/gnc-plugin-page-register.c:2809
 msgid ""
 "This search result contains splits from more than one account. Do you want "
 "to print the checks even though they are not all from the same account?"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:2644
-#: ../src/gnome/gnc-plugin-page-register.c:2776
+#: ../src/gnome/gnc-plugin-page-register.c:2819
 msgid "_Print checks"
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:2663
-#: ../src/gnome/gnc-plugin-page-register.c:2795
+#: ../src/gnome/gnc-plugin-page-register.c:2838
 msgid ""
 "You can only print checks from a bank account register or search results."
 msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:2855
-#: ../src/gnome/gnc-plugin-page-register.c:2955
+#: ../src/gnome/gnc-plugin-page-register.c:2998
 msgid "You cannot void a transaction with reconciled or cleared splits."
 msgstr ""
 
 #. Translators: The %s is the name of the plugin page
 #: ../src/gnome/gnc-plugin-page-register2.c:2999
-#: ../src/gnome/gnc-plugin-page-register.c:3160
+#: ../src/gnome/gnc-plugin-page-register.c:3204
 #: ../src/gnome-utils/gnc-tree-view-account.c:2145
 #: ../src/gnome-utils/gnc-tree-view-owner.c:1205
 #, c-format
 msgid "Filter %s by..."
 msgstr ""
 
-#: ../src/gnome/gnc-plugin-page-register.c:197
+#: ../src/gnome/gnc-plugin-page-register.c:199
 msgid "_Associate File with Transaction"
 msgstr ""
 
-#: ../src/gnome/gnc-plugin-page-register.c:198
+#: ../src/gnome/gnc-plugin-page-register.c:200
 msgid "_Associate Location with Transaction"
 msgstr ""
 
-#: ../src/gnome/gnc-plugin-page-register.c:199
+#: ../src/gnome/gnc-plugin-page-register.c:201
 msgid "_Open Associated File/Location"
 msgstr ""
 
-#: ../src/gnome/gnc-plugin-page-register.c:210
+#: ../src/gnome/gnc-plugin-page-register.c:212
 msgid "Associate a file with the current transaction"
 msgstr ""
 
-#: ../src/gnome/gnc-plugin-page-register.c:211
+#: ../src/gnome/gnc-plugin-page-register.c:213
 msgid "Associate a location with the current transaction"
 msgstr ""
 
-#: ../src/gnome/gnc-plugin-page-register.c:212
+#: ../src/gnome/gnc-plugin-page-register.c:214
 msgid "Open the associated file or location with the current transaction"
 msgstr ""
 
-#: ../src/gnome/gnc-plugin-page-register.c:284
+#: ../src/gnome/gnc-plugin-page-register.c:286
 msgid "Remo_ve Other Splits"
 msgstr ""
 
-#: ../src/gnome/gnc-plugin-page-register.c:329
+#: ../src/gnome/gnc-plugin-page-register.c:331
 #: ../src/gnome-utils/gnc-main-window.c:328
 msgid "_Sort By..."
 msgstr ""
 
-#: ../src/gnome/gnc-plugin-page-register.c:489
+#: ../src/gnome/gnc-plugin-page-register.c:491
 msgid "Associate File"
 msgstr ""
 
-#: ../src/gnome/gnc-plugin-page-register.c:490
+#: ../src/gnome/gnc-plugin-page-register.c:492
 msgid "Associate Location"
 msgstr ""
 
-#: ../src/gnome/gnc-plugin-page-register.c:491
+#: ../src/gnome/gnc-plugin-page-register.c:493
 msgid "Open File/Location"
 msgstr ""
 
-#: ../src/gnome/gnc-plugin-page-register.c:685
+#: ../src/gnome/gnc-plugin-page-register.c:688
 msgid ""
 "You have tried to open an account in the old register while it is open in "
 "the new register."
 msgstr ""
 
 #. Define the strings here to avoid typos and make changes easier.
-#: ../src/gnome/gnc-plugin-page-register.c:2565
-#: ../src/gnome/gnc-plugin-page-register.c:2583
+#: ../src/gnome/gnc-plugin-page-register.c:2608
+#: ../src/gnome/gnc-plugin-page-register.c:2626
 #: ../src/report/standard-reports/transaction.scm:48
 msgid "Transaction Report"
 msgstr ""
 
-#: ../src/gnome/gnc-plugin-page-register.c:2961
+#: ../src/gnome/gnc-plugin-page-register.c:3004
 #: ../src/gnome/gnc-split-reg.c:909
 #: ../src/gnome-utils/gnc-tree-control-split-reg.c:68
 #, c-format
 msgid "This transaction is marked read-only with the comment: '%s'"
 msgstr ""
 
-#: ../src/gnome/gnc-plugin-page-register.c:3032
+#: ../src/gnome/gnc-plugin-page-register.c:3075
 #: ../src/gnome/gnc-split-reg.c:880
 #: ../src/gnome-utils/gnc-tree-control-split-reg.c:1123
 msgid "A reversing entry has already been created for this transaction."
 msgstr ""
 
 #. Translations: The %s is the name of the plugin page
-#: ../src/gnome/gnc-plugin-page-register.c:3083
+#: ../src/gnome/gnc-plugin-page-register.c:3126
 #, c-format
 msgid "Sort %s by..."
 msgstr ""
@@ -6517,31 +6515,31 @@ msgstr ""
 msgid "Balancing entry from reconcilation"
 msgstr ""
 
-#: ../src/gnome/gnc-split-reg2.c:936 ../src/gnome/gnc-split-reg.c:2070
+#: ../src/gnome/gnc-split-reg2.c:936 ../src/gnome/gnc-split-reg.c:2075
 msgid "Present:"
 msgstr ""
 
-#: ../src/gnome/gnc-split-reg2.c:937 ../src/gnome/gnc-split-reg.c:2071
+#: ../src/gnome/gnc-split-reg2.c:937 ../src/gnome/gnc-split-reg.c:2076
 msgid "Future:"
 msgstr ""
 
-#: ../src/gnome/gnc-split-reg2.c:938 ../src/gnome/gnc-split-reg.c:2072
+#: ../src/gnome/gnc-split-reg2.c:938 ../src/gnome/gnc-split-reg.c:2077
 msgid "Cleared:"
 msgstr ""
 
-#: ../src/gnome/gnc-split-reg2.c:939 ../src/gnome/gnc-split-reg.c:2073
+#: ../src/gnome/gnc-split-reg2.c:939 ../src/gnome/gnc-split-reg.c:2078
 msgid "Reconciled:"
 msgstr ""
 
-#: ../src/gnome/gnc-split-reg2.c:940 ../src/gnome/gnc-split-reg.c:2074
+#: ../src/gnome/gnc-split-reg2.c:940 ../src/gnome/gnc-split-reg.c:2079
 msgid "Projected Minimum:"
 msgstr ""
 
-#: ../src/gnome/gnc-split-reg2.c:944 ../src/gnome/gnc-split-reg.c:2078
+#: ../src/gnome/gnc-split-reg2.c:944 ../src/gnome/gnc-split-reg.c:2083
 msgid "Shares:"
 msgstr ""
 
-#: ../src/gnome/gnc-split-reg2.c:945 ../src/gnome/gnc-split-reg.c:2079
+#: ../src/gnome/gnc-split-reg2.c:945 ../src/gnome/gnc-split-reg.c:2084
 msgid "Current Value:"
 msgstr ""
 
@@ -6556,18 +6554,18 @@ msgid ""
 "change the entries."
 msgstr ""
 
-#: ../src/gnome/gnc-split-reg2.c:1069 ../src/gnome/gnc-split-reg.c:2153
+#: ../src/gnome/gnc-split-reg2.c:1069 ../src/gnome/gnc-split-reg.c:2158
 msgid "This account register is read-only."
 msgstr ""
 
-#: ../src/gnome/gnc-split-reg2.c:1112 ../src/gnome/gnc-split-reg.c:2196
+#: ../src/gnome/gnc-split-reg2.c:1112 ../src/gnome/gnc-split-reg.c:2201
 msgid ""
 "This account may not be edited. If you want to edit transactions in this "
 "register, please open the account options and turn off the placeholder "
 "checkbox."
 msgstr ""
 
-#: ../src/gnome/gnc-split-reg2.c:1119 ../src/gnome/gnc-split-reg.c:2203
+#: ../src/gnome/gnc-split-reg2.c:1119 ../src/gnome/gnc-split-reg.c:2208
 msgid ""
 "One of the sub-accounts selected may not be edited. If you want to edit "
 "transactions in this register, please open the sub-account options and turn "
@@ -8001,225 +7999,231 @@ msgid ""
 "remaining principle and the duration of the scheduled transaction."
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:15
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:13
+msgid ""
+"Enter the annual interest rate in percent. Accepts values from 0.001 - 100. "
+"The Mortgage Assistant does not support zero-interest loans."
+msgstr ""
+
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:16
 #: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:17
 #: ../src/gnome/gtkbuilder/dialog-tax-info.glade.h:4
 msgid "Type:"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:16
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:17
 msgid "Months Remaining:"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:17
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:18
 msgid "Interest Rate Change Frequency"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:18
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:19
 msgid "Loan Details"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:19
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:20
 msgid ""
 "\n"
 "Do you utilise an escrow account, if so an account must be specified..."
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:21
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:22
 msgid "... utilize an escrow account for payments?"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:22
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:23
 msgid "Escrow Account:"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:23
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:24
 msgid "Loan Repayment Options"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:24
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:25
 msgid ""
 "\n"
 "All accounts must have valid entries to continue.\n"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:27
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:28
 msgid "Payment From:"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:28
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:29
 msgid "Principal To:"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:29
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:30
 #: ../src/gnome/gtkbuilder/dialog-sx.glade.h:50
 #: ../src/gnome/gtkbuilder/dialog-tax-info.glade.h:3
 msgid "Name:"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:30
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:31
 msgid "Interest To:"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:31
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:32
 msgid "Repayment Frequency"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:32
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:33
 msgid "Loan Repayment"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:33
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:34
 msgid ""
 "\n"
 "All enabled option pages must contain valid entries to continue.\n"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:36
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:37
 msgid "Payment To (Escrow):"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:37
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:38
 msgid "Payment From (Escrow):"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:38
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:39
 msgid "Payment To:"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:39
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:40
 msgid "Specify Source Account"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:40
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:41
 msgid "Use Escrow Account"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:41
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:42
 msgid "Part of Payment Transaction"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:42
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:43
 #: ../src/gnome-utils/gtkbuilder/dialog-account.glade.h:58
 #: ../src/report/standard-reports/account-piecharts.scm:404
 #: ../src/report/standard-reports/category-barchart.scm:491
 msgid "Other"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:43
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:44
 msgid "Payment Frequency"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:44
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:45
 msgid "Previous Option"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:45
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:46
 msgid "Next Option"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:46
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:47
 msgid "Loan Payment"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:47
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:48
 msgid ""
 "\n"
 "Review the details below and if correct press Apply to create the schedule."
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:49
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:50
 msgid "Range: "
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:50
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:51
 #: ../src/gnome/gtkbuilder/dialog-sx.glade.h:54
 msgid "End Date:"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:51
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:52
 #: ../src/report/business-reports/job-report.scm:632
 #: ../src/report/business-reports/owner-report.scm:771
 msgid "Date Range"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:52
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:53
 msgid "Loan Review"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:53
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:54
 msgid "Schedule added successfully."
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:54
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:55
 msgid "Loan Summary"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:55
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:56
 #: ../src/gnome-utils/gnc-date-delta.c:220
 #: ../src/report/standard-reports/price-scatter.scm:231
 msgid "Months"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:56
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:57
 #: ../src/gnome-utils/gnc-date-delta.c:222
 #: ../src/report/standard-reports/price-scatter.scm:232
 msgid "Years"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:57
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:58
 msgid "Current Year"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:58
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:59
 msgid "Now + 1 Year"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:59
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:60
 msgid "Whole Loan"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:61
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:62
 msgid "Interest Rate"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:62
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:63
 msgid "APR (Compounded Daily)"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:63
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:64
 msgid "APR (Compounded Weekly)"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:64
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:65
 msgid "APR (Compounded Monthly)"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:65
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:66
 msgid "APR (Compounded Quarterly)"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:66
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:67
 msgid "APR (Compounded Annually)"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:67
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:68
 msgid "Fixed Rate"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:68
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:69
 msgid "3/1 Year ARM"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:69
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:70
 msgid "5/1 Year ARM"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:70
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:71
 msgid "7/1 Year ARM"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:71
+#: ../src/gnome/gtkbuilder/assistant-loan.glade.h:72
 msgid "10/1 Year ARM"
 msgstr ""
 
@@ -9440,7 +9444,7 @@ msgid "Enter _Interest Payment..."
 msgstr ""
 
 #: ../src/gnome/reconcile-view.c:368
-#: ../src/register/ledger-core/split-register-layout.c:671
+#: ../src/register/ledger-core/split-register-layout.c:690
 #: ../src/register/ledger-core/split-register-model.c:303
 msgid "Reconciled:R"
 msgstr ""
@@ -9565,11 +9569,6 @@ msgstr ""
 
 #: ../src/gnome-search/search-account.c:258
 msgid "Select the Accounts to Compare"
-msgstr ""
-
-#. Build and connect the toggle
-#: ../src/gnome-search/search-boolean.c:205
-msgid "set true"
 msgstr ""
 
 #: ../src/gnome-search/search-date.c:195
@@ -10772,11 +10771,11 @@ msgstr ""
 msgid "GnuCash could not find the associated file."
 msgstr ""
 
-#: ../src/gnome-utils/gnc-gnome-utils.c:452
+#: ../src/gnome-utils/gnc-gnome-utils.c:453
 msgid "GnuCash could not find the associated file"
 msgstr ""
 
-#: ../src/gnome-utils/gnc-gnome-utils.c:478
+#: ../src/gnome-utils/gnc-gnome-utils.c:480
 msgid "GnuCash could not open the associated URI:"
 msgstr ""
 
@@ -11288,31 +11287,31 @@ msgid "_Unreconcile"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-control-split-reg.c:1912
-#: ../src/register/ledger-core/split-register-model.c:2008
+#: ../src/register/ledger-core/split-register-model.c:2064
 msgid "Change reconciled split?"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-control-split-reg.c:1914
-#: ../src/register/ledger-core/split-register-model.c:2010
+#: ../src/register/ledger-core/split-register-model.c:2066
 msgid ""
 "You are about to change a reconciled split. Doing so might make future "
 "reconciliation difficult! Continue with this change?"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-control-split-reg.c:1919
-#: ../src/register/ledger-core/split-register-model.c:2015
+#: ../src/register/ledger-core/split-register-model.c:2071
 msgid "Change split linked to a reconciled split?"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-control-split-reg.c:1921
-#: ../src/register/ledger-core/split-register-model.c:2017
+#: ../src/register/ledger-core/split-register-model.c:2073
 msgid ""
 "You are about to change a split that is linked to a reconciled split. Doing "
 "so might make future reconciliation difficult! Continue with this change?"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-control-split-reg.c:1935
-#: ../src/register/ledger-core/split-register-model.c:2031
+#: ../src/register/ledger-core/split-register-model.c:2087
 msgid "Chan_ge Split"
 msgstr ""
 
@@ -11424,7 +11423,7 @@ msgstr ""
 #: ../src/gnome-utils/gnc-tree-view-price.c:454
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3036
 #: ../src/register/ledger-core/split-register.c:2555
-#: ../src/register/ledger-core/split-register-model.c:379
+#: ../src/register/ledger-core/split-register-model.c:386
 #: ../src/report/business-reports/easy-invoice.scm:269
 #: ../src/report/business-reports/fancy-invoice.scm:279
 #: ../src/report/business-reports/invoice.scm:264
@@ -11854,12 +11853,12 @@ msgid "Rate"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3112
-#: ../src/register/ledger-core/split-register-model.c:482
+#: ../src/register/ledger-core/split-register-model.c:489
 msgid "Credit Formula"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3193
-#: ../src/register/ledger-core/split-register-model.c:475
+#: ../src/register/ledger-core/split-register-model.c:482
 msgid "Debit Formula"
 msgstr ""
 
@@ -11881,43 +11880,43 @@ msgid "Enter the transaction number, such as the check number"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3293
-#: ../src/register/ledger-core/split-register-model.c:1021
+#: ../src/register/ledger-core/split-register-model.c:1077
 msgid "Enter the name of the Customer"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3295
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3304
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3313
-#: ../src/register/ledger-core/split-register-model.c:1058
+#: ../src/register/ledger-core/split-register-model.c:1114
 msgid "Enter notes for the transaction"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3297
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3306
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3315
-#: ../src/register/ledger-core/split-register-model.c:1217
+#: ../src/register/ledger-core/split-register-model.c:1273
 msgid "Enter a description of the split"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3302
-#: ../src/register/ledger-core/split-register-model.c:1024
+#: ../src/register/ledger-core/split-register-model.c:1080
 msgid "Enter the name of the Vendor"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3311
-#: ../src/register/ledger-core/split-register-model.c:1027
+#: ../src/register/ledger-core/split-register-model.c:1083
 msgid "Enter a description of the transaction"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3325
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3329
-#: ../src/register/ledger-core/split-register-model.c:1376
-#: ../src/register/ledger-core/split-register-model.c:1442
+#: ../src/register/ledger-core/split-register-model.c:1432
+#: ../src/register/ledger-core/split-register-model.c:1498
 msgid "Enter the account to transfer from, or choose one from the list"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3327
-#: ../src/register/ledger-core/split-register-model.c:1091
+#: ../src/register/ledger-core/split-register-model.c:1147
 msgid "Reason the transaction was voided"
 msgstr ""
 
@@ -11936,7 +11935,7 @@ msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3369
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3381
-#: ../src/register/ledger-core/split-register-model.c:1325
+#: ../src/register/ledger-core/split-register-model.c:1381
 msgid "Enter the number of shares bought or sold"
 msgstr ""
 
@@ -11949,17 +11948,17 @@ msgid "Enter the rate"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3411
-#: ../src/register/ledger-core/split-register-model.c:1289
+#: ../src/register/ledger-core/split-register-model.c:1345
 msgid "Enter the effective share price"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3421
-#: ../src/register/ledger-core/split-register-model.c:2147
+#: ../src/register/ledger-core/split-register-model.c:2203
 msgid "Enter credit formula for real transaction"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:3431
-#: ../src/register/ledger-core/split-register-model.c:2117
+#: ../src/register/ledger-core/split-register-model.c:2173
 msgid "Enter debit formula for real transaction"
 msgstr ""
 
@@ -16023,7 +16022,7 @@ msgstr ""
 msgid "(Full account ID: "
 msgstr ""
 
-#: ../src/import-export/import-commodity-matcher.c:115
+#: ../src/import-export/import-commodity-matcher.c:113
 msgid ""
 "Please select a commodity to match the following exchange specific code. "
 "Please note that the exchange code of the commodity you select will be "
@@ -16156,7 +16155,7 @@ msgstr ""
 #. name. It MUST NOT contain the
 #. character ':' anywhere in it or
 #. in any translations.
-#: ../src/import-export/ofx/gnc-ofx-import.c:563
+#: ../src/import-export/ofx/gnc-ofx-import.c:586
 #, c-format
 msgid "Stock account for security \"%s\""
 msgstr ""
@@ -16165,44 +16164,44 @@ msgstr ""
 #. name. It MUST NOT contain the
 #. character ':' anywhere in it or
 #. in any translations.
-#: ../src/import-export/ofx/gnc-ofx-import.c:729
+#: ../src/import-export/ofx/gnc-ofx-import.c:752
 #, c-format
 msgid "Income account for security \"%s\""
 msgstr ""
 
-#: ../src/import-export/ofx/gnc-ofx-import.c:842
+#: ../src/import-export/ofx/gnc-ofx-import.c:865
 msgid "Unknown OFX account"
 msgstr ""
 
-#: ../src/import-export/ofx/gnc-ofx-import.c:865
+#: ../src/import-export/ofx/gnc-ofx-import.c:888
 msgid "Unknown OFX checking account"
 msgstr ""
 
-#: ../src/import-export/ofx/gnc-ofx-import.c:869
+#: ../src/import-export/ofx/gnc-ofx-import.c:892
 msgid "Unknown OFX savings account"
 msgstr ""
 
-#: ../src/import-export/ofx/gnc-ofx-import.c:873
+#: ../src/import-export/ofx/gnc-ofx-import.c:896
 msgid "Unknown OFX money market account"
 msgstr ""
 
-#: ../src/import-export/ofx/gnc-ofx-import.c:877
+#: ../src/import-export/ofx/gnc-ofx-import.c:900
 msgid "Unknown OFX credit line account"
 msgstr ""
 
-#: ../src/import-export/ofx/gnc-ofx-import.c:881
+#: ../src/import-export/ofx/gnc-ofx-import.c:904
 msgid "Unknown OFX CMA account"
 msgstr ""
 
-#: ../src/import-export/ofx/gnc-ofx-import.c:885
+#: ../src/import-export/ofx/gnc-ofx-import.c:908
 msgid "Unknown OFX credit card account"
 msgstr ""
 
-#: ../src/import-export/ofx/gnc-ofx-import.c:889
+#: ../src/import-export/ofx/gnc-ofx-import.c:912
 msgid "Unknown OFX investment account"
 msgstr ""
 
-#: ../src/import-export/ofx/gnc-ofx-import.c:972
+#: ../src/import-export/ofx/gnc-ofx-import.c:995
 msgid "Select an OFX/QFX file to process"
 msgstr ""
 
@@ -17273,50 +17272,55 @@ msgstr ""
 #. used to estimate widths. Please only
 #. translate the portion after the ':' and
 #. leave the rest ("sample:") as is.
-#: ../src/register/ledger-core/split-register-layout.c:639
-#: ../src/register/ledger-core/split-register-layout.c:647
+#: ../src/register/ledger-core/split-register-layout.c:658
+#: ../src/register/ledger-core/split-register-layout.c:666
 msgid "sample:99999"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-layout.c:655
+#: ../src/register/ledger-core/split-register-layout.c:674
 msgid "sample:Description of a transaction"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-layout.c:679
-#: ../src/register/ledger-core/split-register-layout.c:719
-#: ../src/register/ledger-core/split-register-layout.c:727
-#: ../src/register/ledger-core/split-register-layout.c:735
-#: ../src/register/ledger-core/split-register-layout.c:745
-#: ../src/register/ledger-core/split-register-layout.c:753
-#: ../src/register/ledger-core/split-register-layout.c:761
-#: ../src/register/ledger-core/split-register-layout.c:769
-#: ../src/register/ledger-core/split-register-layout.c:777
-#: ../src/register/ledger-core/split-register-layout.c:825
+#: ../src/register/ledger-core/split-register-layout.c:698
+#: ../src/register/ledger-core/split-register-model.c:325
+msgid "Associate:A"
+msgstr ""
+
+#: ../src/register/ledger-core/split-register-layout.c:706
+#: ../src/register/ledger-core/split-register-layout.c:746
+#: ../src/register/ledger-core/split-register-layout.c:754
+#: ../src/register/ledger-core/split-register-layout.c:762
+#: ../src/register/ledger-core/split-register-layout.c:772
+#: ../src/register/ledger-core/split-register-layout.c:780
+#: ../src/register/ledger-core/split-register-layout.c:788
+#: ../src/register/ledger-core/split-register-layout.c:796
+#: ../src/register/ledger-core/split-register-layout.c:804
+#: ../src/register/ledger-core/split-register-layout.c:852
 msgid "sample:999,999.000"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-layout.c:711
+#: ../src/register/ledger-core/split-register-layout.c:738
 msgid "sample:Memo field sample text string"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-layout.c:785
+#: ../src/register/ledger-core/split-register-layout.c:812
 msgid "Type:T"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-layout.c:793
+#: ../src/register/ledger-core/split-register-layout.c:820
 msgid "sample:Notes field sample text string"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-layout.c:801
+#: ../src/register/ledger-core/split-register-layout.c:828
 msgid "sample:No Particular Reason"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-layout.c:809
-#: ../src/register/ledger-core/split-register-layout.c:817
+#: ../src/register/ledger-core/split-register-layout.c:836
+#: ../src/register/ledger-core/split-register-layout.c:844
 msgid "sample:(x + 0.33 * y + (x+y) )"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-load.c:259
+#: ../src/register/ledger-core/split-register-load.c:277
 msgid ""
 "Could not determine the account currency. Using the default currency "
 "provided by your system."
@@ -17335,92 +17339,92 @@ msgstr ""
 msgid "T-Num"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-model.c:381
+#: ../src/register/ledger-core/split-register-model.c:388
 msgid "Exch. Rate"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-model.c:398
+#: ../src/register/ledger-core/split-register-model.c:405
 msgid "Oth. Curr."
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-model.c:415
-#: ../src/register/ledger-core/split-register-model.c:439
+#: ../src/register/ledger-core/split-register-model.c:422
+#: ../src/register/ledger-core/split-register-model.c:446
 #, c-format
 msgid "Tot %s"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-model.c:421
+#: ../src/register/ledger-core/split-register-model.c:428
 msgid "Tot Credit"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-model.c:445
+#: ../src/register/ledger-core/split-register-model.c:452
 msgid "Tot Debit"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-model.c:454
+#: ../src/register/ledger-core/split-register-model.c:461
 msgid "Tot Shares"
 msgstr ""
 
 #. This seems to be the one that initially gets used, the InactiveDateCell
 #. is set to, and subsequently displayed.
-#: ../src/register/ledger-core/split-register-model.c:902
+#: ../src/register/ledger-core/split-register-model.c:958
 msgid "Scheduled"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-model.c:951
+#: ../src/register/ledger-core/split-register-model.c:1007
 msgid ""
 "Enter a reference, such as an invoice or check number, common to all entry "
 "lines (splits)"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-model.c:953
+#: ../src/register/ledger-core/split-register-model.c:1009
 msgid ""
 "Enter a reference, such as an invoice or check number, unique to each entry "
 "line (split)"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-model.c:958
+#: ../src/register/ledger-core/split-register-model.c:1014
 msgid ""
 "Enter a reference, such as a check number, common to all entry lines (splits)"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-model.c:960
+#: ../src/register/ledger-core/split-register-model.c:1016
 msgid ""
 "Enter a reference, such as a check number, unique to each entry line (split)"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-model.c:981
+#: ../src/register/ledger-core/split-register-model.c:1037
 msgid ""
 "Enter a transaction reference, such as an invoice or check number, common to "
 "all entry lines (splits)"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-model.c:985
+#: ../src/register/ledger-core/split-register-model.c:1041
 msgid ""
 "Enter a transaction reference that will be common to all entry lines (splits)"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-model.c:1188
+#: ../src/register/ledger-core/split-register-model.c:1244
 msgid "Enter an action type, or choose one from the list"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-model.c:1189
+#: ../src/register/ledger-core/split-register-model.c:1245
 msgid ""
 "Enter a reference number, such as the next check number, or choose an action "
 "type from the list"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-model.c:1452
+#: ../src/register/ledger-core/split-register-model.c:1508
 msgid ""
 "This transaction has multiple splits; press the Split button to see them all"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-model.c:1455
+#: ../src/register/ledger-core/split-register-model.c:1511
 msgid ""
 "This transaction is a stock split; press the Split button to see details"
 msgstr ""
 
-#: ../src/register/ledger-core/split-register-model.c:1942
+#: ../src/register/ledger-core/split-register-model.c:1998
 #, c-format
 msgid ""
 "Cannot modify or delete this transaction. This transaction is marked read-"

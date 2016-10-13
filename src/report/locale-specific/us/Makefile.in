@@ -545,6 +545,7 @@ gncscmmod_DATA = taxtxf.scm taxtxf-de_DE.scm
 @GNC_HAVE_GUILE_2_TRUE@  --gnc-module-dir ${top_builddir}/src/gnome-utils \
 @GNC_HAVE_GUILE_2_TRUE@  --gnc-module-dir ${top_builddir}/src/html \
 @GNC_HAVE_GUILE_2_TRUE@  --gnc-module-dir ${top_builddir}/src/report/report-system \
+@GNC_HAVE_GUILE_2_TRUE@  --gnc-module-dir ${top_builddir}/src/report/locale-specific/us \
 @GNC_HAVE_GUILE_2_TRUE@  --gnc-module-dir ${top_builddir}/src/tax/us \
 @GNC_HAVE_GUILE_2_TRUE@  --guile-load-dir ${top_builddir}/src/app-utils \
 @GNC_HAVE_GUILE_2_TRUE@  --guile-load-dir ${top_builddir}/src/core-utils \
@@ -552,6 +553,7 @@ gncscmmod_DATA = taxtxf.scm taxtxf-de_DE.scm
 @GNC_HAVE_GUILE_2_TRUE@  --guile-load-dir ${top_builddir}/src/gnc-module \
 @GNC_HAVE_GUILE_2_TRUE@  --guile-load-dir ${top_builddir}/src/gnome-utils \
 @GNC_HAVE_GUILE_2_TRUE@  --guile-load-dir ${top_builddir}/src/report/report-system \
+@GNC_HAVE_GUILE_2_TRUE@  --guile-load-dir ${top_builddir}/src/report/locale-specific/us \
 @GNC_HAVE_GUILE_2_TRUE@  --guile-load-dir ${top_builddir}/src/scm \
 @GNC_HAVE_GUILE_2_TRUE@  --guile-load-dir ${top_builddir}/src/tax/us \
 @GNC_HAVE_GUILE_2_TRUE@  --library-dir    ${top_builddir}/src/engine \
@@ -563,7 +565,8 @@ gncscmmod_DATA = taxtxf.scm taxtxf-de_DE.scm
 @GNC_HAVE_GUILE_2_TRUE@  --library-dir    ${top_builddir}/src/backend/xml \
 @GNC_HAVE_GUILE_2_TRUE@  --library-dir    ${top_builddir}/src/backend/sql \
 @GNC_HAVE_GUILE_2_TRUE@  --library-dir    ${top_builddir}/src/html \
-@GNC_HAVE_GUILE_2_TRUE@  --library-dir    ${top_builddir}/src/report/report-system
+@GNC_HAVE_GUILE_2_TRUE@  --library-dir    ${top_builddir}/src/report/report-system \
+@GNC_HAVE_GUILE_2_TRUE@  --library-dir    ${top_builddir}/src/report/locale-specific/us
 
 @GNC_HAVE_GUILE_2_TRUE@gncscmmodcachedir = ${pkglibdir}/scm/ccache/@GUILE_EFFECTIVE_VERSION@/gnucash/report
 @GNC_HAVE_GUILE_2_TRUE@gncscmmodcache_DATA = $(gncscmmod_DATA:.scm=.go)

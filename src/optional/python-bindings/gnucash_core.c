@@ -3075,6 +3075,7 @@ static swig_module_info swig_module = {swig_types, 115, 0, 0, 0, 0};
 #include "Split.h"
 #include "Account.h"
 #include "gnc-commodity.h"
+#include "gnc-environment.h"
 #include "gnc-lot.h"
 #include "gnc-numeric.h"
 #include "gncCustomer.h"
@@ -6279,6 +6280,43 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_xaccAccountSetSortReversed(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Account *arg1 = (Account *) 0 ;
+  gboolean arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:xaccAccountSetSortReversed",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Account, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccAccountSetSortReversed" "', argument " "1"" of type '" "Account *""'"); 
+  }
+  arg1 = (Account *)(argp1);
+  {
+    if (obj1 == Py_True)
+    arg2 = TRUE;
+    else if (obj1 == Py_False)
+    arg2 = FALSE;
+    else
+    {
+      PyErr_SetString(
+        PyExc_ValueError,
+        "Python object passed to a gboolean argument was not True "
+        "or False" );
+      return NULL;
+    }
+  }
+  xaccAccountSetSortReversed(arg1,arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_xaccAccountSetNotes(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   Account *arg1 = (Account *) 0 ;
@@ -6814,6 +6852,47 @@ SWIGINTERN PyObject *_wrap_xaccAccountGetSortOrder(PyObject *SWIGUNUSEDPARM(self
   arg1 = (Account *)(argp1);
   result = (char *)xaccAccountGetSortOrder((Account const *)arg1);
   resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_xaccAccountGetSortReversed(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Account *arg1 = (Account *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  gboolean result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:xaccAccountGetSortReversed",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Account, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccAccountGetSortReversed" "', argument " "1"" of type '" "Account const *""'"); 
+  }
+  arg1 = (Account *)(argp1);
+  result = xaccAccountGetSortReversed((Account const *)arg1);
+  {
+    if (result == TRUE)
+    {
+      resultobj = Py_True;
+      Py_INCREF(resultobj);
+    }
+    else if (result == FALSE)
+    {
+      resultobj = Py_False;
+      Py_INCREF(resultobj);
+    }
+    else
+    {
+      PyErr_SetString(
+        PyExc_ValueError,
+        "function returning gboolean returned a value that wasn't "
+        "TRUE or FALSE.");
+      return NULL;
+    }
+  }
   return resultobj;
 fail:
   return NULL;
@@ -41196,6 +41275,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"xaccAccountSetColor", _wrap_xaccAccountSetColor, METH_VARARGS, (char *)"xaccAccountSetColor(Account * account, char const * color)"},
 	 { (char *)"xaccAccountSetFilter", _wrap_xaccAccountSetFilter, METH_VARARGS, (char *)"xaccAccountSetFilter(Account * account, char const * filter)"},
 	 { (char *)"xaccAccountSetSortOrder", _wrap_xaccAccountSetSortOrder, METH_VARARGS, (char *)"xaccAccountSetSortOrder(Account * account, char const * sortorder)"},
+	 { (char *)"xaccAccountSetSortReversed", _wrap_xaccAccountSetSortReversed, METH_VARARGS, (char *)"xaccAccountSetSortReversed(Account * account, gboolean sortreversed)"},
 	 { (char *)"xaccAccountSetNotes", _wrap_xaccAccountSetNotes, METH_VARARGS, (char *)"xaccAccountSetNotes(Account * account, char const * notes)"},
 	 { (char *)"xaccAccountSetLastNum", _wrap_xaccAccountSetLastNum, METH_VARARGS, (char *)"xaccAccountSetLastNum(Account * account, char const * num)"},
 	 { (char *)"gnc_account_set_policy", _wrap_gnc_account_set_policy, METH_VARARGS, (char *)"gnc_account_set_policy(Account * account, GNCPolicy * policy)"},
@@ -41214,6 +41294,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"xaccAccountGetColor", _wrap_xaccAccountGetColor, METH_VARARGS, (char *)"xaccAccountGetColor(Account const * account) -> char const *"},
 	 { (char *)"xaccAccountGetFilter", _wrap_xaccAccountGetFilter, METH_VARARGS, (char *)"xaccAccountGetFilter(Account const * account) -> char const *"},
 	 { (char *)"xaccAccountGetSortOrder", _wrap_xaccAccountGetSortOrder, METH_VARARGS, (char *)"xaccAccountGetSortOrder(Account const * account) -> char const *"},
+	 { (char *)"xaccAccountGetSortReversed", _wrap_xaccAccountGetSortReversed, METH_VARARGS, (char *)"xaccAccountGetSortReversed(Account const * account) -> gboolean"},
 	 { (char *)"xaccAccountGetNotes", _wrap_xaccAccountGetNotes, METH_VARARGS, (char *)"xaccAccountGetNotes(Account const * account) -> char const *"},
 	 { (char *)"xaccAccountGetLastNum", _wrap_xaccAccountGetLastNum, METH_VARARGS, (char *)"xaccAccountGetLastNum(Account const * account) -> char const *"},
 	 { (char *)"gnc_account_get_policy", _wrap_gnc_account_get_policy, METH_VARARGS, (char *)"gnc_account_get_policy(Account * account) -> GNCPolicy *"},
@@ -43481,6 +43562,7 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, "ACCOUNT_COLOR_",SWIG_FromCharPtr("color"));
   SWIG_Python_SetConstant(d, "ACCOUNT_FILTER_",SWIG_FromCharPtr("filter"));
   SWIG_Python_SetConstant(d, "ACCOUNT_SORT_ORDER_",SWIG_FromCharPtr("sort-order"));
+  SWIG_Python_SetConstant(d, "ACCOUNT_SORT_REVERSED_",SWIG_FromCharPtr("sort-reversed"));
   SWIG_Python_SetConstant(d, "ACCOUNT_NOTES_",SWIG_FromCharPtr("notes"));
   SWIG_Python_SetConstant(d, "ACCOUNT_BALANCE_",SWIG_FromCharPtr("balance"));
   SWIG_Python_SetConstant(d, "ACCOUNT_CLEARED_",SWIG_FromCharPtr("cleared"));

@@ -600,6 +600,7 @@ gncscmmod_DATA = \
 @GNC_HAVE_GUILE_2_TRUE@  --guile-load-dir ${top_builddir}/src/gnc-module \
 @GNC_HAVE_GUILE_2_TRUE@  --guile-load-dir ${top_builddir}/src/gnome-utils \
 @GNC_HAVE_GUILE_2_TRUE@  --guile-load-dir ${top_builddir}/src/scm \
+@GNC_HAVE_GUILE_2_TRUE@  --guile-load-dir ${top_builddir}/src/report/report-system \
 @GNC_HAVE_GUILE_2_TRUE@  --library-dir    ${top_builddir}/src/libqof/qof \
 @GNC_HAVE_GUILE_2_TRUE@  --library-dir    ${top_builddir}/src/engine \
 @GNC_HAVE_GUILE_2_TRUE@  --library-dir    ${top_builddir}/src/app-utils \

@@ -165,6 +165,9 @@
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
+/* Libofx has a daylight-time handling bug. */
+#undef HAVE_OFX_BUG_39
+
 /* System has an OS X Key chain */
 #undef HAVE_OSX_KEYCHAIN
 

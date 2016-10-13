@@ -490,6 +490,10 @@ def xaccAccountSetSortOrder(*args):
   """xaccAccountSetSortOrder(Account * account, char const * sortorder)"""
   return _gnucash_core_c.xaccAccountSetSortOrder(*args)
 
+def xaccAccountSetSortReversed(*args):
+  """xaccAccountSetSortReversed(Account * account, gboolean sortreversed)"""
+  return _gnucash_core_c.xaccAccountSetSortReversed(*args)
+
 def xaccAccountSetNotes(*args):
   """xaccAccountSetNotes(Account * account, char const * notes)"""
   return _gnucash_core_c.xaccAccountSetNotes(*args)
@@ -561,6 +565,10 @@ def xaccAccountGetFilter(*args):
 def xaccAccountGetSortOrder(*args):
   """xaccAccountGetSortOrder(Account const * account) -> char const *"""
   return _gnucash_core_c.xaccAccountGetSortOrder(*args)
+
+def xaccAccountGetSortReversed(*args):
+  """xaccAccountGetSortReversed(Account const * account) -> gboolean"""
+  return _gnucash_core_c.xaccAccountGetSortReversed(*args)
 
 def xaccAccountGetNotes(*args):
   """xaccAccountGetNotes(Account const * account) -> char const *"""
@@ -1028,6 +1036,7 @@ ACCOUNT_DESCRIPTION_ = _gnucash_core_c.ACCOUNT_DESCRIPTION_
 ACCOUNT_COLOR_ = _gnucash_core_c.ACCOUNT_COLOR_
 ACCOUNT_FILTER_ = _gnucash_core_c.ACCOUNT_FILTER_
 ACCOUNT_SORT_ORDER_ = _gnucash_core_c.ACCOUNT_SORT_ORDER_
+ACCOUNT_SORT_REVERSED_ = _gnucash_core_c.ACCOUNT_SORT_REVERSED_
 ACCOUNT_NOTES_ = _gnucash_core_c.ACCOUNT_NOTES_
 ACCOUNT_BALANCE_ = _gnucash_core_c.ACCOUNT_BALANCE_
 ACCOUNT_CLEARED_ = _gnucash_core_c.ACCOUNT_CLEARED_

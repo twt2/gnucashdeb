@@ -710,7 +710,15 @@ gnc_bi_import_create_bis (GtkListStore * store, QofBook * book,
             g_date_free (date);
         }
         timespecFromTime64 (&today, gnc_time (NULL));	// set today to the current date
-        gncEntrySetDateEntered (entry, today);
+        if (strlen (date_opened) != 0)	// If a date is specified in CSV
+        {
+            qof_scan_date (date_opened, &day, &month, &year); // FIXME: Must check for the return value of qof_scan_date!
+            gncEntrySetDate(entry, gnc_dmy2timespec (day, month, year));
+        }
+        else
+        {
+            gncEntrySetDateEntered(entry, today);
+        }
         // Remove escaped quotes
         desc = un_escape(desc);
         notes = un_escape(notes);
@@ -760,10 +768,10 @@ gnc_bi_import_create_bis (GtkListStore * store, QofBook * book,
             gncInvoiceAddEntry (invoice, entry);
         }
         valid = gtk_tree_model_iter_next (GTK_TREE_MODEL (store), &iter);
-
         // handle auto posting of invoices
 
-
+        new_id = NULL;
+       
         if (valid)
             gtk_tree_model_get (GTK_TREE_MODEL (store), &iter, ID, &new_id, -1);
         if (g_strcmp0 (id, new_id) != 0)
@@ -790,6 +798,7 @@ gnc_bi_import_create_bis (GtkListStore * store, QofBook * book,
                                          memo_posted,
                                          text2bool (accumulatesplits),
                                          auto_pay);
+                DEBUG("Invoice %s posted",id);
             }
 
         }
