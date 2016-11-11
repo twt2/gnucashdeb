@@ -1,3 +1,10 @@
+gnucash (1:2.6.14-1) unstable; urgency=medium
+
+  * New upstream release [September 2016] + "774238.patch".
+  * Recommends += "dbus (>= 1.8~) | dbus-x11" (Closes: #815005).
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Sat, 12 Nov 2016 00:18:35 +1100
+
 gnucash (1:2.6.13-1) unstable; urgency=medium
 
   * New upstream release [June 2016].

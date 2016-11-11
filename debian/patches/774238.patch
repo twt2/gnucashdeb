@@ -1,0 +1,44 @@
+Last-Update: 2016-11-12
+Forwarded: not-needed
+Origin: upstream, https://github.com/Gnucash/gnucash/commit/32c4d1458870bdbcdbed1b47f23c2957af1f8f3d
+Bug-Upstream: https://bugzilla.gnome.org/show_bug.cgi?id=774238
+Description: Ensure that the Namespace combo box is initialized to a valid iter.
+
+--- a/src/gnome-utils/dialog-commodity.c
++++ b/src/gnome-utils/dialog-commodity.c
+@@ -645,17 +645,16 @@
+     GtkComboBox *combo_box;
+     GtkTreeModel *model;
+     GtkTreeIter iter, match;
+     GList *namespaces, *node;
++    gboolean matched = FALSE;
+ 
+     g_return_if_fail(GTK_IS_COMBO_BOX (cbwe));
+ 
+     /* Erase the old entries */
+     combo_box = GTK_COMBO_BOX(cbwe);
+     model = gtk_combo_box_get_model(combo_box);
+     gtk_list_store_clear(GTK_LIST_STORE(model));
+-    gtk_tree_model_get_iter_first(model, &match);
+-    gtk_combo_box_set_active_iter(combo_box, &match);
+ 
+     /* fetch a list of the namespaces */
+     switch (mode)
+     {
+@@ -697,11 +696,16 @@
+             gtk_list_store_set (GTK_LIST_STORE(model), &iter, 0, node->data, -1);
+         }
+ 
+         if (init_string && (g_utf8_collate(node->data, init_string) == 0))
++        {
++            matched = TRUE;
+             match = iter;
++        }
+     }
+ 
++    if (!matched)
++        gtk_tree_model_get_iter_first(model, &match);
+     gtk_combo_box_set_active_iter(combo_box, &match);
+     g_list_free(namespaces);
+ }
+ 
