@@ -2150,7 +2150,6 @@ AC_SUBST([am__tar])
 AC_SUBST([am__untar])
 ]) # _AM_PROG_TAR
 
-m4_include([macros/as-scrub-include.m4])
 m4_include([macros/ax_pkg_swig.m4])
 m4_include([macros/ax_python_devel.m4])
 m4_include([macros/ax_swig_python.m4])

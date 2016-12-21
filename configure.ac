@@ -20,7 +20,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 # Autoconf initialization
 AC_PREREQ(2.60)
-AC_INIT([GnuCash], [2.6.14], [gnucash-devel@gnucash.org])
+AC_INIT([GnuCash], [2.6.15], [gnucash-devel@gnucash.org])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_SRCDIR(src/engine/Transaction.h)
 AC_CONFIG_MACRO_DIR([macros])
@@ -555,7 +555,6 @@ fi
 
 LIBXML2_REQUIRED=2.5.10
 PKG_CHECK_MODULES(LIBXML2, libxml-2.0 >= $LIBXML2_REQUIRED)
-AS_SCRUB_INCLUDE(LIBXML2_CFLAGS)
 AC_SUBST(LIBXML2_CFLAGS)
 AC_SUBST(LIBXML2_LIBS)
 
@@ -572,7 +571,6 @@ LIBS="$oLIBS"
 ### LIBXSLT
 
 PKG_CHECK_MODULES(LIBXSLT, libxslt)
-AS_SCRUB_INCLUDE(LIBXLT_CFLAGS)
 AC_SUBST(LIBXSLT_CFLAGS)
 AC_SUBST(LIBXSLT_LIBS)
 
@@ -810,8 +808,11 @@ struct tm ts;
 ts.tm_year = 116;
 ts.tm_mon = 2;
 ts.tm_mday = 19;
-
+#ifdef _WIN32
+putenv(\"TZ=PST-8PDT-7,M 4.1.0/0,M 10.6.0/0\");
+#else
 setenv("TZ", "PST 08 PDT 07 M 4.1.0, M 10.6.0", 1);
+#endif
 time_t t = ofxdate_to_time_t(timestr);
 if (t == mktime(&ts))
   exit(0);
@@ -870,7 +871,6 @@ then
     AQBANKING_LIBS="${AQBANKING_LIBS} -lktoblzcheck"
   fi
 
-  AS_SCRUB_INCLUDE(AQBANKING_CFLAGS)
   AC_SUBST(AQBANKING_LIBS)
   AC_SUBST(AQBANKING_CFLAGS)
   _COMPONENTS="$_COMPONENTS aqbanking"
@@ -1086,23 +1086,19 @@ then
 
 
   PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.24.0)
-  AS_SCRUB_INCLUDE(GTK_CFLAGS)
   AC_SUBST(GTK_CFLAGS)
   AC_SUBST(GTK_LIBS)
 
   PKG_CHECK_MODULES(GNOMECANVAS, libgnomecanvas-2.0)
-  AS_SCRUB_INCLUDE(GNOMECANVAS_CFLAGS)
   AC_SUBST(GNOMECANVAS_CFLAGS)
   AC_SUBST(GNOMECANVAS_LIBS)
 
   PKG_CHECK_MODULES(GDK_PIXBUF, gdk-pixbuf-2.0)
-  AS_SCRUB_INCLUDE(GDK_PIXBUF_CFLAGS)
   AC_SUBST(GDK_PIXBUF_CFLAGS)
   AC_SUBST(GDK_PIXBUF_LIBS)
 
    # checks for goffice
   PKG_CHECK_MODULES(GOFFICE, libgoffice-0.8 >= 0.7.0 libgoffice-0.8 < 0.9.0, [goffice=1], [AC_MSG_ERROR([Cannot find libgoffice >= 0.7.0 and < 0.9.0])])
-  AS_SCRUB_INCLUDE(GOFFICE_CFLAGS)
   AC_SUBST(GOFFICE_CFLAGS)
   AC_SUBST(GOFFICE_LIBS)
 
@@ -1651,7 +1647,7 @@ AC_CONFIG_FILES([src/gnc-module/test/test-scm-multi],
 AC_CONFIG_FILES([src/gnome-utils/test/test-load-module],
                 [chmod +x src/gnome-utils/test/test-load-module])
 AC_CONFIG_FILES([src/report/locale-specific/us/test/test-load-module],
-                [src/report/locale-specific/us/test/test-load-module])
+                [chmod +x src/report/locale-specific/us/test/test-load-module])
 AC_CONFIG_FILES([src/report/report-gnome/test/test-load-module],
                 [chmod +x src/report/report-gnome/test/test-load-module])
 AC_CONFIG_FILES([src/report/report-system/test/test-load-module],

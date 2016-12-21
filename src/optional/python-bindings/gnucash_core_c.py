@@ -3985,6 +3985,18 @@ def gncInvoiceSetPostedTxn(*args):
 def gncInvoiceSetPostedLot(*args):
   """gncInvoiceSetPostedLot(GncInvoice * invoice, GNCLot * lot)"""
   return _gnucash_core_c.gncInvoiceSetPostedLot(*args)
+
+def gncInvoiceAttachToLot(*args):
+  """gncInvoiceAttachToLot(GncInvoice * invoice, GNCLot * lot)"""
+  return _gnucash_core_c.gncInvoiceAttachToLot(*args)
+
+def gncInvoiceDetachFromLot(*args):
+  """gncInvoiceDetachFromLot(GNCLot * lot)"""
+  return _gnucash_core_c.gncInvoiceDetachFromLot(*args)
+
+def gncInvoiceAttachToTxn(*args):
+  """gncInvoiceAttachToTxn(GncInvoice * invoice, Transaction * txn)"""
+  return _gnucash_core_c.gncInvoiceAttachToTxn(*args)
 GNC_ID_JOB = _gnucash_core_c.GNC_ID_JOB
 
 def gnc_job_get_type():

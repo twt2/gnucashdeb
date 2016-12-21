@@ -431,7 +431,9 @@ gnc_g_date_time_new_from_timespec_local (Timespec ts)
 {
     GDateTime *gdt1 = gnc_g_date_time_new_from_unix_local (ts.tv_sec);
     double nsecs = ((double)ts.tv_nsec + 0.5)/ 1000000000.0L;
-    GDateTime *gdt2 = g_date_time_add_seconds (gdt1, nsecs);
+    GDateTime *gdt2 = NULL;
+    g_return_val_if_fail (gdt1 != NULL, NULL);
+    gdt2 = g_date_time_add_seconds (gdt1, nsecs);
     g_date_time_unref (gdt1);
     g_assert (g_date_time_to_unix (gdt2) == ts.tv_sec + (nsecs >= 1.0 ? (gint64)nsecs : 0));
     return gdt2;
@@ -456,6 +458,8 @@ gnc_date_dateformat_to_string(QofDateFormat format)
         return "locale";
     case QOF_DATE_FORMAT_CUSTOM:
         return "custom";
+    case QOF_DATE_FORMAT_UNSET:
+        return "unset";
     default:
         return NULL;
     }
@@ -481,6 +485,8 @@ gnc_date_string_to_dateformat(const char* fmt_str, QofDateFormat *format)
         *format = QOF_DATE_FORMAT_LOCALE;
     else if (!strcmp(fmt_str, "custom"))
         *format = QOF_DATE_FORMAT_CUSTOM;
+    else if (!strcmp(fmt_str, "unset"))
+        *format = QOF_DATE_FORMAT_UNSET;
     else
         return TRUE;
 
@@ -769,6 +775,8 @@ const gchar *qof_date_format_get_string(QofDateFormat df)
         return "%Y-%m-%dT%H:%M:%SZ";
     case QOF_DATE_FORMAT_ISO:
         return "%Y-%m-%d";
+    case QOF_DATE_FORMAT_UNSET: // use global
+        return qof_date_format_get_string (dateFormat);
     case QOF_DATE_FORMAT_LOCALE:
     default:
         break;
@@ -798,6 +806,8 @@ const gchar *qof_date_text_format_get_string(QofDateFormat df)
         return "%Y-%m-%dT%H:%M:%SZ";
     case QOF_DATE_FORMAT_ISO:
         return "%Y-%b-%d";
+    case QOF_DATE_FORMAT_UNSET: // use global
+        return qof_date_text_format_get_string (dateFormat);
     case QOF_DATE_FORMAT_LOCALE:
     default:
         break;
@@ -1478,8 +1488,11 @@ gnc_iso8601_to_timespec_gmt(const char *str)
 	gdt = g_date_time_new_utc (year, month, day, hour, minute, second);
     }
 
-    time.tv_sec = g_date_time_to_unix (gdt);
-    time.tv_nsec = g_date_time_get_microsecond (gdt) * 1000;
+    if (gdt != NULL)
+    {
+	time.tv_sec = g_date_time_to_unix (gdt);
+	time.tv_nsec = g_date_time_get_microsecond (gdt) * 1000;
+    }
     g_date_time_unref (gdt);
     return time;
 }
@@ -1573,18 +1586,18 @@ gnc_dmy2timespec_neutral (int day, int month, int year)
     struct tm date;
     Timespec ts = {0, 0};
     GTimeZone *zone = gnc_g_time_zone_new_local();
-    GDateTime *gdt = gnc_g_date_time_new_local (year, month, day, 12, 0, 0.0);
+    GDateTime *gdt = gnc_g_date_time_new_local (year, month, day, 10, 59, 0.0);
     int interval = g_time_zone_find_interval (zone, G_TIME_TYPE_STANDARD,
                                               g_date_time_to_unix(gdt));
-    int offset = g_time_zone_get_offset(gnc_g_time_zone_new_local(),
-                                        interval) / 3600;
+    int offset = g_time_zone_get_offset(zone, interval) / 60;
+    int off_hr = (offset / 60) + (offset % 60 ? (offset < 0 ? -1 : 1) : 0);
     g_date_time_unref (gdt);
     memset (&date, 0, sizeof(struct tm));
     date.tm_year = year - 1900;
     date.tm_mon = month - 1;
     date.tm_mday = day;
-    date.tm_hour = offset < -11 ? -offset : offset > 13 ? 24 - offset : 11;
-    date.tm_min = 0;
+    date.tm_hour = off_hr < -10 ? -off_hr : off_hr > 13 ? 23 - off_hr : 10;
+    date.tm_min = 59;
     date.tm_sec = 0;
 
     ts.tv_sec = gnc_timegm(&date);
@@ -1806,5 +1819,6 @@ gnc_date_load_funcs (void)
 {
     Testfuncs *tf = g_slice_new (Testfuncs);
     tf->timespec_normalize = timespec_normalize;
+    tf->timezone_new_local = gnc_g_time_zone_new_local;
     return tf;
 }

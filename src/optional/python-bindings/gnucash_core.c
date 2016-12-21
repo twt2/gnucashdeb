@@ -33711,6 +33711,87 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_gncInvoiceAttachToLot(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GncInvoice *arg1 = (GncInvoice *) 0 ;
+  GNCLot *arg2 = (GNCLot *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:gncInvoiceAttachToLot",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__gncInvoice, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncInvoiceAttachToLot" "', argument " "1"" of type '" "GncInvoice *""'"); 
+  }
+  arg1 = (GncInvoice *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_GNCLot, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gncInvoiceAttachToLot" "', argument " "2"" of type '" "GNCLot *""'"); 
+  }
+  arg2 = (GNCLot *)(argp2);
+  gncInvoiceAttachToLot(arg1,arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gncInvoiceDetachFromLot(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GNCLot *arg1 = (GNCLot *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:gncInvoiceDetachFromLot",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNCLot, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncInvoiceDetachFromLot" "', argument " "1"" of type '" "GNCLot *""'"); 
+  }
+  arg1 = (GNCLot *)(argp1);
+  gncInvoiceDetachFromLot(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gncInvoiceAttachToTxn(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GncInvoice *arg1 = (GncInvoice *) 0 ;
+  Transaction *arg2 = (Transaction *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:gncInvoiceAttachToTxn",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__gncInvoice, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncInvoiceAttachToTxn" "', argument " "1"" of type '" "GncInvoice *""'"); 
+  }
+  arg1 = (GncInvoice *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_Transaction, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gncInvoiceAttachToTxn" "', argument " "2"" of type '" "Transaction *""'"); 
+  }
+  arg2 = (Transaction *)(argp2);
+  gncInvoiceAttachToTxn(arg1,arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_gnc_job_get_type(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GType result;
@@ -42118,6 +42199,9 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gncInvoiceSetPostedAcc", _wrap_gncInvoiceSetPostedAcc, METH_VARARGS, (char *)"gncInvoiceSetPostedAcc(GncInvoice * invoice, Account * acc)"},
 	 { (char *)"gncInvoiceSetPostedTxn", _wrap_gncInvoiceSetPostedTxn, METH_VARARGS, (char *)"gncInvoiceSetPostedTxn(GncInvoice * invoice, Transaction * txn)"},
 	 { (char *)"gncInvoiceSetPostedLot", _wrap_gncInvoiceSetPostedLot, METH_VARARGS, (char *)"gncInvoiceSetPostedLot(GncInvoice * invoice, GNCLot * lot)"},
+	 { (char *)"gncInvoiceAttachToLot", _wrap_gncInvoiceAttachToLot, METH_VARARGS, (char *)"gncInvoiceAttachToLot(GncInvoice * invoice, GNCLot * lot)"},
+	 { (char *)"gncInvoiceDetachFromLot", _wrap_gncInvoiceDetachFromLot, METH_VARARGS, (char *)"gncInvoiceDetachFromLot(GNCLot * lot)"},
+	 { (char *)"gncInvoiceAttachToTxn", _wrap_gncInvoiceAttachToTxn, METH_VARARGS, (char *)"gncInvoiceAttachToTxn(GncInvoice * invoice, Transaction * txn)"},
 	 { (char *)"gnc_job_get_type", _wrap_gnc_job_get_type, METH_VARARGS, (char *)"gnc_job_get_type() -> GType"},
 	 { (char *)"gncJobCreate", _wrap_gncJobCreate, METH_VARARGS, (char *)"gncJobCreate(QofBook * book) -> GncJob *"},
 	 { (char *)"gncJobDestroy", _wrap_gncJobDestroy, METH_VARARGS, (char *)"gncJobDestroy(GncJob * job)"},

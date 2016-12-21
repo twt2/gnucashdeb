@@ -89,8 +89,7 @@ DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(srcdir)/org.gnucash.window.pages.account.tree.gschema.xml.in.in \
 	$(srcdir)/org.gnucash.window.pages.gschema.xml.in.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/macros/as-scrub-include.m4 \
-	$(top_srcdir)/macros/ax_pkg_swig.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/macros/ax_pkg_swig.m4 \
 	$(top_srcdir)/macros/ax_python_devel.m4 \
 	$(top_srcdir)/macros/ax_swig_python.m4 \
 	$(top_srcdir)/macros/binreloc.m4 \
