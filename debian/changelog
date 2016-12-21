@@ -1,3 +1,11 @@
+gnucash (1:2.6.15-1) unstable; urgency=medium
+
+  * New upstream release [December 2016].
+    - removed obsolete "774238.patch".
+    + fixed FTBFS in test-report-utilities (Closes: #846027).
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Thu, 22 Dec 2016 08:24:13 +1100
+
 gnucash (1:2.6.14-1) unstable; urgency=medium
 
   * New upstream release [September 2016] + "774238.patch".

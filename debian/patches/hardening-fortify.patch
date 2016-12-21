@@ -12,7 +12,7 @@ Description: Disable supression of fortify hardening flag.
 
 --- a/configure.ac
 +++ b/configure.ac
-@@ -729,12 +729,8 @@
+@@ -727,12 +727,8 @@
  
  AC_ARG_ENABLE( debug,
    [AS_HELP_STRING([--enable-debug],[compile with debugging flags set])],
