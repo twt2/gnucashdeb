@@ -3,16 +3,16 @@
 ;;
 ;; updated by  J. Alex Aycinena, July 2008, October 2009
 ;;
-;; This report prints transaction detail and account totals for Tax-related
-;; accounts sorted by form/schedule, copy, line and tax code, and exports TXF
-;; files for import to TaxCut, TurboTax, etc.
+;; This report prints transaction details and account totals for accounts
+;; relevant to United States taxes, sorted by form/schedule, copy, line
+;; and tax code, and exports TXF files for import to TaxCut, TurboTax, etc.
 ;;
 ;; For this to work, the user has to segregate taxable and not taxable
 ;; income to different accounts, as well as deductible and non-
 ;; deductible expenses and the accounts need to be referenced to the tax codes.
 ;; However, there is no need to limit tax codes to just one account. For codes
 ;; like N286 (Dividend, Ordinary) that can have the "payer" printed on
-;; Schedule B on seperate lines, to have amounts from different accounts
+;; Schedule B on separate lines, to have amounts from different accounts
 ;; summarized together for one "payer" line, the accounts referenced to the
 ;; same tax code for a given "payer" need to be adjacent to each other in the
 ;; account hierarchy.
@@ -65,7 +65,7 @@
 ;;
 ;; From prior version:
 ;; NOTE: setting of specific dates is squirly! and seems
-;; to be current-date dependant!  Actually, time of day dependant!  Just
+;; to be current-date dependent!  Actually, time of day dependent!  Just
 ;; after midnight gives diffenent dates than just before!  Referencing
 ;; all times to noon seems to fix this.  Subtracting 1 year sometimes
 ;; subtracts 2!  see "(to-value"

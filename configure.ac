@@ -20,7 +20,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 # Autoconf initialization
 AC_PREREQ(2.60)
-AC_INIT([GnuCash], [2.6.15], [gnucash-devel@gnucash.org])
+AC_INIT([GnuCash], [2.6.16], [https://bugzilla.gnome.org/page.cgi?id=browse.html&product=GnuCash], , [http://www.gnucash.org/])
 AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_SRCDIR(src/engine/Transaction.h)
 AC_CONFIG_MACRO_DIR([macros])
@@ -90,11 +90,13 @@ AC_DEFINE_UNQUOTED(GNUCASH_RESAVE_VERSION, $GNUCASH_RESAVE_VERSION,
 AC_DEFINE_UNQUOTED(GNUCASH_LATEST_STABLE_SERIES, "$GNUCASH_LATEST_STABLE_SERIES",
     [Most recent stable GnuCash series])
 
-dnl Set of available languages.
+dnl Set of available languages:
+dnl managed at the Translation Project:
 TP_LINGUAS="az ca cs da eu fa ja nl rw sk sr sv tr uk zh_CN"
 dnl already marked as external at TP:
 GC_LINGUAS="ar bg de el en_GB es fi fr gu he hi hu it kn ko lt lv mr nb ne pl pt pt_BR ro ru ta te ur vi zh_TW "
-dnl not marked or no TP team:
+dnl New or unmarked: The release manager should announce them to TP 
+dnl and when listed there move in the respective group above.
 NEW_LINGUAS="as brx doi es_NI kok kok@latin ks mai mni mni@bengali"
 
 ALL_LINGUAS="$TP_LINGUAS $GC_LINGUAS $NEW_LINGUAS"
@@ -116,7 +118,7 @@ AC_PROG_INSTALL
 PKG_PROG_PKG_CONFIG
 
 dnl clang wants to check file encodings, and we need to tell it not to
-dnl becuase of the unicode currency symbols. But older versions of GCC
+dnl because of the unicode currency symbols. But older versions of GCC
 dnl don't like the warning suppression option, so we need to set it only
 dnl with clang.
 
@@ -506,7 +508,7 @@ the libtool(-ltdl) development package?])])
 # version 2.0.10 of SWIG, because that's the first version that supports
 # guile 2.
 #
-# For a guile 1.8 build we accept an older version, but wont allow you
+# For a guile 1.8 build we accept an older version, but won't allow you
 # to build the dist because we need to apply a patch to the swig
 # generated files that needs to go into the release tarball. At that
 # point we don't know yet which version of guile will be used together
@@ -628,7 +630,7 @@ then
       [[GNC_DBD_DIR="$with_dbi_dbd_dir"
        EXTRA_SEARCH_LIBS=$GNC_DBD_DIR]],
       [[GNC_DBD_DIR=""
-        # pkg-config is new in libdbi 0.9. Use it if avaiable
+        # pkg-config is new in libdbi 0.9. Use it if available
         # Otherwise fall back to our previous hard coded values
         pkg-config --exists dbi
         if test $? -eq 0; then
@@ -728,20 +730,21 @@ AC_SUBST(GNC_LIBEXECDIR)
 AC_ARG_ENABLE( debug,
   [AS_HELP_STRING([--enable-debug],[compile with debugging flags set])],
   [
+  if test x$enableval = xyes; then
      # remove any optimization flags...
      CFLAGS=`echo ${CFLAGS} | sed -e 's,-O.,,g'`
      # ...except for those the user wants.
      CFLAGS="${CFLAGS} -g ${USER_OPTIMIZATION}"
      LDFLAGS="${LDFLAGS} -g"
-     AC_DEFINE(DEBUG_MEMORY,1,[Enable debug memory])
-  ],
-  [     AC_DEFINE(DEBUG_MEMORY,0,[Enable debug memory])
+  fi
   ])
 
 AC_ARG_ENABLE( profile,
   [AS_HELP_STRING([--enable-profile],[compile with profiling set])],
-  CFLAGS="${CFLAGS} -pg"
-  LDFLAGS="${LDFLAGS} -pg")
+  if test x$enableval = xyes; then
+    CFLAGS="${CFLAGS} -pg"
+    LDFLAGS="${LDFLAGS} -pg"
+  fi)
 
 ### --------------------------------------------------------------------------
 ### Register2
@@ -908,7 +911,11 @@ LANGINFO_D_FMT_CHECK
 dnl Enable locale-specific tax-related information in the accounts
 AC_ARG_ENABLE( locale-specific-tax,
   [AS_HELP_STRING([--enable-locale-specific-tax],[enable localized tax categories (experimental, but used by the german SKR04 account chart)])],
-  AC_DEFINE(LOCALE_SPECIFIC_TAX,1,Enable the experimental locale-specific tax categories) )
+  [
+  if test x$enableval = xyes; then
+    AC_DEFINE(LOCALE_SPECIFIC_TAX,1,Enable the experimental locale-specific tax categories)
+  fi
+  ])
 
 dnl Make sure we have a proper gettext installed
 AC_MSG_CHECKING(for a valid gettext/gmsgfmt installation)
@@ -1122,35 +1129,7 @@ then
 
     webkit)
       PKG_CHECK_MODULES(WEBKIT, webkit-1.0 >= "1.2")
-      case "$platform" in
-        win32)
-          # 1.1.90 has both functions
-          AC_DEFINE(HAVE_WEBKIT_WEB_VIEW_LOAD_URI,1,[webkit_web_view_load_uri exists])
-          AC_DEFINE(HAVE_WEBKIT_WEB_FRAME_PRINT_FULL,1,[webkit_web_frame_print_full exists])
-          ;;
-        *)
-          # Unsure - check functions exist
-          oLIBS="$LIBS"
-          LIBS="$LIBS ${WEBKIT_LIBS}"
-          AC_CHECK_FUNCS(webkit_web_view_load_uri)
-          LIBS="$oLIBS"
-          AC_MSG_CHECKING(for webkit_web_frame_print_full)
-          saved_CFLAGS="${CFLAGS}"
-          saved_LIBS="${LIBS}"
-          CFLAGS="${CFLAGS} ${WEBKIT_CFLAGS}"
-          LIBS="${LIBS} ${WEBKIT_LIBS}"
-          AC_LINK_IFELSE(
-              [AC_LANG_PROGRAM(
-                  [[#include <webkit/webkit.h>]],
-                  [[webkit_web_frame_print_full( 0, 0, 0, 0 );]])],
-                  [AC_MSG_RESULT(yes)
-                   AC_DEFINE(HAVE_WEBKIT_WEB_FRAME_PRINT_FULL,1,[webkit_web_frame_print_full exists])],
-                  [AC_MSG_RESULT(no)])
-          CFLAGS="${saved_CFLAGS}"
-          LIBS="${saved_LIBS}"
-          ;;
-        esac
-        ;;
+      ;;
 
     *) AC_MSG_ERROR([Invalid HTML engine: must be webkit]) ;;
   esac

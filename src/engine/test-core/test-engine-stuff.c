@@ -2,7 +2,7 @@
  * @file test-engine-stuff.c
  * @brief tools to set up random, but finanically consistent books.
  * Create transactions with random values, random accounts, random
- * account heirarchies, etc.
+ * account hierarchies, etc.
  *
  * XXX We should modify routines to create really, ugly, dirty
  * transactions
@@ -474,7 +474,7 @@ get_random_gnc_numeric(void)
      * The loop is to "make sure" we get there.  We might
      * want to make this dependent on "deno" in the future.
      */
-    numer = get_random_gint64 () % (2ULL << 44);
+    numer = get_random_gint64 () % (2ULL << 40);
     if (0 == numer) numer = 1;
     /* Make sure we have a non-zero denominator */
     if (0 == deno) deno = 1;

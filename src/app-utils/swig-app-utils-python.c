@@ -2914,17 +2914,18 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 #define SWIGTYPE_p_GNCOptionDB swig_types[1]
 #define SWIGTYPE_p_MonetaryList swig_types[2]
 #define SWIGTYPE_p_QofBook swig_types[3]
-#define SWIGTYPE_p_SCM swig_types[4]
-#define SWIGTYPE_p_char swig_types[5]
-#define SWIGTYPE_p_double swig_types[6]
-#define SWIGTYPE_p_float swig_types[7]
-#define SWIGTYPE_p_gboolean swig_types[8]
-#define SWIGTYPE_p_gint64 swig_types[9]
-#define SWIGTYPE_p_gnc_monetary swig_types[10]
-#define SWIGTYPE_p_int swig_types[11]
-#define SWIGTYPE_p_unsigned_int swig_types[12]
-static swig_type_info *swig_types[14];
-static swig_module_info swig_module = {swig_types, 13, 0, 0, 0, 0};
+#define SWIGTYPE_p_QofSession swig_types[4]
+#define SWIGTYPE_p_SCM swig_types[5]
+#define SWIGTYPE_p_char swig_types[6]
+#define SWIGTYPE_p_double swig_types[7]
+#define SWIGTYPE_p_float swig_types[8]
+#define SWIGTYPE_p_gboolean swig_types[9]
+#define SWIGTYPE_p_gint64 swig_types[10]
+#define SWIGTYPE_p_gnc_monetary swig_types[11]
+#define SWIGTYPE_p_int swig_types[12]
+#define SWIGTYPE_p_unsigned_int swig_types[13]
+static swig_type_info *swig_types[15];
+static swig_module_info swig_module = {swig_types, 14, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3130,6 +3131,19 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_gnc_get_current_session(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  QofSession *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":gnc_get_current_session")) SWIG_fail;
+  result = (QofSession *)gnc_get_current_session();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_QofSession, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_gnc_get_current_book_tax_name(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   gchar *result = 0 ;
@@ -3319,6 +3333,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
 	 { (char *)"gnc_prefs_init", _wrap_gnc_prefs_init, METH_VARARGS, NULL},
 	 { (char *)"gnc_get_current_book", _wrap_gnc_get_current_book, METH_VARARGS, NULL},
+	 { (char *)"gnc_get_current_session", _wrap_gnc_get_current_session, METH_VARARGS, NULL},
 	 { (char *)"gnc_get_current_book_tax_name", _wrap_gnc_get_current_book_tax_name, METH_VARARGS, NULL},
 	 { (char *)"gnc_get_current_book_tax_type", _wrap_gnc_get_current_book_tax_type, METH_VARARGS, NULL},
 	 { (char *)"gnc_get_current_root_account", _wrap_gnc_get_current_root_account, METH_VARARGS, NULL},
@@ -3336,6 +3351,7 @@ static swig_type_info _swigt__p_Account = {"_p_Account", "Account *", 0, 0, (voi
 static swig_type_info _swigt__p_GNCOptionDB = {"_p_GNCOptionDB", "GNCOptionDB *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_MonetaryList = {"_p_MonetaryList", "MonetaryList *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_QofBook = {"_p_QofBook", "QofBook *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_QofSession = {"_p_QofSession", "QofSession *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_SCM = {"_p_SCM", "SCM *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_double = {"_p_double", "double *|gdouble *", 0, 0, (void*)0, 0};
@@ -3351,6 +3367,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_GNCOptionDB,
   &_swigt__p_MonetaryList,
   &_swigt__p_QofBook,
+  &_swigt__p_QofSession,
   &_swigt__p_SCM,
   &_swigt__p_char,
   &_swigt__p_double,
@@ -3366,6 +3383,7 @@ static swig_cast_info _swigc__p_Account[] = {  {&_swigt__p_Account, 0, 0, 0},{0,
 static swig_cast_info _swigc__p_GNCOptionDB[] = {  {&_swigt__p_GNCOptionDB, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_MonetaryList[] = {  {&_swigt__p_MonetaryList, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_QofBook[] = {  {&_swigt__p_QofBook, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_QofSession[] = {  {&_swigt__p_QofSession, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_SCM[] = {  {&_swigt__p_SCM, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_double[] = {  {&_swigt__p_double, 0, 0, 0},{0, 0, 0, 0}};
@@ -3381,6 +3399,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_GNCOptionDB,
   _swigc__p_MonetaryList,
   _swigc__p_QofBook,
+  _swigc__p_QofSession,
   _swigc__p_SCM,
   _swigc__p_char,
   _swigc__p_double,

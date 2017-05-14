@@ -13,6 +13,9 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
+
+# GLIB - Library of useful C routines
+
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -77,11 +80,13 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+DIST_COMMON = $(top_srcdir)/test-templates/Makefile.decl \
+	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
+	$(top_srcdir)/depcomp $(top_srcdir)/test-driver
 TESTS = test-link$(EXEEXT) test-import-parse$(EXEEXT)
 check_PROGRAMS = test-link$(EXEEXT) test-import-parse$(EXEEXT)
+noinst_PROGRAMS = $(am__EXEEXT_1) $(check_PROGRAMS)
 subdir = src/import-export/test
-DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
-	$(top_srcdir)/depcomp $(top_srcdir)/test-driver
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/macros/ax_pkg_swig.m4 \
 	$(top_srcdir)/macros/ax_python_devel.m4 \
@@ -102,6 +107,8 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
+am__EXEEXT_1 = test-import-pending-matches$(EXEEXT)
+PROGRAMS = $(noinst_PROGRAMS)
 test_import_parse_SOURCES = test-import-parse.c
 test_import_parse_OBJECTS = test-import-parse.$(OBJEXT)
 test_import_parse_LDADD = $(LDADD)
@@ -120,6 +127,20 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+am_test_import_pending_matches_OBJECTS = test_import_pending_matches-test-import-pending-matches.$(OBJEXT)
+test_import_pending_matches_OBJECTS =  \
+	$(am_test_import_pending_matches_OBJECTS)
+test_import_pending_matches_DEPENDENCIES =  \
+	${top_builddir}/src/libqof/qof/libgnc-qof.la \
+	${top_builddir}/src/engine/libgncmod-engine.la \
+	../libgncmod-generic-import.la \
+	${top_builddir}/src/test-core/libtest-core.la \
+	${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
+	$(am__DEPENDENCIES_1)
+test_import_pending_matches_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(test_import_pending_matches_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
 test_link_SOURCES = test-link.c
 test_link_OBJECTS = test-link.$(OBJEXT)
 test_link_LDADD = $(LDADD)
@@ -166,8 +187,10 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = test-import-parse.c test-link.c
-DIST_SOURCES = test-import-parse.c test-link.c
+SOURCES = test-import-parse.c $(test_import_pending_matches_SOURCES) \
+	test-link.c
+DIST_SOURCES = test-import-parse.c \
+	$(test_import_pending_matches_SOURCES) test-link.c
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -653,6 +676,14 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+GTESTER = gtester 			# for non-GLIB packages
+GTESTER_REPORT = gtester-report
+#GTESTER = $(top_builddir)/glib/gtester			# for the GLIB package
+#GTESTER_REPORT = $(top_builddir)/glib/gtester-report	# for the GLIB package
+
+# initialize variables for unconditional += appending
+EXTRA_DIST = 
+TEST_PROGS = test-import-pending-matches
 AM_CPPFLAGS = \
   -I${top_srcdir}/src \
   -I${top_srcdir}/src/gnc-module \
@@ -661,6 +692,8 @@ AM_CPPFLAGS = \
   -I${top_srcdir}/src/app-utils \
   -I${top_srcdir}/src/import-export \
   -I${top_srcdir}/src/libqof/qof \
+  -I${top_srcdir}/src/engine/test-core \
+  ${GTK_CFLAGS} \
   ${GUILE_CFLAGS} \
   ${GLIB_CFLAGS}
 
@@ -701,11 +734,21 @@ TESTS_ENVIRONMENT = \
   GNC_BUILDDIR="${abs_top_builddir}" \
   $(shell ${abs_top_srcdir}/src/gnc-test-env.pl --noexports ${GNC_TEST_DEPS})
 
+test_import_pending_matches_SOURCES = test-import-pending-matches.c
+test_import_pending_matches_LDADD = \
+  ${top_builddir}/src/libqof/qof/libgnc-qof.la \
+  ${top_builddir}/src/engine/libgncmod-engine.la \
+  ../libgncmod-generic-import.la \
+  ${top_builddir}/src/test-core/libtest-core.la \
+  ${top_builddir}/src/engine/test-core/libgncmod-test-engine.la \
+  ${GLIB_LIBS}
+
+test_import_pending_matches_CFLAGS = $(AM_CPPFLAGS)
 all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .log .o .obj .test .test$(EXEEXT) .trs
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/test-templates/Makefile.decl $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -726,6 +769,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
+$(top_srcdir)/test-templates/Makefile.decl:
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -745,9 +789,22 @@ clean-checkPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
+clean-noinstPROGRAMS:
+	@list='$(noinst_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
+
 test-import-parse$(EXEEXT): $(test_import_parse_OBJECTS) $(test_import_parse_DEPENDENCIES) $(EXTRA_test_import_parse_DEPENDENCIES) 
 	@rm -f test-import-parse$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_import_parse_OBJECTS) $(test_import_parse_LDADD) $(LIBS)
+
+test-import-pending-matches$(EXEEXT): $(test_import_pending_matches_OBJECTS) $(test_import_pending_matches_DEPENDENCIES) $(EXTRA_test_import_pending_matches_DEPENDENCIES) 
+	@rm -f test-import-pending-matches$(EXEEXT)
+	$(AM_V_CCLD)$(test_import_pending_matches_LINK) $(test_import_pending_matches_OBJECTS) $(test_import_pending_matches_LDADD) $(LIBS)
 
 test-link$(EXEEXT): $(test_link_OBJECTS) $(test_link_DEPENDENCIES) $(EXTRA_test_link_DEPENDENCIES) 
 	@rm -f test-link$(EXEEXT)
@@ -761,6 +818,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-import-parse.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-link.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_import_pending_matches-test-import-pending-matches.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -782,6 +840,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+test_import_pending_matches-test-import-pending-matches.o: test-import-pending-matches.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_import_pending_matches_CFLAGS) $(CFLAGS) -MT test_import_pending_matches-test-import-pending-matches.o -MD -MP -MF $(DEPDIR)/test_import_pending_matches-test-import-pending-matches.Tpo -c -o test_import_pending_matches-test-import-pending-matches.o `test -f 'test-import-pending-matches.c' || echo '$(srcdir)/'`test-import-pending-matches.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_import_pending_matches-test-import-pending-matches.Tpo $(DEPDIR)/test_import_pending_matches-test-import-pending-matches.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-import-pending-matches.c' object='test_import_pending_matches-test-import-pending-matches.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_import_pending_matches_CFLAGS) $(CFLAGS) -c -o test_import_pending_matches-test-import-pending-matches.o `test -f 'test-import-pending-matches.c' || echo '$(srcdir)/'`test-import-pending-matches.c
+
+test_import_pending_matches-test-import-pending-matches.obj: test-import-pending-matches.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_import_pending_matches_CFLAGS) $(CFLAGS) -MT test_import_pending_matches-test-import-pending-matches.obj -MD -MP -MF $(DEPDIR)/test_import_pending_matches-test-import-pending-matches.Tpo -c -o test_import_pending_matches-test-import-pending-matches.obj `if test -f 'test-import-pending-matches.c'; then $(CYGPATH_W) 'test-import-pending-matches.c'; else $(CYGPATH_W) '$(srcdir)/test-import-pending-matches.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_import_pending_matches-test-import-pending-matches.Tpo $(DEPDIR)/test_import_pending_matches-test-import-pending-matches.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test-import-pending-matches.c' object='test_import_pending_matches-test-import-pending-matches.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_import_pending_matches_CFLAGS) $(CFLAGS) -c -o test_import_pending_matches-test-import-pending-matches.obj `if test -f 'test-import-pending-matches.c'; then $(CYGPATH_W) 'test-import-pending-matches.c'; else $(CYGPATH_W) '$(srcdir)/test-import-pending-matches.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1043,9 +1115,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
-	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS check-local
 check: check-am
-all-am: Makefile
+all-am: Makefile $(PROGRAMS)
 installdirs:
 install: install-am
 install-exec: install-exec-am
@@ -1082,14 +1154,14 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-checkPROGRAMS clean-generic clean-libtool \
-	mostlyclean-am
+clean-am: clean-checkPROGRAMS clean-generic clean-libtool clean-local \
+	clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
-	distclean-tags
+	distclean-local distclean-tags
 
 dvi: dvi-am
 
@@ -1153,20 +1225,109 @@ uninstall-am:
 
 .MAKE: check-am install-am install-strip
 
-.PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am clean \
-	clean-checkPROGRAMS clean-generic clean-libtool cscopelist-am \
+.PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am \
+	check-local clean clean-checkPROGRAMS clean-generic \
+	clean-libtool clean-local clean-noinstPROGRAMS cscopelist-am \
 	ctags ctags-am distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+	distclean-libtool distclean-local distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	recheck tags tags-am uninstall uninstall-am
 
+
+### testing rules
+
+# test: run all tests in cwd and subdirs
+test: test-nonrecursive
+@PLATFORM_WIN32_FALSE@	@ for subdir in $(SUBDIRS) . ; do \
+@PLATFORM_WIN32_FALSE@	    test "$$subdir" = "." -o "$$subdir" = "po" || \
+@PLATFORM_WIN32_FALSE@	    ( cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $@ ) || exit $? ; \
+@PLATFORM_WIN32_FALSE@	  done
+
+# test-nonrecursive: run tests only in cwd
+test-nonrecursive: ${TEST_PROGS}
+@PLATFORM_WIN32_FALSE@	@test -z "${TEST_PROGS}" || MALLOC_CHECK_=2 MALLOC_PERTURB_=$$(($${RANDOM:-256} % 256)) ${GTESTER} --verbose ${TEST_PROGS}
+
+# test-report: run tests in subdirs and generate report
+# perf-report: run tests in subdirs with -m perf and generate report
+# full-report: like test-report: with -m perf and -m slow
+test-report perf-report full-report:	${TEST_PROGS}
+	@test -z "${TEST_PROGS}" || { \
+	  case $@ in \
+	  test-report) test_options="-k";; \
+	  perf-report) test_options="-k -m=perf";; \
+	  full-report) test_options="-k -m=perf -m=slow";; \
+	  esac ; \
+	  if test -z "$$GTESTER_LOGDIR" ; then	\
+	    ${GTESTER} --verbose $$test_options -o test-report.xml ${TEST_PROGS} ; \
+	  elif test -n "${TEST_PROGS}" ; then \
+	    ${GTESTER} --verbose $$test_options -o `mktemp "$$GTESTER_LOGDIR/log-XXXXXX"` ${TEST_PROGS} ; \
+	  fi ; \
+	}
+	@ ignore_logdir=true ; \
+	  if test -z "$$GTESTER_LOGDIR" ; then \
+	    GTESTER_LOGDIR=`mktemp -d "\`pwd\`/.testlogs-XXXXXX"`; export GTESTER_LOGDIR ; \
+	    ignore_logdir=false ; \
+	  fi ; \
+	  if test -d "$(top_srcdir)/.git" ; then \
+	    REVISION=`git describe` ; \
+	  else \
+	    REVISION=$(VERSION) ; \
+	  fi ; \
+	  for subdir in $(SUBDIRS) . ; do \
+	    test "$$subdir" = "." -o "$$subdir" = "po" || \
+	    ( cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $@ ) || exit $? ; \
+	  done ; \
+	  $$ignore_logdir || { \
+	    echo '<?xml version="1.0"?>'              > $@.xml ; \
+	    echo '<report-collection>'               >> $@.xml ; \
+	    echo '<info>'                            >> $@.xml ; \
+	    echo '  <package>$(PACKAGE)</package>'   >> $@.xml ; \
+	    echo '  <version>$(VERSION)</version>'   >> $@.xml ; \
+	    echo "  <revision>$$REVISION</revision>" >> $@.xml ; \
+	    echo '</info>'                           >> $@.xml ; \
+	    for lf in `ls -L "$$GTESTER_LOGDIR"/.` ; do \
+	      sed '1,1s/^<?xml\b[^>?]*?>//' <"$$GTESTER_LOGDIR"/"$$lf" >> $@.xml ; \
+	    done ; \
+	    echo >> $@.xml ; \
+	    echo '</report-collection>' >> $@.xml ; \
+	    rm -rf "$$GTESTER_LOGDIR"/ ; \
+	    ${GTESTER_REPORT} --version 2>/dev/null 1>&2 ; test "$$?" != 0 || ${GTESTER_REPORT} $@.xml >$@.html ; \
+	  }
+.PHONY: test test-report perf-report full-report test-nonrecursive
+
+.PHONY: lcov genlcov lcov-clean
+# use recursive makes in order to ignore errors during check
+lcov:
+	-$(MAKE) $(AM_MAKEFLAGS) -k check
+	$(MAKE) $(AM_MAKEFLAGS) genlcov
+
+# we have to massage the lcov.info file slightly to hide the effect of libtool
+# placing the objects files in the .libs/ directory separate from the *.c
+# we also have to delete tests/.libs/libmoduletestplugin_*.gcda
+genlcov:
+	rm -f $(top_builddir)/tests/.libs/libmoduletestplugin_*.gcda
+	$(LTP) --directory $(top_builddir) --capture --output-file glib-lcov.info --test-name GLIB_PERF --no-checksum --compat-libtool
+	LANG=C $(LTP_GENHTML) --prefix $(top_builddir) --output-directory glib-lcov --title "GLib Code Coverage" --legend --show-details glib-lcov.info
+
+lcov-clean:
+	-$(LTP) --directory $(top_builddir) -z
+	-rm -rf glib-lcov.info glib-lcov
+	-find -name '*.gcda' -print | xargs rm
+
+# run tests in cwd as part of make check
+check-local: test-nonrecursive
+
+clean-local:
+	rm -f translog.*
+
+distclean-local: clean-local
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -6,9 +6,6 @@
 /* Include pthread support for binary relocation? */
 #undef BR_PTHREAD
 
-/* Enable debug memory */
-#undef DEBUG_MEMORY
-
 /* Use binary relocation? */
 #undef ENABLE_BINRELOC
 
@@ -248,12 +245,6 @@
 
 /* Define to 1 if you have the <wctype.h> header file. */
 #undef HAVE_WCTYPE_H
-
-/* webkit_web_frame_print_full exists */
-#undef HAVE_WEBKIT_WEB_FRAME_PRINT_FULL
-
-/* Define to 1 if you have the `webkit_web_view_load_uri' function. */
-#undef HAVE_WEBKIT_WEB_VIEW_LOAD_URI
 
 /* Define to 1 if you have the <X11/Xlib.h> header file. */
 #undef HAVE_X11_XLIB_H

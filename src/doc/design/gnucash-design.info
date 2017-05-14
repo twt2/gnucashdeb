@@ -14,8 +14,8 @@ END-INFO-DIR-ENTRY
 
    Copyright 2000 Gnumatic Incorporated
 
-   This is Edition 2.6.15, last updated 17 December 2016, of the
-'GnuCash Design Document', version 2.6.15.
+   This is Edition 2.6.16, last updated 25 March 2017, of the 'GnuCash
+Design Document', version 2.6.16.
 
    Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1 or
@@ -31,8 +31,8 @@ File: gnucash-design.info,  Node: Top,  Next: GNU Free Documentation License,  P
 GnuCash Design Document
 ***********************
 
-This is Edition 2.6.15, last updated 17 December 2016, of the 'GnuCash
-Design Document', version 2.6.15.
+This is Edition 2.6.16, last updated 25 March 2017, of the 'GnuCash
+Design Document', version 2.6.16.
 
 * Menu:
 
@@ -925,7 +925,7 @@ program is running, is using the C pointer which points to the
 structure.  C pointers have the advantage of speed, but also have some
 disadvantages:
 
-   * Pointers cannot be used in data files and are not persistant across
+   * Pointers cannot be used in data files and are not persistent across
      different program invocations.
 
    * When an entity is destroyed, every other structure which references
@@ -964,7 +964,7 @@ File: gnucash-design.info,  Node: When to use GUIDs,  Next: GUID Types,  Prev: G
 -----------------------
 
 Although GUIDs are very flexible, the engine structures like Accounts
-will probably continue to use C pointers for the forseeable future,
+will probably continue to use C pointers for the foreseeable future,
 since they are much faster (and in certain respects more convenient)
 than using GUIDs.  In general, however, it is much safer to use GUIDs.
 In particular, you should consider using GUIDs if any of the following
@@ -1158,7 +1158,7 @@ File: gnucash-design.info,  Node: Numeric Library,  Next: Key-Value Pair Frames,
 ===================
 
 =============== The documentation below for gnc_numeric is obsolete and
-has been superseeded by the gnc_numeric docs in the header file.
+has been superseded by the gnc_numeric docs in the header file.
 =========================================
 
    Financial quantities in GnuCash (Split quantities and values) are
@@ -1201,7 +1201,7 @@ File: gnucash-design.info,  Node: Standard Numeric Arguments,  Next: Creating Nu
 --------------------------------
 
 =============== The documentation below for gnc_numeric is obsolete and
-has been superseeded by the gnc_numeric docs in the header file.
+has been superseded by the gnc_numeric docs in the header file.
 =========================================
 
    It is useful to specify a denominator in cases where it is known that
@@ -1318,7 +1318,7 @@ GNC_DENOM_AUTO as DENOM and 'GNC_DENOM_FIXED | GNC_RND_NEVER' as HOW.
 File: gnucash-design.info,  Node: Creating Numeric Objects,  Next: Basic Arithmetic Operations,  Prev: Standard Numeric Arguments,  Up: Numeric Library
 
 =============== The documentation below for gnc_numeric is obsolete and
-has been superseeded by the gnc_numeric docs in the header file.
+has been superseded by the gnc_numeric docs in the header file.
 =========================================
 
 2.4.2 Creating Numeric Objects
@@ -1433,7 +1433,7 @@ File: gnucash-design.info,  Node: Numeric Comparisons and Predicates,  Next: Num
 File: gnucash-design.info,  Node: Numeric Denominator Conversion,  Next: Numeric Floating Point Conversion,  Prev: Numeric Comparisons and Predicates,  Up: Numeric Library
 
 =============== The documentation below for gnc_numeric is obsolete and
-has been superseeded by the gnc_numeric docs in the header file.
+has been superseded by the gnc_numeric docs in the header file.
 =========================================
 
 2.4.5 Numeric Denominator Conversion
@@ -1521,7 +1521,7 @@ File: gnucash-design.info,  Node: Numeric Example,  Prev: Numeric Error Handling
 ---------------------
 
 =============== The documentation below for gnc_numeric is obsolete and
-has been superseeded by the gnc_numeric docs in the header file.
+has been superseded by the gnc_numeric docs in the header file.
 =========================================
 
    The following program finds the best 'gnc_numeric' approximation to
@@ -1709,7 +1709,7 @@ A 'kvp_frame' is the datatype used to associate key strings with
      Works like 'kvp_frame_get_frame', but the frame path is specified
      as a single string where the keys are separated by slashes; thus,
      for example: '/this/is/a/valid/path' and '///so//is////this/'.
-     Multiple slashes are compresed and a leading slash is optional.
+     Multiple slashes are compressed and a leading slash is optional.
      The pointers '.' and '..' are _not_ followed/obeyed.  (This is
      arguably a bug that needs fixing).
 
@@ -2594,7 +2594,7 @@ File: gnucash-design.info,  Node: Split Setters,  Prev: Split Getters,  Up: Spli
  -- Function: void xaccSplitSetSharePriceAndAmount (Split * SPLIT,
           gnc_numeric PRICE, gnc_numeric AMOUNT)
      Set both the share price and share quantity of SPLIT.  This routine
-     is more efficent than calling 'xaccSplitSetShareAmount' and
+     is more efficient than calling 'xaccSplitSetShareAmount' and
      'xaccSplitSetSharePrice' in succesion.
 
  -- Function: void xaccSplitSetValue (Split * SPLIT, gnc_numeric VALUE)
@@ -3305,7 +3305,7 @@ datastores.  This class provides several important services:
    The current implementation assumes the use of files and file locks;
 however, the API was designed to be general enough to allow the use of
 generic URL's, and/or implementation on top of SQL or other
-database/persistant object technology.
+database/persistent object technology.
 
 * Menu:
 
@@ -3327,7 +3327,7 @@ File: gnucash-design.info,  Node: GNCBook API,  Prev: GNCBooks,  Up: GNCBooks
 
  -- Function: gboolean gnc_book_begin (GNCBook * BOOK, const char *
           BOOK_ID, gboolean ignore_lock, gboolean create_if_nonexistent)
-     Begins a new book editing sesssion.  It takes as an argument the
+     Begins a new book editing session.  It takes as an argument the
      book id.  The book id must be a string in the form of a URI/URL. In
      the current implementation, only one type of URI is supported, and
      that is the file URI: anything of the form
@@ -3743,7 +3743,7 @@ File: gnucash-design.info,  Node: Controlling Refreshes,  Next: Finding Componen
  -- Function: void gnc_resume_gui_refresh (void)
      Resume the invocation of refresh handlers by the Component Manager.
      Each call reduces the suspend counter by one.  When the counter
-     reaches zero, all events which have occured since the last refresh
+     reaches zero, all events which have occurred since the last refresh
      are collected and passed to refresh handlers via the CHANGES
      argument.  Refresh handlers will still be excluded based on their
      watches.
@@ -4125,7 +4125,7 @@ to.
 
    Options are organised into sections, which are each given a title
 string such as "Register" or "International".  The UI displays each
-section on a seperate page.  Each section has a number of options.  Each
+section on a separate page.  Each section has a number of options.  Each
 option has a name that uniquely identifies it in that section, and an
 alphabetic "sort tag" that determines the relative ordering of the
 options for display.
@@ -4139,7 +4139,7 @@ File: gnucash-design.info,  Node: Option Types,  Next: Option Creation,  Prev: O
 Sometimes, GnuCash requires the user to specify true/false properties.
 Others properties most easily specified by selections from a list,
 others from a number, others still by selecting dates, or one or more
-accounts in the account hierachy, or even colors.  GnuCash supports all
+accounts in the account hierarchy, or even colors.  GnuCash supports all
 of these and more:
 
 'boolean'
@@ -4172,7 +4172,7 @@ of these and more:
 'account-list'
 
      For selecting a particular account or accounts.  The UI displays a
-     tree of the account hierachy.
+     tree of the account hierarchy.
 
 'multichoice'
 
@@ -4893,99 +4893,99 @@ Concept Index
 
 
 Tag Table:
-Node: Top868
-Node: GNU Free Documentation License4197
-Node: Introduction22897
-Node: Top Level24689
-Node: Engine31891
-Node: Engine Introduction33608
-Node: Using and Extending the Engine API36824
-Ref: Using and Extending the Engine API-Footnote-138051
-Node: Globally Unique Identifiers38158
-Node: When to use GUIDs40202
-Node: GUID Types40952
-Node: How to use GUIDs41886
-Node: GUIDs and GnuCash Entities45199
-Node: The GUID Generator46573
-Node: Numeric Library47643
-Node: Standard Numeric Arguments49470
-Node: Creating Numeric Objects54140
-Node: Basic Arithmetic Operations54772
-Node: Numeric Comparisons and Predicates57241
-Node: Numeric Denominator Conversion58861
-Node: Numeric Floating Point Conversion59855
-Node: Numeric String Conversion60452
-Node: Numeric Error Handling61081
-Node: Numeric Example62131
-Node: Key-Value Pair Frames63806
-Node: Key-Value Policy65005
-Node: kvp_frame66845
-Node: kvp_value70281
-Node: kvp_list72898
-Node: Events74377
-Node: Event API74895
-Node: Commodities76652
-Node: General Commodity API78349
-Node: Commodity Getters79223
-Node: Commodity Setters80290
-Node: Commodity Tables81172
-Node: General Commodity Table API81623
-Node: Commodity Table Access API82343
-Node: Commodity Table Modification API84199
-Node: Prices85647
-Node: Price Implementation Details86946
-Node: General Price API88346
-Node: Price Getters89392
-Node: Price Setters90282
-Node: Price Databases91583
-Node: Price Lists91907
-Node: General Price Database API92837
-Node: Splits93852
-Node: General Split API95774
-Node: Split Getters97086
-Node: Split Setters100439
-Node: Transactions102510
-Node: General Transaction API104808
-Node: Transaction Getters107507
-Node: Transaction Setters109026
-Node: Accounts110395
-Node: Account Types112703
-Node: General Account API114011
-Node: Account Type API115963
-Node: Account Getters117371
-Node: Account Tax API122694
-Node: Account Groups124235
-Node: General Account Group API124999
-Node: Account Group Account API126644
-Node: GNCBooks128838
-Node: GNCBook API129885
-Node: Scrub133730
-Node: Component Manager133826
-Node: Component Manager Introduction135200
-Node: Refresh Mechanism137379
-Node: CM Initialization and Shutdown139674
-Node: Refresh Handlers140202
-Node: Close Handlers143983
-Node: Registering and Unregistering Components144704
-Node: Watching Engine Objects146531
-Node: Controlling Refreshes147640
-Node: Finding Components149086
-Node: Iterating over Components150483
-Node: Register151579
-Node: Cells152857
-Node: BasicCell154005
-Node: Cellblocks155150
-Node: Table155831
-Node: Split Register157616
-Node: Reports158944
-Node: Creating a Report159845
-Node: User Preferences161471
-Node: Option Databases162706
-Node: Option Types163511
-Node: Option Creation165418
-Node: Option Values172776
-Node: Function Index173471
-Node: Data Type Index203607
-Node: Concept Index205733
+Node: Top865
+Node: GNU Free Documentation License4191
+Node: Introduction22891
+Node: Top Level24683
+Node: Engine31885
+Node: Engine Introduction33602
+Node: Using and Extending the Engine API36818
+Ref: Using and Extending the Engine API-Footnote-138045
+Node: Globally Unique Identifiers38152
+Node: When to use GUIDs40196
+Node: GUID Types40947
+Node: How to use GUIDs41881
+Node: GUIDs and GnuCash Entities45194
+Node: The GUID Generator46568
+Node: Numeric Library47638
+Node: Standard Numeric Arguments49464
+Node: Creating Numeric Objects54133
+Node: Basic Arithmetic Operations54764
+Node: Numeric Comparisons and Predicates57233
+Node: Numeric Denominator Conversion58853
+Node: Numeric Floating Point Conversion59846
+Node: Numeric String Conversion60443
+Node: Numeric Error Handling61072
+Node: Numeric Example62122
+Node: Key-Value Pair Frames63796
+Node: Key-Value Policy64995
+Node: kvp_frame66835
+Node: kvp_value70272
+Node: kvp_list72889
+Node: Events74368
+Node: Event API74886
+Node: Commodities76643
+Node: General Commodity API78340
+Node: Commodity Getters79214
+Node: Commodity Setters80281
+Node: Commodity Tables81163
+Node: General Commodity Table API81614
+Node: Commodity Table Access API82334
+Node: Commodity Table Modification API84190
+Node: Prices85638
+Node: Price Implementation Details86937
+Node: General Price API88337
+Node: Price Getters89383
+Node: Price Setters90273
+Node: Price Databases91574
+Node: Price Lists91898
+Node: General Price Database API92828
+Node: Splits93843
+Node: General Split API95765
+Node: Split Getters97077
+Node: Split Setters100430
+Node: Transactions102502
+Node: General Transaction API104800
+Node: Transaction Getters107499
+Node: Transaction Setters109018
+Node: Accounts110387
+Node: Account Types112695
+Node: General Account API114003
+Node: Account Type API115955
+Node: Account Getters117363
+Node: Account Tax API122686
+Node: Account Groups124227
+Node: General Account Group API124991
+Node: Account Group Account API126636
+Node: GNCBooks128830
+Node: GNCBook API129877
+Node: Scrub133721
+Node: Component Manager133817
+Node: Component Manager Introduction135191
+Node: Refresh Mechanism137370
+Node: CM Initialization and Shutdown139665
+Node: Refresh Handlers140193
+Node: Close Handlers143974
+Node: Registering and Unregistering Components144695
+Node: Watching Engine Objects146522
+Node: Controlling Refreshes147631
+Node: Finding Components149078
+Node: Iterating over Components150475
+Node: Register151571
+Node: Cells152849
+Node: BasicCell153997
+Node: Cellblocks155142
+Node: Table155823
+Node: Split Register157608
+Node: Reports158936
+Node: Creating a Report159837
+Node: User Preferences161463
+Node: Option Databases162698
+Node: Option Types163503
+Node: Option Creation165412
+Node: Option Values172770
+Node: Function Index173465
+Node: Data Type Index203601
+Node: Concept Index205727
 
 End Tag Table

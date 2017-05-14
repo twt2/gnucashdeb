@@ -962,7 +962,7 @@ gnc_dense_cal_draw_to_buffer(GncDenseCal *dcal)
     }
     LOG_AND_RESET(timer, "alternating month colors");
 
-    /* Hilight the marked days. */
+    /* Highlight the marked days. */
     {
         int i;
         int x1, x2, y1, y2;
@@ -1015,7 +1015,7 @@ gnc_dense_cal_draw_to_buffer(GncDenseCal *dcal)
         cairo_rectangle (cr, x + 0.5, y + 0.5, w, h);
         cairo_stroke (cr);
 
-        /* draw the week seperations */
+        /* draw the week separations */
         for (j = 0; j < num_weeks_per_col(dcal); j++)
         {
             gint wy = y + (j * week_height(dcal));
@@ -1024,7 +1024,7 @@ gnc_dense_cal_draw_to_buffer(GncDenseCal *dcal)
             cairo_stroke (cr);
         }
 
-        /* draw the day seperations */
+        /* draw the day separations */
         for (j = 1; j < 7; j++)
         {
             gint dx = x + (j * day_width(dcal));
@@ -1181,6 +1181,8 @@ gnc_dense_cal_button_press(GtkWidget *widget,
     GtkAllocation alloc;
     gint doc;
     GncDenseCal *dcal = GNC_DENSE_CAL(widget);
+    gint win_xpos = evt->x_root + 5;
+    gint win_ypos = evt->y_root + 5;
 
     doc = wheres_this(dcal, evt->x, evt->y);
     dcal->showPopup = ~(dcal->showPopup);
@@ -1200,11 +1202,13 @@ gnc_dense_cal_button_press(GtkWidget *widget,
         gtk_widget_queue_resize(GTK_WIDGET(dcal->transPopup));
         gtk_widget_show_all(GTK_WIDGET(dcal->transPopup));
 
-        if ((evt->x_root + 5 + alloc.width > gdk_screen_get_width(screen))||
-            (evt->y_root + 5 + alloc.height > gdk_screen_get_height(screen)))
-            gtk_window_move(GTK_WINDOW(dcal->transPopup), evt->x_root - 2 - alloc.width, evt->y_root - 2 - alloc.height);
-        else
-            gtk_window_move(GTK_WINDOW(dcal->transPopup), evt->x_root + 5, evt->y_root + 5);
+        if (evt->x_root + 5 + alloc.width > gdk_screen_get_width(screen))
+            win_xpos = evt->x_root - 2 - alloc.width;
+
+        if (evt->y_root + 5 + alloc.height > gdk_screen_get_height(screen))
+            win_ypos = evt->y_root - 2 - alloc.height;
+
+        gtk_window_move(GTK_WINDOW(dcal->transPopup), win_xpos, win_ypos);
     }
     else
         gtk_widget_hide(GTK_WIDGET(dcal->transPopup));
@@ -1221,6 +1225,8 @@ gnc_dense_cal_motion_notify(GtkWidget *widget,
     gint doc;
     int unused;
     GdkModifierType unused2;
+    gint win_xpos = event->x_root + 5;
+    gint win_ypos = event->y_root + 5;
 
     dcal = GNC_DENSE_CAL(widget);
     if (!dcal->showPopup)
@@ -1238,13 +1244,15 @@ gnc_dense_cal_motion_notify(GtkWidget *widget,
 
         gtk_widget_get_allocation(GTK_WIDGET(dcal->transPopup), &alloc);
 
-        gtk_widget_show_all(GTK_WIDGET(dcal->transPopup));
+        gtk_widget_show_all(GTK_WIDGET(dcal->transPopup));      
 
-        if ((event->x_root + 5 + alloc.width > gdk_screen_get_width(screen))||
-            (event->y_root + 5 + alloc.height > gdk_screen_get_height(screen)))
-            gtk_window_move(GTK_WINDOW(dcal->transPopup), event->x_root - 2 - alloc.width, event->y_root - 2 - alloc.height);
-        else
-            gtk_window_move(GTK_WINDOW(dcal->transPopup), event->x_root + 5, event->y_root + 5);
+        if (event->x_root + 5 + alloc.width > gdk_screen_get_width(screen))
+            win_xpos = event->x_root - 2 - alloc.width;
+
+        if (event->y_root + 5 + alloc.height > gdk_screen_get_height(screen))
+            win_ypos = event->y_root - 2 - alloc.height;
+
+        gtk_window_move(GTK_WINDOW(dcal->transPopup), win_xpos, win_ypos);
     }
     else
         gtk_widget_hide(GTK_WIDGET(dcal->transPopup));

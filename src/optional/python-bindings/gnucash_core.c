@@ -9084,6 +9084,46 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_xaccAccountCountSplits(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Account *arg1 = (Account *) 0 ;
+  gboolean arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  gint64 result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:xaccAccountCountSplits",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Account, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccAccountCountSplits" "', argument " "1"" of type '" "Account const *""'"); 
+  }
+  arg1 = (Account *)(argp1);
+  {
+    if (obj1 == Py_True)
+    arg2 = TRUE;
+    else if (obj1 == Py_False)
+    arg2 = FALSE;
+    else
+    {
+      PyErr_SetString(
+        PyExc_ValueError,
+        "Python object passed to a gboolean argument was not True "
+        "or False" );
+      return NULL;
+    }
+  }
+  result = xaccAccountCountSplits((Account const *)arg1,arg2);
+  {
+    resultobj = PyInt_FromLong(result);
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_xaccAccountMoveAllSplits(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   Account *arg1 = (Account *) 0 ;
@@ -35718,6 +35758,60 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_gncEntryGetPrice(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GncEntry *arg1 = (GncEntry *) 0 ;
+  gboolean arg2 ;
+  gboolean arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  gnc_numeric result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:gncEntryGetPrice",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__gncEntry, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncEntryGetPrice" "', argument " "1"" of type '" "GncEntry const *""'"); 
+  }
+  arg1 = (GncEntry *)(argp1);
+  {
+    if (obj1 == Py_True)
+    arg2 = TRUE;
+    else if (obj1 == Py_False)
+    arg2 = FALSE;
+    else
+    {
+      PyErr_SetString(
+        PyExc_ValueError,
+        "Python object passed to a gboolean argument was not True "
+        "or False" );
+      return NULL;
+    }
+  }
+  {
+    if (obj2 == Py_True)
+    arg3 = TRUE;
+    else if (obj2 == Py_False)
+    arg3 = FALSE;
+    else
+    {
+      PyErr_SetString(
+        PyExc_ValueError,
+        "Python object passed to a gboolean argument was not True "
+        "or False" );
+      return NULL;
+    }
+  }
+  result = gncEntryGetPrice((struct _gncEntry const *)arg1,arg2,arg3);
+  resultobj = SWIG_NewPointerObj((gnc_numeric *)memcpy((gnc_numeric *)malloc(sizeof(gnc_numeric)),&result,sizeof(gnc_numeric)), SWIGTYPE_p__gnc_numeric, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_gncEntryGetInvDiscount(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GncEntry *arg1 = (GncEntry *) 0 ;
@@ -41448,6 +41542,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"xaccAccountIsAPARType", _wrap_xaccAccountIsAPARType, METH_VARARGS, (char *)"xaccAccountIsAPARType(GNCAccountType t) -> gboolean"},
 	 { (char *)"xaccAccountIsEquityType", _wrap_xaccAccountIsEquityType, METH_VARARGS, (char *)"xaccAccountIsEquityType(GNCAccountType t) -> gboolean"},
 	 { (char *)"xaccAccountGetSplitList", _wrap_xaccAccountGetSplitList, METH_VARARGS, (char *)"xaccAccountGetSplitList(Account const * account) -> SplitList *"},
+	 { (char *)"xaccAccountCountSplits", _wrap_xaccAccountCountSplits, METH_VARARGS, (char *)"xaccAccountCountSplits(Account const * acc, gboolean include_children) -> gint64"},
 	 { (char *)"xaccAccountMoveAllSplits", _wrap_xaccAccountMoveAllSplits, METH_VARARGS, (char *)"xaccAccountMoveAllSplits(Account * accfrom, Account * accto)"},
 	 { (char *)"xaccAccountForEachTransaction", _wrap_xaccAccountForEachTransaction, METH_VARARGS, (char *)"xaccAccountForEachTransaction(Account const * account, TransactionCallback proc, void * data) -> gint"},
 	 { (char *)"xaccAccountFindTransByDesc", _wrap_xaccAccountFindTransByDesc, METH_VARARGS, (char *)"xaccAccountFindTransByDesc(Account const * account, char const * description) -> Transaction *"},
@@ -42263,6 +42358,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gncEntryGetDocQuantity", _wrap_gncEntryGetDocQuantity, METH_VARARGS, (char *)"gncEntryGetDocQuantity(GncEntry const * entry, gboolean is_cn) -> _gnc_numeric"},
 	 { (char *)"gncEntryGetInvAccount", _wrap_gncEntryGetInvAccount, METH_VARARGS, (char *)"gncEntryGetInvAccount(GncEntry const * entry) -> Account *"},
 	 { (char *)"gncEntryGetInvPrice", _wrap_gncEntryGetInvPrice, METH_VARARGS, (char *)"gncEntryGetInvPrice(GncEntry const * entry) -> _gnc_numeric"},
+	 { (char *)"gncEntryGetPrice", _wrap_gncEntryGetPrice, METH_VARARGS, (char *)"gncEntryGetPrice(GncEntry const * entry, gboolean const cust_doc, gboolean const net) -> _gnc_numeric"},
 	 { (char *)"gncEntryGetInvDiscount", _wrap_gncEntryGetInvDiscount, METH_VARARGS, (char *)"gncEntryGetInvDiscount(GncEntry const * entry) -> _gnc_numeric"},
 	 { (char *)"gncEntryGetInvDiscountType", _wrap_gncEntryGetInvDiscountType, METH_VARARGS, (char *)"gncEntryGetInvDiscountType(GncEntry const * entry) -> GncAmountType"},
 	 { (char *)"gncEntryGetInvDiscountHow", _wrap_gncEntryGetInvDiscountHow, METH_VARARGS, (char *)"gncEntryGetInvDiscountHow(GncEntry const * entry) -> GncDiscountHow"},
@@ -43798,7 +43894,6 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, "GNC_COMMODITY_TABLE",SWIG_FromCharPtr("gnc_commodity_table"));
   SWIG_Python_SetConstant(d, "GNC_COMMODITY_NS_LEGACY",SWIG_FromCharPtr("GNC_LEGACY_CURRENCIES"));
   SWIG_Python_SetConstant(d, "GNC_COMMODITY_NS_ISO",SWIG_FromCharPtr("ISO4217"));
-  SWIG_Python_SetConstant(d, "GNC_COMMODITY_NS_CURRENCY",SWIG_FromCharPtr("CURRENCY"));
   SWIG_Python_SetConstant(d, "GNC_COMMODITY_NS_NASDAQ",SWIG_FromCharPtr("NASDAQ"));
   SWIG_Python_SetConstant(d, "GNC_COMMODITY_NS_NYSE",SWIG_FromCharPtr("NYSE"));
   SWIG_Python_SetConstant(d, "GNC_COMMODITY_NS_EUREX",SWIG_FromCharPtr("EUREX"));

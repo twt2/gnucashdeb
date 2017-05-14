@@ -840,6 +840,10 @@ def xaccAccountGetSplitList(*args):
   """xaccAccountGetSplitList(Account const * account) -> SplitList *"""
   return _gnucash_core_c.xaccAccountGetSplitList(*args)
 
+def xaccAccountCountSplits(*args):
+  """xaccAccountCountSplits(Account const * acc, gboolean include_children) -> gint64"""
+  return _gnucash_core_c.xaccAccountCountSplits(*args)
+
 def xaccAccountMoveAllSplits(*args):
   """xaccAccountMoveAllSplits(Account * accfrom, Account * accto)"""
   return _gnucash_core_c.xaccAccountMoveAllSplits(*args)
@@ -2367,7 +2371,6 @@ def gnc_commodity_namespace_get_type():
 GNC_COMMODITY_TABLE = _gnucash_core_c.GNC_COMMODITY_TABLE
 GNC_COMMODITY_NS_LEGACY = _gnucash_core_c.GNC_COMMODITY_NS_LEGACY
 GNC_COMMODITY_NS_ISO = _gnucash_core_c.GNC_COMMODITY_NS_ISO
-GNC_COMMODITY_NS_CURRENCY = _gnucash_core_c.GNC_COMMODITY_NS_CURRENCY
 GNC_COMMODITY_NS_NASDAQ = _gnucash_core_c.GNC_COMMODITY_NS_NASDAQ
 GNC_COMMODITY_NS_NYSE = _gnucash_core_c.GNC_COMMODITY_NS_NYSE
 GNC_COMMODITY_NS_EUREX = _gnucash_core_c.GNC_COMMODITY_NS_EUREX
@@ -4254,6 +4257,10 @@ def gncEntryGetInvAccount(*args):
 def gncEntryGetInvPrice(*args):
   """gncEntryGetInvPrice(GncEntry const * entry) -> _gnc_numeric"""
   return _gnucash_core_c.gncEntryGetInvPrice(*args)
+
+def gncEntryGetPrice(*args):
+  """gncEntryGetPrice(GncEntry const * entry, gboolean const cust_doc, gboolean const net) -> _gnc_numeric"""
+  return _gnucash_core_c.gncEntryGetPrice(*args)
 
 def gncEntryGetInvDiscount(*args):
   """gncEntryGetInvDiscount(GncEntry const * entry) -> _gnc_numeric"""

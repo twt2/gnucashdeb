@@ -748,10 +748,10 @@ test_get_currency_denom (Fixture *fixture, gconstpointer pData)
     const gint denom = gnc_commodity_get_fraction (fixture->curr);
     g_assert_cmpint (fixture->func->get_currency_denom (NULL), ==, 0);
     fixture->split->parent = NULL;
-    g_assert_cmpint (fixture->func->get_currency_denom (fixture->split), ==, 100000);
+    g_assert_cmpint (fixture->func->get_currency_denom (fixture->split), ==, 1000000);
     fixture->split->parent = txn;
     txn->common_currency = NULL;
-    g_assert_cmpint (fixture->func->get_currency_denom (fixture->split), ==, 100000);
+    g_assert_cmpint (fixture->func->get_currency_denom (fixture->split), ==, 1000000);
     txn->common_currency = fixture->curr;
     g_assert_cmpint (fixture->func->get_currency_denom (fixture->split), ==, denom);
 }
@@ -766,7 +766,7 @@ test_get_commodity_denom (Fixture *fixture, gconstpointer pData)
     const gint denom = gnc_commodity_get_fraction (fixture->comm);
     g_assert_cmpint (fixture->func->get_commodity_denom (NULL), ==, 0);
     fixture->split->acc = NULL;
-    g_assert_cmpint (fixture->func->get_commodity_denom (fixture->split), ==, 100000);
+    g_assert_cmpint (fixture->func->get_commodity_denom (fixture->split), ==, 1000000);
     fixture->split->acc = acc;
     g_assert_cmpint (fixture->func->get_commodity_denom (fixture->split), ==, denom);
 }
@@ -1696,7 +1696,7 @@ test_xaccSplitGetSharePrice (Fixture *fixture, gconstpointer pData)
     g_assert (gnc_numeric_equal (result, expected));
     g_assert_cmpint (check.hits, ==, 0);
 
-    /* Now invent some value/ammount pairs which cause numeric errors to test the limits */
+    /* Now invent some value/amount pairs which cause numeric errors to test the limits */
     split->amount = gnc_numeric_create (987654321, 10);
     split->value = gnc_numeric_create (3, 789304166);
     quotient = gnc_numeric_div (split->value, split->amount,

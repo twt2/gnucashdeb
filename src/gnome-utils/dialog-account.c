@@ -188,7 +188,7 @@ gnc_account_commodity_from_type (AccountWindow * aw, gboolean update)
     if (aw->type == ACCT_TYPE_TRADING)
         new_mode = DIAG_COMM_ALL;
     else if ((aw->type == ACCT_TYPE_STOCK) || (aw->type == ACCT_TYPE_MUTUAL))
-        new_mode = DIAG_COMM_NON_CURRENCY;
+        new_mode = DIAG_COMM_NON_CURRENCY_SELECT;
     else
         new_mode = DIAG_COMM_CURRENCY;
 
@@ -1308,6 +1308,7 @@ gnc_account_window_create(AccountWindow *aw)
     GtkWidget *label;
     GtkBuilder  *builder;
     GtkTreeSelection *selection;
+    const gchar *tt = _("This Account contains Transactions.\nChanging this option is not possible.");
 
     ENTER("aw %p, modal %d", aw, aw->modal);
     builder = gtk_builder_new();
@@ -1338,8 +1339,21 @@ gnc_account_window_create(AccountWindow *aw)
                          gnc_commodity_edit_get_string,
                          gnc_commodity_edit_new_select,
                          &aw->commodity_mode);
-    gtk_box_pack_start(GTK_BOX(box), aw->commodity_edit, TRUE, TRUE, 0);
-    gtk_widget_show (aw->commodity_edit);
+
+    // If the account has transactions, prevent changes by displaying a label and tooltip
+    if (xaccAccountCountSplits (aw_get_account (aw), FALSE) > 0)
+    {
+        const gchar *sec_name = gnc_commodity_get_printname (xaccAccountGetCommodity(aw_get_account (aw)));
+        GtkWidget *label = gtk_label_new (sec_name);
+        gtk_widget_set_tooltip_text (label, tt);
+        gtk_box_pack_start (GTK_BOX(box), label, FALSE, FALSE, 0);
+        gtk_widget_show (label);
+    }
+    else
+    {
+        gtk_box_pack_start(GTK_BOX(box), aw->commodity_edit, TRUE, TRUE, 0);
+        gtk_widget_show (aw->commodity_edit);
+    }
 
     label = GTK_WIDGET(gtk_builder_get_object (builder, "security_label"));
     gnc_general_select_make_mnemonic_target (GNC_GENERAL_SELECT(aw->commodity_edit), label);
@@ -1373,7 +1387,7 @@ gnc_account_window_create(AccountWindow *aw)
     gtk_label_set_mnemonic_widget (GTK_LABEL(label), amount);
 
     box = GTK_WIDGET(gtk_builder_get_object (builder, "opening_balance_date_box"));
-    date_edit = gnc_date_edit_new (gnc_time (NULL), 1, 1);
+    date_edit = gnc_date_edit_new (gnc_time (NULL), 0, 0);
     aw->opening_balance_date_edit = date_edit;
     gtk_box_pack_start(GTK_BOX(box), date_edit, TRUE, TRUE, 0);
     gtk_widget_show (date_edit);
@@ -1400,6 +1414,22 @@ gnc_account_window_create(AccountWindow *aw)
     /* This goes at the end so the select callback has good data. */
     aw->type_view = GTK_WIDGET(gtk_builder_get_object (builder, "type_view"));
     gnc_account_type_view_create (aw);
+
+    // If the account has transactions, prevent changes by displaying a label and tooltip
+    if (xaccAccountCountSplits (aw_get_account (aw), FALSE) > 0)
+    {
+        GNCAccountType atype = xaccAccountGetType (aw_get_account (aw));
+        GtkWidget *label = gtk_label_new (xaccAccountGetTypeStr (atype));
+        GtkWidget *vbox = GTK_WIDGET(gtk_builder_get_object (builder, "type_vbox"));
+        GtkWidget *parent_widget = gtk_widget_get_parent (GTK_WIDGET(aw->type_view));
+
+        g_object_ref (G_OBJECT(aw->type_view));
+        gtk_container_remove (GTK_CONTAINER(vbox), parent_widget);
+        gtk_widget_set_tooltip_text (label, tt);
+        gtk_box_pack_start (GTK_BOX(vbox), label, FALSE, FALSE, 0);
+        gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+        gtk_widget_show (label);
+    }
 
     gnc_restore_window_size (GNC_PREFS_GROUP, GTK_WINDOW(aw->dialog));
 

@@ -641,7 +641,7 @@
          (overwrite-ok? (and (gnc:report-template-is-custom/template-guid? custom-template-id) overwrite?))
          ;; Generate a serialized report-template with a random guid
          (saved-form (gnc:report-template-serialize-from-report report))
-         ;; Immediatly evaluate the serialized report template to
+         ;; Immediately evaluate the serialized report template to
          ;; - check if it's error free and can be deserialized
          ;; - load it into the runtime for immediate use by the user
          ;; (Bug #342206)
@@ -755,8 +755,8 @@
        (if report
 	   (begin 
 	     (set! html (gnc:report-render-html report #t))
-             (set! html (gnc:substring-replace-from-to html "jquery.min.js" "" 2 -1))
-             (set! html (gnc:substring-replace-from-to html "jquery.jqplot.js" "" 2 -1))
+             (set! html (gnc:substring-replace-from-to html (gnc:html-js-include "jqplot/jquery.min.js") "" 2 -1))
+             (set! html (gnc:substring-replace-from-to html (gnc:html-js-include "jqplot/jquery.jqplot.js") "" 2 -1))
            ))))
     (gnc-unset-busy-cursor '())
     html))

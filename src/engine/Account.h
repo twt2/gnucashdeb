@@ -767,7 +767,7 @@ gint gnc_account_get_current_depth (const Account *account);
 
 /** Return the number of levels of descendants accounts below the
  *  specified account.  The returned number does not include the
- *  specifed account itself.
+ *  specified account itself.
  *
  *  @param account The account to query.
  *
@@ -978,6 +978,15 @@ gboolean xaccAccountIsEquityType(GNCAccountType t);
  * internal data structure used by this object.
  */
 SplitList* xaccAccountGetSplitList (const Account *account);
+
+/** The xaccAccountCountSplits() routine returns the number of all
+ *    the splits in the account.
+ * @param acc the account for which to count the splits
+ *
+ * @param include_children also count splits in descendants (TRUE) or
+ *        for this account only (FALSE).
+ */
+gint64 xaccAccountCountSplits (const Account *acc, gboolean include_children);
 
 /** The xaccAccountMoveAllSplits() routine reassigns each of the splits
  *  in accfrom to accto. */
