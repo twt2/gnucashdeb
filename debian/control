@@ -3,7 +3,7 @@ Section: gnome
 Priority: optional
 Maintainer: Dmitry Smirnov <onlyjob@debian.org>
 Standards-Version: 4.0.0
-Build-Depends: debhelper (>= 9.20160403~), intltool, pkg-config, dh-autoreconf, dh-python,
+Build-Depends: debhelper (>= 10), intltool, pkg-config, dh-autoreconf, dh-python,
  guile-2.0-dev,
  imagemagick,
  libaqbanking-dev (>= 5.6.0beta),
