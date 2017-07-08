@@ -812,6 +812,10 @@ def xaccAccountGetTypeStr(*args):
   """xaccAccountGetTypeStr(GNCAccountType type) -> char const *"""
   return _gnucash_core_c.xaccAccountGetTypeStr(*args)
 
+def xaccAccountTypesCompatibleWith(*args):
+  """xaccAccountTypesCompatibleWith(GNCAccountType type) -> guint32"""
+  return _gnucash_core_c.xaccAccountTypesCompatibleWith(*args)
+
 def xaccParentAccountTypesCompatibleWith(*args):
   """xaccParentAccountTypesCompatibleWith(GNCAccountType type) -> guint32"""
   return _gnucash_core_c.xaccParentAccountTypesCompatibleWith(*args)
@@ -2370,7 +2374,9 @@ def gnc_commodity_namespace_get_type():
   return _gnucash_core_c.gnc_commodity_namespace_get_type()
 GNC_COMMODITY_TABLE = _gnucash_core_c.GNC_COMMODITY_TABLE
 GNC_COMMODITY_NS_LEGACY = _gnucash_core_c.GNC_COMMODITY_NS_LEGACY
+GNC_COMMODITY_NS_TEMPLATE = _gnucash_core_c.GNC_COMMODITY_NS_TEMPLATE
 GNC_COMMODITY_NS_ISO = _gnucash_core_c.GNC_COMMODITY_NS_ISO
+GNC_COMMODITY_NS_CURRENCY = _gnucash_core_c.GNC_COMMODITY_NS_CURRENCY
 GNC_COMMODITY_NS_NASDAQ = _gnucash_core_c.GNC_COMMODITY_NS_NASDAQ
 GNC_COMMODITY_NS_NYSE = _gnucash_core_c.GNC_COMMODITY_NS_NYSE
 GNC_COMMODITY_NS_EUREX = _gnucash_core_c.GNC_COMMODITY_NS_EUREX
@@ -2621,6 +2627,10 @@ def gnc_commodity_table_add_default_data(*args):
 def gnc_commodity_namespace_get_name(*args):
   """gnc_commodity_namespace_get_name(gnc_commodity_namespace const * ns) -> char const *"""
   return _gnucash_core_c.gnc_commodity_namespace_get_name(*args)
+
+def gnc_commodity_namespace_get_gui_name(*args):
+  """gnc_commodity_namespace_get_gui_name(gnc_commodity_namespace const * ns) -> char const *"""
+  return _gnucash_core_c.gnc_commodity_namespace_get_gui_name(*args)
 
 def gnc_commodity_namespace_get_commodity_list(*args):
   """gnc_commodity_namespace_get_commodity_list(gnc_commodity_namespace const * ns) -> GList *"""

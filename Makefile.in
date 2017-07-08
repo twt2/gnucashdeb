@@ -81,11 +81,11 @@ build_triplet = @build@
 host_triplet = @host@
 noinst_PROGRAMS = gnc-guile$(EXEEXT)
 subdir = .
-DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog \
+DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog COPYING \
 	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
-	$(srcdir)/config.h.in depcomp $(dist_doc_DATA) COPYING TODO \
-	compile config.guess config.sub install-sh missing ltmain.sh
+	$(srcdir)/config.h.in depcomp $(dist_doc_DATA) TODO compile \
+	config.guess config.sub install-sh missing ltmain.sh
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/macros/ax_pkg_swig.m4 \
 	$(top_srcdir)/macros/ax_python_devel.m4 \

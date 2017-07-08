@@ -15,7 +15,7 @@
 # Edit dist if not a Fedora release
 %define dist FC%{fc_rel}
 
-%define version 2.6.16
+%define version 2.6.17
 %define __libtoolize /bin/true
 
 %define libgnomeui_version 2.8.0

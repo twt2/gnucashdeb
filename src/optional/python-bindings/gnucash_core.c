@@ -8809,6 +8809,30 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_xaccAccountTypesCompatibleWith(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GNCAccountType arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  PyObject * obj0 = 0 ;
+  guint32 result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:xaccAccountTypesCompatibleWith",&obj0)) SWIG_fail;
+  ecode1 = SWIG_AsVal_int(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "xaccAccountTypesCompatibleWith" "', argument " "1"" of type '" "GNCAccountType""'");
+  } 
+  arg1 = (GNCAccountType)(val1);
+  result = xaccAccountTypesCompatibleWith(arg1);
+  {
+    resultobj = PyLong_FromUnsignedLong(result);
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_xaccParentAccountTypesCompatibleWith(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GNCAccountType arg1 ;
@@ -22150,6 +22174,28 @@ SWIGINTERN PyObject *_wrap_gnc_commodity_namespace_get_name(PyObject *SWIGUNUSED
   }
   arg1 = (gnc_commodity_namespace *)(argp1);
   result = (char *)gnc_commodity_namespace_get_name((gnc_commodity_namespace const *)arg1);
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gnc_commodity_namespace_get_gui_name(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  gnc_commodity_namespace *arg1 = (gnc_commodity_namespace *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:gnc_commodity_namespace_get_gui_name",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_gnc_commodity_namespace, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_commodity_namespace_get_gui_name" "', argument " "1"" of type '" "gnc_commodity_namespace const *""'"); 
+  }
+  arg1 = (gnc_commodity_namespace *)(argp1);
+  result = (char *)gnc_commodity_namespace_get_gui_name((gnc_commodity_namespace const *)arg1);
   resultobj = SWIG_FromCharPtr((const char *)result);
   return resultobj;
 fail:
@@ -41535,6 +41581,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"xaccAccountStringToType", _wrap_xaccAccountStringToType, METH_VARARGS, (char *)"xaccAccountStringToType(char const * str, GNCAccountType * type) -> gboolean"},
 	 { (char *)"xaccAccountStringToEnum", _wrap_xaccAccountStringToEnum, METH_VARARGS, (char *)"xaccAccountStringToEnum(char const * str) -> GNCAccountType"},
 	 { (char *)"xaccAccountGetTypeStr", _wrap_xaccAccountGetTypeStr, METH_VARARGS, (char *)"xaccAccountGetTypeStr(GNCAccountType type) -> char const *"},
+	 { (char *)"xaccAccountTypesCompatibleWith", _wrap_xaccAccountTypesCompatibleWith, METH_VARARGS, (char *)"xaccAccountTypesCompatibleWith(GNCAccountType type) -> guint32"},
 	 { (char *)"xaccParentAccountTypesCompatibleWith", _wrap_xaccParentAccountTypesCompatibleWith, METH_VARARGS, (char *)"xaccParentAccountTypesCompatibleWith(GNCAccountType type) -> guint32"},
 	 { (char *)"xaccAccountTypesCompatible", _wrap_xaccAccountTypesCompatible, METH_VARARGS, (char *)"xaccAccountTypesCompatible(GNCAccountType parent_type, GNCAccountType child_type) -> gboolean"},
 	 { (char *)"xaccAccountTypesValid", _wrap_xaccAccountTypesValid, METH_VARARGS, (char *)"xaccAccountTypesValid() -> guint32"},
@@ -41966,6 +42013,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gnc_commodity_table_remove", _wrap_gnc_commodity_table_remove, METH_VARARGS, (char *)"gnc_commodity_table_remove(gnc_commodity_table * table, gnc_commodity * comm)"},
 	 { (char *)"gnc_commodity_table_add_default_data", _wrap_gnc_commodity_table_add_default_data, METH_VARARGS, (char *)"gnc_commodity_table_add_default_data(gnc_commodity_table * table, QofBook * book) -> gboolean"},
 	 { (char *)"gnc_commodity_namespace_get_name", _wrap_gnc_commodity_namespace_get_name, METH_VARARGS, (char *)"gnc_commodity_namespace_get_name(gnc_commodity_namespace const * ns) -> char const *"},
+	 { (char *)"gnc_commodity_namespace_get_gui_name", _wrap_gnc_commodity_namespace_get_gui_name, METH_VARARGS, (char *)"gnc_commodity_namespace_get_gui_name(gnc_commodity_namespace const * ns) -> char const *"},
 	 { (char *)"gnc_commodity_namespace_get_commodity_list", _wrap_gnc_commodity_namespace_get_commodity_list, METH_VARARGS, (char *)"gnc_commodity_namespace_get_commodity_list(gnc_commodity_namespace const * ns) -> GList *"},
 	 { (char *)"gnc_commodity_table_has_namespace", _wrap_gnc_commodity_table_has_namespace, METH_VARARGS, (char *)"gnc_commodity_table_has_namespace(gnc_commodity_table const * table, char const * commodity_namespace) -> int"},
 	 { (char *)"gnc_commodity_table_get_namespaces", _wrap_gnc_commodity_table_get_namespaces, METH_VARARGS, (char *)"gnc_commodity_table_get_namespaces(gnc_commodity_table const * t) -> GList *"},
@@ -43893,7 +43941,9 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, "GNC_DENOM_AUTO",SWIG_From_int((int)(0)));
   SWIG_Python_SetConstant(d, "GNC_COMMODITY_TABLE",SWIG_FromCharPtr("gnc_commodity_table"));
   SWIG_Python_SetConstant(d, "GNC_COMMODITY_NS_LEGACY",SWIG_FromCharPtr("GNC_LEGACY_CURRENCIES"));
+  SWIG_Python_SetConstant(d, "GNC_COMMODITY_NS_TEMPLATE",SWIG_FromCharPtr("template"));
   SWIG_Python_SetConstant(d, "GNC_COMMODITY_NS_ISO",SWIG_FromCharPtr("ISO4217"));
+  SWIG_Python_SetConstant(d, "GNC_COMMODITY_NS_CURRENCY",SWIG_FromCharPtr("CURRENCY"));
   SWIG_Python_SetConstant(d, "GNC_COMMODITY_NS_NASDAQ",SWIG_FromCharPtr("NASDAQ"));
   SWIG_Python_SetConstant(d, "GNC_COMMODITY_NS_NYSE",SWIG_FromCharPtr("NYSE"));
   SWIG_Python_SetConstant(d, "GNC_COMMODITY_NS_EUREX",SWIG_FromCharPtr("EUREX"));
