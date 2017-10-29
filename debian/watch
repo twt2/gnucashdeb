@@ -1,3 +1,7 @@
-version=3
+version=4
 
-http://sf.net/gnucash/gnucash-(\d+\.\d+\.\d+)\.tar\.bz2
+## https://qa.debian.org/watch/sf.php/gnucash/
+
+opts="\
+uversionmangle=s{\-\d}{}\
+"  http://sf.net/gnucash/gnucash-(\d+\.\d+\.\d+)(?:-\d)?\.tar\.bz2
