@@ -769,7 +769,7 @@ gnucash (2.2.6-1) unstable; urgency=low
     needed (libltd3-dev, liborbit-dev, libungif4-dev), or which are
     indirect (libjpeg62-dev, libbonobo2-dev, libgnomevfs2-dev,
     libgnomevfs2-extra, imagemagick, libart-2.0-dev).
-  
+
   * src/import-export/aqbanking/gnc-ab-utils.c (gnc_ab_get_remote_name):
     Actually get remote name, not purpose.  Patch thanks to Micha Lenk.
     (Closes: #492799).
@@ -785,7 +785,7 @@ gnucash (2.2.4-2) unstable; urgency=low
   * debian/README.debian: Drop apology for HBCI non-support.
 
   * debian/rules (configure): Don't print out config.log on failure anymore.
-  
+
  -- Thomas Bushnell, BSG <tb@debian.org>  Sat, 19 Jul 2008 12:07:31 -0700
 
 gnucash (2.2.4-1) unstable; urgency=low
@@ -796,14 +796,14 @@ gnucash (2.2.4-1) unstable; urgency=low
 
 gnucash (2.2.3-2) unstable; urgency=low
 
-  * debian/control (Build-Depends): Add libofx-dev and ofx back, now that the 
+  * debian/control (Build-Depends): Add libofx-dev and ofx back, now that the
   license concerns are settled.
   (Build-Conflicts): Don't conflict with libofx-dev.
   (gnucash/Description, gnucash-common/Description): Add back that
   we support OFX.
   * debian/rules (configure): Add --enable-ofx to configure invocation.
   (Closes: #462559)
-  
+
   * debian/README.debian: Drop OFX explanation.
 
  -- Thomas Bushnell, BSG <tb@debian.org>  Mon, 04 Feb 2008 19:53:04 -0500
@@ -811,7 +811,7 @@ gnucash (2.2.3-2) unstable; urgency=low
 gnucash (2.2.3-1) unstable; urgency=low
 
   * New upstream release.
-  
+
   * debian/control (Build-Depends): Remove libofx-dev and ofx, in anticipation
     of the likely removal of libofx from Debian, at least for the short term.
     See http://bugs.debian.org/460407 for details.
@@ -819,7 +819,7 @@ gnucash (2.2.3-1) unstable; urgency=low
     (gnucash/Description, gnucash-common/Description): Remove mention
     of importation of OFX files.
   * debian/rules (configure): Remove --enable-ofx from configure invocation.
-  
+
   * debian/README.debian: Update HBCI information; add OFX information.
 
  -- Thomas Bushnell, BSG <tb@debian.org>  Sat, 12 Jan 2008 13:34:58 -0500
@@ -838,13 +838,13 @@ gnucash (2.2.2-1) unstable; urgency=low
 
   * New upstream release.  (Closes: #387031, #413764, #182921, #180659,
     #369513, #379338).
-  
+
   * debian/control (Build-Depends): Switch from libgoffice-1-dev to
     libgoffice-0-dev.  (Closes: #450464).
-  
+
   * debian/control (gnucash): Recommend gnucash-docs instead of merely
     Suggesting. (Closes: #451894).
-  
+
   * debian/gnucash.menu (icon): Filename is now gnucash-icon-16x16.png.
   * debian/gnucash.desktop (Icon): Likewise.  (Closes: #444950).
 
@@ -852,9 +852,9 @@ gnucash (2.2.2-1) unstable; urgency=low
 
 gnucash (2.2.1-1) unstable; urgency=medium
 
-  * New upstream release.  (Closes: #441363, #441289, #441309, #441129, 
+  * New upstream release.  (Closes: #441363, #441289, #441309, #441129,
     #441248, #435578, #435892)
-  * debian/control (Build-Depends): Remove g-wrap and libgwrap-runtime-dev.  
+  * debian/control (Build-Depends): Remove g-wrap and libgwrap-runtime-dev.
     Switch back to guile-1.6-dev.  Add swig.
     (Build-Conflicts): Add guile-1.8-dev and guile-1.8.
     (gnucash Depends): Remove guile-g-wrap.
@@ -878,10 +878,10 @@ gnucash (2.0.5-1.1) unstable; urgency=low
   * Non-maintainer upload.
   * Please remove the Build-Depends on libdb3-dev (Closes: #289668)
   * Remove duplicate libgsf-gnome-1-dev from Build-Depends
-  * Replace deprecated ${Source-Version} with ${source:Version} 
+  * Replace deprecated ${Source-Version} with ${source:Version}
 
  -- Neil Williams <codehelp@debian.org>  Tue, 17 Jul 2007 14:02:44 +0100
-	
+
 gnucash (2.0.5-1) unstable; urgency=low
 
   * New upstream release. (Closes: #194545, #242441, #386923, #368139,
@@ -894,7 +894,7 @@ gnucash (2.0.2-3) unstable; urgency=medium
   * Acknowledge NMU (change was to debian/control).  (Closes: #403351)
   * debian/control (Build-Depends): Actually drop python dependency
     entirely.
-  
+
   * Correct bogus assumptions that GType fits in an int.  (Closes: #406378)
     Many thanks to Steve Langasek <vorlon@debian.org> for the patch.
   * src/gnome/gnc-split-reg.h (gnc_split_reg_get_type): Return type is GType.
@@ -902,14 +902,14 @@ gnucash (2.0.2-3) unstable; urgency=medium
     Likewise.
   * src/gnome-search/search-account.h (gnc_search_account_get_type): Likewise.
   * src/gnome-search/search-boolean.h (gnc_search_boolean_get_type): Likewise.
-  * src/gnome-search/search-date.h (gnc_search_date_get_type): Likewise. 
+  * src/gnome-search/search-date.h (gnc_search_date_get_type): Likewise.
   * src/gnome-search/search-double.h (gnc_search_double_get_type): Likewise.
   * src/gnome-search/search-int64.h (gnc_search_int64_get_type): Likewise.
   * src/gnome-search/search-numeric.h (gnc_search_numeric_get_type): Likewise
   * src/gnome-search/search-reconciled.h (gnc_search_reconciled_get_type):
     Likewise.
   * src/gnome-search/search-string.h (gnc_search_string_get_type): Likewise.
-  * src/business/business-gnome/search-owner.h (gnc_search_owner_get_type): 
+  * src/business/business-gnome/search-owner.h (gnc_search_owner_get_type):
     Return type is GType.
   * src/gnome-search/gnc-general-search.c (gnc_general_search_get_type):
     Return type and GENERAL_SEARCH_TYPE are GType.
@@ -953,28 +953,28 @@ gnucash (2.0.2-1) unstable; urgency=high
   * Urgency high because this includes translation updates that need to
     get into etch.
   * New upstream release.
-    
+
  -- Thomas Bushnell, BSG <tb@debian.org>  Sun,  8 Oct 2006 17:31:50 -0700
 
 gnucash (2.0.1-4) unstable; urgency=low
 
   * debian/control (Standards-Version): Update to 3.7.2.
-  
+
   * debian/changelog (1.6.1-5): Repair John Goerzen's email address; it was
     mangled.
-  
+
   * debian/copyright: Update FSF address to Franklin St.
-  
+
   * debian/control (gnucash/Depends): Add ${misc:Depends} to pick up
     gconf2 dependency from dh_gconf.
-  
+
   * debian/postinst: Don't bother with ldconfig.
-  
+
   * debian/control (Build-Depends): Add imagemagick.
   * debian/rules (install): Convert PNG icon to XPM icon, and remove PNG
     icon file.
   * debian/gnucash.menu: Reference new XPM filename in place of old PNG one.
-  
+
  -- Thomas Bushnell, BSG <tb@debian.org>  Mon,  2 Oct 2006 22:44:23 -0700
 
 gnucash (2.0.1-3) unstable; urgency=low
@@ -990,13 +990,13 @@ gnucash (2.0.1-2) unstable; urgency=low
 
   * debian/control (Build-Depends): Require at least version 1.9.6-3.1 of
     g-wrap.  (Closes: #382127).
-    
+
   * debian/control (gnucash): Depend on libcrypt-ssleay-perl.  (Closes:
     #387061).
-  
+
   * debian/README.debian: Provide more accurate information about why HBCI
     cannot be supported at present.  (Closes: #384627)
-  
+
   * debian/control (Build-Depends): Add libgoffice-1-dev and
     libgsf-gnome-1-dev.  (Closes: #382691)
 
@@ -1024,10 +1024,10 @@ gnucash (1.9.8-2) unstable; urgency=low
 
 gnucash (1.9.8-1) unstable; urgency=high
 
-  * High urgency because this fixes a critical bug.  
-  
+  * High urgency because this fixes a critical bug.
+
   * New upstream release.  (Closes: #370502).
-    
+
   * debian/gnucash.install: Add /usr/share/applications/gnucash.desktop.
   * debian/rules (binary-indep): After dh_install run, remove
     gnucash.desktop from gnucash-common so that it is only in gnucash.
@@ -1037,7 +1037,7 @@ gnucash (1.9.8-1) unstable; urgency=high
 
 gnucash (1.9.7-1) unstable; urgency=low
 
-  * New upstream release.  (Closes: #202614, #283092, #286119, #368140, 
+  * New upstream release.  (Closes: #202614, #283092, #286119, #368140,
     #196169, #236697, #362552, #295566, #367800)
 
  -- Thomas Bushnell, BSG <tb@debian.org>  Mon,  5 Jun 2006 22:06:16 -0700
@@ -1069,7 +1069,7 @@ gnucash (1.9.5-4) experimental; urgency=low
   * debian/control (Build-Depends): Add g-wrap.  (Closes: #367060)
 
   * debian/control (Build-Depends): Add ofx, to get ofxdump.
-  
+
  -- Thomas Bushnell, BSG <tb@debian.org>  Sat, 13 May 2006 09:19:01 -0700
 
 gnucash (1.9.5-3) experimental; urgency=low
@@ -1090,18 +1090,18 @@ gnucash (1.9.5-2) experimental; urgency=low
 gnucash (1.9.5-1) experimental; urgency=low
 
   * New upstream release.
-  
+
   * debian/control (gnucash): Don't depend on libgconf11.  (Closes: #360361)
-  
+
   * debian/control (gnucash): Depend on g-wrap and guile-g-wrap.  (Closes:
     #362529)
-    
+
  -- Thomas Bushnell, BSG <tb@debian.org>  Tue, 18 Apr 2006 11:40:28 -0700
 
 gnucash (1.9.3-1) experimental; urgency=low
 
   * New upstream release.
-  
+
   * debian/control (Build-Depends): Require x11-common in place of
     xfree86-common. (Closes: #349184)
 
@@ -1135,7 +1135,7 @@ gnucash (1.9.1-1) experimental; urgency=low
   * debian/gnucash.menu: Likewise.
   * debian/README.Debian: Bring up-to-date, and include upstream's
     warning.
-  
+
  -- Thomas Bushnell, BSG <tb@debian.org>  Wed, 15 Feb 2006 20:50:27 -0800
 
 gnucash (1.8.12-8) unstable; urgency=low
@@ -1198,15 +1198,15 @@ gnucash (1.8.12-1) unstable; urgency=low
 
   * New upstream release.  (Closes: #299235) All local changes we made to
     1.8.10 are in the upstream source now.
-  
+
   * debian/control (Build-Depends): Require at least version 1:0.8.0-8 of
     libofx-dev to get the new C++ API.
-  
+
  -- Thomas Bushnell, BSG <tb@debian.org>  Thu,  3 Nov 2005 09:32:10 -0800
 
 gnucash (1.8.10-19) unstable; urgency=low
 
-  * debian/control: Require at least version 1.4.2-22 of libgnome-dev.  
+  * debian/control: Require at least version 1.4.2-22 of libgnome-dev.
     Require at least version 0.40.3-15 of libguppi-dev.  Require at least
     version 0.24-3 of libgal-dev.
 
@@ -1218,7 +1218,7 @@ gnucash (1.8.10-18) unstable; urgency=low
     Debian gnucash.desktop, and put it in the right place.
   * debian/gnucash.desktop: New file.  Thanks to Magnus Therning.
     (Closes: #291987)
-  
+
  -- Thomas Bushnell, BSG <tb@debian.org>  Wed, 31 Aug 2005 21:10:07 -0700
 
 gnucash (1.8.10-17) unstable; urgency=low
@@ -1240,7 +1240,7 @@ gnucash (1.8.10-15) unstable; urgency=low
   * src/engine/date.c (printDate): Use mktime and localtime_r to fill in
     the complete tm_str structure, since there are locales that expect to
     be able to print the day of the week in a date string.  (Closes:
-    #312109, 296693)  If the date didn't fit in the provided string, then 
+    #312109, 296693)  If the date didn't fit in the provided string, then
     print it as an ISO date.
 
  -- Thomas Bushnell, BSG <tb@debian.org>  Sun, 28 Aug 2005 13:27:27 -0700
@@ -1260,7 +1260,7 @@ gnucash (1.8.10-13) unstable; urgency=low
 gnucash (1.8.10-12) unstable; urgency=high
 
   * High urgency because it fixes an RC bug.
-  
+
   * debian/control (Build-Depends): Require version 1.0.9-7 or later of
     libgconf-dev to be sure we have an important bugfix in place.
     (gnucash Depends): Require version 1.0.9-7 or later of libgconf11 for
@@ -1273,21 +1273,21 @@ gnucash (1.8.10-11) unstable; urgency=medium
 
   * debian/control: Require version 1.1.10 of libgtkhtml-dev or greater.
     (Closes: #120933, #190118).
-    
+
   * debian/rules (build): Don't do make check; it slows down all the
     buildds.
-  
+
   * debian/README.debian: Update to match current reality; especially add
     a notice about gconf locking snafu.
-  
+
  -- Thomas Bushnell, BSG <tb@debian.org>  Tue,  5 Apr 2005 14:38:46 -0700
 
 gnucash (1.8.10-10) unstable; urgency=medium
-    
-  * medium urgency because the bad Depends is causing grief for many users. 
-  
+
+  * medium urgency because the bad Depends is causing grief for many users.
+
   * control: Set Priority to optional.
-  
+
   * control (gnucash Depends): Partially revert last change; don't depend
     on dfontmgr or lmodern; the former is a GUI and the latter is
     essentially all of TeX.  gnucash runs fine without both.
@@ -1323,9 +1323,9 @@ gnucash (1.8.10-6) unstable; urgency=low
 
   * Rerun libtoolize (--force --copy, version 1.4), automake, autoconf.
   * aclocal.m4: Hand-edit in the new libtool macro for aclocal.m4.
-    
+
   * debian/control: No longer Build-Depends on libtool.
-  
+
  -- Thomas Bushnell, BSG <tb@debian.org>  Wed, 16 Feb 2005 00:41:44 -0800
 
 gnucash (1.8.10-5) unstable; urgency=low
@@ -1364,7 +1364,7 @@ gnucash (1.8.10-2) unstable; urgency=low
 gnucash (1.8.10-1) unstable; urgency=low
 
   * New upstream release.  (Closes: #285572, #224455.)
-    
+
   * debian/rules: Don't use --enable-hbci; omit hbci-specific bits.
   * debian/control: Drop gnucash-hbci.
     (This does not signify the abandonment of HBCI intentions for gnucash,
@@ -1373,10 +1373,10 @@ gnucash (1.8.10-1) unstable; urgency=low
   * debian/control: Require libofx1-dev, not libofx-dev (which is
     deprecated).  Don't require libopenhbci-dev, libchipcard20-dev,
     libopenhbci-plugin-ddvcard.
-    
+
   * debian/rules (dh_shlibdeps): Program does not take multiple -l
     options; use a colon separated list.
-  
+
  -- Thomas Bushnell, BSG <tb@debian.org>  Mon, 10 Jan 2005 12:51:22 -0800
 
 gnucash (1.8.9-4) unstable; urgency=low
@@ -1653,7 +1653,7 @@ gnucash (1.7.7-1) unstable; urgency=low
 gnucash (1.7.6+cvs.2002.12.31-1) unstable; urgency=low
 
   * Updated CVS
-  * DATETIME -> TIMESTAMP in postgres code. Closes: #174711 
+  * DATETIME -> TIMESTAMP in postgres code. Closes: #174711
   * Compile in src/import-export/ofx/test, which broke on some arches, may work
     now.
 
@@ -1819,7 +1819,7 @@ gnucash (1.6.4-2) unstable; urgency=low
      add 'en_CA ISO-8859-1' to /etc/locale.gen
      A new README.Debian explains this in detail."
   * Use --sysconfdir=/etc in debian/rules (Treacy)
-  * Calls ldconfig in postinst/postrm 
+  * Calls ldconfig in postinst/postrm
 
  -- John Goerzen <jgoerzen@complete.org>  Wed, 31 Oct 2001 11:22:04 -0500
 
@@ -2070,7 +2070,7 @@ gnucash (1.2.3.cvs.19991026-1) unstable; urgency=low
 
 gnucash (1.2.3-3) unstable; urgency=low
 
-  * Add patch for powerpc supplied by 
+  * Add patch for powerpc supplied by
     Konstantinos Margaritis <markos@debian.org> (Fixes #39050).
   * Add improved documention in description as suggested by
     reiter@netspace.net.au (Fixes #45229).
@@ -2095,7 +2095,7 @@ gnucash (1.2.1-1) unstable; urgency=low
 
   * New upstream version.
   * Add patch provided by Tomas Pospisek <tpo@spin.ch> to add a
-    menu entry for gnucash. 
+    menu entry for gnucash.
 
  -- Tyson Dowd <trd@cs.mu.oz.au>  Sat, 17 Jul 1999 17:29:48 -0700
 
