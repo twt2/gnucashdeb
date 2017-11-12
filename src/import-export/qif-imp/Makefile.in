@@ -582,7 +582,8 @@ EXTRA_DIST = \
   ${gncscm_DATA} \
   ${gtkbuilder_DATA} \
   file-format.txt \
-  $(ui_DATA)
+  $(ui_DATA) \
+  CMakeLists.txt
 
 CLEANFILES = .scm-links ${gncscmmodcache_DATA} ${gncscmcache_DATA}
 @GNUCASH_SEPARATE_BUILDDIR_TRUE@SCM_FILE_LINKS = \

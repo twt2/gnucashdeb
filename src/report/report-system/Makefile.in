@@ -618,7 +618,13 @@ gncscmmod_DATA = \
 @GNC_HAVE_GUILE_2_TRUE@gncscmcachedir = ${pkglibdir}/scm/ccache/@GUILE_EFFECTIVE_VERSION@
 @GNC_HAVE_GUILE_2_TRUE@gncscmcache_DATA = $(gncscm_DATA:.scm=.go)
 noinst_DATA = .scm-links
-EXTRA_DIST = report-system.i ${gncscmmod_DATA} ${gncscm_DATA} ${gncmodscm_DATA}
+EXTRA_DIST = \
+	report-system.i \
+	${gncscmmod_DATA} \
+	${gncscm_DATA} \
+	${gncmodscm_DATA} \
+	CMakeLists.txt
+
 CLEANFILES = \
 	report \
 	.scm-links \

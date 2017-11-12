@@ -1738,7 +1738,7 @@
         PWARN("failed to insert %s into commodity table", fullname);
       }
     }
-    gnc_commodity_set_default_symbol(c, "﷼﷼");
+    gnc_commodity_set_default_symbol(c, "﷼");
   }
 
   {

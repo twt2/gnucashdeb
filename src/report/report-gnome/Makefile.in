@@ -577,7 +577,8 @@ EXTRA_DIST = \
   report-gnome.i \
   ${gtkbuilder_DATA} \
   ${gncscmmod_DATA} \
-  ${ui_DATA}
+  ${ui_DATA} \
+  CMakeLists.txt
 
 
 #Only needed when srcdir and builddir are different

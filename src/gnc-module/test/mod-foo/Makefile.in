@@ -464,7 +464,8 @@ libgncmodfoo_la_LIBADD = \
 
 EXTRA_DIST = \
   foo.i \
-  gnucash/foo.scm
+  gnucash/foo.scm \
+  CMakeLists.txt
 
 BUILT_SOURCES = swig-foo.c
 MAINTAINERCLEANFILES = swig-foo.c

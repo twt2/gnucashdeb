@@ -592,9 +592,10 @@ CLEANFILES = $(BUILT_SOURCES) ${config_DATA} ${PLATFORM_FILES} \
 # if you change gncoverridedir, make sure you change ./overrides/Makefile.am too.
 @PLATFORM_WIN32_FALSE@gncoverridesdir = ${GNC_LIBEXECDIR}/overrides
 EXTRA_DIST = \
-    generate-gnc-script \
+	generate-gnc-script \
 	gnucash-valgrind.in \
-	environment.in
+	environment.in \
+	CMakeLists.txt
 
 all: all-recursive
 

@@ -413,7 +413,8 @@ account_DATA = \
 
 EXTRA_DIST = \
   README.bas_2012 \
-  ${account_DATA}
+  ${account_DATA} \
+  CMakeLists.txt
 
 all: all-am
 

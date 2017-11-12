@@ -419,7 +419,8 @@ gncscm_DATA = \
 @GNC_HAVE_GUILE_2_TRUE@gncscmcache_DATA = $(gncscm_DATA:.scm=.go)
 noinst_DATA = .scm-links
 EXTRA_DIST = \
-  ${gncscm_DATA}
+  ${gncscm_DATA} \
+  CMakeLists.txt
 
 CLEANFILES = .scm-links ${gncscmcache_DATA}
 DISTCLEANFILES = ${SCM_FILE_LINKS}

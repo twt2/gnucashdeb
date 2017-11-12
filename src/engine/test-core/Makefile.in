@@ -464,6 +464,7 @@ AM_CPPFLAGS = \
   ${GLIB_CFLAGS} \
   ${GUILE_CFLAGS}
 
+EXTRA_DIST = CMakeLists.txt
 all: all-am
 
 .SUFFIXES:

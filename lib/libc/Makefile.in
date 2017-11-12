@@ -453,7 +453,8 @@ EXTRA_libc_missing_la_SOURCES = \
   localtime_r.c \
   setenv.c \
   strfmon.c \
-  strptime.c
+  strptime.c \
+  CMakeLists.txt
 
 libc_missing_la_LIBADD = $(LTLIBOBJS)
 @OS_WIN32_TRUE@AM_CPPFLAGS = -DOS_WIN32

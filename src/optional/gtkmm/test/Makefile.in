@@ -650,7 +650,7 @@ GTESTER_REPORT = gtester-report
 #GTESTER_REPORT = $(top_builddir)/glib/gtester-report	# for the GLIB package
 
 # initialize variables for unconditional += appending
-EXTRA_DIST = 
+EXTRA_DIST = CMakeLists.txt
 TEST_PROGS = 
 
 #You will only need one of these: It points to the module directory

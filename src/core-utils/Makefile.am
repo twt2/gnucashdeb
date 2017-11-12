@@ -130,7 +130,13 @@ endif
 
 noinst_DATA = .scm-links
 BUILT_SOURCES = gncla-dir.h gnc-version.h
-EXTRA_DIST = $(gncscmmod_DATA) core-utils.i gncla-dir.h.in gnc-vcs-info.h
+EXTRA_DIST = \
+  $(gncscmmod_DATA) \
+  core-utils.i \
+  gncla-dir.h.in \
+  gnc-vcs-info.h \
+  CMakeLists.txt
+
 clean-local:
 	rm -rf gnucash
 
@@ -170,6 +176,7 @@ _gnc-version.h: gnc-vcs-info.h Makefile
 		echo "#define GNUCASH_SCM \"$$scm_info\"" >> _gnc-version.h ; \
 	fi
 	@echo "#define GNUCASH_BUILD_DATE \"`date +%Y-%m-%d`\"" >> _gnc-version.h
+	@echo "#define GNUCASH_BUILD_YEAR \"`date +%Y`\"" >> _gnc-version.h
 	@echo "#include \"gnc-vcs-info.h\""          >> _gnc-version.h
 	@echo "#endif"                               >> _gnc-version.h
 

@@ -438,6 +438,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = \
 	C \
+	ca \
 	cs \
 	da \
 	de_AT \
@@ -472,6 +473,7 @@ SUBDIRS = \
 	zh_HK \
 	zh_TW
 
+EXTRA_DIST = CMakeLists.txt
 all: all-recursive
 
 .SUFFIXES:

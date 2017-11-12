@@ -438,7 +438,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 @GNUCASH_ENABLE_GUI_FALSE@SUBDIRS = libc
 @GNUCASH_ENABLE_GUI_TRUE@SUBDIRS = libc stf
-EXTRA_DIST = README
+EXTRA_DIST = README CMakeLists.txt
 all: all-recursive
 
 .SUFFIXES:

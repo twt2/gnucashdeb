@@ -660,9 +660,11 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 GTESTER = gtester 			# for non-GLIB packages
 GTESTER_REPORT = gtester-report
-EXTRA_DIST = \
-  sample1.csv
+#GTESTER = $(top_builddir)/glib/gtester			# for the GLIB package
+#GTESTER_REPORT = $(top_builddir)/glib/gtester-report	# for the GLIB package
 
+# initialize variables for unconditional += appending
+EXTRA_DIST = sample1.csv CMakeLists.txt
 TEST_PROGS = 
 
 #You will only need one of these: It points to the module directory

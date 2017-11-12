@@ -439,6 +439,7 @@ top_srcdir = @top_srcdir@
 SUBDIRS = \
   valgrind
 
+EXTRA_DIST = CMakeLists.txt
 all: all-recursive
 
 .SUFFIXES:

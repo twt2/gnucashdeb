@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-02 11:51-0700\n"
+"POT-Creation-Date: 2017-09-26 12:03-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -776,7 +776,7 @@ msgstr ""
 msgid "Credit"
 msgstr ""
 
-#: ../src/app-utils/option-util.c:1685
+#: ../src/app-utils/option-util.c:1656
 #, c-format
 msgid ""
 "There is a problem with option %s:%s.\n"
@@ -1121,7 +1121,7 @@ msgstr ""
 #. 2nd %s is the scm type (svn/svk/git/bzr);
 #. 3rd %s is the scm revision number;
 #. 4th %s is the build date
-#: ../src/bin/gnucash-bin.c:452 ../src/gnome-utils/gnc-main-window.c:4385
+#: ../src/bin/gnucash-bin.c:452 ../src/gnome-utils/gnc-main-window.c:4386
 #, c-format
 msgid ""
 "%s\n"
@@ -1136,7 +1136,7 @@ msgstr ""
 #. Translators: 1st %s is a fixed message, which is translated independently;
 #. 2nd %s is the scm (svn/svk/git/bzr) revision number;
 #. 3rd %s is the build date
-#: ../src/bin/gnucash-bin.c:463 ../src/gnome-utils/gnc-main-window.c:4392
+#: ../src/bin/gnucash-bin.c:463 ../src/gnome-utils/gnc-main-window.c:4393
 #, c-format
 msgid ""
 "%s\n"
@@ -1189,12 +1189,12 @@ msgstr ""
 #: ../src/gnome-utils/gtkbuilder/gnc-frequency.glade.h:4
 #: ../src/import-export/csv-imp/gnc-csv-model.c:70
 #: ../src/import-export/import-pending-matches.c:192
-#: ../src/report/standard-reports/transaction.scm:685
-#: ../src/report/standard-reports/transaction.scm:722
-#: ../src/report/standard-reports/transaction.scm:777
-#: ../src/report/standard-reports/transaction.scm:839
-#: ../src/report/standard-reports/transaction.scm:987
-#: ../src/report/standard-reports/transaction.scm:997
+#: ../src/report/standard-reports/transaction.scm:690
+#: ../src/report/standard-reports/transaction.scm:727
+#: ../src/report/standard-reports/transaction.scm:782
+#: ../src/report/standard-reports/transaction.scm:844
+#: ../src/report/standard-reports/transaction.scm:992
+#: ../src/report/standard-reports/transaction.scm:1002
 msgid "None"
 msgstr ""
 
@@ -1871,7 +1871,7 @@ msgstr ""
 #: ../src/report/standard-reports/transaction.scm:384
 #: ../src/report/standard-reports/transaction.scm:385
 #: ../src/report/standard-reports/transaction.scm:442
-#: ../src/report/standard-reports/transaction.scm:946
+#: ../src/report/standard-reports/transaction.scm:951
 msgid "Num"
 msgstr ""
 
@@ -1923,9 +1923,9 @@ msgstr ""
 #: ../src/report/standard-reports/register.scm:851
 #: ../src/report/standard-reports/transaction.scm:398
 #: ../src/report/standard-reports/transaction.scm:458
-#: ../src/report/standard-reports/transaction.scm:758
-#: ../src/report/standard-reports/transaction.scm:813
-#: ../src/report/standard-reports/transaction.scm:983
+#: ../src/report/standard-reports/transaction.scm:763
+#: ../src/report/standard-reports/transaction.scm:818
+#: ../src/report/standard-reports/transaction.scm:988
 msgid "Amount"
 msgstr ""
 
@@ -3211,9 +3211,9 @@ msgstr ""
 #: ../src/report/standard-reports/sx-summary.scm:447
 #: ../src/report/standard-reports/transaction.scm:388
 #: ../src/report/standard-reports/transaction.scm:444
-#: ../src/report/standard-reports/transaction.scm:762
-#: ../src/report/standard-reports/transaction.scm:817
-#: ../src/report/standard-reports/transaction.scm:947
+#: ../src/report/standard-reports/transaction.scm:767
+#: ../src/report/standard-reports/transaction.scm:822
+#: ../src/report/standard-reports/transaction.scm:952
 msgid "Description"
 msgstr ""
 
@@ -3302,8 +3302,8 @@ msgstr ""
 #: ../src/report/standard-reports/sx-summary.scm:488
 #: ../src/report/standard-reports/transaction.scm:420
 #: ../src/report/standard-reports/transaction.scm:447
-#: ../src/report/standard-reports/transaction.scm:948
-#: ../src/report/standard-reports/transaction.scm:978
+#: ../src/report/standard-reports/transaction.scm:953
+#: ../src/report/standard-reports/transaction.scm:983
 msgid "Notes"
 msgstr ""
 
@@ -3614,9 +3614,9 @@ msgstr ""
 #: ../src/report/standard-reports/register.scm:812
 #: ../src/report/standard-reports/transaction.scm:380
 #: ../src/report/standard-reports/transaction.scm:427
-#: ../src/report/standard-reports/transaction.scm:734
-#: ../src/report/standard-reports/transaction.scm:789
-#: ../src/report/standard-reports/transaction.scm:942
+#: ../src/report/standard-reports/transaction.scm:739
+#: ../src/report/standard-reports/transaction.scm:794
+#: ../src/report/standard-reports/transaction.scm:947
 msgid "Date"
 msgstr ""
 
@@ -3633,7 +3633,7 @@ msgstr ""
 #: ../src/gnome-utils/gnc-tree-view-split-reg.c:2865
 #: ../src/gnome-utils/gtkbuilder/gnc-date-format.glade.h:6
 #: ../src/import-export/csv-exp/csv-transactions-export.c:418
-#: ../src/report/standard-reports/transaction.scm:821
+#: ../src/report/standard-reports/transaction.scm:826
 msgid "Number"
 msgstr ""
 
@@ -3682,9 +3682,9 @@ msgstr ""
 #: ../src/report/standard-reports/transaction.scm:408
 #: ../src/report/standard-reports/transaction.scm:447
 #: ../src/report/standard-reports/transaction.scm:448
-#: ../src/report/standard-reports/transaction.scm:774
-#: ../src/report/standard-reports/transaction.scm:825
-#: ../src/report/standard-reports/transaction.scm:972
+#: ../src/report/standard-reports/transaction.scm:779
+#: ../src/report/standard-reports/transaction.scm:830
+#: ../src/report/standard-reports/transaction.scm:977
 msgid "Memo"
 msgstr ""
 
@@ -4328,12 +4328,12 @@ msgid " + "
 msgstr ""
 
 #: ../src/engine/Recurrence.c:598
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:33
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:32
 #: ../src/gnome/gtkbuilder/dialog-sx.glade.h:41
 #: ../src/gnome-utils/gtkbuilder/gnc-frequency.glade.h:20
 #: ../src/report/standard-reports/account-piecharts.scm:125
 #: ../src/report/standard-reports/category-barchart.scm:132
-#: ../src/report/standard-reports/transaction.scm:840
+#: ../src/report/standard-reports/transaction.scm:845
 msgid "Weekly"
 msgstr ""
 
@@ -4382,7 +4382,7 @@ msgid "%s %s"
 msgstr ""
 
 #: ../src/engine/Recurrence.c:687
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:31
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:30
 msgid "Semi-monthly"
 msgstr ""
 
@@ -4406,18 +4406,18 @@ msgstr ""
 #. g_warning("nth weekday not handled");
 #. g_string_printf(buf, "@fixme: nth weekday not handled");
 #: ../src/engine/Recurrence.c:736 ../src/engine/Recurrence.c:750
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:30
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:29
 #: ../src/gnome/gtkbuilder/dialog-sx.glade.h:43
 #: ../src/gnome-utils/gtkbuilder/gnc-frequency.glade.h:30
 #: ../src/report/standard-reports/account-piecharts.scm:122
 #: ../src/report/standard-reports/category-barchart.scm:129
-#: ../src/report/standard-reports/transaction.scm:841
+#: ../src/report/standard-reports/transaction.scm:846
 msgid "Monthly"
 msgstr ""
 
 #: ../src/engine/Recurrence.c:762 ../src/gnome/gtkbuilder/dialog-sx.glade.h:45
 #: ../src/report/standard-reports/account-piecharts.scm:119
-#: ../src/report/standard-reports/transaction.scm:843
+#: ../src/report/standard-reports/transaction.scm:848
 msgid "Yearly"
 msgstr ""
 
@@ -4730,7 +4730,7 @@ msgstr ""
 #: ../src/report/standard-reports/register.scm:440
 #: ../src/report/standard-reports/transaction.scm:394
 #: ../src/report/standard-reports/transaction.scm:454
-#: ../src/report/standard-reports/transaction.scm:956
+#: ../src/report/standard-reports/transaction.scm:961
 msgid "Shares"
 msgstr ""
 
@@ -4840,7 +4840,7 @@ msgstr ""
 #: ../src/gnome-search/dialog-search.c:893
 #: ../src/gnome-search/dialog-search.c:899
 #: ../src/import-export/csv-exp/csv-transactions-export.c:422
-#: ../src/report/standard-reports/transaction.scm:766
+#: ../src/report/standard-reports/transaction.scm:771
 msgid "Number/Action"
 msgstr ""
 
@@ -4855,7 +4855,7 @@ msgstr ""
 #: ../src/gnome-search/dialog-search.c:895
 #: ../src/gnome-search/dialog-search.c:901
 #: ../src/import-export/csv-exp/csv-transactions-export.c:418
-#: ../src/report/standard-reports/transaction.scm:770
+#: ../src/report/standard-reports/transaction.scm:775
 msgid "Transaction Number"
 msgstr ""
 
@@ -6221,7 +6221,7 @@ msgstr ""
 
 #: ../src/gnome/gnc-plugin-page-register2.c:482
 #: ../src/gnome/gnc-plugin-page-register.c:487
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:24
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:23
 msgid "Schedule"
 msgstr ""
 
@@ -8046,7 +8046,7 @@ msgid ""
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/assistant-loan.glade.h:16
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:17
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:16
 #: ../src/gnome/gtkbuilder/dialog-tax-info.glade.h:4
 msgid "Type:"
 msgstr ""
@@ -8418,106 +8418,102 @@ msgid "Interest rate"
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:6
-msgid "Clear the entry"
-msgstr ""
-
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:7
 msgid "Present value"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:8
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:7
 msgid "Periodic payment"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:9
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:8
 msgid "Future value"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:10
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:9
 msgid "Recalculate the (single) blank entry in the above fields."
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:11
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:10
 msgid "Calculate"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:12
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:11
 msgid "<b>Payment Options</b>"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:13
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:12
 msgid "Payment Total:"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:14
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:13
 msgid "total"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:15
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:14
 msgid "Discrete"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:16
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:15
 msgid "Continuous"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:18
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:17
 #: ../src/gnome/gtkbuilder/dialog-sx.glade.h:51
 #: ../src/gnome-utils/gtkbuilder/gnc-frequency.glade.h:1
 msgid "Frequency:"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:19
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:18
 msgid "When paid:"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:20
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:19
 msgid "Beginning"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:21
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:20
 msgid "End"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:22
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:21
 msgid "<b>Compounding:</b>"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:23
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:22
 msgid "<b>Period:</b>"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:25
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:24
 msgid "Annual"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:26
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:25
 msgid "Semi-annual"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:27
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:26
 msgid "Tri-annual"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:28
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:27
 #: ../src/gnome/gtkbuilder/dialog-sx.glade.h:44
-#: ../src/report/standard-reports/transaction.scm:842
+#: ../src/report/standard-reports/transaction.scm:847
 msgid "Quarterly"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:29
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:28
 msgid "Bi-monthly"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:32
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:31
 msgid "Bi-weekly"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:34
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:33
 msgid "Daily (360)"
 msgstr ""
 
-#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:35
+#: ../src/gnome/gtkbuilder/dialog-fincalc.glade.h:34
 msgid "Daily (365)"
 msgstr ""
 
@@ -9361,8 +9357,8 @@ msgid "Keep normal account order."
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register.glade.h:30
-#: ../src/report/standard-reports/transaction.scm:735
-#: ../src/report/standard-reports/transaction.scm:790
+#: ../src/report/standard-reports/transaction.scm:740
+#: ../src/report/standard-reports/transaction.scm:795
 msgid "Sort by date."
 msgstr ""
 
@@ -9392,8 +9388,8 @@ msgid "Amo_unt"
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register.glade.h:38
-#: ../src/report/standard-reports/transaction.scm:759
-#: ../src/report/standard-reports/transaction.scm:814
+#: ../src/report/standard-reports/transaction.scm:764
+#: ../src/report/standard-reports/transaction.scm:819
 msgid "Sort by amount."
 msgstr ""
 
@@ -9402,14 +9398,14 @@ msgid "_Memo"
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register.glade.h:40
-#: ../src/report/standard-reports/transaction.scm:775
-#: ../src/report/standard-reports/transaction.scm:826
+#: ../src/report/standard-reports/transaction.scm:780
+#: ../src/report/standard-reports/transaction.scm:831
 msgid "Sort by memo."
 msgstr ""
 
 #: ../src/gnome/gtkbuilder/gnc-plugin-page-register.glade.h:42
-#: ../src/report/standard-reports/transaction.scm:763
-#: ../src/report/standard-reports/transaction.scm:818
+#: ../src/report/standard-reports/transaction.scm:768
+#: ../src/report/standard-reports/transaction.scm:823
 msgid "Sort by description."
 msgstr ""
 
@@ -10207,31 +10203,31 @@ msgid "Select the default selection."
 msgstr ""
 
 #. The reset button on each option page
-#: ../src/gnome-utils/dialog-options.c:1131
+#: ../src/gnome-utils/dialog-options.c:1136
 msgid "Reset defaults"
 msgstr ""
 
-#: ../src/gnome-utils/dialog-options.c:1133
+#: ../src/gnome-utils/dialog-options.c:1138
 msgid "Reset all values to their defaults."
 msgstr ""
 
-#: ../src/gnome-utils/dialog-options.c:1459
+#: ../src/gnome-utils/dialog-options.c:1464
 msgid "Page"
 msgstr ""
 
-#: ../src/gnome-utils/dialog-options.c:2139
+#: ../src/gnome-utils/dialog-options.c:2144
 msgid "Clear"
 msgstr ""
 
-#: ../src/gnome-utils/dialog-options.c:2140
+#: ../src/gnome-utils/dialog-options.c:2145
 msgid "Clear any selected image file."
 msgstr ""
 
-#: ../src/gnome-utils/dialog-options.c:2142
+#: ../src/gnome-utils/dialog-options.c:2147
 msgid "Select image"
 msgstr ""
 
-#: ../src/gnome-utils/dialog-options.c:2144
+#: ../src/gnome-utils/dialog-options.c:2149
 msgid "Select an image file."
 msgstr ""
 
@@ -11133,14 +11129,15 @@ msgid "The GnuCash personal finance manager. The GNU way to manage your money!"
 msgstr ""
 
 #: ../src/gnome-utils/gnc-main-window.c:4372
-msgid "© 1997-2017 Contributors"
+#, c-format
+msgid "© 1997-%s Contributors"
 msgstr ""
 
 #. Translators: the following string will be shown in Help->About->Credits
 #. * Enter your name or that of your team and an email contact for feedback.
 #. * The string can have multiple rows, so you can also add a list of
 #. * contributors.
-#: ../src/gnome-utils/gnc-main-window.c:4409
+#: ../src/gnome-utils/gnc-main-window.c:4410
 msgid "translator_credits"
 msgstr ""
 
@@ -11483,7 +11480,7 @@ msgstr ""
 #: ../src/report/standard-reports/register.scm:450
 #: ../src/report/standard-reports/transaction.scm:396
 #: ../src/report/standard-reports/transaction.scm:456
-#: ../src/report/standard-reports/transaction.scm:957
+#: ../src/report/standard-reports/transaction.scm:962
 msgid "Price"
 msgstr ""
 
@@ -11575,9 +11572,9 @@ msgstr ""
 #: ../src/report/standard-reports/general-ledger.scm:82
 #: ../src/report/standard-reports/general-ledger.scm:102
 #: ../src/report/standard-reports/transaction.scm:390
-#: ../src/report/standard-reports/transaction.scm:726
-#: ../src/report/standard-reports/transaction.scm:781
-#: ../src/report/standard-reports/transaction.scm:949
+#: ../src/report/standard-reports/transaction.scm:731
+#: ../src/report/standard-reports/transaction.scm:786
+#: ../src/report/standard-reports/transaction.scm:954
 #: ../src/report/standard-reports/trial-balance.scm:664
 msgid "Account Name"
 msgstr ""
@@ -11594,9 +11591,9 @@ msgstr ""
 #: ../src/report/standard-reports/general-ledger.scm:104
 #: ../src/report/standard-reports/sx-summary.scm:85
 #: ../src/report/standard-reports/transaction.scm:410
-#: ../src/report/standard-reports/transaction.scm:730
-#: ../src/report/standard-reports/transaction.scm:785
-#: ../src/report/standard-reports/transaction.scm:951
+#: ../src/report/standard-reports/transaction.scm:735
+#: ../src/report/standard-reports/transaction.scm:790
+#: ../src/report/standard-reports/transaction.scm:956
 msgid "Account Code"
 msgstr ""
 
@@ -12505,7 +12502,7 @@ msgstr ""
 
 #: ../src/gnome-utils/gtkbuilder/dialog-account.glade.h:50
 #: ../src/gnome-utils/gtkbuilder/gnc-tree-view-owner.glade.h:1
-#: ../src/report/standard-reports/transaction.scm:665
+#: ../src/report/standard-reports/transaction.scm:670
 msgid "Filter By..."
 msgstr ""
 
@@ -18300,7 +18297,7 @@ msgid "Sort by expense amount."
 msgstr ""
 
 #: ../src/report/business-reports/customer-summary.scm:472
-#: ../src/report/standard-reports/transaction.scm:831
+#: ../src/report/standard-reports/transaction.scm:836
 msgid "Ascending"
 msgstr ""
 
@@ -18309,7 +18306,7 @@ msgid "A to Z, smallest to largest."
 msgstr ""
 
 #: ../src/report/business-reports/customer-summary.scm:475
-#: ../src/report/standard-reports/transaction.scm:834
+#: ../src/report/standard-reports/transaction.scm:839
 msgid "Descending"
 msgstr ""
 
@@ -18398,7 +18395,7 @@ msgstr ""
 #: ../src/report/business-reports/invoice.scm:245
 #: ../src/report/business-reports/taxinvoice.scm:169
 #: ../src/report/standard-reports/register.scm:411
-#: ../src/report/standard-reports/transaction.scm:942
+#: ../src/report/standard-reports/transaction.scm:947
 msgid "Display the date?"
 msgstr ""
 
@@ -18406,7 +18403,7 @@ msgstr ""
 #: ../src/report/business-reports/fancy-invoice.scm:265
 #: ../src/report/business-reports/invoice.scm:250
 #: ../src/report/standard-reports/register.scm:426
-#: ../src/report/standard-reports/transaction.scm:947
+#: ../src/report/standard-reports/transaction.scm:952
 msgid "Display the description?"
 msgstr ""
 
@@ -18519,7 +18516,7 @@ msgstr ""
 #: ../src/report/standard-reports/transaction.scm:412
 #: ../src/report/standard-reports/transaction.scm:414
 #: ../src/report/standard-reports/transaction.scm:420
-#: ../src/report/standard-reports/transaction.scm:1063
+#: ../src/report/standard-reports/transaction.scm:1068
 msgid "Display"
 msgstr ""
 
@@ -18562,7 +18559,7 @@ msgstr ""
 #: ../src/report/standard-reports/general-ledger.scm:93
 #: ../src/report/standard-reports/general-ledger.scm:113
 #: ../src/report/standard-reports/register.scm:474
-#: ../src/report/standard-reports/transaction.scm:960
+#: ../src/report/standard-reports/transaction.scm:965
 msgid "Totals"
 msgstr ""
 
@@ -18570,7 +18567,7 @@ msgstr ""
 #: ../src/report/business-reports/fancy-invoice.scm:310
 #: ../src/report/business-reports/invoice.scm:295
 #: ../src/report/standard-reports/register.scm:475
-#: ../src/report/standard-reports/transaction.scm:960
+#: ../src/report/standard-reports/transaction.scm:965
 msgid "Display the totals?"
 msgstr ""
 
@@ -21871,7 +21868,7 @@ msgstr ""
 
 #: ../src/report/standard-reports/category-barchart.scm:602
 #: ../src/report/standard-reports/transaction.scm:301
-#: ../src/report/standard-reports/transaction.scm:1031
+#: ../src/report/standard-reports/transaction.scm:1036
 msgid "Grand Total"
 msgstr ""
 
@@ -21984,7 +21981,7 @@ msgstr ""
 #: ../src/report/standard-reports/register.scm:145
 #: ../src/report/standard-reports/register.scm:416
 #: ../src/report/standard-reports/transaction.scm:386
-#: ../src/report/standard-reports/transaction.scm:945
+#: ../src/report/standard-reports/transaction.scm:950
 msgid "Num/Action"
 msgstr ""
 
@@ -21994,7 +21991,7 @@ msgstr ""
 #: ../src/report/standard-reports/general-ledger.scm:112
 #: ../src/report/standard-reports/register.scm:469
 #: ../src/report/standard-reports/transaction.scm:404
-#: ../src/report/standard-reports/transaction.scm:959
+#: ../src/report/standard-reports/transaction.scm:964
 msgid "Running Balance"
 msgstr ""
 
@@ -22006,7 +22003,7 @@ msgid "Sorting"
 msgstr ""
 
 #: ../src/report/standard-reports/general-ledger.scm:65
-#: ../src/report/standard-reports/transaction.scm:681
+#: ../src/report/standard-reports/transaction.scm:686
 msgid "Filter Type"
 msgstr ""
 
@@ -22019,9 +22016,9 @@ msgstr ""
 #: ../src/report/standard-reports/general-ledger.scm:98
 #: ../src/report/standard-reports/transaction.scm:382
 #: ../src/report/standard-reports/transaction.scm:429
-#: ../src/report/standard-reports/transaction.scm:742
-#: ../src/report/standard-reports/transaction.scm:797
-#: ../src/report/standard-reports/transaction.scm:943
+#: ../src/report/standard-reports/transaction.scm:747
+#: ../src/report/standard-reports/transaction.scm:802
+#: ../src/report/standard-reports/transaction.scm:948
 msgid "Reconciled Date"
 msgstr ""
 
@@ -22030,52 +22027,52 @@ msgstr ""
 #: ../src/report/standard-reports/transaction.scm:439
 #: ../src/report/standard-reports/transaction.scm:523
 #: ../src/report/standard-reports/transaction.scm:525
-#: ../src/report/standard-reports/transaction.scm:965
+#: ../src/report/standard-reports/transaction.scm:970
 msgid "Trans Number"
 msgstr ""
 
 #: ../src/report/standard-reports/general-ledger.scm:83
 #: ../src/report/standard-reports/general-ledger.scm:103
 #: ../src/report/standard-reports/transaction.scm:406
-#: ../src/report/standard-reports/transaction.scm:950
+#: ../src/report/standard-reports/transaction.scm:955
 msgid "Use Full Account Name"
 msgstr ""
 
 #: ../src/report/standard-reports/general-ledger.scm:85
 #: ../src/report/standard-reports/general-ledger.scm:105
 #: ../src/report/standard-reports/transaction.scm:392
-#: ../src/report/standard-reports/transaction.scm:750
-#: ../src/report/standard-reports/transaction.scm:805
-#: ../src/report/standard-reports/transaction.scm:952
+#: ../src/report/standard-reports/transaction.scm:755
+#: ../src/report/standard-reports/transaction.scm:810
+#: ../src/report/standard-reports/transaction.scm:957
 msgid "Other Account Name"
 msgstr ""
 
 #: ../src/report/standard-reports/general-ledger.scm:86
 #: ../src/report/standard-reports/general-ledger.scm:106
 #: ../src/report/standard-reports/transaction.scm:414
-#: ../src/report/standard-reports/transaction.scm:954
+#: ../src/report/standard-reports/transaction.scm:959
 msgid "Use Full Other Account Name"
 msgstr ""
 
 #: ../src/report/standard-reports/general-ledger.scm:87
 #: ../src/report/standard-reports/general-ledger.scm:107
 #: ../src/report/standard-reports/transaction.scm:412
-#: ../src/report/standard-reports/transaction.scm:754
-#: ../src/report/standard-reports/transaction.scm:809
-#: ../src/report/standard-reports/transaction.scm:955
+#: ../src/report/standard-reports/transaction.scm:759
+#: ../src/report/standard-reports/transaction.scm:814
+#: ../src/report/standard-reports/transaction.scm:960
 msgid "Other Account Code"
 msgstr ""
 
 #: ../src/report/standard-reports/general-ledger.scm:94
 #: ../src/report/standard-reports/general-ledger.scm:114
-#: ../src/report/standard-reports/transaction.scm:993
-#: ../src/report/standard-reports/transaction.scm:1064
+#: ../src/report/standard-reports/transaction.scm:998
+#: ../src/report/standard-reports/transaction.scm:1069
 msgid "Sign Reverses"
 msgstr ""
 
 #: ../src/report/standard-reports/general-ledger.scm:121
 #: ../src/report/standard-reports/transaction.scm:617
-#: ../src/report/standard-reports/transaction.scm:1070
+#: ../src/report/standard-reports/transaction.scm:1075
 msgid "Style"
 msgstr ""
 
@@ -22086,13 +22083,13 @@ msgstr ""
 
 #: ../src/report/standard-reports/general-ledger.scm:133
 #: ../src/report/standard-reports/transaction.scm:418
-#: ../src/report/standard-reports/transaction.scm:862
+#: ../src/report/standard-reports/transaction.scm:867
 msgid "Show Full Account Name"
 msgstr ""
 
 #: ../src/report/standard-reports/general-ledger.scm:134
 #: ../src/report/standard-reports/transaction.scm:416
-#: ../src/report/standard-reports/transaction.scm:869
+#: ../src/report/standard-reports/transaction.scm:874
 msgid "Show Account Code"
 msgstr ""
 
@@ -22107,7 +22104,7 @@ msgid "Primary Subtotal for Date Key"
 msgstr ""
 
 #: ../src/report/standard-reports/general-ledger.scm:137
-#: ../src/report/standard-reports/transaction.scm:890
+#: ../src/report/standard-reports/transaction.scm:895
 msgid "Primary Sort Order"
 msgstr ""
 
@@ -22127,7 +22124,7 @@ msgid "Secondary Subtotal for Date Key"
 msgstr ""
 
 #: ../src/report/standard-reports/general-ledger.scm:141
-#: ../src/report/standard-reports/transaction.scm:927
+#: ../src/report/standard-reports/transaction.scm:932
 msgid "Secondary Sort Order"
 msgstr ""
 
@@ -22152,12 +22149,12 @@ msgstr ""
 msgid "Total Trading"
 msgstr ""
 
-#: ../src/report/standard-reports/income-statement.scm:718
+#: ../src/report/standard-reports/income-statement.scm:720
 #: ../src/report/standard-reports/trial-balance.scm:617
 msgid "Income Statement"
 msgstr ""
 
-#: ../src/report/standard-reports/income-statement.scm:719
+#: ../src/report/standard-reports/income-statement.scm:721
 msgid "Profit & Loss"
 msgstr ""
 
@@ -22399,13 +22396,13 @@ msgid "Display the check number/action?"
 msgstr ""
 
 #: ../src/report/standard-reports/register.scm:421
-#: ../src/report/standard-reports/transaction.scm:945
-#: ../src/report/standard-reports/transaction.scm:946
+#: ../src/report/standard-reports/transaction.scm:950
+#: ../src/report/standard-reports/transaction.scm:951
 msgid "Display the check number?"
 msgstr ""
 
 #: ../src/report/standard-reports/register.scm:431
-#: ../src/report/standard-reports/transaction.scm:973
+#: ../src/report/standard-reports/transaction.scm:978
 msgid "Display the memo?"
 msgstr ""
 
@@ -22414,7 +22411,7 @@ msgid "Display the account?"
 msgstr ""
 
 #: ../src/report/standard-reports/register.scm:441
-#: ../src/report/standard-reports/transaction.scm:956
+#: ../src/report/standard-reports/transaction.scm:961
 msgid "Display the number of shares?"
 msgstr ""
 
@@ -22423,33 +22420,33 @@ msgid "Display the name of lot the shares are in?"
 msgstr ""
 
 #: ../src/report/standard-reports/register.scm:451
-#: ../src/report/standard-reports/transaction.scm:957
+#: ../src/report/standard-reports/transaction.scm:962
 msgid "Display the shares price?"
 msgstr ""
 
 #: ../src/report/standard-reports/register.scm:456
-#: ../src/report/standard-reports/transaction.scm:984
+#: ../src/report/standard-reports/transaction.scm:989
 msgid "Display the amount?"
 msgstr ""
 
 #: ../src/report/standard-reports/register.scm:459
 #: ../src/report/standard-reports/transaction.scm:624
-#: ../src/report/standard-reports/transaction.scm:988
+#: ../src/report/standard-reports/transaction.scm:993
 msgid "Single"
 msgstr ""
 
 #: ../src/report/standard-reports/register.scm:459
-#: ../src/report/standard-reports/transaction.scm:988
+#: ../src/report/standard-reports/transaction.scm:993
 msgid "Single Column Display."
 msgstr ""
 
 #: ../src/report/standard-reports/register.scm:460
-#: ../src/report/standard-reports/transaction.scm:989
+#: ../src/report/standard-reports/transaction.scm:994
 msgid "Double"
 msgstr ""
 
 #: ../src/report/standard-reports/register.scm:460
-#: ../src/report/standard-reports/transaction.scm:989
+#: ../src/report/standard-reports/transaction.scm:994
 msgid "Two Column Display."
 msgstr ""
 
@@ -22458,7 +22455,7 @@ msgid "Display the value in transaction currency?"
 msgstr ""
 
 #: ../src/report/standard-reports/register.scm:470
-#: ../src/report/standard-reports/transaction.scm:959
+#: ../src/report/standard-reports/transaction.scm:964
 msgid "Display a running balance?"
 msgstr ""
 
@@ -22542,263 +22539,267 @@ msgstr ""
 msgid "Formats the table suitable for cut & paste exporting with extra cells."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:666
+#: ../src/report/standard-reports/transaction.scm:665
+msgid "Account Substring"
+msgstr ""
+
+#: ../src/report/standard-reports/transaction.scm:671
 msgid "Filter on these accounts."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:682
+#: ../src/report/standard-reports/transaction.scm:687
 msgid "Filter account."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:686
+#: ../src/report/standard-reports/transaction.scm:691
 msgid "Do not do any filtering."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:688
+#: ../src/report/standard-reports/transaction.scm:693
 msgid "Include Transactions to/from Filter Accounts"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:689
+#: ../src/report/standard-reports/transaction.scm:694
 msgid "Include transactions to/from filter accounts only."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:691
+#: ../src/report/standard-reports/transaction.scm:696
 msgid "Exclude Transactions to/from Filter Accounts"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:692
+#: ../src/report/standard-reports/transaction.scm:697
 msgid "Exclude transactions to/from all filter accounts."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:700
+#: ../src/report/standard-reports/transaction.scm:705
 msgid "How to handle void transactions."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:704
+#: ../src/report/standard-reports/transaction.scm:709
 msgid "Non-void only"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:705
+#: ../src/report/standard-reports/transaction.scm:710
 msgid "Show only non-voided transactions."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:708
+#: ../src/report/standard-reports/transaction.scm:713
 msgid "Void only"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:709
+#: ../src/report/standard-reports/transaction.scm:714
 msgid "Show only voided transactions."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:712
+#: ../src/report/standard-reports/transaction.scm:717
 msgid "Both"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:713
+#: ../src/report/standard-reports/transaction.scm:718
 msgid "Show both (and include void transactions in totals)."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:723
-#: ../src/report/standard-reports/transaction.scm:778
+#: ../src/report/standard-reports/transaction.scm:728
+#: ../src/report/standard-reports/transaction.scm:783
 msgid "Do not sort."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:727
-#: ../src/report/standard-reports/transaction.scm:782
+#: ../src/report/standard-reports/transaction.scm:732
+#: ../src/report/standard-reports/transaction.scm:787
 msgid "Sort & subtotal by account name."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:731
-#: ../src/report/standard-reports/transaction.scm:786
+#: ../src/report/standard-reports/transaction.scm:736
+#: ../src/report/standard-reports/transaction.scm:791
 msgid "Sort & subtotal by account code."
-msgstr ""
-
-#: ../src/report/standard-reports/transaction.scm:738
-#: ../src/report/standard-reports/transaction.scm:793
-msgid "Exact Time"
-msgstr ""
-
-#: ../src/report/standard-reports/transaction.scm:739
-#: ../src/report/standard-reports/transaction.scm:794
-msgid "Sort by exact time."
 msgstr ""
 
 #: ../src/report/standard-reports/transaction.scm:743
 #: ../src/report/standard-reports/transaction.scm:798
+msgid "Exact Time"
+msgstr ""
+
+#: ../src/report/standard-reports/transaction.scm:744
+#: ../src/report/standard-reports/transaction.scm:799
+msgid "Sort by exact time."
+msgstr ""
+
+#: ../src/report/standard-reports/transaction.scm:748
+#: ../src/report/standard-reports/transaction.scm:803
 msgid "Sort by the Reconciled Date."
-msgstr ""
-
-#: ../src/report/standard-reports/transaction.scm:746
-#: ../src/report/standard-reports/transaction.scm:801
-msgid "Register Order"
-msgstr ""
-
-#: ../src/report/standard-reports/transaction.scm:747
-#: ../src/report/standard-reports/transaction.scm:802
-msgid "Sort as with the register."
 msgstr ""
 
 #: ../src/report/standard-reports/transaction.scm:751
 #: ../src/report/standard-reports/transaction.scm:806
+msgid "Register Order"
+msgstr ""
+
+#: ../src/report/standard-reports/transaction.scm:752
+#: ../src/report/standard-reports/transaction.scm:807
+msgid "Sort as with the register."
+msgstr ""
+
+#: ../src/report/standard-reports/transaction.scm:756
+#: ../src/report/standard-reports/transaction.scm:811
 msgid "Sort by account transferred from/to's name."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:755
-#: ../src/report/standard-reports/transaction.scm:810
+#: ../src/report/standard-reports/transaction.scm:760
+#: ../src/report/standard-reports/transaction.scm:815
 msgid "Sort by account transferred from/to's code."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:767
+#: ../src/report/standard-reports/transaction.scm:772
 msgid "Sort by check number/action."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:771
+#: ../src/report/standard-reports/transaction.scm:776
 msgid "Sort by transaction number."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:822
+#: ../src/report/standard-reports/transaction.scm:827
 msgid "Sort by check/transaction number."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:832
+#: ../src/report/standard-reports/transaction.scm:837
 msgid "Smallest to largest, earliest to latest."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:835
+#: ../src/report/standard-reports/transaction.scm:840
 msgid "Largest to smallest, latest to earliest."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:839
+#: ../src/report/standard-reports/transaction.scm:844
 msgid "None."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:840
+#: ../src/report/standard-reports/transaction.scm:845
 msgid "Weekly."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:841
+#: ../src/report/standard-reports/transaction.scm:846
 msgid "Monthly."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:842
+#: ../src/report/standard-reports/transaction.scm:847
 msgid "Quarterly."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:843
+#: ../src/report/standard-reports/transaction.scm:848
 msgid "Yearly."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:849
+#: ../src/report/standard-reports/transaction.scm:854
 msgid "Sort by this criterion first."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:864
+#: ../src/report/standard-reports/transaction.scm:869
 msgid "Show the full account name for subtotals and subtitles?"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:871
+#: ../src/report/standard-reports/transaction.scm:876
 msgid "Show the account code for subtotals and subtitles?"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:878
+#: ../src/report/standard-reports/transaction.scm:883
 msgid "Subtotal according to the primary key?"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:884
-#: ../src/report/standard-reports/transaction.scm:921
+#: ../src/report/standard-reports/transaction.scm:889
+#: ../src/report/standard-reports/transaction.scm:926
 msgid "Do a date subtotal."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:891
+#: ../src/report/standard-reports/transaction.scm:896
 msgid "Order of primary sorting."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:900
+#: ../src/report/standard-reports/transaction.scm:905
 msgid "Sort by this criterion second."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:915
+#: ../src/report/standard-reports/transaction.scm:920
 msgid "Subtotal according to the secondary key?"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:928
+#: ../src/report/standard-reports/transaction.scm:933
 msgid "Order of Secondary sorting."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:943
+#: ../src/report/standard-reports/transaction.scm:948
 msgid "Display the reconciled date?"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:948
+#: ../src/report/standard-reports/transaction.scm:953
 msgid "Display the notes if the memo is unavailable?"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:949
+#: ../src/report/standard-reports/transaction.scm:954
 msgid "Display the account name?"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:950
-#: ../src/report/standard-reports/transaction.scm:954
+#: ../src/report/standard-reports/transaction.scm:955
+#: ../src/report/standard-reports/transaction.scm:959
 msgid "Display the full account name?"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:951
+#: ../src/report/standard-reports/transaction.scm:956
 msgid "Display the account code?"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:952
+#: ../src/report/standard-reports/transaction.scm:957
 msgid ""
 "Display the other account name? (if this is a split transaction, this "
 "parameter is guessed)."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:955
+#: ../src/report/standard-reports/transaction.scm:960
 msgid "Display the other account code?"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:966
+#: ../src/report/standard-reports/transaction.scm:971
 msgid "Display the trans number?"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:987
+#: ../src/report/standard-reports/transaction.scm:992
 msgid "No amount display."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:994
+#: ../src/report/standard-reports/transaction.scm:999
 msgid "Reverse amount display for certain account types."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:997
+#: ../src/report/standard-reports/transaction.scm:1002
 msgid "Don't change any displayed amounts."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:998
+#: ../src/report/standard-reports/transaction.scm:1003
 msgid "Income and Expense"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:999
+#: ../src/report/standard-reports/transaction.scm:1004
 msgid "Reverse amount display for Income and Expense Accounts."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:1000
+#: ../src/report/standard-reports/transaction.scm:1005
 msgid "Credit Accounts"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:1001
+#: ../src/report/standard-reports/transaction.scm:1006
 msgid ""
 "Reverse amount display for Liability, Payable, Equity, Credit Card, and "
 "Income accounts."
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:1014
+#: ../src/report/standard-reports/transaction.scm:1019
 msgid "From %s To %s"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:1018
-#: ../src/report/standard-reports/transaction.scm:1024
-#: ../src/report/standard-reports/transaction.scm:1030
-#: ../src/report/standard-reports/transaction.scm:1036
-#: ../src/report/standard-reports/transaction.scm:1042
+#: ../src/report/standard-reports/transaction.scm:1023
+#: ../src/report/standard-reports/transaction.scm:1029
+#: ../src/report/standard-reports/transaction.scm:1035
+#: ../src/report/standard-reports/transaction.scm:1041
+#: ../src/report/standard-reports/transaction.scm:1047
 #: ../src/report/stylesheets/stylesheet-easy.scm:102
 #: ../src/report/stylesheets/stylesheet-easy.scm:109
 #: ../src/report/stylesheets/stylesheet-easy.scm:116
@@ -22851,27 +22852,27 @@ msgstr ""
 msgid "Colors"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:1019
+#: ../src/report/standard-reports/transaction.scm:1024
 msgid "Primary Subtotals/headings"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:1025
+#: ../src/report/standard-reports/transaction.scm:1030
 msgid "Secondary Subtotals/headings"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:1037
+#: ../src/report/standard-reports/transaction.scm:1042
 msgid "Split Odd"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:1043
+#: ../src/report/standard-reports/transaction.scm:1048
 msgid "Split Even"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:1539
+#: ../src/report/standard-reports/transaction.scm:1544
 msgid "No matching transactions found"
 msgstr ""
 
-#: ../src/report/standard-reports/transaction.scm:1541
+#: ../src/report/standard-reports/transaction.scm:1546
 msgid ""
 "No transactions were found that match the time interval and account "
 "selection specified in the Options panel."

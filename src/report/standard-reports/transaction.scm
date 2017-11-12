@@ -661,6 +661,11 @@
     #f #t))
 
   (gnc:register-trep-option
+   (gnc:make-internal-option
+    gnc:pagename-accounts (N_ "Account Substring")
+    ""))
+
+  (gnc:register-trep-option
    (gnc:make-account-list-option
     gnc:pagename-accounts (N_ "Filter By...")
     "b" (N_ "Filter on these accounts.")

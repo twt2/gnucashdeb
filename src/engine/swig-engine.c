@@ -36669,12 +36669,12 @@ _wrap_gncTaxTableGetTables (SCM s_0)
   QofBook *arg1 = (QofBook *) 0 ;
   SCM gswig_result;
   SWIGUNUSED int gswig_list_p = 0;
-  GList *result = 0 ;
+  GncTaxTableList *result = 0 ;
   
   {
     arg1 = (QofBook *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_QofBook, 1, 0);
   }
-  result = (GList *)gncTaxTableGetTables(arg1);
+  result = (GncTaxTableList *)gncTaxTableGetTables(arg1);
   {
     gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_GList, 0);
   }
@@ -38312,7 +38312,7 @@ static swig_type_info _swigt__p_GDate = {"_p_GDate", "GDate *", 0, 0, (void*)0, 
 static swig_type_info _swigt__p_GDateTime = {"_p_GDateTime", "GDateTime *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GFunc = {"_p_GFunc", "GFunc *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GHashTable = {"_p_GHashTable", "GHashTable *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_GList = {"_p_GList", "OwnerList *|GList *|CommodityList *|AccountValueList *|MonetaryList *|EntryList *|GncTaxTableEntryList *|PriceList *|GncInvoiceList *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_GList = {"_p_GList", "OwnerList *|GList *|CommodityList *|AccountValueList *|MonetaryList *|GncTaxTableList *|EntryList *|GncTaxTableEntryList *|PriceList *|GncInvoiceList *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GNCAccountType = {"_p_GNCAccountType", "enum GNCAccountType *|GNCAccountType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GNCDateMonthFormat = {"_p_GNCDateMonthFormat", "enum GNCDateMonthFormat *|GNCDateMonthFormat *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GNCLot = {"_p_GNCLot", "GNCLot *", 0, 0, (void*)0, 0};

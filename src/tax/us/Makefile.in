@@ -552,7 +552,8 @@ gncscm_DATA = txf.scm txf-help.scm txf-de_DE.scm txf-help-de_DE.scm
 noinst_DATA = .scm-links
 EXTRA_DIST = \
   ${gncscmmod_DATA} \
-  ${gncscm_DATA}
+  ${gncscm_DATA} \
+  CMakeLists.txt
 
 CLEANFILES = .scm-links ${gncscmmodcache_DATA} ${gncscmcache_DATA}
 DISTCLEANFILES = ${SCM_FILE_LINKS}

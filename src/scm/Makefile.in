@@ -506,7 +506,8 @@ SCM_FILES = ${gncscm_DATA} ${gncscmmod_DATA}
 EXTRA_DIST = \
   build-config.scm.in \
   config \
-  ${SCM_FILES}
+  ${SCM_FILES} \
+  CMakeLists.txt
 
 CLEANFILES = .scm-links ${gncscmmodcache_DATA} ${gncscmcache_DATA}
 DISTCLEANFILES = ${SCM_FILE_LINKS}

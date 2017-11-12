@@ -567,7 +567,7 @@ uidir = $(GNC_UI_DIR)
 ui_DATA = gnc-plugin-gtkmm-ui.xml
 gtkbuilderdir = $(GNC_GTKBUILDER_DIR)
 gtkbuilder_DATA = 
-EXTRA_DIST = ${ui_DATA} ${gtkbuilder_DATA}
+EXTRA_DIST = ${ui_DATA} ${gtkbuilder_DATA} CMakeLists.txt
 all: all-recursive
 
 .SUFFIXES:

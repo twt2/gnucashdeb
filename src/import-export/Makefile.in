@@ -576,7 +576,8 @@ AM_CPPFLAGS = -I${top_srcdir}/src -I${top_srcdir}/src/core-utils \
 	${GTK_CFLAGS} ${GLIB_CFLAGS} -DG_LOG_DOMAIN=\"gnc.i-e\"
 EXTRA_DIST = \
   $(gtkbuilder_DATA) \
-  generic-import-design.txt
+  generic-import-design.txt \
+  CMakeLists.txt
 
 all: all-recursive
 

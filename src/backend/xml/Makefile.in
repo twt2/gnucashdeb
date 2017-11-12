@@ -627,6 +627,7 @@ libgncmod_backend_xml_la_LIBADD = \
    libgnc-backend-xml-utils.la \
    ${top_builddir}/src/libqof/qof/libgnc-qof.la
 
+EXTRA_DIST = CMakeLists.txt
 all: all-recursive
 
 .SUFFIXES:

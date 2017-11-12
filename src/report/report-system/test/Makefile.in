@@ -701,7 +701,8 @@ SCM_TEST_HELPERS = test-extras.scm
 EXTRA_DIST = \
 	test-load-module \
 	$(SCM_TEST_HELPERS) \
-	$(SCM_TEST_SRCS)
+	$(SCM_TEST_SRCS) \
+	CMakeLists.txt
 
 noinst_DATA = .scm-links
 CLEANFILES = .scm-links

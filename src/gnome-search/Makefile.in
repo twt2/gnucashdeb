@@ -530,7 +530,8 @@ gtkbuilder_DATA = \
   dialog-search.glade
 
 EXTRA_DIST = \
-  ${gtkbuilder_DATA}
+  ${gtkbuilder_DATA} \
+  CMakeLists.txt
 
 all: all-am
 

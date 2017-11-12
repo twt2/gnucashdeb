@@ -378,7 +378,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 EXTRA_DIST = \
   gnucash.spec.in \
-  gnucash.spec
+  gnucash.spec \
+  CMakeLists.txt
 
 DISTCLEANFILES = gnucash.spec
 all: all-am

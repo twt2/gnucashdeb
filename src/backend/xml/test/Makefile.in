@@ -1178,7 +1178,8 @@ EXTRA_DIST = \
   grab-types.pl \
   test-dom-parser1.c \
   test-real-data.sh \
-  test-xml2-is-file.c
+  test-xml2-is-file.c \
+  CMakeLists.txt
 
 all: all-recursive
 

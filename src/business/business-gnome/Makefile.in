@@ -605,7 +605,8 @@ libgncmod_business_gnome_la_LIBADD = \
 gncscmmoddir = ${GNC_SCM_INSTALL_DIR}/gnucash
 gncscmmod_DATA = business-gnome.scm
 EXTRA_DIST = \
-  ${gncscmmod_DATA}
+  ${gncscmmod_DATA} \
+  CMakeLists.txt
 
 
 #Only needed when srcdir and builddir are different

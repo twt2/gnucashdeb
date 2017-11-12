@@ -931,7 +931,7 @@ GTESTER_REPORT = gtester-report
 # initialize variables for unconditional += appending
 EXTRA_DIST = test-create-account test-create-account.scm \
 	test-scm-query-import test-scm-query-import.scm \
-	$(SCM_TEST_HELPERS) $(SCM_TEST_SRCS)
+	$(SCM_TEST_HELPERS) $(SCM_TEST_SRCS) CMakeLists.txt
 TEST_PROGS = test-engine
 MODULEPATH = src/engine
 AM_CPPFLAGS = \

@@ -528,7 +528,8 @@ gncinclude_HEADERS = \
 noinst_DATA = .scm-links
 EXTRA_DIST = \
   ${gncscmmod_DATA} \
-  gnc-module.i
+  gnc-module.i \
+  CMakeLists.txt
 
 
 #For executing test cases

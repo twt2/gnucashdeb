@@ -673,7 +673,8 @@ noinst_HEADERS = \
   calculation/fin_static_proto.h
 
 EXTRA_DIST = swig-app-utils-python.c app-utils.i ${gncscmmod_DATA} \
-	${gncscm_DATA} ${prefsmigration_DATA} $(am__append_4)
+	${gncscm_DATA} ${prefsmigration_DATA} CMakeLists.txt \
+	$(am__append_4)
 
 #For executing test cases
 @GNUCASH_SEPARATE_BUILDDIR_TRUE@SCM_FILE_LINKS = \

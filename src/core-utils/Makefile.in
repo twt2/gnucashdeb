@@ -596,7 +596,13 @@ gncscmmod_DATA = core-utils.scm
 @GNC_HAVE_GUILE_2_TRUE@gncscmmodcache_DATA = $(gncscmmod_DATA:.scm=.go)
 noinst_DATA = .scm-links
 BUILT_SOURCES = gncla-dir.h gnc-version.h
-EXTRA_DIST = $(gncscmmod_DATA) core-utils.i gncla-dir.h.in gnc-vcs-info.h
+EXTRA_DIST = \
+  $(gncscmmod_DATA) \
+  core-utils.i \
+  gncla-dir.h.in \
+  gnc-vcs-info.h \
+  CMakeLists.txt
+
 CLEANFILES = $(BUILT_SOURCES) .scm-links ${gncscmmodcache_DATA}
 MAINTAINERCLEANFILES = swig-core-utils-guile.c swig-core-utils-python.c
 all: $(BUILT_SOURCES)
@@ -1090,6 +1096,7 @@ uninstall-am: uninstall-gncscmmodDATA uninstall-gncscmmodcacheDATA \
 @GNC_HAVE_GUILE_2_TRUE@	GNC_BUILDDIR=${top_builddir} \
 @GNC_HAVE_GUILE_2_TRUE@	$(shell ${abs_top_srcdir}/src/gnc-test-env.pl --noexports ${GUILE_COMPILE_ENV})  \
 @GNC_HAVE_GUILE_2_TRUE@	$(GUILD) compile -o $@ $<
+
 clean-local:
 	rm -rf gnucash
 
@@ -1119,6 +1126,7 @@ _gnc-version.h: gnc-vcs-info.h Makefile
 		echo "#define GNUCASH_SCM \"$$scm_info\"" >> _gnc-version.h ; \
 	fi
 	@echo "#define GNUCASH_BUILD_DATE \"`date +%Y-%m-%d`\"" >> _gnc-version.h
+	@echo "#define GNUCASH_BUILD_YEAR \"`date +%Y`\"" >> _gnc-version.h
 	@echo "#include \"gnc-vcs-info.h\""          >> _gnc-version.h
 	@echo "#endif"                               >> _gnc-version.h
 

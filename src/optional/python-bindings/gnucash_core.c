@@ -37926,7 +37926,7 @@ SWIGINTERN PyObject *_wrap_gncTaxTableGetTables(PyObject *SWIGUNUSEDPARM(self), 
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  GList *result = 0 ;
+  GncTaxTableList *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:gncTaxTableGetTables",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_QofBook, 0 |  0 );
@@ -37934,7 +37934,7 @@ SWIGINTERN PyObject *_wrap_gncTaxTableGetTables(PyObject *SWIGUNUSEDPARM(self), 
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncTaxTableGetTables" "', argument " "1"" of type '" "QofBook *""'"); 
   }
   arg1 = (QofBook *)(argp1);
-  result = (GList *)gncTaxTableGetTables(arg1);
+  result = (GncTaxTableList *)gncTaxTableGetTables(arg1);
   {
     guint i;
     gpointer data;
@@ -42469,7 +42469,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gncTaxTableEqual", _wrap_gncTaxTableEqual, METH_VARARGS, (char *)"gncTaxTableEqual(GncTaxTable const * a, GncTaxTable const * b) -> gboolean"},
 	 { (char *)"gncTaxTableLookup", _wrap_gncTaxTableLookup, METH_VARARGS, (char *)"gncTaxTableLookup(QofBook const * book, GncGUID guid) -> GncTaxTable *"},
 	 { (char *)"gncTaxTableLookupByName", _wrap_gncTaxTableLookupByName, METH_VARARGS, (char *)"gncTaxTableLookupByName(QofBook * book, char const * name) -> GncTaxTable *"},
-	 { (char *)"gncTaxTableGetTables", _wrap_gncTaxTableGetTables, METH_VARARGS, (char *)"gncTaxTableGetTables(QofBook * book) -> GList *"},
+	 { (char *)"gncTaxTableGetTables", _wrap_gncTaxTableGetTables, METH_VARARGS, (char *)"gncTaxTableGetTables(QofBook * book) -> GncTaxTableList *"},
 	 { (char *)"gncTaxTableGetName", _wrap_gncTaxTableGetName, METH_VARARGS, (char *)"gncTaxTableGetName(GncTaxTable const * table) -> char const *"},
 	 { (char *)"gncTaxTableGetParent", _wrap_gncTaxTableGetParent, METH_VARARGS, (char *)"gncTaxTableGetParent(GncTaxTable const * table) -> GncTaxTable *"},
 	 { (char *)"gncTaxTableReturnChild", _wrap_gncTaxTableReturnChild, METH_VARARGS, (char *)"gncTaxTableReturnChild(GncTaxTable * table, gboolean make_new) -> GncTaxTable *"},
@@ -42589,7 +42589,7 @@ static swig_type_info _swigt__p_GCompareFunc = {"_p_GCompareFunc", "GCompareFunc
 static swig_type_info _swigt__p_GDate = {"_p_GDate", "GDate *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GFunc = {"_p_GFunc", "GFunc *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GHashTable = {"_p_GHashTable", "GHashTable *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_GList = {"_p_GList", "GList *|CommodityList *|AccountValueList *|MonetaryList *|EntryList *|GncTaxTableEntryList *|GncInvoiceList *|PriceList *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_GList = {"_p_GList", "GList *|CommodityList *|AccountValueList *|MonetaryList *|GncTaxTableList *|EntryList *|GncTaxTableEntryList *|GncInvoiceList *|PriceList *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GNCAccountType = {"_p_GNCAccountType", "enum GNCAccountType *|GNCAccountType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GNCLot = {"_p_GNCLot", "GNCLot *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_GNCNumericErrorCode = {"_p_GNCNumericErrorCode", "enum GNCNumericErrorCode *|GNCNumericErrorCode *", 0, 0, (void*)0, 0};

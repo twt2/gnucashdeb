@@ -418,6 +418,7 @@ dist_account_DATA = \
  acctchrt_investment.gnucash-xea \
  acctchrt_kids.gnucash-xea
 
+EXTRA_DIST = CMakeLists.txt
 all: all-am
 
 .SUFFIXES:

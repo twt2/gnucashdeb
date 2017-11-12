@@ -537,6 +537,7 @@ libgncmod_backend_dbi_la_LIBADD = \
    ${top_builddir}/src/libqof/qof/libgnc-qof.la \
    ${LIBDBI_LIBS}
 
+EXTRA_DIST = CMakeLists.txt
 all: all-recursive
 
 .SUFFIXES:

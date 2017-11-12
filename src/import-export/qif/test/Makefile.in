@@ -688,7 +688,7 @@ TESTS_ENVIRONMENT = \
   $(shell ${abs_top_srcdir}/src/gnc-test-env.pl --noexports ${GNC_TEST_DEPS})
 
 EXTRA_DIST = \
-  test-files/test-1-bank-txn.qif
+  test-files/test-1-bank-txn.qif CMakeLists.txt
 
 all: all-am
 

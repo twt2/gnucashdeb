@@ -439,6 +439,7 @@ top_srcdir = @top_srcdir@
 @WITH_PYTHON_TRUE@PYTHON_BINDINGS_DIR = python-bindings
 @WITH_GTKMM_TRUE@GTKMM_DIR = gtkmm
 SUBDIRS = ${PYTHON_BINDINGS_DIR} ${GTKMM_DIR}
+EXTRA_DIST = CMakeLists.txt
 all: all-recursive
 
 .SUFFIXES:

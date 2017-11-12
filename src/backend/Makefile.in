@@ -438,6 +438,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 @WITH_DBI_TRUE@DBI_DIR = dbi
 SUBDIRS = xml sql ${DBI_DIR}
+EXTRA_DIST = CMakeLists.txt
 all: all-recursive
 
 .SUFFIXES:

@@ -414,7 +414,8 @@ account_DATA = \
   acctchrt_renter.gnucash-xea
 
 EXTRA_DIST = \
-  ${account_DATA}
+  ${account_DATA} \
+  CMakeLists.txt
 
 all: all-am
 

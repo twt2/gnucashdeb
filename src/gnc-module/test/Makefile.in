@@ -771,7 +771,8 @@ EXTRA_DIST = \
   test-scm-dynload \
   test-scm-init \
   test-scm-module \
-  test-scm-multi
+  test-scm-multi \
+  CMakeLists.txt
 
 all: all-recursive
 

@@ -708,7 +708,7 @@ GTESTER_REPORT = gtester-report
 #GTESTER_REPORT = $(top_builddir)/glib/gtester-report	# for the GLIB package
 
 # initialize variables for unconditional += appending
-EXTRA_DIST = 
+EXTRA_DIST = CMakeLists.txt
 TEST_PROGS = test-sqlbe
 MODULEPATH = src/backend/sql
 test_column_types_SOURCES = \

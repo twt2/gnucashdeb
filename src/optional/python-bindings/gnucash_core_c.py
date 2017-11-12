@@ -4535,7 +4535,7 @@ def gncTaxTableLookupByName(*args):
   return _gnucash_core_c.gncTaxTableLookupByName(*args)
 
 def gncTaxTableGetTables(*args):
-  """gncTaxTableGetTables(QofBook * book) -> GList *"""
+  """gncTaxTableGetTables(QofBook * book) -> GncTaxTableList *"""
   return _gnucash_core_c.gncTaxTableGetTables(*args)
 
 def gncTaxTableGetName(*args):
