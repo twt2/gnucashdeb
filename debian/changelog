@@ -1,7 +1,13 @@
-gnucash (1:2.7.3-1) UNRELEASED; urgency=medium
+gnucash (1:2.7.3-1) experimental; urgency=medium
 
   * New upstream release [December 2017].
-    * No longer depends on libwebkitgtk-1.0 (Closes: #790204).
+    * No longer depends on libwebkitgtk-1.0 (Closes: #790204)
+      Thanks to John Ralls,
+                Jeremy Bicha,
+                Adrian Bunk,
+                Micha Lenk,
+                Steve Langasek,
+                Laurent Bigonville.
   * Build-Depends:
     + cmake
     + googletest
@@ -19,7 +25,7 @@ gnucash (1:2.7.3-1) UNRELEASED; urgency=medium
     - libgnomecanvas2-dev
     + texinfo
 
- -- Dmitry Smirnov <onlyjob@debian.org>  Sat, 18 Nov 2017 19:12:12 +1100
+ -- Dmitry Smirnov <onlyjob@debian.org>  Sun, 07 Jan 2018 22:28:21 +1100
 
 gnucash (1:2.6.18-1) unstable; urgency=medium
 
