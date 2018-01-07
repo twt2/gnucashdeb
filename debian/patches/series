@@ -1,3 +1,2 @@
-789928u.patch
-876306.patch
+automake-subdir-objects.patch
 hardening-fortify.patch

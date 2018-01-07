@@ -9,6 +9,8 @@ Comment:
 
 Files: *
 Copyright:
+    2014-2016                Aaron Laws <dartme18@gmail.com> <dartmetrash@gmail.com>
+    2015                     Alex Aycinena <alex.aycinena@gmail.com>
     2001                     Almer S. Tigelaar <almer@gnome.org>
     2003                     Andreas J. Guelzow <aguelzow@taliesin.ca>
     2006-2008                Andreas Koehler <andi5.py@gmx.net>
@@ -43,7 +45,7 @@ Copyright:
     2006                     Florian Steinel
     2001                     Free Software Foundation
     1994-2015                Free Software Foundation, Inc
-    2011-2015                Geert Janssens <geert@kobaltwit.be>
+    2011-2016                Geert Janssens <geert@kobaltwit.be>
     2010                     Geert Janssens <janssens-geert@telenet.be>
     1998                     Gerald Combs
     2005                     GnuCash team
@@ -58,7 +60,7 @@ Copyright:
     2003                     Jan Arne Petersen <jpetersen@uni-bonn.de>
     2003                     Jan-Pascal van Best <janpascal@vanbest.org>
     1998-1999,2001           Jeremy Collins
-    2011-2013                John Ralls <jralls@ceridwen.us>
+    2011-2014,2016-2017      John Ralls <jralls@ceridwen.us>
     2001-2002,2004-2007      Joshua Sled <jsled@asynchronous.org>
     1997-2004                Linas Vepstas <linas@linas.org>
     1991                     Marc Feeley
@@ -76,12 +78,13 @@ Copyright:
     1998                     Radey Shouman
     2001-2002                Richard Hult <richard@imendio.com>
     1998-2001                Rob Browning <rlb@cs.utexas.edu>
-    2011-2012                Robert Fewell
+    2011-2012,2014-2017      Robert Fewell
     2000-2001                Robert Merkel <rgmerk@mira.net>
     1997                     Robin D. Clark <rclark@cs.hmc.edu>
     2009                     Sebastian Held <sebastian.held@gmx.de>
     2008                     Sven Henkel <shenkel@gmail.com>
     1990-2000                Terry D. Boldt
+    2013                     Tom Lofts <dev@loftx.co.uk>
     1997                     Torben Weis <weis@kde.org>
 License: GPL-2+
 Comment:
@@ -91,37 +94,71 @@ Comment:
  as the application as a whole
  unless otherwise explicitly stated in the file.
 
-Files: debian/*
-Copyright: 2009-2012 Micha Lenk <micha@debian.org>
-           2011-2014 Sébastien Villemot <sebastien@debian.org>
-           2012-2017 Dmitry Smirnov <onlyjob@debian.org>
-           2004-2009 Thomas Bushnell, BSG <tb@debian.org>
-           2002-2004 James A. Treacy <treacy@debian.org>
-           2000-2001 John Goerzen <jgoerzen@complete.org>
-           1999-2000 Tyson Dowd <trd@cs.mu.oz.au>
-License: GPL-3+
+Files: borrowed/goffice/*
+Copyright:
+    2002-2005 Andreas J. Guelzow <aguelzow@taliesin.ca>
+    2000      Marco Pesenti Gritti
+    2006      Morten Welinder <terra@gnome.org>
+    1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
+License: GPL-2+
+
+Files: borrowed/gwengui-gtk3/*
+Copyright:
+    2010 Martin Preuss <martin@libchipcard.de>
+License: LGPL-2.1+
+
+Files: borrowed/libc/*
+Copyright:
+    2007 Andreas Koehler <andi5.py@gmx.net>
+    1998 Gerald Combs <gerald@ethereal.com>
+    2001 Linux Developers Group
+License: GPL-2+
 
 Files:
-    lib/libc/strfmon.c
-    lib/libc/strfmon.h
-    src/python/pycons/ishell.py
+    borrowed/libc/strfmon.c
+    borrowed/libc/strfmon.h
 Copyright:
-    2001      Alexey Zelkin <phantom@FreeBSD.org>
+    2001 Alexey Zelkin <phantom@FreeBSD.org>
+License: BSD-2-Clause_a
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ 1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ SUCH DAMAGE.
+
+Files:
+    gnucash/python/pycons/ishell.py
+Copyright:
     2007      IBM Corporation
 License: BSD-2-Clause
 
 Files:
-    src/python/pycons/__init__.py
-    src/python/pycons/console.py
-    src/python/pycons/pycons
-    src/python/pycons/setup.py
-    src/python/pycons/shell.py
+    gnucash/python/pycons/__init__.py
+    gnucash/python/pycons/console.py
+    gnucash/python/pycons/pycons
+    gnucash/python/pycons/setup.py
+    gnucash/python/pycons/shell.py
 Copyright:
     2008      Nicolas Rougier
 License: BSD-3-Clause
 
 Files:
-    src/report/jqplot/plugins/*
+    gnucash/report/jqplot/plugins/*
 Copyright:
     2009-2013 Chris Leonello
 License: Expat or GPL-2
@@ -136,41 +173,41 @@ Copyright:
     2004-2005,2007-2009 Free Software Foundation, Inc
 License: FSFULLR
 
-Files: 
- src/doc/design/gnucash-design.info
- src/doc/design/gnucash-design.texi
+Files:
+    libgnucash/doc/design/gnucash-design.info
+    libgnucash/doc/design/gnucash-design.texi
 Copyright: 2000 Gnumatic Incorporated
 License: GFDL-NIV-1.1
-Comment: 
+Comment:
  http://www.debian.org/vote/2006/vote_001#outcome
 
 Files:
-    src/app-utils/gnc-sx-instance-model.h
-    src/gnome-utils/gnc-dense-cal-model.h
-    src/gnome-utils/gnc-dense-cal-store.h
-    src/gnome-utils/gnc-sx-instance-dense-cal-adapter.h
-    src/gnome-utils/gnc-sx-list-tree-model-adapter.h
-    src/gnome-utils/gnc-tree-view-sx-list.h
-    src/gnome/dialog-sx-editor.h
-    src/gnome/dialog-sx-editor2.h
-    src/gnome/dialog-sx-since-last-run.h
+    libgnucash/app-utils/gnc-sx-instance-model.h
+    gnucash/gnome-utils/gnc-dense-cal-model.h
+    gnucash/gnome-utils/gnc-dense-cal-store.h
+    gnucash/gnome-utils/gnc-sx-instance-dense-cal-adapter.h
+    gnucash/gnome-utils/gnc-sx-list-tree-model-adapter.h
+    gnucash/gnome-utils/gnc-tree-view-sx-list.h
+    gnucash/gnome/dialog-sx-editor.h
+    gnucash/gnome/dialog-sx-editor2.h
+    gnucash/gnome/dialog-sx-since-last-run.h
 Copyright:
     2006      Josh Sled <jsled@asynchronous.org>
     2001,2006-2007 Joshua Sled <jsled@asynchronous.org>
 License: GPL-2 or GPL-3
 
 Files:
-    src/app-utils/gnc-sx-instance-model.c
-    src/gnome-utils/gnc-dense-cal-model.c
-    src/gnome-utils/gnc-dense-cal-store.c
-    src/gnome-utils/gnc-sx-instance-dense-cal-adapter.c
-    src/gnome-utils/gnc-sx-list-tree-model-adapter.c
-    src/gnome-utils/gnc-tree-view-sx-list.c
-    src/gnome/dialog-sx-editor.c
-    src/gnome/dialog-sx-editor2.c
-    src/gnome/dialog-sx-since-last-run.c
-    src/gnome/gnc-plugin-page-sx-list.c
-    src/gnome/gnc-plugin-page-sx-list.h
+    libgnucash/app-utils/gnc-sx-instance-model.c
+    gnucash/gnome-utils/gnc-dense-cal-model.c
+    gnucash/gnome-utils/gnc-dense-cal-store.c
+    gnucash/gnome-utils/gnc-sx-instance-dense-cal-adapter.c
+    gnucash/gnome-utils/gnc-sx-list-tree-model-adapter.c
+    gnucash/gnome-utils/gnc-tree-view-sx-list.c
+    gnucash/gnome/dialog-sx-editor.c
+    gnucash/gnome/dialog-sx-editor2.c
+    gnucash/gnome/dialog-sx-since-last-run.c
+    gnucash/gnome/gnc-plugin-page-sx-list.c
+    gnucash/gnome/gnc-plugin-page-sx-list.h
 Copyright:
     2006      Josh Sled <jsled@asynchronous.org>
     2001-2002,2006-2007 Joshua Sled <jsled@asynchronous.org>
@@ -190,8 +227,36 @@ Copyright:
 License: GPL-2+ and exception-Autoconf
 
 Files:
-    src/import-export/csv-imp/gnc-csv-gnumeric-popup.c
-    src/import-export/csv-imp/gnc-csv-gnumeric-popup.h
+    macros/ax_append_flag.m4
+    macros/ax_check_compile_flag.m4
+    macros/m4_ax_check_compile_flag.m4
+    macros/m4_ax_pthread.m4
+Copyright:
+    2008 Guido U. Draheim <guidod@gmx.de>
+    2011 Maarten Bosmans <mkbosmans@gmail.com>
+    2008 Steven G. Johnson <stevenj@alum.mit.edu>
+    2011 Daniel Richard G. <skunk@iSKUNK.ORG>
+License: GPL-3+
+
+Files:
+    macros/ax_cxx_compile_stdcxx_11.m4
+    macros/m4_ax_boost_base.m4
+Copyright:
+    2014 Alexey Sokolov <sokolov@google.com>
+    2008 Benjamin Kosnik <bkoz@redhat.com>
+    2009 Peter Adolphs
+    2013 Roy Stogner <roystgnr@ices.utexas.edu>
+    2008 Thomas Porschberg <thomas@randspringer.de>
+    2012 Zack Weinberg <zackw@panix.com>
+License: FSF-Install
+ Copying and distribution of this file, with or without modification, are
+ permitted in any medium without royalty provided the copyright notice
+ and this notice are preserved. This file is offered as-is, without any
+ warranty.
+
+Files:
+    gnucash/import-export/csv-imp/gnc-csv-gnumeric-popup.c
+    gnucash/import-export/csv-imp/gnc-csv-gnumeric-popup.h
 Copyright: Gnumeric authors
 License: GPL-2 or GPL-3
 
@@ -208,32 +273,32 @@ Copyright:
 License: GPL-3+ and exception-Autoconf
 
 Files:
-    src/doc/design/texinfo.tex
+    libgnucash/doc/design/texinfo.tex
 Copyright: 1985-1986,1988,1990-2013 Free Software Foundation, Inc.
 License: GPL-3+ and exception-GPL3-Tex
 
 Files:
-    lib/libc/strptime.c
-    src/app-utils/gnc-accounting-period.c
-    src/app-utils/gnc-accounting-period.h
-    src/gnome-search/gnc-general-search.h
-    src/gnome-utils/gnc-account-sel.c
-    src/gnome-utils/gnc-account-sel.h
-    src/gnome-utils/gnc-amount-edit.c
-    src/gnome-utils/gnc-amount-edit.h
-    src/gnome-utils/gnc-commodity-edit.c
-    src/gnome-utils/gnc-commodity-edit.h
-    src/gnome-utils/gnc-currency-edit.c
-    src/gnome-utils/gnc-currency-edit.h
-    src/gnome-utils/gnc-date-delta.c
-    src/gnome-utils/gnc-date-delta.h
-    src/gnome-utils/gnc-date-edit.c
-    src/gnome-utils/gnc-date-edit.h
-    src/gnome-utils/gnc-date-format.h
-    src/gnome-utils/gnc-general-select.c
-    src/gnome-utils/gnc-general-select.h
-    src/gnome-utils/gnc-period-select.c
-    src/gnome-utils/gnc-period-select.h
+    borrowed/libc/strptime.c
+    libgnucash/app-utils/gnc-accounting-period.c
+    libgnucash/app-utils/gnc-accounting-period.h
+    gnucash/gnome-search/gnc-general-search.h
+    gnucash/gnome-utils/gnc-account-sel.c
+    gnucash/gnome-utils/gnc-account-sel.h
+    gnucash/gnome-utils/gnc-amount-edit.c
+    gnucash/gnome-utils/gnc-amount-edit.h
+    gnucash/gnome-utils/gnc-commodity-edit.c
+    gnucash/gnome-utils/gnc-commodity-edit.h
+    gnucash/gnome-utils/gnc-currency-edit.c
+    gnucash/gnome-utils/gnc-currency-edit.h
+    gnucash/gnome-utils/gnc-date-delta.c
+    gnucash/gnome-utils/gnc-date-delta.h
+    gnucash/gnome-utils/gnc-date-edit.c
+    gnucash/gnome-utils/gnc-date-edit.h
+    gnucash/gnome-utils/gnc-date-format.h
+    gnucash/gnome-utils/gnc-general-select.c
+    gnucash/gnome-utils/gnc-general-select.h
+    gnucash/gnome-utils/gnc-period-select.c
+    gnucash/gnome-utils/gnc-period-select.h
 Copyright:
     2000      Dave Peticolas <dave@krondo.com>
     2005-2006 David Hampton <hampton@employees.org>
@@ -244,8 +309,7 @@ Copyright:
 License: LGPL-2+
 
 Files:
-    src/core-utils/gnc-jalali.c
-    src/optional/gtkmm/gncmm/wrap_init.hpp
+    libgnucash/core-utils/gnc-jalali.c
     util/guile.c
 Copyright:
     1996-1997,2000-2001,2006,2008 Free Software Foundation, Inc
@@ -265,22 +329,32 @@ License: Permissive-gettext
  but which still want to provide support for the GNU gettext functionality.
 
 Files:
-    src/app-utils/gfec.c
-    src/app-utils/gfec.h
-    src/report/jqplot/plugins/jqplot.json2.js
+    libgnucash/app-utils/gfec.c
+    libgnucash/app-utils/gfec.h
+    gnucash/report/jqplot/plugins/jqplot.json2.js
 Copyright:
     Not-Applicable
 License: public-domain
  This code is in the public domain.
 
 Files:
-    src/cmake_modules/*
+    common/cmake_modules/*
 Copyright:
     2017      GnuCash team
     2015      Rob Gowin
     2009-2010 Christian Stimming
     2006      Oswald Buddenhagen <ossi@kde.org>
 License: BSD-3-Clause~author
+
+Files: debian/*
+Copyright: 2009-2012 Micha Lenk <micha@debian.org>
+           2011-2014 Sébastien Villemot <sebastien@debian.org>
+           2012-2018 Dmitry Smirnov <onlyjob@debian.org>
+           2004-2009 Thomas Bushnell, BSG <tb@debian.org>
+           2002-2004 James A. Treacy <treacy@debian.org>
+           2000-2001 John Goerzen <jgoerzen@complete.org>
+           1999-2000 Tyson Dowd <trd@cs.mu.oz.au>
+License: GPL-3+
 
 License: BSD-2-Clause
  Redistribution and use in source and binary forms, with or without

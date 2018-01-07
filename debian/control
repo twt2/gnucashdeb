@@ -3,34 +3,43 @@ Section: gnome
 Priority: optional
 Maintainer: Dmitry Smirnov <onlyjob@debian.org>
 Standards-Version: 4.1.1
-Build-Depends: debhelper (>= 10), intltool, pkg-config, dh-python,
+Build-Depends: debhelper (>= 10), intltool, pkg-config, dh-python, cmake,
+ googletest,
  guile-2.0-dev,
  imagemagick,
  libaqbanking-dev (>= 5.6.0beta),
+ libboost-dev,
+ libboost-date-time-dev,
+ libboost-filesystem-dev,
+ libboost-locale-dev,
+ libboost-regex-dev,
  libdbi-dev,
  libdbd-sqlite3,
  libglib2.0-dev (>= 2.26),
  libsecret-1-dev,
- libgnomecanvas2-dev,
- libgoffice-0.8-dev,
- libgtk2.0-dev (>= 2.24),
+# libgnomecanvas2-dev,
+ libgoffice-0.10-dev,
+ libgtk-3-dev,
  libgwengui-gtk2-dev,
  libofx-dev,
- libwebkitgtk-dev,
+ libwebkit2gtk-4.0-dev,
  libxml2-dev,
  libxslt1-dev,
  python,
  python-dev,
+ texinfo,
  xsltproc,
  zlib1g-dev
 ## Needed by tests:
  ,locales-all
+# ,faketime
 Build-Conflicts: guile-1.8
 Homepage: http://www.gnucash.org/
 Vcs-Browser: https://anonscm.debian.org/cgit/pkg-gnucash/gnucash.git
 Vcs-Git: https://anonscm.debian.org/git/pkg-gnucash/gnucash.git
 
 Package: gnucash
+Built-Using: ${my:Built-Using}
 Architecture: any
 Depends: gnucash-common (= ${source:Version}), ${shlibs:Depends},
   ${aqbanking:Depends}, ${misc:Depends}, ${perl:Depends}, guile-2.0,

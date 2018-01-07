@@ -1,0 +1,27 @@
+~~~~
+Makefile.am:14: warning: source file 'util/guile.c' is in a subdirectory,
+Makefile.am:14: but option 'subdir-objects' is disabled
+automake: warning: possible forward-incompatibility.
+automake: At least a source file is in a subdirectory, but the 'subdir-objects'
+automake: automake option hasn't been enabled.  For now, the corresponding output
+automake: object file(s) will be placed in the top-level directory.  However,
+automake: this behaviour will change in future Automake versions: they will
+automake: unconditionally cause object files to be placed in the same subdirectory
+automake: of the corresponding sources.
+automake: You are advised to start using 'subdir-objects' option throughout your
+automake: project, to avoid future incompatibilities.
+~~~~
+
+--- a/configure.ac
++++ b/configure.ac
+@@ -41,9 +41,9 @@
+ # doesn't do. Fixes are in git and expected in Automake-1.16. See
+ # http://lists.gnu.org/archive/html/automake/2014-04/msg00002.html and
+ # http://debbugs.gnu.org/cgi/bugreport.cgi?bug=13928 for details.
+ # In the meantime the best option is to use Automake 1.13 or earlier.
+-AM_INIT_AUTOMAKE([1.9 tar-ustar dist-bzip2])
++AM_INIT_AUTOMAKE([1.9 tar-ustar dist-bzip2 subdir-objects])
+ 
+ # Parse out the version number
+ GNUCASH_VERSION_STRING=AC_PACKAGE_VERSION
+ GNUCASH_MAJOR_VERSION=`echo $GNUCASH_VERSION_STRING | [ sed -e 's/^\([^\.]*\)\.\([^.]*\)\.\(.*\)$/\1/' ]`

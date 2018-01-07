@@ -1,5 +1,5 @@
 Author: Dmitry Smirnov <onlyjob@member.fsf.org>
-Last-Update: 2012-06-28
+Last-Update: 2017-11-18
 Forwarded: not-needed
 Description: Disable supression of fortify hardening flag.
  Wirh --enable-debug upstream build system removes '-02' argument
@@ -12,7 +12,7 @@ Description: Disable supression of fortify hardening flag.
 
 --- a/configure.ac
 +++ b/configure.ac
-@@ -730,12 +730,8 @@
+@@ -764,15 +764,8 @@
  AC_ARG_ENABLE( debug,
    [AS_HELP_STRING([--enable-debug],[compile with debugging flags set])],
    [
@@ -21,6 +21,9 @@ Description: Disable supression of fortify hardening flag.
 -     CFLAGS=`echo ${CFLAGS} | sed -e 's,-O.,,g'`
 -     # ...except for those the user wants.
 -     CFLAGS="${CFLAGS} -g ${USER_OPTIMIZATION}"
+-     # Do the same for C++
+-     CXXFLAGS=`echo ${CXXFLAGS} | sed -e 's,-O.,,g'`
+-     CXXFLAGS="${CXXFLAGS} -g ${USER_OPTIMIZATION}"
       LDFLAGS="${LDFLAGS} -g"
    fi
    ])
