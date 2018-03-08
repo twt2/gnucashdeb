@@ -1,6 +1,9 @@
 gnucash (1:2.7.5-1) UNRELEASED; urgency=medium
 
   * New upstream release [March 2018].
+  * Build-Depends:
+    + libgwengui-gtk2-dev --> libgwengui-gtk3-dev (Closes: #886587)
+    + guile-2.0-dev --> guile-2.2-dev (Closes: #885204)
 
  -- Dmitry Smirnov <onlyjob@debian.org>  Wed, 28 Feb 2018 07:57:03 +1100
 
