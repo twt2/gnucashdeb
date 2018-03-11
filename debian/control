@@ -3,7 +3,7 @@ Section: gnome
 Priority: optional
 Maintainer: Dmitry Smirnov <onlyjob@debian.org>
 Standards-Version: 4.1.3
-Build-Depends: debhelper (>= 10), pkg-config, dh-python
+Build-Depends: debhelper (>= 11~), pkg-config, dh-python
     ,cmake
     ,googletest
     ,guile-2.2-dev
