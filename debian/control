@@ -3,7 +3,7 @@ Section: gnome
 Priority: optional
 Maintainer: Dmitry Smirnov <onlyjob@debian.org>
 Standards-Version: 4.1.1
-Build-Depends: debhelper (>= 10), intltool, pkg-config, dh-python
+Build-Depends: debhelper (>= 10), pkg-config, dh-python
     ,cmake
     ,googletest
     ,guile-2.2-dev
@@ -18,7 +18,7 @@ Build-Depends: debhelper (>= 10), intltool, pkg-config, dh-python
     ,libdbd-sqlite3
     ,libglib2.0-dev
     ,libsecret-1-dev
-    ,libgoffice-0.10-dev
+#   ,libgoffice-0.10-dev
     ,libgtk-3-dev
     ,libgwengui-gtk3-dev
     ,libofx-dev

@@ -6,7 +6,7 @@
 include /usr/share/dpkg/pkg-info.mk
 
 # Hack for Gnucash build system
-export BUILDING_FROM_VCS=$(if $(wildcard autogen.sh),yes,no)
+#export BUILDING_FROM_VCS=$(if $(wildcard libgnucash/core-utils/gnc-vcs-info.h),yes,no)
 
 # reduce overlinking
 #export DEB_LDFLAGS_MAINT_APPEND += -Wl,--as-needed
