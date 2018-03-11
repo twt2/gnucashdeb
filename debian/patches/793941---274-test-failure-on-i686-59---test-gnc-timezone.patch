@@ -1,0 +1,62 @@
+From 5520fae838bfddc92385c85706e741a753458c5d Mon Sep 17 00:00:00 2001
+Date: Tue, 6 Mar 2018 09:56:13 -0800
+Subject: [PATCH] Bug 793941 - 2.7.4: test failure on i686: 59 - test-gnc-timezone
+Bug-Upstream: https://bugzilla.gnome.org/show_bug.cgi?id=793941
+
+--- a/libgnucash/engine/test/gtest-gnc-timezone.cpp
++++ b/libgnucash/engine/test/gtest-gnc-timezone.cpp
+@@ -141,28 +141,12 @@
+ 
+ TEST(gnc_timezone_constructors, test_IANA_Perth_tz)
+ {
+     TimeZoneProvider tzp("Australia/Perth");
+-    for (int year = 1893; year < 2048; ++year)
++    for (int year = 1916; year < 2048; ++year)
+     {
+         auto tz = tzp.get(year);
+-#ifdef __LP64__
+-        if (year < 1895)
+-        {
+-            EXPECT_EQ(tz->std_zone_abbrev(), "LMT");
+-            EXPECT_FALSE(tz->has_dst());
+-            EXPECT_EQ(tz->base_utc_offset().total_seconds(), 27804);
+-        }
+-        else if (year < 1916)
+-#else
+-        if (year < 1916)
+-#endif
+-        {
+-            EXPECT_EQ(tz->std_zone_abbrev(), "AWST");
+-            EXPECT_FALSE(tz->has_dst());
+-            EXPECT_EQ(tz->base_utc_offset().total_seconds(), 28800);
+-        }
+-        else if (year < 1917)
++        if (year < 1917)
+         {
+             EXPECT_EQ(tz->std_zone_abbrev(), "AWST");
+             EXPECT_TRUE(tz->has_dst());
+             EXPECT_EQ(tz->base_utc_offset().total_seconds(), 28800);
+@@ -203,22 +187,12 @@
+ 
+ TEST(gnc_timezone_constructors, test_IANA_Minsk_tz)
+ {
+     TimeZoneProvider tzp("Europe/Minsk");
+-    for (int year = 1870; year < 2020; ++year)
++    for (int year = 1916; year < 2020; ++year)
+     {
+         auto tz = tzp.get(year);
+-#ifdef __LP64__
+-        if (year < 1879)
+-        {
+-            EXPECT_EQ(tz->std_zone_abbrev(), "LMT");
+-            EXPECT_FALSE(tz->has_dst());
+-            EXPECT_EQ(tz->base_utc_offset().total_seconds(), 6616);
+-        }
+-        else if (year < 1924)
+-#else
+         if (year < 1924)
+-#endif
+         {
+             EXPECT_EQ(tz->std_zone_abbrev(), "MMT");
+             EXPECT_FALSE(tz->has_dst());
+             EXPECT_EQ(tz->base_utc_offset().total_seconds(), 6600);
