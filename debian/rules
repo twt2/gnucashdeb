@@ -23,7 +23,7 @@ export GUILE_AUTO_COMPILE=0
 #;;; ERROR: failed to create path for auto-compiled file "/usr/bin/guild"
 
 %:
-	dh $@ --buildsystem=cmake --with python2,aqbanking --builddirectory=.build
+	dh $@ --buildsystem=cmake --with python3,aqbanking --builddirectory=.build
 
 override_dh_auto_clean:
 	$(RM) -rv .build/__gtest */*/*/.libs */*/.libs
@@ -87,9 +87,6 @@ endif
 
 override_dh_strip:
 	dh_strip --dbgsym-migration='gnucash-dbg (<< 1:2.6.13~)'
-
-override_dh_python2:
-	dh_python2 --no-guessing-versions -V $(shell pyversions -dv)
 
 override_dh_gencontrol:
 	dh_gencontrol -- -Vmy:Built-Using="$(foreach pkg,googletest,$(word 2,$(shell dpkg --status $(pkg) | grep ^Package)) (=$(word 2,$(shell dpkg --status $(pkg) | grep Version))),)"

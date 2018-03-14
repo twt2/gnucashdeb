@@ -25,8 +25,8 @@ Build-Depends: debhelper (>= 11~), pkg-config, dh-python
     ,libwebkit2gtk-4.0-dev
     ,libxml2-dev
     ,libxslt1-dev
-    ,python
-    ,python-dev
+    ,python3
+    ,python3-dev
     ,texinfo
     ,xsltproc
     ,zlib1g-dev
@@ -83,10 +83,10 @@ Description: common files for the financial-accounting software Gnucash
  not be installed directly, but is pulled in automatically by the dependencies
  of the Gnucash package.
 
-Package: python-gnucash
+Package: python3-gnucash
 Section: python
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, python-gtk2
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}
 Description: Gnucash interface for Python
  Gnucash provides accounting functions suitable for use by small businesses and
  individuals. It can track finances in multiple accounts, keeping running and
