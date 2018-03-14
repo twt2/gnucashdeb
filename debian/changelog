@@ -6,7 +6,6 @@ gnucash (1:2.7.5-1) UNRELEASED; urgency=medium
     Thanks, John Ralls.
   * Build-Depends:
     + libgwengui-gtk2-dev --> libgwengui-gtk3-dev (Closes: #886587)
-    + guile-2.0-dev --> guile-2.2-dev (Closes: #885204)
     - libgoffice-0.10-dev
   * Standards-Version: 4.1.3
   * debhelper & compat to version 11.
