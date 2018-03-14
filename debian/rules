@@ -75,6 +75,7 @@ override_dh_install:
 	dh_install
 
 override_dh_auto_test:
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
 	$(MAKE) -C .build check; sh -x -c 'RV=$$0; [ "$${RV}" -eq 0 ] || cat ".build/Testing/Temporary/LastTest.log"; exit $${RV}' $$?
 #	TZ=PST8PDT $(MAKE) -C .build check
 #	set -ex ;\
@@ -82,6 +83,7 @@ override_dh_auto_test:
 #          TZ="Etc/GMT$$T" faketime '2014-12-24 08:55:42' $(MAKE) -C .build check ;\
 #          TZ="Etc/GMT$$T" $(MAKE) -C .build check ;\
 #        done
+endif
 
 override_dh_strip:
 	dh_strip --dbgsym-migration='gnucash-dbg (<< 1:2.6.13~)'
