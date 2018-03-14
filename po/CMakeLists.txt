@@ -9,6 +9,8 @@ SET (NEW_LINGUAS as brx doi es_NI kok kok@latin ks mai mni mni@bengali)
 
 SET (ALL_LINGUAS ${TP_LINGUAS} ${GC_LINGUAS} ${NEW_LINGUAS})
 
+file (WRITE LINGUAS "${ALL_LINGUAS}")
+
 SET (CATALOGS "")
 SET (BUILD_CATALOGS "")
 
@@ -18,12 +20,14 @@ IF (${CMAKE_VERSION} VERSION_GREATER 3.1)
 ENDIF()
 
 SET(po_SOURCES "")
+file (WRITE LINGUAS "")
 FOREACH(lingua ${ALL_LINGUAS})
   LIST(APPEND po_SOURCES ${lingua}.po)
+  file (APPEND LINGUAS "${lingua} ")
 ENDFOREACH()
 
-SET_LOCAL_DIST(po_DIST_local ${po_SOURCES} CMakeLists.txt ChangeLog Makevars POTFILES.ignore POTFILES.in POTFILES.skip
-        README check-po.cmake)
+SET_LOCAL_DIST(po_DIST_local ${po_SOURCES} CMakeLists.txt ChangeLog Makevars
+  POTFILES.in POTFILES.skip README gnucash-pot.cmake)
 SET(po_DIST ${po_DIST_local} ${po_glossary_DIST} PARENT_SCOPE)
 
 FOREACH(lingua ${ALL_LINGUAS})
@@ -31,7 +35,9 @@ FOREACH(lingua ${ALL_LINGUAS})
   LIST(APPEND CATALOGS ${_OUTPUT_FILE})
   ADD_CUSTOM_COMMAND(
       OUTPUT ${_OUTPUT_FILE}
-      COMMAND ${CMAKE_COMMAND_TMP} ${MSGFMT} -o ${_OUTPUT_FILE} ${CMAKE_CURRENT_SOURCE_DIR}/${lingua}.po
+      COMMAND ${CMAKE_COMMAND_TMP}
+        ${GETTEXT_MSGFMT_EXECUTABLE}
+            -o ${_OUTPUT_FILE} ${CMAKE_CURRENT_SOURCE_DIR}/${lingua}.po
   )
   SET(_BUILD_FILE_DIR ${DATADIR_BUILD}/locale/${lingua}/LC_MESSAGES)
   MAKE_DIRECTORY(${_BUILD_FILE_DIR})
@@ -42,7 +48,7 @@ FOREACH(lingua ${ALL_LINGUAS})
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/${lingua}.mo ${_BUILD_FILE}
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${_OUTPUT_FILE}
     #APPEND
-  )
+    )
 ENDFOREACH(lingua)
 
 ADD_CUSTOM_TARGET(po-gmo ALL DEPENDS ${CATALOGS})
@@ -50,9 +56,8 @@ ADD_CUSTOM_TARGET(po-gmo-build ALL DEPENDS ${BUILD_CATALOGS})
 
 
 FOREACH(lingua ${ALL_LINGUAS})
-  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/${lingua}.mo RENAME gnucash.mo DESTINATION share/locale/${lingua}/LC_MESSAGES)
+  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/${lingua}.mo RENAME gnucash.mo DESTINATION ${CMAKE_INSTALL_DATADIR}/locale/${lingua}/LC_MESSAGES)
 ENDFOREACH(lingua)
-
 
 FUNCTION(READ_FILE_REMOVING_COMMENTS OUTPUT PATH)
   SET(RESULT "")
@@ -66,49 +71,41 @@ ENDFUNCTION()
 
 
 FUNCTION(MAKE_GNUCASH_POTFILES)
-
-  SET(IGNORE_PATTERNS "gw-" "test" "experimental" "python-bindings" "swig-.*\\.c")
-  
   # Create a list of candidate translation files
-  FILE(GLOB_RECURSE FILES_IN RELATIVE ${CMAKE_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/*.c ${CMAKE_SOURCE_DIR}/*.glade ${CMAKE_SOURCE_DIR}/*.desktop.in
-    ${CMAKE_SOURCE_DIR}/*.keys.in  ${CMAKE_SOURCE_DIR}/*.gschema.xml.in.in ${CMAKE_SOURCE_DIR}/*.scm)
+  file (GLOB_RECURSE FILES_IN RELATIVE ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/*.c ${CMAKE_SOURCE_DIR}/*.cpp
+    ${CMAKE_SOURCE_DIR}/*.glade ${CMAKE_SOURCE_DIR}/*.desktop.in.in
+    ${CMAKE_SOURCE_DIR}/*.gschema.xml.in ${CMAKE_SOURCE_DIR}/*.appdata.xml.in
+    ${CMAKE_SOURCE_DIR}/*.keys.in ${CMAKE_SOURCE_DIR}/*.scm
+    ${CMAKE_SOURCE_DIR}/*/qofbookslots.h
+  )
 
-  # Only consider files in the src/ directory. Also check against list of ignore patterns
-  SET(FILES "")
-  FOREACH(path ${FILES_IN})
-    STRING(REGEX MATCH "^src" IS_SRC ${path})
-    IF (IS_SRC)
-      SET(IS_IGNORED FALSE)
-      FOREACH(pattern ${IGNORE_PATTERNS})
-        STRING(REGEX MATCH ${pattern} YES_IGNORE ${path})
-        IF (YES_IGNORE)
-	  SET(IS_IGNORED TRUE)
-        ENDIF()
-      ENDFOREACH(pattern)
-      IF (NOT IS_IGNORED)
-        LIST(APPEND FILES ${path})
-      ENDIF(NOT IS_IGNORED)
-    ENDIF(IS_SRC)      
-  ENDFOREACH(path)
+  # Only consider files in a selection of the source directories and
+  # additionally check against list of ignore patterns
+  set (GOOD_FILES "")
+  foreach (path ${FILES_IN})
+    if (${path} MATCHES "^(bindings/|borrowed/|common/|doc/|libgnucash/|gnucash/)"
+        AND
+        NOT ${path} MATCHES "gw-|test|experimental|python-bindings|swig-.*\\.c")
+        list (APPEND GOOD_FILES ${path})
+    endif ()
+  endforeach (path)
 
-  # Read in list of paths to skip from POTFILES.{skip,ignore}
+  # Remove the paths that we have marked as explicitly skipped
   READ_FILE_REMOVING_COMMENTS(SKIP_LINES POTFILES.skip)
-  READ_FILE_REMOVING_COMMENTS(IGNORE_LINES POTFILES.ignore)
+  foreach (path ${SKIP_LINES})
+      list(REMOVE_ITEM GOOD_FILES ${path})
+  endforeach ()
 
-  # Remove the paths that are skipped or ignored
-  FOREACH(path ${SKIP_LINES} ${IGNORE_LINES})
-    list(REMOVE_ITEM FILES ${path})
-  ENDFOREACH()
 
-  
-  # CMake sorting different from UNIX sorting. Sort the files
-  # here so it is easier for me to compare to the autotools
-  # generated POTFILES.in
-  STRING(REPLACE ";" "\n" SORT_IN "${FILES}")
+  # CMake sorting is different from UNIX sorting. Use perl to
+  # sort POTFILES.in universally. This may no longer be needed
+  # now we have dropped autotools support.
+  STRING(REPLACE ";" "\n" SORT_IN "${GOOD_FILES}")
+  SET(SORT_IN "${SORT_IN}\n")
   FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/POTFILES.in.in "${SORT_IN}")
 
-  EXECUTE_PROCESS(COMMAND "sort"
+  EXECUTE_PROCESS(COMMAND "${PERL_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/util/elegant-sort.pl"
     INPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/POTFILES.in.in
     OUTPUT_VARIABLE POTFILES_IN
   )
@@ -116,91 +113,47 @@ FUNCTION(MAKE_GNUCASH_POTFILES)
 
   # Write out the final list.
   # intltool-update insists that this file be in the source directory. :-(
-  SET(POTFILES_IN_PATH ${CMAKE_CURRENT_SOURCE_DIR}/POTFILES.in)
+  SET(POTFILES_IN_PATH ${CMAKE_CURRENT_BINARY_DIR}/POTFILES.in)
   FILE(WRITE ${POTFILES_IN_PATH} "# This is a list of files which contain translatable strings.
-# This file was generated by ../make-gnucash-potfiles.
+# This file was autogenerated by cmake.
 ")
 
+  set(POTFILE_DEPS "")
   FOREACH(path ${POTFILES})
-    STRING(REGEX MATCH gschema.xml.in.in IS_GSCHEMA ${path})
-    IF(IS_GSCHEMA AND NOT WIN32)
-      # Force parse type for gsettings files
-      SET(path "[type: gettext/gsettings]${path}")
-    ENDIF()
+    list(APPEND POTFILE_DEPS ${CMAKE_SOURCE_DIR}/${path})
     FILE(APPEND ${POTFILES_IN_PATH} "${path}\n")
   ENDFOREACH()
 
-  # These are also added, even though they are outside of src/
-  FILE(APPEND ${POTFILES_IN_PATH} "src/gnome/gnucash.appdata.xml.in
-src/gnome/gnucash.desktop.in.in
-src/libqof/qof/gnc-date.c
-src/libqof/qof/qofbookslots.h
-doc/tip_of_the_day.list.in
-")
+  CONFIGURE_FILE(${POTFILES_IN_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/POTFILES.in NEWLINE_STYLE LF)
 
+  set(gnucash_pot_depends ${POTFILE_DEPS}  CACHE INTERNAL "List of files with translatable strings. If any of these change, gnucash.pot should be regenerated")
 ENDFUNCTION()
-
-find_program(INTLTOOL_UPDATE NAMES intltool-update)
-IF (${INTLTOOL_UPDATE} STREQUAL "INTLTOOL_UPDATE-NOTFOUND")
-  MESSAGE(FATAL_ERROR "Can't find the 'intltool-update' program.")
-ENDIF ()
 
 IF(BUILDING_FROM_VCS)
 
   MAKE_GNUCASH_POTFILES()
 
-  find_program(INTLTOOL_EXTRACT NAMES intltool-extract)
   find_program(XGETTEXT xgettext)
-
-  IF (${INTLTOOL_EXTRACT} STREQUAL "INTLTOOL_EXTRACT-NOTFOUND")
-    MESSAGE(FATAL_ERROR "Can't find the 'intltool-extract' program.")
-  ENDIF ()
+  configure_file (${CMAKE_CURRENT_SOURCE_DIR}/Makevars
+    ${CMAKE_CURRENT_BINARY_DIR}/Makevars COPYONLY)
 
   IF (${XGETTEXT} STREQUAL "XGETTEXT-NOTFOUND")
     MESSAGE(FATAL_ERROR "Can't find the 'xgettext' program.")
   ENDIF ()
 
-  IF (${CMAKE_VERSION} VERSION_GREATER 3.1 AND NOT WIN32)
-    EXECUTE_PROCESS(
-            COMMAND ${CMAKE_COMMAND_TMP} INTLTOOL_EXTRACT=${INTLTOOL_EXTRACT} XGETTEXT=${XGETTEXT} ${INTLTOOL_UPDATE} --gettext-package ${PACKAGE} --pot
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-            RESULT_VARIABLE GNUCASH_POT_RESULT
-    )
-    IF(NOT ${GNUCASH_POT_RESULT} STREQUAL "0")
-      MESSAGE(FATAL_ERROR "Error when creating gnucash.pot: ${GNUCASH_POT_RESULT}")
-    ENDIF()
-  ELSE()
-    CONFIGURE_FILE(make-gnucash-pot.sh.in make-gnucash-pot.sh)
-    EXECUTE_PROCESS(
-            COMMAND ${SHELL} ${CMAKE_CURRENT_BINARY_DIR}/make-gnucash-pot.sh
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-            RESULT_VARIABLE GNUCASH_POT_RESULT_SHELL
-    )
-    IF(NOT ${GNUCASH_POT_RESULT_SHELL} STREQUAL "0")
-      MESSAGE(FATAL_ERROR "Error when creating gnucash.pot from shell script: ${GNUCASH_POT_RESULT_SHELL}")
-    ENDIF()
-  ENDIF()
-
-  IF (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/gnucash.pot)
-    MESSAGE(FATAL_ERROR "POT file '${CMAKE_CURRENT_SOURCE_DIR}/gnucash.pot' was not successfully created.")
-  ENDIF()
-
-
-  EXECUTE_PROCESS(
-          COMMAND ${CMAKE_COMMAND} -E copy gnucash.pot ${CMAKE_CURRENT_BINARY_DIR}
-          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  )
-  EXECUTE_PROCESS(
-          COMMAND ${CMAKE_COMMAND} -E remove gnucash.pot
-          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  )
-
-ENDIF()
-
-ADD_CUSTOM_TARGET(check-po
+  add_custom_command(OUTPUT gnucash.pot
         COMMAND ${CMAKE_COMMAND}
-           -D INTLTOOL_UPDATE=${INTLTOOL_UPDATE}
-           -D PO_DIR=${CMAKE_CURRENT_SOURCE_DIR}
-           -P check-po.cmake
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
+           -D TOP_SRC_DIR=${CMAKE_SOURCE_DIR}
+           -D PO_SRC_DIR=${CMAKE_CURRENT_SOURCE_DIR}
+           -D PO_BIN_DIR=${CMAKE_CURRENT_BINARY_DIR}
+           -D PACKAGE=${PACKAGE}
+           -D PACKAGE_NAME=${PACKAGE_NAME}
+           -D PACKAGE_VERSION=${PACKAGE_VERSION}
+           -D XGETTEXT=${XGETTEXT}
+           -P ${CMAKE_CURRENT_SOURCE_DIR}/gnucash-pot.cmake
+        DEPENDS ${gnucash_pot_depends}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  )
+  add_custom_target (pot DEPENDS gnucash.pot)
+ENDIF()
+dist_add_generated (${BUILDING_FROM_VCS} gnucash.pot)
