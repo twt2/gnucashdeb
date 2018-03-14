@@ -23,7 +23,7 @@ export GUILE_AUTO_COMPILE=0
 #;;; ERROR: failed to create path for auto-compiled file "/usr/bin/guild"
 
 %:
-	dh $@ --buildsystem=cmake --parallel --with python2,autoreconf,aqbanking --builddirectory=.build
+	dh $@ --buildsystem=cmake --with python2,aqbanking --builddirectory=.build
 
 override_dh_auto_clean:
 	$(RM) -rv .build/__gtest */*/*/.libs */*/.libs
