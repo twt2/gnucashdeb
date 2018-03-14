@@ -1,1 +1,4 @@
-doc/examples/*.xac
+doc/examples/README*
+doc/examples/*.gnucash
+doc/examples/*.csv
+doc/examples/*.qif
