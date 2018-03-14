@@ -1,0 +1,109 @@
+From c3180ab374ad9a2c2c0861b85c85299fe9bc16fb Mon Sep 17 00:00:00 2001
+Origin: upstream, https://github.com/Gnucash/gnucash/commit/c3180ab374ad9a2c2c0861b85c85299fe9bc16fb.patch
+From: John Ralls <jralls@ceridwen.us>
+Date: Thu, 8 Mar 2018 12:47:26 -0800
+Subject: [PATCH] Operator << fix.
+
+--- a/libgnucash/engine/gnc-numeric.cpp
++++ b/libgnucash/engine/gnc-numeric.cpp
+@@ -1302,8 +1302,20 @@
+     return 0;
+ }
+ #endif
+ 
++
++std::ostream&
++operator<<(std::ostream& s, GncNumeric n)
++{
++    std::basic_ostringstream<wchar_t> ss;
++    ss.imbue(s.getloc());
++    ss << n;
++    std::wstring_convert<std::codecvt_utf8<wchar_t>> make_utf8;
++    s << make_utf8.to_bytes(ss.str());
++    return s;
++}
++
+ const char* gnc_numeric_errorCode_to_string(GNCNumericErrorCode error_code)
+ {
+     switch (error_code)
+     {
+--- a/libgnucash/engine/gnc-numeric.hpp
++++ b/libgnucash/engine/gnc-numeric.hpp
+@@ -26,8 +26,9 @@
+ #include <string>
+ #include <iostream>
+ #include <locale>
+ #include <typeinfo> // For std::bad_cast exception
++#include <codecvt> // UTF-8 <--> UTF16 conversion
+ #include "gnc-rational-rounding.hpp"
+ 
+ class GncRational;
+ 
+@@ -338,8 +339,9 @@
+  * locale rules. Numbers are presented as integers if the denominator is 1, as a
+  * decimal if the denominator is a multiple of 10, otherwise as
+  * "numerator/denominator".
+  */
++std::ostream& operator<<(std::ostream&, GncNumeric);
+ 
+ /* Implementation adapted from "The C++ Standard Library, Second Edition" by
+  * Nicolai M. Josuttis, Addison-Wesley, 2012, ISBN 978-0-321-62321-8.
+  */
+@@ -348,12 +350,12 @@
+ {
+     std::basic_ostringstream<charT, traits> ss;
+     std::locale loc = s.getloc();
+     ss.imbue(loc);
+-    char dec_pt = '.';
++    auto dec_pt = static_cast<charT>('.');
+     try
+     {
+-        dec_pt = std::use_facet<std::numpunct<char>>(loc).decimal_point();
++        dec_pt = std::use_facet<std::numpunct<charT>>(loc).decimal_point();
+     }
+     catch(const std::bad_cast& err) {} //Don't do anything, num_sep is already set.
+ 
+     ss.copyfmt(s);
+@@ -368,9 +370,8 @@
+     s << ss.str();
+     return s;
+ }
+ 
+-
+ /**
+  * std::stream input operator.
+  *
+  * Doesn't do any special space handling, spaces in the input stream will
+@@ -385,9 +386,9 @@
+  */
+ template <typename charT, typename traits>
+ std::basic_istream<charT, traits>& operator>>(std::basic_istream<charT, traits>& s, GncNumeric& n)
+ {
+-    std::string instr;
++    std::basic_string<charT, traits> instr;
+     s >> instr;
+     if (s)
+         n = GncNumeric(instr, true);
+     return s;
+--- a/libgnucash/engine/test/gtest-gnc-numeric.cpp
++++ b/libgnucash/engine/test/gtest-gnc-numeric.cpp
+@@ -212,12 +212,17 @@
+     output << rational_string;
+     EXPECT_EQ("123/456", output.str());
+     try
+     {
+-        output.imbue(std::locale("fr_FR.utf8"));
++        auto loc = std::locale("fr_FR.utf8");
++        auto thou_sep = std::use_facet<std::numpunct<wchar_t>>(loc).thousands_sep();
++        output.imbue(loc);
+         output.str("");
+         output << simple_int;
+-        EXPECT_EQ("123 456", output.str());
++        if (thou_sep == L' ')
++            EXPECT_EQ("123 456", output.str());
++        else
++            EXPECT_EQ("123\xe2\x80\xaf""456", output.str());
+     }
+     catch (std::runtime_error)
+     {
+         output.imbue(std::locale("fr_FR"));
