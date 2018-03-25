@@ -1,3 +1,12 @@
+gnucash (1:2.7.7-1) experimental; urgency=medium
+
+  * New upstream release [March 2018].
+
+  [ Julian Wollrath <jwollrath@web.de> ]
+  * Switch to Python3 (Closes: #884343).
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Mon, 26 Mar 2018 01:18:37 +1100
+
 gnucash (1:2.7.6-1) experimental; urgency=medium
 
   * New upstream release [March 2018].
