@@ -138,27 +138,27 @@ G_LOG_LEVEL_INFO = _unittest_support.G_LOG_LEVEL_INFO
 G_LOG_LEVEL_DEBUG = _unittest_support.G_LOG_LEVEL_DEBUG
 G_LOG_LEVEL_MASK = _unittest_support.G_LOG_LEVEL_MASK
 
-def test_add_error(error):
+def test_add_error(error: 'TestErrorStruct') -> "void":
     return _unittest_support.test_add_error(error)
 test_add_error = _unittest_support.test_add_error
 
-def test_clear_error_list():
+def test_clear_error_list() -> "void":
     return _unittest_support.test_clear_error_list()
 test_clear_error_list = _unittest_support.test_clear_error_list
 
-def test_set_checked_handler(domain, level, data):
+def test_set_checked_handler(domain: 'char const *', level: 'GLogLevelFlags', data: 'gpointer') -> "guint":
     return _unittest_support.test_set_checked_handler(domain, level, data)
 test_set_checked_handler = _unittest_support.test_set_checked_handler
 
-def test_set_list_handler(domain, level, data):
+def test_set_list_handler(domain: 'char const *', level: 'GLogLevelFlags', data: 'gpointer') -> "guint":
     return _unittest_support.test_set_list_handler(domain, level, data)
 test_set_list_handler = _unittest_support.test_set_list_handler
 
-def test_set_null_handler(domain, level, data):
+def test_set_null_handler(domain: 'char const *', level: 'GLogLevelFlags', data: 'gpointer') -> "guint":
     return _unittest_support.test_set_null_handler(domain, level, data)
 test_set_null_handler = _unittest_support.test_set_null_handler
 
-def g_log_remove_handler(log_domain, handler):
+def g_log_remove_handler(log_domain: 'char const *', handler: 'guint') -> "void":
     return _unittest_support.g_log_remove_handler(log_domain, handler)
 g_log_remove_handler = _unittest_support.g_log_remove_handler
 # This file is compatible with both classic and new-style classes.

@@ -6,10 +6,10 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: GnuCash 2.7.6\n"
+"Project-Id-Version: GnuCash 2.7.7\n"
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?"
 "product=GnuCash&component=Translations\n"
-"POT-Creation-Date: 2018-03-11 10:39-0700\n"
+"POT-Creation-Date: 2018-03-18 13:29-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -934,7 +934,7 @@ msgstr ""
 #: gnucash/import-export/csv-imp/gnc-imp-props-tx.cpp:59
 #: gnucash/import-export/import-main-matcher.c:476
 #: gnucash/import-export/import-match-picker.c:392
-#: gnucash/import-export/qif-imp/dialog-account-picker.c:368
+#: gnucash/import-export/qif-imp/dialog-account-picker.c:370
 #: gnucash/register/ledger-core/split-register-model.c:333
 #: gnucash/report/business-reports/job-report.scm:38
 #: gnucash/report/business-reports/owner-report.scm:49
@@ -1201,12 +1201,12 @@ msgstr ""
 #: gnucash/gnome-utils/gnc-tree-control-split-reg.c:1023
 #: gnucash/gnome-utils/gnc-tree-control-split-reg.c:1063
 #: gnucash/gnome-utils/gnc-tree-view-split-reg.c:2422
-#: gnucash/gtkbuilder/assistant-xml-encoding.glade:199
+#: gnucash/gtkbuilder/assistant-xml-encoding.glade:196
 #: gnucash/gtkbuilder/dialog-account.glade:26
 #: gnucash/gtkbuilder/dialog-account.glade:463
 #: gnucash/gtkbuilder/dialog-account.glade:750
 #: gnucash/gtkbuilder/dialog-account.glade:1488
-#: gnucash/gtkbuilder/dialog-account-picker.glade:174
+#: gnucash/gtkbuilder/dialog-account-picker.glade:173
 #: gnucash/gtkbuilder/dialog-bi-import-gui.glade:38
 #: gnucash/gtkbuilder/dialog-billterms.glade:816
 #: gnucash/gtkbuilder/dialog-billterms.glade:1007
@@ -1227,7 +1227,7 @@ msgstr ""
 #: gnucash/gtkbuilder/dialog-invoice.glade:713
 #: gnucash/gtkbuilder/dialog-invoice.glade:1300
 #: gnucash/gtkbuilder/dialog-job.glade:40
-#: gnucash/gtkbuilder/dialog-new-user.glade:154
+#: gnucash/gtkbuilder/dialog-new-user.glade:149
 #: gnucash/gtkbuilder/dialog-options.glade:39
 #: gnucash/gtkbuilder/dialog-order.glade:561
 #: gnucash/gtkbuilder/dialog-payment.glade:78
@@ -1261,7 +1261,7 @@ msgstr ""
 #: gnucash/html/gnc-html-webkit1.c:1197
 #: gnucash/import-export/bi-import/dialog-bi-import-gui.c:420
 #: gnucash/import-export/csv-imp/assistant-csv-account-import.c:329
-#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1954
+#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1955
 #: gnucash/import-export/customer-import/dialog-customer-import-gui.c:386
 #: gnucash/register/ledger-core/gncEntryLedger.c:918
 #: gnucash/register/ledger-core/gncEntryLedgerControl.c:897
@@ -2506,7 +2506,7 @@ msgid "You must select a Currency."
 msgstr ""
 
 #: gnucash/gnome/dialog-price-editor.c:229
-#: gnucash/gnome-utils/dialog-transfer.c:1696
+#: gnucash/gnome-utils/dialog-transfer.c:1698
 msgid "You must enter a valid amount."
 msgstr ""
 
@@ -3203,8 +3203,8 @@ msgstr ""
 #: gnucash/gnome/gnc-split-reg.c:986 gnucash/gnome-search/search-account.c:263
 #: gnucash/gnome-utils/dialog-account.c:650
 #: gnucash/gnome-utils/gnc-gui-query.c:297
-#: gnucash/gtkbuilder/assistant-xml-encoding.glade:214
-#: gnucash/gtkbuilder/dialog-account-picker.glade:189
+#: gnucash/gtkbuilder/assistant-xml-encoding.glade:211
+#: gnucash/gtkbuilder/dialog-account-picker.glade:188
 #: gnucash/gtkbuilder/dialog-bi-import-gui.glade:53
 #: gnucash/gtkbuilder/dialog-billterms.glade:834
 #: gnucash/gtkbuilder/dialog-billterms.glade:1025
@@ -3224,7 +3224,7 @@ msgstr ""
 #: gnucash/gtkbuilder/dialog-invoice.glade:729
 #: gnucash/gtkbuilder/dialog-invoice.glade:1315
 #: gnucash/gtkbuilder/dialog-job.glade:56
-#: gnucash/gtkbuilder/dialog-new-user.glade:169
+#: gnucash/gtkbuilder/dialog-new-user.glade:164
 #: gnucash/gtkbuilder/dialog-object-references.glade:23
 #: gnucash/gtkbuilder/dialog-options.glade:71
 #: gnucash/gtkbuilder/dialog-order.glade:577
@@ -5439,7 +5439,7 @@ msgstr ""
 #: gnucash/gtkbuilder/dialog-search.glade:21
 #: gnucash/gtkbuilder/dialog-sx.glade:766
 #: gnucash/gtkbuilder/dialog-vendor.glade:47
-#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1990
+#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1991
 msgid "_Help"
 msgstr ""
 
@@ -6139,28 +6139,28 @@ msgstr ""
 msgid "Action/Number:"
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-file-access.c:298
+#: gnucash/gnome-utils/dialog-file-access.c:300
 msgid "Open..."
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-file-access.c:299
+#: gnucash/gnome-utils/dialog-file-access.c:301
 #: gnucash/gnome-utils/gnc-file.c:89 gnucash/gnome-utils/gnc-file.c:100
 #: gnucash/gtkbuilder/dialog-customer-import-gui.glade:112
 #: gnucash/gtkbuilder/gnc-plugin-page-budget.glade:487
 msgid "_Open"
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-file-access.c:305
+#: gnucash/gnome-utils/dialog-file-access.c:307
 msgid "Save As..."
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-file-access.c:306
-#: gnucash/gnome-utils/dialog-file-access.c:315
+#: gnucash/gnome-utils/dialog-file-access.c:308
+#: gnucash/gnome-utils/dialog-file-access.c:317
 #: gnucash/gtkbuilder/dialog-file-access.glade:40
 msgid "_Save As"
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-file-access.c:314
+#: gnucash/gnome-utils/dialog-file-access.c:316
 #: gnucash/gnome-utils/gnc-file.c:121 gnucash/gnome-utils/gnc-file.c:298
 #: gnucash/report/report-gnome/gnc-plugin-page-report.c:1123
 msgid "Export"
@@ -6362,35 +6362,35 @@ msgstr ""
 msgid "Are you sure you want to delete this entry?"
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-transfer.c:590
+#: gnucash/gnome-utils/dialog-transfer.c:591
 msgid "Show the income and expense accounts"
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-transfer.c:694
+#: gnucash/gnome-utils/dialog-transfer.c:695
 msgid "Error"
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-transfer.c:1311
+#: gnucash/gnome-utils/dialog-transfer.c:1313
 msgid ""
 "Retrieve the current online quote. This will fail if there is a manually-"
 "created price for today."
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-transfer.c:1315
+#: gnucash/gnome-utils/dialog-transfer.c:1317
 msgid "Finance::Quote must be installed to enable this button."
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-transfer.c:1417
+#: gnucash/gnome-utils/dialog-transfer.c:1419
 msgid ""
 "You must specify an account to transfer from, or to, or both, for this "
 "transaction. Otherwise, it will not be recorded."
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-transfer.c:1427
+#: gnucash/gnome-utils/dialog-transfer.c:1429
 msgid "You can't transfer from and to the same account!"
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-transfer.c:1438
+#: gnucash/gnome-utils/dialog-transfer.c:1440
 #: gnucash/gnome-utils/gnc-tree-control-split-reg.c:1950
 #: gnucash/register/ledger-core/gncEntryLedger.c:85
 #: gnucash/register/ledger-core/split-register.c:1848
@@ -6398,46 +6398,46 @@ msgstr ""
 msgid "The account %s does not allow transactions."
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-transfer.c:1454
+#: gnucash/gnome-utils/dialog-transfer.c:1456
 msgid ""
 "You can't transfer from a non-currency account. Try reversing the \"from\" "
 "and \"to\" accounts and making the \"amount\" negative."
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-transfer.c:1472
+#: gnucash/gnome-utils/dialog-transfer.c:1474
 msgid "You must enter a valid price."
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-transfer.c:1484
+#: gnucash/gnome-utils/dialog-transfer.c:1486
 msgid "You must enter a valid `to' amount."
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-transfer.c:1705
+#: gnucash/gnome-utils/dialog-transfer.c:1707
 msgid "You must enter an amount to transfer."
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-transfer.c:1947
+#: gnucash/gnome-utils/dialog-transfer.c:1949
 #: gnucash/gtkbuilder/dialog-employee.glade:736
 msgid "Credit Account"
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-transfer.c:1951
+#: gnucash/gnome-utils/dialog-transfer.c:1953
 msgid "Debit Account"
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-transfer.c:1969
+#: gnucash/gnome-utils/dialog-transfer.c:1971
 msgid "Transfer From"
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-transfer.c:1973
+#: gnucash/gnome-utils/dialog-transfer.c:1975
 msgid "Transfer To"
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-transfer.c:2030
+#: gnucash/gnome-utils/dialog-transfer.c:2032
 msgid "Debit Amount:"
 msgstr ""
 
-#: gnucash/gnome-utils/dialog-transfer.c:2035
+#: gnucash/gnome-utils/dialog-transfer.c:2037
 #: gnucash/gtkbuilder/dialog-transfer.glade:552
 msgid "To Amount:"
 msgstr ""
@@ -11069,7 +11069,7 @@ msgstr ""
 msgid "Match Transactions"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-hierarchy.glade:19
+#: gnucash/gtkbuilder/assistant-hierarchy.glade:20
 msgid ""
 "This assistant will help you create a set of GnuCash accounts for your "
 "assets (such as investments, checking or savings accounts), liabilities "
@@ -11084,21 +11084,21 @@ msgid ""
 "Click 'Cancel'  if you do not wish to create any new accounts now."
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-hierarchy.glade:28
+#: gnucash/gtkbuilder/assistant-hierarchy.glade:29
 msgid "New Account Hierarchy Setup"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-hierarchy.glade:42
+#: gnucash/gtkbuilder/assistant-hierarchy.glade:43
 msgid ""
 "\n"
 "Please choose the currency to use for new accounts."
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-hierarchy.glade:103
+#: gnucash/gtkbuilder/assistant-hierarchy.glade:104
 msgid "Choose Currency"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-hierarchy.glade:118
+#: gnucash/gtkbuilder/assistant-hierarchy.glade:119
 msgid ""
 "\n"
 "Select categories that correspond to the ways that you foresee you will use "
@@ -11110,30 +11110,30 @@ msgid ""
 "deleted by hand later at any time."
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-hierarchy.glade:157
+#: gnucash/gtkbuilder/assistant-hierarchy.glade:158
 msgid "<b>Categories</b>"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-hierarchy.glade:200
+#: gnucash/gtkbuilder/assistant-hierarchy.glade:201
 #: gnucash/gtkbuilder/dialog-account.glade:536
 #: gnucash/gtkbuilder/dialog-reset-warnings.glade:103
 msgid "_Select All"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-hierarchy.glade:216
+#: gnucash/gtkbuilder/assistant-hierarchy.glade:217
 #: gnucash/gtkbuilder/dialog-account.glade:552
 msgid "C_lear All"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-hierarchy.glade:241
+#: gnucash/gtkbuilder/assistant-hierarchy.glade:242
 msgid "<b>Category Description</b>"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-hierarchy.glade:340
+#: gnucash/gtkbuilder/assistant-hierarchy.glade:341
 msgid "Choose accounts to create"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-hierarchy.glade:355
+#: gnucash/gtkbuilder/assistant-hierarchy.glade:356
 msgid ""
 "\n"
 "If you would like to change an account's name, click on the row containing "
@@ -11152,11 +11152,11 @@ msgid ""
 "opening balance.\n"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-hierarchy.glade:393
+#: gnucash/gtkbuilder/assistant-hierarchy.glade:394
 msgid "Setup selected accounts"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-hierarchy.glade:403
+#: gnucash/gtkbuilder/assistant-hierarchy.glade:404
 msgid ""
 "Press `Apply' to create your new accounts. You will then be able to save "
 "them to a file or database.\n"
@@ -11166,7 +11166,7 @@ msgid ""
 "Press `Cancel' to close this dialog without creating any new accounts."
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-hierarchy.glade:412
+#: gnucash/gtkbuilder/assistant-hierarchy.glade:413
 msgid "Finish Account Setup"
 msgstr ""
 
@@ -11754,25 +11754,25 @@ msgstr ""
 msgid "Qif Import Summary"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:10
-#: gnucash/gtkbuilder/assistant-stock-split.glade:26
+#: gnucash/gtkbuilder/assistant-stock-split.glade:9
+#: gnucash/gtkbuilder/assistant-stock-split.glade:25
 msgid "Stock Split Assistant"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:20
+#: gnucash/gtkbuilder/assistant-stock-split.glade:19
 msgid "This assistant will help you record a stock split or stock merger.\n"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:40
+#: gnucash/gtkbuilder/assistant-stock-split.glade:39
 msgid ""
 "Select the account for which you want to record a stock split or merger."
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:73
+#: gnucash/gtkbuilder/assistant-stock-split.glade:72
 msgid "Stock Split Account"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:86
+#: gnucash/gtkbuilder/assistant-stock-split.glade:85
 msgid ""
 "Enter the date and the number of shares you gained or lost from the stock "
 "split or merger. For stock mergers (negative splits) use a negative value "
@@ -11780,7 +11780,7 @@ msgid ""
 "transaction, or accept the default one."
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:108
+#: gnucash/gtkbuilder/assistant-stock-split.glade:107
 #: gnucash/gtkbuilder/dialog-account.glade:1357
 #: gnucash/gtkbuilder/dialog-price.glade:175
 #: gnucash/gtkbuilder/dialog-print-check.glade:674
@@ -11789,75 +11789,75 @@ msgstr ""
 msgid "_Date:"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:122
+#: gnucash/gtkbuilder/assistant-stock-split.glade:121
 msgid "_Shares:"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:136
+#: gnucash/gtkbuilder/assistant-stock-split.glade:135
 msgid "Desc_ription:"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:151
+#: gnucash/gtkbuilder/assistant-stock-split.glade:150
 msgid "Stock Split"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:173
+#: gnucash/gtkbuilder/assistant-stock-split.glade:172
 msgid ""
 "If you want to record a stock price for the split, enter it below. You may "
 "safely leave it blank."
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:189
+#: gnucash/gtkbuilder/assistant-stock-split.glade:188
 msgid "New _Price:"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:203
+#: gnucash/gtkbuilder/assistant-stock-split.glade:202
 msgid "Currenc_y:"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:233
+#: gnucash/gtkbuilder/assistant-stock-split.glade:232
 msgid "Stock Split Details"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:248
+#: gnucash/gtkbuilder/assistant-stock-split.glade:247
 msgid ""
 "If you received a cash disbursement as a result of the stock split, enter "
 "the details of that payment here. Otherwise, just click `Forward'."
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:268
+#: gnucash/gtkbuilder/assistant-stock-split.glade:267
 msgid "_Amount:"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:281
+#: gnucash/gtkbuilder/assistant-stock-split.glade:280
 #: gnucash/gtkbuilder/dialog-print-check.glade:1102
 msgid "_Memo:"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:297
+#: gnucash/gtkbuilder/assistant-stock-split.glade:296
 msgid "Cash In Lieu"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:335
+#: gnucash/gtkbuilder/assistant-stock-split.glade:334
 msgid "<b>_Income Account</b>"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:348
+#: gnucash/gtkbuilder/assistant-stock-split.glade:347
 msgid "<b>A_sset Account</b>"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:413
+#: gnucash/gtkbuilder/assistant-stock-split.glade:412
 msgid "Cash in Lieu"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:421
+#: gnucash/gtkbuilder/assistant-stock-split.glade:420
 msgid ""
 "If you are finished creating the stock split or merger, press `Apply'. You "
 "may also press `Back' to review your choices, or `Cancel' to quit without "
 "making any changes."
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-stock-split.glade:426
+#: gnucash/gtkbuilder/assistant-stock-split.glade:425
 msgid "Stock Split Finish"
 msgstr ""
 
@@ -11889,19 +11889,19 @@ msgstr ""
 msgid "Finish GnuCash Datafile Import"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-xml-encoding.glade:181
+#: gnucash/gtkbuilder/assistant-xml-encoding.glade:178
 msgid "Edit the list of encodings"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-xml-encoding.glade:256
+#: gnucash/gtkbuilder/assistant-xml-encoding.glade:253
 msgid "<b>S_ystem input encodings</b>"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-xml-encoding.glade:353
+#: gnucash/gtkbuilder/assistant-xml-encoding.glade:350
 msgid "<b>_Custom encoding</b>"
 msgstr ""
 
-#: gnucash/gtkbuilder/assistant-xml-encoding.glade:441
+#: gnucash/gtkbuilder/assistant-xml-encoding.glade:438
 msgid "<b>_Selected encodings</b>"
 msgstr ""
 
@@ -12405,12 +12405,12 @@ msgid ""
 "Default transaction status (overridden by the status given by the QIF file)"
 msgstr ""
 
-#: gnucash/gtkbuilder/dialog-account-picker.glade:141
+#: gnucash/gtkbuilder/dialog-account-picker.glade:140
 #: gnucash/gtkbuilder/dialog-import.glade:12
 msgid "Select Account"
 msgstr ""
 
-#: gnucash/gtkbuilder/dialog-account-picker.glade:219
+#: gnucash/gtkbuilder/dialog-account-picker.glade:218
 msgid "_Select or add a GnuCash account:"
 msgstr ""
 
@@ -13662,31 +13662,31 @@ msgstr ""
 msgid "<b>Splits _in lot</b>"
 msgstr ""
 
-#: gnucash/gtkbuilder/dialog-new-user.glade:26
+#: gnucash/gtkbuilder/dialog-new-user.glade:25
 msgid "_No"
 msgstr ""
 
-#: gnucash/gtkbuilder/dialog-new-user.glade:41
+#: gnucash/gtkbuilder/dialog-new-user.glade:40
 msgid "_Yes"
 msgstr ""
 
-#: gnucash/gtkbuilder/dialog-new-user.glade:87
+#: gnucash/gtkbuilder/dialog-new-user.glade:86
 msgid ""
 "<span weight=\"bold\" size=\"larger\">Display Welcome Dialog Again?</span>"
 msgstr ""
 
-#: gnucash/gtkbuilder/dialog-new-user.glade:101
+#: gnucash/gtkbuilder/dialog-new-user.glade:100
 msgid ""
 "If you press the <i>Yes</i> button, the <i>Welcome to GnuCash</i> dialog "
 "will be displayed again next time you start GnuCash. If you press the <i>No</"
 "i> button, it will not be displayed again."
 msgstr ""
 
-#: gnucash/gtkbuilder/dialog-new-user.glade:216
+#: gnucash/gtkbuilder/dialog-new-user.glade:211
 msgid "<span size=\"larger\" weight=\"bold\">Welcome to GnuCash!</span>"
 msgstr ""
 
-#: gnucash/gtkbuilder/dialog-new-user.glade:236
+#: gnucash/gtkbuilder/dialog-new-user.glade:231
 msgid ""
 "There are some predefined actions available that most new users prefer to "
 "get started with GnuCash. Select one of these actions from below and click "
@@ -13694,15 +13694,15 @@ msgid ""
 "perform any of them."
 msgstr ""
 
-#: gnucash/gtkbuilder/dialog-new-user.glade:250
+#: gnucash/gtkbuilder/dialog-new-user.glade:245
 msgid "C_reate a new set of accounts"
 msgstr ""
 
-#: gnucash/gtkbuilder/dialog-new-user.glade:267
+#: gnucash/gtkbuilder/dialog-new-user.glade:262
 msgid "_Import my QIF files"
 msgstr ""
 
-#: gnucash/gtkbuilder/dialog-new-user.glade:284
+#: gnucash/gtkbuilder/dialog-new-user.glade:279
 msgid "_Open the new user tutorial"
 msgstr ""
 
@@ -16398,7 +16398,7 @@ msgstr ""
 
 #: gnucash/import-export/aqb/assistant-ab-initial.c:891
 #: gnucash/import-export/qif-imp/assistant-qif-import.c:552
-#: gnucash/import-export/qif-imp/dialog-account-picker.c:378
+#: gnucash/import-export/qif-imp/dialog-account-picker.c:380
 msgid "New?"
 msgstr ""
 
@@ -17633,14 +17633,14 @@ msgid ""
 msgstr ""
 
 #: gnucash/import-export/csv-imp/assistant-csv-price-import.cpp:829
-#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:838
+#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:839
 msgid ""
 "There were problems reading some saved settings, continuing to load.\n"
 "Please review and save again."
 msgstr ""
 
 #: gnucash/import-export/csv-imp/assistant-csv-price-import.cpp:852
-#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:861
+#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:862
 msgid "Delete the Import Settings."
 msgstr ""
 
@@ -17649,48 +17649,48 @@ msgid "Save the Import Settings."
 msgstr ""
 
 #: gnucash/import-export/csv-imp/assistant-csv-price-import.cpp:887
-#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:895
+#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:896
 msgid "Setting name already exists, over write?"
 msgstr ""
 
 #: gnucash/import-export/csv-imp/assistant-csv-price-import.cpp:901
-#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:909
+#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:910
 msgid "The settings have been saved."
 msgstr ""
 
 #: gnucash/import-export/csv-imp/assistant-csv-price-import.cpp:926
-#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:934
+#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:935
 msgid "There was a problem saving the settings, please try again."
 msgstr ""
 
 #. If it fails, change back to the old encoding.
 #: gnucash/import-export/csv-imp/assistant-csv-price-import.cpp:1092
-#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1108
+#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1109
 msgid "Invalid encoding selected"
 msgstr ""
 
 #: gnucash/import-export/csv-imp/assistant-csv-price-import.cpp:1251
-#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1218
+#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1219
 msgid "Merge with column on _left"
 msgstr ""
 
 #: gnucash/import-export/csv-imp/assistant-csv-price-import.cpp:1255
-#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1222
+#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1223
 msgid "Merge with column on _right"
 msgstr ""
 
 #: gnucash/import-export/csv-imp/assistant-csv-price-import.cpp:1260
-#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1227
+#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1228
 msgid "_Split this column"
 msgstr ""
 
 #: gnucash/import-export/csv-imp/assistant-csv-price-import.cpp:1265
-#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1232
+#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1233
 msgid "_Widen this column"
 msgstr ""
 
 #: gnucash/import-export/csv-imp/assistant-csv-price-import.cpp:1269
-#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1236
+#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1237
 msgid "_Narrow this column"
 msgstr ""
 
@@ -17739,17 +17739,17 @@ msgid ""
 "%s"
 msgstr ""
 
-#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1714
+#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1715
 msgid "No Linked Account"
 msgstr ""
 
-#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1898
+#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1899
 msgid ""
 "To change mapping, double click on a row or select a row and press the "
 "button..."
 msgstr ""
 
-#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1942
+#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1943
 #, c-format
 msgid ""
 "An unexpected error has occurred while mapping accounts. Please report this "
@@ -17759,7 +17759,7 @@ msgid ""
 "%s"
 msgstr ""
 
-#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1976
+#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1977
 #, c-format
 msgid ""
 "An unexpected error has occurred while creating transactions. Please report "
@@ -17769,12 +17769,12 @@ msgid ""
 "%s"
 msgstr ""
 
-#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1985
+#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1986
 msgid "Double click on rows to change, then click on Apply to Import"
 msgstr ""
 
 #. Translators: {1} will be replaced with a filename
-#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:2023
+#: gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:2024
 msgid "The transactions were imported from file '{1}'."
 msgstr ""
 
@@ -18139,7 +18139,7 @@ msgstr ""
 msgid "y/d/m"
 msgstr ""
 
-#: gnucash/import-export/import-main-matcher.c:266
+#: gnucash/import-export/import-main-matcher.c:265
 msgid "Destination account for the auto-balance split."
 msgstr ""
 
@@ -18224,12 +18224,12 @@ msgstr ""
 msgid "Auto"
 msgstr ""
 
-#: gnucash/import-export/log-replay/gnc-log-replay.c:582
+#: gnucash/import-export/log-replay/gnc-log-replay.c:584
 msgid "Select a .log file to replay"
 msgstr ""
 
 #. Translators: %s is the file name.
-#: gnucash/import-export/log-replay/gnc-log-replay.c:602
+#: gnucash/import-export/log-replay/gnc-log-replay.c:604
 #, c-format
 msgid "Cannot open the current log file: %s"
 msgstr ""
@@ -18238,16 +18238,16 @@ msgstr ""
 #. * First argument is the filename,
 #. * second argument is the error.
 #.
-#: gnucash/import-export/log-replay/gnc-log-replay.c:618
+#: gnucash/import-export/log-replay/gnc-log-replay.c:620
 #, c-format
 msgid "Failed to open log file: %s: %s"
 msgstr ""
 
-#: gnucash/import-export/log-replay/gnc-log-replay.c:628
+#: gnucash/import-export/log-replay/gnc-log-replay.c:630
 msgid "The log file you selected was empty."
 msgstr ""
 
-#: gnucash/import-export/log-replay/gnc-log-replay.c:637
+#: gnucash/import-export/log-replay/gnc-log-replay.c:639
 msgid ""
 "The log file you selected cannot be read. The file header was not recognized."
 msgstr ""

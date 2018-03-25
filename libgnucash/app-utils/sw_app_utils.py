@@ -99,43 +99,43 @@ except __builtin__.Exception:
     _newclass = 0
 
 
-def gnc_prefs_init():
+def gnc_prefs_init() -> "void":
     return _sw_app_utils.gnc_prefs_init()
 gnc_prefs_init = _sw_app_utils.gnc_prefs_init
 
-def gnc_get_current_book():
+def gnc_get_current_book() -> "QofBook *":
     return _sw_app_utils.gnc_get_current_book()
 gnc_get_current_book = _sw_app_utils.gnc_get_current_book
 
-def gnc_get_current_session():
+def gnc_get_current_session() -> "QofSession *":
     return _sw_app_utils.gnc_get_current_session()
 gnc_get_current_session = _sw_app_utils.gnc_get_current_session
 
-def gnc_get_current_book_tax_name():
+def gnc_get_current_book_tax_name() -> "gchar const *":
     return _sw_app_utils.gnc_get_current_book_tax_name()
 gnc_get_current_book_tax_name = _sw_app_utils.gnc_get_current_book_tax_name
 
-def gnc_get_current_book_tax_type():
+def gnc_get_current_book_tax_type() -> "gchar const *":
     return _sw_app_utils.gnc_get_current_book_tax_type()
 gnc_get_current_book_tax_type = _sw_app_utils.gnc_get_current_book_tax_type
 
-def gnc_get_current_root_account():
+def gnc_get_current_root_account() -> "Account *":
     return _sw_app_utils.gnc_get_current_root_account()
 gnc_get_current_root_account = _sw_app_utils.gnc_get_current_root_account
 
-def gnc_gettext_helper(string):
+def gnc_gettext_helper(string: 'char const *') -> "char *":
     return _sw_app_utils.gnc_gettext_helper(string)
 gnc_gettext_helper = _sw_app_utils.gnc_gettext_helper
 
-def gnc_option_db_new(guile_options):
+def gnc_option_db_new(guile_options: 'SCM') -> "GNCOptionDB *":
     return _sw_app_utils.gnc_option_db_new(guile_options)
 gnc_option_db_new = _sw_app_utils.gnc_option_db_new
 
-def gnc_option_db_destroy(odb):
+def gnc_option_db_destroy(odb: 'GNCOptionDB *') -> "void":
     return _sw_app_utils.gnc_option_db_destroy(odb)
 gnc_option_db_destroy = _sw_app_utils.gnc_option_db_destroy
 
-def gnc_option_db_set_option_selectable_by_name(guile_option, section, name, selectable):
+def gnc_option_db_set_option_selectable_by_name(guile_option: 'SCM', section: 'char const *', name: 'char const *', selectable: 'gboolean') -> "void":
     return _sw_app_utils.gnc_option_db_set_option_selectable_by_name(guile_option, section, name, selectable)
 gnc_option_db_set_option_selectable_by_name = _sw_app_utils.gnc_option_db_set_option_selectable_by_name
 # This file is compatible with both classic and new-style classes.

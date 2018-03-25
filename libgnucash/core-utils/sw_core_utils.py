@@ -99,7 +99,7 @@ except __builtin__.Exception:
     _newclass = 0
 
 
-def gnc_environment_setup():
+def gnc_environment_setup() -> "void":
     return _sw_core_utils.gnc_environment_setup()
 gnc_environment_setup = _sw_core_utils.gnc_environment_setup
 GNC_PREFS_GROUP_GENERAL = _sw_core_utils.GNC_PREFS_GROUP_GENERAL
@@ -142,219 +142,219 @@ GNC_PREF_CURRENCY_OTHER = _sw_core_utils.GNC_PREF_CURRENCY_OTHER
 GNC_PREF_CURRENCY_CHOICE_LOCALE = _sw_core_utils.GNC_PREF_CURRENCY_CHOICE_LOCALE
 GNC_PREF_CURRENCY_CHOICE_OTHER = _sw_core_utils.GNC_PREF_CURRENCY_CHOICE_OTHER
 
-def gnc_prefs_get_namespace_regexp():
+def gnc_prefs_get_namespace_regexp() -> "gchar const *":
     return _sw_core_utils.gnc_prefs_get_namespace_regexp()
 gnc_prefs_get_namespace_regexp = _sw_core_utils.gnc_prefs_get_namespace_regexp
 
-def gnc_prefs_set_namespace_regexp(str):
+def gnc_prefs_set_namespace_regexp(str: 'gchar const *') -> "void":
     return _sw_core_utils.gnc_prefs_set_namespace_regexp(str)
 gnc_prefs_set_namespace_regexp = _sw_core_utils.gnc_prefs_set_namespace_regexp
 
-def gnc_prefs_is_debugging_enabled():
+def gnc_prefs_is_debugging_enabled() -> "gboolean":
     return _sw_core_utils.gnc_prefs_is_debugging_enabled()
 gnc_prefs_is_debugging_enabled = _sw_core_utils.gnc_prefs_is_debugging_enabled
 
-def gnc_prefs_set_debugging(d):
+def gnc_prefs_set_debugging(d: 'gboolean') -> "void":
     return _sw_core_utils.gnc_prefs_set_debugging(d)
 gnc_prefs_set_debugging = _sw_core_utils.gnc_prefs_set_debugging
 
-def gnc_prefs_is_extra_enabled():
+def gnc_prefs_is_extra_enabled() -> "gboolean":
     return _sw_core_utils.gnc_prefs_is_extra_enabled()
 gnc_prefs_is_extra_enabled = _sw_core_utils.gnc_prefs_is_extra_enabled
 
-def gnc_prefs_set_extra(enabled):
+def gnc_prefs_set_extra(enabled: 'gboolean') -> "void":
     return _sw_core_utils.gnc_prefs_set_extra(enabled)
 gnc_prefs_set_extra = _sw_core_utils.gnc_prefs_set_extra
 
-def gnc_prefs_get_file_save_compressed():
+def gnc_prefs_get_file_save_compressed() -> "gboolean":
     return _sw_core_utils.gnc_prefs_get_file_save_compressed()
 gnc_prefs_get_file_save_compressed = _sw_core_utils.gnc_prefs_get_file_save_compressed
 
-def gnc_prefs_set_file_save_compressed(compressed):
+def gnc_prefs_set_file_save_compressed(compressed: 'gboolean') -> "void":
     return _sw_core_utils.gnc_prefs_set_file_save_compressed(compressed)
 gnc_prefs_set_file_save_compressed = _sw_core_utils.gnc_prefs_set_file_save_compressed
 
-def gnc_prefs_get_file_retention_policy():
+def gnc_prefs_get_file_retention_policy() -> "gint":
     return _sw_core_utils.gnc_prefs_get_file_retention_policy()
 gnc_prefs_get_file_retention_policy = _sw_core_utils.gnc_prefs_get_file_retention_policy
 
-def gnc_prefs_set_file_retention_policy(policy):
+def gnc_prefs_set_file_retention_policy(policy: 'gint') -> "void":
     return _sw_core_utils.gnc_prefs_set_file_retention_policy(policy)
 gnc_prefs_set_file_retention_policy = _sw_core_utils.gnc_prefs_set_file_retention_policy
 
-def gnc_prefs_get_file_retention_days():
+def gnc_prefs_get_file_retention_days() -> "gint":
     return _sw_core_utils.gnc_prefs_get_file_retention_days()
 gnc_prefs_get_file_retention_days = _sw_core_utils.gnc_prefs_get_file_retention_days
 
-def gnc_prefs_set_file_retention_days(days):
+def gnc_prefs_set_file_retention_days(days: 'gint') -> "void":
     return _sw_core_utils.gnc_prefs_set_file_retention_days(days)
 gnc_prefs_set_file_retention_days = _sw_core_utils.gnc_prefs_set_file_retention_days
 
-def gnc_prefs_get_long_version():
+def gnc_prefs_get_long_version() -> "guint":
     return _sw_core_utils.gnc_prefs_get_long_version()
 gnc_prefs_get_long_version = _sw_core_utils.gnc_prefs_get_long_version
 
-def gnc_prefs_is_set_up():
+def gnc_prefs_is_set_up() -> "gboolean":
     return _sw_core_utils.gnc_prefs_is_set_up()
 gnc_prefs_is_set_up = _sw_core_utils.gnc_prefs_is_set_up
 
-def gnc_prefs_register_cb(group, pref_name, func, user_data):
+def gnc_prefs_register_cb(group: 'char const *', pref_name: 'gchar const *', func: 'gpointer', user_data: 'gpointer') -> "gulong":
     return _sw_core_utils.gnc_prefs_register_cb(group, pref_name, func, user_data)
 gnc_prefs_register_cb = _sw_core_utils.gnc_prefs_register_cb
 
-def gnc_prefs_remove_cb_by_func(group, pref_name, func, user_data):
+def gnc_prefs_remove_cb_by_func(group: 'gchar const *', pref_name: 'gchar const *', func: 'gpointer', user_data: 'gpointer') -> "void":
     return _sw_core_utils.gnc_prefs_remove_cb_by_func(group, pref_name, func, user_data)
 gnc_prefs_remove_cb_by_func = _sw_core_utils.gnc_prefs_remove_cb_by_func
 
-def gnc_prefs_remove_cb_by_id(group, id):
+def gnc_prefs_remove_cb_by_id(group: 'gchar const *', id: 'guint') -> "void":
     return _sw_core_utils.gnc_prefs_remove_cb_by_id(group, id)
 gnc_prefs_remove_cb_by_id = _sw_core_utils.gnc_prefs_remove_cb_by_id
 
-def gnc_prefs_register_group_cb(group, func, user_data):
+def gnc_prefs_register_group_cb(group: 'gchar const *', func: 'gpointer', user_data: 'gpointer') -> "guint":
     return _sw_core_utils.gnc_prefs_register_group_cb(group, func, user_data)
 gnc_prefs_register_group_cb = _sw_core_utils.gnc_prefs_register_group_cb
 
-def gnc_prefs_remove_group_cb_by_func(group, func, user_data):
+def gnc_prefs_remove_group_cb_by_func(group: 'gchar const *', func: 'gpointer', user_data: 'gpointer') -> "void":
     return _sw_core_utils.gnc_prefs_remove_group_cb_by_func(group, func, user_data)
 gnc_prefs_remove_group_cb_by_func = _sw_core_utils.gnc_prefs_remove_group_cb_by_func
 
-def gnc_prefs_bind(group, pref_name, object, property):
+def gnc_prefs_bind(group: 'gchar const *', pref_name: 'gchar const *', object: 'gpointer', property: 'gchar const *') -> "void":
     return _sw_core_utils.gnc_prefs_bind(group, pref_name, object, property)
 gnc_prefs_bind = _sw_core_utils.gnc_prefs_bind
 
-def gnc_prefs_get_bool(group, pref_name):
+def gnc_prefs_get_bool(group: 'gchar const *', pref_name: 'gchar const *') -> "gboolean":
     return _sw_core_utils.gnc_prefs_get_bool(group, pref_name)
 gnc_prefs_get_bool = _sw_core_utils.gnc_prefs_get_bool
 
-def gnc_prefs_get_int(group, pref_name):
+def gnc_prefs_get_int(group: 'gchar const *', pref_name: 'gchar const *') -> "gint":
     return _sw_core_utils.gnc_prefs_get_int(group, pref_name)
 gnc_prefs_get_int = _sw_core_utils.gnc_prefs_get_int
 
-def gnc_prefs_get_int64(group, pref_name):
+def gnc_prefs_get_int64(group: 'gchar const *', pref_name: 'gchar const *') -> "gint64":
     return _sw_core_utils.gnc_prefs_get_int64(group, pref_name)
 gnc_prefs_get_int64 = _sw_core_utils.gnc_prefs_get_int64
 
-def gnc_prefs_get_float(group, pref_name):
+def gnc_prefs_get_float(group: 'gchar const *', pref_name: 'gchar const *') -> "gdouble":
     return _sw_core_utils.gnc_prefs_get_float(group, pref_name)
 gnc_prefs_get_float = _sw_core_utils.gnc_prefs_get_float
 
-def gnc_prefs_get_string(group, pref_name):
+def gnc_prefs_get_string(group: 'gchar const *', pref_name: 'gchar const *') -> "gchar *":
     return _sw_core_utils.gnc_prefs_get_string(group, pref_name)
 gnc_prefs_get_string = _sw_core_utils.gnc_prefs_get_string
 
-def gnc_prefs_get_enum(group, pref_name):
+def gnc_prefs_get_enum(group: 'gchar const *', pref_name: 'gchar const *') -> "gint":
     return _sw_core_utils.gnc_prefs_get_enum(group, pref_name)
 gnc_prefs_get_enum = _sw_core_utils.gnc_prefs_get_enum
 
-def gnc_prefs_get_coords(group, pref_name, x, y):
+def gnc_prefs_get_coords(group: 'gchar const *', pref_name: 'gchar const *', x: 'gdouble *', y: 'gdouble *') -> "void":
     return _sw_core_utils.gnc_prefs_get_coords(group, pref_name, x, y)
 gnc_prefs_get_coords = _sw_core_utils.gnc_prefs_get_coords
 
-def gnc_prefs_get_value(group, pref_name):
+def gnc_prefs_get_value(group: 'gchar const *', pref_name: 'gchar const *') -> "GVariant *":
     return _sw_core_utils.gnc_prefs_get_value(group, pref_name)
 gnc_prefs_get_value = _sw_core_utils.gnc_prefs_get_value
 
-def gnc_prefs_set_bool(group, pref_name, value):
+def gnc_prefs_set_bool(group: 'gchar const *', pref_name: 'gchar const *', value: 'gboolean') -> "gboolean":
     return _sw_core_utils.gnc_prefs_set_bool(group, pref_name, value)
 gnc_prefs_set_bool = _sw_core_utils.gnc_prefs_set_bool
 
-def gnc_prefs_set_int(group, pref_name, value):
+def gnc_prefs_set_int(group: 'gchar const *', pref_name: 'gchar const *', value: 'gint') -> "gboolean":
     return _sw_core_utils.gnc_prefs_set_int(group, pref_name, value)
 gnc_prefs_set_int = _sw_core_utils.gnc_prefs_set_int
 
-def gnc_prefs_set_int64(group, pref_name, value):
+def gnc_prefs_set_int64(group: 'gchar const *', pref_name: 'gchar const *', value: 'gint64') -> "gboolean":
     return _sw_core_utils.gnc_prefs_set_int64(group, pref_name, value)
 gnc_prefs_set_int64 = _sw_core_utils.gnc_prefs_set_int64
 
-def gnc_prefs_set_float(group, pref_name, value):
+def gnc_prefs_set_float(group: 'gchar const *', pref_name: 'gchar const *', value: 'gdouble') -> "gboolean":
     return _sw_core_utils.gnc_prefs_set_float(group, pref_name, value)
 gnc_prefs_set_float = _sw_core_utils.gnc_prefs_set_float
 
-def gnc_prefs_set_string(group, pref_name, value):
+def gnc_prefs_set_string(group: 'gchar const *', pref_name: 'gchar const *', value: 'gchar const *') -> "gboolean":
     return _sw_core_utils.gnc_prefs_set_string(group, pref_name, value)
 gnc_prefs_set_string = _sw_core_utils.gnc_prefs_set_string
 
-def gnc_prefs_set_enum(group, pref_name, value):
+def gnc_prefs_set_enum(group: 'gchar const *', pref_name: 'gchar const *', value: 'gint') -> "gboolean":
     return _sw_core_utils.gnc_prefs_set_enum(group, pref_name, value)
 gnc_prefs_set_enum = _sw_core_utils.gnc_prefs_set_enum
 
-def gnc_prefs_set_coords(group, pref_name, x, y):
+def gnc_prefs_set_coords(group: 'gchar const *', pref_name: 'gchar const *', x: 'gdouble', y: 'gdouble') -> "gboolean":
     return _sw_core_utils.gnc_prefs_set_coords(group, pref_name, x, y)
 gnc_prefs_set_coords = _sw_core_utils.gnc_prefs_set_coords
 
-def gnc_prefs_set_value(group, pref_name, value):
+def gnc_prefs_set_value(group: 'gchar const *', pref_name: 'gchar const *', value: 'GVariant *') -> "gboolean":
     return _sw_core_utils.gnc_prefs_set_value(group, pref_name, value)
 gnc_prefs_set_value = _sw_core_utils.gnc_prefs_set_value
 
-def gnc_prefs_reset(group, pref_name):
+def gnc_prefs_reset(group: 'gchar const *', pref_name: 'gchar const *') -> "void":
     return _sw_core_utils.gnc_prefs_reset(group, pref_name)
 gnc_prefs_reset = _sw_core_utils.gnc_prefs_reset
 
-def gnc_prefs_reset_group(group):
+def gnc_prefs_reset_group(group: 'gchar const *') -> "void":
     return _sw_core_utils.gnc_prefs_reset_group(group)
 gnc_prefs_reset_group = _sw_core_utils.gnc_prefs_reset_group
 
-def gnc_version():
+def gnc_version() -> "gchar const *":
     return _sw_core_utils.gnc_version()
 gnc_version = _sw_core_utils.gnc_version
 
-def gnc_path_get_bindir():
+def gnc_path_get_bindir() -> "gchar *":
     return _sw_core_utils.gnc_path_get_bindir()
 gnc_path_get_bindir = _sw_core_utils.gnc_path_get_bindir
 
-def gnc_path_get_stdreportsdir():
+def gnc_path_get_stdreportsdir() -> "gchar *":
     return _sw_core_utils.gnc_path_get_stdreportsdir()
 gnc_path_get_stdreportsdir = _sw_core_utils.gnc_path_get_stdreportsdir
 
-def gnc_path_find_localized_html_file(arg1):
+def gnc_path_find_localized_html_file(arg1: 'gchar const *') -> "gchar *":
     return _sw_core_utils.gnc_path_find_localized_html_file(arg1)
 gnc_path_find_localized_html_file = _sw_core_utils.gnc_path_find_localized_html_file
 
-def gnc_build_userdata_path(arg1):
+def gnc_build_userdata_path(arg1: 'gchar const *') -> "gchar *":
     return _sw_core_utils.gnc_build_userdata_path(arg1)
 gnc_build_userdata_path = _sw_core_utils.gnc_build_userdata_path
 
-def gnc_build_report_path(arg1):
+def gnc_build_report_path(arg1: 'gchar const *') -> "gchar *":
     return _sw_core_utils.gnc_build_report_path(arg1)
 gnc_build_report_path = _sw_core_utils.gnc_build_report_path
 
-def gnc_build_stdreports_path(arg1):
+def gnc_build_stdreports_path(arg1: 'gchar const *') -> "gchar *":
     return _sw_core_utils.gnc_build_stdreports_path(arg1)
 gnc_build_stdreports_path = _sw_core_utils.gnc_build_stdreports_path
 
-def gnc_scm_log_warn(arg1):
+def gnc_scm_log_warn(arg1: 'gchar const *') -> "void":
     return _sw_core_utils.gnc_scm_log_warn(arg1)
 gnc_scm_log_warn = _sw_core_utils.gnc_scm_log_warn
 
-def gnc_scm_log_error(arg1):
+def gnc_scm_log_error(arg1: 'gchar const *') -> "void":
     return _sw_core_utils.gnc_scm_log_error(arg1)
 gnc_scm_log_error = _sw_core_utils.gnc_scm_log_error
 
-def gnc_scm_log_msg(arg1):
+def gnc_scm_log_msg(arg1: 'gchar const *') -> "void":
     return _sw_core_utils.gnc_scm_log_msg(arg1)
 gnc_scm_log_msg = _sw_core_utils.gnc_scm_log_msg
 
-def gnc_scm_log_debug(arg1):
+def gnc_scm_log_debug(arg1: 'gchar const *') -> "void":
     return _sw_core_utils.gnc_scm_log_debug(arg1)
 gnc_scm_log_debug = _sw_core_utils.gnc_scm_log_debug
 
-def gnc_utf8_strip_invalid_strdup(arg1):
+def gnc_utf8_strip_invalid_strdup(arg1: 'gchar const *') -> "gchar *":
     return _sw_core_utils.gnc_utf8_strip_invalid_strdup(arg1)
 gnc_utf8_strip_invalid_strdup = _sw_core_utils.gnc_utf8_strip_invalid_strdup
 
-def gnc_locale_from_utf8(arg1):
+def gnc_locale_from_utf8(arg1: 'gchar const *') -> "gchar *":
     return _sw_core_utils.gnc_locale_from_utf8(arg1)
 gnc_locale_from_utf8 = _sw_core_utils.gnc_locale_from_utf8
 
-def gnc_locale_to_utf8(arg1):
+def gnc_locale_to_utf8(arg1: 'gchar const *') -> "gchar *":
     return _sw_core_utils.gnc_locale_to_utf8(arg1)
 gnc_locale_to_utf8 = _sw_core_utils.gnc_locale_to_utf8
 
-def gnc_locale_default_iso_currency_code():
+def gnc_locale_default_iso_currency_code() -> "char const *":
     return _sw_core_utils.gnc_locale_default_iso_currency_code()
 gnc_locale_default_iso_currency_code = _sw_core_utils.gnc_locale_default_iso_currency_code
 
-def gnc_utf8_validate(arg1, arg2, arg3):
+def gnc_utf8_validate(arg1: 'gchar const *', arg2: 'gssize', arg3: 'gchar const **') -> "gboolean":
     return _sw_core_utils.gnc_utf8_validate(arg1, arg2, arg3)
 gnc_utf8_validate = _sw_core_utils.gnc_utf8_validate
 # This file is compatible with both classic and new-style classes.

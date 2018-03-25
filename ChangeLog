@@ -1,14 +1,154 @@
+2018-03-18 John Ralls 
+
+	* Actually change CMakeLists.txt for the release. (HEAD -> unstable, tag: 2.7.7)
+
+2018-03-18 John Ralls 
+
+	* Fix release narrative in NEWS. (origin/unstable)
+
+2018-03-18 John Ralls 
+
+	* Release 2.7.7.
+
+2018-03-17 luc14n0 
+
+	* Add COMPILE_GSCHEMAS to allow disabling gschemas compilation
+
+2018-03-18 John Ralls 
+
+	* Update es.po from the Translation Project.
+
+2018-03-18 John Ralls 
+
+	* Fix the Python Console for Python3.
+
+2018-03-17 John Ralls 
+
+	* Merge Chris Lam's Increase default options dialog size PR into unstable.
+
+2018-03-17 John Ralls 
+
+	* Merge Bob Fewell's assorted GUI fixups PR 310 into unstable.
+
+2018-03-17 John Ralls 
+
+	* Merge Tomas Schlosser's "Allow creation of prices in Python bindings" into unstable.
+
+2018-03-15 Julian Wollrath 
+
+	* Bug 791831 - Add python3 support
+
+2018-03-17 John Ralls 
+
+	* Revert "Add COMPILE_SCHEMA to allow disabling gschema compilation"
+
+2018-03-17 John Ralls 
+
+	* Merge Luciano Santos's 'compile-schema-patch' PR into unstable.
+
+2018-03-17 John Ralls 
+
+	* Bug 794236 - Import a log file
+
+2018-03-17 luc14n0 
+
+	* Add COMPILE_SCHEMA to allow disabling gschema compilation
+
+2018-03-16 John Ralls 
+
+	* Fix date corruption in SQL load.
+
+2018-03-16 John Ralls 
+
+	* Fix lost Bayesian matches in SQL backend.
+
+2018-03-16 Tomas Schlosser 
+
+	* Allow creation of prices in Python bindings
+
+2018-03-15 John Ralls 
+
+	* Avoid crash when committing a date outside of the valid range
+
+2018-03-15 fell 
+
+	* Merge branch 'maint' into unstable
+
+2018-03-15 fell 
+
+	* Improve comments how to update FQ sources (origin/maint, maint)
+
+2018-03-15 fell 
+
+	* Merge branch 'maint' into unstable PR #313
+
+2018-03-14 Di Mang 
+
+	* Remove the emacs comments at the end of files
+
+2018-03-14 Di Mang 
+
+	* Remove the emacs comments at the end of files
+
+2018-03-14 fell 
+
+	* Merge branch 'maint' into unstable PR #311
+
+2018-03-13 John Ralls 
+
+	* Bug 787439 - Segmentation Fault in Transfer dialog after clearing...
+
 2018-03-12 Di Mang 
 
-	* Update GC version and date. (HEAD -> unstable, origin/unstable)
+	* Update GC version and date. (tag: 2.7.6)
+
+2018-03-12 Robert Fewell 
+
+	* When doing a file save from the a new start we have no key file
+
+2018-03-12 Robert Fewell 
+
+	* Stop critical error due to testing null filename
+
+2018-03-12 Robert Fewell 
+
+	* Change dialog-new-user to use a GtkWindow
+
+2018-03-12 Robert Fewell 
+
+	* A couple of changes to assistant glade files
+
+2018-03-12 Robert Fewell 
+
+	* Bug 794242 - Remove keep above setting for assistant hierarchy
+
+2018-03-11 Robert Fewell 
+
+	* Fix transient parent warnings in import dialogs
+
+2018-03-11 Robert Fewell 
+
+	* Add missing response section to the account picker dialog
+
+2018-03-11 Robert Fewell 
+
+	* Glade 3.20 adds surplus padding option to action area
 
 2018-03-11 John Ralls 
 
-	* Release 2.7.6 (tag: 2.7.6)
+	* Release 2.7.6
 
 2018-03-11 John Ralls 
 
 	* Pass GTEST_ROOT and GMOCK_ROOT through to distcheck.
+
+2018-03-11 Di Mang 
+
+	* Add XML namespaces for all Account Hierarchy Templates.
+
+2018-03-06 Christopher Lam 
+
+	* Increase default options dialog size
 
 2018-03-10 John Ralls 
 
@@ -40,7 +180,7 @@
 
 2018-03-10 fell 
 
-	* Minor fix in de.po (origin/maint)
+	* Minor fix in de.po
 
 2018-03-10 fell 
 
@@ -364,7 +504,7 @@
 
 2018-02-24 John Ralls 
 
-	* Fix up some formatting problems and an extra bug in NEWS. (origin/master, origin/HEAD)
+	* Fix up some formatting problems and an extra bug in NEWS.
 
 2018-02-24 John Ralls 
 
@@ -808,7 +948,7 @@
 
 2018-02-04 John Ralls 
 
-	* Spelling Correction. (master)
+	* Spelling Correction.
 
 2018-02-04 John Ralls 
 
@@ -1164,7 +1304,7 @@
 
 2018-01-23 fell 
 
-	* Merge remote-tracking branch 'DiMan/update-trans-ru-01' into maint (maint)
+	* Merge remote-tracking branch 'DiMan/update-trans-ru-01' into maint
 
 2018-01-22 Di Mang 
 
