@@ -1,3 +1,9 @@
+gnucash (1:2.7.8-1) experimental; urgency=medium
+
+  * New upstream release [March 2018].
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Tue, 27 Mar 2018 23:34:54 +1100
+
 gnucash (1:2.7.7-1) experimental; urgency=medium
 
   * New upstream release [March 2018].
