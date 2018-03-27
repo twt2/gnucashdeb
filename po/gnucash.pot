@@ -6,10 +6,10 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: GnuCash 2.7.7\n"
+"Project-Id-Version: GnuCash 2.7.8\n"
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?"
 "product=GnuCash&component=Translations\n"
-"POT-Creation-Date: 2018-03-18 13:29-0700\n"
+"POT-Creation-Date: 2018-03-25 12:40-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1183,7 +1183,7 @@ msgstr ""
 #: gnucash/gnome/dialog-commodities.c:190
 #: gnucash/gnome/dialog-price-edit-db.c:202
 #: gnucash/gnome/dialog-tax-info.c:1140 gnucash/gnome/gnc-plugin-budget.c:329
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:1544
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:1564
 #: gnucash/gnome/gnc-plugin-page-invoice.c:157
 #: gnucash/gnome/gnc-plugin-page-owner-tree.c:1149
 #: gnucash/gnome/gnc-plugin-page-register2.c:1626
@@ -1272,7 +1272,7 @@ msgstr ""
 #: gnucash/gnome/dialog-commodities.c:191
 #: gnucash/gnome/dialog-imap-editor.c:127
 #: gnucash/gnome/dialog-price-edit-db.c:203
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:1545
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:1565
 #: gnucash/gnome/gnc-plugin-page-invoice.c:162
 #: gnucash/gnome/gnc-plugin-page-owner-tree.c:1150
 #: gnucash/gnome/gnc-plugin-page-sx-list.c:160
@@ -2257,7 +2257,7 @@ msgid "Find Job"
 msgstr ""
 
 #: gnucash/gnome/dialog-lot-viewer.c:797
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:353
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:355
 #: gnucash/gnome/gnc-plugin-page-budget.c:178
 #: gnucash/gnome/window-reconcile2.c:1708 gnucash/gnome/window-reconcile.c:1750
 #: gnucash/gnome-utils/gnc-file.c:102 gnucash/gnome-utils/gnc-file.c:274
@@ -2485,7 +2485,7 @@ msgstr[1] ""
 msgid "Delete prices?"
 msgstr ""
 
-#: gnucash/gnome/dialog-price-edit-db.c:421
+#: gnucash/gnome/dialog-price-edit-db.c:422
 #: gnucash/report/standard-reports/budget-income-statement.scm:125
 #: gnucash/report/standard-reports/equity-statement.scm:85
 #: gnucash/report/standard-reports/income-statement.scm:118
@@ -2493,7 +2493,7 @@ msgstr ""
 msgid "Entries"
 msgstr ""
 
-#: gnucash/gnome/dialog-price-edit-db.c:451
+#: gnucash/gnome/dialog-price-edit-db.c:452
 msgid "Are you sure you want to delete these prices ?"
 msgstr ""
 
@@ -3508,109 +3508,109 @@ msgstr ""
 msgid "Edit the payment this transaction is a part of"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:169
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:171
 #: gnucash/gnome/gnc-plugin-page-invoice.c:103
 msgid "New _Account..."
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:170
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:172
 msgid "Create a new Account"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:174
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:176
 msgid "New Account _Hierarchy..."
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:175
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:177
 msgid "Extend the current book by merging with new account type categories"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:180
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:191
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:294
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:182
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:193
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:296
 #: gnucash/gnome/gnc-plugin-page-budget.c:126
 msgid "Open _Account"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:181
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:192
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:295
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:183
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:194
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:297
 #: gnucash/gnome/gnc-plugin-page-budget.c:127
 msgid "Open the selected account"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:185
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:187
 msgid "Open _Old Style Register Account"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:186
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:188
 msgid "Open the old style register selected account"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:199
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:210
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:299
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:201
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:212
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:301
 msgid "Open _SubAccounts"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:200
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:211
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:300
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:202
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:213
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:302
 #: gnucash/gnome/gnc-plugin-page-budget.c:133
 msgid "Open the selected account and all its subaccounts"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:204
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:206
 msgid "Open Old St_yle Subaccounts"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:205
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:207
 msgid "Open the old style register selected account and all its subaccounts"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:218
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:220
 #: gnucash/gnome/gnc-plugin-page-register2.c:243
 #: gnucash/gnome/gnc-plugin-page-register.c:251
 msgid "Edit _Account"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:219
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:221
 #: gnucash/gnome/gnc-plugin-page-register2.c:244
 #: gnucash/gnome/gnc-plugin-page-register.c:252
 msgid "Edit the selected account"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:223
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:225
 msgid "_Delete Account..."
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:224
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:226
 msgid "Delete selected account"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:228
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:233
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:230
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:235
 #: gnucash/gnome/gnc-plugin-page-register2.c:248
 #: gnucash/gnome/gnc-plugin-page-register.c:256
 msgid "F_ind Account"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:229
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:234
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:231
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:236
 #: gnucash/gnome/gnc-plugin-page-register2.c:249
 #: gnucash/gnome/gnc-plugin-page-register.c:257
 msgid "Find an account"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:238
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:240
 msgid "_Renumber Subaccounts..."
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:239
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:241
 msgid "Renumber the children of the selected account"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:245
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:247
 #: gnucash/gnome/gnc-plugin-page-budget.c:157
 #: gnucash/gnome/gnc-plugin-page-owner-tree.c:181
 #: gnucash/gnome/gnc-plugin-page-register2.c:326
@@ -3619,122 +3619,122 @@ msgstr ""
 msgid "_Filter By..."
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:251
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:253
 #: gnucash/gnome/gnc-plugin-page-register2.c:343
 #: gnucash/gnome/gnc-plugin-page-register.c:355
 msgid "_Reconcile..."
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:252
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:254
 #: gnucash/gnome/gnc-plugin-page-register2.c:344
 #: gnucash/gnome/gnc-plugin-page-register.c:356
 msgid "Reconcile the selected account"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:256
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:258
 #: gnucash/gnome/gnc-plugin-page-register2.c:348
 #: gnucash/gnome/gnc-plugin-page-register.c:360
 msgid "_Auto-clear..."
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:257
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:259
 msgid "Automatically clear individual transactions, given a cleared amount"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:261
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:263
 #: gnucash/gnome/gnc-plugin-page-register2.c:338
 #: gnucash/gnome/gnc-plugin-page-register.c:350
 #: gnucash/gnome/window-reconcile2.c:2207 gnucash/gnome/window-reconcile.c:2263
 msgid "_Transfer..."
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:262
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:264
 #: gnucash/gnome/gnc-plugin-page-register2.c:339
 #: gnucash/gnome/gnc-plugin-page-register.c:351
 #: gnucash/gnome/window-reconcile2.c:2208 gnucash/gnome/window-reconcile.c:2264
 msgid "Transfer funds from one account to another"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:266
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:268
 #: gnucash/gnome/gnc-plugin-page-register2.c:353
 #: gnucash/gnome/gnc-plugin-page-register.c:365
 msgid "Stoc_k Split..."
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:267
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:269
 #: gnucash/gnome/gnc-plugin-page-register2.c:354
 #: gnucash/gnome/gnc-plugin-page-register.c:366
 msgid "Record a stock split or a stock merger"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:271
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:273
 #: gnucash/gnome/gnc-plugin-page-register2.c:358
 #: gnucash/gnome/gnc-plugin-page-register.c:370
 msgid "View _Lots..."
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:272
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:274
 #: gnucash/gnome/gnc-plugin-page-register2.c:359
 #: gnucash/gnome/gnc-plugin-page-register.c:371
 msgid "Bring up the lot viewer/editor window"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:276
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:278
 msgid "Check & Repair A_ccount"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:277
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:279
 #: gnucash/gnome/window-reconcile2.c:2213 gnucash/gnome/window-reconcile.c:2269
 msgid ""
 "Check for and repair unbalanced transactions and orphan splits in this "
 "account"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:281
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:283
 msgid "Check & Repair Su_baccounts"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:282
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:284
 msgid ""
 "Check for and repair unbalanced transactions and orphan splits in this "
 "account and its subaccounts"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:287
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:289
 msgid "Check & Repair A_ll"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:288
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:290
 msgid ""
 "Check for and repair unbalanced transactions and orphan splits in all "
 "accounts"
 msgstr ""
 
 #. Extensions Menu
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:292
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:294
 #: gnucash/gnome/gnc-plugin-register2.c:64
 msgid "_Register2"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:355
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:357
 msgid "Open2"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:357
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:359
 #: gnucash/gnome/gnc-plugin-page-owner-tree.c:268
 #: gnucash/gnome/gnc-plugin-page-owner-tree.c:269
 #: gnucash/gnome/gnc-plugin-page-owner-tree.c:270
 msgid "Edit"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:358
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:360
 #: gnucash/gnome/gnc-plugin-page-owner-tree.c:271
 #: gnucash/gnome/gnc-plugin-page-owner-tree.c:272
 #: gnucash/gnome/gnc-plugin-page-owner-tree.c:273
 msgid "New"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:359
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:361
 #: gnucash/gnome/gnc-plugin-page-budget.c:179
 #: gnucash/gnome/gnc-plugin-page-invoice.c:261
 #: gnucash/gnome/gnc-plugin-page-register2.c:486
@@ -3757,8 +3757,8 @@ msgstr ""
 #. * The translated string appears as the tab name and as the
 #. * text associated with the option selector on the tab
 #.
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:450
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:456
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:452
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:458
 #: gnucash/gnome-utils/gnc-tree-view-split-reg.c:2896
 #: gnucash/gnome-utils/gnc-tree-view-split-reg.c:2898
 #: gnucash/gnome-utils/gnc-tree-view-split-reg.c:2900
@@ -3793,49 +3793,58 @@ msgstr ""
 msgid "Accounts"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:1329
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:1348
+msgid ""
+"The list below shows objects which make use of the account which you want to "
+"delete.\n"
+"Before you can delete it, you must either delete those objects or else "
+"modify them so they make use\n"
+"of another account"
+msgstr ""
+
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:1359
 #: gnucash/gnome/gnc-plugin-page-owner-tree.c:1132
 msgid "(no name)"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:1354
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:1383
 #, c-format
 msgid "Deleting account %s"
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:1478
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:1498
 #, c-format
 msgid "The account %s will be deleted."
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:1491
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:1511
 #, c-format
 msgid "All transactions in this account will be moved to the account %s."
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:1497
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:1517
 msgid "All transactions in this account will be deleted."
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:1506
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:1526
 #, c-format
 msgid "All of its sub-accounts will be moved to the account %s."
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:1512
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:1532
 msgid "All of its subaccounts will be deleted."
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:1517
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:1537
 #, c-format
 msgid "All sub-account transactions will be moved to the account %s."
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:1523
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:1543
 msgid "All sub-account transactions will be deleted."
 msgstr ""
 
-#: gnucash/gnome/gnc-plugin-page-account-tree.c:1528
+#: gnucash/gnome/gnc-plugin-page-account-tree.c:1548
 msgid "Are you sure you want to do this?"
 msgstr ""
 

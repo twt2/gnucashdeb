@@ -1,10 +1,70 @@
+2018-03-25 John Ralls 
+
+	* Release 2.7.8. (HEAD -> unstable, tag: 2.7.8)
+
+2018-03-25 John Ralls 
+
+	* Merge branch 'maint' into unstable (origin/unstable)
+
+2018-03-25 John Ralls 
+
+	* Revert "Load the environment file when initializing the python bindings."
+
+2018-03-25 John Ralls 
+
+	* Merge Chris Lam's Fix-794030 into maint (origin/maint, maint)
+
+2018-03-25 Christopher Lam 
+
+	* Bug 794030 - relative date functions compute wrong day of month
+
+2018-03-24 John Ralls 
+
+	* Merge Bob Fewell's Bug 794360 PR into unstable.
+
+2018-03-24 John Ralls 
+
+	* Load the environment file when initializing the python bindings.
+
+2018-03-22 John Ralls 
+
+	* [python bindings] Add required posted dates to the transactions.
+
+2018-03-22 John Ralls 
+
+	* More python 3 fixups.
+
+2018-03-21 Robert Fewell 
+
+	* Bug 794644 - Deleting prices slow
+
+2018-03-21 Robert Fewell 
+
+	* Fix a couple of Transient parent warnings
+
+2018-03-21 Robert Fewell 
+
+	* Component not found error when accounts are deleted
+
+2018-03-21 Robert Fewell 
+
+	* Bug 794360 Critical error when deleting accounts with children
+
+2018-03-20 John Ralls 
+
+	* Fix a string msgid generation.
+
+2018-03-19 John Ralls 
+
+	* Bug 794330 - Scheduled Transaction Editor Transfer Button Does Not Work
+
 2018-03-18 John Ralls 
 
-	* Actually change CMakeLists.txt for the release. (HEAD -> unstable, tag: 2.7.7)
+	* Actually change CMakeLists.txt for the release. (tag: 2.7.7)
 
 2018-03-18 John Ralls 
 
-	* Fix release narrative in NEWS. (origin/unstable)
+	* Fix release narrative in NEWS.
 
 2018-03-18 John Ralls 
 
@@ -76,7 +136,7 @@
 
 2018-03-15 fell 
 
-	* Improve comments how to update FQ sources (origin/maint, maint)
+	* Improve comments how to update FQ sources
 
 2018-03-15 fell 
 
