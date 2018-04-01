@@ -54,7 +54,6 @@ Suggests: libdbd-mysql, libdbd-pgsql, libdbd-sqlite3
 Recommends: gnucash-docs
            ,python-gnucash
            ,yelp
-           ,dbus (>= 1.8~) | dbus-x11
 Breaks: gnucash-common (<< 1:2.4.8-1~)
 Replaces: gnucash-common (<< 1:2.4.8-1~)
 Description: personal and small-business financial-accounting software
