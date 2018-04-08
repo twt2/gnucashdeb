@@ -1,3 +1,19 @@
+gnucash (1:3.0-1) experimental; urgency=medium
+
+  * New upstream release [April 2018]. (Closes: #892177).
+  * control: removed dbus recommends, as advised by Laurent Bigonville
+    (Closes: #815005).
+  * Recommends: python-gnucash --> python3-gnucash.
+    Thanks, Laurent Bigonville.
+  * Install python examples.
+    Thanks, Laurent Bigonville.
+  * watch: minor pattern correction/update.
+  * Build with guile-2.2-dev (Closes: #885204);
+    Pass "-X.go" to dh_strip which is "Unable to recognise the format of
+    the input file" of *.go files...
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Sun, 08 Apr 2018 18:14:53 +1000
+
 gnucash (1:2.7.8-1) experimental; urgency=medium
 
   * New upstream release [March 2018].
