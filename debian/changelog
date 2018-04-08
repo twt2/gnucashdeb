@@ -1,3 +1,9 @@
+gnucash (1:2.6.19-1) unstable; urgency=medium
+
+  * New upstream release [December 2017].
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Mon, 09 Apr 2018 01:39:23 +1000
+
 gnucash (1:2.6.18-1) unstable; urgency=medium
 
   * New upstream release [September 2017].
