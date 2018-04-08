@@ -6,7 +6,7 @@ Standards-Version: 4.1.3
 Build-Depends: debhelper (>= 11~), pkg-config, dh-python
     ,cmake
     ,googletest
-    ,guile-2.0-dev
+    ,guile-2.2-dev
     ,imagemagick
     ,libaqbanking-dev
     ,libboost-dev
@@ -43,7 +43,7 @@ Built-Using: ${my:Built-Using}
 Architecture: any
 Depends: gnucash-common (= ${source:Version}), ${shlibs:Depends}
     ,${aqbanking:Depends} ,${misc:Depends} ,${perl:Depends}
-    ,guile-2.0
+    ,guile-2.2
     ,libfinance-quote-perl
     ,libwww-perl
     ,libhtml-tree-perl

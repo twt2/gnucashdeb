@@ -85,8 +85,10 @@ ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
 #        done
 endif
 
+##dh_strip: is "Unable to recognise the format of the input file" of *.go files:
+##dh_strip: strip --remove-section=.comment --remove-section=.note --strip-unneeded debian/gnucash/usr/lib/x86_64-linux-gnu/gnucash/gnucash/scm/2.2/html-jqplot.go returned exit code 1
 override_dh_strip:
-	dh_strip --dbgsym-migration='gnucash-dbg (<< 1:2.6.13~)'
+	dh_strip --dbgsym-migration='gnucash-dbg (<< 1:2.6.13~)' -X.go
 
 override_dh_gencontrol:
 	dh_gencontrol -- -Vmy:Built-Using="$(foreach pkg,googletest,$(word 2,$(shell dpkg --status $(pkg) | grep ^Package)) (=$(word 2,$(shell dpkg --status $(pkg) | grep Version))),)"
