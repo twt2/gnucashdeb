@@ -52,7 +52,7 @@ Depends: gnucash-common (= ${source:Version}), ${shlibs:Depends}
     ,libdate-manip-perl
 Suggests: libdbd-mysql, libdbd-pgsql, libdbd-sqlite3
 Recommends: gnucash-docs
-           ,python-gnucash
+           ,python3-gnucash
            ,yelp
 Breaks: gnucash-common (<< 1:2.4.8-1~)
 Replaces: gnucash-common (<< 1:2.4.8-1~)
