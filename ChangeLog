@@ -1,800 +1,2152 @@
-2017-12-16 John Ralls 
+2018-04-01 John Ralls 
 
-	* Update Dutch and Serbian translations from the Translation project. (HEAD -> maint)
+	* Release GnuCash 3.0 (HEAD -> unstable, tag: 3.0)
 
-2017-12-16 John Ralls 
+2018-04-01 John Ralls 
 
-	* Merge Rob Gowin's Partial Fix for Bug 787497 into maint. (origin/maint)
+	* Compile our own gwen-gtk3 if the supplied one is 4.20.0.
 
-2017-12-16 John Ralls 
+2018-03-31 John Ralls 
 
-	* Add test-flat-bayes to autotools build.
+	* Convert to a two-digit version number.
 
-2017-12-16 John Ralls 
+2018-03-31 John Ralls 
 
-	* Add minimum version to feature and fix copy-paste error in test-flat-bayes.
+	* Merge branch 'maint' into unstable
 
-2017-11-22 lmat 
+2018-03-30 John Ralls 
 
-	* GUID/Flat bayes handling in 2.6
+	* Catch guid_syntax_exception in build_bayes.
 
-2017-12-02 Rob Gowin 
+2018-03-31 John Ralls 
 
-	* Partial fix for Bug 787497 - Disabling options cripples dist package (PR243)
+	* Release 2.6.20 (tag: 2.6.20, maint)
 
-2017-11-23 Rob Gowin 
+2018-03-31 John Ralls 
 
-	* Bug 790620 - Failed to create file “/usr/share/glib-2.0/schemas/gschemas.compiled.XY789Y”
+	* Remove previously deleted gnc-value-portfolio script from dist.
 
-2017-11-21 John Ralls 
+2018-03-31 John Ralls 
 
-	* Fix python build and test errors on Mac.
+	* One more glade file with visible=true dialogs. (origin/unstable)
 
-2017-11-19 John Ralls 
+2018-03-31 John Ralls 
 
-	* A better way to handle MySQL's 0000-00-00 invalid date indicator.
+	* Merge Bob Fewell's 'Gwenhywfar fixes' PR328 into unstable.
 
-2017-11-19 John Ralls 
+2018-03-31 Geert Janssens 
 
-	* Don't try to unref a NULL GDateTime*.
+	* Fix read and write of business counters and counter_formats
 
-2017-11-15 fell 
+2018-03-31 Robert Fewell 
 
-	* Add po/glossary/gnc-glossary.pot to .gitignore
+	* Fix transient parent warnings when doing MT940 import
 
-2017-11-15 fell 
+2018-03-31 Robert Fewell 
 
-	* Fix a few encodings and Content-* tags in glossary
+	* Missing container add for textbrowser
 
-2017-11-07 John Ralls 
+2018-03-31 Robert Fewell 
 
-	* Bug 789928 - FTBFS with libdbi 0.9.0-5 on Debian
+	* Error for lineedit when setting text
 
-2017-10-20 fell 
+2018-03-31 Robert Fewell 
 
-	* Add a bunch of translator comments and a few accelerators to glade files
+	* Couple of missing properties for groupbox
 
-2017-10-20 fell 
+2018-03-31 Robert Fewell 
 
-	* Add a bunch of translator comments to C files
+	* Bug794707 - Aqbanking combo boxes missing selection.
 
-2017-10-20 fell 
+2018-03-31 Geert Janssens 
 
-	* Improve type of bank accounts in SKR03
+	* Merge branch 'imap-editor-fix' of https://github.com/Bob-IT/gnucash into unstable
 
-2017-10-20 fell 
+2018-03-31 Christopher Lam 
 
-	* Add "Assets & Liabilities", "Profit & Loss" to the glossary,
+	* gncInvoice: complete removal gncInvoiceDateExists
 
-2017-10-20 fell 
+2018-03-31 Christopher Lam 
 
-	* Mayor overhaul of de.po
+	* Replace gncInvoiceDateExists to gncInvoiceIsPosted
 
-2017-10-20 fell 
+2018-03-30 John Ralls 
 
-	* Fix wiki link
+	* Merge Chris Lam's Bug 792800 Pull Request into unstable.
 
-2017-10-13 fell 
+2018-03-30 John Ralls 
 
-	* update de.po to commit f283437
+	* Merge Bob Fewell's Autosize PR into unstable.
 
-2017-10-11 fell 
+2018-03-30 John Ralls 
 
-	* Merge branch 'maint' of https://github.com/DiMan/Gnucash into maint
+	* Fix more transient-for warnings.
 
-2017-10-07 Di Mang 
+2018-03-30 John Ralls 
 
-	* Adjustment of some Russian translations
+	* Bug 794730 - SIGSEGV when entering an exchange rate, Part 2
 
-2017-10-06 fell 
+2018-03-30 Geert Janssens 
 
-	* Use descriptions from gschema as tooltips in Preferences Aqbanking
+	* Add feature kvp frame to the dbi test file
 
-2017-10-03 Geert Janssens 
+2018-03-30 Geert Janssens 
 
-	* Fix gnucash.pot generation from cmake build.
+	* Fix slot loading in sql backend
 
-2017-10-03 Geert Janssens 
+2018-03-29 John Ralls 
 
-	* Stop testing GObject's handling of invalid parameters
+	* Bug 794730 - SIGSEGV when entering an exchange rate
 
-2017-10-03 fell 
+2018-03-29 Christopher Lam 
 
-	* Fix a typo in gir error message
+	* invoice, easy-invoice.scm: %discount from html-table to string
 
-2017-10-02 fell 
+2018-03-27 Christopher Lam 
 
-	* Readd the missing glade msgctx strings to ru.po
+	* TR: Price Column shown in commodity SCU
 
-2017-10-02 fell 
+2018-03-26 Christopher Lam 
 
-	* ru.po: Minor improvements of the header after PR #209
+	* Bug 792800 - Advanced Portfolio Report tries to divide by zero balance and aborts.
 
-2017-10-01 ashed 
+2018-03-29 Robert Fewell 
 
-	* Update Russian Translation with the 2.6.18 gnucash.pot.
+	* Bug794806 - Autosize too small
 
-2017-09-29 Ashed 
+2018-03-29 Geert Janssens 
 
-	* Updated and polished Russian Translation.
+	* Bug 794765 - when saving as into a PostgreSQL database, things fail because of renaming the numtest table twice (origin/maint)
 
-2017-09-21 christopherlam 
+2018-03-29 Robert Fewell 
 
-	* Add missing export (gnc:date-get-week)
+	* Fix the gtests for the changes made to ImapInfo structure
 
-2017-09-27 Geert Janssens 
+2018-03-29 Robert Fewell 
 
-	* Add Catalan README file to autotools based build
+	* Speed up loading of the Imap Editor Treeview
 
-2017-09-26 Josep-Maria Prat 
+2018-03-29 Robert Fewell 
 
-	* Readme translated into catalan
+	* Fix Imap Editor to reflect the changes in kvp paths
 
-2017-09-22 John Ralls 
+2018-03-29 Geert Janssens 
 
-	* Release 2.6.18 (tag: 2.6.18)
+	* Remove duplicate css definitions
 
-2017-09-22 John Ralls 
+2018-03-28 Christian Stimming 
 
-	* Remove automake version check for make dist.
+	* Online HBCI actions: Remove outdated non-SEPA menu items.
 
-2017-09-22 John Ralls 
+2018-03-28 Mike Alexander 
 
-	* Fix typo in CA_DIST name.
+	* Change portfolio.scm like advanced-portfolio.scm was changed in 9fd53e6.
 
-2017-09-21 John Ralls 
+2018-03-27 Di Mang 
 
-	* Import latest Farsi and Srpska translations from the translation project.
+	* ru.po: some more translations
 
-2017-09-21 Geert Janssens 
+2018-03-26 Di Mang 
 
-	* Revert "Ignore softlink for new report"
+	* ru.po: Update some translations
 
-2017-09-21 Geert Janssens 
+2018-03-26 Di Mang 
 
-	* Ignore softlink for new report
+	* Update ru.po from new gnucash.pot file
 
-2017-09-21 Geert Janssens 
+2018-03-26 Di Mang 
 
-	* Fixup for Catalan account charts
+	* de.po: Update some translations
 
-2017-09-21 Geert Janssens 
+2018-03-26 Di Mang 
 
-	* Add boilerplate to get Catalan account charts installed and added to the distribution
+	* Updating de.po from new gnucash.pot file
 
-2017-09-21 Josep-Maria Prat 
+2018-03-25 John Ralls 
 
-	* Catalan accounts missing
+	* Release 2.7.8. (tag: 2.7.8)
 
-2017-09-20 Geert Janssens 
+2018-03-25 John Ralls 
 
-	* Properly ignore internal report options that are not on invisible option pages when opening the report options dialog
+	* Merge branch 'maint' into unstable
 
-2017-09-06 John Ralls 
+2018-03-25 John Ralls 
 
-	* Install the current, 2015, and 2016 ChangeLogs.
+	* Revert "Load the environment file when initializing the python bindings."
 
-2017-09-15 Geert Janssens 
+2018-03-25 John Ralls 
 
-	* Bug 647805 - Interdependent report options fail to change state after using apply for a limited number of times
+	* Merge Chris Lam's Fix-794030 into maint
 
-2017-09-15 fell 
+2018-03-25 Christopher Lam 
 
-	* Bug 787479 - Persian currency symbol is doubled
+	* Bug 794030 - relative date functions compute wrong day of month
 
-2017-09-11 Rob Gowin 
+2018-03-24 John Ralls 
 
-	* Fix issues with loading and running init.py
+	* Merge Bob Fewell's Bug 794360 PR into unstable.
 
-2017-09-11 fell 
+2018-03-24 John Ralls 
 
-	* Update changed string in de.po
+	* Load the environment file when initializing the python bindings.
 
-2017-09-11 fell 
+2018-03-22 John Ralls 
 
-	* Fix error in recent commit
+	* [python bindings] Add required posted dates to the transactions.
 
-2017-09-11 fell 
+2018-03-22 John Ralls 
 
-	* Remove build_year from translatable copyright string
+	* More python 3 fixups.
 
-2017-09-10 fell 
+2018-03-21 Robert Fewell 
 
-	* Review of PR #183
+	* Bug 794644 - Deleting prices slow
 
-2017-09-09 christopherlam 
+2018-03-21 Robert Fewell 
 
-	* Fix swig wrapper for gncTaxTableGetTaxTables
+	* Fix a couple of Transient parent warnings
 
-2017-09-04 Daniel 
+2018-03-21 Robert Fewell 
 
-	* L10N: DE, some small corrections.
+	* Component not found error when accounts are deleted
 
-2017-09-08 Rob Gowin 
+2018-03-21 Robert Fewell 
 
-	* Fix problems that occur when running out of CMake build dir
+	* Bug 794360 Critical error when deleting accounts with children
 
-2017-09-08 Rob Gowin 
+2018-03-20 John Ralls 
 
-	* Run the python bindings test when using CMake
+	* Fix a string msgid generation.
 
-2017-09-06 lmat 
+2018-03-19 John Ralls 
 
-	* Adding .gitignore entries for ctags and vim swaps
+	* Bug 794330 - Scheduled Transaction Editor Transfer Button Does Not Work
 
-2017-09-08 fell 
+2018-03-18 John Ralls 
 
-	* Revert PR #182 mostly.
+	* Actually change CMakeLists.txt for the release. (tag: 2.7.7)
 
-2017-09-08 Geert Janssens 
+2018-03-18 John Ralls 
 
-	* Merge branch 'maint.translation.de.02' of https://github.com/quazgar/gnucash into maint
+	* Fix release narrative in NEWS.
 
-2017-09-04 Daniel 
+2018-03-18 John Ralls 
 
-	* L10N: DE, automatic "make pot" changes.
+	* Release 2.7.7.
 
-2017-09-04 Daniel 
+2018-03-17 luc14n0 
 
-	* L10N: DE, fix bug #787226: Bill ID / Billing ID swapped.
+	* Add COMPILE_GSCHEMAS to allow disabling gschemas compilation
 
-2017-09-03 Geert Janssens 
+2018-03-18 John Ralls 
 
-	* Only build aqbanking when requested
+	* Update es.po from the Translation Project.
 
-2017-09-02 Sumit Bhardwaj 
+2018-03-18 John Ralls 
 
-	* Added WITH_OFX fix to CMakeLists in gnucash/import-export/ofx
+	* Fix the Python Console for Python3.
 
-2017-09-02 Geert Janssens 
+2018-03-17 John Ralls 
 
-	* Fix deliberate test failure on previous commit
+	* Merge Chris Lam's Increase default options dialog size PR into unstable.
 
-2017-09-02 Geert Janssens 
+2018-03-17 John Ralls 
 
-	* Have Travis print out build logs in case of test failures
+	* Merge Bob Fewell's assorted GUI fixups PR 310 into unstable.
 
-2017-09-02 Geert Janssens 
+2018-03-17 John Ralls 
 
-	* Set up a build matrix on Travis CI
+	* Merge Tomas Schlosser's "Allow creation of prices in Python bindings" into unstable.
 
-2017-09-01 Rob Gowin 
+2018-03-15 Julian Wollrath 
 
-	* Enable CMake build in Travis CI
+	* Bug 791831 - Add python3 support
 
-2017-08-25 Geert Janssens 
+2018-03-17 John Ralls 
 
-	* Hide Account Substring option
+	* Revert "Add COMPILE_SCHEMA to allow disabling gschema compilation"
 
-2017-08-25 Geert Janssens 
+2018-03-17 John Ralls 
 
-	* Merge branch 'patch-3' of https://github.com/christopherlam/gnucash into maint
+	* Merge Luciano Santos's 'compile-schema-patch' PR into unstable.
 
-2017-08-25 christopherlam 
+2018-03-17 John Ralls 
 
-	* Reduce to compatibility shim
+	* Bug 794236 - Import a log file
 
-2017-07-01 Yasuaki Taniguchi 
+2018-03-17 luc14n0 
 
-	* Bug 784284 - unifying "Clear the entry." tooltip on Loan Repayment Calculator
+	* Add COMPILE_SCHEMA to allow disabling gschema compilation
 
-2017-08-19 Kristjan Onu 
+2018-03-16 John Ralls 
 
-	* Correct Price Overview documentation typos
+	* Fix date corruption in SQL load.
 
-2017-08-21 fell 
+2018-03-16 John Ralls 
 
-	* PR #172: Accelerator fixes for Latvian language
+	* Fix lost Bayesian matches in SQL backend.
 
-2017-08-16 christopherlam 
+2018-03-16 Tomas Schlosser 
 
-	* added case sensitive filter
+	* Allow creation of prices in Python bindings
 
-2017-08-16 christopherlam 
+2018-03-15 John Ralls 
 
-	* Account fullname filter for transaction.scm
+	* Avoid crash when committing a date outside of the valid range
 
-2017-08-03 christopherlam 
+2018-03-15 fell 
 
-	* Remove clutter from generated html
+	* Merge branch 'maint' into unstable
 
-2017-08-03 christopherlam 
+2018-03-15 fell 
 
-	* Partial fix for bug 660027
+	* Improve comments how to update FQ sources
 
-2017-08-16 Valdis Vitolins 
+2018-03-15 fell 
 
-	* Accelerator fixes for Latvian language
+	* Merge branch 'maint' into unstable PR #313
 
-2017-08-11 fell 
+2018-03-14 Di Mang 
 
-	* PR #170 Fixes for po/lv.po file
+	* Remove the emacs comments at the end of files
 
-2017-08-11 Valdis Vitolins 
+2018-03-14 Di Mang 
 
-	* Fixes for po/lv.po file
+	* Remove the emacs comments at the end of files
 
-2017-08-10 fell 
+2018-03-14 fell 
 
-	* Merge Messages fom Maint in lv.po
+	* Merge branch 'maint' into unstable PR #311
 
-2017-08-09 Valdis Vitolins 
+2018-03-13 John Ralls 
 
-	* *.po file updated for Latvian language
+	* Bug 787439 - Segmentation Fault in Transfer dialog after clearing...
 
-2017-08-09 Geert Janssens 
+2018-03-12 Di Mang 
 
-	* Fix ambiguity in Dutch translation of the gnucash description
+	* Update GC version and date. (tag: 2.7.6)
 
-2017-08-01 christopherlam 
+2018-03-12 Robert Fewell 
 
-	* Fix income statement when trading accounts not used
+	* When doing a file save from the a new start we have no key file
 
-2017-08-01 christopherlam 
+2018-03-12 Robert Fewell 
 
-	* Add vertical-align:top to default text fields.
+	* Stop critical error due to testing null filename
 
-2017-07-17 Rob Gowin 
+2018-03-12 Robert Fewell 
 
-	* Fix failure to compile AQBanking GSchemas in CMake Build.
+	* Change dialog-new-user to use a GtkWindow
 
-2017-07-10 Geert Janssens 
+2018-03-12 Robert Fewell 
 
-	* Fix a couple of double EXTRA_DIST declarations from the previous commit
+	* A couple of changes to assistant glade files
 
-2017-07-10 Geert Janssens 
+2018-03-12 Robert Fewell 
 
-	* Add CMakeLists.txt files to dist tarball generated by autotools
+	* Bug 794242 - Remove keep above setting for assistant hierarchy
 
-2017-06-06 Rob Gowin 
+2018-03-11 Robert Fewell 
 
-	* No need for make dist and distcheck when checking autotools build in cmake
+	* Fix transient parent warnings in import dialogs
 
-2017-02-01 Rob Gowin 
+2018-03-11 Robert Fewell 
 
-	* Implement 'dist', 'distcheck' and 'uninstall' targets for CMake
+	* Add missing response section to the account picker dialog
 
-2017-06-26 Kuang-che Wu 
+2018-03-11 Robert Fewell 
 
-	* Fix import-export compile on windows
+	* Glade 3.20 adds surplus padding option to action area
 
-2017-07-02 John Ralls 
+2018-03-11 John Ralls 
 
-	* Some more translations from the TP. (tag: 2.6.17b)
+	* Release 2.7.6
 
-2017-07-01 John Ralls 
+2018-03-11 John Ralls 
 
-	* Re-release 2.6.17 (tag: 2.6.17a)
+	* Pass GTEST_ROOT and GMOCK_ROOT through to distcheck.
 
-2017-07-01 John Ralls 
+2018-03-11 Di Mang 
 
-	* Release 2.6.17 (tag: 2.6.17)
+	* Add XML namespaces for all Account Hierarchy Templates.
 
-2017-06-30 John Ralls 
+2018-03-06 Christopher Lam 
 
-	* Update translations from the translation project.
+	* Increase default options dialog size
 
-2017-06-29 Mike Evans 
+2018-03-10 John Ralls 
 
-	* Bug 784317 - typo in 'import customers or vendors from text file' dialog
+	* Update the Spanish translation from the Translation Project.
 
-2017-06-25 John Ralls 
+2018-03-10 John Ralls 
 
-	* Bug 782274 - Transactions produced by Transfer Funds or Process...
+	* Merge Bob Fewell's two bug fixes, PR302, into unstable.
 
-2017-06-24 John Ralls 
+2018-03-10 John Ralls 
 
-	* Bug 782897 - Stock Split Assistant crashes GnuCash if you enter a New...
+	* Merge Bob Fewell's focus-fix PR304.
 
-2017-06-20 Geert Janssens 
+2018-03-10 John Ralls 
 
-	* Bug 603379 - Prevent changing some Account Options if it has transactions - followup
+	* Merge Bob Fewell's transient parent PR308 into unstable.
 
-2017-06-20 Geert Janssens 
+2018-03-10 mpuels 
 
-	* Properly define the template namespace rather than using a local string everywhere
+	* Fix typo
 
-2017-06-16 Geert Janssens 
+2018-03-10 John Ralls 
 
-	* Bug 781634 followup - separate translatable commodity namespace strings from those uses in storage
+	* Put the crlf line-endings back on windows text files.
 
-2017-06-16 John Ralls 
+2018-03-10 fell 
 
-	* Correctly store time64 0 in the SQL backend.
+	* Merge branch 'maint' into unstable
 
-2017-06-16 John Ralls 
+2018-03-10 fell 
 
-	* Clamp time64 values passed to GDateTime functions to the valid range.
+	* Minor fix in de.po
 
-2017-06-04 christopherlam 
+2018-03-10 fell 
 
-	* Bug 776396 Further Fix
+	* Backport and review of commit c0fd3b3: Remove all references to the now-defunct Yahoo! quote retrieval
 
-2017-05-26 John Ralls 
+2018-03-09 John Ralls 
 
-	* Bug 783095 - gnucash-2.6.16 segfaults on startup
+	* Gcc-4.8 doesn't have std::codecvt.
 
-2017-05-21 Mike Evans 
+2018-03-09 John Ralls 
 
-	* Change from deprecated gncEntrySetDate to gncEntrySetDateGDate. Again.
+	* Fix boost linking problem on Unbuntu 14.
 
-2017-05-21 Mike Evans 
+2018-03-09 John Ralls 
 
-	* Revert "Change from deprecated gncEntrySetDate to gncEntrySetDateGDate." Oops, more work required.
+	* Provide fallback value for test_core_dir in case it hasn't been built yet.
 
-2017-05-21 Mike Evans 
+2018-03-09 John Ralls 
 
-	* Change from deprecated gncEntrySetDate to gncEntrySetDateGDate.
+	* Bug 793900 - 2.7.5: test failure: 105 - python-bindings.
 
-2017-05-19 Mike Evans 
+2018-03-08 John Ralls 
 
-	* Correct a typo.
+	* Operator << fix.
 
-2017-05-18 Mike Evans 
+2018-03-09 Geert Janssens 
 
-	* Use correct column for entry date.
+	* Csv Importer - Prevent crash if number of saved columns is higher than actually detected ones.
 
-2017-05-13 Bert 
+2018-03-08 fell 
 
-	* Bug 776396 - Foreign currency reports, amounts are not aligned correctly
+	* Merge branch 'maint' into unstable PR #305, #:306
 
-2016-08-10 fell 
+2018-03-08 fell 
 
-	* Add XSU to iso-4217-currencies
+	* PR #306: Merge branch 'maint-transfer-01' of https://github.com/DiMan/Gnucash into maint
 
-2017-05-03 Geert Janssens 
+2017-09-17 Carsten Rinke 
 
-	* Drop ifdeffed out code block
+	* Bug764245 - multi-column reports include incorrect sub-reports
 
-2017-05-03 Geert Janssens 
+2018-03-08 Geert Janssens 
 
-	* Bug 781634 - Alert on missing account currency when opening account
+	* Csv imp settings - internalize prefix handling
 
-2017-04-29 John Ralls 
+2018-03-08 Geert Janssens 
 
-	* CMakeLists.txt: Remove Apple architecture settings.
+	* Csv import settings - undo rename of common methods
 
-2017-04-16 John Ralls 
+2018-03-08 Geert Janssens 
 
-	* Updated ar.po from ashalash@msn.com
+	* Csv importer - align file names
 
-2017-04-29 fell 
+2018-03-08 Geert Janssens 
 
-	* Fix wrong displayed position of the verbose flag in gnc-fq-dump
+	* Bug 793467 - GnuCash crashes when trying to open a binary file instead of a CSV
 
-2017-04-16 John Ralls 
+2018-03-08 Geert Janssens 
 
-	* Merge branch 'PR140' into maint
+	* Enable test to handle attempt to load non-existing file in csv importer
 
-2016-08-04 John Ralls 
+2018-03-08 Geert Janssens 
 
-	* Adjust CMAKE_C_FLAGS for better release/debug behavior.
+	* Csv import - improve memory handling in the assistant class
 
-2017-04-10 John Ralls 
+2018-03-08 Geert Janssens 
 
-	* Use the Mac Locale to find the account templates only when building with quartz.
+	* Add some background info on memory management in CSV importers
 
-2017-04-10 Mike Alexander 
+2018-03-08 Robert Fewell 
 
-	* Fix a minor typo.
+	* Fix transient parent warnings for various import dialogs
 
-2017-04-04 Mike Alexander 
+2018-03-08 Robert Fewell 
 
-	* Fix the SWIG Guile wrapping of functions that have a "struct tm" parameter.
+	* Fix transient parent warnings for report dialogs
 
-2017-04-03 John Ralls 
+2018-03-08 Robert Fewell 
 
-	* Save Changes Bug 780889 - Split-register transactions result in invalid...
+	* Fix transient parent warnings for various business dialogs
 
-2017-04-02 John Ralls 
+2018-03-08 Robert Fewell 
 
-	* Bug 780845 - link in github repo README file needs correction/editing
+	* Fix transient parent warnings for various dialogs
 
-2017-03-30 John Ralls 
+2018-03-07 Di Mang 
 
-	* Merge Ueli Neiderer's swift-transactiontxt branch into maint.
+	* clean up of account hierarchy templates for "de_DE"
 
-2017-03-30 Ueli Niederer 
+2018-03-07 Di Mang 
 
-	* Obey GNUcash coding style
+	* clean up of account hierarchy templates for "C"
 
-2017-03-30 Ueli Niederer 
+2018-03-07 Robert Fewell 
 
-	* Added a preference to control import behaivour of transaction text
+	* Fix Segmentation fault when going to File->New
 
-2017-03-28 Ueli Niederer 
+2018-03-07 fell 
 
-	* Including the transaction text into the purpose text
+	* Merge branch 'maint' into unstable PR #303
 
-2017-03-25 John Ralls 
+2018-03-06 Di Mang 
 
-	* Release 2.6.16 (tag: 2.6.16)
+	* Remove the unnecessary comments: <!-- Local variables: --> <!-- mode: xml        --> <!-- End:             -->
 
-2017-03-25 John Ralls 
+2018-03-06 John Ralls 
 
-	* Reduce the gate on get_random_gnc_numeric.
+	* Bug 794083 - gnucash-2.7.5: cmake+make build installs Makefile
 
-2017-03-25 John Ralls 
+2018-03-06 John Ralls 
 
-	* Update translations ca, nl, and sr from the translation project.
+	* Bug 793941 - 2.7.4: test failure on i686: 59 - test-gnc-timezone
 
-2017-03-24 John Ralls 
+2018-03-06 John Ralls 
 
-	* Bug 670731 - Future Value not working with Loan Scheduled transaction
+	* Speed up GUID equality comparison.
 
-2017-03-24 fell 
+2018-03-06 Robert Fewell 
 
-	* Update of de.po
+	* Bug 794031, enable placeholder toggle and provide callback
 
-2017-03-24 fell 
+2018-03-06 Robert Fewell 
+
+	* Bug 793699 - start_spath could be used uninitialised
+
+2018-03-06 fell 
+
+	* Merge branch 'maint' into unstable PR #300
+
+2018-03-05 Di Mang 
+
+	* Adjustment of Account Hierarchy Templates. (mentioned in PR #293 on GitHub)
+
+2018-03-05 Geert Janssens 
+
+	* Merge branch 'unstable-bugfix' of https://github.com/christopherlam/gnucash into unstable
+
+2018-03-05 Geert Janssens 
+
+	* Merge branch 'unstable-transfer-02' of https://github.com/DiMan/gnucash into unstable
+
+2018-03-05 Geert Janssens 
+
+	* Merge branch 'master' of https://github.com/nielsegberts/gnucash into unstable
+
+2018-03-05 Geert Janssens 
+
+	* Merge branch 'cpack' of https://github.com/TheBiggerGuy/gnucash into unstable
+
+2018-03-05 Guy Taylor 
+
+	* Fix CPack package version number
+
+2018-03-05 Christopher Lam 
+
+	* Modernise chart colours
+
+2018-03-04 Christopher Lam 
+
+	* taxtxf: schemify
+
+2018-03-04 Christopher Lam 
+
+	* <br> to <br/> and ~s to ~a
+
+2018-03-04 Christopher Lam 
+
+	* remove begindate in qofquery
+
+2018-03-05 fell 
+
+	* Merge branch 'maint' into unstable
+
+2018-03-03 Di Mang 
+
+	* Revision and expansion of accounts for the Russian language. In addition, replacing of commodity: USD => RUB.
+
+2018-03-04 Di Mang 
+
+	* Add spacing between border and text in dialog "New Accounts Hierarchy Setup".
+
+2018-03-04 Christopher Lam 
+
+	* Bug 765846 - Expense Over Time for subaccounts: An error occurred while running the report
+
+2018-03-04 Christian Stimming 
+
+	* Fix auto-selection of splits in reconcile
+
+2018-03-03 Di Mang 
+
+	* Revision and expansion of accounts for the Russian language. In addition, replacing of commodity: USD => RUB.
+
+2018-03-03 Christopher Lam 
+
+	* bugfix gnc_ui_new_account_window
+
+2018-03-01 Geert Janssens 
+
+	* Merge branch 'maint' into unstable
+
+2018-03-01 Geert Janssens 
+
+	* Bug 792008 - gnucash 2.6.19 fails to build
+
+2018-03-01 Geert Janssens 
+
+	* Bug 745941 - Review of po Headers / make pot
+
+2018-02-18 Geert Janssens 
+
+	* Properly detect git in case of linked worktree
+
+2018-03-01 Christopher Lam 
+
+	* TR: Show "Grand Total" only if it has been generated.
+
+2018-03-01 Christopher Lam 
+
+	* test-TR: Add dual-column testing
+
+2018-01-05 Christopher Lam 
+
+	* test-TR: unit tests
+
+2018-01-19 Christopher Lam 
+
+	* TR ENH: Add "Subtotal Summary Grid"
+
+2018-03-01 Geert Janssens 
+
+	* Merge branch 'scheme-progress-1' of https://github.com/christopherlam/gnucash into unstable
+
+2018-02-28 Christopher Lam 
+
+	* date-utilities: bugfix weekly render
+
+2018-02-28 John Ralls 
+
+	* Bug 793947 - Impossible to render printable invoice
+
+2018-02-28 Christopher Lam 
+
+	* Bug 793898 - 2.7.4: Incorrect copyright statement in gnucash/report/standard-reports/sx-summary.scm
+
+2018-02-24 Christopher Lam 
+
+	* TR: change multichoice values from list to symbols
+
+2018-02-28 Christopher Lam 
+
+	* TR: make no-report-data message consistent with initial no-account
+
+2018-02-28 Christopher Lam 
+
+	* TR: simplify no-account-after-filtering stage
+
+2018-02-28 Niels 
+
+	* Fix fall through in Account.cpp
+
+2018-02-24 Christopher Lam 
+
+	* options.scm: tidy (gnc:render-options-changed)
+
+2018-02-28 Geert Janssens 
+
+	* Merge branch 'reg-item' of https://github.com/Bob-IT/gnucash into unstable
+
+2018-02-28 Robert Fewell 
+
+	* With register obscured the sheet kept being redrawn
+
+2018-02-28 Geert Janssens 
+
+	* Cleanup namespace usage for boost::locale
+
+2018-02-28 Geert Janssens 
+
+	* Fix typo: should read 'older version of gettext' rather than 'older version of gnucash'
+
+2018-02-28 Geert Janssens 
+
+	* Merge branch 'master' of https://github.com/jeblad/gnucash into unstable
+
+2018-02-28 Geert Janssens 
+
+	* Merge branch 'register-pref-update' of https://github.com/Bob-IT/gnucash into unstable
+
+2018-02-28 Geert Janssens 
+
+	* Rework source directory structure for gschema, gtkbuilder and ui files
+
+2018-02-28 Geert Janssens 
+
+	* Simplify POTFILES.in generation
+
+2018-02-28 Geert Janssens 
+
+	* Remove autotools-only path exception to find reports
+
+2018-02-27 Geert Janssens 
+
+	* Drop no longer used intltool related variable
+
+2018-02-27 Geert Janssens 
+
+	* Handle situation where gettext 0.19.6 is not available
+
+2018-02-27 Geert Janssens 
+
+	* Drop intltool in favour or using modern gettext
+
+2018-02-26 Geert Janssens 
+
+	* Bug 793460 - gnucash/import-export/csv-imp/assistant-csv-trans-import.cpp:1941 is impossible to translate
+
+2018-02-26 Geert Janssens 
+
+	* Improve config and app data migration to handle renaming of config<version>.user to config-user.scm on all platforms
+
+2018-02-24 John Ralls 
+
+	* Fix up some formatting problems and an extra bug in NEWS.
+
+2018-02-24 John Ralls 
+
+	* Release GnuCash 2.7.5 (tag: 2.7.5)
+
+2018-02-24 John Ralls 
+
+	* Distribute strings.scm!
+
+2018-02-24 John Ralls 
+
+	* Update Slovak and Spanish translations from the Translation Project.
+
+2018-02-24 John Ralls 
+
+	* Block events while creating scheduled transactions.
+
+2018-02-24 Geert Janssens 
+
+	* Make travis happy
+
+2018-02-20 Geert Janssens 
+
+	* Look for user editable config files in gnc_userconfig_dir instead of gnc_userdata_dir
+
+2018-02-20 Geert Janssens 
+
+	* Stop searching for a config.auto file
+
+2018-02-24 John Ralls 
+
+	* Optimize GncDateTime string constructor.
+
+2018-02-23 John Ralls 
+
+	* Delete unused and redundant macro.
+
+2018-02-23 John Ralls 
+
+	* Transient-for for Edit/New Account dialog.
+
+2018-02-23 John Ralls 
+
+	* Transient-for for reconcile information dialog.
+
+2018-02-23 Geert Janssens 
+
+	* Merge branch 'unstable-prepare-SRFI64' of https://github.com/christopherlam/gnucash into unstable
+
+2018-02-23 Robert Fewell 
+
+	* Use the gnc_prefs_get_bool values to update cache values
+
+2018-02-19 Christopher Lam 
+
+	* TR & options: upgrade HTML to XHTML
+
+2018-02-19 Christopher Lam 
+
+	* TR: (minor change) eq? -> eqv?
+
+2018-02-21 Christopher Lam 
+
+	* Add optional testing group for srfi-64
+
+2018-02-23 Christopher Lam 
+
+	* html-document.scm: Restore <html> tag
+
+2018-02-22 Andreas Müller 
+
+	* Bug 787095 - Gnucash Crashes when opening old XML file
+
+2018-02-22 John Ralls 
+
+	* Merge Bob Fewell's "Cache a couple of split register preferences...
+
+2018-02-22 Nikos Charonitakis 
+
+	* Updated Greek Translation
+
+2018-02-20 John Ralls 
+
+	* Bug 792157 - Cannot create account with different currency
+
+2018-02-21 Robert Fewell 
+
+	* Cache a couple of split register preferences
+
+2018-02-20 John Ralls 
+
+	* Remove bogus file from POTFILES.in.
+
+2018-02-20 John Ralls 
+
+	* Bug 792833 - User specifies source of 'num' field'; either...
+
+2018-02-19 John Ralls 
+
+	* Fix typo, gnc-account-get-book not gnc:account-get-book
+
+2018-02-19 Geert Janssens 
+
+	* Use a platform dependent package name for gnc_user[config|data]_dir
+
+2018-02-19 John Ralls 
+
+	* Move gnc:substring-replace-from-to back to utilities.scm
+
+2018-02-19 John Ralls 
+
+	* Reduce warning about failing to dlopen a module to debug.
+
+2018-02-19 Geert Janssens 
+
+	* Adjust gnc_userconfig_dir and get_userconfig_home to the former returns a subdirectory of the latter
+
+2018-02-19 Geert Janssens 
+
+	* Merge branch 'BUG792809' of https://github.com/Bob-IT/gnucash into unstable
+
+2018-02-19 John Ralls 
+
+	* Move string.scm to qif-imp, the only place it's used.
+
+2018-02-19 John Ralls 
+
+	* Remove unused functions from utilities.scm
+
+2018-02-19 John Ralls 
+
+	* Restore fin.scm, incorrectly removed earlier.
+
+2018-02-19 John Ralls 
+
+	* Restore inadvertently-deleted standard-reports tests.
+
+2018-02-19 fell 
+
+	* Merge branch 'maint' into unstable
+
+2018-02-19 fell 
+
+	* Make REPORT_ERROR private
+
+2018-02-19 fell 
+
+	* update de.po to commit ce71586
+
+2018-02-19 fell 
+
+	* Mark forgotten error messages in gnc-sx-instance-model.c translatable and report them bilingual:  *  in g_critical untranslated and  *  in g_list_append translated.
+
+2018-02-18 John Ralls 
+
+	* Move direct check dependencies to the originating CMakeLists.txt.
+
+2018-02-18 John Ralls 
+
+	* Make a target for the python-bindings test to set its dependencies.
+
+2018-02-18 John Ralls 
+
+	* Rename the gnc-module test libraries to be consistent with other modules.
+
+2018-02-18 John Ralls 
+
+	* More Scheme dependency additions.
+
+2018-02-03 Robert Fewell 
+
+	* Change gsettings upgrade test so old_maj_min is < 207
+
+2018-02-03 Robert Fewell 
+
+	* On first load, cell height is wrong which affects highlighting
+
+2018-02-03 Robert Fewell 
+
+	* Remove doc gtk2 rc file and replace with gtk3 css one
+
+2018-02-01 Robert Fewell 
+
+	* Move the user CSS settings file
+
+2018-02-18 John Ralls 
+
+	* Bug 793568 - "Cash Flow" report crashes
+
+2018-02-18 fell 
+
+	* Add a TODO note for variadic macros after C++2a standardization
+
+2018-02-18 Geert Janssens 
+
+	* Spelling fix in import map editor
+
+2018-02-17 John Ralls 
+
+	* Replace sprintf with Guile's built-in format.
+
+2018-02-17 Geert Janssens 
+
+	* Merge branch 'unstable-TR-progress' of https://github.com/christopherlam/gnucash into unstable
+
+2018-02-13 Harald H 
+
+	* Updated info and migrated to the latest AppStream specs
+
+2018-02-17 Geert Janssens 
+
+	* Fix a few leftovers from work on main.scm
+
+2018-02-17 Geert Janssens 
+
+	* Remove the need for a temporary script file to compile gschemas
+
+2018-02-17 Geert Janssens 
+
+	* Drop install rule for previously removed (scm) config file
+
+2018-02-11 Christopher Lam 
+
+	* GSTR: Restore some strings
+
+2018-02-07 Christopher Lam 
+
+	* TR & GSTReport: Improve comments
+
+2018-02-07 Christopher Lam 
+
+	* GSTReport: filter out some transactions
+
+2018-02-07 Christopher Lam 
+
+	* Revert options.scm lookup-options renaming
+
+2018-01-12 Christopher Lam 
+
+	* REWRITE income-gst-statement.scm
+
+2018-01-07 Christopher Lam 
+
+	* ADD-API: gnc:option-make-internal!,  gnc:unregister-option
+
+2018-01-27 Christopher Lam 
+
+	* TR: remove unnecessary no-account-after-filtering step
+
+2018-01-28 Christopher Lam 
+
+	* TR: omit display of $0 in subtotals in other currencies.
+
+2018-01-12 Christopher Lam 
+
+	* (infobox)->(gnc:render-options-changed) in options.scm
+
+2018-02-01 christopherlam 
+
+	* Use xaccSplitGetReconcile instead of (zero? date)
+
+2018-02-16 John Ralls 
+
+	* Rename libgnucash/scm/main.scm to utilities.scm
+
+2018-02-16 John Ralls 
+
+	* We're done modularizing. About 16 years ago.
+
+2018-02-16 John Ralls 
+
+	* Remove some obsolete and unused Scheme files.
+
+2018-02-16 John Ralls 
+
+	* Rework the Scheme target dependencies.
+
+2018-02-16 John Erling Blad 
+
+	* Partial update of Norwegian po file
+
+2018-02-16 John Erling Blad 
+
+	* Changed last one to blame
+
+2018-02-16 John Erling Blad 
+
+	* Partial update of Norwegian po file
+
+2018-02-16 John Erling Blad 
+
+	* Partial update of Norwegian po-file
+
+2018-02-16 John Erling Blad 
+
+	* Partial update of Norwegian po-file
+
+2018-02-15 John Ralls 
+
+	* Make sure that all of the builder and uimanager files are installed...
+
+2018-02-15 John Ralls 
+
+	* Rationalize the copying and installation of GtkBuilder and GtkUIManager files.
+
+2018-02-15 John Ralls 
+
+	* Remove superfluous variable.
+
+2018-02-15 John Ralls 
+
+	* No more Makefile.am.
+
+2018-02-15 John Ralls 
+
+	* Prevent a couple of divide-by-zero errors.
+
+2018-02-15 John Ralls 
+
+	* Fix double free, caused test to crash on Mac.
+
+2018-02-15 John Ralls 
+
+	* Merge branch 'maint' into unstable
+
+2018-02-15 John Ralls 
+
+	* Merge Chris Lam's 'maint-fix-45f61a3'.
+
+2018-02-15 John Ralls 
+
+	* Merge branch 'maint' into unstable
+
+2018-02-08 Christopher Lam 
+
+	* bug 793278 fix for maint
+
+2018-02-14 fell 
+
+	* Insert lost '#, c-format' lines again into de.po
+
+2018-02-14 Geert Janssens 
+
+	* Merge branch 'addendum-replace-numeric-with-number' of https://github.com/christopherlam/gnucash into unstable
+
+2018-02-08 Christopher Lam 
+
+	* bug 793278 fix
+
+2018-02-14 Geert Janssens 
+
+	* Merge branch 'maint' into unstable
+
+2018-02-04 John Clements 
+
+	* fix syntax of example qif file
+
+2018-02-10 Geert Janssens 
+
+	* Bug 792884 - cmake: gschemas.compiled missing
+
+2018-02-14 fell 
+
+	* Merge branch 'translation27DE' into unstable
+
+2018-02-14 fell 
+
+	* Review of PR #268
+
+2018-02-14 Christopher Lam 
+
+	* Bugfix create-commodity-list
+
+2018-02-14 Christopher Lam 
+
+	* Addendum replace numeric to number in scheme
+
+2018-02-13 John Ralls 
+
+	* ADD_DEFINITIONS is obsolete for setting C/CXXFLAGS.
+
+2018-02-13 John Ralls 
+
+	* Bug 792883 - cmake: no way to turn off -Werror
+
+2018-02-13 fell 
+
+	* Merge branch 'maint' into unstable
+
+2018-02-13 fell 
+
+	* PR #275: Business accounts for India with GST
+
+2018-02-13 fell 
+
+	* Preparation for indian business with GST template
+
+2018-02-12 John Ralls 
+
+	* Don't force-set Boost_USE_STATIC_LIBS or Boost_USE_STATIC_RUNTIME.
+
+2018-02-12 Mechtilde 
+
+	* some more German translations
+
+2018-02-12 Mechtilde 
+
+	* adjust conflicts
+
+2018-02-12 Mechtilde 
+
+	* correct some typos
+
+2018-02-12 Mechtilde 
+
+	* msgmerge with gnucash-2.7.4.pot
+
+2018-01-28 Mechtilde 
+
+	* add some more German translations
+
+2018-01-28 Mechtilde 
+
+	* add some more German translations
+
+2018-01-28 Mechtilde 
+
+	* add even more German translations
+
+2018-01-28 Mechtilde 
+
+	* add some more German translation
+
+2018-01-27 Mechtilde 
+
+	* add ellipses to fit Common User Access (CUA) under the Tools menu
+
+2018-01-27 Mechtilde 
+
+	* add some German translations
+
+2018-02-04 John Ralls 
+
+	* Spelling Correction.
+
+2018-02-04 John Ralls 
+
+	* Bug 793155 - Gnucash 2.7.4 crashes on launch MacOS 10.13.4 PB1
+
+2018-02-03 Geert Janssens 
+
+	* Prevent installation of cmake related files when building in source
+
+2018-02-03 John Ralls 
+
+	* Fix off-by-one errors in release count.
+
+2018-02-02 John Ralls 
+
+	* Release 2.7.4 (tag: 2.7.4)
+
+2018-02-03 Geert Janssens 
+
+	* Bug 787497 - Disabling OFX, AqBanking or python-bindings support cripples the dist build target
+
+2018-02-03 John Ralls 
+
+	* [MacOS]Conditionally set -Wno-unused-local-typedef and -Wno-unknown-attributes.
+
+2018-02-03 Geert Janssens 
+
+	* Merge branch "maint" into unstable"
+
+2018-02-03 Geert Janssens 
+
+	* Add tooltips to Alpha Vantage key option
+
+2018-02-03 Geert Janssens 
+
+	* Delete wrongly merged file
+
+2018-02-03 fell 
+
+	* Merge branch 'maint' into unstable
+
+2018-02-02 fell 
 
 	* update de.po
 
-2017-03-24 fell 
+2018-01-30 fell 
 
-	* Use "Billing Information" as in other biz modules
+	* Improve Import menu entries Customer & vendors...
 
-2017-03-23 John Ralls 
+2018-02-02 John Ralls 
 
-	* Bug 776247 - PriceEditor thinks Currency XXX is an actual currency...
+	* Update Turkish translation from the Translation Project.
 
-2017-03-23 fell 
+2018-02-01 John Ralls 
 
-	* Fix a typo in my last commit
+	* Add XDG_CONFIG_HOME and FONTCONFIG_FILE to MacOS environment
 
-2017-03-23 fell 
+2018-01-30 John Ralls 
 
-	* Exlpain "Blank Transaction" to translators
+	* Bug 792763 - deleting a transaction can cause a SIGSEGV
 
-2017-03-23 Geert Janssens 
+2018-02-02 Geert Janssens 
 
-	* Align a help string in two different files for easier translation
+	* Merge branch 'maint' into unstable
 
-2017-03-23 Geert Janssens 
+2018-02-02 Geert Janssens 
 
-	* Disable tests when minimum glib2 requirement is not met
+	* Provide preference panel to set the Alpha Vantage API key needed for fincance::quote
 
-2017-03-22 Geert Janssens 
+2018-02-02 Geert Janssens 
 
-	* Bug 739571 - Small fixups for previous commits
+	* Improve gnc_data_home verification and creation
 
-2016-02-13 Jesse Olmer 
+2018-02-01 Geert Janssens 
 
-	* Bug 739571 - Matching imported transactions doesn't indicate previously matched entries
+	* Disable the proper test...
 
-2016-01-17 Jesse Olmer 
+2018-02-01 Geert Janssens 
 
-	* Bug 739571 - Matching imported transactions doesn't indicate previously matched entries
+	* Temporarily disable test that breaks on travis only
 
-2017-03-22 fell 
+2018-02-01 Geert Janssens 
 
-	* Update de.po
+	* Simplify filepath init code
 
-2017-03-22 fell 
+2018-02-01 Geert Janssens 
 
-	* Prepare update of de.po
+	* Fix project name, which also determines a number of default paths
 
-2017-03-16 fell 
+2018-01-30 Robert Fewell 
 
-	* Add 2 translator comments to get a unique translation for 'Tax Report Options'
+	* Bug 792809 Add a register foreground CSS class
 
-2017-03-21 John Ralls 
+2018-01-31 Geert Janssens 
 
-	* Save Changes Bug 776517 - Trial Balance Report:...
+	* Merge branch 'unstable-fix-business-reports' of https://github.com/christopherlam/gnucash into unstable
 
-2017-03-21 Geert Janssens 
+2018-01-31 Geert Janssens 
 
-	* Bug 766630 - gui dialog for sorting transactions to accounts after aqbanking import broken
+	* Merge branch 'CorrectStrings27EN' of https://github.com/Mechtilde/gnucash into unstable
 
-2017-03-21 Geert Janssens 
+2018-01-31 Geert Janssens 
 
-	* Resave dialog-import.glade without any real change
+	* Remove make-gnucash-po.sh.in
 
-2017-03-21 John Ralls 
+2018-01-31 Geert Janssens 
 
-	* Bug 778208 - Scheduling 2nd, 3rd or 4th Wed doesn't seem to work.
+	* Revert "Fix version number inclusion in gnucash.desktop file"
 
-2017-03-18 Robert Fewell 
+2018-01-31 Geert Janssens 
 
-	* Bug 603379 - Prevent changing some Account Options if it has transactions
+	* Add GENERATE_SWIG_WRAPPERS option to control the generation of swig wrappers independently of whether we're building from git
 
-2017-03-18 Robert Fewell 
+2018-01-30 Geert Janssens 
 
-	* Bug 603379 - Count the splits in an Account.
+	* Revert "Allow user to override BUILDING_FROM_VCS"
 
-2017-03-18 John Ralls 
+2018-01-30 Geert Janssens 
 
-	* Merge en_GB budget->Budget into maint.
+	* Properly detect git in case of linked worktree
 
-2017-03-18 Simon Hollingshead 
+2018-01-30 Geert Janssens 
 
-	* Consistently capitalise budget in en-GB menu items
+	* Allow user to override BUILDING_FROM_VCS
 
-2017-03-18 John Ralls 
+2018-01-30 Christopher Lam 
 
-	* Revert "Fix query period in test-account-get-trans-type-splits-interval."
+	* BUGFIX: invoice posted-date is no longer 0 for unposted invoices
 
-2017-03-17 John Ralls 
+2018-01-30 fell 
 
-	* Fix query period in test-account-get-trans-type-splits-interval.
+	* Merge branch 'maint' into unstable
 
-2017-03-18 John Ralls 
+2018-01-30 fell 
 
-	* Merge new Finnish translation into maint.
+	* Add src/plugins/example/gnc-plugin.example.c to POTFILES.skip
 
-2017-03-18 John Ralls 
+2018-01-30 fell 
 
-	* Update GnuCash version and PO date for Finnish translation.
+	* Replace a missed SVN
 
-2017-03-13 Tuomo Hartikainen 
+2018-01-29 Geert Janssens 
 
-	* Update Finnish translation
+	* gnucash.pot target improvements
 
-2017-03-17 Tuomo Hartikainen 
+2018-01-28 Mechtilde 
 
-	* Merge updated po template in fi.po
+	* add some more German translations
 
-2017-03-16 fell 
+2018-01-28 Mechtilde 
 
-	* PR #134: Update local symbol of iso-4217-currency MUR
+	* add some more German translations
 
-2017-03-11 Robert Fewell 
+2018-01-28 Mechtilde 
 
-	* Bug 779411 - jqplot fixes for piechart and syntax error.
+	* add even more German translations
 
-2017-03-13 Christian Stimming 
+2018-01-28 Mechtilde 
 
-	* Online banking: Add output of bank messages that might occasionally be received.
+	* add some more German translation
 
-2017-03-09 Christoph Rohland 
+2018-01-27 Mechtilde 
 
-	* Charge back net value of bill entries in invoices
+	* add ellipses to fit Common User Access (CUA) under the Tools menu
 
-2017-03-10 John Ralls 
+2018-01-27 Mechtilde 
 
-	* Fix failed unit test from previous commit.
+	* add some German translations
 
-2017-03-10 John Ralls 
+2018-01-27 Geert Janssens 
 
-	* Bug 779217 - Transactions rounded to 5 decimal places when opening file.
+	* More translation fixes detected by Mechtilde and reported on IRC
 
-2017-03-10 John Ralls 
+2018-01-27 Geert Janssens 
 
-	* Bug 777949 - Accounts implicitly created in ledger attempt creation twice
+	* Fix a few more translation issues discovered during code review
 
-2017-03-09 John Ralls 
+2018-01-27 Geert Janssens 
 
-	* Bug 776564 - Creating a scheduled transaction from an existing...
+	* Bug 792947 - Missing translatable strings
 
-2017-03-04 Geert Janssens 
+2018-01-29 Geert Janssens 
 
-	* Allow only date entry for opening balances on new accounts
+	* Re-enable building a dist tarball from within distcheck
 
-2017-03-02 hcrohland 
+2018-01-29 Geert Janssens 
 
-	* Revert the taxinvoice.scm changes
+	* Rewrite gnc_add_swig_guile_command to work in dist tarball as well
 
-2017-03-01 hcrohland 
+2018-01-29 Geert Janssens 
 
-	* Make the net price option better compatible with master
+	* Rewrite gnc_add_swig_python_command to work in dist tarball as well
 
-2017-02-03 hcrohland 
+2018-01-29 Geert Janssens 
 
-	* Enable taxinvoice to show net price
+	* Review which built files are really needed in the dist tarball
 
-2017-02-18 sdementen 
+2018-01-29 Geert Janssens 
 
-	* add gnc_get_current_session to swig interface
+	* Fix version number inclusion in gnucash.desktop file
 
-2017-02-14 fell 
+2018-01-29 Geert Janssens 
 
-	* Review of pull request #125 from Mechtilde
+	* Improve handling of generated distributable files
 
-2017-02-14 Frank H. Ellenberger 
+2018-01-28 Geert Janssens 
 
-	* Merge pull request #125 from Mechtilde/TranslationDE
+	* Fix make dist on a clean checkout
 
-2017-02-12 Mechtilde 
+2018-01-27 Geert Janssens 
 
-	* msgmerge with gnucash-2.6.15.pot
+	* Make potfile generation a custom target, and make the dist target depend on it
 
-2016-12-26 Mechtilde 
+2018-01-27 Geert Janssens 
 
-	* translation tip_of_the_day
+	* Revert "Partially revert commit 85bfbd8e8258e"
 
-2017-02-12 fell 
+2018-01-28 John Ralls 
 
-	* Improve comment about available languages
+	* Add DL_LIBS to gncmod-gnome-utils target.
 
-2017-02-10 fell 
+2018-01-28 Mechtilde 
 
-	* Set a separate translator comment to avoid pulling the whole file header comment in POT
+	* correct typo in horizontal
 
-2017-02-10 fell 
+2018-01-27 John Ralls 
 
-	* Fix german language tag
+	* Fix Webkit1 configuration for Windows Builds.
 
-2017-02-10 fell 
+2018-01-27 John Ralls 
 
-	* Update PACKAGE_BUGREPORT, set PACKAGE_URL
+	* Add googletest to the list of dependencies.
 
-2017-02-04 John Ralls 
+2018-01-27 Geert Janssens 
 
-	* Make gnc_dbi_safe_sync_all safer.
+	* Partially revert commit 85bfbd8e8258e
 
-2017-02-04 John Ralls 
+2018-01-26 John Ralls 
 
-	* Move the transaction-lock on obtaining the database lock earlier.
+	* Fix no transient for warnings from reconcile dialogs.
 
-2017-02-04 John Ralls 
+2018-01-26 John Ralls 
 
-	* Add SAVEPOINT support to enable nested gnc_dbi_transaction calls.
+	* [MacOS] Put the reconcile window menu on the screen menubar.
 
-2017-02-04 John Ralls 
+2018-01-26 Geert Janssens 
 
-	* Extract static gnc_dbi_transaction functions.
+	* Fix test-cashflow-barchart.scm for guile 2.2
 
-2017-02-01 DIG 
+2018-01-26 Geert Janssens 
 
-	* Small updates for Russian translation
+	* Remove support code to load qof backend in autotools based build environment
 
-2017-02-01 Geert Janssens 
+2018-01-26 Geert Janssens 
 
-	* Bug 777875 - Reports with charts are flickering in certain circumstances
+	* Remove the .in extension from test-real-data.sh and stop configuring it for autotools
 
-2017-01-30 Geert Janssens 
+2018-01-26 Geert Janssens 
 
-	* Extend account color to all columns in the account hierarchy page
+	* Remove unused file
 
-2017-01-28 Geert Janssens 
+2018-01-26 Geert Janssens 
 
-	* Travis - fix failure to load some libraries while running scm tests
+	* Some minor cleanups after the autotools removal
 
-2017-01-28 Geert Janssens 
+2018-01-26 Geert Janssens 
 
-	* Bug 759934 - Tiny reports in HiDPI
+	* Merge branch 'unstable-TR-bugfix' of https://github.com/christopherlam/gnucash into unstable
 
-2017-01-27 Geert Janssens 
+2018-01-26 fell 
 
-	* Drop a couple of webkit related configure tests
+	* Merge branch 'maint' into unstable
 
-2017-01-26 D. Hugh Redelmeier 
+2018-01-26 fell 
 
-	* add comments to clarify that taxtxf.scm is US-specific
+	* Remove obsolete GNOME2_STATUS
 
-2017-01-26 Pedro Albuquerque 
+2018-01-25 Geert Janssens 
 
-	* Bug 777561 - Update pt.po to v. 2.6.15
+	* Merge branch 'maint' into unstable
 
-2016-12-27 Robert Fewell 
+2018-01-25 John Ralls 
 
-	* Bug 516920 - Calendar Pop up disappears of the left side
+	* Remove stray addition from 34cc103e947.
 
-2017-01-16 klemens 
+2018-01-25 Geert Janssens 
 
-	* spelling fixes
+	* Import Dutch translation by Mark Haanen from the Translation Project
 
-2017-01-21 Pedro Albuquerque 
+2018-01-25 John Ralls 
 
-	* Several spelling corrections of the pt_PT translation
+	* Remove overview links to nonexistant articles.
 
-2017-01-17 Mike Evans 
+2018-01-25 John Ralls 
 
-	* Make strings translatable in dialog-bi-import.c
+	* Add doxygen target.
 
-2017-01-15 Mike Evans 
+2018-01-25 Geert Janssens 
 
-	* Bug 767032 - Bad invoices from importing "posted" needing currency conversion
+	* Apply Xavier's translations for goffice
 
-2017-01-10 Geert Janssens 
+2018-01-25 Geert Janssens 
 
-	* Fix compiler warning about confusing indentation
+	* Merge es.po from Translation Project into unstable
 
-2017-01-10 Geert Janssens 
+2018-01-25 Geert Janssens 
 
-	* Drop unused DEBUG_MEMORY macro
+	* Merge branch maint into unstable
 
-2017-01-07 Stefan Talpalaru 
+2018-01-25 Geert Janssens 
 
-	* configure: fix --disable-debug, --disable-profile and --disable-locale-specific-tax
+	* Import new Spanish translation from the Translation Project
+
+2018-01-25 Geert Janssens 
+
+	* Import new Spanish translation from the Translation Project
+
+2017-12-30 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/transaction.scm
+
+2018-01-25 Geert Janssens 
+
+	* Merge branch 'unstable-update-translation' of https://github.com/DiMan/gnucash into unstable
+
+2018-01-25 Geert Janssens 
+
+	* Display detected Finance::Quote version in About dialog
+
+2018-01-25 Geert Janssens 
+
+	* Merge branch 'maint' into unstable
+
+2018-01-25 Geert Janssens 
+
+	* Display detected Finance::Quote version in about dialog
+
+2018-01-23 John Ralls 
+
+	* Fix test for GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK
+
+2018-01-23 John Ralls 
+
+	* Fix some dependency-checking failures.
+
+2018-01-23 John Ralls 
+
+	* Define GDK_MODIFIER_INTENT_DEFAULT_MOD_MASK if it isn't in Gdk.
+
+2018-01-23 John Ralls 
+
+	* Use Gtk3's GdkModifierIntent masks.
+
+2018-01-23 fell 
+
+	* Merge remote-tracking branch 'DiMan/update-trans-ru-01' into maint
+
+2018-01-22 Di Mang 
+
+	* ru.po (unstable): adaptation to translation in project goffice
+
+2018-01-22 Di Mang 
+
+	* de.po (unstable): add Dmitriy Mangul as translator
+
+2018-01-22 Di Mang 
+
+	* ru.po (unstable): some improvments for translation of frequency words in gnc-frequency.glade
+
+2018-01-22 Di Mang 
+
+	* ru.po (maint): some improvments for translation of frequency words in gnc-frequency.glade
+
+2018-01-21 John Ralls 
+
+	* Merge branch 'maint' into unstable
+
+2018-01-21 John Ralls 
+
+	* Revert "Calculate rates only for buy transactions in the report commodity
+
+2018-01-20 Christopher Lam 
+
+	* Change gnc_pricedb_convert_balance_nearest_price from timespec to time64.
+
+2018-01-20 John Ralls 
+
+	* Merge Chris Lam's and Aaron Laws's branch 'time64-ftw' into unstable.
+
+2018-01-20 John Ralls 
+
+	* Remove Timespec from the guile base typemap.
+
+2018-01-20 John Ralls 
+
+	* Convert python bindings from timespec to time64.
+
+2018-01-20 Di Mang 
+
+	* de.po: update german translation
+
+2018-01-20 Di Mang 
+
+	* ru.po: update russian translation for 2.3.7
+
+2018-01-20 Di Mang 
+
+	* unstable: ru.po - update to new gnucash.pot file
+
+2018-01-20 Di Mang 
+
+	* ru.po: update PO-Revision-Date
+
+2018-01-20 Di Mang 
+
+	* ru.po: improvement of some translations
+
+2018-01-20 Di Mang 
+
+	* update ru.po to 2.6.19
+
+2018-01-19 fell 
+
+	* Fix missing translations in taxinvoice.scm
+
+2018-01-18 John Ralls 
+
+	* Merge branch Chris Lam's 'unstable-TR-fix' of into unstable.
+
+2018-01-18 John Ralls 
+
+	* Merge branch Rob Gowin's 'bye_bye_autotools' into unstable.
+
+2018-01-17 Geert Janssens 
+
+	* Merge branch 'maint' into unstable
+
+2018-01-17 Geert Janssens 
+
+	* Fix our appstream id as per the appstream recommendation
+
+2018-01-16 John Ralls 
+
+	* Use a more appropriate comparison for doubles.
+
+2018-01-16 John Ralls 
+
+	* Remove tests checking members of deleted objects.
+
+2018-01-16 fell 
+
+	* Merge remote-tracking branch 'Mechtilde/SKR03typo' into maint
+
+2018-01-16 fell 
+
+	* update gitignore to the suggestion to have the build dir[s] hidden
+
+2018-01-16 fell 
+
+	* A few fixes of german translation
+
+2018-01-16 fell 
+
+	* Review my comments on I18N issues
+
+2018-01-07 fell 
+
+	* de.po: msgmerge Improve Translator comments...
+
+2018-01-16 Geert Janssens 
+
+	* Merge branch 'Translation27DE' of https://github.com/Mechtilde/gnucash into unstable
+
+2018-01-16 Mechtilde 
+
+	* correct typo
+
+2018-01-07 fell 
+
+	* Improve translator comments, remove an unneeded MsgId
+
+2018-01-14 John Ralls 
+
+	* Bug 790845 - 2.7.3: massive test failures on some architectures (reopened).
+
+2018-01-14 Mechtilde 
+
+	* add even further translations
+
+2018-01-14 Geert Janssens 
+
+	* Import translations from goffice po files that are relevant for the borrowed goffice files
+
+2018-01-14 Geert Janssens 
+
+	* Fix duplicate message definition errors
+
+2018-01-14 Geert Janssens 
+
+	* Merge current gnucash.pot file into existing po files
+
+2017-12-02 Rob Gowin 
+
+	* Remove Autotools
+
+2018-01-12 Mechtilde 
+
+	* add some more translations
+
+2018-01-11 Mechtilde 
+
+	* add some more translations
+
+2018-01-10 Christopher Lam 
+
+	* [mod|inc|dec]date64 API rename back to date
+
+2018-01-07 Christopher Lam 
+
+	* BUGFIX: enable informal headers for dual-column only
+
+2018-01-10 Mechtilde 
+
+	* correct typo
+
+2018-01-10 Mechtilde 
+
+	* first part overworked
+
+2018-01-10 Christopher Lam 
+
+	* BUGFIX TR common currency was broken
+
+2018-01-10 Mechtilde 
+
+	* translate new strings from goffice
+
+2018-01-10 Mechtilde 
+
+	* renewed de.po to 2.7.3
+
+2018-01-09 John Ralls 
+
+	* Save Changes Bug 792106 - Wrong dates displayed
+
+2018-01-09 John Ralls 
+
+	* Extract function tz_from_string.
+
+2018-01-09 John Ralls 
+
+	* Merge branch 'maint-bugfix-report-collectors' of https://github.com/christopherlam/gnucash into maint
+
+2018-01-09 John Ralls 
+
+	* Merge Chris Lam's 'unstable-fix-category-charts-crash' to unstable.
+
+2018-01-09 John Ralls 
+
+	* Merge branch 'remove-portfolio-dist' of https://github.com/codesmythe/gnucash into unstable
+
+2018-01-09 Christopher Lam 
+
+	* TP->T64: gnucash/report/utility-reports/hello-world.scm
+
+2018-01-03 Christopher Lam 
+
+	* bugfix incorrect min-date handling
+
+2018-01-03 Christopher Lam 
+
+	* REMOVE-TIMEPAIR: libgnucash/app-utils/app-utils.scm & date-utilities.scm
+
+2018-01-03 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/advanced-portfolio.scm
+
+2018-01-03 Christopher Lam 
+
+	* TP->T64: gnucash/report/locale-specific/us/taxtxf.scm
+
+2018-01-03 Christopher Lam 
+
+	* ADD-TIME64-API: libgnucash/engine/gnc-pricedb.[ch]
+
+2018-01-01 Christopher Lam 
+
+	* TP->T64: gnucash/import-export/qif-imp/qif-merge-groups.scm
+
+2017-12-30 Christopher Lam 
+
+	* TP->T64: libgnucash/scm/price-quotes.scm
+
+2017-12-30 Christopher Lam 
+
+	* ADD-TIME64-API: libgnucash/engine/gnc-pricedb.[ch]
+
+2017-12-28 Christopher Lam 
+
+	* TP->T64: libgnucash/engine/test/test-split.scm
+
+2017-12-24 Christopher Lam 
+
+	* TP->T64: libgnucash/engine/engine-interface.scm
+
+2017-12-24 Christopher Lam 
+
+	* TP->T64: gnucash/report/utility-reports/hello-world.scm
+
+2017-12-24 Christopher Lam 
+
+	* TP->T64: gnucash/report/stylesheets/stylesheet-head-or-tail.scm
+
+2017-12-24 Christopher Lam 
+
+	* TP->T64: gnucash/report/stylesheets/stylesheet-footer.scm
+
+2017-12-24 Christopher Lam 
+
+	* TP->T64: gnucash/report/stylesheets/stylesheet-fancy.scm
+
+2017-12-24 Christopher Lam 
+
+	* TP->T64: gnucash/report/stylesheets/stylesheet-easy.scm
+
+2017-12-24 Christopher Lam 
+
+	* TP->T64: gnucash/report/business-reports/receipt.eguile.scm
+
+2017-12-24 Christopher Lam 
+
+	* TP->T64: gnucash/report/business-reports/invoice.scm
+
+2017-12-24 Christopher Lam 
+
+	* TP->T64: gnucash/report/business-reports/fancy-invoice.scm
+
+2017-12-24 Christopher Lam 
+
+	* TP->T64: gnucash/report/business-reports/easy-invoice.scm
+
+2017-12-22 Christopher Lam 
+
+	* TP->T64: gnucash/report/business-reports/job-report.scm
+
+2017-12-21 Christopher Lam 
+
+	* TP->T64: gnucash/report/business-reports/balsheet-eg[.eguile].scm
+
+2017-12-19 Christopher Lam 
+
+	* TP->T64: gnucash/report/business-reports/taxinvoice.eguile.scm
+
+2017-12-19 Christopher Lam 
+
+	* TP->T64: gnucash/report/business-reports/owner-report.scm
+
+2017-12-17 Christopher Lam 
+
+	* TP->T64: gnucash/report/business-reports/customer-summary.scm
+
+2017-12-18 Christopher Lam 
+
+	* TP->T64: gnucash/report/business-reports/aging.scm to time64
+
+2017-12-23 Christopher Lam 
+
+	* TP->T64: gnucash/report/locale-specific/us/taxtxf-de_DE.scm
+
+2017-12-15 Christopher Lam 
+
+	* TP->T64: gnucash/report/locale-specific/us/taxtxf.scm
+
+2017-12-24 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/income-gst-statement.scm
+
+2017-12-17 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/test/test-generic-net-linechart.scm
+
+2017-12-17 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/test/test-generic-net-barchart.scm
+
+2017-12-17 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/test/test-cashflow-barchart.scm
+
+2017-12-17 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/test/test-cash-flow.scm
+
+2017-12-16 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/cashflow-barchart.scm
+
+2017-12-16 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/category-barchart.scm
+
+2017-12-16 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/net-barchart.scm
+
+2017-12-19 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/net-linechart.scm
+
+2017-12-30 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/transaction.scm
+
+2017-12-15 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/budget-income-statement.scm
+
+2017-12-15 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/budget-balance-sheet.scm
+
+2017-12-15 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/budget-flow.scm
+
+2017-12-15 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/budget-barchart.scm
+
+2017-12-15 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/budget.scm
+
+2017-11-25 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/register.scm
+
+2017-11-25 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/equity-statement.scm
+
+2017-11-25 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/balance-sheet.scm
+
+2018-01-08 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/average-balance.scm
+
+2017-11-24 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/account-piecharts.scm
+
+2017-11-24 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/advanced-portfolio.scm
+
+2017-11-24 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/portfolio.scm
+
+2017-12-19 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/trial-balance.scm
+
+2017-11-22 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/income-statement.scm
+
+2018-01-08 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/daily-reports.scm
+
+2017-11-22 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/sx-summary.scm
+
+2017-11-21 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/price-scatter.scm
+
+2017-11-21 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/account-summary.scm
+
+2017-12-19 Christopher Lam 
+
+	* TP->T64: gnucash/report/standard-reports/cash-flow.scm
+
+2017-12-22 Christopher Lam 
+
+	* TP->T64: gnucash/report/report-system/test/test-report-utilities.scm
+
+2017-12-19 Christopher Lam 
+
+	* TP->T64: gnucash/report/report-system/html-acct-table
+
+2017-11-24 Christopher Lam 
+
+	* gnucash/report/report-system/collectors.scm - remove useless predicate type
+
+2018-01-08 Christopher Lam 
+
+	* gnucash/report/report-system/report-collectors.scm
+
+2018-01-08 Christopher Lam 
+
+	* gnucash/report/report-system/commodity-utilities.scm
+
+2017-12-19 Christopher Lam 
+
+	* TP->T64: gnucash/report/report-system/report-utilities
+
+2017-12-17 Christopher Lam 
+
+	* TP->T64: libgnucash/engine/test/test-extras.scm
+
+2017-12-19 Christopher Lam 
+
+	* TP->T64 COMPATIBILITY SHIM: gnucash/libgnucash/app-utils/options.scm
+
+2017-12-21 Christopher Lam 
+
+	* date-utilities.scm: optimize leapyear calc
+
+2017-11-19 Christopher Lam 
+
+	* Bugzilla 790526 Correct weeknum calculator
+
+2017-12-23 Christopher Lam 
+
+	* ADD-TIME64-API: libgnucash/app-utils/app-utils.scm & date-utilities.scm
+
+2017-12-31 lmat 
+
+	* Adding bill term time64 function
+
+2017-12-31 lmat 
+
+	* Some time64 corrections
+
+2017-12-31 lmat 
+
+	* Transaction members Timespec->time64
+
+2017-12-29 lmat 
+
+	* gncInvoice uses time64
+
+2017-12-29 lmat 
+
+	* gncEntry members timespec->time64
+
+2017-12-29 lmat 
+
+	* Converted timespec_to_dom_tree to time64
+
+2017-12-29 lmat 
+
+	* Removing timspec from some xml parsing
+
+2017-12-23 lmat 
+
+	* added gnc-dmy2time64* functions
+
+2017-12-23 lmat 
+
+	* gnc_option_get_ui_value_date uses time64
+
+2017-12-23 lmat 
+
+	* Transaction getVoidTime uses time64.
+
+2017-11-22 Christopher Lam 
+
+	* Further scheme conversion to gdate to use time64
+
+2017-12-18 lmat 
+
+	* Add time64 functions for gncEntry
+
+2017-12-17 lmat 
+
+	* Adding time64 alternatives
+
+2017-12-17 lmat 
+
+	* Renaming time64 function for consistency
+
+2017-12-16 lmat 
+
+	* Adding some time64 alternatives
+
+2017-12-01 lmat 
+
+	* timespec->time64 for gnc_budget_get_period...
+
+2017-11-22 lmat 
+
+	* Date option absolute now takes time64.
+
+2017-11-21 lmat 
+
+	* Changing scheme conversion to gdate to use time64
+
+2017-11-13 lmat 
+
+	* Removing uses of timespec
+
+2017-11-13 lmat 
+
+	* Removing uses of timespec
+
+2017-11-13 lmat 
+
+	* Removing unused timespec function
+
+2017-11-11 lmat 
+
+	* Adding some time64 API functions
+
+2018-01-07 John Ralls 
+
+	* Fix travis test failure: It seems the boost bug is fixed.
+
+2018-01-07 John Ralls 
+
+	* Fix the libgncmod-python installed name.
+
+2018-01-07 John Ralls 
+
+	* Fix some environment file issues.
+
+2018-01-06 DiMan 
+
+	* some text changes
+
+2018-01-05 John Ralls 
+
+	* Fix gnc_get_default_report_font_family returning bad string.
+
+2018-01-05 Rob Gowin 
+
+	* Remove gnc-value-portfolio references from dist lists.
+
+2017-12-28 christopherlam 
+
+	* bugfix incorrect min-date handling
+
+2018-01-03 fell 
+
+	* remove absolute pathes from previous commit
+
+2018-01-03 fell 
+
+	* Msgmerge after source change and fix another typo in de.po
+
+2018-01-03 fell 
+
+	* Mark "_New Account" button label in import-account-matcher translatable
+
+2018-01-03 fell 
+
+	* msgmerge and header update for de.po
+
+2018-01-03 fell 
+
+	* Another typo in the german CSV importer texts.
+
+2018-01-02 John Ralls 
+
+	* Remove all references to the now-defunct Yahoo! quote retrieval
+
+2018-01-02 Christopher Lam 
+
+	* bugfix: fix crash if acc-depth too low
 
