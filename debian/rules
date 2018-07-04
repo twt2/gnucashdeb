@@ -74,6 +74,10 @@ override_dh_install:
 	find debian/tmp/usr/lib -name \*.la -exec rm -v \{\} \;
 	dh_install
 
+override_dh_compress:
+	## Don't compress certain files (#895256):
+	dh_compress -XAUTHORS -XDOCUMENTERS -XLICENSE
+
 override_dh_auto_test:
 ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
 	$(MAKE) -C .build check; sh -x -c 'RV=$$0; [ "$${RV}" -eq 0 ] || cat ".build/Testing/Temporary/LastTest.log"; exit $${RV}' $$?
