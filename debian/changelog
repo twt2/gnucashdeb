@@ -1,3 +1,11 @@
+gnucash (1:3.2-1) UNRELEASED; urgency=medium
+
+  * New upstream release [June 2018].
+  * Standards-Version: 4.1.4.
+  * Upload to unstable.
+
+ -- Dmitry Smirnov <onlyjob@debian.org>  Wed, 04 Jul 2018 19:11:42 +1000
+
 gnucash (1:3.0-1) experimental; urgency=medium
 
   * New upstream release [April 2018]. (Closes: #892177).

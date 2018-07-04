@@ -30,6 +30,7 @@ Copyright:
     2010-2012                Christian Stimming <christian@cstimming.de>
     2001                     Christian Stimming <stimming@tu-harburg.de>
     2001-2005,2007,2011      Christian Stimming <stimming@tuhh.de>
+    2018                     Christopher Lam
     2001-2002                CodeFactory AB
     2010                     Cristian KLEIN
     2003                     Darin Willits <darin@willits.ca>
@@ -45,7 +46,7 @@ Copyright:
     2006                     Florian Steinel
     2001                     Free Software Foundation
     1994-2015                Free Software Foundation, Inc
-    2011-2016                Geert Janssens <geert@kobaltwit.be>
+    2011-2018                Geert Janssens <geert@kobaltwit.be>
     2010                     Geert Janssens <janssens-geert@telenet.be>
     1998                     Gerald Combs
     2005                     GnuCash team
@@ -93,6 +94,12 @@ Comment:
  Files are assumed to be under same license terms
  as the application as a whole
  unless otherwise explicitly stated in the file.
+
+Files: borrowed/guile-json/*
+Copyright:
+    2013-2017 Aleix Conchillo Flaque <aconchillo@gmail.com>
+    2015-2016 Jan Nieuwenhuizen <janneke@gnu.org>
+License: LGPL-3+
 
 Files: borrowed/goffice/*
 Copyright:
