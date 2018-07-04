@@ -1,7 +1,10 @@
+# uscan(1) configuration file.
 version=4
 
-## https://qa.debian.org/watch/sf.php/gnucash/
+ https://github.com/Gnucash/gnucash/releases \
+ .*/gnucash-(\d[\d\.]+)\.tar\.(?:xz|bz2|gz)
 
+## https://qa.debian.org/watch/sf.php/gnucash/
 opts="\
 uversionmangle=s{\-\d}{}\
-"  http://sf.net/gnucash/gnucash-(\d+\.\d+\.\d+)(?:-\d)?\.tar\.bz2
+"  http://sf.net/gnucash/gnucash-(\d[\d\.]+)(?:-\d)?\.tar\.bz2
