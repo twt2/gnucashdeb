@@ -5,6 +5,7 @@ gnucash (1:3.2-1) unstable; urgency=medium
   * Fixed warning in "About" dialog (Closes: #895256).
     Thanks, Laurent Bigonville.
   * Added Guile-2.2 related lintian-overrides.
+  * Build-Depends += "libxml2-utils, swig".
   * Standards-Version: 4.1.4.
   * Vcs URLs to Salsa.
   * Upload to unstable.
