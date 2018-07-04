@@ -13,7 +13,7 @@ Some advantages of using CMake:
 
  * The build time on Windows drops from around an hour to just a few
    minutes.
-
+   
  * CMake supports the generation of build files for several IDEs
    such as Xcode, Eclipse, KDevelop and others. The open source Qt
    Creator and the commercial CLion C/C++ IDE from JetBrains can use
@@ -25,7 +25,7 @@ Some advantages of using CMake:
 This setup also uses the http://www.ninja-build.org[Ninja] build
 system to enable fast and parallel builds on Windows. (On POSIX
 systems [OS X, Linux, FreeBSD, etc.] Ninja does not seem significantly
-faster than using the default Makefile generator to me.)
+faster that using the default Makefile generator to me.)
 
 == Scope
 
@@ -62,7 +62,8 @@ Limitations include:
 
 The CMake setup does not support building and installing dependencies
 (although it probably could some day). So you need to have the
-dependencies available. Various resources on the GnuCash wiki
+dependencies available, most likely by having run the existing
+Autotools build at least once. Various resources on the GnuCash wiki
 will have advice on how to do this.
 
 You will need to have CMake and optionally Ninja installed, either
@@ -103,11 +104,6 @@ Then decide what cmake command line options you will need:
    the top-level `CMakeLists.txt` file.  For example, you can disable
    SQL using these options.
 
- * Google Test will work without setting options in most Linux distros, but if
-   it doesn't you may need to set GMOCK_ROOT or GTEST_ROOT to the root of the
-   respective sources. Set GTEST_DISABLE to prevent Google Test based tests from
-   running.
-
 Some examples:
 
  * Build on Linux, don't want to install, use the Makefile generator:
@@ -125,11 +121,6 @@ Some examples:
  * The same, but use the Xcode generator:
 
    $ cmake -D CMAKE_INSTALL_PREFIX=/tmp/gnucash -D CMAKE_PREFIX_PATH=$HOME/gnucash-unstable -G Xcode ../gnucash
-
-  * Again, this time pointing to a gmock-1.7.0 source directory:
-
-   $ cmake -D CMAKE_INSTALL_PREFIX=/tmp/gnucash -D
-   CMAKE_PREFIX_PATH=$HOME/gnucash-unstable -D GMOCK_ROOT=$HOME/gmock-1.7.0 -D GTEST_ROOT=$HOME/gmock-1.7.0/gtest -G Xcode ../gnucash
 
 === Building
 

@@ -62,23 +62,16 @@ Libraries/Deps
 --------------
   required		Version
   --------		_______
-glib2			2.40.0
-gtk+3			3.14.0
-guile			2.2.0 or 2.0.0
+glib2			2.28.0
+gtk+2			2.24.0
+guile			1.8.5 or 2.0.0
+libgnomecanvas		2.0
+[lib]goffice		0.7.0
 libxml2			2.5.10
-libxslt, including xsltproc
-ICU                                             International Compnents for
-                                                Unicode
-boost			1.50.0                  locale and regex libs must be
-                                                built with ICU support.
+libxslt
 swig			2.0.10			Only required to build from git
 						or SVN.
-webkit			webkitgtk-3.0 (Windows, Mac)
-                        webkit2gtk-3.0 (Everything Else)
-googletest              1.7.0                   Some distros call it gtest.
-                                                Some distros also separate out
-                                                googlemock or gmock; both are
-                                                required.
+webkit			1.0
 
   optional
   --------
@@ -93,14 +86,6 @@ libofx			0.9.0			 OFX/QFX import
 
 python			2.4.0			 python bindings; headers
 						 required, not just binaries.
-
-makeinfo                                         Not really needed, it
-                                                 just builds the
-                                                 mostly obsolete
-                                                 design documentation
-                                                 (superceded for the
-                                                 most part in Doxygen
-                                                 docs).
 
   at runtime, required
   ---------------------

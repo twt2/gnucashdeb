@@ -1,1 +1,0 @@
-SET_DIST_LIST(example_glade_DIST CMakeLists.txt )
