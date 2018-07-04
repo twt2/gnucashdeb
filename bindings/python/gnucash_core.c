@@ -19106,13 +19106,11 @@ SWIGINTERN PyObject *_wrap_qof_query_date_predicate(PyObject *SWIGUNUSEDPARM(sel
   PyObject *resultobj = 0;
   QofQueryCompare arg1 ;
   QofDateMatch arg2 ;
-  Timespec arg3 ;
+  time64 arg3 ;
   int val1 ;
   int ecode1 = 0 ;
   int val2 ;
   int ecode2 = 0 ;
-  void *argp3 ;
-  int res3 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
@@ -19130,15 +19128,16 @@ SWIGINTERN PyObject *_wrap_qof_query_date_predicate(PyObject *SWIGUNUSEDPARM(sel
   } 
   arg2 = (QofDateMatch)(val2);
   {
-    res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_Timespec,  0 );
-    if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "qof_query_date_predicate" "', argument " "3"" of type '" "Timespec""'"); 
-    }  
-    if (!argp3) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "qof_query_date_predicate" "', argument " "3"" of type '" "Timespec""'");
-    } else {
-      arg3 = *((Timespec *)(argp3));
-    }
+    PyDateTime_IMPORT;
+    struct tm time = {
+      PyDateTime_DATE_GET_SECOND(obj2),
+      PyDateTime_DATE_GET_MINUTE(obj2),
+      PyDateTime_DATE_GET_HOUR(obj2),
+      PyDateTime_GET_DAY(obj2),
+      PyDateTime_GET_MONTH(obj2) - 1,
+      PyDateTime_GET_YEAR(obj2) - 1900
+    };
+    arg3 = gnc_mktime(&time);
   }
   result = (QofQueryPredData *)qof_query_date_predicate(arg1,arg2,arg3);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__QofQueryPredData, 0 |  0 );
@@ -19504,11 +19503,10 @@ fail:
 SWIGINTERN PyObject *_wrap_qof_query_date_predicate_get_date(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   QofQueryPredData *arg1 = (QofQueryPredData *) 0 ;
-  Timespec *arg2 = (Timespec *) 0 ;
+  time64 *arg2 = (time64 *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
+  time64 secs2 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   gboolean result;
@@ -19519,11 +19517,19 @@ SWIGINTERN PyObject *_wrap_qof_query_date_predicate_get_date(PyObject *SWIGUNUSE
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_query_date_predicate_get_date" "', argument " "1"" of type '" "QofQueryPredData const *""'"); 
   }
   arg1 = (QofQueryPredData *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_Timespec, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "qof_query_date_predicate_get_date" "', argument " "2"" of type '" "Timespec *""'"); 
+  {
+    PyDateTime_IMPORT;
+    struct tm time = {
+      PyDateTime_DATE_GET_SECOND(obj1),
+      PyDateTime_DATE_GET_MINUTE(obj1),
+      PyDateTime_DATE_GET_HOUR(obj1),
+      PyDateTime_GET_DAY(obj1),
+      PyDateTime_GET_MONTH(obj1) - 1,
+      PyDateTime_GET_YEAR(obj1) - 1900
+    };
+    time64 secs2 = gnc_mktime(&time);
+    arg2 = &secs2;
   }
-  arg2 = (Timespec *)(argp2);
   result = qof_query_date_predicate_get_date((struct _QofQueryPredData const *)arg1,arg2);
   {
     if (result == TRUE)
@@ -34163,6 +34169,69 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_gncInvoiceGetTotalTaxList(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GncInvoice *arg1 = (GncInvoice *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  AccountValueList *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:gncInvoiceGetTotalTaxList",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__gncInvoice, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncInvoiceGetTotalTaxList" "', argument " "1"" of type '" "GncInvoice *""'"); 
+  }
+  arg1 = (GncInvoice *)(argp1);
+  result = (AccountValueList *)gncInvoiceGetTotalTaxList(arg1);
+  {
+    guint i;
+    gpointer data;
+    PyObject *list = PyList_New(0);
+    for (i = 0; i < g_list_length(result); i++)
+    {
+      data = g_list_nth_data(result, i);
+      if (GNC_IS_ACCOUNT(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_Account, 0));
+      else if (GNC_IS_SPLIT(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_Split, 0));
+      else if (GNC_IS_TRANSACTION(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_Transaction, 0));
+      else if (GNC_IS_COMMODITY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_gnc_commodity, 0));
+      else if (GNC_IS_COMMODITY_NAMESPACE(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_gnc_commodity_namespace, 0));
+      else if (GNC_IS_LOT(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
+      else if (GNC_IS_PRICE(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
+      else if (GNC_IS_INVOICE(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncInvoice, 0));
+      else if (GNC_IS_ENTRY(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
+      else if (GNC_IS_CUSTOMER(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncCustomer, 0));
+      else if (GNC_IS_VENDOR(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncVendor, 0));
+      else if (GNC_IS_EMPLOYEE(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEmployee, 0));
+      else if (GNC_IS_JOB(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncJob, 0));
+      else if (GNC_IS_TAXTABLE(data))
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncTaxTable, 0));
+      else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
+      else
+      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_void, 0));
+    }
+    resultobj = list;
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_gncInvoiceGetEntries(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GncInvoice *arg1 = (GncInvoice *) 0 ;
@@ -43573,7 +43642,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"delete__QofQueryPredData", _wrap_delete__QofQueryPredData, METH_VARARGS, (char *)"delete__QofQueryPredData(_QofQueryPredData self)"},
 	 { (char *)"_QofQueryPredData_swigregister", _QofQueryPredData_swigregister, METH_VARARGS, NULL},
 	 { (char *)"qof_query_string_predicate", _wrap_qof_query_string_predicate, METH_VARARGS, (char *)"qof_query_string_predicate(QofQueryCompare how, gchar const * str, QofStringMatch options, gboolean is_regex) -> _QofQueryPredData"},
-	 { (char *)"qof_query_date_predicate", _wrap_qof_query_date_predicate, METH_VARARGS, (char *)"qof_query_date_predicate(QofQueryCompare how, QofDateMatch options, Timespec date) -> _QofQueryPredData"},
+	 { (char *)"qof_query_date_predicate", _wrap_qof_query_date_predicate, METH_VARARGS, (char *)"qof_query_date_predicate(QofQueryCompare how, QofDateMatch options, time64 date) -> _QofQueryPredData"},
 	 { (char *)"qof_query_numeric_predicate", _wrap_qof_query_numeric_predicate, METH_VARARGS, (char *)"qof_query_numeric_predicate(QofQueryCompare how, QofNumericMatch options, _gnc_numeric value) -> _QofQueryPredData"},
 	 { (char *)"qof_query_guid_predicate", _wrap_qof_query_guid_predicate, METH_VARARGS, (char *)"qof_query_guid_predicate(QofGuidMatch options, GList * guids) -> _QofQueryPredData"},
 	 { (char *)"qof_query_int32_predicate", _wrap_qof_query_int32_predicate, METH_VARARGS, (char *)"qof_query_int32_predicate(QofQueryCompare how, gint32 val) -> _QofQueryPredData"},
@@ -43585,7 +43654,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"qof_query_choice_predicate", _wrap_qof_query_choice_predicate, METH_VARARGS, (char *)"qof_query_choice_predicate(QofGuidMatch options, GList * guids) -> _QofQueryPredData"},
 	 { (char *)"qof_query_core_predicate_copy", _wrap_qof_query_core_predicate_copy, METH_VARARGS, (char *)"qof_query_core_predicate_copy(_QofQueryPredData pdata) -> _QofQueryPredData"},
 	 { (char *)"qof_query_core_predicate_free", _wrap_qof_query_core_predicate_free, METH_VARARGS, (char *)"qof_query_core_predicate_free(_QofQueryPredData pdata)"},
-	 { (char *)"qof_query_date_predicate_get_date", _wrap_qof_query_date_predicate_get_date, METH_VARARGS, (char *)"qof_query_date_predicate_get_date(_QofQueryPredData pd, Timespec * date) -> gboolean"},
+	 { (char *)"qof_query_date_predicate_get_date", _wrap_qof_query_date_predicate_get_date, METH_VARARGS, (char *)"qof_query_date_predicate_get_date(_QofQueryPredData pd, time64 * date) -> gboolean"},
 	 { (char *)"qof_query_core_to_string", _wrap_qof_query_core_to_string, METH_VARARGS, (char *)"qof_query_core_to_string(QofType arg1, gpointer object, QofParam * getter) -> char *"},
 	 { (char *)"qof_string_number_compare_func", _wrap_qof_string_number_compare_func, METH_VARARGS, (char *)"qof_string_number_compare_func(gpointer a, gpointer b, gint options, QofParam * this_param) -> int"},
 	 { (char *)"GncGUID_reserved_set", _wrap_GncGUID_reserved_set, METH_VARARGS, (char *)"GncGUID_reserved_set(GncGUID self, unsigned char [16] reserved)"},
@@ -44003,6 +44072,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gncInvoiceGetTotalOf", _wrap_gncInvoiceGetTotalOf, METH_VARARGS, (char *)"gncInvoiceGetTotalOf(GncInvoice * invoice, GncEntryPaymentType type) -> _gnc_numeric"},
 	 { (char *)"gncInvoiceGetTotalSubtotal", _wrap_gncInvoiceGetTotalSubtotal, METH_VARARGS, (char *)"gncInvoiceGetTotalSubtotal(GncInvoice * invoice) -> _gnc_numeric"},
 	 { (char *)"gncInvoiceGetTotalTax", _wrap_gncInvoiceGetTotalTax, METH_VARARGS, (char *)"gncInvoiceGetTotalTax(GncInvoice * invoice) -> _gnc_numeric"},
+	 { (char *)"gncInvoiceGetTotalTaxList", _wrap_gncInvoiceGetTotalTaxList, METH_VARARGS, (char *)"gncInvoiceGetTotalTaxList(GncInvoice * invoice) -> AccountValueList *"},
 	 { (char *)"gncInvoiceGetEntries", _wrap_gncInvoiceGetEntries, METH_VARARGS, (char *)"gncInvoiceGetEntries(GncInvoice * invoice) -> EntryList *"},
 	 { (char *)"gncInvoiceGetPrice", _wrap_gncInvoiceGetPrice, METH_VARARGS, (char *)"gncInvoiceGetPrice(GncInvoice * invoice, gnc_commodity * commodity) -> GNCPrice *"},
 	 { (char *)"gncInvoiceAmountPositive", _wrap_gncInvoiceAmountPositive, METH_VARARGS, (char *)"gncInvoiceAmountPositive(GncInvoice const * invoice) -> gboolean"},

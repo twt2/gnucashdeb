@@ -95,7 +95,7 @@ static void set_timespec_val (gpointer pObject, Timespec *ts);
 static  gpointer get_guid_val (gpointer pObject);
 static void set_guid_val (gpointer pObject,  gpointer pValue);
 static gnc_numeric get_numeric_val (gpointer pObject);
-static void set_numeric_val (gpointer pObject, gnc_numeric *value);
+static void set_numeric_val (gpointer pObject, gnc_numeric value);
 static GDate* get_gdate_val (gpointer pObject);
 static void set_gdate_val (gpointer pObject, GDate* value);
 static slot_info_t* slot_info_copy (slot_info_t* pInfo, GncGUID* guid);
@@ -363,11 +363,9 @@ set_string_val (gpointer pObject,  gpointer pValue)
 static  gpointer
 get_double_val (gpointer pObject)
 {
-    slot_info_t* pInfo = (slot_info_t*)pObject;
-    static double d_val;
-
+    static double d_val; /* static so that we can return it. */
     g_return_val_if_fail (pObject != NULL, NULL);
-
+    auto pInfo = static_cast<slot_info_t*>(pObject);
     if (pInfo->pKvpValue->get_type () == KvpValue::Type::DOUBLE)
     {
         d_val = pInfo->pKvpValue->get<double> ();
@@ -515,7 +513,7 @@ get_numeric_val (gpointer pObject)
 }
 
 static void
-set_numeric_val (gpointer pObject, gnc_numeric *value)
+set_numeric_val (gpointer pObject, gnc_numeric value)
 {
     slot_info_t* pInfo = (slot_info_t*)pObject;
     KvpValue* pValue = NULL;
@@ -523,7 +521,7 @@ set_numeric_val (gpointer pObject, gnc_numeric *value)
     g_return_if_fail (pObject != NULL);
 
     if (pInfo->value_type != KvpValue::Type::NUMERIC) return;
-    set_slot_from_value (pInfo, new KvpValue {*value});
+    set_slot_from_value (pInfo, new KvpValue {value});
 }
 
 static GDate*
@@ -703,7 +701,7 @@ gnc_sql_slots_delete (GncSqlBackend* sql_be, const GncGUID* guid)
                 if (string_to_guid (val.c_str(), &child_guid))
                     gnc_sql_slots_delete (sql_be, &child_guid);
             }
-            catch (std::invalid_argument)
+            catch (std::invalid_argument&)
             {
                 continue;
             }
@@ -766,19 +764,15 @@ gnc_sql_slots_load (GncSqlBackend* sql_be, QofInstance* inst)
 static void
 slots_load_info (slot_info_t* pInfo)
 {
-    gchar guid_buf[GUID_ENCODING_LENGTH + 1];
-
     g_return_if_fail (pInfo != NULL);
     g_return_if_fail (pInfo->be != NULL);
     g_return_if_fail (pInfo->guid != NULL);
     g_return_if_fail (pInfo->pKvpFrame != NULL);
 
-    (void)guid_to_string_buff (pInfo->guid, guid_buf);
-
-    std::stringstream buf;
-    buf << "SELECT * FROM " << TABLE_NAME <<
-        " WHERE obj_guid='" << guid_buf << "'";
-    auto stmt = pInfo->be->create_statement_from_sql (buf.str());
+    gnc::GUID guid(*pInfo->guid);
+    std::string sql("SELECT * FROM " TABLE_NAME " WHERE obj_guid='");
+    sql += guid.to_string() + "'";
+    auto stmt = pInfo->be->create_statement_from_sql(sql);
     if (stmt != nullptr)
     {
         auto result = pInfo->be->execute_select_statement (stmt);
@@ -825,44 +819,6 @@ load_slot_for_list_item (GncSqlBackend* sql_be, GncSqlRow& row,
 
 }
 
-void
-gnc_sql_slots_load_for_instancevec (GncSqlBackend* sql_be, InstanceVec& instances)
-{
-    QofCollection* coll;
-    std::stringstream sql;
-
-    g_return_if_fail (sql_be != NULL);
-
-    // Ignore empty list
-    if (instances.empty()) return;
-
-    coll = qof_instance_get_collection (instances[0]);
-
-    // Create the query for all slots for all items on the list
-
-    sql << "SELECT * FROM " << TABLE_NAME << " WHERE " <<
-                            obj_guid_col_table[0]->name();
-    if (instances.size() != 1)
-        sql << " IN (";
-    else
-        sql << " = ";
-
-    gnc_sql_append_guids_to_sql (sql, instances);
-    if (instances.size() > 1)
-        sql << ")";
-
-    // Execute the query and load the slots
-    auto stmt = sql_be->create_statement_from_sql(sql.str());
-    if (stmt == nullptr)
-    {
-        PERR ("stmt == NULL, SQL = '%s'\n", sql.str().c_str());
-        return;
-    }
-    auto result = sql_be->execute_select_statement (stmt);
-    for (auto row : *result)
-        load_slot_for_list_item (sql_be, row, coll);
-}
-
 static void
 load_slot_for_book_object (GncSqlBackend* sql_be, GncSqlRow& row,
                            BookLookupFn lookup_fn)
@@ -897,29 +853,25 @@ load_slot_for_book_object (GncSqlBackend* sql_be, GncSqlRow& row,
  * @param lookup_fn Lookup function
  */
 void gnc_sql_slots_load_for_sql_subquery (GncSqlBackend* sql_be,
-                                          const gchar* subquery,
+                                          const std::string subquery,
                                           BookLookupFn lookup_fn)
 {
-    gchar* sql;
-
     g_return_if_fail (sql_be != NULL);
 
     // Ignore empty subquery
-    if (subquery == NULL) return;
+    if (subquery.empty()) return;
 
-    sql = g_strdup_printf ("SELECT * FROM %s WHERE %s IN (%s)",
-                           TABLE_NAME, obj_guid_col_table[0]->name(),
-                           subquery);
+    std::string pkey(obj_guid_col_table[0]->name());
+    std::string sql("SELECT * FROM " TABLE_NAME " WHERE ");
+    sql += pkey + " IN (" + subquery + ")";
 
     // Execute the query and load the slots
     auto stmt = sql_be->create_statement_from_sql(sql);
     if (stmt == nullptr)
     {
-        PERR ("stmt == NULL, SQL = '%s'\n", sql);
-        g_free (sql);
+        PERR ("stmt == NULL, SQL = '%s'\n", sql.c_str());
         return;
     }
-    g_free (sql);
     auto result = sql_be->execute_select_statement(stmt);
     for (auto row : *result)
         load_slot_for_book_object (sql_be, row, lookup_fn);

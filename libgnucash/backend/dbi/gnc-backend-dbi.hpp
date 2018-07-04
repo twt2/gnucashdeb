@@ -51,11 +51,10 @@ class GncSqlRow;
  */
 enum TableOpType
 {
-    drop = 0,
-    empty,
-    backup,
+    backup = 0,
     rollback,
-    drop_backup
+    drop_backup,
+    recover
 };
 
 /**
@@ -99,7 +98,8 @@ public:
     void safe_sync(QofBook*) override;
     bool connected() const noexcept { return m_conn != nullptr; }
     /** FIXME: Just a pass-through to m_conn: */
-    void set_dbi_error(int error, unsigned int repeat,  bool retry) noexcept
+    void set_dbi_error(QofBackendError error, unsigned int repeat,
+                       bool retry) noexcept
     {
         m_conn->set_error(error, repeat, retry);
     }
@@ -117,6 +117,21 @@ private:
     bool create_database(dbi_conn conn, const char* db);
     bool m_exists;         // Does the database exist?
 };
+
+/* locale-stack */
+inline std::string
+gnc_push_locale(const int category, const std::string locale)
+{
+    std::string retval(setlocale(category, nullptr));
+    setlocale(category, locale.c_str());
+    return retval;
+}
+
+inline void
+gnc_pop_locale(const int category, std::string locale)
+{
+    setlocale(category, locale.c_str());
+}
 
 /* external access required for tests */
 std::string adjust_sql_options_string(const std::string&);

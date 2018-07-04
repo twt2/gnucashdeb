@@ -2348,6 +2348,7 @@ lookup_nearest_in_time(GNCPriceDB *db,
     GList *item = NULL;
 
     if (!db || !c || !currency) return NULL;
+    if (t.tv_sec == INT64_MAX) return NULL;
     ENTER ("db=%p commodity=%p currency=%p", db, c, currency);
     price_list = pricedb_get_prices_internal (db, c, currency, TRUE);
     if (!price_list) return NULL;
@@ -3226,7 +3227,7 @@ gnc_pricedb_register (void)
     {
         { PRICE_COMMODITY, GNC_ID_COMMODITY, (QofAccessFunc)gnc_price_get_commodity, (QofSetterFunc)gnc_price_set_commodity },
         { PRICE_CURRENCY, GNC_ID_COMMODITY, (QofAccessFunc)gnc_price_get_currency, (QofSetterFunc)gnc_price_set_currency },
-        { PRICE_DATE, QOF_TYPE_DATE, (QofAccessFunc)gnc_price_get_time, (QofSetterFunc)gnc_price_set_time },
+        { PRICE_DATE, QOF_TYPE_DATE, (QofAccessFunc)gnc_price_get_time64, (QofSetterFunc)gnc_price_set_time64 },
         { PRICE_SOURCE, QOF_TYPE_STRING, (QofAccessFunc)gnc_price_get_source, (QofSetterFunc)gnc_price_set_source },
         { PRICE_TYPE, QOF_TYPE_STRING, (QofAccessFunc)gnc_price_get_typestr, (QofSetterFunc)gnc_price_set_typestr },
         { PRICE_VALUE, QOF_TYPE_NUMERIC, (QofAccessFunc)gnc_price_get_value, (QofSetterFunc)gnc_price_set_value },

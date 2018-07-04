@@ -3,6 +3,10 @@
 borrowed/goffice/go-charmap-sel.c
 borrowed/goffice/go-glib-extras.c
 borrowed/goffice/go-optionmenu.c
+borrowed/guile-json/json/builder.scm
+borrowed/guile-json/json/parser.scm
+borrowed/guile-json/json/syntax.scm
+borrowed/guile-json/json.scm
 borrowed/gwengui-gtk3/gtk3_gui.c
 borrowed/gwengui-gtk3/gtk3_gui_dialog.c
 borrowed/gwengui-gtk3/w_checkbox.c
@@ -343,9 +347,6 @@ gnucash/import-export/ofx/gnc-ofx-import.c
 gnucash/import-export/ofx/gnc-ofx-kvp.c
 gnucash/import-export/ofx/gnc-plugin-ofx.c
 gnucash/import-export/ofx/gschemas/org.gnucash.dialogs.import.ofx.gschema.xml.in
-gnucash/import-export/qif/qif-context.c
-gnucash/import-export/qif/qif-file.c
-gnucash/import-export/qif/qif-objects.c
 gnucash/import-export/qif-imp/assistant-qif-import.c
 gnucash/import-export/qif-imp/dialog-account-picker.c
 gnucash/import-export/qif-imp/gncmod-qif-import.c
@@ -446,10 +447,10 @@ gnucash/report/report-system/eguile-utilities.scm
 gnucash/report/report-system/gncmod-report-system.c
 gnucash/report/report-system/gnc-report.c
 gnucash/report/report-system/html-acct-table.scm
+gnucash/report/report-system/html-anytag.scm
 gnucash/report/report-system/html-barchart.scm
 gnucash/report/report-system/html-document.scm
 gnucash/report/report-system/html-fonts.scm
-gnucash/report/report-system/html-jqplot.scm
 gnucash/report/report-system/html-linechart.scm
 gnucash/report/report-system/html-piechart.scm
 gnucash/report/report-system/html-scatter.scm
@@ -458,7 +459,6 @@ gnucash/report/report-system/html-style-sheet.scm
 gnucash/report/report-system/html-table.scm
 gnucash/report/report-system/html-text.scm
 gnucash/report/report-system/html-utilities.scm
-gnucash/report/report-system/list-extras.scm
 gnucash/report/report-system/options-utilities.scm
 gnucash/report/report-system/report-collectors.scm
 gnucash/report/report-system/report.scm
@@ -483,8 +483,7 @@ gnucash/report/standard-reports/general-journal.scm
 gnucash/report/standard-reports/general-ledger.scm
 gnucash/report/standard-reports/income-gst-statement.scm
 gnucash/report/standard-reports/income-statement.scm
-gnucash/report/standard-reports/net-barchart.scm
-gnucash/report/standard-reports/net-linechart.scm
+gnucash/report/standard-reports/net-charts.scm
 gnucash/report/standard-reports/portfolio.scm
 gnucash/report/standard-reports/price-scatter.scm
 gnucash/report/standard-reports/register.scm

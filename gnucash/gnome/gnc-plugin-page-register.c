@@ -180,6 +180,7 @@ static void gnc_plugin_page_register_cmd_associate_location_transaction (GtkActi
 static void gnc_plugin_page_register_cmd_execassociated_transaction (GtkAction *action, GncPluginPageRegister *plugin_page);
 
 static void gnc_plugin_page_help_changed_cb( GNCSplitReg *gsr, GncPluginPageRegister *register_page );
+static void gnc_plugin_page_popup_menu_cb( GNCSplitReg *gsr, GncPluginPageRegister *register_page );
 static void gnc_plugin_page_register_refresh_cb (GHashTable *changes, gpointer user_data);
 static void gnc_plugin_page_register_close_cb (gpointer user_data);
 
@@ -1129,6 +1130,10 @@ gnc_plugin_page_register_create_widget (GncPluginPage *plugin_page)
                       G_CALLBACK ( gnc_plugin_page_help_changed_cb ),
                       page );
 
+    g_signal_connect (G_OBJECT (gsr), "show-popup-menu",
+                      G_CALLBACK ( gnc_plugin_page_popup_menu_cb ),
+                      page );
+
     reg = gnc_ledger_display_get_split_register(priv->ledger);
     gnc_split_register_config(reg, reg->type, reg->style,
                               reg->use_double_line);
@@ -1324,6 +1329,7 @@ static const gchar *style_names[] =
 
 #define KEY_REGISTER_TYPE       "RegisterType"
 #define KEY_ACCOUNT_NAME        "AccountName"
+#define KEY_ACCOUNT_GUID        "AccountGuid"
 #define KEY_REGISTER_STYLE      "RegisterStyle"
 #define KEY_DOUBLE_LINE         "DoubleLineMode"
 
@@ -1374,12 +1380,15 @@ gnc_plugin_page_register_save_page (GncPluginPage *plugin_page,
     {
         const gchar *label;
         gchar* name;
+        gchar acct_guid[GUID_ENCODING_LENGTH + 1];
         label = (ledger_type == LD_SINGLE) ? LABEL_ACCOUNT : LABEL_SUBACCOUNT;
         leader = gnc_ledger_display_leader(priv->ledger);
         g_key_file_set_string(key_file, group_name, KEY_REGISTER_TYPE, label);
         name = gnc_account_get_full_name(leader);
         g_key_file_set_string(key_file, group_name, KEY_ACCOUNT_NAME, name);
         g_free(name);
+        guid_to_string_buff (xaccAccountGetGUID (leader), acct_guid);
+        g_key_file_set_string(key_file, group_name, KEY_ACCOUNT_GUID, acct_guid);
     }
     else if (reg->type == GENERAL_JOURNAL)
     {
@@ -1479,8 +1488,9 @@ gnc_plugin_page_register_recreate_page (GtkWidget *window,
 {
     GncPluginPage *page;
     GError *error = NULL;
-    gchar *reg_type, *acct_name;
-    Account *account;
+    gchar *reg_type, *acct_guid;
+    GncGUID guid;
+    Account *account = NULL;
     QofBook *book;
     gboolean include_subs;
 
@@ -1497,12 +1507,22 @@ gnc_plugin_page_register_recreate_page (GtkWidget *window,
     {
         include_subs = (g_ascii_strcasecmp(reg_type, LABEL_SUBACCOUNT) == 0);
         DEBUG("Include subs: %d", include_subs);
-        acct_name = g_key_file_get_string(key_file, group_name,
-                                          KEY_ACCOUNT_NAME, &error);
         book = qof_session_get_book(gnc_get_current_session());
-        account = gnc_account_lookup_by_full_name(gnc_book_get_root_account(book),
-                  acct_name);
-        g_free(acct_name);
+        acct_guid = g_key_file_get_string(key_file, group_name,
+                                          KEY_ACCOUNT_GUID, &error);
+        if (string_to_guid (acct_guid, &guid)) //find account by guid
+        {
+            account = xaccAccountLookup (&guid, book);
+            g_free(acct_guid);
+        }
+        if (account == NULL) //find account by full name
+        {
+            gchar *acct_name = g_key_file_get_string(key_file, group_name,
+                                              KEY_ACCOUNT_NAME, &error);
+            account = gnc_account_lookup_by_full_name(gnc_book_get_root_account(book),
+                      acct_name);
+            g_free(acct_name);
+        }
         if (account == NULL)
         {
             LEAVE("Bad account name");
@@ -4052,6 +4072,23 @@ gnc_plugin_page_help_changed_cb (GNCSplitReg *gsr, GncPluginPageRegister *regist
     help = gnc_table_get_help(reg->table);
     gnc_window_set_status(window, GNC_PLUGIN_PAGE(register_page), help);
     g_free(help);
+}
+
+static void
+gnc_plugin_page_popup_menu_cb (GNCSplitReg *gsr, GncPluginPageRegister *register_page)
+{
+    GncWindow *window;
+
+    g_return_if_fail(GNC_IS_PLUGIN_PAGE_REGISTER(register_page));
+
+    window = GNC_WINDOW(GNC_PLUGIN_PAGE(register_page)->window);
+    if (!window)
+    {
+        // This routine can be called before the page is added to a
+        // window.
+        return;
+    }
+    gnc_main_window_popup_menu_cb (GTK_WIDGET(window), GNC_PLUGIN_PAGE(register_page));
 }
 
 static void

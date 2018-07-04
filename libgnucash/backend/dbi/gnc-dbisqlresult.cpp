@@ -30,6 +30,7 @@ extern "C"
 /* For direct access to dbi data structs, sadly needed for datetime */
 #include <dbi/dbi-dev.h>
 }
+#include <cmath>
 #include <gnc-datetime.hpp>
 #include "gnc-dbisqlresult.hpp"
 #include "gnc-dbisqlconnection.hpp"
@@ -109,7 +110,7 @@ GncDbiSqlResult::IteratorImpl::get_int_at_col(const char* col) const
     return dbi_result_get_longlong (m_inst->m_dbi_result, col);
 }
 
-float
+double
 GncDbiSqlResult::IteratorImpl::get_float_at_col(const char* col) const
 {
     auto type = dbi_result_get_field_type (m_inst->m_dbi_result, col);
@@ -117,9 +118,10 @@ GncDbiSqlResult::IteratorImpl::get_float_at_col(const char* col) const
     if(type != DBI_TYPE_DECIMAL ||
        (attrs & DBI_DECIMAL_SIZEMASK) != DBI_DECIMAL_SIZE4)
         throw (std::invalid_argument{"Requested float from non-float column."});
-    gnc_push_locale (LC_NUMERIC, "C");
-    auto retval =  dbi_result_get_float(m_inst->m_dbi_result, col);
-    gnc_pop_locale (LC_NUMERIC);
+    auto locale = gnc_push_locale (LC_NUMERIC, "C");
+    auto interim =  dbi_result_get_float(m_inst->m_dbi_result, col);
+    gnc_pop_locale (LC_NUMERIC, locale);
+    double retval = static_cast<double>(round(interim * 1000000.0)) / 1000000.0;
     return retval;
 }
 
@@ -131,9 +133,9 @@ GncDbiSqlResult::IteratorImpl::get_double_at_col(const char* col) const
     if(type != DBI_TYPE_DECIMAL ||
        (attrs & DBI_DECIMAL_SIZEMASK) != DBI_DECIMAL_SIZE8)
         throw (std::invalid_argument{"Requested double from non-double column."});
-    gnc_push_locale (LC_NUMERIC, "C");
+    auto locale = gnc_push_locale (LC_NUMERIC, "C");
     auto retval =  dbi_result_get_double(m_inst->m_dbi_result, col);
-    gnc_pop_locale (LC_NUMERIC);
+    gnc_pop_locale (LC_NUMERIC, locale);
     return retval;
 }
 
@@ -144,15 +146,12 @@ GncDbiSqlResult::IteratorImpl::get_string_at_col(const char* col) const
     auto attrs = dbi_result_get_field_attribs (m_inst->m_dbi_result, col);
     if(type != DBI_TYPE_STRING)
         throw (std::invalid_argument{"Requested string from non-string column."});
-    gnc_push_locale (LC_NUMERIC, "C");
     auto strval = dbi_result_get_string(m_inst->m_dbi_result, col);
     if (strval == nullptr)
     {
-        gnc_pop_locale (LC_NUMERIC);
         throw (std::invalid_argument{"Column empty."});
     }
     auto retval =  std::string{strval};
-    gnc_pop_locale (LC_NUMERIC);
     return retval;
 }
 time64
@@ -163,7 +162,6 @@ GncDbiSqlResult::IteratorImpl::get_time64_at_col (const char* col) const
     auto attrs = dbi_result_get_field_attribs (result, col);
     if (type != DBI_TYPE_DATETIME)
         throw (std::invalid_argument{"Requested time64 from non-time64 column."});
-    gnc_push_locale (LC_NUMERIC, "C");
 #if HAVE_LIBDBI_TO_LONGLONG
     /* A less evil hack than the one required by libdbi-0.8, but
      * still necessary to work around the same bug.
@@ -182,7 +180,6 @@ GncDbiSqlResult::IteratorImpl::get_time64_at_col (const char* col) const
 #endif //HAVE_LIBDBI_TO_LONGLONG
     if (retval < MINTIME || retval > MAXTIME)
         retval = 0;
-    gnc_pop_locale (LC_NUMERIC);
     return retval;
 }
 

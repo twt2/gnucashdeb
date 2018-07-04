@@ -1250,7 +1250,7 @@ gnc_split_register_xfer_dialog(SplitRegister *reg, Transaction *txn,
     cur = reg->table->current_cursor;
 
     /* Create the exchange rate dialog. */
-    xfer = gnc_xfer_dialog(GTK_WIDGET (reg), NULL);
+    xfer = gnc_xfer_dialog(gnc_split_register_get_parent (reg), NULL);
     g_return_val_if_fail(xfer, NULL);
 
     /* Set the description. */
@@ -1321,6 +1321,13 @@ gnc_split_register_handle_exchange (SplitRegister *reg, gboolean force_dialog)
     CursorClass cursor_class;
 
     ENTER("reg=%p, force_dialog=%s", reg, force_dialog ? "TRUE" : "FALSE" );
+
+    /* No point in setting a rate on a template transaction. */
+    if (reg->is_template)
+    {
+        LEAVE("Template transaction, rate makes no sense.");
+        return FALSE;
+    }
 
     /* Make sure we NEED this for this type of register */
     if (!gnc_split_reg_has_rate_cell (reg->type))

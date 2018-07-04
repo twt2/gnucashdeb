@@ -172,7 +172,6 @@ static void gnc_main_window_cmd_help_contents (GtkAction *action, GncMainWindow 
 static void gnc_main_window_cmd_help_about (GtkAction *action, GncMainWindow *window);
 
 static void do_popup_menu(GncPluginPage *page, GdkEventButton *event);
-static gboolean gnc_main_window_popup_menu_cb (GtkWidget *widget, GncPluginPage *page);
 static GtkWidget *gnc_main_window_get_statusbar (GncWindow *window_in);
 static void statusbar_notification_lastmodified(void);
 
@@ -225,7 +224,8 @@ typedef struct GncMainWindowPrivate
     GncPluginPage *current_page;
     /** The identifier for this window's engine event handler. */
     gint event_handler_id;
-
+    /** Array for window position. */
+    gint pos[2];
     /** A hash table of all action groups that have been installed
      *  into this window. The keys are the name of an action
      *  group, the values are structures of type
@@ -762,18 +762,20 @@ gnc_main_window_restore_window (GncMainWindow *window, GncMainWindowSaveData *da
         g_warning("invalid number of values for group %s key %s",
                   window_group, WINDOW_POSITION);
     }
-// This does not do any thing ?
-//    else if ((pos[0] + (geom ? geom[0] : 0) < 0) ||
-//             (pos[0] > gdk_screen_width()) ||
-//             (pos[1] + (geom ? geom[1] : 0) < 0) ||
-//             (pos[1] > gdk_screen_height()))
-//    {
-//    g_debug("position %dx%d, size%dx%d is offscreen; will not move",
-//	    pos[0], pos[1], geom[0], geom[1]);
-//    }
+    /* Prevent restoring coordinates if this would move the window off-screen */
+    else if ((pos[0] + (geom ? geom[0] : 0) < 0) ||
+             (pos[0] > gdk_screen_width()) ||
+             (pos[1] + (geom ? geom[1] : 0) < 0) ||
+             (pos[1] > gdk_screen_height()))
+    {
+        g_debug("position %dx%d, size%dx%d is offscreen; will not move",
+                pos[0], pos[1], geom[0], geom[1]);
+    }
     else
     {
         gtk_window_move(GTK_WINDOW(window), pos[0], pos[1]);
+        priv->pos[0] = pos[0];
+        priv->pos[1] = pos[1];
         DEBUG("window (%p) position %dx%d", window, pos[0], pos[1]);
     }
     if (geom)
@@ -1005,7 +1007,7 @@ gnc_main_window_save_window (GncMainWindow *window, GncMainWindowSaveData *data)
     GncMainWindowPrivate *priv;
     GtkAction *action;
     gint i, num_pages, coords[4], *order;
-    gboolean maximized, visible;
+    gboolean maximized, minimized, visible;
     gchar *window_group;
 
     /* Setup */
@@ -1046,8 +1048,19 @@ gnc_main_window_save_window (GncMainWindow *window, GncMainWindowSaveData *data)
     gtk_window_get_size(GTK_WINDOW(window), &coords[2], &coords[3]);
     maximized = (gdk_window_get_state(gtk_widget_get_window ((GTK_WIDGET(window))))
                  & GDK_WINDOW_STATE_MAXIMIZED) != 0;
-    g_key_file_set_integer_list(data->key_file, window_group,
-                                WINDOW_POSITION, &coords[0], 2);
+    minimized = (gdk_window_get_state(gtk_widget_get_window ((GTK_WIDGET(window))))
+                 & GDK_WINDOW_STATE_ICONIFIED) != 0;
+
+    if (minimized)
+    {
+        gint *pos = priv->pos;
+        g_key_file_set_integer_list(data->key_file, window_group,
+                                    WINDOW_POSITION, &pos[0], 2);
+        DEBUG("window minimized (%p) position %dx%d", window, pos[0], pos[1]);
+    }
+    else
+        g_key_file_set_integer_list(data->key_file, window_group,
+                                    WINDOW_POSITION, &coords[0], 2);
     g_key_file_set_integer_list(data->key_file, window_group,
                                 WINDOW_GEOMETRY, &coords[2], 2);
     g_key_file_set_boolean(data->key_file, window_group,
@@ -1219,7 +1232,8 @@ gnc_main_window_prompt_for_save (GtkWidget *window)
         _("If you don't save, changes from the past %d days and %d hours will be discarded.");
     time64 oldest_change;
     gint minutes, hours, days;
-
+    if (!gnc_current_session_exist())
+        return FALSE;
     session = gnc_get_current_session();
     book = qof_session_get_book(session);
     filename = qof_session_get_url(session);
@@ -1350,14 +1364,17 @@ static gboolean
 gnc_main_window_quit(GncMainWindow *window)
 {
     QofSession *session;
-    gboolean needs_save, do_shutdown;
-
-    session = gnc_get_current_session();
-    needs_save = qof_book_session_not_saved(qof_session_get_book(session)) &&
-                 !gnc_file_save_in_progress();
-    do_shutdown = !needs_save ||
-                  (needs_save && !gnc_main_window_prompt_for_save(GTK_WIDGET(window)));
-
+    gboolean needs_save, do_shutdown = TRUE;
+    if (gnc_current_session_exist())
+    {
+        session = gnc_get_current_session();
+        needs_save =
+            qof_book_session_not_saved(qof_session_get_book(session)) &&
+            !gnc_file_save_in_progress();
+        do_shutdown = !needs_save ||
+            (needs_save &&
+             !gnc_main_window_prompt_for_save(GTK_WIDGET(window)));
+    }
     if (do_shutdown)
     {
         g_timeout_add(250, gnc_main_window_timed_quit, NULL);
@@ -2028,11 +2045,47 @@ gnc_main_window_update_tab_color (gpointer gsettings, gchar *pref, gpointer user
 }
 
 
+/** Set the tab label ellipsize value. The special check for a zero
+ *  value handles the case where a user hasn't set a tab width and
+ *  the preference default isn't detected.
+ *
+ *  @internal
+ *
+ *  @param label GtkLabel for the tab.
+ *
+ *  @param tab_width Tab width the user has set in preferences.
+ *
+ */
+static void
+gnc_main_window_set_tab_ellipsize (GtkWidget *label, gint tab_width)
+{
+    const gchar *lab_text = gtk_label_get_text (GTK_LABEL(label));
+
+    if (tab_width != 0)
+    {
+        gint text_length = g_utf8_strlen (lab_text, -1);
+        if (text_length < tab_width)
+        {
+            gtk_label_set_width_chars (GTK_LABEL(label), text_length);
+            gtk_label_set_ellipsize (GTK_LABEL(label), PANGO_ELLIPSIZE_NONE);
+        }
+        else
+        {
+            gtk_label_set_width_chars (GTK_LABEL(label), tab_width);
+            gtk_label_set_ellipsize (GTK_LABEL(label), PANGO_ELLIPSIZE_MIDDLE);
+        }
+    }
+    else
+    {
+        gtk_label_set_width_chars (GTK_LABEL(label), 15);
+        gtk_label_set_ellipsize (GTK_LABEL(label), PANGO_ELLIPSIZE_NONE);
+    }
+}
+
+
 /** Update the width of the label in the tab of a notebook page.  This
- *  function adjusts both the width and the ellipsize mode so that the tab
- *  label looks correct.  The special check for a zero value handles the
- *  case where a user hasn't set a tab width and the preference default isn't
- *  detected.
+ *  function adjusts both the width and the ellipsize mode so that the
+ *  tab label looks correct.
  *
  *  @internal
  *
@@ -2046,7 +2099,6 @@ gnc_main_window_update_tab_width_one_page (GncPluginPage *page,
 {
     gint *new_value = user_data;
     GtkWidget *label;
-    const gchar *lab_text;
 
     ENTER("page %p, visible %d", page, *new_value);
     label = g_object_get_data(G_OBJECT (page), PLUGIN_PAGE_TAB_LABEL);
@@ -2055,23 +2107,7 @@ gnc_main_window_update_tab_width_one_page (GncPluginPage *page,
         LEAVE("no label");
         return;
     }
-
-    lab_text = gtk_label_get_text (GTK_LABEL(label));
-
-    if (*new_value != 0)
-    {
-        if (g_utf8_strlen (lab_text, -1) < *new_value)
-            gtk_label_set_width_chars (GTK_LABEL(label), strlen (lab_text));
-        else
-            gtk_label_set_width_chars (GTK_LABEL(label), *new_value);
-
-        gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_MIDDLE);
-    }
-    else
-    {
-        gtk_label_set_width_chars (GTK_LABEL(label), 15);
-        gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_NONE);
-    }
+    gnc_main_window_set_tab_ellipsize (label, *new_value);
     LEAVE(" ");
 }
 
@@ -2940,15 +2976,8 @@ gnc_main_window_open_page (GncMainWindow *window,
     label = gtk_label_new (lab_text);
     g_object_set_data (G_OBJECT (page), PLUGIN_PAGE_TAB_LABEL, label);
 
-    if (width != 0)
-    {
-        if (g_utf8_strlen (lab_text, -1) < width)
-            gtk_label_set_width_chars (GTK_LABEL(label), strlen (lab_text));
-        else
-            gtk_label_set_width_chars (GTK_LABEL(label), width);
+    gnc_main_window_set_tab_ellipsize (label, width);
 
-        gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_MIDDLE);
-    }
     gtk_widget_show (label);
 
     tab_hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
@@ -3733,10 +3762,12 @@ gnc_quartz_should_quit (GtkosxApplication *theApp, GncMainWindow *window)
     QofSession *session;
     gboolean needs_save;
 
-    if (!gnc_main_window_all_finish_pending() ||
-            gnc_file_save_in_progress())
+    if (!gnc_current_session_exist() ||
+        !gnc_main_window_all_finish_pending() ||
+        gnc_file_save_in_progress())
+
     {
-        return TRUE;
+        return FALSE;
     }
     session = gnc_get_current_session();
     needs_save = qof_book_session_not_saved(qof_session_get_book(session)) &&
@@ -4785,7 +4816,7 @@ do_popup_menu(GncPluginPage *page, GdkEventButton *event)
  *  @return Always returns TRUE to indicate that the menu request was
  *  handled.
  */
-static gboolean
+gboolean
 gnc_main_window_popup_menu_cb (GtkWidget *widget,
                                GncPluginPage *page)
 {

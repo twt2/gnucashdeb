@@ -92,6 +92,8 @@ gnc_entry_ledger_get_account_by_name (GncEntryLedger *ledger, BasicCell * bcell,
 
     /* Find the account */
     account = gnc_account_lookup_for_register (gnc_get_current_root_account (), name);
+    if (!account)
+        account = gnc_account_lookup_by_code (gnc_get_current_root_account(), name);
 
     if (!account)
     {
@@ -116,13 +118,16 @@ gnc_entry_ledger_get_account_by_name (GncEntryLedger *ledger, BasicCell * bcell,
         if (!account)
             return NULL;
         *isnew = TRUE;
-
-        /* Now have a new account. Update the cell with the name as created. */
-        account_name = gnc_get_account_name_for_register (account);
+    }
+    
+    /* Now have a new account. Update the cell with the name as created. */
+    account_name = gnc_get_account_name_for_register (account);
+    if (g_strcmp0(account_name, gnc_basic_cell_get_value(bcell)))
+    {
         gnc_combo_cell_set_value (cell, account_name);
         gnc_basic_cell_set_changed (&cell->cell, TRUE);
-        g_free (account_name);
     }
+    g_free (account_name);
 
     /* See if the account (either old or new) is a placeholder. */
     if (xaccAccountGetPlaceholder (account))
@@ -722,6 +727,7 @@ gnc_entry_ledger_compute_value (GncEntryLedger *ledger,
     GncTaxTable *table;
     GList *taxes = NULL;
     int denom = 100;
+    gnc_numeric value_unrounded, taxes_unrounded;
 
     gnc_entry_ledger_get_numeric (ledger, ENTRY_QTY_CELL, &qty);
     gnc_entry_ledger_get_numeric (ledger, ENTRY_PRIC_CELL, &price);
@@ -773,12 +779,18 @@ gnc_entry_ledger_compute_value (GncEntryLedger *ledger,
     }
 
     gncEntryComputeValue (qty, price, (taxable ? table : NULL), taxincluded,
-                          discount, disc_type, disc_how, denom,
-                          value, NULL, &taxes);
+                          discount, disc_type, disc_how, 0,
+                          &value_unrounded, NULL, &taxes);
+
+    if (value)
+        *value = gnc_numeric_convert (value_unrounded, denom,
+                                      GNC_HOW_RND_ROUND_HALF_UP);
 
     /* return the tax value */
+    taxes_unrounded = gncAccountValueTotal (taxes);
     if (tax_value)
-        *tax_value = gncAccountValueTotal (taxes);
+        *tax_value = gnc_numeric_convert (taxes_unrounded, denom,
+                                          GNC_HOW_RND_ROUND_HALF_UP);
 }
 
 gboolean

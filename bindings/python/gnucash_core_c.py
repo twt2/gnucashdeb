@@ -2145,8 +2145,8 @@ def qof_query_string_predicate(how: 'QofQueryCompare', str: 'gchar const *', opt
     """qof_query_string_predicate(QofQueryCompare how, gchar const * str, QofStringMatch options, gboolean is_regex) -> _QofQueryPredData"""
     return _gnucash_core_c.qof_query_string_predicate(how, str, options, is_regex)
 
-def qof_query_date_predicate(how: 'QofQueryCompare', options: 'QofDateMatch', date: 'Timespec') -> "QofQueryPredData *":
-    """qof_query_date_predicate(QofQueryCompare how, QofDateMatch options, Timespec date) -> _QofQueryPredData"""
+def qof_query_date_predicate(how: 'QofQueryCompare', options: 'QofDateMatch', date: 'time64') -> "QofQueryPredData *":
+    """qof_query_date_predicate(QofQueryCompare how, QofDateMatch options, time64 date) -> _QofQueryPredData"""
     return _gnucash_core_c.qof_query_date_predicate(how, options, date)
 
 def qof_query_numeric_predicate(how: 'QofQueryCompare', options: 'QofNumericMatch', value: '_gnc_numeric') -> "QofQueryPredData *":
@@ -2193,8 +2193,8 @@ def qof_query_core_predicate_free(pdata: '_QofQueryPredData') -> "void":
     """qof_query_core_predicate_free(_QofQueryPredData pdata)"""
     return _gnucash_core_c.qof_query_core_predicate_free(pdata)
 
-def qof_query_date_predicate_get_date(pd: '_QofQueryPredData', date: 'Timespec *') -> "gboolean":
-    """qof_query_date_predicate_get_date(_QofQueryPredData pd, Timespec * date) -> gboolean"""
+def qof_query_date_predicate_get_date(pd: '_QofQueryPredData', date: 'time64 *') -> "gboolean":
+    """qof_query_date_predicate_get_date(_QofQueryPredData pd, time64 * date) -> gboolean"""
     return _gnucash_core_c.qof_query_date_predicate_get_date(pd, date)
 
 def qof_query_core_to_string(arg1: 'QofType', object: 'gpointer', getter: 'QofParam *') -> "char *":
@@ -3992,6 +3992,10 @@ def gncInvoiceGetTotalSubtotal(invoice: 'GncInvoice *') -> "gnc_numeric":
 def gncInvoiceGetTotalTax(invoice: 'GncInvoice *') -> "gnc_numeric":
     """gncInvoiceGetTotalTax(GncInvoice * invoice) -> _gnc_numeric"""
     return _gnucash_core_c.gncInvoiceGetTotalTax(invoice)
+
+def gncInvoiceGetTotalTaxList(invoice: 'GncInvoice *') -> "AccountValueList *":
+    """gncInvoiceGetTotalTaxList(GncInvoice * invoice) -> AccountValueList *"""
+    return _gnucash_core_c.gncInvoiceGetTotalTaxList(invoice)
 
 def gncInvoiceGetEntries(invoice: 'GncInvoice *') -> "EntryList *":
     """gncInvoiceGetEntries(GncInvoice * invoice) -> EntryList *"""

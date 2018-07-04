@@ -149,7 +149,7 @@ LDT_from_unix_local(const time64 time)
         auto tz = tzp.get(temp.date().year());
         return LDT(temp, tz);
     }
-    catch(boost::gregorian::bad_year)
+    catch(boost::gregorian::bad_year&)
     {
         throw(std::invalid_argument("Time value is outside the supported year range."));
     }
@@ -158,26 +158,41 @@ LDT_from_unix_local(const time64 time)
 static LDT
 LDT_from_struct_tm(const struct tm tm)
 {
+    Date tdate;
+    Duration tdur;
+    TZ_Ptr tz;
+
     try
     {
-        auto tdate = boost::gregorian::date_from_tm(tm);
-        auto tdur = boost::posix_time::time_duration(tm.tm_hour, tm.tm_min,
-                                                     tm.tm_sec, 0);
-        auto tz = tzp.get(tdate.year());
+        tdate = boost::gregorian::date_from_tm(tm);
+        tdur = boost::posix_time::time_duration(tm.tm_hour, tm.tm_min,
+                                                 tm.tm_sec, 0);
+        tz = tzp.get(tdate.year());
         LDT ldt(tdate, tdur, tz, LDTBase::EXCEPTION_ON_ERROR);
         return ldt;
     }
-    catch(boost::gregorian::bad_year)
+    catch(boost::gregorian::bad_year&)
     {
         throw(std::invalid_argument("Time value is outside the supported year range."));
     }
-    catch(boost::local_time::time_label_invalid)
+    catch(boost::local_time::time_label_invalid&)
     {
         throw(std::invalid_argument("Struct tm does not resolve to a valid time."));
     }
-    catch(boost::local_time::ambiguous_result)
+    catch(boost::local_time::ambiguous_result&)
     {
-        throw(std::invalid_argument("Struct tm can resolve to more than one time."));
+        /* We plunked down in the middle of a DST change. Try constructing the
+         * LDT three hours later to get a valid result then back up those three
+         * hours to have the time we want.
+         */
+        using boost::posix_time::hours;
+        auto hour = tm.tm_hour;
+        tdur += hours(3);
+        LDT ldt(tdate, tdur, tz, LDTBase::NOT_DATE_TIME_ON_ERROR);
+        if (ldt.is_special())
+            throw(std::invalid_argument("Couldn't create a valid datetime."));
+        ldt -= hours(3);
+        return ldt;
     }
 }
 
@@ -256,7 +271,7 @@ GncDateTimeImpl::GncDateTimeImpl(const GncDateImpl& date, DayPart part) :
                 m_time -= hours(offset.hours() - 11);
         }
     }
-    catch(boost::gregorian::bad_year)
+    catch(boost::gregorian::bad_year&)
     {
         throw(std::invalid_argument("Time value is outside the supported year range."));
     }
@@ -282,23 +297,35 @@ GncDateTimeImpl::GncDateTimeImpl(std::string str) :
     m_time(unix_epoch, utc_zone)
 {
     if (str.empty()) return;
-
-    auto tzpos = str.find_first_of("+-", str.find(":"));
-    auto tzptr = tz_from_string(tzpos != str.npos ? str.substr(tzpos) : "");
-    if (tzpos != str.npos && str[tzpos - 1] == ' ') --tzpos;
-
+    TZ_Ptr tzptr;
     try
     {
-        bool delimited = str.find("-") == 4;
-        if (!delimited)
-            str.insert(8, "T");
-        auto pdt = delimited ?
-            boost::posix_time::time_from_string(str.substr(0, tzpos)) :
-            boost::posix_time::from_iso_string(str.substr(0,tzpos));
+        static const boost::regex delim_iso("^(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}(?:\\.\\d{0,9})?)\\s*([+-]\\d{2}(?::?\\d{2})?)?$");
+        static const boost::regex non_delim("^(\\d{14}(?:\\.\\d{0,9})?)\\s*([+-]\\d{2}\\s*(:?\\d{2})?)?$");
+        PTime pdt;
+        boost::smatch sm;
+        if (regex_match(str, sm, non_delim))
+        {
+            std::string time_str(sm[1]);
+            time_str.insert(8, "T");
+            pdt = boost::posix_time::from_iso_string(time_str);
+        }
+        else if (regex_match(str, sm, delim_iso))
+        {
+            pdt = boost::posix_time::time_from_string(sm[1]);
+        }
+        else
+        {
+            throw(std::invalid_argument("The date string was not formatted in a way that GncDateTime(std::string) knows how to parse."));
+        }
+        std::string tzstr("");
+        if (sm[2].matched)
+            tzstr += sm[2];
+        tzptr = tz_from_string(tzstr);
         m_time = LDT(pdt.date(), pdt.time_of_day(), tzptr,
                          LDTBase::NOT_DATE_TIME_ON_ERROR);
     }
-    catch(boost::gregorian::bad_year)
+    catch(boost::gregorian::bad_year&)
     {
         throw(std::invalid_argument("The date string was outside of the supported year range."));
     }
@@ -343,13 +370,31 @@ GncDateTimeImpl::date() const
     return std::unique_ptr<GncDateImpl>(new GncDateImpl(m_time.local_time().date()));
 }
 
+/* The 'O', 'E', and '-' format modifiers are not supported by
+ * boost's output facets. Remove them.
+ */
+static inline std::string
+normalize_format (const std::string& format)
+{
+    bool is_pct = false;
+    std::string normalized;
+    std::remove_copy_if(
+        format.begin(), format.end(), back_inserter(normalized),
+        [&is_pct](char e){
+            bool r = (is_pct && (e == 'E' || e == 'O' || e == '-'));
+            is_pct = e == '%';
+            return r;
+        });
+    return normalized;
+}
+
 std::string
 GncDateTimeImpl::format(const char* format) const
 {
     using Facet = boost::local_time::local_time_facet;
     std::stringstream ss;
     //The stream destructor frees the facet, so it must be heap-allocated.
-    auto output_facet(new Facet(format));
+    auto output_facet(new Facet(normalize_format(format).c_str()));
     ss.imbue(std::locale(std::locale(), output_facet));
     ss << m_time;
     return ss.str();
@@ -361,7 +406,7 @@ GncDateTimeImpl::format_zulu(const char* format) const
     using Facet = boost::posix_time::time_facet;
     std::stringstream ss;
     //The stream destructor frees the facet, so it must be heap-allocated.
-    auto output_facet(new Facet(format));
+    auto output_facet(new Facet(normalize_format(format).c_str()));
     ss.imbue(std::locale(std::locale(), output_facet));
     ss << m_time.utc_time();
     return ss.str();
@@ -420,7 +465,7 @@ GncDateImpl::format(const char* format) const
     using Facet = boost::gregorian::date_facet;
     std::stringstream ss;
     //The stream destructor frees the facet, so it must be heap-allocated.
-    auto output_facet(new Facet(format));
+    auto output_facet(new Facet(normalize_format(format).c_str()));
     ss.imbue(std::locale(std::locale(), output_facet));
     ss << m_greg;
     return ss.str();
