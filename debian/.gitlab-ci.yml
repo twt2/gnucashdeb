@@ -29,14 +29,15 @@ stages:
   - check
   - build
 
-yamllint:
+dpkg-control:
   stage: check
   tags:
-    - yamllint
+    - cme
   dependencies: []
   allow_failure: false
-  script: |
-    yamllint -c debian/.yamllint debian/.*.yml
+  script:
+    - wrap-and-sort --keep-first --trailing-comma # terrible way to fix "Cannot parse: ''" in "cme check dpkg-control".
+    - cme check dpkg-control
 
 dpkg-copyright:
   stage: check
@@ -47,15 +48,14 @@ dpkg-copyright:
   script: |
     cme check dpkg-copyright
 
-dpkg-control:
+yamllint:
   stage: check
   tags:
-    - cme
+    - yamllint
   dependencies: []
-  allow_failure: true
-  script:
-    - wrap-and-sort --keep-first --trailing-comma # terrible way to fix "Cannot parse: ''" in "cme check dpkg-control".
-    - cme check dpkg-control
+  allow_failure: false
+  script: |
+    yamllint -c debian/.yamllint debian/.*.yml
 
 ## Build
 
@@ -113,3 +113,17 @@ unstable-amd64:
     - *origtargz
     - ${PDEBUILD_CMD} --architecture amd64 -- --basetgz /var/cache/pbuilder/unstable-amd64.tgz
     - ${LINTIAN_CMD}
+
+stretch-amd64:
+  stage: build
+  tags:
+    - pbuilder
+    - amd64
+  dependencies: []
+  allow_failure: false
+  before_script:
+    - *pre_build
+  script:
+    - ${ORIGTAR_CMD}
+    - ${PDEBUILD_CMD} --architecture amd64 -- --basetgz /var/cache/pbuilder/stretch-amd64.tgz
+
