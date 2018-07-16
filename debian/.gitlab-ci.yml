@@ -124,6 +124,6 @@ stretch-amd64:
   before_script:
     - *pre_build
   script:
-    - ${ORIGTAR_CMD}
+    - *origtargz
     - ${PDEBUILD_CMD} --architecture amd64 -- --basetgz /var/cache/pbuilder/stretch-amd64.tgz
 
