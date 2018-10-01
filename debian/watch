@@ -7,4 +7,4 @@ version=4
 ## https://qa.debian.org/watch/sf.php/gnucash/
 opts="\
 uversionmangle=s{\-\d}{}\
-"  http://sf.net/gnucash/gnucash-(\d[\d\.]+)(?:-\d)?\.tar\.bz2
+"  https://sf.net/gnucash/gnucash-(\d[\d\.]+)(?:-\d)?\.tar\.bz2

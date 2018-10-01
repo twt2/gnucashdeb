@@ -1,3 +1,9 @@
+gnucash (1:3.2-2) UNRELEASED; urgency=medium
+
+  * d/watch: Use https protocol
+
+ -- Ondřej Nový <onovy@debian.org>  Mon, 01 Oct 2018 10:00:08 +0200
+
 gnucash (1:3.2-1) unstable; urgency=medium
 
   * New upstream release [June 2018] (Closes: #897970).
