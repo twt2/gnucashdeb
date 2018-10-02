@@ -4,6 +4,11 @@
 #export DH_VERBOSE=1
 
 include /usr/share/dpkg/pkg-info.mk
+include /usr/share/dpkg/architecture.mk
+
+ifeq ($(DEB_TARGET_ARCH_ENDIAN),big)
+    CMAKE_WORDS_BIGENDIAN = -DWORDS_BIGENDIAN=1
+endif
 
 # Hack for Gnucash build system
 #export BUILDING_FROM_VCS=$(if $(wildcard libgnucash/core-utils/gnc-vcs-info.h),yes,no)
@@ -49,6 +54,8 @@ override_dh_auto_configure:
                -DCMAKE_CXX_FLAGS="$(CXXFLAGS) $(CPPFLAGS)" \
                -DWITH_PYTHON=ON             \
                -DCMAKE_INSTALL_LIBDIR=/usr/lib/$(DEB_HOST_MULTIARCH)/gnucash \
+                $(CMAKE_WORDS_BIGENDIAN) \
+        ;
 
 #		--libdir=/usr/lib/$(DEB_HOST_MULTIARCH)/gnucash \
 #		--infodir=/noinst \
