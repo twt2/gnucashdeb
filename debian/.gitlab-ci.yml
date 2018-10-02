@@ -13,8 +13,8 @@ variables:
 
 .origtargz:
   script: &origtargz |
-    rm -rf .git
     ${ORIGTAR_CMD}
+#    rm -rf .git
 #    debian/unpack-components.sh
 
 .pre_build:
@@ -66,12 +66,12 @@ unstable-binary-indep:
     - amd64
   dependencies: []
 ## https://bugs.debian.org/867822
-  allow_failure: true
+  allow_failure: false
   before_script:
     - *pre_build
   script:
     - *origtargz
-    - pdebuild --debbuildopts "-A" --use-pdebuild-internal --buildresult "${PB_RESULT}" --architecture amd64 -- --binary-indep --basetgz /var/cache/pbuilder/unstable-amd64.tgz
+    - pdebuild --debbuildopts "-A" --use-pdebuild-internal --buildresult "${PB_RESULT}" --architecture all -- --binary-indep --basetgz /var/cache/pbuilder/unstable-amd64.tgz
 
 testing_unstable-amd64:
   stage: build
