@@ -14,7 +14,7 @@ variables:
 .origtargz:
   script: &origtargz |
     ${ORIGTAR_CMD}
-#    rm -rf .git
+    rm -rf .git
 #    debian/unpack-components.sh
 
 .pre_build:
