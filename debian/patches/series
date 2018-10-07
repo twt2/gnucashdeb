@@ -1,2 +1,3 @@
 bigendian.patch
+test--skip-test-qofsession.patch
 test--skip-test-stress-options.patch
