@@ -1,0 +1,52 @@
+Origin: upstream, https://bugs.gnucash.org/attachment.cgi?id=373094
+Bug-Upstream: https://bugs.gnucash.org/show_bug.cgi?id=797008
+Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=918057
+From: Maxim Cournoyer <maxim.cournoyer@gmail.com>
+Date: Wed, 2 Jan 2019 14:46:28 -0500
+Subject: tests: Fix a test failure in test-transaction.scm.
+
+With the New Year upon us, a test which was hard-coded to use 2018 now
+failed.
+
+Fixes issue #797008 (see:
+https://bugs.gnucash.org/show_bug.cgi?id=797008).
+
+* gnucash/report/standard-reports/test/test-transaction.scm:
+(trep-tests): Use the current year in the test string instead of a
+static one.
+
+--- a/gnucash/report/standard-reports/test/test-transaction.scm
++++ b/gnucash/report/standard-reports/test/test-transaction.scm
+@@ -4,8 +4,9 @@
+ (use-modules (gnucash report standard-reports transaction))
+ (use-modules (gnucash report stylesheets))
+ (use-modules (gnucash report report-system))
+ (use-modules (gnucash report report-system test test-extras))
++(use-modules (srfi srfi-19))
+ (use-modules (srfi srfi-64))
+ (use-modules (gnucash engine test srfi64-extras))
+ (use-modules (sxml simple))
+ (use-modules (sxml xpath))
+@@ -642,18 +643,20 @@
+       (set-option! options "General" "Common Currency" #t)
+       (set-option! options "General" "Show original currency amount" #t)
+       (set-option! options "Sorting" "Primary Key" 'date)
+       (set-option! options "Sorting" "Primary Subtotal for Date Key" 'none)
+-      (let* ((sxml (options->sxml options "dual columns")))
++      (let* ((sxml (options->sxml options "dual columns"))
++	     (current-year (date->string (current-date) "~y")))
+         (test-equal "dual amount column, with original currency headers"
+           (list "Date" "Num" "Description" "Memo/Notes" "Account"
+                 "Debit (USD)" "Credit (USD)" "Debit" "Credit")
+           (get-row-col sxml 0 #f))
+         (test-equal "dual amount column, grand totals available"
+           (list "Grand Total" "$2,280.00" "$2,280.00")
+           (get-row-col sxml -1 #f))
+         (test-equal "dual amount column, first transaction correct"
+-          (list "01/03/18" "$103 income" "Root.Asset.Bank" "$103.00" "$103.00")
++          (list (string-append "01/03/" current-year) "$103 income"
++		"Root.Asset.Bank" "$103.00" "$103.00")
+           (get-row-col sxml 1 #f)))
+       )
+ 
+     (test-end "display options")

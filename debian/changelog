@@ -1,6 +1,7 @@
 gnucash (1:3.4-1) unstable; urgency=medium
 
   * New upstream release (Closes: #918059).
+  * New patch to fix "test-transaction" (Closes: #918057).
 
  -- Dmitry Smirnov <onlyjob@debian.org>  Thu, 03 Jan 2019 08:51:54 +1100
 
