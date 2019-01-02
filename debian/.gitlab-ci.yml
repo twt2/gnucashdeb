@@ -120,7 +120,7 @@ stretch-amd64:
     - pbuilder
     - amd64
   dependencies: []
-  allow_failure: false
+  allow_failure: true
   before_script:
     - *pre_build
   script:
