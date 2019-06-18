@@ -53,7 +53,7 @@ public:
     void add_where_cond(QofIdTypeConst, const PairVec&) override;
 
 private:
-    const GncSqlConnection* m_conn;
+    const GncSqlConnection* m_conn = nullptr;
     std::string m_sql;
 };
 
@@ -542,8 +542,8 @@ GncDbiSqlConnection::quote_string (const std::string& unquoted_str)
     char* quoted_str;
     size_t size;
 
-    size = dbi_conn_quote_string_copy (m_conn, unquoted_str.c_str(),
-                                       &quoted_str);
+    dbi_conn_quote_string_copy (m_conn, unquoted_str.c_str(),
+                                &quoted_str);
     if (quoted_str == nullptr)
         return std::string{""};
     std::string retval{quoted_str};

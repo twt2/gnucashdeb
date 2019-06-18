@@ -1,5 +1,410 @@
 Version history:
 ------- -------
+3.4 - 30 December 2018
+The fourth release of the 3.x stable series.
+The following bugs have been fixed:
+     Bug 498072 - GnuCash show taxes on invoice when individual taxes is
+                  not checked
+     Bug 760825 - On duplicating a bill, the entry dates should be set to
+                  the bill date, not to the current date - followup:
+                  Use neutral time on entry post dates instead of canonical time
+     Bug 767772 - Associated file with transaction is lost when moving entry
+                  between accounts
+     Bug 775580 - Inaccurate information provided for "Common Accounts" when
+                  using "New Account Hierarchy Setup"
+     Bug 779565 - Treeview header combos do not work at first load
+     Bug 788332 - Last Reconcile Date column sorts by day of month not date
+     Bug 789674 - Close Book tool regression
+     Bug 793156 - Incorrect date sort order in Generic import matcher window
+     Bug 795080 - Some dates reset to 01/01/1970
+     Bug 795237 - Update of "wohnungsw" template
+     Bug 795425 - Version 2018 of german account template SKR49
+     Bug 796772 - Receivable Ageing Report invalid URL for Totals column
+     Bug 796806 - Crash after OFX import if line item dragged
+     Bug 796842 - Add new employee window may not fit on screen
+     Bug 796849 - Load another QIF file causes "that file already loaded" dialog
+     Bug 796875 - Unable to use arrow keys to advance past pre-filled text
+                  in register
+     Bug 796878 - test-qofsession fails on x86_32.
+     Bug 796883 - Register text oddities
+                  HOME and END need to be treated like right and left arrow
+                  keys.
+     Bug 796886 - OFX Import does not show source account in the transaction
+                  matching window
+     Bug 796887 - Remove account slot key color if there is no valid color
+     Bug 796893 - invoice.GetDatePosted() and other date related functions
+                  returns strange values for uninitalised dates.
+     Bug 796896 - Button to complete an export not intuitively placed or
+                  discoverable
+     Bug 796903 - Crash when searching invoice by Invoice Owner
+     Bug 796914 - Customer Summary is giving error
+     Bug 796915 - Update Account colour background
+     Bug 796940 - Invalid transaction date-posted KVP causes date-posted to
+                  not be saved.
+     Bug 796944 - Tab navigation From Company Address field in New Book Options
+     Bug 796945 - Search Search Criteria window does not scroll when added
+                  criteria exceed a certain amount
+     Bug 796948 - Scheduled Transactions Entered Since Last Run Are not Visible
+     Bug 796949 - Incorrect conversion of 0,01 USD to EUR
+     Bug 796960 - Incorrect amount sort order in Generic import matcher window
+     Bug 796961 - Can't overwrite existing MYSQL database, V3.3.
+     Bug 796967 - gnclock table not removed when using PostgreSQL.
+     Bug 796978 - Deleting a split of same account as register cancels the
+                  transaction without warning
+     Bug 796981 - Gnucash crashes with critical error when selecting another
+                  file
+     Bug 796982 - Import Bills & Invoices: change in un_escape() routine
+                  causes description and notes fields to be mangled.
+     Bug 796988 - Untranslated string in CSV transaction importer
+     Bug 796989 - some date/time does not honor user locale
+     Bug 796994 - Unable to generate Tax Report because of pricedb error
+
+Other repairs or enhancements not marked as bugs:
+     Set up filepath utils to determine the GNC_CONFIG_HOME in the same way
+          as GNC_DATA_HOME
+          Until now GNC_CONFIG_HOME was more or less hard-coded. Now it can be
+          set via environment variable GNC_CONFIG_HOME. In addition it will
+          automatically be created to avoid potential user confusion.
+     Redesign gnc-uri-utils
+          gnc_uri_get_components will now return NULL as protocol if the input
+               is a normal file system path instead of a uri (it used to
+               return 'file')
+          gnc_uri_get_protocol will now return NULL if the input is a normal
+               file system path instead of a uri (it used to return 'file')
+          gnc_uri_is_file_protocol now returns FALSE if protocol is NULL
+               (it used to return TRUE)
+           gnc_uri_is_file_uri now returns FALSE if input is a normal file
+                system path instead of a uri (it used to return TRUE)
+           a new function gnc_uri_targets_local_fs will return TRUE only if
+                its input is either a file uri or a normal file system path.
+                This function is now mostly used instead of
+                gnc_uri_is_file_uri in the current code base
+           a new function gnc_uri_is_uri is added to check whether its input
+                is a valid uri (has protocol, path and hostname for non-file
+                uris)
+           refer to 'scheme' instead of 'protocol' as that's the more formal
+               term used in uris
+               This involves renaming 3 functions:
+                    gnc_uri_get_protocol -> gnc_uri_get_scheme
+                    gnc_uri_is_known_protocol -> gnc_uri_is_known_scheme
+                    gnc_uri_is_file_protocol -> gnc_uri_is_file_scheme
+               The *_protocol variants are marked as deprecated.
+               Additionally a number of local variables have been renamed from
+               protocol to scheme to support this change.
+     Show warnings for deprecated declarations
+          We're about to announce our own set of deprecated functions in
+          libgnucash. That would be pretty pointless if we also would silence
+          all deprecation warnings at the same time...
+     More report code-cleanup by Chris Lam, including deprecating the
+           following functions:
+               gnc:account-get-balance-at-date
+               gnc:account-get-total-flow
+               gnc-commodity-numeric-string
+               gnc-commodity-value->string
+               gnc:double-col
+               gnc:options-add-include-subaccounts
+               gnc:options-add-group-accounts
+               gnc:options-add-currency-selection
+            The following modules are deprecated:
+               report-system/collectors
+               report-system/report-collectors
+     Invoice: Remove H1 title and superflous option.
+           Printing the title twice is silly, so remove the option and the
+           H1 display of the title. Note that the remaining title is in a
+           div named "invoice-title" so it can be styled with CSS as the user
+           pleases from the Report Options Layout tab.
+     The preference, use formal accounting labels does not update the header
+          With a register open and you change preference 'use formal
+          accounting labels' it does not update the register header so add
+         a call back for the preference.
+
+     Make the grid lines of totals Budget tree view track the preferences
+          Make the grid lines of the totals tree view track the preferences
+          to match the account tree view above it.
+     Add routine to fix Account Color being set to "Not Set"
+          Previously the account color slot has been populated with
+          "Not Set" when any field for the account has been edited and
+          saved. This routine should run once and remove all such entries.
+     Performance fix in dom_chars_handler: use g_strndup instead of g_strdup
+     In the appdata/metadata file, rename the ID from org.gnucash.Gnucash
+          to org.gnucash.GnuCash to match flathub, and add a launchable ID
+          to link it to the desktop file.
+     Added double-click-on-file for the CSV transaction, price, and account
+         importers and exporters.
+     Cleaned up a variety of issues reported by the clang static analyzer.
+     Allow the text options widget to use all remaining space
+          The text option widget used for report options has only about 3
+          lines visible currently and will not use any available space in
+          the dialogue. Change the packing for this widget to expand and
+          fill the remaining dialogue space. If there are more than one text
+          option widget on a page then the available space will be shared
+          equally.
+     Add short_labels for a few toolbar buttons with long names. That should
+          fit a few more buttons on the toolbar.
+     Update iso-4217-currencies.xml, adddding VES - Bolivar Soberano, minor
+          updates of other VE currencies.
+     Python 3 bindings fixes and improvements from Christoph Holterman and
+          Sumit Bhardwaj.
+
+Updated Translations:  Chinese (Simplified), Farsi, German, Japanese, Portuguese (Portugal), Ukrainian
+Updated Account Templates: English (US), English (UK), German (Austria), German (Germany), Portuguese (Portugal)
+
+Known Issues:
+     Bug 795251 - googletest detection cannot be overridden
+     Bug 795614 - Unicode handling in amount fields [resubmission]
+     Bug 795729 - Advanced Portfolio Report - Percentage rates not displaying
+                  leadinga zeroes
+     Bug 795071 - new account entry screen keeps on disappearing and coming back
+     Bug 796122 - Poor Performance Scanning Old Files During Autosave
+     Bug 796492 - Wrong calculation of the first occurrence
+     Bug 796520 - Layout overlapping in Income & Expense Chart
+     Bug 795362 - Special variable "i" not parsed in function calls
+     Bug 796687 - Tax Entity name and type for an account won't work under
+                  "Tax Reporting Options" in Gnucash 3.2
+     Bug 796728 - GnuCash 3.0-3.2 crashes when starting up under Windows
+     Bug 796740 - Selecting register value with mouse fails
+     Bug 796746 - Cannot copy and paste anything into the amount field
+                  (both credit and debit)
+     Bug 796496 - CSV Importer: Column Selectors invisible on Windows.
+     Bug 796767 - The importer shows read-only and placeholder accounts
+     Bug 796779 - Window size in SEPA transaction
+     Bug 796761 - Newline (char(10) is inserted into the end of the string if
+                  copy & paste text from excel into the description field of
+                  transaction
+     Bug 796656 - GnuCash frequently crashes, usually involving unsaved
+                  transactions.
+     Bug 796799 - After Deleting Transaction Price, Enter Required 2x
+     Bug 796774 - Investment account QIF Import does not import transaction
+     Bug 796758 - Improve error messages, why one can not remove a tax table
+     Bug 796773 - Display of Negative numbers
+     Bug 796782 - Cannot import OFX file in new 3.2
+     Bug 796810 - Account creation and editing dialogs do not allow entering
+                  umlaut-u
+     Bug 796824 - took more than 2 hours to import 220 transactions
+     Bug 796844 - Amount column of Customer Report should net Credits and Debits
+     Bug 796750 - qof_query_search_for stores pointer of type string argument
+     Bug 795393 - Do not create .log files when using sqlite backend
+     Bug 796857 - Import of QIF duplicates transfer transactions
+     Bug 796852 - Context sensitive Help broken
+     Bug 796850 - Auto-decimal-point causes incorrect price to display when
+                  amount is edited.
+     Bug 796100 - Autosave Doesn't Always Work
+     Bug 796754 - Guile encoding certain strings not as UTF-8
+     Bug 796847 - Error trying to do CSV import doesn't recognize account
+                  specification
+     Bug 796877 - test-stress-options fails
+     Bug 796871 - GtkFileChooser Name Field and Sidebar Ignore UNC Paths
+     Bug 796736 - Column Widths calculator need to allow more padding
+     Bug 796885 - SX Editor Calendar Sometimes Shows Wrong Year, Wrong Next Date
+     Bug 796909 - Can't enter different notes and memos for an AR payment
+                  transaction
+     Bug 796880 - Menu Tooltips Interfere with All Dialogs
+     Bug 796688 - "Next" Button Moves Repeatedly During New File Wizard
+     Bug 796911 - Minimum window width is too large, so it may not be possible
+                  to maximise the window
+     Bug 796892 - Startup warning: undefined symbol PyOS_getsig
+     Bug 796907 - After a series of actions to the window of GnuCash, some of
+                  or all of the contents will dispear and could not get them
+                  back
+     Bug 796896 - Button to complete an export not intuitively placed or
+                  discoverable
+     Bug 775368 - "Average cost" price source problem
+     Bug 796926 - Scrolling Fails if Mouse Leaves Window
+     Bug 796900 - Problems in Description Editing. Select all implemented with
+                  the Caps Key (plus no Ctrl Z Undo, grrr)
+     Bug 796500 - Scalability issue - importing large CSV to large book won't
+                  finish
+     Bug 796775 - Auto fill not working correctly (only match the first char
+                  you type ...)
+     Bug 796899 - FTBFS on [mips]: segfault; test-backend-dbi; endianness
+     Bug 796933 - Backspace key doesn't work, sometimes.
+     Bug 796934 - Menu and message characters display as boxes
+     Bug 796895 - Report end and start dates not obeyed
+     Bug 796935 - Scrollbar indicator does not move while scrolling
+     Bug 796938 - Typing account name no longer navigates to account
+     Bug 796942 - Make Auto-Split Optional or Undo-Able for Data Entry
+     Bug 796890 - CSV import of multi-split transactions marks reconciliation
+                  status of first line as cleared
+     Bug 796882 - Entering an amount as a calculation fails the first time in
+                  bills
+     Bug 796867 - GNUCash crashes on startup with Mac Mojave 10.14 in Dark mode.
+     Bug 796953 - Attempting to enter loan causes 3.3 to crash
+     Bug 796870 - Cannot (occasionally) undo invoice billing
+     Bug 796954 - No scroll in invoice/billing and all columns not visible.
+                  Column resizing is disastrous
+     Bug 796955 - Import CSV - Single-line two-currency transactions can't be
+                  imported
+     Bug 795804 - Extremely slow save
+     Bug 795383 - Gnucash crashes on import of a 1400-transaction (or more)
+                  CSV file
+     Bug 796946 - Mortgage and Loan Repayment Setup tool crashes when exiting
+                  "Loan Repayment Options" page
+     Bug 796970 - Disable editing of currency retrieval settings for currencies.
+     Bug 796973 - Blocking problem when importing QIF - trading commodities
+                  enter Information
+     Bug 796968 - Screen display gets corrupted in some circumstances when
+                  multiple windows stacked on top of each other
+     Bug 796971 - Keys "Home" and "End" do not work after popup is displayed
+     Bug 796879 - GnuCash crashes on startup
+     Bug 796894 - Edit -> Preferences results in gnucash.exe- No Disk error box
+     Bug 796979 - GnuCash segfaults on first startup when run from remote
+                  X session
+     Bug 796983 - fails when importing QIF exported by Quicken 2015 Deluxe
+     Bug 796905 - GNUcash does not start after windows 10 update
+     Bug 796976 - saving file with scheduled transaction hangs: copy of
+                  scheduled transactions missing in tmp file?
+     Bug 796974 - Feature Request - Headings for the Matcher column
+                  Deposit/Withdrawal do not change to Debit/Credit when formal
+                  accounting labels are preferenced
+     Bug 796990 - Budget : Newly created account and account with zero
+                  transaction cannot be shown in Budget
+     Bug 796989 - some date/time does not honor user locale
+     Bug 796936 - Saving XML-formatted file to CryFS volume crashes GNUCash
+     Bug 796965 - Show Unused Accounts
+     Bug 796977 - No amounts displaying after upgrade from 2.6.19 to 3.3
+     Bug 795384 - GnuCash 3 is tremendously memory hungry on macOs
+     Bug 796878 - test-qofsession fails on x86_32
+     Bug 796992 - gnucash --add-price-quotes always fails
+
+
+3.3 - 30 September 2018
+The fourth release of the 3.x stable series.
+The following bugs have been fixed:
+
+    Bug 771667 - Different warnings when changing reconciled splits vs. splits
+                 linked to reconciled splits.
+    Bug 784420 - "Save changes on closing" window waits 2^32 seconds when
+                 "Time to wait for answer" is set 0.
+    Bug 786708 - GnuCash won't load currency fractions larger than 1000000.
+                 Also create larger fractions for the account dialog.
+    Bug 787439 - Segmentation Fault in Transfer dialog after clearing Date field
+                 and pressing escape.
+    Bug 789594 - Unable to overwrite sqlite3 database file.
+    Bug 792446 - Mixed languages in error dialog.
+    Bug 794526 - Python bindings can't find loadable modules.
+    Bug 794755 - Commodity Register displays fractional prices.
+                 Prices will now be displayed in decimal, rounded to two more
+                 places than the currency's smallest unit.
+    Bug 794870 - If no book is opened, gnucash still asks if the user wants
+                 to save changes when opening a file.
+    Bug 795821 - GnuCash could not obtain the lock for
+                 file://C:\Users\username\Documents\GnuCash\2.6.21\xxxx\xxxx.gnucash
+    Bug 796054 - Unposting and reposting invoice doubles amounts.
+                 Add scrub function to unblock the double post transaction
+    Bug 796137 - query.search_for outputs critical qof.object errors and
+                 prevents queries being run.
+    Bug 796248 - Editing Scheduled Transaction.
+                 In addition to not begining to edit already-loaded
+                 transactions, don't try to load splits that are already
+                 loaded. It shouldn't be possible to load a transaction
+                 without also loading its splits.
+    Bug 796474 - Segmentation fault while setting up online banking.
+                 Allow only a single instance of the assistant.
+    Bug 796509 - Saved reports don't respect *some* 'Edit report options'.
+    Bug 796579 - Cannot go forward with empty duplicates screen.
+    Bug 796665 - Backspace Key Inoperable After Ctrl+V.
+    Bug 796669 - Dark Theme Text Colors Hard to Read.
+                 Only add the register-foreground class when using Gnucash built
+                 in colours. When this setting not used, the foreground colour
+                 by default will be what ever the theme has set and will be
+                 down to the user to over ride along with the other register
+                 colours.
+    Bug 796724 - Can't overwrite gnucash DB on MariaDB.
+    Bug 796725 - 4 of 6 Date Posted options fail to return matching
+                 transactions.
+    Bug 796734 - Auto-complete entry not highlighting to allow for incremental
+                 entry.
+    Bug 796737 - Patch to restore gncmod-python.c.
+    Bug 796739 - Toolbar buttons have no labels.
+    Bug 796751 - reconcile window usability - R column should be next to Amount.
+    Bug 796755 - buggy window handling at startup.
+    Bug 796756 - OFX import fails to recognize associated income accounts.
+    Bug 796759 - --add-price-quotes <sql file> leaves a lock on the file.
+    Bug 796762 - Scrollbar partially hides the delete button in  the Saved
+                 Report Configurations window.
+                 The vertical scrollbar obscures the delete button in the tree
+                 view so add a dummy blank column to the end and set it to the
+                 width of the vertical scrollbar.
+    Bug 796766 - Credit note creating 'imbalance' with wrong entries
+    Bug 796777 - CVE-2008-1391: Integer overflow in included strfmon function.
+    Bug 796788 - Strange behaviour in options of multicolumn report.
+    Bug 796792 - SaveAs Overwrite dialogue in background and not visible.
+    Bug 796812 - gnc_date_cell_get_date and gnc_date_cell_get_date_gdate have
+                 different date validation behaviour.
+    Bug 796813 - Date validation inconsistent.
+    Bug 796814 - Changing a book's read-only threshold doesn't immediately
+                 affect open registers.
+    Bug 796816 - Notes field in Duplicate Invoice dialogue is 'read-only'.
+    Bug 796819 - Bad icon with Spanish localization.
+                 Drop translations of the 'gnucash-icon' string from our po
+                 files and add a note for translators to not translate this
+                 string or use the literal 'gnucash-icon' as translation.
+    Bug 796820 - References to 'Gnome Bugzilla' should be changed to
+                 'GnuCash Bugzilla'.
+    Bug 796833 - Excel csv Format misprocessed.
+                 Convert all line ending styles to the one expected by the C++
+                 standard library before starting to parse a csv file.
+    Bug 796839 - Find transaction won't filter on Date Posted.
+    Bug 796858 - TypeError: in method 'qof_query_int32_predicate', argument 2 of
+                 type 'gint32' on gnucash.gnucash_core.QueryInt32Predicate.
+
+Other repairs or enhancements not marked as bugs:
+
+    Set toolbar buttons to show both icon and text.
+        And make the icon small to recover some vertical screen estate. The
+        motivation for this is that Gtk has dropped the ability for users
+        to change a toolbar's appearance. And as our icons are often less than
+        descriptive many users benefit from having textual descriptions as
+        well. This is the best compromise we can make until the gui gets an
+        in-depth redesign.
+    Add preference for forcing prices to decimal display.
+        Anticipating that some users might prefer to see exact prices, add
+        a preference to General>Numbers to configure whether prices are
+        rounded to decimals or are displayed as exact fractions.
+    Revert the "Average Cost" pricing changes made in 2.6.17.
+        These changes broke trial balances in many books.
+    Allow saving to xml over an existing sqlite3 file and the other way around.
+    Add customer/vendor ID in client section of invoices.
+        Partly fixes bugs 430259 and 742086; full fixes would require
+        not-backward-compatible data model changes.
+    Change the default filter for General Ledger.
+        The General Ledger default for the number of days shown is 30 but
+        for the Register it is 0, meaning show all. So change the default
+        filter based on ledger type and use this when determining if the
+        setting should be saved or removed.
+    Fix gtk accelerator mixups by explicitly disabling actions that are not
+        relevant. For example, File->Print and its variants for various page
+        types all use the same '<primary>p' as global accelerator. It was
+        possible to have gnucash invoke the 'Print Report...' action instead
+        of the 'Print Invoice...' action when hitting <primary>p on an invoice
+        page. If no report page was open at this point, gnucash would crash.
+        If a report was open, gnucash would invoke the print action on that
+        report instead of opening an invoice report for the invoice.
+    [job-report] Prevent Crash if there is no AR account
+    Add the ability to cascade account colours in account tree.
+        The colour on an account that has sub-accounts can be applied to its
+        sub-accounts; by default only those sub-accounts that don't have a
+        colour set are affected, but there's a preference to override that.
+    Speed up loading the preference dialog by blocking register updates until
+        the dialog is fully loaded.
+    Update change_tax_code.py, add basic test for python query.
+    Simplify GNCQueryView's data model: It was managing a number of redudant
+        parameters which were leaking memory all over the place. The information
+        that was tracked could easily be extracted from the underlying
+        GtkTreeView, GtkTreeModel or GtkTreeSelection when needed.
+    Open customer/vendor/employee report when double-clicking an the
+        respective owner the cust/vend/empl overview page.
+    Update Overview of README based on https://lists.gnucash.org/pipermail/gnucash-devel/2018-September/042748.html
+    Many new tests for reports.
+    Some substantial speedups when loading large amounts of business
+        transactions from a SQL backend.
+    Clean up a lot of memory leaks.
+    Remove all use of Timespec in the program. Provide deprecated wrapper
+        functions supporting timespecs for custom reports; users should update
+        the reports as soonas possible.
+
+Updated Translations: Farsi, Ukrainian
+
 3.2 - 25 June 2018
 The third release of the 3.x stable series.
 
@@ -2888,7 +3293,7 @@ Concurrent with the release of Gnucash 2.6.4 we're pleased to also release a new
 	 reason GnuCash crashes in testing these releases.
 	 o PLEASE TEST TEST AND TEST SOME MORE any and all features important
 	 to you. Then post any bugs you find to bugzilla
-	 http://bugzilla.gnome.org/enter_bug.cgi?product=GnuCash
+	 https://bugs.gnucash.org/enter_bug.cgi
 	 o If you have the urge to help beyond testing please get involved in
 	 the discussions on the GnuCash mailing lists which you will find at
 	 http://www.gnucash.org.  Please see http://wiki.gnucash.org/wiki/Development
@@ -3358,7 +3763,7 @@ Concurrent with the release of Gnucash 2.6.4 we're pleased to also release a new
 	 GnuCash crashes in testing these releases.
 	 o Please test any and all features important to you. Then post any
 	 bugs you find to bugzilla
-	 http://bugzilla.gnome.org/enter_bug.cgi?product=GnuCash
+	 https://bugs.gnucash.org/enter_bug.cgi
 	 o Compared to the 2.0.x series, there are only very few user-visible
 	 new features, except for the completed port to the Microsoft Windows
 	 operating system. Minor new features compared to the 2.0.x series
@@ -3407,7 +3812,7 @@ Concurrent with the release of Gnucash 2.6.4 we're pleased to also release a new
 	 GnuCash crashes in testing these releases.
 	 o Please test any and all features important to you. Then post any
 	 bugs you find to bugzilla
-	 http://bugzilla.gnome.org/enter_bug.cgi?product=GnuCash
+	 https://bugs.gnucash.org/enter_bug.cgi
 	 o Compared to the 2.0.x series, there are only very few user-visible
 	 new features, except for the completed port to the Microsoft Windows
 	 operating system. Minor new features compared to the 2.0.x series
@@ -3447,7 +3852,7 @@ Concurrent with the release of Gnucash 2.6.4 we're pleased to also release a new
 	 GnuCash crashes in testing these releases.
 	 o Please test any and all features important to you. Then post any
 	 bugs you find to bugzilla
-	 http://bugzilla.gnome.org/enter_bug.cgi?product=GnuCash
+	 https://bugs.gnucash.org/enter_bug.cgi
 	 o Compared to the 2.0.x series, there are only very few user-visible
 	 new features, except for the completed port to the Microsoft Windows
 	 operating system. Minor new features compared to the 2.0.x series
@@ -3487,7 +3892,7 @@ Concurrent with the release of Gnucash 2.6.4 we're pleased to also release a new
 	 GnuCash crashes in testing these releases.
 	 o Please test any and all features important to you. Then post any
 	 bugs you find to bugzilla
-	 http://bugzilla.gnome.org/enter_bug.cgi?product=GnuCash
+	 https://bugs.gnucash.org/enter_bug.cgi
 	 o Compared to the 2.0.x series, there are only very few user-visible
 	 new features, except for the completed port to the Microsoft Windows
 	 operating system. Minor new features compared to the 2.0.x series
@@ -3521,7 +3926,7 @@ Concurrent with the release of Gnucash 2.6.4 we're pleased to also release a new
 	 GnuCash crashes in testing these releases.
 	 o Please test any and all features important to you. Then post any
 	 bugs you find to bugzilla
-	 http://bugzilla.gnome.org/enter_bug.cgi?product=GnuCash
+	 https://bugs.gnucash.org/enter_bug.cgi
 	 o Compared to the 2.0.x series, there are only very few user-visible
 	 new features, except for the completed port to the Microsoft Windows
 	 operating system. Minor new features compared to the 2.0.x series
@@ -3558,7 +3963,7 @@ Concurrent with the release of Gnucash 2.6.4 we're pleased to also release a new
 	 reason GnuCash crashes in testing these releases.
 	 o PLEASE TEST TEST AND TEST SOME MORE any and all features important
 	 to you. Then post any bugs you find to bugzilla
-	 http://bugzilla.gnome.org/enter_bug.cgi?product=GnuCash
+	 https://bugs.gnucash.org/enter_bug.cgi
 	 o If you have the urge to help beyond testing please get involved in
 	 the discussions on the GnuCash mailing lists which you will find at
 	 http://www.gnucash.org. We especially need people to help with
@@ -3703,7 +4108,7 @@ Concurrent with the release of Gnucash 2.6.4 we're pleased to also release a new
 	 release.
 	 o PLEASE TEST any and all features important to you. Then post any 
 	 bugs you find to bugzilla
-	 http://bugzilla.gnome.org/enter_bug.cgi?product=GnuCash
+	 https://bugs.gnucash.org/enter_bug.cgi
 	 o We would like to encourage people to test this and any further
 	 releases as much as possible and submit bug reports in order that we
 	 can polish GnuCash to be as stable as possible for the 2.0.0 release
@@ -3723,7 +4128,7 @@ Concurrent with the release of Gnucash 2.6.4 we're pleased to also release a new
 	 many bugfixes since the first beta release.
 	 o PLEASE TEST any and all features important to you. Then post any 
 	 bugs you find to bugzilla
-	 http://bugzilla.gnome.org/enter_bug.cgi?product=GnuCash
+	 https://bugs.gnucash.org/enter_bug.cgi
 	 o We would like to encourage people to test this and any further
 	 releases as much as possible and submit bug reports in order that we
 	 can polish GnuCash to be as stable as possible for the 2.0.0 release
@@ -3749,7 +4154,7 @@ Concurrent with the release of Gnucash 2.6.4 we're pleased to also release a new
 	 many bugfixes since the sixth unstable release.
 	 o PLEASE TEST any and all features important to you. Then post any 
 	 bugs you find to bugzilla
-	 http://bugzilla.gnome.org/enter_bug.cgi?product=GnuCash
+	 https://bugs.gnucash.org/enter_bug.cgi
 	 o We would like to encourage people to test this and any further
 	 releases as much as possible and submit bug reports in order that we
 	 can polish GnuCash to be as stable as possible for the 2.0.0 release
@@ -3780,7 +4185,7 @@ Concurrent with the release of Gnucash 2.6.4 we're pleased to also release a new
 	 reason GnuCash crashes in testing these releases.
 	 o PLEASE TEST TEST AND TEST SOME MORE any and all features important
 	 to you. Then post any bugs you find to bugzilla
-	 http://bugzilla.gnome.org/enter_bug.cgi?product=GnuCash
+	 https://bugs.gnucash.org/enter_bug.cgi
 	 o Major bugfixes include -
 	 o More Register fixes.
 	 o Fixes to Scheduled Transactions.
@@ -3809,7 +4214,7 @@ Concurrent with the release of Gnucash 2.6.4 we're pleased to also release a new
 	 reason GnuCash crashes in testing these releases.
 	 o PLEASE TEST TEST AND TEST SOME MORE any and all features important
 	 to you. Then post any bugs you find to bugzilla
-	 http://bugzilla.gnome.org/enter_bug.cgi?product=GnuCash
+	 https://bugs.gnucash.org/enter_bug.cgi
 	 o Major bugfixes include -
 	 o More Register fixes.
 	 o Fixes to Scheduled Transactions.
@@ -3841,7 +4246,7 @@ Concurrent with the release of Gnucash 2.6.4 we're pleased to also release a new
 	 reason GnuCash crashes in testing these releases.
 	 o PLEASE TEST TEST AND TEST SOME MORE any and all features important
 	 to you. Then post any bugs you find to bugzilla
-	 http://bugzilla.gnome.org/enter_bug.cgi?product=GnuCash
+	 https://bugs.gnucash.org/enter_bug.cgi
 	 o Major bugfixes include -
 	 o More Register fixes.
 	 o Fixes for OFX importer.
@@ -3874,7 +4279,7 @@ Concurrent with the release of Gnucash 2.6.4 we're pleased to also release a new
 	 reason GnuCash crashes in testing these releases.
 	 o PLEASE TEST TEST AND TEST SOME MORE any and all features important
 	 to you. Then post any bugs you find to bugzilla
-	 http://bugzilla.gnome.org/enter_bug.cgi?product=GnuCash
+	 https://bugs.gnucash.org/enter_bug.cgi
 	 o Major bugfixes include -
 	 o More Register fixes.
 	 o HIGify the scheduled transaction dialogs.
@@ -3911,7 +4316,7 @@ Concurrent with the release of Gnucash 2.6.4 we're pleased to also release a new
 	 reason GnuCash crashes in testing these releases.
 	 o PLEASE TEST TEST AND TEST SOME MORE any and all features important
 	 to you. Then post any bugs you find to bugzilla
-	 http://bugzilla.gnome.org/enter_bug.cgi?product=GnuCash
+	 https://bugs.gnucash.org/enter_bug.cgi
 	 o Major bugfixes include - 
 	 o Register fixes
 	 o Finance::Quote issues
@@ -3943,7 +4348,7 @@ Concurrent with the release of Gnucash 2.6.4 we're pleased to also release a new
 	 reason GnuCash crashes in testing these releases.
 	 o PLEASE TEST TEST AND TEST SOME MORE any and all features important
 	 to you. Then post any bugs you find to bugzilla
-	 http://bugzilla.gnome.org/enter_bug.cgi?product=GnuCash
+	 https://bugs.gnucash.org/enter_bug.cgi
 	 o If you have the urge to help beyond testing please get involved in
 	 the discussions on the GnuCash mailing lists which you will find at
 	 http://www.gnucash.org. We especially need people to help with
@@ -4729,7 +5134,7 @@ Concurrent with the release of Gnucash 2.6.4 we're pleased to also release a new
 	 o Added calculate the number of remaining payments based on the start
 	   date, loan length and current date to Mortgage druid
 	 o loads of bugfixes, keep those bugs coming!
-	 o NOTE: Report bugs to bugzilla.gnome.org
+	 o NOTE: Report bugs to https://bugs.gnucash.org
 
  1.7.2  - 27 October 2002
  	 o second alpha release
@@ -4746,14 +5151,14 @@ Concurrent with the release of Gnucash 2.6.4 we're pleased to also release a new
 	   PIN to user preferences.
 	 o HBCI suport requires OpenHBCI 0.9.3 or current OpenHBCI CVS
 	 o loads of bugfixes, keep those bugs coming!
-	 o NOTE: Report bugs to bugzilla.gnome.org
+	 o NOTE: Report bugs to https://bugs.gnucash.org
 	 
  1.7.1  - 13 October 2002
  	 o first alpha release
 	 o lots of new features, please test as much as you can
 	 o esp Scheduled Transactions, Small Business and OFX/HBCI.
 	 o please check Changelog for exact details
-	 o NOTE: Report bugs to bugzilla.gnome.org
+	 o NOTE: Report bugs to https://bugs.gnucash.org
 
  1.5.98 - 04 June 2001
          o second beta release

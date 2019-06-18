@@ -1394,6 +1394,7 @@ gtv_sr_cdf0 (GtkTreeViewColumn *col, GtkCellRenderer *cell, GtkTreeModel *s_mode
     gnc_numeric num = gnc_numeric_zero();
     const gchar *s = "";
     const gchar *row_color;
+    char datebuff[MAX_DATE_LENGTH + 1];
     RowDepth depth;
     gint *indices;
     Account *anchor = view->priv->anchor;
@@ -1462,6 +1463,7 @@ gtv_sr_cdf0 (GtkTreeViewColumn *col, GtkCellRenderer *cell, GtkTreeModel *s_mode
     switch (viewcol) {
     case COL_DATE:
         /* Column is DATE */
+        memset (datebuff, 0, sizeof(datebuff));
         if (is_split)
             g_object_set (cell, "cell-background", "white", (gchar*)NULL);
 
@@ -1474,65 +1476,51 @@ gtv_sr_cdf0 (GtkTreeViewColumn *col, GtkCellRenderer *cell, GtkTreeModel *s_mode
             show_extra_dates = TRUE;
 
         if (is_trow1) {
-            Timespec ts = {xaccTransRetDatePosted (trans),0};
+            time64 t = xaccTransRetDatePosted (trans);
             //If the time returned by xaccTransGetDatePostedTS is 0 then assume it
             //is a new transaction and set the time to current time to show current
             //date on new transactions
-            if (ts.tv_sec == 0)
-                ts.tv_sec = gnc_time (NULL);
-            s = gnc_print_date (ts);
+            if (t == 0)
+                t = gnc_time (NULL);
+            qof_print_date_buff (datebuff, sizeof(datebuff), t);
             editable = TRUE;
         }
         else if (is_trow2 && show_extra_dates) {
-            Timespec ts = {xaccTransRetDateEntered (trans),0};
+            time64 t = xaccTransRetDateEntered (trans);
             g_object_set (cell, "cell-background", YELLOWCELL, (gchar*)NULL);
             //If the time returned by xaccTransGetDateEnteredTS is 0 then assume it
             //is a new transaction and set the time to current time to show current
             //date on new transactions
-            if (ts.tv_sec == 0)
-                ts.tv_sec = gnc_time (NULL);
-            s = gnc_print_date (ts);
+            if (t == 0)
+                t = gnc_time (NULL);
+            qof_print_date_buff (datebuff, sizeof(datebuff), t);
             editable = FALSE;
         }
         else if (is_split && show_extra_dates) {
-            Timespec ts = {0,0};
 
             if (xaccSplitGetReconcile (split) == YREC)
             {
-                xaccSplitGetDateReconciledTS (split, &ts);
-                //If the time returned by xaccTransGetDateEnteredTS is 0 then assume it
-                //is a new transaction and set the time to current time to show current
-                //date on new transactions
-                if (ts.tv_sec == 0)
-                {
-                    ts.tv_sec = gnc_time (NULL);
-                    //xaccSplitSetDateReconciledTS (split, ts.tv_sec);
-                }//if
-                s = gnc_print_date (ts);
+                time64 t = xaccSplitGetDateReconciled (split);
+                qof_print_date_buff (datebuff, sizeof(datebuff), t);
             }
-            else
-                s = "";
             editable = FALSE;
         }
         else {
-            s = "";
             editable = FALSE;
         }
 
         /* Is this a template */
         if (is_template && is_trow1)
         {
-            s =  _(" Scheduled ");
+            strncpy (datebuff,  _(" Scheduled "), sizeof(datebuff));
             editable = FALSE;
         }
         else if (is_template && is_trow2 && show_extra_dates)
         {
-            s = "";
             editable = FALSE;
         }
         else if (is_template && is_split && show_extra_dates)
         {
-            s = "";
             editable = FALSE;
         }
 
@@ -1540,11 +1528,12 @@ gtv_sr_cdf0 (GtkTreeViewColumn *col, GtkCellRenderer *cell, GtkTreeModel *s_mode
 
         /* This will remove the calander buttons if FALSE */
         g_object_set (cell, "use_buttons", view->priv->show_calendar_buttons, NULL );
-        g_object_set (cell, "text", s, "editable", editable, NULL);
+        g_object_set (cell, "text", datebuff, "editable", editable, NULL);
         break;
 
     case COL_DUEDATE:
         /* Column is DUE DATE */
+        memset (datebuff, 0, sizeof(datebuff));
         if (is_split)
             g_object_set (cell, "cell-background", "white", (gchar*)NULL);
 
@@ -1552,18 +1541,17 @@ gtv_sr_cdf0 (GtkTreeViewColumn *col, GtkCellRenderer *cell, GtkTreeModel *s_mode
             /* Only print the due date for invoice transactions */
             if (type == TXN_TYPE_INVOICE)
             {
-                Timespec ts = {xaccTransRetDateDue (trans), 0};
-                s = gnc_print_date (ts);
+                time64 t = xaccTransRetDateDue (trans);
+                qof_print_date_buff (datebuff, sizeof(datebuff), t);
                 editable = FALSE;
             }
             else {
-                s = "";
                 editable = FALSE;
             }
         }
         editable = (read_only == TRUE) ? FALSE : editable;
 
-        g_object_set (cell, "text", s, "editable", editable, NULL);
+        g_object_set (cell, "text", datebuff, "editable", editable, NULL);
         break;
 
     case COL_NUMACT:
@@ -1805,12 +1793,9 @@ gtv_sr_cdf0 (GtkTreeViewColumn *col, GtkCellRenderer *cell, GtkTreeModel *s_mode
         }
         else
         {
-            GNCPrintAmountInfo print_info;
-
-            print_info = gnc_default_price_print_info();
-            print_info.min_decimal_places = 2;
-
-            num = gnc_numeric_convert (gnc_tree_util_get_rate_for (view, trans, split, is_blank), 1000000, GNC_HOW_RND_ROUND_HALF_UP);
+            GNCPrintAmountInfo print_info =
+                gnc_default_price_print_info(xaccTransGetCurrency(trans));
+            num = gnc_tree_util_get_rate_for (view, trans, split, is_blank);
 
             if (gnc_numeric_check (num) == GNC_ERROR_OK)
                 s = xaccPrintAmount (num, print_info);
@@ -1876,7 +1861,6 @@ gtv_sr_cdf0 (GtkTreeViewColumn *col, GtkCellRenderer *cell, GtkTreeModel *s_mode
         if (is_trow2)
         {
             s = "";
-            editable = FALSE;
         }
         else if (is_trow1) // Value
         {
@@ -1884,11 +1868,7 @@ gtv_sr_cdf0 (GtkTreeViewColumn *col, GtkCellRenderer *cell, GtkTreeModel *s_mode
             {
                 Split *this_split;
 
-                this_split = gtv_sr_get_this_split (view, trans);
-
                 num = xaccTransGetAccountValue (trans, anchor);
-
-                editable = !expanded && !gnc_tree_util_split_reg_is_multi (this_split);
 
                 if (expanded)
                     s = "";
@@ -1898,7 +1878,6 @@ gtv_sr_cdf0 (GtkTreeViewColumn *col, GtkCellRenderer *cell, GtkTreeModel *s_mode
             else
             {
                 s = "";
-                editable = FALSE;
             }
         }
 
@@ -1908,7 +1887,6 @@ gtv_sr_cdf0 (GtkTreeViewColumn *col, GtkCellRenderer *cell, GtkTreeModel *s_mode
             {
                 num = xaccSplitGetAmount (split);
                 s = xaccPrintAmount (num, gnc_account_print_info (xaccSplitGetAccount (split), SHOW_SYMBOL));
-                editable = TRUE;
             }
             else if (anchor)
             {
@@ -1919,13 +1897,11 @@ gtv_sr_cdf0 (GtkTreeViewColumn *col, GtkCellRenderer *cell, GtkTreeModel *s_mode
                 {
                     num = xaccSplitGetAmount (split);
                     s = xaccPrintAmount (num, gnc_account_print_info (xaccSplitGetAccount (split), SHOW_SYMBOL));
-                    editable = TRUE;
                 }
             }
             else
             {
                 s = "";
-                editable = FALSE;
             }
 
             if (gtv_sr_get_imbalance (trans))
@@ -1951,14 +1927,12 @@ gtv_sr_cdf0 (GtkTreeViewColumn *col, GtkCellRenderer *cell, GtkTreeModel *s_mode
         if (is_trow2)
         {
             s = "";
-            editable = FALSE;
         }
         else if (is_trow1)
         {
             if (expanded)
             {
                 s = "";
-                editable = FALSE;
             }
             else
             {
@@ -1974,22 +1948,18 @@ gtv_sr_cdf0 (GtkTreeViewColumn *col, GtkCellRenderer *cell, GtkTreeModel *s_mode
                         else
                             num = xaccSplitGetSharePrice (this_split);
 
-                        editable = !expanded && !gnc_tree_util_split_reg_is_multi (this_split);
-
-                        if (gnc_numeric_check (num) == GNC_ERROR_OK)
+                         if (gnc_numeric_check (num) == GNC_ERROR_OK)
                         {
                             s = xaccPrintAmount (num, gnc_split_amount_print_info (split, SHOW_SYMBOL));
                         }
                         else
                         {
                             s = "";
-                            editable = FALSE;
                         }
                     }
                     else
                     {
                         s = "";
-                        editable = FALSE;
                     }
                 }
             }
@@ -2007,18 +1977,15 @@ gtv_sr_cdf0 (GtkTreeViewColumn *col, GtkCellRenderer *cell, GtkTreeModel *s_mode
                 if (gnc_numeric_check (num) == GNC_ERROR_OK)
                 {
                     s = xaccPrintAmount (num, gnc_split_amount_print_info (split, SHOW_SYMBOL));
-                    editable = TRUE;
                 }
                 else
                 {
                     s = "";
-                    editable = FALSE;
                 }
             }
             else
             {
                 s = "";
-                editable = FALSE;
             }
 
             if (gtv_sr_get_imbalance (trans))
@@ -2047,7 +2014,6 @@ gtv_sr_cdf0 (GtkTreeViewColumn *col, GtkCellRenderer *cell, GtkTreeModel *s_mode
                     if (!gnc_tree_util_split_reg_get_debcred_entry (view, trans, split, is_blank, &num, &print_info))
                         num = gnc_numeric_zero();
 
-                    editable = TRUE;
                     if (gtv_sr_get_imbalance (trans))
                         g_object_set (cell, "cell-background", PINKCELL, (gchar*)NULL);
                 }
@@ -2055,18 +2021,15 @@ gtv_sr_cdf0 (GtkTreeViewColumn *col, GtkCellRenderer *cell, GtkTreeModel *s_mode
                 {
                     if (anchor)
                     {
-                         editable = !expanded && !gnc_tree_util_split_reg_is_multi (gtv_sr_get_this_split (view, trans));
                          num = xaccTransGetAccountAmount (trans, anchor);
                     }
                     else
                     {
-                        editable = FALSE;
                         num = gnc_numeric_zero();
                     }
                 }
                 else if (is_trow2)
                 {
-                    editable = FALSE;
                     num = gnc_numeric_zero();
                 }
 
@@ -2087,12 +2050,10 @@ gtv_sr_cdf0 (GtkTreeViewColumn *col, GtkCellRenderer *cell, GtkTreeModel *s_mode
             }
             else
             {
-                editable = TRUE;
 
                 if (is_trow1 || is_trow2)
                 {
                     s = "";
-                    editable = FALSE;
                 }
                 else if (is_split && viewcol == COL_DEBIT)
                     s = gnc_tree_util_split_reg_template_get_fdebt_entry (split);
@@ -4037,8 +3998,6 @@ gtv_sr_key_press_cb (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
                 g_free (string);
             }
 
-            model = gnc_tree_view_split_reg_get_model_from_view (view);
-
             /* Step to the next column, we may wrap */
             gnc_tree_view_keynav (GNC_TREE_VIEW (view), &col, spath, event); // returns path and column
 
@@ -5002,7 +4961,7 @@ gtv_sr_num_cb (GtkEntry    *entry,
         snprintf (buff, sizeof(buff), "%ld", number);
 
         if (g_strcmp0 (buff, "") == 0)
-            leave_string = "";
+            leave_string = g_strdup ("");
         else
             leave_string = g_strdup (buff);
     }

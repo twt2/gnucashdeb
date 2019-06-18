@@ -34,6 +34,7 @@ extern void test_suite_transaction();
 extern void test_suite_split();
 extern void test_suite_engine_kvp_properties (void);
 extern void test_suite_gnc_pricedb();
+extern void test_suite_gnc_uri_utils(void);
 
 int
 main (int   argc,
@@ -43,7 +44,7 @@ main (int   argc,
     qof_log_init_filename_special("stderr"); /* Init the log system */
     g_test_init ( &argc, &argv, NULL ); 	/* initialize test program */
     //qof_log_set_level("gnc", G_LOG_LEVEL_DEBUG);
-    g_test_bug_base("https://bugzilla.gnome.org/show_bug.cgi?id="); /* init the bugzilla URL */
+    g_test_bug_base("https://bugs.gnucash.org/show_bug.cgi?id="); /* init the bugzilla URL */
     /* Disable the transaction log */
     xaccLogDisable();
 
@@ -55,6 +56,7 @@ main (int   argc,
     test_suite_split();
     test_suite_engine_kvp_properties ();
     test_suite_gnc_pricedb();
+    test_suite_gnc_uri_utils();
 
     return g_test_run( );
 }

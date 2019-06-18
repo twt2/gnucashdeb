@@ -99,10 +99,15 @@ style_dimensions_destroy (BlockDimensions *dimensions)
     if (dimensions == NULL)
         return;
 
-    g_table_destroy (dimensions->cell_dimensions);
-    dimensions->cell_dimensions = NULL;
+    dimensions->refcount--;
 
-    g_free(dimensions);
+    if (dimensions->refcount == 0)
+    {
+        g_table_destroy (dimensions->cell_dimensions);
+        dimensions->cell_dimensions = NULL;
+
+        g_free(dimensions);
+    }
 }
 
 
@@ -223,7 +228,7 @@ set_dimensions_pass_one (GnucashSheet *sheet, CellBlock *cursor,
             cd->pixel_width = MAX (cd->pixel_width, width);
         }
 
-        cd = g_table_index (dimensions->cell_dimensions, row, 0);
+        g_table_index (dimensions->cell_dimensions, row, 0);
         dimensions->height += max_height;
     }
 
@@ -289,7 +294,6 @@ set_dimensions_pass_two (GnucashSheet *sheet, int default_width)
             cd = g_table_index (cd_table, 0, col);
 
             cd->pixel_width += (default_width - width);
-            width += (default_width - width);
             widths[col] = cd->pixel_width;
 
             break;
@@ -311,8 +315,6 @@ set_dimensions_pass_two (GnucashSheet *sheet, int default_width)
 
             cd = g_table_index (cd_table, 0, col);
 
-            old_width = cd->pixel_width;
-
             cd->pixel_width += (default_width - width);
 
             text = cell->sample_text;
@@ -330,7 +332,6 @@ set_dimensions_pass_two (GnucashSheet *sheet, int default_width)
 
             cd->pixel_width = MAX (cd->pixel_width, sample_width);
 
-            width += cd->pixel_width - old_width;
             widths[col] = cd->pixel_width;
 
             break;
@@ -644,7 +645,7 @@ destroy_style_helper (gpointer key, gpointer value, gpointer user_data)
     SheetBlockStyle *style = value;
     GnucashSheet *sheet = user_data;
 
-    gnucash_sheet_style_destroy (sheet, style);
+    gnucash_sheet_style_unref (sheet, style);
     g_free (cursor_name);
 }
 
@@ -674,10 +675,12 @@ gnucash_sheet_create_styles (GnucashSheet *sheet)
     for (node = cursors; node; node = node->next)
     {
         CellBlock *cursor = node->data;
+        SheetBlockStyle *style = gnucash_sheet_style_new (sheet, cursor);
 
+        gnucash_sheet_style_ref (sheet, style);
         g_hash_table_insert (sheet->cursor_styles,
                              g_strdup (cursor->cursor_name),
-                             gnucash_sheet_style_new (sheet, cursor));
+                             style);
     }
 }
 
@@ -798,7 +801,7 @@ gnucash_sheet_get_style_from_cursor (GnucashSheet *sheet,
  */
 
 void
-gnucash_style_ref (SheetBlockStyle *style)
+gnucash_sheet_style_ref (GnucashSheet *sheet, SheetBlockStyle *style)
 {
     g_return_if_fail (style != NULL);
 
@@ -807,14 +810,14 @@ gnucash_style_ref (SheetBlockStyle *style)
 
 
 void
-gnucash_style_unref (SheetBlockStyle *style)
+gnucash_sheet_style_unref (GnucashSheet *sheet, SheetBlockStyle *style)
 {
     g_return_if_fail (style != NULL);
 
     style->refcount--;
 
-    if (style->refcount < 0)
-        g_warning ("Unbalanced Style ref/unref");
+    if (style->refcount == 0)
+        gnucash_sheet_style_destroy (sheet, style);
 }
 
 typedef struct

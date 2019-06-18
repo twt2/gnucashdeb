@@ -1230,6 +1230,8 @@ static swig_guile_clientdata _swig_guile_clientdataAccountClass = { NULL, SCM_EO
 static swig_guile_clientdata _swig_guile_clientdataGncImportMatchMap = { NULL, SCM_EOL };
 static swig_guile_clientdata _swig_guile_clientdataGncImapInfo = { NULL, SCM_EOL };
 static swig_guile_clientdata _swig_guile_clientdataGncLotClass = { NULL, SCM_EOL };
+static swig_guile_clientdata _swig_guile_clientdataTimespec = { NULL, SCM_EOL };
+static swig_guile_clientdata _swig_guile_clientdataTime64 = { NULL, SCM_EOL };
 static swig_guile_clientdata _swig_guile_clientdata_QofQueryPredData = { NULL, SCM_EOL };
 static swig_guile_clientdata _swig_guile_clientdata_gnc_numeric = { NULL, SCM_EOL };
 static swig_guile_clientdata _swig_guile_clientdata_gnc_monetary = { NULL, SCM_EOL };
@@ -1291,80 +1293,81 @@ static swig_guile_clientdata _swig_guile_clientdata_gncAccountValue = { NULL, SC
 #define SWIGTYPE_p_Recurrence swig_types[51]
 #define SWIGTYPE_p_Split swig_types[52]
 #define SWIGTYPE_p_SplitList swig_types[53]
-#define SWIGTYPE_p_Transaction swig_types[54]
-#define SWIGTYPE_p_TransactionCallback swig_types[55]
-#define SWIGTYPE_p__GncBudgetClass swig_types[56]
-#define SWIGTYPE_p__GncCommodityClass swig_types[57]
-#define SWIGTYPE_p__GncCommodityNamespaceClass swig_types[58]
-#define SWIGTYPE_p__GncPriceClass swig_types[59]
-#define SWIGTYPE_p__GncPriceDBClass swig_types[60]
-#define SWIGTYPE_p__QofQuery swig_types[61]
-#define SWIGTYPE_p__QofQueryPredData swig_types[62]
-#define SWIGTYPE_p__SplitClass swig_types[63]
-#define SWIGTYPE_p__TransactionClass swig_types[64]
-#define SWIGTYPE_p__gncAccountValue swig_types[65]
-#define SWIGTYPE_p__gncAddress swig_types[66]
-#define SWIGTYPE_p__gncAddressClass swig_types[67]
-#define SWIGTYPE_p__gncBillTerm swig_types[68]
-#define SWIGTYPE_p__gncBillTermClass swig_types[69]
-#define SWIGTYPE_p__gncCustomer swig_types[70]
-#define SWIGTYPE_p__gncCustomerClass swig_types[71]
-#define SWIGTYPE_p__gncEmployee swig_types[72]
-#define SWIGTYPE_p__gncEmployeeClass swig_types[73]
-#define SWIGTYPE_p__gncEntry swig_types[74]
-#define SWIGTYPE_p__gncEntryClass swig_types[75]
-#define SWIGTYPE_p__gncInvoice swig_types[76]
-#define SWIGTYPE_p__gncInvoiceClass swig_types[77]
-#define SWIGTYPE_p__gncJob swig_types[78]
-#define SWIGTYPE_p__gncJobClass swig_types[79]
-#define SWIGTYPE_p__gncOrder swig_types[80]
-#define SWIGTYPE_p__gncOrderClass swig_types[81]
-#define SWIGTYPE_p__gncOwner swig_types[82]
-#define SWIGTYPE_p__gncTaxTable swig_types[83]
-#define SWIGTYPE_p__gncTaxTableClass swig_types[84]
-#define SWIGTYPE_p__gncTaxTableEntry swig_types[85]
-#define SWIGTYPE_p__gncVendor swig_types[86]
-#define SWIGTYPE_p__gncVendorClass swig_types[87]
-#define SWIGTYPE_p__gnc_monetary swig_types[88]
-#define SWIGTYPE_p__gnc_numeric swig_types[89]
-#define SWIGTYPE_p_budget_s swig_types[90]
-#define SWIGTYPE_p_char swig_types[91]
-#define SWIGTYPE_p_cleared_match_t swig_types[92]
-#define SWIGTYPE_p_double swig_types[93]
-#define SWIGTYPE_p_f_p_Account_p_void__p_void swig_types[94]
-#define SWIGTYPE_p_f_p_Account_p_void__void swig_types[95]
-#define SWIGTYPE_p_f_p_GNCLot_p_void__gboolean swig_types[96]
-#define SWIGTYPE_p_f_p_GNCLot_p_void__p_void swig_types[97]
-#define SWIGTYPE_p_f_p_GNCPrice_p_void__gboolean swig_types[98]
-#define SWIGTYPE_p_f_p_gnc_commodity_p_void__gboolean swig_types[99]
-#define SWIGTYPE_p_f_p_void_p_void__void swig_types[100]
-#define SWIGTYPE_p_float swig_types[101]
-#define SWIGTYPE_p_gboolean swig_types[102]
-#define SWIGTYPE_p_gconstpointer swig_types[103]
-#define SWIGTYPE_p_gint32 swig_types[104]
-#define SWIGTYPE_p_gint64 swig_types[105]
-#define SWIGTYPE_p_gnc_commodity swig_types[106]
-#define SWIGTYPE_p_gnc_commodity_namespace swig_types[107]
-#define SWIGTYPE_p_gnc_commodity_table swig_types[108]
-#define SWIGTYPE_p_gnc_price_db_s swig_types[109]
-#define SWIGTYPE_p_gnc_quote_source swig_types[110]
-#define SWIGTYPE_p_gncpolicy_s swig_types[111]
-#define SWIGTYPE_p_gsize swig_types[112]
-#define SWIGTYPE_p_guint32 swig_types[113]
-#define SWIGTYPE_p_guint8 swig_types[114]
-#define SWIGTYPE_p_gunichar swig_types[115]
-#define SWIGTYPE_p_imap_info swig_types[116]
-#define SWIGTYPE_p_int swig_types[117]
-#define SWIGTYPE_p_p_GList swig_types[118]
-#define SWIGTYPE_p_p_Transaction swig_types[119]
-#define SWIGTYPE_p_query_txn_match_t swig_types[120]
-#define SWIGTYPE_p_timespec64 swig_types[121]
-#define SWIGTYPE_p_tm swig_types[122]
-#define SWIGTYPE_p_unsigned_int swig_types[123]
-#define SWIGTYPE_p_unsigned_long swig_types[124]
-#define SWIGTYPE_p_void swig_types[125]
-static swig_type_info *swig_types[127];
-static swig_module_info swig_module = {swig_types, 126, 0, 0, 0, 0};
+#define SWIGTYPE_p_Time64 swig_types[54]
+#define SWIGTYPE_p_Timespec swig_types[55]
+#define SWIGTYPE_p_Transaction swig_types[56]
+#define SWIGTYPE_p_TransactionCallback swig_types[57]
+#define SWIGTYPE_p__GncBudgetClass swig_types[58]
+#define SWIGTYPE_p__GncCommodityClass swig_types[59]
+#define SWIGTYPE_p__GncCommodityNamespaceClass swig_types[60]
+#define SWIGTYPE_p__GncPriceClass swig_types[61]
+#define SWIGTYPE_p__GncPriceDBClass swig_types[62]
+#define SWIGTYPE_p__QofQuery swig_types[63]
+#define SWIGTYPE_p__QofQueryPredData swig_types[64]
+#define SWIGTYPE_p__SplitClass swig_types[65]
+#define SWIGTYPE_p__TransactionClass swig_types[66]
+#define SWIGTYPE_p__gncAccountValue swig_types[67]
+#define SWIGTYPE_p__gncAddress swig_types[68]
+#define SWIGTYPE_p__gncAddressClass swig_types[69]
+#define SWIGTYPE_p__gncBillTerm swig_types[70]
+#define SWIGTYPE_p__gncBillTermClass swig_types[71]
+#define SWIGTYPE_p__gncCustomer swig_types[72]
+#define SWIGTYPE_p__gncCustomerClass swig_types[73]
+#define SWIGTYPE_p__gncEmployee swig_types[74]
+#define SWIGTYPE_p__gncEmployeeClass swig_types[75]
+#define SWIGTYPE_p__gncEntry swig_types[76]
+#define SWIGTYPE_p__gncEntryClass swig_types[77]
+#define SWIGTYPE_p__gncInvoice swig_types[78]
+#define SWIGTYPE_p__gncInvoiceClass swig_types[79]
+#define SWIGTYPE_p__gncJob swig_types[80]
+#define SWIGTYPE_p__gncJobClass swig_types[81]
+#define SWIGTYPE_p__gncOrder swig_types[82]
+#define SWIGTYPE_p__gncOrderClass swig_types[83]
+#define SWIGTYPE_p__gncOwner swig_types[84]
+#define SWIGTYPE_p__gncTaxTable swig_types[85]
+#define SWIGTYPE_p__gncTaxTableClass swig_types[86]
+#define SWIGTYPE_p__gncTaxTableEntry swig_types[87]
+#define SWIGTYPE_p__gncVendor swig_types[88]
+#define SWIGTYPE_p__gncVendorClass swig_types[89]
+#define SWIGTYPE_p__gnc_monetary swig_types[90]
+#define SWIGTYPE_p__gnc_numeric swig_types[91]
+#define SWIGTYPE_p_budget_s swig_types[92]
+#define SWIGTYPE_p_char swig_types[93]
+#define SWIGTYPE_p_cleared_match_t swig_types[94]
+#define SWIGTYPE_p_double swig_types[95]
+#define SWIGTYPE_p_f_p_Account_p_void__p_void swig_types[96]
+#define SWIGTYPE_p_f_p_Account_p_void__void swig_types[97]
+#define SWIGTYPE_p_f_p_GNCLot_p_void__gboolean swig_types[98]
+#define SWIGTYPE_p_f_p_GNCLot_p_void__p_void swig_types[99]
+#define SWIGTYPE_p_f_p_GNCPrice_p_void__gboolean swig_types[100]
+#define SWIGTYPE_p_f_p_gnc_commodity_p_void__gboolean swig_types[101]
+#define SWIGTYPE_p_f_p_void_p_void__void swig_types[102]
+#define SWIGTYPE_p_float swig_types[103]
+#define SWIGTYPE_p_gboolean swig_types[104]
+#define SWIGTYPE_p_gconstpointer swig_types[105]
+#define SWIGTYPE_p_gint32 swig_types[106]
+#define SWIGTYPE_p_gint64 swig_types[107]
+#define SWIGTYPE_p_gnc_commodity swig_types[108]
+#define SWIGTYPE_p_gnc_commodity_namespace swig_types[109]
+#define SWIGTYPE_p_gnc_commodity_table swig_types[110]
+#define SWIGTYPE_p_gnc_price_db_s swig_types[111]
+#define SWIGTYPE_p_gnc_quote_source swig_types[112]
+#define SWIGTYPE_p_gncpolicy_s swig_types[113]
+#define SWIGTYPE_p_gsize swig_types[114]
+#define SWIGTYPE_p_guint32 swig_types[115]
+#define SWIGTYPE_p_guint8 swig_types[116]
+#define SWIGTYPE_p_gunichar swig_types[117]
+#define SWIGTYPE_p_imap_info swig_types[118]
+#define SWIGTYPE_p_int swig_types[119]
+#define SWIGTYPE_p_p_GList swig_types[120]
+#define SWIGTYPE_p_p_Transaction swig_types[121]
+#define SWIGTYPE_p_query_txn_match_t swig_types[122]
+#define SWIGTYPE_p_tm swig_types[123]
+#define SWIGTYPE_p_unsigned_int swig_types[124]
+#define SWIGTYPE_p_unsigned_long swig_types[125]
+#define SWIGTYPE_p_void swig_types[126]
+static swig_type_info *swig_types[128];
+static swig_module_info swig_module = {swig_types, 127, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1384,6 +1387,7 @@ static swig_module_info swig_module = {swig_types, 126, 0, 0, 0, 0};
 #include "gnc-lot.h"
 #include "gnc-session.h"
 #include "gnc-hooks-scm.h"
+#include "engine-deprecated.h"
 #include "engine-helpers.h"
 #include "engine-helpers-guile.h"
 #include "policy.h"
@@ -1656,6 +1660,7 @@ static char const *gswig_const_GNC_COMMODITY_NS_MUTUAL = (char const *)("FUND");
 static char const *gswig_const_GNC_COMMODITY_NS_AMEX = (char const *)("AMEX");
 static char const *gswig_const_GNC_COMMODITY_NS_ASX = (char const *)("ASX");
 static char const *gswig_const_GNC_COMMODITY_NS_ISO_GUI = (char const *)("Currencies");
+static int gswig_const_GNC_COMMODITY_MAX_FRACTION = (int)(1000000000);
 static int gswig_const_SOURCE_SINGLE = (int)(SOURCE_SINGLE);
 static int gswig_const_SOURCE_MULTI = (int)(SOURCE_MULTI);
 static int gswig_const_SOURCE_UNKNOWN = (int)(SOURCE_UNKNOWN);
@@ -2512,82 +2517,6 @@ _wrap_xaccSplitSetDateReconciledSecs (SCM s_0, SCM s_1)
   arg2 = scm_to_int64(s_1); 
   xaccSplitSetDateReconciledSecs(arg1,arg2);
   gswig_result = SCM_UNSPECIFIED;
-  
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_xaccSplitSetDateReconciledTS (SCM s_0, SCM s_1)
-{
-#define FUNC_NAME "xaccSplitSetDateReconciledTS"
-  Split *arg1 = (Split *) 0 ;
-  Timespec *arg2 = (Timespec *) 0 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  
-  {
-    arg1 = (Split *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Split, 1, 0);
-  }
-  {
-    arg2 = (Timespec *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_timespec64, 2, 0);
-  }
-  xaccSplitSetDateReconciledTS(arg1,arg2);
-  gswig_result = SCM_UNSPECIFIED;
-  
-  
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_xaccSplitGetDateReconciledTS (SCM s_0, SCM s_1)
-{
-#define FUNC_NAME "xaccSplitGetDateReconciledTS"
-  Split *arg1 = (Split *) 0 ;
-  Timespec *arg2 = (Timespec *) 0 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  
-  {
-    arg1 = (Split *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Split, 1, 0);
-  }
-  {
-    arg2 = (Timespec *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_timespec64, 2, 0);
-  }
-  xaccSplitGetDateReconciledTS((Split const *)arg1,arg2);
-  gswig_result = SCM_UNSPECIFIED;
-  
-  
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_xaccSplitRetDateReconciledTS (SCM s_0)
-{
-#define FUNC_NAME "xaccSplitRetDateReconciledTS"
-  Split *arg1 = (Split *) 0 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  Timespec result;
-  
-  {
-    arg1 = (Split *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Split, 1, 0);
-  }
-  result = xaccSplitRetDateReconciledTS((Split const *)arg1);
-  {
-    Timespec * resultptr;
-    resultptr = (Timespec *) malloc(sizeof(Timespec));
-    memmove(resultptr, &result, sizeof(Timespec));
-    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_timespec64, 1);
-  }
   
   
   return gswig_result;
@@ -10763,7 +10692,7 @@ _wrap_xaccTransGetReadOnly (SCM s_0)
   {
     arg1 = (Transaction *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Transaction, 1, 0);
   }
-  result = (char *)xaccTransGetReadOnly((Transaction const *)arg1);
+  result = (char *)xaccTransGetReadOnly(arg1);
   {
     gswig_result = SCM_UNSPECIFIED;
     if (result) {
@@ -12697,6 +12626,801 @@ _wrap_LOT_NOTES(SCM s_0)
 
 
 static SCM
+_wrap_Timespec_tv_sec_set (SCM s_0, SCM s_1)
+{
+#define FUNC_NAME "Timespec-tv-sec-set"
+  Timespec *arg1 = (Timespec *) 0 ;
+  time64 arg2 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  
+  {
+    arg1 = (Timespec *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Timespec, 1, 0);
+  }
+  arg2 = scm_to_int64(s_1); 
+  if (arg1) (arg1)->tv_sec = arg2;
+  gswig_result = SCM_UNSPECIFIED;
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_Timespec_tv_sec_get (SCM s_0)
+{
+#define FUNC_NAME "Timespec-tv-sec-get"
+  Timespec *arg1 = (Timespec *) 0 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  time64 result;
+  
+  {
+    arg1 = (Timespec *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Timespec, 1, 0);
+  }
+  result =  ((arg1)->tv_sec);
+  gswig_result = scm_from_int64(result); 
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_Timespec_tv_nsec_set (SCM s_0, SCM s_1)
+{
+#define FUNC_NAME "Timespec-tv-nsec-set"
+  Timespec *arg1 = (Timespec *) 0 ;
+  time64 arg2 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  
+  {
+    arg1 = (Timespec *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Timespec, 1, 0);
+  }
+  arg2 = scm_to_int64(s_1); 
+  if (arg1) (arg1)->tv_nsec = arg2;
+  gswig_result = SCM_UNSPECIFIED;
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_Timespec_tv_nsec_get (SCM s_0)
+{
+#define FUNC_NAME "Timespec-tv-nsec-get"
+  Timespec *arg1 = (Timespec *) 0 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  time64 result;
+  
+  {
+    arg1 = (Timespec *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Timespec, 1, 0);
+  }
+  result =  ((arg1)->tv_nsec);
+  gswig_result = scm_from_int64(result); 
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_new_Timespec ()
+{
+#define FUNC_NAME "new-Timespec"
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  Timespec *result = 0 ;
+  
+  result = (Timespec *)calloc(1, sizeof(Timespec));
+  {
+    gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_Timespec, 1);
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_delete_Timespec (SCM s_0)
+{
+#define FUNC_NAME "delete-Timespec"
+  Timespec *arg1 = (Timespec *) 0 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  
+  {
+    arg1 = (Timespec *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Timespec, 1, 0);
+  }
+  free((char *) arg1);
+  gswig_result = SCM_UNSPECIFIED;
+  
+  SWIG_Guile_MarkPointerDestroyed(s_0);
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_xaccSplitSetDateReconciledTS (SCM s_0, SCM s_1)
+{
+#define FUNC_NAME "xaccSplitSetDateReconciledTS"
+  Split *arg1 = (Split *) 0 ;
+  Timespec *arg2 = (Timespec *) 0 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  
+  {
+    arg1 = (Split *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Split, 1, 0);
+  }
+  {
+    arg2 = (Timespec *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_Timespec, 2, 0);
+  }
+  xaccSplitSetDateReconciledTS(arg1,arg2);
+  gswig_result = SCM_UNSPECIFIED;
+  
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_xaccSplitGetDateReconciledTS (SCM s_0, SCM s_1)
+{
+#define FUNC_NAME "xaccSplitGetDateReconciledTS"
+  Split *arg1 = (Split *) 0 ;
+  Timespec *arg2 = (Timespec *) 0 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  
+  {
+    arg1 = (Split *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Split, 1, 0);
+  }
+  {
+    arg2 = (Timespec *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_Timespec, 2, 0);
+  }
+  xaccSplitGetDateReconciledTS(arg1,arg2);
+  gswig_result = SCM_UNSPECIFIED;
+  
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_xaccSplitRetDateReconciledTS (SCM s_0)
+{
+#define FUNC_NAME "xaccSplitRetDateReconciledTS"
+  Split *arg1 = (Split *) 0 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  Timespec result;
+  
+  {
+    arg1 = (Split *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Split, 1, 0);
+  }
+  result = xaccSplitRetDateReconciledTS(arg1);
+  {
+    Timespec * resultptr;
+    resultptr = (Timespec *) malloc(sizeof(Timespec));
+    memmove(resultptr, &result, sizeof(Timespec));
+    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_Timespec, 1);
+  }
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_transaction_get_date_posted (SCM s_0)
+{
+#define FUNC_NAME "gnc-transaction-get-date-posted"
+  Transaction *arg1 = (Transaction *) 0 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  Timespec result;
+  
+  {
+    arg1 = (Transaction *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Transaction, 1, 0);
+  }
+  result = gnc_transaction_get_date_posted((Transaction const *)arg1);
+  {
+    Timespec * resultptr;
+    resultptr = (Timespec *) malloc(sizeof(Timespec));
+    memmove(resultptr, &result, sizeof(Timespec));
+    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_Timespec, 1);
+  }
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_transaction_get_date_entered (SCM s_0)
+{
+#define FUNC_NAME "gnc-transaction-get-date-entered"
+  Transaction *arg1 = (Transaction *) 0 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  Timespec result;
+  
+  {
+    arg1 = (Transaction *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Transaction, 1, 0);
+  }
+  result = gnc_transaction_get_date_entered((Transaction const *)arg1);
+  {
+    Timespec * resultptr;
+    resultptr = (Timespec *) malloc(sizeof(Timespec));
+    memmove(resultptr, &result, sizeof(Timespec));
+    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_Timespec, 1);
+  }
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_split_get_date_reconciled (SCM s_0)
+{
+#define FUNC_NAME "gnc-split-get-date-reconciled"
+  Split *arg1 = (Split *) 0 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  Timespec result;
+  
+  {
+    arg1 = (Split *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Split, 1, 0);
+  }
+  result = gnc_split_get_date_reconciled((Split const *)arg1);
+  {
+    Timespec * resultptr;
+    resultptr = (Timespec *) malloc(sizeof(Timespec));
+    memmove(resultptr, &result, sizeof(Timespec));
+    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_Timespec, 1);
+  }
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_transaction_set_date (SCM s_0, SCM s_1)
+{
+#define FUNC_NAME "gnc-transaction-set-date"
+  Transaction *arg1 = (Transaction *) 0 ;
+  Timespec arg2 ;
+  Timespec *argp2 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  
+  {
+    arg1 = (Transaction *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Transaction, 1, 0);
+  }
+  {
+    argp2 = (Timespec *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_Timespec, 2, 0);
+    arg2 = *argp2;
+  }
+  gnc_transaction_set_date(arg1,arg2);
+  gswig_result = SCM_UNSPECIFIED;
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gncTaxTableLastModified (SCM s_0)
+{
+#define FUNC_NAME "gncTaxTableLastModified"
+  GncTaxTable *arg1 = (GncTaxTable *) 0 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  Timespec result;
+  
+  {
+    arg1 = (GncTaxTable *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncTaxTable, 1, 0);
+  }
+  result = gncTaxTableLastModified((struct _gncTaxTable const *)arg1);
+  {
+    Timespec * resultptr;
+    resultptr = (Timespec *) malloc(sizeof(Timespec));
+    memmove(resultptr, &result, sizeof(Timespec));
+    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_Timespec, 1);
+  }
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gncOwnerApplyPayment (SCM s_0, SCM s_1, SCM s_2, SCM s_3, SCM s_4, SCM s_5, SCM s_6, SCM s_7, SCM s_8, SCM s_9, SCM s_10)
+{
+#define FUNC_NAME "gncOwnerApplyPayment"
+  GncOwner *arg1 = (GncOwner *) 0 ;
+  Transaction **arg2 = (Transaction **) 0 ;
+  GList *arg3 = (GList *) 0 ;
+  Account *arg4 = (Account *) 0 ;
+  Account *arg5 = (Account *) 0 ;
+  gnc_numeric arg6 ;
+  gnc_numeric arg7 ;
+  Timespec arg8 ;
+  char *arg9 = (char *) 0 ;
+  char *arg10 = (char *) 0 ;
+  gboolean arg11 ;
+  Timespec *argp8 ;
+  int must_free9 = 0 ;
+  int must_free10 = 0 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  
+  {
+    arg1 = (GncOwner *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncOwner, 1, 0);
+  }
+  {
+    arg2 = (Transaction **)SWIG_MustGetPtr(s_1, SWIGTYPE_p_p_Transaction, 2, 0);
+  }
+  {
+    arg3 = (GList *)SWIG_MustGetPtr(s_2, SWIGTYPE_p_GList, 3, 0);
+  }
+  {
+    arg4 = (Account *)SWIG_MustGetPtr(s_3, SWIGTYPE_p_Account, 4, 0);
+  }
+  {
+    arg5 = (Account *)SWIG_MustGetPtr(s_4, SWIGTYPE_p_Account, 5, 0);
+  }
+  arg6 = gnc_scm_to_numeric(s_5);
+  arg7 = gnc_scm_to_numeric(s_6);
+  {
+    argp8 = (Timespec *)SWIG_MustGetPtr(s_7, SWIGTYPE_p_Timespec, 8, 0);
+    arg8 = *argp8;
+  }
+  {
+    arg9 = (char *)SWIG_scm2str(s_8);
+    must_free9 = 1;
+  }
+  {
+    arg10 = (char *)SWIG_scm2str(s_9);
+    must_free10 = 1;
+  }
+  arg11 = scm_is_true(s_10) ? TRUE : FALSE;
+  gncOwnerApplyPayment((struct _gncOwner const *)arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,(char const *)arg9,(char const *)arg10,arg11);
+  gswig_result = SCM_UNSPECIFIED;
+  
+  
+  
+  
+  
+  if (must_free9 && arg9) SWIG_free(arg9);
+  if (must_free10 && arg10) SWIG_free(arg10);
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gncOwnerApplyPayment_rest (SCM rest)
+{
+SCM arg[11];
+SWIG_Guile_GetArgs (arg, rest, 11, 0, "gncOwnerApplyPayment");
+return _wrap_gncOwnerApplyPayment(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], arg[8], arg[9], arg[10]);
+}
+static SCM
+_wrap_gncOwnerCreatePaymentLot (SCM s_0, SCM s_1, SCM s_2, SCM s_3, SCM s_4, SCM s_5, SCM s_6, SCM s_7, SCM s_8)
+{
+#define FUNC_NAME "gncOwnerCreatePaymentLot"
+  GncOwner *arg1 = (GncOwner *) 0 ;
+  Transaction **arg2 = (Transaction **) 0 ;
+  Account *arg3 = (Account *) 0 ;
+  Account *arg4 = (Account *) 0 ;
+  gnc_numeric arg5 ;
+  gnc_numeric arg6 ;
+  Timespec arg7 ;
+  char *arg8 = (char *) 0 ;
+  char *arg9 = (char *) 0 ;
+  Timespec *argp7 ;
+  int must_free8 = 0 ;
+  int must_free9 = 0 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  GNCLot *result = 0 ;
+  
+  {
+    arg1 = (GncOwner *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncOwner, 1, 0);
+  }
+  {
+    arg2 = (Transaction **)SWIG_MustGetPtr(s_1, SWIGTYPE_p_p_Transaction, 2, 0);
+  }
+  {
+    arg3 = (Account *)SWIG_MustGetPtr(s_2, SWIGTYPE_p_Account, 3, 0);
+  }
+  {
+    arg4 = (Account *)SWIG_MustGetPtr(s_3, SWIGTYPE_p_Account, 4, 0);
+  }
+  arg5 = gnc_scm_to_numeric(s_4);
+  arg6 = gnc_scm_to_numeric(s_5);
+  {
+    argp7 = (Timespec *)SWIG_MustGetPtr(s_6, SWIGTYPE_p_Timespec, 7, 0);
+    arg7 = *argp7;
+  }
+  {
+    arg8 = (char *)SWIG_scm2str(s_7);
+    must_free8 = 1;
+  }
+  {
+    arg9 = (char *)SWIG_scm2str(s_8);
+    must_free9 = 1;
+  }
+  result = (GNCLot *)gncOwnerCreatePaymentLot((struct _gncOwner const *)arg1,arg2,arg3,arg4,arg5,arg6,arg7,(char const *)arg8,(char const *)arg9);
+  {
+    gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_GNCLot, 0);
+  }
+  
+  
+  
+  
+  if (must_free8 && arg8) SWIG_free(arg8);
+  if (must_free9 && arg9) SWIG_free(arg9);
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_price_set_time (SCM s_0, SCM s_1)
+{
+#define FUNC_NAME "gnc-price-set-time"
+  GNCPrice *arg1 = (GNCPrice *) 0 ;
+  Timespec arg2 ;
+  Timespec *argp2 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  
+  {
+    arg1 = (GNCPrice *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_GNCPrice, 1, 0);
+  }
+  {
+    argp2 = (Timespec *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_Timespec, 2, 0);
+    arg2 = *argp2;
+  }
+  gnc_price_set_time(arg1,arg2);
+  gswig_result = SCM_UNSPECIFIED;
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_price_get_time (SCM s_0)
+{
+#define FUNC_NAME "gnc-price-get-time"
+  GNCPrice *arg1 = (GNCPrice *) 0 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  Timespec result;
+  
+  {
+    arg1 = (GNCPrice *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_GNCPrice, 1, 0);
+  }
+  result = gnc_price_get_time(arg1);
+  {
+    Timespec * resultptr;
+    resultptr = (Timespec *) malloc(sizeof(Timespec));
+    memmove(resultptr, &result, sizeof(Timespec));
+    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_Timespec, 1);
+  }
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_pricedb_lookup_at_time (SCM s_0, SCM s_1, SCM s_2, SCM s_3)
+{
+#define FUNC_NAME "gnc-pricedb-lookup-at-time"
+  GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
+  gnc_commodity *arg2 = (gnc_commodity *) 0 ;
+  gnc_commodity *arg3 = (gnc_commodity *) 0 ;
+  Timespec arg4 ;
+  Timespec *argp4 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  GNCPrice *result = 0 ;
+  
+  {
+    arg1 = (GNCPriceDB *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_gnc_price_db_s, 1, 0);
+  }
+  {
+    arg2 = (gnc_commodity *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_gnc_commodity, 2, 0);
+  }
+  {
+    arg3 = (gnc_commodity *)SWIG_MustGetPtr(s_2, SWIGTYPE_p_gnc_commodity, 3, 0);
+  }
+  {
+    argp4 = (Timespec *)SWIG_MustGetPtr(s_3, SWIGTYPE_p_Timespec, 4, 0);
+    arg4 = *argp4;
+  }
+  result = (GNCPrice *)gnc_pricedb_lookup_at_time(arg1,(gnc_commodity const *)arg2,(gnc_commodity const *)arg3,arg4);
+  {
+    gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_GNCPrice, 0);
+  }
+  
+  
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_pricedb_lookup_day (SCM s_0, SCM s_1, SCM s_2, SCM s_3)
+{
+#define FUNC_NAME "gnc-pricedb-lookup-day"
+  GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
+  gnc_commodity *arg2 = (gnc_commodity *) 0 ;
+  gnc_commodity *arg3 = (gnc_commodity *) 0 ;
+  Timespec arg4 ;
+  Timespec *argp4 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  GNCPrice *result = 0 ;
+  
+  {
+    arg1 = (GNCPriceDB *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_gnc_price_db_s, 1, 0);
+  }
+  {
+    arg2 = (gnc_commodity *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_gnc_commodity, 2, 0);
+  }
+  {
+    arg3 = (gnc_commodity *)SWIG_MustGetPtr(s_2, SWIGTYPE_p_gnc_commodity, 3, 0);
+  }
+  {
+    argp4 = (Timespec *)SWIG_MustGetPtr(s_3, SWIGTYPE_p_Timespec, 4, 0);
+    arg4 = *argp4;
+  }
+  result = (GNCPrice *)gnc_pricedb_lookup_day(arg1,(gnc_commodity const *)arg2,(gnc_commodity const *)arg3,arg4);
+  {
+    gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_GNCPrice, 0);
+  }
+  
+  
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_pricedb_lookup_nearest_in_time (SCM s_0, SCM s_1, SCM s_2, SCM s_3)
+{
+#define FUNC_NAME "gnc-pricedb-lookup-nearest-in-time"
+  GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
+  gnc_commodity *arg2 = (gnc_commodity *) 0 ;
+  gnc_commodity *arg3 = (gnc_commodity *) 0 ;
+  Timespec arg4 ;
+  Timespec *argp4 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  GNCPrice *result = 0 ;
+  
+  {
+    arg1 = (GNCPriceDB *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_gnc_price_db_s, 1, 0);
+  }
+  {
+    arg2 = (gnc_commodity *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_gnc_commodity, 2, 0);
+  }
+  {
+    arg3 = (gnc_commodity *)SWIG_MustGetPtr(s_2, SWIGTYPE_p_gnc_commodity, 3, 0);
+  }
+  {
+    argp4 = (Timespec *)SWIG_MustGetPtr(s_3, SWIGTYPE_p_Timespec, 4, 0);
+    arg4 = *argp4;
+  }
+  result = (GNCPrice *)gnc_pricedb_lookup_nearest_in_time(arg1,(gnc_commodity const *)arg2,(gnc_commodity const *)arg3,arg4);
+  {
+    gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_GNCPrice, 0);
+  }
+  
+  
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_pricedb_lookup_nearest_in_time_any_currency (SCM s_0, SCM s_1, SCM s_2)
+{
+#define FUNC_NAME "gnc-pricedb-lookup-nearest-in-time-any-currency"
+  GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
+  gnc_commodity *arg2 = (gnc_commodity *) 0 ;
+  Timespec arg3 ;
+  Timespec *argp3 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  PriceList *result = 0 ;
+  
+  {
+    arg1 = (GNCPriceDB *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_gnc_price_db_s, 1, 0);
+  }
+  {
+    arg2 = (gnc_commodity *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_gnc_commodity, 2, 0);
+  }
+  {
+    argp3 = (Timespec *)SWIG_MustGetPtr(s_2, SWIGTYPE_p_Timespec, 3, 0);
+    arg3 = *argp3;
+  }
+  result = (PriceList *)gnc_pricedb_lookup_nearest_in_time_any_currency(arg1,(gnc_commodity const *)arg2,arg3);
+  {
+    SCM list = SCM_EOL;
+    GList *node;
+    
+    for (node = result; node; node = node->next)
+    list = scm_cons(SWIG_NewPointerObj(node->data,
+        SWIGTYPE_p_GNCPrice, 0), list);
+    
+    gswig_result = scm_reverse(list);
+  }
+  
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_pricedb_lookup_latest_before (SCM s_0, SCM s_1, SCM s_2, SCM s_3)
+{
+#define FUNC_NAME "gnc-pricedb-lookup-latest-before"
+  GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
+  gnc_commodity *arg2 = (gnc_commodity *) 0 ;
+  gnc_commodity *arg3 = (gnc_commodity *) 0 ;
+  Timespec arg4 ;
+  Timespec *argp4 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  GNCPrice *result = 0 ;
+  
+  {
+    arg1 = (GNCPriceDB *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_gnc_price_db_s, 1, 0);
+  }
+  {
+    arg2 = (gnc_commodity *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_gnc_commodity, 2, 0);
+  }
+  {
+    arg3 = (gnc_commodity *)SWIG_MustGetPtr(s_2, SWIGTYPE_p_gnc_commodity, 3, 0);
+  }
+  {
+    argp4 = (Timespec *)SWIG_MustGetPtr(s_3, SWIGTYPE_p_Timespec, 4, 0);
+    arg4 = *argp4;
+  }
+  result = (GNCPrice *)gnc_pricedb_lookup_latest_before(arg1,arg2,arg3,arg4);
+  {
+    gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_GNCPrice, 0);
+  }
+  
+  
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_pricedb_lookup_latest_before_any_currency (SCM s_0, SCM s_1, SCM s_2)
+{
+#define FUNC_NAME "gnc-pricedb-lookup-latest-before-any-currency"
+  GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
+  gnc_commodity *arg2 = (gnc_commodity *) 0 ;
+  Timespec arg3 ;
+  Timespec *argp3 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  PriceList *result = 0 ;
+  
+  {
+    arg1 = (GNCPriceDB *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_gnc_price_db_s, 1, 0);
+  }
+  {
+    arg2 = (gnc_commodity *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_gnc_commodity, 2, 0);
+  }
+  {
+    argp3 = (Timespec *)SWIG_MustGetPtr(s_2, SWIGTYPE_p_Timespec, 3, 0);
+    arg3 = *argp3;
+  }
+  result = (PriceList *)gnc_pricedb_lookup_latest_before_any_currency(arg1,(gnc_commodity const *)arg2,arg3);
+  {
+    SCM list = SCM_EOL;
+    GList *node;
+    
+    for (node = result; node; node = node->next)
+    list = scm_cons(SWIG_NewPointerObj(node->data,
+        SWIGTYPE_p_GNCPrice, 0), list);
+    
+    gswig_result = scm_reverse(list);
+  }
+  
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_pricedb_convert_balance_nearest_price (SCM s_0, SCM s_1, SCM s_2, SCM s_3, SCM s_4)
+{
+#define FUNC_NAME "gnc-pricedb-convert-balance-nearest-price"
+  GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
+  gnc_numeric arg2 ;
+  gnc_commodity *arg3 = (gnc_commodity *) 0 ;
+  gnc_commodity *arg4 = (gnc_commodity *) 0 ;
+  Timespec arg5 ;
+  Timespec *argp5 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  gnc_numeric result;
+  
+  {
+    arg1 = (GNCPriceDB *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_gnc_price_db_s, 1, 0);
+  }
+  arg2 = gnc_scm_to_numeric(s_1);
+  {
+    arg3 = (gnc_commodity *)SWIG_MustGetPtr(s_2, SWIGTYPE_p_gnc_commodity, 3, 0);
+  }
+  {
+    arg4 = (gnc_commodity *)SWIG_MustGetPtr(s_3, SWIGTYPE_p_gnc_commodity, 4, 0);
+  }
+  {
+    argp5 = (Timespec *)SWIG_MustGetPtr(s_4, SWIGTYPE_p_Timespec, 5, 0);
+    arg5 = *argp5;
+  }
+  result = gnc_pricedb_convert_balance_nearest_price(arg1,arg2,(gnc_commodity const *)arg3,(gnc_commodity const *)arg4,arg5);
+  gswig_result = gnc_numeric_to_scm(result);
+  
+  
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
 _wrap_gncPriceGetGUID (SCM s_0)
 {
 #define FUNC_NAME "gncPriceGetGUID"
@@ -12753,110 +13477,6 @@ _wrap_QOF_ID_BOOK_SCM ()
     memmove(resultptr, &result, sizeof(QofIdType));
     gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_QofIdType, 1);
   }
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_gnc_transaction_get_date_posted (SCM s_0)
-{
-#define FUNC_NAME "gnc-transaction-get-date-posted"
-  Transaction *arg1 = (Transaction *) 0 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  Timespec result;
-  
-  {
-    arg1 = (Transaction *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Transaction, 1, 0);
-  }
-  result = gnc_transaction_get_date_posted((Transaction const *)arg1);
-  {
-    Timespec * resultptr;
-    resultptr = (Timespec *) malloc(sizeof(Timespec));
-    memmove(resultptr, &result, sizeof(Timespec));
-    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_timespec64, 1);
-  }
-  
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_gnc_transaction_get_date_entered (SCM s_0)
-{
-#define FUNC_NAME "gnc-transaction-get-date-entered"
-  Transaction *arg1 = (Transaction *) 0 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  Timespec result;
-  
-  {
-    arg1 = (Transaction *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Transaction, 1, 0);
-  }
-  result = gnc_transaction_get_date_entered((Transaction const *)arg1);
-  {
-    Timespec * resultptr;
-    resultptr = (Timespec *) malloc(sizeof(Timespec));
-    memmove(resultptr, &result, sizeof(Timespec));
-    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_timespec64, 1);
-  }
-  
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_gnc_split_get_date_reconciled (SCM s_0)
-{
-#define FUNC_NAME "gnc-split-get-date-reconciled"
-  Split *arg1 = (Split *) 0 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  Timespec result;
-  
-  {
-    arg1 = (Split *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Split, 1, 0);
-  }
-  result = gnc_split_get_date_reconciled((Split const *)arg1);
-  {
-    Timespec * resultptr;
-    resultptr = (Timespec *) malloc(sizeof(Timespec));
-    memmove(resultptr, &result, sizeof(Timespec));
-    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_timespec64, 1);
-  }
-  
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_gnc_transaction_set_date (SCM s_0, SCM s_1)
-{
-#define FUNC_NAME "gnc-transaction-set-date"
-  Transaction *arg1 = (Transaction *) 0 ;
-  Timespec arg2 ;
-  Timespec *argp2 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  
-  {
-    arg1 = (Transaction *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Transaction, 1, 0);
-  }
-  {
-    argp2 = (Timespec *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_timespec64, 2, 0);
-    arg2 = *argp2;
-  }
-  gnc_transaction_set_date(arg1,arg2);
-  gswig_result = SCM_UNSPECIFIED;
-  
   
   return gswig_result;
 #undef FUNC_NAME
@@ -13097,51 +13717,6 @@ _wrap_gnc_book_option_remove_cb (SCM s_0, SCM s_1, SCM s_2)
 
 
 static SCM
-_wrap_gnc_timespec2timepair (SCM s_0)
-{
-#define FUNC_NAME "gnc-timespec2timepair"
-  Timespec arg1 ;
-  Timespec *argp1 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  SCM result;
-  
-  {
-    argp1 = (Timespec *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_timespec64, 1, 0);
-    arg1 = *argp1;
-  }
-  result = (SCM)gnc_timespec2timepair(arg1);
-  gswig_result=result;
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_gnc_timepair2timespec (SCM s_0)
-{
-#define FUNC_NAME "gnc-timepair2timespec"
-  SCM arg1 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  Timespec result;
-  
-  arg1=s_0;
-  result = gnc_timepair2timespec(arg1);
-  {
-    Timespec * resultptr;
-    resultptr = (Timespec *) malloc(sizeof(Timespec));
-    memmove(resultptr, &result, sizeof(Timespec));
-    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_timespec64, 1);
-  }
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
 _wrap_gnc_time64_to_GDate (SCM s_0)
 {
 #define FUNC_NAME "gnc-time64-to-GDate"
@@ -13157,26 +13732,6 @@ _wrap_gnc_time64_to_GDate (SCM s_0)
     resultptr = (GDate *) malloc(sizeof(GDate));
     memmove(resultptr, &result, sizeof(GDate));
     gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_GDate, 1);
-  }
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_gnc_timepair_p (SCM s_0)
-{
-#define FUNC_NAME "gnc-timepair-p"
-  SCM arg1 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  int result;
-  
-  arg1=s_0;
-  result = (int)gnc_timepair_p(arg1);
-  {
-    gswig_result = scm_from_long(result);
   }
   
   return gswig_result;
@@ -13990,32 +14545,6 @@ _wrap_gnc_price_set_currency (SCM s_0, SCM s_1)
 
 
 static SCM
-_wrap_gnc_price_set_time (SCM s_0, SCM s_1)
-{
-#define FUNC_NAME "gnc-price-set-time"
-  GNCPrice *arg1 = (GNCPrice *) 0 ;
-  Timespec arg2 ;
-  Timespec *argp2 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  
-  {
-    arg1 = (GNCPrice *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_GNCPrice, 1, 0);
-  }
-  {
-    argp2 = (Timespec *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_timespec64, 2, 0);
-    arg2 = *argp2;
-  }
-  gnc_price_set_time(arg1,arg2);
-  gswig_result = SCM_UNSPECIFIED;
-  
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
 _wrap_gnc_price_set_time64 (SCM s_0, SCM s_1)
 {
 #define FUNC_NAME "gnc-price-set-time64"
@@ -14202,32 +14731,6 @@ _wrap_gnc_price_get_currency (SCM s_0)
   result = (gnc_commodity *)gnc_price_get_currency((GNCPrice const *)arg1);
   {
     gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_gnc_commodity, 0);
-  }
-  
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_gnc_price_get_time (SCM s_0)
-{
-#define FUNC_NAME "gnc-price-get-time"
-  GNCPrice *arg1 = (GNCPrice *) 0 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  Timespec result;
-  
-  {
-    arg1 = (GNCPrice *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_GNCPrice, 1, 0);
-  }
-  result = gnc_price_get_time((GNCPrice const *)arg1);
-  {
-    Timespec * resultptr;
-    resultptr = (Timespec *) malloc(sizeof(Timespec));
-    memmove(resultptr, &result, sizeof(Timespec));
-    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_timespec64, 1);
   }
   
   
@@ -14929,10 +15432,9 @@ _wrap_gnc_pricedb_remove_old_prices (SCM s_0, SCM s_1, SCM s_2, SCM s_3, SCM s_4
   GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
   GList *arg2 = (GList *) 0 ;
   GDate *arg3 = (GDate *) 0 ;
-  Timespec arg4 ;
+  time64 arg4 ;
   PriceRemoveSourceFlags arg5 ;
   PriceRemoveKeepOptions arg6 ;
-  Timespec *argp4 ;
   SCM gswig_result;
   SWIGUNUSED int gswig_list_p = 0;
   gboolean result;
@@ -14946,10 +15448,7 @@ _wrap_gnc_pricedb_remove_old_prices (SCM s_0, SCM s_1, SCM s_2, SCM s_3, SCM s_4
   {
     arg3 = (GDate *)SWIG_MustGetPtr(s_2, SWIGTYPE_p_GDate, 3, 0);
   }
-  {
-    argp4 = (Timespec *)SWIG_MustGetPtr(s_3, SWIGTYPE_p_timespec64, 4, 0);
-    arg4 = *argp4;
-  }
+  arg4 = scm_to_int64(s_3); 
   {
     arg5 = (PriceRemoveSourceFlags) scm_to_int(s_4); 
   }
@@ -15109,14 +15608,13 @@ _wrap_gnc_pricedb_get_prices (SCM s_0, SCM s_1, SCM s_2)
 
 
 static SCM
-_wrap_gnc_pricedb_lookup_at_time (SCM s_0, SCM s_1, SCM s_2, SCM s_3)
+_wrap_gnc_pricedb_lookup_at_time64 (SCM s_0, SCM s_1, SCM s_2, SCM s_3)
 {
-#define FUNC_NAME "gnc-pricedb-lookup-at-time"
+#define FUNC_NAME "gnc-pricedb-lookup-at-time64"
   GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
   gnc_commodity *arg2 = (gnc_commodity *) 0 ;
   gnc_commodity *arg3 = (gnc_commodity *) 0 ;
-  Timespec arg4 ;
-  Timespec *argp4 ;
+  time64 arg4 ;
   SCM gswig_result;
   SWIGUNUSED int gswig_list_p = 0;
   GNCPrice *result = 0 ;
@@ -15130,50 +15628,8 @@ _wrap_gnc_pricedb_lookup_at_time (SCM s_0, SCM s_1, SCM s_2, SCM s_3)
   {
     arg3 = (gnc_commodity *)SWIG_MustGetPtr(s_2, SWIGTYPE_p_gnc_commodity, 3, 0);
   }
-  {
-    argp4 = (Timespec *)SWIG_MustGetPtr(s_3, SWIGTYPE_p_timespec64, 4, 0);
-    arg4 = *argp4;
-  }
-  result = (GNCPrice *)gnc_pricedb_lookup_at_time(arg1,(gnc_commodity const *)arg2,(gnc_commodity const *)arg3,arg4);
-  {
-    gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_GNCPrice, 1);
-  }
-  
-  
-  
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_gnc_pricedb_lookup_day (SCM s_0, SCM s_1, SCM s_2, SCM s_3)
-{
-#define FUNC_NAME "gnc-pricedb-lookup-day"
-  GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
-  gnc_commodity *arg2 = (gnc_commodity *) 0 ;
-  gnc_commodity *arg3 = (gnc_commodity *) 0 ;
-  Timespec arg4 ;
-  Timespec *argp4 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  GNCPrice *result = 0 ;
-  
-  {
-    arg1 = (GNCPriceDB *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_gnc_price_db_s, 1, 0);
-  }
-  {
-    arg2 = (gnc_commodity *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_gnc_commodity, 2, 0);
-  }
-  {
-    arg3 = (gnc_commodity *)SWIG_MustGetPtr(s_2, SWIGTYPE_p_gnc_commodity, 3, 0);
-  }
-  {
-    argp4 = (Timespec *)SWIG_MustGetPtr(s_3, SWIGTYPE_p_timespec64, 4, 0);
-    arg4 = *argp4;
-  }
-  result = (GNCPrice *)gnc_pricedb_lookup_day(arg1,(gnc_commodity const *)arg2,(gnc_commodity const *)arg3,arg4);
+  arg4 = scm_to_int64(s_3); 
+  result = (GNCPrice *)gnc_pricedb_lookup_at_time64(arg1,(gnc_commodity const *)arg2,(gnc_commodity const *)arg3,arg4);
   {
     gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_GNCPrice, 1);
   }
@@ -15210,46 +15666,7 @@ _wrap_gnc_pricedb_lookup_day_t64 (SCM s_0, SCM s_1, SCM s_2, SCM s_3)
   arg4 = scm_to_int64(s_3); 
   result = (GNCPrice *)gnc_pricedb_lookup_day_t64(arg1,(gnc_commodity const *)arg2,(gnc_commodity const *)arg3,arg4);
   {
-    gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_GNCPrice, 0);
-  }
-  
-  
-  
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_gnc_pricedb_lookup_nearest_in_time (SCM s_0, SCM s_1, SCM s_2, SCM s_3)
-{
-#define FUNC_NAME "gnc-pricedb-lookup-nearest-in-time"
-  GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
-  gnc_commodity *arg2 = (gnc_commodity *) 0 ;
-  gnc_commodity *arg3 = (gnc_commodity *) 0 ;
-  Timespec arg4 ;
-  Timespec *argp4 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  GNCPrice *result = 0 ;
-  
-  {
-    arg1 = (GNCPriceDB *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_gnc_price_db_s, 1, 0);
-  }
-  {
-    arg2 = (gnc_commodity *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_gnc_commodity, 2, 0);
-  }
-  {
-    arg3 = (gnc_commodity *)SWIG_MustGetPtr(s_2, SWIGTYPE_p_gnc_commodity, 3, 0);
-  }
-  {
-    argp4 = (Timespec *)SWIG_MustGetPtr(s_3, SWIGTYPE_p_timespec64, 4, 0);
-    arg4 = *argp4;
-  }
-  result = (GNCPrice *)gnc_pricedb_lookup_nearest_in_time(arg1,(gnc_commodity const *)arg2,(gnc_commodity const *)arg3,arg4);
-  {
-    gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_GNCPrice, 0);
+    gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_GNCPrice, 1);
   }
   
   
@@ -15296,48 +15713,6 @@ _wrap_gnc_pricedb_lookup_nearest_in_time64 (SCM s_0, SCM s_1, SCM s_2, SCM s_3)
 
 
 static SCM
-_wrap_gnc_pricedb_lookup_nearest_in_time_any_currency (SCM s_0, SCM s_1, SCM s_2)
-{
-#define FUNC_NAME "gnc-pricedb-lookup-nearest-in-time-any-currency"
-  GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
-  gnc_commodity *arg2 = (gnc_commodity *) 0 ;
-  Timespec arg3 ;
-  Timespec *argp3 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  PriceList *result = 0 ;
-  
-  {
-    arg1 = (GNCPriceDB *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_gnc_price_db_s, 1, 0);
-  }
-  {
-    arg2 = (gnc_commodity *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_gnc_commodity, 2, 0);
-  }
-  {
-    argp3 = (Timespec *)SWIG_MustGetPtr(s_2, SWIGTYPE_p_timespec64, 3, 0);
-    arg3 = *argp3;
-  }
-  result = (PriceList *)gnc_pricedb_lookup_nearest_in_time_any_currency(arg1,(gnc_commodity const *)arg2,arg3);
-  {
-    SCM list = SCM_EOL;
-    GList *node;
-    
-    for (node = result; node; node = node->next)
-    list = scm_cons(SWIG_NewPointerObj(node->data,
-        SWIGTYPE_p_GNCPrice, 0), list);
-    
-    gswig_result = scm_reverse(list);
-  }
-  
-  
-  g_list_free(result);
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
 _wrap_gnc_pricedb_lookup_nearest_in_time_any_currency_t64 (SCM s_0, SCM s_1, SCM s_2)
 {
 #define FUNC_NAME "gnc-pricedb-lookup-nearest-in-time-any-currency-t64"
@@ -15368,6 +15743,7 @@ _wrap_gnc_pricedb_lookup_nearest_in_time_any_currency_t64 (SCM s_0, SCM s_1, SCM
   }
   
   
+  g_list_free(result);
   
   return gswig_result;
 #undef FUNC_NAME
@@ -15375,14 +15751,13 @@ _wrap_gnc_pricedb_lookup_nearest_in_time_any_currency_t64 (SCM s_0, SCM s_1, SCM
 
 
 static SCM
-_wrap_gnc_pricedb_lookup_latest_before (SCM s_0, SCM s_1, SCM s_2, SCM s_3)
+_wrap_gnc_pricedb_lookup_latest_before_t64 (SCM s_0, SCM s_1, SCM s_2, SCM s_3)
 {
-#define FUNC_NAME "gnc-pricedb-lookup-latest-before"
+#define FUNC_NAME "gnc-pricedb-lookup-latest-before-t64"
   GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
   gnc_commodity *arg2 = (gnc_commodity *) 0 ;
   gnc_commodity *arg3 = (gnc_commodity *) 0 ;
-  Timespec arg4 ;
-  Timespec *argp4 ;
+  time64 arg4 ;
   SCM gswig_result;
   SWIGUNUSED int gswig_list_p = 0;
   GNCPrice *result = 0 ;
@@ -15396,11 +15771,8 @@ _wrap_gnc_pricedb_lookup_latest_before (SCM s_0, SCM s_1, SCM s_2, SCM s_3)
   {
     arg3 = (gnc_commodity *)SWIG_MustGetPtr(s_2, SWIGTYPE_p_gnc_commodity, 3, 0);
   }
-  {
-    argp4 = (Timespec *)SWIG_MustGetPtr(s_3, SWIGTYPE_p_timespec64, 4, 0);
-    arg4 = *argp4;
-  }
-  result = (GNCPrice *)gnc_pricedb_lookup_latest_before(arg1,arg2,arg3,arg4);
+  arg4 = scm_to_int64(s_3); 
+  result = (GNCPrice *)gnc_pricedb_lookup_latest_before_t64(arg1,arg2,arg3,arg4);
   {
     gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_GNCPrice, 0);
   }
@@ -15414,13 +15786,12 @@ _wrap_gnc_pricedb_lookup_latest_before (SCM s_0, SCM s_1, SCM s_2, SCM s_3)
 
 
 static SCM
-_wrap_gnc_pricedb_lookup_latest_before_any_currency (SCM s_0, SCM s_1, SCM s_2)
+_wrap_gnc_pricedb_lookup_latest_before_any_currency_t64 (SCM s_0, SCM s_1, SCM s_2)
 {
-#define FUNC_NAME "gnc-pricedb-lookup-latest-before-any-currency"
+#define FUNC_NAME "gnc-pricedb-lookup-latest-before-any-currency-t64"
   GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
   gnc_commodity *arg2 = (gnc_commodity *) 0 ;
-  Timespec arg3 ;
-  Timespec *argp3 ;
+  time64 arg3 ;
   SCM gswig_result;
   SWIGUNUSED int gswig_list_p = 0;
   PriceList *result = 0 ;
@@ -15431,11 +15802,8 @@ _wrap_gnc_pricedb_lookup_latest_before_any_currency (SCM s_0, SCM s_1, SCM s_2)
   {
     arg2 = (gnc_commodity *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_gnc_commodity, 2, 0);
   }
-  {
-    argp3 = (Timespec *)SWIG_MustGetPtr(s_2, SWIGTYPE_p_timespec64, 3, 0);
-    arg3 = *argp3;
-  }
-  result = (PriceList *)gnc_pricedb_lookup_latest_before_any_currency(arg1,(gnc_commodity const *)arg2,arg3);
+  arg3 = scm_to_int64(s_2); 
+  result = (PriceList *)gnc_pricedb_lookup_latest_before_any_currency_t64(arg1,(gnc_commodity const *)arg2,arg3);
   {
     SCM list = SCM_EOL;
     GList *node;
@@ -15489,9 +15857,9 @@ _wrap_gnc_pricedb_convert_balance_latest_price (SCM s_0, SCM s_1, SCM s_2, SCM s
 
 
 static SCM
-_wrap_gnc_pricedb_convert_balance_nearest_price (SCM s_0, SCM s_1, SCM s_2, SCM s_3, SCM s_4)
+_wrap_gnc_pricedb_convert_balance_nearest_price_t64 (SCM s_0, SCM s_1, SCM s_2, SCM s_3, SCM s_4)
 {
-#define FUNC_NAME "gnc-pricedb-convert-balance-nearest-price"
+#define FUNC_NAME "gnc-pricedb-convert-balance-nearest-price-t64"
   GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
   gnc_numeric arg2 ;
   gnc_commodity *arg3 = (gnc_commodity *) 0 ;
@@ -15512,7 +15880,7 @@ _wrap_gnc_pricedb_convert_balance_nearest_price (SCM s_0, SCM s_1, SCM s_2, SCM 
     arg4 = (gnc_commodity *)SWIG_MustGetPtr(s_3, SWIGTYPE_p_gnc_commodity, 4, 0);
   }
   arg5 = scm_to_int64(s_4); 
-  result = gnc_pricedb_convert_balance_nearest_price(arg1,arg2,(gnc_commodity const *)arg3,(gnc_commodity const *)arg4,arg5);
+  result = gnc_pricedb_convert_balance_nearest_price_t64(arg1,arg2,(gnc_commodity const *)arg3,(gnc_commodity const *)arg4,arg5);
   gswig_result = gnc_numeric_to_scm(result);
   
   
@@ -15851,14 +16219,96 @@ _wrap_qof_session_get_url (SCM s_0)
 
 
 static SCM
-_wrap_timespec_get_type ()
+_wrap_Time64_t_set (SCM s_0, SCM s_1)
 {
-#define FUNC_NAME "timespec-get-type"
+#define FUNC_NAME "Time64-t-set"
+  Time64 *arg1 = (Time64 *) 0 ;
+  time64 arg2 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  
+  {
+    arg1 = (Time64 *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Time64, 1, 0);
+  }
+  arg2 = scm_to_int64(s_1); 
+  if (arg1) (arg1)->t = arg2;
+  gswig_result = SCM_UNSPECIFIED;
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_Time64_t_get (SCM s_0)
+{
+#define FUNC_NAME "Time64-t-get"
+  Time64 *arg1 = (Time64 *) 0 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  time64 result;
+  
+  {
+    arg1 = (Time64 *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Time64, 1, 0);
+  }
+  result =  ((arg1)->t);
+  gswig_result = scm_from_int64(result); 
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_new_Time64 ()
+{
+#define FUNC_NAME "new-Time64"
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  Time64 *result = 0 ;
+  
+  result = (Time64 *)calloc(1, sizeof(Time64));
+  {
+    gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_Time64, 1);
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_delete_Time64 (SCM s_0)
+{
+#define FUNC_NAME "delete-Time64"
+  Time64 *arg1 = (Time64 *) 0 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  
+  {
+    arg1 = (Time64 *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_Time64, 1, 0);
+  }
+  free((char *) arg1);
+  gswig_result = SCM_UNSPECIFIED;
+  
+  SWIG_Guile_MarkPointerDestroyed(s_0);
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_time64_get_type ()
+{
+#define FUNC_NAME "time64-get-type"
   SCM gswig_result;
   SWIGUNUSED int gswig_list_p = 0;
   GType result;
   
-  result = timespec_get_type();
+  result = time64_get_type();
   {
     GType * resultptr;
     resultptr = (GType *) malloc(sizeof(GType));
@@ -16690,144 +17140,6 @@ _wrap_gnc_gdate_set_time64 (SCM s_0, SCM s_1)
 
 
 static SCM
-_wrap_timespec_equal (SCM s_0, SCM s_1)
-{
-#define FUNC_NAME "timespec-equal"
-  Timespec *arg1 = (Timespec *) 0 ;
-  Timespec *arg2 = (Timespec *) 0 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  gboolean result;
-  
-  {
-    arg1 = (Timespec *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_timespec64, 1, 0);
-  }
-  {
-    arg2 = (Timespec *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_timespec64, 2, 0);
-  }
-  result = timespec_equal((struct timespec64 const *)arg1,(struct timespec64 const *)arg2);
-  gswig_result = result ? SCM_BOOL_T : SCM_BOOL_F;
-  
-  
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_timespec_cmp (SCM s_0, SCM s_1)
-{
-#define FUNC_NAME "timespec-cmp"
-  Timespec *arg1 = (Timespec *) 0 ;
-  Timespec *arg2 = (Timespec *) 0 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  gint result;
-  
-  {
-    arg1 = (Timespec *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_timespec64, 1, 0);
-  }
-  {
-    arg2 = (Timespec *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_timespec64, 2, 0);
-  }
-  result = (gint)timespec_cmp((struct timespec64 const *)arg1,(struct timespec64 const *)arg2);
-  {
-    gswig_result = scm_from_long(result);
-  }
-  
-  
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_timespec_diff (SCM s_0, SCM s_1)
-{
-#define FUNC_NAME "timespec-diff"
-  Timespec *arg1 = (Timespec *) 0 ;
-  Timespec *arg2 = (Timespec *) 0 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  Timespec result;
-  
-  {
-    arg1 = (Timespec *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_timespec64, 1, 0);
-  }
-  {
-    arg2 = (Timespec *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_timespec64, 2, 0);
-  }
-  result = timespec_diff((struct timespec64 const *)arg1,(struct timespec64 const *)arg2);
-  {
-    Timespec * resultptr;
-    resultptr = (Timespec *) malloc(sizeof(Timespec));
-    memmove(resultptr, &result, sizeof(Timespec));
-    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_timespec64, 1);
-  }
-  
-  
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_timespec_abs (SCM s_0)
-{
-#define FUNC_NAME "timespec-abs"
-  Timespec *arg1 = (Timespec *) 0 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  Timespec result;
-  
-  {
-    arg1 = (Timespec *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_timespec64, 1, 0);
-  }
-  result = timespec_abs((struct timespec64 const *)arg1);
-  {
-    Timespec * resultptr;
-    resultptr = (Timespec *) malloc(sizeof(Timespec));
-    memmove(resultptr, &result, sizeof(Timespec));
-    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_timespec64, 1);
-  }
-  
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_timespecCanonicalDayTime (SCM s_0)
-{
-#define FUNC_NAME "timespecCanonicalDayTime"
-  Timespec arg1 ;
-  Timespec *argp1 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  Timespec result;
-  
-  {
-    argp1 = (Timespec *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_timespec64, 1, 0);
-    arg1 = *argp1;
-  }
-  result = timespecCanonicalDayTime(arg1);
-  {
-    Timespec * resultptr;
-    resultptr = (Timespec *) malloc(sizeof(Timespec));
-    memmove(resultptr, &result, sizeof(Timespec));
-    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_timespec64, 1);
-  }
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
 _wrap_time64CanonicalDayTime (SCM s_0)
 {
 #define FUNC_NAME "time64CanonicalDayTime"
@@ -16839,144 +17151,6 @@ _wrap_time64CanonicalDayTime (SCM s_0)
   arg1 = scm_to_int64(s_0); 
   result = time64CanonicalDayTime(arg1);
   gswig_result = scm_from_int64(result); 
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_timespec_now ()
-{
-#define FUNC_NAME "timespec-now"
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  Timespec result;
-  
-  result = timespec_now();
-  {
-    Timespec * resultptr;
-    resultptr = (Timespec *) malloc(sizeof(Timespec));
-    memmove(resultptr, &result, sizeof(Timespec));
-    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_timespec64, 1);
-  }
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_timespecFromTime64 (SCM s_0, SCM s_1)
-{
-#define FUNC_NAME "timespecFromTime64"
-  Timespec *arg1 = (Timespec *) 0 ;
-  time64 arg2 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  
-  {
-    arg1 = (Timespec *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_timespec64, 1, 0);
-  }
-  arg2 = scm_to_int64(s_1); 
-  timespecFromTime64(arg1,arg2);
-  gswig_result = SCM_UNSPECIFIED;
-  
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_timespecToTime64 (SCM s_0)
-{
-#define FUNC_NAME "timespecToTime64"
-  Timespec arg1 ;
-  Timespec *argp1 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  time64 result;
-  
-  {
-    argp1 = (Timespec *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_timespec64, 1, 0);
-    arg1 = *argp1;
-  }
-  result = timespecToTime64(arg1);
-  gswig_result = scm_from_int64(result); 
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_time64_to_gdate (SCM s_0)
-{
-#define FUNC_NAME "time64-to-gdate"
-  time64 arg1 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  GDate result;
-  
-  arg1 = scm_to_int64(s_0); 
-  result = time64_to_gdate(arg1);
-  {
-    GDate * resultptr;
-    resultptr = (GDate *) malloc(sizeof(GDate));
-    memmove(resultptr, &result, sizeof(GDate));
-    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_GDate, 1);
-  }
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_timespec_to_gdate (SCM s_0)
-{
-#define FUNC_NAME "timespec-to-gdate"
-  Timespec arg1 ;
-  Timespec *argp1 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  GDate result;
-  
-  {
-    argp1 = (Timespec *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_timespec64, 1, 0);
-    arg1 = *argp1;
-  }
-  result = timespec_to_gdate(arg1);
-  {
-    GDate * resultptr;
-    resultptr = (GDate *) malloc(sizeof(GDate));
-    memmove(resultptr, &result, sizeof(GDate));
-    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_GDate, 1);
-  }
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_gdate_to_timespec (SCM s_0)
-{
-#define FUNC_NAME "gdate-to-timespec"
-  GDate arg1 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  Timespec result;
-  
-  arg1 = gnc_time64_to_GDate(s_0);
-  result = gdate_to_timespec(arg1);
-  {
-    Timespec * resultptr;
-    resultptr = (Timespec *) malloc(sizeof(Timespec));
-    memmove(resultptr, &result, sizeof(Timespec));
-    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_timespec64, 1);
-  }
   
   return gswig_result;
 #undef FUNC_NAME
@@ -17086,105 +17260,6 @@ _wrap_gnc_dmy2time64_end (SCM s_0, SCM s_1, SCM s_2)
 
 
 static SCM
-_wrap_gnc_dmy2timespec (SCM s_0, SCM s_1, SCM s_2)
-{
-#define FUNC_NAME "gnc-dmy2timespec"
-  gint arg1 ;
-  gint arg2 ;
-  gint arg3 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  Timespec result;
-  
-  {
-    arg1 = (gint) scm_to_int(s_0);
-  }
-  {
-    arg2 = (gint) scm_to_int(s_1);
-  }
-  {
-    arg3 = (gint) scm_to_int(s_2);
-  }
-  result = gnc_dmy2timespec(arg1,arg2,arg3);
-  {
-    Timespec * resultptr;
-    resultptr = (Timespec *) malloc(sizeof(Timespec));
-    memmove(resultptr, &result, sizeof(Timespec));
-    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_timespec64, 1);
-  }
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_gnc_dmy2timespec_end (SCM s_0, SCM s_1, SCM s_2)
-{
-#define FUNC_NAME "gnc-dmy2timespec-end"
-  gint arg1 ;
-  gint arg2 ;
-  gint arg3 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  Timespec result;
-  
-  {
-    arg1 = (gint) scm_to_int(s_0);
-  }
-  {
-    arg2 = (gint) scm_to_int(s_1);
-  }
-  {
-    arg3 = (gint) scm_to_int(s_2);
-  }
-  result = gnc_dmy2timespec_end(arg1,arg2,arg3);
-  {
-    Timespec * resultptr;
-    resultptr = (Timespec *) malloc(sizeof(Timespec));
-    memmove(resultptr, &result, sizeof(Timespec));
-    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_timespec64, 1);
-  }
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_gnc_dmy2timespec_neutral (SCM s_0, SCM s_1, SCM s_2)
-{
-#define FUNC_NAME "gnc-dmy2timespec-neutral"
-  gint arg1 ;
-  gint arg2 ;
-  gint arg3 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  Timespec result;
-  
-  {
-    arg1 = (gint) scm_to_int(s_0);
-  }
-  {
-    arg2 = (gint) scm_to_int(s_1);
-  }
-  {
-    arg3 = (gint) scm_to_int(s_2);
-  }
-  result = gnc_dmy2timespec_neutral(arg1,arg2,arg3);
-  {
-    Timespec * resultptr;
-    resultptr = (Timespec *) malloc(sizeof(Timespec));
-    memmove(resultptr, &result, sizeof(Timespec));
-    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_timespec64, 1);
-  }
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
 _wrap_gnc_iso8601_to_time64_gmt (SCM s_0)
 {
 #define FUNC_NAME "gnc-iso8601-to-time64-gmt"
@@ -17201,43 +17276,6 @@ _wrap_gnc_iso8601_to_time64_gmt (SCM s_0)
   result = gnc_iso8601_to_time64_gmt((char const *)arg1);
   gswig_result = scm_from_int64(result); 
   if (must_free1 && arg1) SWIG_free(arg1);
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_gnc_timespec_to_iso8601_buff (SCM s_0, SCM s_1)
-{
-#define FUNC_NAME "gnc-timespec-to-iso8601-buff"
-  Timespec arg1 ;
-  gchar *arg2 = (gchar *) 0 ;
-  Timespec *argp1 ;
-  int must_free2 = 0 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  gchar *result = 0 ;
-  
-  {
-    argp1 = (Timespec *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_timespec64, 1, 0);
-    arg1 = *argp1;
-  }
-  {
-    arg2 = (gchar *)SWIG_scm2str(s_1);
-    must_free2 = 1;
-  }
-  result = (gchar *)gnc_timespec_to_iso8601_buff(arg1,arg2);
-  {
-    gswig_result = SCM_UNSPECIFIED;
-    if (result) {
-      gswig_result = scm_from_utf8_string((const char *)result);
-    }
-    if (!result || !scm_is_true(gswig_result)) {
-      gswig_result = scm_c_make_string(0, SCM_UNDEFINED);
-    }
-  }
-  if (must_free2 && arg2) SWIG_free(arg2);
   
   return gswig_result;
 #undef FUNC_NAME
@@ -17271,42 +17309,6 @@ _wrap_gnc_time64_to_iso8601_buff (SCM s_0, SCM s_1)
     }
   }
   if (must_free2 && arg2) SWIG_free(arg2);
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
-_wrap_gnc_timespec2dmy (SCM s_0, SCM s_1, SCM s_2, SCM s_3)
-{
-#define FUNC_NAME "gnc-timespec2dmy"
-  Timespec arg1 ;
-  gint *arg2 = (gint *) 0 ;
-  gint *arg3 = (gint *) 0 ;
-  gint *arg4 = (gint *) 0 ;
-  Timespec *argp1 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  
-  {
-    argp1 = (Timespec *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_timespec64, 1, 0);
-    arg1 = *argp1;
-  }
-  {
-    arg2 = (gint *)SWIG_MustGetPtr(s_1, SWIGTYPE_p_int, 2, 0);
-  }
-  {
-    arg3 = (gint *)SWIG_MustGetPtr(s_2, SWIGTYPE_p_int, 3, 0);
-  }
-  {
-    arg4 = (gint *)SWIG_MustGetPtr(s_3, SWIGTYPE_p_int, 4, 0);
-  }
-  gnc_timespec2dmy(arg1,arg2,arg3,arg4);
-  gswig_result = SCM_UNSPECIFIED;
-  
-  
-  
   
   return gswig_result;
 #undef FUNC_NAME
@@ -17666,36 +17668,6 @@ _wrap_qof_print_date (SCM s_0)
 
 
 static SCM
-_wrap_gnc_print_date (SCM s_0)
-{
-#define FUNC_NAME "gnc-print-date"
-  Timespec arg1 ;
-  Timespec *argp1 ;
-  SCM gswig_result;
-  SWIGUNUSED int gswig_list_p = 0;
-  char *result = 0 ;
-  
-  {
-    argp1 = (Timespec *)SWIG_MustGetPtr(s_0, SWIGTYPE_p_timespec64, 1, 0);
-    arg1 = *argp1;
-  }
-  result = (char *)gnc_print_date(arg1);
-  {
-    gswig_result = SCM_UNSPECIFIED;
-    if (result) {
-      gswig_result = scm_from_utf8_string((const char *)result);
-    }
-    if (!result || !scm_is_true(gswig_result)) {
-      gswig_result = scm_c_make_string(0, SCM_UNDEFINED);
-    }
-  }
-  
-  return gswig_result;
-#undef FUNC_NAME
-}
-
-
-static SCM
 _wrap_qof_scan_date (SCM s_0, SCM s_1, SCM s_2, SCM s_3)
 {
 #define FUNC_NAME "qof-scan-date"
@@ -17762,6 +17734,66 @@ _wrap_gnc_tm_set_day_start (SCM s_0)
     arg1 = &t1;
   }
   gnc_tm_set_day_start(arg1);
+  gswig_result = SCM_UNSPECIFIED;
+  {
+    struct tm* t = arg1;
+    SCM tm = s_0;
+    if (t == NULL)
+    {
+      SCM_SIMPLE_VECTOR_SET(tm, 0, scm_from_int(t->tm_sec));
+      SCM_SIMPLE_VECTOR_SET(tm, 1, scm_from_int(t->tm_min));
+      SCM_SIMPLE_VECTOR_SET(tm, 2, scm_from_int(t->tm_hour));
+      SCM_SIMPLE_VECTOR_SET(tm, 3, scm_from_int(t->tm_mday));
+      SCM_SIMPLE_VECTOR_SET(tm, 4, scm_from_int(t->tm_mon));
+      SCM_SIMPLE_VECTOR_SET(tm, 5, scm_from_int(t->tm_year));
+      SCM_SIMPLE_VECTOR_SET(tm, 6, scm_from_int(t->tm_wday));
+      SCM_SIMPLE_VECTOR_SET(tm, 7, scm_from_int(t->tm_yday));
+      SCM_SIMPLE_VECTOR_SET(tm, 8, scm_from_int(t->tm_isdst));
+#ifdef HAVE_STRUCT_TM_GMTOFF
+      SCM_SIMPLE_VECTOR_SET(tm, 9, scm_from_long(t->tm_gmtoff));
+      SCM_SIMPLE_VECTOR_SET(tm, 10, scm_from_locale_string(t->tm_zone?t->tm_zone:"Unset"));
+#else
+      SCM_SIMPLE_VECTOR_SET(tm, 9, scm_from_long(0));
+      SCM_SIMPLE_VECTOR_SET(tm, 10, scm_from_locale_string("GMT"));
+#endif
+    }
+  }
+  
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_tm_set_day_neutral (SCM s_0)
+{
+#define FUNC_NAME "gnc-tm-set-day-neutral"
+  struct tm *arg1 = (struct tm *) 0 ;
+  struct tm t1 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  
+  {
+    SCM tm = s_0;
+    SCM zone;
+    t1.tm_sec = scm_to_int(SCM_SIMPLE_VECTOR_REF(tm, 0));
+    t1.tm_min = scm_to_int(SCM_SIMPLE_VECTOR_REF(tm, 1));
+    t1.tm_hour = scm_to_int(SCM_SIMPLE_VECTOR_REF(tm, 2));
+    t1.tm_mday = scm_to_int(SCM_SIMPLE_VECTOR_REF(tm, 3));
+    t1.tm_mon = scm_to_int(SCM_SIMPLE_VECTOR_REF(tm, 4));
+    t1.tm_year = scm_to_int(SCM_SIMPLE_VECTOR_REF(tm, 5));
+    t1.tm_wday = scm_to_int(SCM_SIMPLE_VECTOR_REF(tm, 6));
+    t1.tm_yday = scm_to_int(SCM_SIMPLE_VECTOR_REF(tm, 7));
+    t1.tm_isdst = scm_to_int(SCM_SIMPLE_VECTOR_REF(tm, 8));
+#ifdef HAVE_STRUCT_TM_GMTOFF
+    t1.tm_gmtoff = scm_to_int(SCM_SIMPLE_VECTOR_REF(tm, 9));
+    zone = SCM_SIMPLE_VECTOR_REF(tm, 10);
+    t1.tm_zone = SCM_UNBNDP(zone) ? NULL : scm_to_locale_string(zone);
+#endif
+    arg1 = &t1;
+  }
+  gnc_tm_set_day_neutral(arg1);
   gswig_result = SCM_UNSPECIFIED;
   {
     struct tm* t = arg1;
@@ -17924,6 +17956,24 @@ _wrap_gnc_time64_get_day_start (SCM s_0)
   
   arg1 = scm_to_int64(s_0); 
   result = gnc_time64_get_day_start(arg1);
+  gswig_result = scm_from_int64(result); 
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_time64_get_day_neutral (SCM s_0)
+{
+#define FUNC_NAME "gnc-time64-get-day-neutral"
+  time64 arg1 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  time64 result;
+  
+  arg1 = scm_to_int64(s_0); 
+  result = gnc_time64_get_day_neutral(arg1);
   gswig_result = scm_from_int64(result); 
   
   return gswig_result;
@@ -18243,6 +18293,29 @@ _wrap_gnc_gdate_hash (SCM s_0)
   result = (guint)gnc_gdate_hash(arg1);
   {
     gswig_result = scm_from_ulong(result);
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_time64_to_gdate (SCM s_0)
+{
+#define FUNC_NAME "time64-to-gdate"
+  time64 arg1 ;
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  GDate result;
+  
+  arg1 = scm_to_int64(s_0); 
+  result = time64_to_gdate(arg1);
+  {
+    GDate * resultptr;
+    resultptr = (GDate *) malloc(sizeof(GDate));
+    memmove(resultptr, &result, sizeof(GDate));
+    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_GDate, 1);
   }
   
   return gswig_result;
@@ -24027,6 +24100,21 @@ _wrap_GNC_COMMODITY_NS_ISO_GUI(SCM s_0)
   
   {
     gswig_result = SWIG_str02scm(gswig_const_GNC_COMMODITY_NS_ISO_GUI);
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_GNC_COMMODITY_MAX_FRACTION(SCM s_0)
+{
+#define FUNC_NAME "GNC-COMMODITY-MAX-FRACTION"
+  SCM gswig_result;
+  
+  {
+    gswig_result = scm_from_long(gswig_const_GNC_COMMODITY_MAX_FRACTION);
   }
   
   return gswig_result;
@@ -37892,19 +37980,18 @@ _wrap_gncOwnerGetOwnerFromTypeGuid (SCM s_0, SCM s_1, SCM s_2, SCM s_3)
 
 
 static SCM
-_wrap_gncOwnerCreatePaymentLot (SCM s_0, SCM s_1, SCM s_2, SCM s_3, SCM s_4, SCM s_5, SCM s_6, SCM s_7, SCM s_8)
+_wrap_gncOwnerCreatePaymentLotSecs (SCM s_0, SCM s_1, SCM s_2, SCM s_3, SCM s_4, SCM s_5, SCM s_6, SCM s_7, SCM s_8)
 {
-#define FUNC_NAME "gncOwnerCreatePaymentLot"
+#define FUNC_NAME "gncOwnerCreatePaymentLotSecs"
   GncOwner *arg1 = (GncOwner *) 0 ;
   Transaction **arg2 = (Transaction **) 0 ;
   Account *arg3 = (Account *) 0 ;
   Account *arg4 = (Account *) 0 ;
   gnc_numeric arg5 ;
   gnc_numeric arg6 ;
-  Timespec arg7 ;
+  time64 arg7 ;
   char *arg8 = (char *) 0 ;
   char *arg9 = (char *) 0 ;
-  Timespec *argp7 ;
   int must_free8 = 0 ;
   int must_free9 = 0 ;
   SCM gswig_result;
@@ -37925,10 +38012,7 @@ _wrap_gncOwnerCreatePaymentLot (SCM s_0, SCM s_1, SCM s_2, SCM s_3, SCM s_4, SCM
   }
   arg5 = gnc_scm_to_numeric(s_4);
   arg6 = gnc_scm_to_numeric(s_5);
-  {
-    argp7 = (Timespec *)SWIG_MustGetPtr(s_6, SWIGTYPE_p_timespec64, 7, 0);
-    arg7 = *argp7;
-  }
+  arg7 = scm_to_int64(s_6); 
   {
     arg8 = (char *)SWIG_scm2str(s_7);
     must_free8 = 1;
@@ -37937,7 +38021,7 @@ _wrap_gncOwnerCreatePaymentLot (SCM s_0, SCM s_1, SCM s_2, SCM s_3, SCM s_4, SCM
     arg9 = (char *)SWIG_scm2str(s_8);
     must_free9 = 1;
   }
-  result = (GNCLot *)gncOwnerCreatePaymentLot((struct _gncOwner const *)arg1,arg2,arg3,arg4,arg5,arg6,arg7,(char const *)arg8,(char const *)arg9);
+  result = (GNCLot *)gncOwnerCreatePaymentLotSecs((struct _gncOwner const *)arg1,arg2,arg3,arg4,arg5,arg6,arg7,(char const *)arg8,(char const *)arg9);
   {
     gswig_result = SWIG_NewPointerObj (result, SWIGTYPE_p_GNCLot, 0);
   }
@@ -37979,9 +38063,9 @@ _wrap_gncOwnerAutoApplyPaymentsWithLots (SCM s_0, SCM s_1)
 
 
 static SCM
-_wrap_gncOwnerApplyPayment (SCM s_0, SCM s_1, SCM s_2, SCM s_3, SCM s_4, SCM s_5, SCM s_6, SCM s_7, SCM s_8, SCM s_9, SCM s_10)
+_wrap_gncOwnerApplyPaymentSecs (SCM s_0, SCM s_1, SCM s_2, SCM s_3, SCM s_4, SCM s_5, SCM s_6, SCM s_7, SCM s_8, SCM s_9, SCM s_10)
 {
-#define FUNC_NAME "gncOwnerApplyPayment"
+#define FUNC_NAME "gncOwnerApplyPaymentSecs"
   GncOwner *arg1 = (GncOwner *) 0 ;
   Transaction **arg2 = (Transaction **) 0 ;
   GList *arg3 = (GList *) 0 ;
@@ -37989,11 +38073,10 @@ _wrap_gncOwnerApplyPayment (SCM s_0, SCM s_1, SCM s_2, SCM s_3, SCM s_4, SCM s_5
   Account *arg5 = (Account *) 0 ;
   gnc_numeric arg6 ;
   gnc_numeric arg7 ;
-  Timespec arg8 ;
+  time64 arg8 ;
   char *arg9 = (char *) 0 ;
   char *arg10 = (char *) 0 ;
   gboolean arg11 ;
-  Timespec *argp8 ;
   int must_free9 = 0 ;
   int must_free10 = 0 ;
   SCM gswig_result;
@@ -38016,10 +38099,7 @@ _wrap_gncOwnerApplyPayment (SCM s_0, SCM s_1, SCM s_2, SCM s_3, SCM s_4, SCM s_5
   }
   arg6 = gnc_scm_to_numeric(s_5);
   arg7 = gnc_scm_to_numeric(s_6);
-  {
-    argp8 = (Timespec *)SWIG_MustGetPtr(s_7, SWIGTYPE_p_timespec64, 8, 0);
-    arg8 = *argp8;
-  }
+  arg8 = scm_to_int64(s_7); 
   {
     arg9 = (char *)SWIG_scm2str(s_8);
     must_free9 = 1;
@@ -38029,7 +38109,7 @@ _wrap_gncOwnerApplyPayment (SCM s_0, SCM s_1, SCM s_2, SCM s_3, SCM s_4, SCM s_5
     must_free10 = 1;
   }
   arg11 = scm_is_true(s_10) ? TRUE : FALSE;
-  gncOwnerApplyPayment((struct _gncOwner const *)arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,(char const *)arg9,(char const *)arg10,arg11);
+  gncOwnerApplyPaymentSecs((struct _gncOwner const *)arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,(char const *)arg9,(char const *)arg10,arg11);
   gswig_result = SCM_UNSPECIFIED;
   
   
@@ -38045,11 +38125,11 @@ _wrap_gncOwnerApplyPayment (SCM s_0, SCM s_1, SCM s_2, SCM s_3, SCM s_4, SCM s_5
 
 
 static SCM
-_wrap_gncOwnerApplyPayment_rest (SCM rest)
+_wrap_gncOwnerApplyPaymentSecs_rest (SCM rest)
 {
 SCM arg[11];
-SWIG_Guile_GetArgs (arg, rest, 11, 0, "gncOwnerApplyPayment");
-return _wrap_gncOwnerApplyPayment(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], arg[8], arg[9], arg[10]);
+SWIG_Guile_GetArgs (arg, rest, 11, 0, "gncOwnerApplyPaymentSecs");
+return _wrap_gncOwnerApplyPaymentSecs(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], arg[7], arg[8], arg[9], arg[10]);
 }
 static SCM
 _wrap_gncOwnerFindOffsettingSplit (SCM s_0, SCM s_1)
@@ -39226,24 +39306,19 @@ _wrap_gncTaxTableGetRefcount (SCM s_0)
 
 
 static SCM
-_wrap_gncTaxTableLastModified (SCM s_0)
+_wrap_gncTaxTableLastModifiedSecs (SCM s_0)
 {
-#define FUNC_NAME "gncTaxTableLastModified"
+#define FUNC_NAME "gncTaxTableLastModifiedSecs"
   GncTaxTable *arg1 = (GncTaxTable *) 0 ;
   SCM gswig_result;
   SWIGUNUSED int gswig_list_p = 0;
-  Timespec result;
+  time64 result;
   
   {
     arg1 = (GncTaxTable *)SWIG_MustGetPtr(s_0, SWIGTYPE_p__gncTaxTable, 1, 0);
   }
-  result = gncTaxTableLastModified((struct _gncTaxTable const *)arg1);
-  {
-    Timespec * resultptr;
-    resultptr = (Timespec *) malloc(sizeof(Timespec));
-    memmove(resultptr, &result, sizeof(Timespec));
-    gswig_result = SWIG_NewPointerObj(resultptr, SWIGTYPE_p_timespec64, 1);
-  }
+  result = gncTaxTableLastModifiedSecs((struct _gncTaxTable const *)arg1);
+  gswig_result = scm_from_int64(result); 
   
   
   return gswig_result;
@@ -40773,6 +40848,8 @@ static swig_type_info _swigt__p_QuoteSourceType = {"_p_QuoteSourceType", "enum Q
 static swig_type_info _swigt__p_Recurrence = {"_p_Recurrence", "Recurrence *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_Split = {"_p_Split", "Split *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_SplitList = {"_p_SplitList", "SplitList *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_Time64 = {"_p_Time64", "Time64 *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_Timespec = {"_p_Timespec", "Timespec *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_Transaction = {"_p_Transaction", "Transaction *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_TransactionCallback = {"_p_TransactionCallback", "TransactionCallback *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__GncBudgetClass = {"_p__GncBudgetClass", "struct _GncBudgetClass *|GncBudgetClass *", 0, 0, (void*)0, 0};
@@ -40840,7 +40917,6 @@ static swig_type_info _swigt__p_int = {"_p_int", "int *|gint *", 0, 0, (void*)0,
 static swig_type_info _swigt__p_p_GList = {"_p_p_GList", "GList **|PriceList **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p_Transaction = {"_p_p_Transaction", "Transaction **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_query_txn_match_t = {"_p_query_txn_match_t", "enum query_txn_match_t *|query_txn_match_t *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_timespec64 = {"_p_timespec64", "struct timespec64 *|Timespec *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_tm = {"_p_tm", "struct tm *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_int = {"_p_unsigned_int", "guint *|unsigned int *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_long = {"_p_unsigned_long", "SCM *|unsigned long *", 0, 0, (void*)0, 0};
@@ -40901,6 +40977,8 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_Recurrence,
   &_swigt__p_Split,
   &_swigt__p_SplitList,
+  &_swigt__p_Time64,
+  &_swigt__p_Timespec,
   &_swigt__p_Transaction,
   &_swigt__p_TransactionCallback,
   &_swigt__p__GncBudgetClass,
@@ -40968,7 +41046,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_p_GList,
   &_swigt__p_p_Transaction,
   &_swigt__p_query_txn_match_t,
-  &_swigt__p_timespec64,
   &_swigt__p_tm,
   &_swigt__p_unsigned_int,
   &_swigt__p_unsigned_long,
@@ -41029,6 +41106,8 @@ static swig_cast_info _swigc__p_QuoteSourceType[] = {  {&_swigt__p_QuoteSourceTy
 static swig_cast_info _swigc__p_Recurrence[] = {  {&_swigt__p_Recurrence, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_Split[] = {  {&_swigt__p_Split, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_SplitList[] = {  {&_swigt__p_SplitList, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_Time64[] = {  {&_swigt__p_Time64, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_Timespec[] = {  {&_swigt__p_Timespec, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_Transaction[] = {  {&_swigt__p_Transaction, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_TransactionCallback[] = {  {&_swigt__p_TransactionCallback, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__GncBudgetClass[] = {  {&_swigt__p__GncBudgetClass, 0, 0, 0},{0, 0, 0, 0}};
@@ -41096,7 +41175,6 @@ static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0
 static swig_cast_info _swigc__p_p_GList[] = {  {&_swigt__p_p_GList, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_Transaction[] = {  {&_swigt__p_p_Transaction, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_query_txn_match_t[] = {  {&_swigt__p_query_txn_match_t, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_timespec64[] = {  {&_swigt__p_timespec64, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_tm[] = {  {&_swigt__p_tm, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_int[] = {  {&_swigt__p_unsigned_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_long[] = {  {&_swigt__p_unsigned_long, 0, 0, 0},{0, 0, 0, 0}};
@@ -41157,6 +41235,8 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_Recurrence,
   _swigc__p_Split,
   _swigc__p_SplitList,
+  _swigc__p_Time64,
+  _swigc__p_Timespec,
   _swigc__p_Transaction,
   _swigc__p_TransactionCallback,
   _swigc__p__GncBudgetClass,
@@ -41224,7 +41304,6 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_p_GList,
   _swigc__p_p_Transaction,
   _swigc__p_query_txn_match_t,
-  _swigc__p_timespec64,
   _swigc__p_tm,
   _swigc__p_unsigned_int,
   _swigc__p_unsigned_long,
@@ -41500,9 +41579,6 @@ SWIG_init(void)
   scm_c_define_gsubr("xaccSplitSetReconcile", 2, 0, 0, (swig_guile_proc) _wrap_xaccSplitSetReconcile);
   scm_c_define_gsubr("xaccSplitGetReconcile", 1, 0, 0, (swig_guile_proc) _wrap_xaccSplitGetReconcile);
   scm_c_define_gsubr("xaccSplitSetDateReconciledSecs", 2, 0, 0, (swig_guile_proc) _wrap_xaccSplitSetDateReconciledSecs);
-  scm_c_define_gsubr("xaccSplitSetDateReconciledTS", 2, 0, 0, (swig_guile_proc) _wrap_xaccSplitSetDateReconciledTS);
-  scm_c_define_gsubr("xaccSplitGetDateReconciledTS", 2, 0, 0, (swig_guile_proc) _wrap_xaccSplitGetDateReconciledTS);
-  scm_c_define_gsubr("xaccSplitRetDateReconciledTS", 1, 0, 0, (swig_guile_proc) _wrap_xaccSplitRetDateReconciledTS);
   scm_c_define_gsubr("xaccSplitGetDateReconciled", 1, 0, 0, (swig_guile_proc) _wrap_xaccSplitGetDateReconciled);
   scm_c_define_gsubr("xaccSplitSetAmount", 2, 0, 0, (swig_guile_proc) _wrap_xaccSplitSetAmount);
   scm_c_define_gsubr("xaccSplitGetAmount", 1, 0, 0, (swig_guile_proc) _wrap_xaccSplitGetAmount);
@@ -41946,13 +42022,36 @@ SWIG_init(void)
   scm_c_define_gsubr("LOT-BALANCE", 0, 0, 0, (swig_guile_proc) _wrap_LOT_BALANCE);
   scm_c_define_gsubr("LOT-TITLE", 0, 0, 0, (swig_guile_proc) _wrap_LOT_TITLE);
   scm_c_define_gsubr("LOT-NOTES", 0, 0, 0, (swig_guile_proc) _wrap_LOT_NOTES);
-  scm_c_define_gsubr("gncPriceGetGUID", 1, 0, 0, (swig_guile_proc) _wrap_gncPriceGetGUID);
-  scm_c_define_gsubr("gncBudgetGetGUID", 1, 0, 0, (swig_guile_proc) _wrap_gncBudgetGetGUID);
-  scm_c_define_gsubr("QOF-ID-BOOK-SCM", 0, 0, 0, (swig_guile_proc) _wrap_QOF_ID_BOOK_SCM);
+  SWIG_TypeClientData(SWIGTYPE_p_Timespec, (void *) &_swig_guile_clientdataTimespec);
+  scm_c_define_gsubr("Timespec-tv-sec-set", 2, 0, 0, (swig_guile_proc) _wrap_Timespec_tv_sec_set);
+  scm_c_define_gsubr("Timespec-tv-sec-get", 1, 0, 0, (swig_guile_proc) _wrap_Timespec_tv_sec_get);
+  scm_c_define_gsubr("Timespec-tv-nsec-set", 2, 0, 0, (swig_guile_proc) _wrap_Timespec_tv_nsec_set);
+  scm_c_define_gsubr("Timespec-tv-nsec-get", 1, 0, 0, (swig_guile_proc) _wrap_Timespec_tv_nsec_get);
+  scm_c_define_gsubr("new-Timespec", 0, 0, 0, (swig_guile_proc) _wrap_new_Timespec);
+  ((swig_guile_clientdata *)(SWIGTYPE_p_Timespec->clientdata))->destroy = (guile_destructor) _wrap_delete_Timespec;
+  scm_c_define_gsubr("delete-Timespec", 1, 0, 0, (swig_guile_proc) _wrap_delete_Timespec);
+  scm_c_define_gsubr("xaccSplitSetDateReconciledTS", 2, 0, 0, (swig_guile_proc) _wrap_xaccSplitSetDateReconciledTS);
+  scm_c_define_gsubr("xaccSplitGetDateReconciledTS", 2, 0, 0, (swig_guile_proc) _wrap_xaccSplitGetDateReconciledTS);
+  scm_c_define_gsubr("xaccSplitRetDateReconciledTS", 1, 0, 0, (swig_guile_proc) _wrap_xaccSplitRetDateReconciledTS);
   scm_c_define_gsubr("gnc-transaction-get-date-posted", 1, 0, 0, (swig_guile_proc) _wrap_gnc_transaction_get_date_posted);
   scm_c_define_gsubr("gnc-transaction-get-date-entered", 1, 0, 0, (swig_guile_proc) _wrap_gnc_transaction_get_date_entered);
   scm_c_define_gsubr("gnc-split-get-date-reconciled", 1, 0, 0, (swig_guile_proc) _wrap_gnc_split_get_date_reconciled);
   scm_c_define_gsubr("gnc-transaction-set-date", 2, 0, 0, (swig_guile_proc) _wrap_gnc_transaction_set_date);
+  scm_c_define_gsubr("gncTaxTableLastModified", 1, 0, 0, (swig_guile_proc) _wrap_gncTaxTableLastModified);
+  scm_c_define_gsubr("gncOwnerApplyPayment", 0, 0, 1, (swig_guile_proc) _wrap_gncOwnerApplyPayment_rest);
+  scm_c_define_gsubr("gncOwnerCreatePaymentLot", 9, 0, 0, (swig_guile_proc) _wrap_gncOwnerCreatePaymentLot);
+  scm_c_define_gsubr("gnc-price-set-time", 2, 0, 0, (swig_guile_proc) _wrap_gnc_price_set_time);
+  scm_c_define_gsubr("gnc-price-get-time", 1, 0, 0, (swig_guile_proc) _wrap_gnc_price_get_time);
+  scm_c_define_gsubr("gnc-pricedb-lookup-at-time", 4, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_lookup_at_time);
+  scm_c_define_gsubr("gnc-pricedb-lookup-day", 4, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_lookup_day);
+  scm_c_define_gsubr("gnc-pricedb-lookup-nearest-in-time", 4, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_lookup_nearest_in_time);
+  scm_c_define_gsubr("gnc-pricedb-lookup-nearest-in-time-any-currency", 3, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_lookup_nearest_in_time_any_currency);
+  scm_c_define_gsubr("gnc-pricedb-lookup-latest-before", 4, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_lookup_latest_before);
+  scm_c_define_gsubr("gnc-pricedb-lookup-latest-before-any-currency", 3, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_lookup_latest_before_any_currency);
+  scm_c_define_gsubr("gnc-pricedb-convert-balance-nearest-price", 5, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_convert_balance_nearest_price);
+  scm_c_define_gsubr("gncPriceGetGUID", 1, 0, 0, (swig_guile_proc) _wrap_gncPriceGetGUID);
+  scm_c_define_gsubr("gncBudgetGetGUID", 1, 0, 0, (swig_guile_proc) _wrap_gncBudgetGetGUID);
+  scm_c_define_gsubr("QOF-ID-BOOK-SCM", 0, 0, 0, (swig_guile_proc) _wrap_QOF_ID_BOOK_SCM);
   scm_c_define_gsubr("gnc-get-num-action", 2, 0, 0, (swig_guile_proc) _wrap_gnc_get_num_action);
   scm_c_define_gsubr("gnc-get-action-num", 2, 0, 0, (swig_guile_proc) _wrap_gnc_get_action_num);
   scm_c_define_gsubr("gnc-set-num-action", 4, 0, 0, (swig_guile_proc) _wrap_gnc_set_num_action);
@@ -41960,10 +42059,7 @@ SWIG_init(void)
   scm_c_define_gsubr("gnc-book-option-book-currency-selected", 1, 0, 0, (swig_guile_proc) _wrap_gnc_book_option_book_currency_selected);
   scm_c_define_gsubr("gnc-book-option-register-cb", 3, 0, 0, (swig_guile_proc) _wrap_gnc_book_option_register_cb);
   scm_c_define_gsubr("gnc-book-option-remove-cb", 3, 0, 0, (swig_guile_proc) _wrap_gnc_book_option_remove_cb);
-  scm_c_define_gsubr("gnc-timespec2timepair", 1, 0, 0, (swig_guile_proc) _wrap_gnc_timespec2timepair);
-  scm_c_define_gsubr("gnc-timepair2timespec", 1, 0, 0, (swig_guile_proc) _wrap_gnc_timepair2timespec);
   scm_c_define_gsubr("gnc-time64-to-GDate", 1, 0, 0, (swig_guile_proc) _wrap_gnc_time64_to_GDate);
-  scm_c_define_gsubr("gnc-timepair-p", 1, 0, 0, (swig_guile_proc) _wrap_gnc_timepair_p);
   scm_c_define_gsubr("gnc-guid2scm", 1, 0, 0, (swig_guile_proc) _wrap_gnc_guid2scm);
   scm_c_define_gsubr("gnc-scm2guid", 1, 0, 0, (swig_guile_proc) _wrap_gnc_scm2guid);
   scm_c_define_gsubr("gnc-guid-p", 1, 0, 0, (swig_guile_proc) _wrap_gnc_guid_p);
@@ -42005,7 +42101,6 @@ SWIG_init(void)
   scm_c_define_gsubr("gnc-price-commit-edit", 1, 0, 0, (swig_guile_proc) _wrap_gnc_price_commit_edit);
   scm_c_define_gsubr("gnc-price-set-commodity", 2, 0, 0, (swig_guile_proc) _wrap_gnc_price_set_commodity);
   scm_c_define_gsubr("gnc-price-set-currency", 2, 0, 0, (swig_guile_proc) _wrap_gnc_price_set_currency);
-  scm_c_define_gsubr("gnc-price-set-time", 2, 0, 0, (swig_guile_proc) _wrap_gnc_price_set_time);
   scm_c_define_gsubr("gnc-price-set-time64", 2, 0, 0, (swig_guile_proc) _wrap_gnc_price_set_time64);
   scm_c_define_gsubr("gnc-price-set-source", 2, 0, 0, (swig_guile_proc) _wrap_gnc_price_set_source);
   scm_c_define_gsubr("gnc-price-set-source-string", 2, 0, 0, (swig_guile_proc) _wrap_gnc_price_set_source_string);
@@ -42014,7 +42109,6 @@ SWIG_init(void)
   scm_c_define_gsubr("gnc-price-lookup", 2, 0, 0, (swig_guile_proc) _wrap_gnc_price_lookup);
   scm_c_define_gsubr("gnc-price-get-commodity", 1, 0, 0, (swig_guile_proc) _wrap_gnc_price_get_commodity);
   scm_c_define_gsubr("gnc-price-get-currency", 1, 0, 0, (swig_guile_proc) _wrap_gnc_price_get_currency);
-  scm_c_define_gsubr("gnc-price-get-time", 1, 0, 0, (swig_guile_proc) _wrap_gnc_price_get_time);
   scm_c_define_gsubr("gnc-price-get-time64", 1, 0, 0, (swig_guile_proc) _wrap_gnc_price_get_time64);
   scm_c_define_gsubr("gnc-price-get-source", 1, 0, 0, (swig_guile_proc) _wrap_gnc_price_get_source);
   scm_c_define_gsubr("gnc-price-get-source-string", 1, 0, 0, (swig_guile_proc) _wrap_gnc_price_get_source_string);
@@ -42051,17 +42145,14 @@ SWIG_init(void)
   scm_c_define_gsubr("gnc-pricedb-lookup-latest-any-currency", 2, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_lookup_latest_any_currency);
   scm_c_define_gsubr("gnc-pricedb-has-prices", 3, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_has_prices);
   scm_c_define_gsubr("gnc-pricedb-get-prices", 3, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_get_prices);
-  scm_c_define_gsubr("gnc-pricedb-lookup-at-time", 4, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_lookup_at_time);
-  scm_c_define_gsubr("gnc-pricedb-lookup-day", 4, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_lookup_day);
+  scm_c_define_gsubr("gnc-pricedb-lookup-at-time64", 4, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_lookup_at_time64);
   scm_c_define_gsubr("gnc-pricedb-lookup-day-t64", 4, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_lookup_day_t64);
-  scm_c_define_gsubr("gnc-pricedb-lookup-nearest-in-time", 4, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_lookup_nearest_in_time);
   scm_c_define_gsubr("gnc-pricedb-lookup-nearest-in-time64", 4, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_lookup_nearest_in_time64);
-  scm_c_define_gsubr("gnc-pricedb-lookup-nearest-in-time-any-currency", 3, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_lookup_nearest_in_time_any_currency);
   scm_c_define_gsubr("gnc-pricedb-lookup-nearest-in-time-any-currency-t64", 3, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_lookup_nearest_in_time_any_currency_t64);
-  scm_c_define_gsubr("gnc-pricedb-lookup-latest-before", 4, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_lookup_latest_before);
-  scm_c_define_gsubr("gnc-pricedb-lookup-latest-before-any-currency", 3, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_lookup_latest_before_any_currency);
+  scm_c_define_gsubr("gnc-pricedb-lookup-latest-before-t64", 4, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_lookup_latest_before_t64);
+  scm_c_define_gsubr("gnc-pricedb-lookup-latest-before-any-currency-t64", 3, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_lookup_latest_before_any_currency_t64);
   scm_c_define_gsubr("gnc-pricedb-convert-balance-latest-price", 4, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_convert_balance_latest_price);
-  scm_c_define_gsubr("gnc-pricedb-convert-balance-nearest-price", 5, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_convert_balance_nearest_price);
+  scm_c_define_gsubr("gnc-pricedb-convert-balance-nearest-price-t64", 5, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_convert_balance_nearest_price_t64);
   scm_c_define_gsubr("gnc-pricedb-foreach-price", 4, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_foreach_price);
   scm_c_define_gsubr("gnc-pricedb-num-prices", 2, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_num_prices);
   scm_c_define_gsubr("gnc-pricedb-nth-price", 3, 0, 0, (swig_guile_proc) _wrap_gnc_pricedb_nth_price);
@@ -42077,7 +42168,13 @@ SWIG_init(void)
   scm_c_define_gsubr("qof-session-new", 0, 0, 0, (swig_guile_proc) _wrap_qof_session_new);
   scm_c_define_gsubr("qof-session-get-book", 1, 0, 0, (swig_guile_proc) _wrap_qof_session_get_book);
   scm_c_define_gsubr("qof-session-get-url", 1, 0, 0, (swig_guile_proc) _wrap_qof_session_get_url);
-  scm_c_define_gsubr("timespec-get-type", 0, 0, 0, (swig_guile_proc) _wrap_timespec_get_type);
+  SWIG_TypeClientData(SWIGTYPE_p_Time64, (void *) &_swig_guile_clientdataTime64);
+  scm_c_define_gsubr("Time64-t-set", 2, 0, 0, (swig_guile_proc) _wrap_Time64_t_set);
+  scm_c_define_gsubr("Time64-t-get", 1, 0, 0, (swig_guile_proc) _wrap_Time64_t_get);
+  scm_c_define_gsubr("new-Time64", 0, 0, 0, (swig_guile_proc) _wrap_new_Time64);
+  ((swig_guile_clientdata *)(SWIGTYPE_p_Time64->clientdata))->destroy = (guile_destructor) _wrap_delete_Time64;
+  scm_c_define_gsubr("delete-Time64", 1, 0, 0, (swig_guile_proc) _wrap_delete_Time64);
+  scm_c_define_gsubr("time64-get-type", 0, 0, 0, (swig_guile_proc) _wrap_time64_get_type);
   scm_c_define_gsubr("gnc-default-strftime-date-format", 0, 1, 0, (swig_guile_proc) _wrap_gnc_default_strftime_date_format);
   scm_c_define_gsubr("MAX-DATE-LENGTH", 0, 0, 0, (swig_guile_proc) _wrap_MAX_DATE_LENGTH);
   scm_c_define_gsubr("QOF-UTC-DATE-FORMAT", 0, 0, 0, (swig_guile_proc) _wrap_QOF_UTC_DATE_FORMAT);
@@ -42110,29 +42207,13 @@ SWIG_init(void)
   scm_c_define_gsubr("gnc-g-date-new-today", 0, 0, 0, (swig_guile_proc) _wrap_gnc_g_date_new_today);
   scm_c_define_gsubr("gnc-gdate-set-today", 1, 0, 0, (swig_guile_proc) _wrap_gnc_gdate_set_today);
   scm_c_define_gsubr("gnc-gdate-set-time64", 2, 0, 0, (swig_guile_proc) _wrap_gnc_gdate_set_time64);
-  scm_c_define_gsubr("timespec-equal", 2, 0, 0, (swig_guile_proc) _wrap_timespec_equal);
-  scm_c_define_gsubr("timespec-cmp", 2, 0, 0, (swig_guile_proc) _wrap_timespec_cmp);
-  scm_c_define_gsubr("timespec-diff", 2, 0, 0, (swig_guile_proc) _wrap_timespec_diff);
-  scm_c_define_gsubr("timespec-abs", 1, 0, 0, (swig_guile_proc) _wrap_timespec_abs);
-  scm_c_define_gsubr("timespecCanonicalDayTime", 1, 0, 0, (swig_guile_proc) _wrap_timespecCanonicalDayTime);
   scm_c_define_gsubr("time64CanonicalDayTime", 1, 0, 0, (swig_guile_proc) _wrap_time64CanonicalDayTime);
-  scm_c_define_gsubr("timespec-now", 0, 0, 0, (swig_guile_proc) _wrap_timespec_now);
-  scm_c_define_gsubr("timespecFromTime64", 2, 0, 0, (swig_guile_proc) _wrap_timespecFromTime64);
-  scm_c_define_gsubr("timespecToTime64", 1, 0, 0, (swig_guile_proc) _wrap_timespecToTime64);
-  scm_c_define_gsubr("time64-to-gdate", 1, 0, 0, (swig_guile_proc) _wrap_time64_to_gdate);
-  scm_c_define_gsubr("timespec-to-gdate", 1, 0, 0, (swig_guile_proc) _wrap_timespec_to_gdate);
-  scm_c_define_gsubr("gdate-to-timespec", 1, 0, 0, (swig_guile_proc) _wrap_gdate_to_timespec);
   scm_c_define_gsubr("gdate-to-time64", 1, 0, 0, (swig_guile_proc) _wrap_gdate_to_time64);
   scm_c_define_gsubr("gnc-dmy2time64", 3, 0, 0, (swig_guile_proc) _wrap_gnc_dmy2time64);
   scm_c_define_gsubr("gnc-dmy2time64-neutral", 3, 0, 0, (swig_guile_proc) _wrap_gnc_dmy2time64_neutral);
   scm_c_define_gsubr("gnc-dmy2time64-end", 3, 0, 0, (swig_guile_proc) _wrap_gnc_dmy2time64_end);
-  scm_c_define_gsubr("gnc-dmy2timespec", 3, 0, 0, (swig_guile_proc) _wrap_gnc_dmy2timespec);
-  scm_c_define_gsubr("gnc-dmy2timespec-end", 3, 0, 0, (swig_guile_proc) _wrap_gnc_dmy2timespec_end);
-  scm_c_define_gsubr("gnc-dmy2timespec-neutral", 3, 0, 0, (swig_guile_proc) _wrap_gnc_dmy2timespec_neutral);
   scm_c_define_gsubr("gnc-iso8601-to-time64-gmt", 1, 0, 0, (swig_guile_proc) _wrap_gnc_iso8601_to_time64_gmt);
-  scm_c_define_gsubr("gnc-timespec-to-iso8601-buff", 2, 0, 0, (swig_guile_proc) _wrap_gnc_timespec_to_iso8601_buff);
   scm_c_define_gsubr("gnc-time64-to-iso8601-buff", 2, 0, 0, (swig_guile_proc) _wrap_gnc_time64_to_iso8601_buff);
-  scm_c_define_gsubr("gnc-timespec2dmy", 4, 0, 0, (swig_guile_proc) _wrap_gnc_timespec2dmy);
   scm_c_define_gsubr("qof-date-format-get", 0, 0, 0, (swig_guile_proc) _wrap_qof_date_format_get);
   scm_c_define_gsubr("qof-date-format-set", 1, 0, 0, (swig_guile_proc) _wrap_qof_date_format_set);
   scm_c_define_gsubr("qof-date-format-get-string", 1, 0, 0, (swig_guile_proc) _wrap_qof_date_format_get_string);
@@ -42144,12 +42225,13 @@ SWIG_init(void)
   scm_c_define_gsubr("qof-print-date-buff", 3, 0, 0, (swig_guile_proc) _wrap_qof_print_date_buff);
   scm_c_define_gsubr("qof-print-gdate", 3, 0, 0, (swig_guile_proc) _wrap_qof_print_gdate);
   scm_c_define_gsubr("qof-print-date", 1, 0, 0, (swig_guile_proc) _wrap_qof_print_date);
-  scm_c_define_gsubr("gnc-print-date", 1, 0, 0, (swig_guile_proc) _wrap_gnc_print_date);
   scm_c_define_gsubr("qof-scan-date", 4, 0, 0, (swig_guile_proc) _wrap_qof_scan_date);
   scm_c_define_gsubr("gnc-tm-set-day-start", 1, 0, 0, (swig_guile_proc) _wrap_gnc_tm_set_day_start);
+  scm_c_define_gsubr("gnc-tm-set-day-neutral", 1, 0, 0, (swig_guile_proc) _wrap_gnc_tm_set_day_neutral);
   scm_c_define_gsubr("gnc-tm-set-day-middle", 1, 0, 0, (swig_guile_proc) _wrap_gnc_tm_set_day_middle);
   scm_c_define_gsubr("gnc-tm-set-day-end", 1, 0, 0, (swig_guile_proc) _wrap_gnc_tm_set_day_end);
   scm_c_define_gsubr("gnc-time64-get-day-start", 1, 0, 0, (swig_guile_proc) _wrap_gnc_time64_get_day_start);
+  scm_c_define_gsubr("gnc-time64-get-day-neutral", 1, 0, 0, (swig_guile_proc) _wrap_gnc_time64_get_day_neutral);
   scm_c_define_gsubr("gnc-time64-get-day-end", 1, 0, 0, (swig_guile_proc) _wrap_gnc_time64_get_day_end);
   scm_c_define_gsubr("gnc-date-get-last-mday", 2, 0, 0, (swig_guile_proc) _wrap_gnc_date_get_last_mday);
   scm_c_define_gsubr("gnc-tm-get-today-start", 1, 0, 0, (swig_guile_proc) _wrap_gnc_tm_get_today_start);
@@ -42161,6 +42243,7 @@ SWIG_init(void)
   scm_c_define_gsubr("gnc-dow-abbrev", 3, 0, 0, (swig_guile_proc) _wrap_gnc_dow_abbrev);
   scm_c_define_gsubr("gnc-gdate-equal", 2, 0, 0, (swig_guile_proc) _wrap_gnc_gdate_equal);
   scm_c_define_gsubr("gnc-gdate-hash", 1, 0, 0, (swig_guile_proc) _wrap_gnc_gdate_hash);
+  scm_c_define_gsubr("time64-to-gdate", 1, 0, 0, (swig_guile_proc) _wrap_time64_to_gdate);
   scm_c_define_gsubr("gnc-time64-get-day-start-gdate", 1, 0, 0, (swig_guile_proc) _wrap_gnc_time64_get_day_start_gdate);
   scm_c_define_gsubr("gnc-time64-get-day-end-gdate", 1, 0, 0, (swig_guile_proc) _wrap_gnc_time64_get_day_end_gdate);
   scm_c_define_gsubr("gnc-gdate-set-month-start", 1, 0, 0, (swig_guile_proc) _wrap_gnc_gdate_set_month_start);
@@ -42428,6 +42511,7 @@ SWIG_init(void)
   scm_c_define_gsubr("GNC-COMMODITY-NS-AMEX", 0, 0, 0, (swig_guile_proc) _wrap_GNC_COMMODITY_NS_AMEX);
   scm_c_define_gsubr("GNC-COMMODITY-NS-ASX", 0, 0, 0, (swig_guile_proc) _wrap_GNC_COMMODITY_NS_ASX);
   scm_c_define_gsubr("GNC-COMMODITY-NS-ISO-GUI", 0, 0, 0, (swig_guile_proc) _wrap_GNC_COMMODITY_NS_ISO_GUI);
+  scm_c_define_gsubr("GNC-COMMODITY-MAX-FRACTION", 0, 0, 0, (swig_guile_proc) _wrap_GNC_COMMODITY_MAX_FRACTION);
   scm_c_define_gsubr("SOURCE-SINGLE", 0, 0, 0, (swig_guile_proc) _wrap_SOURCE_SINGLE);
   scm_c_define_gsubr("SOURCE-MULTI", 0, 0, 0, (swig_guile_proc) _wrap_SOURCE_MULTI);
   scm_c_define_gsubr("SOURCE-UNKNOWN", 0, 0, 0, (swig_guile_proc) _wrap_SOURCE_UNKNOWN);
@@ -43195,9 +43279,9 @@ SWIG_init(void)
   scm_c_define_gsubr("gncOwnerGetOwnerFromLot", 2, 0, 0, (swig_guile_proc) _wrap_gncOwnerGetOwnerFromLot);
   scm_c_define_gsubr("gncOwnerGetOwnerFromTxn", 2, 0, 0, (swig_guile_proc) _wrap_gncOwnerGetOwnerFromTxn);
   scm_c_define_gsubr("gncOwnerGetOwnerFromTypeGuid", 4, 0, 0, (swig_guile_proc) _wrap_gncOwnerGetOwnerFromTypeGuid);
-  scm_c_define_gsubr("gncOwnerCreatePaymentLot", 9, 0, 0, (swig_guile_proc) _wrap_gncOwnerCreatePaymentLot);
+  scm_c_define_gsubr("gncOwnerCreatePaymentLotSecs", 9, 0, 0, (swig_guile_proc) _wrap_gncOwnerCreatePaymentLotSecs);
   scm_c_define_gsubr("gncOwnerAutoApplyPaymentsWithLots", 2, 0, 0, (swig_guile_proc) _wrap_gncOwnerAutoApplyPaymentsWithLots);
-  scm_c_define_gsubr("gncOwnerApplyPayment", 0, 0, 1, (swig_guile_proc) _wrap_gncOwnerApplyPayment_rest);
+  scm_c_define_gsubr("gncOwnerApplyPaymentSecs", 0, 0, 1, (swig_guile_proc) _wrap_gncOwnerApplyPaymentSecs_rest);
   scm_c_define_gsubr("gncOwnerFindOffsettingSplit", 2, 0, 0, (swig_guile_proc) _wrap_gncOwnerFindOffsettingSplit);
   scm_c_define_gsubr("gncOwnerReduceSplitTo", 2, 0, 0, (swig_guile_proc) _wrap_gncOwnerReduceSplitTo);
   scm_c_define_gsubr("gncOwnerSetLotLinkMemo", 1, 0, 0, (swig_guile_proc) _wrap_gncOwnerSetLotLinkMemo);
@@ -43254,7 +43338,7 @@ SWIG_init(void)
   scm_c_define_gsubr("gncTaxTableReturnChild", 2, 0, 0, (swig_guile_proc) _wrap_gncTaxTableReturnChild);
   scm_c_define_gsubr("gncTaxTableGetEntries", 1, 0, 0, (swig_guile_proc) _wrap_gncTaxTableGetEntries);
   scm_c_define_gsubr("gncTaxTableGetRefcount", 1, 0, 0, (swig_guile_proc) _wrap_gncTaxTableGetRefcount);
-  scm_c_define_gsubr("gncTaxTableLastModified", 1, 0, 0, (swig_guile_proc) _wrap_gncTaxTableLastModified);
+  scm_c_define_gsubr("gncTaxTableLastModifiedSecs", 1, 0, 0, (swig_guile_proc) _wrap_gncTaxTableLastModifiedSecs);
   scm_c_define_gsubr("gncTaxTableEntryGetAccount", 1, 0, 0, (swig_guile_proc) _wrap_gncTaxTableEntryGetAccount);
   scm_c_define_gsubr("gncTaxTableEntryGetType", 1, 0, 0, (swig_guile_proc) _wrap_gncTaxTableEntryGetType);
   scm_c_define_gsubr("gncTaxTableEntryGetAmount", 1, 0, 0, (swig_guile_proc) _wrap_gncTaxTableEntryGetAmount);
@@ -43375,7 +43459,7 @@ SWIG_init(void)
 static void SWIG_init_helper(void *data)
 {
 SWIG_init();
-scm_c_export("gncSplitGetGUID", "gncTransGetGUID", "gncAccountGetGUID", "gnc-split-get-type", "CREC", "YREC", "FREC", "NREC", "VREC", "xaccSplitConvertAmount", "xaccMallocSplit", "xaccSplitReinit", "xaccSplitDestroy", "xaccSplitCopyOnto", "xaccSplitGetBook", "xaccSplitGetAccount", "xaccSplitSetAccount", "xaccSplitGetParent", "xaccSplitSetParent", "xaccSplitGetLot", "xaccSplitSetLot", "xaccSplitSetMemo", "xaccSplitGetMemo", "xaccSplitSetAction", "xaccSplitGetAction", "xaccSplitSetReconcile", "xaccSplitGetReconcile", "xaccSplitSetDateReconciledSecs", "xaccSplitSetDateReconciledTS", "xaccSplitGetDateReconciledTS", "xaccSplitRetDateReconciledTS", "xaccSplitGetDateReconciled", "xaccSplitSetAmount", "xaccSplitGetAmount", "xaccSplitSetValue", "xaccSplitGetValue", "xaccSplitSetSharePriceAndAmount", "xaccSplitGetSharePrice", "xaccSplitSetBaseValue", "xaccSplitGetBaseValue", "xaccSplitGetBalance", "xaccSplitGetClearedBalance", "xaccSplitGetReconciledBalance", "xaccSplitEqual", "xaccSplitLookup", "xaccSplitListGetUniqueTransactions", "xaccSplitAddPeerSplit", "xaccSplitHasPeers", "xaccSplitIsPeerSplit", "xaccSplitRemovePeerSplit", "xaccSplitMergePeerSplits", "xaccSplitGetOtherSplit", "xaccSplitGetType", "xaccSplitMakeStockSplit", "xaccSplitOrder", "xaccSplitOrderDateOnly", "xaccSplitCompareAccountFullNames", "xaccSplitCompareAccountCodes", "xaccSplitCompareOtherAccountFullNames", "xaccSplitCompareOtherAccountCodes", "xaccSplitGetCorrAccountFullName", "xaccSplitGetCorrAccountName", "xaccSplitGetCorrAccountCode", "xaccSplitSetSharePrice", "xaccSplitVoidFormerAmount", "xaccSplitVoidFormerValue", "SPLIT-DATE-RECONCILED", "SPLIT-BALANCE", "SPLIT-CLEARED-BALANCE", "SPLIT-RECONCILED-BALANCE", "SPLIT-MEMO", "SPLIT-ACTION", "SPLIT-RECONCILE", "SPLIT-AMOUNT", "SPLIT-SHARE-PRICE", "SPLIT-VALUE", "SPLIT-TYPE", "SPLIT-VOIDED-AMOUNT", "SPLIT-VOIDED-VALUE", "SPLIT-LOT", "SPLIT-TRANS", "SPLIT-ACCOUNT", "SPLIT-ACCOUNT-GUID", "SPLIT-ACCT-FULLNAME", "SPLIT-CORR-ACCT-NAME", "SPLIT-CORR-ACCT-CODE", "gnc-account-get-children", "gnc-account-get-children-sorted", "gnc-account-get-descendants", "gnc-account-get-descendants-sorted", "AccountClass-parent-class-set", "AccountClass-parent-class-get", "new-AccountClass", "delete-AccountClass", "GncImportMatchMap-acc-set", "GncImportMatchMap-acc-get", "GncImportMatchMap-book-set", "GncImportMatchMap-book-get", "new-GncImportMatchMap", "delete-GncImportMatchMap", "gnc-account-get-type", "ACCT-TYPE-INVALID", "ACCT-TYPE-NONE", "ACCT-TYPE-BANK", "ACCT-TYPE-CASH", "ACCT-TYPE-CREDIT", "ACCT-TYPE-ASSET", "ACCT-TYPE-LIABILITY", "ACCT-TYPE-STOCK", "ACCT-TYPE-MUTUAL", "ACCT-TYPE-CURRENCY", "ACCT-TYPE-INCOME", "ACCT-TYPE-EXPENSE", "ACCT-TYPE-EQUITY", "ACCT-TYPE-RECEIVABLE", "ACCT-TYPE-PAYABLE", "ACCT-TYPE-ROOT", "ACCT-TYPE-TRADING", "NUM-ACCOUNT-TYPES", "ACCT-TYPE-CHECKING", "ACCT-TYPE-SAVINGS", "ACCT-TYPE-MONEYMRKT", "ACCT-TYPE-CREDITLINE", "ACCT-TYPE-LAST", "xaccMallocAccount", "gnc-account-create-root", "xaccCloneAccount", "xaccAccountBeginEdit", "xaccAccountCommitEdit", "xaccAccountDestroy", "xaccAccountEqual", "xaccAccountOrder", "gnc-get-account-separator-string", "gnc-get-account-separator", "gnc-set-account-separator", "gnc-book-get-root-account", "gnc-book-set-root-account", "xaccAccountLookup", "gnc-account-name-violations-errmsg", "gnc-account-list-name-violations", "gnc-account-get-book", "xaccAccountSetType", "xaccAccountSetName", "xaccAccountSetCode", "xaccAccountSetDescription", "xaccAccountSetColor", "xaccAccountSetFilter", "xaccAccountSetSortOrder", "xaccAccountSetSortReversed", "xaccAccountSetNotes", "xaccAccountSetLastNum", "gnc-account-set-policy", "xaccAccountGetType", "xaccAccountIsPriced", "gnc-account-set-start-balance", "gnc-account-set-start-cleared-balance", "gnc-account-set-start-reconciled-balance", "gnc-account-set-balance-dirty", "gnc-account-set-sort-dirty", "gnc-account-insert-split", "gnc-account-remove-split", "xaccAccountGetName", "xaccAccountGetCode", "xaccAccountGetDescription", "xaccAccountGetColor", "xaccAccountGetFilter", "xaccAccountGetSortOrder", "xaccAccountGetSortReversed", "xaccAccountGetNotes", "xaccAccountGetLastNum", "gnc-account-get-policy", "xaccAccountRecomputeBalance", "xaccAccountSortSplits", "gnc-account-get-full-name", "xaccAccountGainsAccount", "dxaccAccountSetPriceSrc", "dxaccAccountGetPriceSrc", "xaccAccountGetAutoInterestXfer", "xaccAccountSetAutoInterestXfer", "xaccAccountSetCommodity", "xaccAccountGetCommodity", "gnc-account-get-currency-or-parent", "xaccAccountGetCommoditySCU", "xaccAccountGetCommoditySCUi", "xaccAccountSetCommoditySCU", "xaccAccountSetNonStdSCU", "xaccAccountGetNonStdSCU", "xaccAccountGetBalance", "xaccAccountGetClearedBalance", "xaccAccountGetReconciledBalance", "xaccAccountGetPresentBalance", "xaccAccountGetProjectedMinimumBalance", "xaccAccountGetBalanceAsOfDate", "xaccAccountConvertBalanceToCurrency", "xaccAccountConvertBalanceToCurrencyAsOfDate", "xaccAccountGetBalanceInCurrency", "xaccAccountGetClearedBalanceInCurrency", "xaccAccountGetReconciledBalanceInCurrency", "xaccAccountGetPresentBalanceInCurrency", "xaccAccountGetProjectedMinimumBalanceInCurrency", "xaccAccountGetBalanceAsOfDateInCurrency", "xaccAccountGetBalanceChangeForPeriod", "gnc-account-append-child", "gnc-account-remove-child", "gnc-account-get-parent", "gnc-account-get-root", "gnc-account-is-root", "gnc-account-n-children", "gnc-account-child-index", "gnc-account-nth-child", "gnc-account-n-descendants", "gnc-account-get-current-depth", "gnc-account-get-tree-depth", "gnc-account-foreach-child", "gnc-account-foreach-descendant", "gnc-account-foreach-descendant-until", "gnc-account-join-children", "gnc-account-merge-children", "xaccAccountSetReconcileChildrenStatus", "xaccAccountGetReconcileChildrenStatus", "xaccAccountHasAncestor", "gnc-account-lookup-by-name", "gnc-account-lookup-by-full-name", "gnc-account-lookup-by-code", "xaccAccountTypeEnumAsString", "xaccAccountStringToType", "xaccAccountStringToEnum", "xaccAccountGetTypeStr", "xaccAccountTypesCompatibleWith", "xaccParentAccountTypesCompatibleWith", "xaccAccountTypesCompatible", "xaccAccountTypesValid", "xaccAccountIsAssetLiabType", "xaccAccountIsAPARType", "xaccAccountIsEquityType", "xaccAccountGetSplitList", "xaccAccountCountSplits", "xaccAccountMoveAllSplits", "xaccAccountForEachTransaction", "xaccAccountFindTransByDesc", "xaccAccountFindSplitByDesc", "xaccAccountInsertLot", "xaccAccountRemoveLot", "xaccAccountGetLotList", "xaccAccountForEachLot", "xaccAccountFindOpenLots", "xaccAccountGetReconcileLastDate", "xaccAccountSetReconcileLastDate", "xaccAccountGetReconcileLastInterval", "xaccAccountSetReconcileLastInterval", "xaccAccountGetReconcilePostponeDate", "xaccAccountSetReconcilePostponeDate", "xaccAccountGetReconcilePostponeBalance", "xaccAccountSetReconcilePostponeBalance", "xaccAccountClearReconcilePostpone", "PLACEHOLDER-NONE", "PLACEHOLDER-THIS", "PLACEHOLDER-CHILD", "xaccAccountGetPlaceholder", "xaccAccountSetPlaceholder", "xaccAccountGetDescendantPlaceholder", "xaccAccountGetHidden", "xaccAccountSetHidden", "xaccAccountIsHidden", "xaccAccountGetTaxRelated", "xaccAccountSetTaxRelated", "xaccAccountGetTaxUSCode", "xaccAccountSetTaxUSCode", "xaccAccountGetTaxUSPayerNameSource", "xaccAccountSetTaxUSPayerNameSource", "xaccAccountGetTaxUSCopyNumber", "xaccAccountSetTaxUSCopyNumber", "xaccAccountSetMark", "xaccClearMark", "xaccClearMarkDown", "gnc-account-tree-begin-staged-transaction-traversals", "xaccSplitsBeginStagedTransactionTraversals", "xaccAccountBeginStagedTransactionTraversals", "xaccTransactionTraverse", "xaccAccountStagedTransactionTraversal", "gnc-account-tree-staged-transaction-traversal", "xaccAccountTreeForEachTransaction", "gnc-account-imap-create-imap", "gnc-account-imap-find-account", "gnc-account-imap-add-account", "gnc-account-imap-delete-account", "gnc-account-imap-find-account-bayes", "gnc-account-imap-add-account-bayes", "GncImapInfo-source-account-set", "GncImapInfo-source-account-get", "GncImapInfo-map-account-set", "GncImapInfo-map-account-get", "GncImapInfo-list-set", "GncImapInfo-list-get", "GncImapInfo-head-set", "GncImapInfo-head-get", "GncImapInfo-category-set", "GncImapInfo-category-get", "GncImapInfo-match-string-set", "GncImapInfo-match-string-get", "GncImapInfo-count-set", "GncImapInfo-count-get", "new-GncImapInfo", "delete-GncImapInfo", "gnc-account-imap-get-info-bayes", "gnc-account-imap-get-info", "gnc-account-get-map-entry", "gnc-account-delete-map-entry", "gnc-account-delete-all-bayes-maps", "DxaccAccountSetCurrency", "DxaccAccountGetCurrency", "dxaccAccountSetQuoteTZ", "dxaccAccountGetQuoteTZ", "ACCOUNT-KVP", "ACCOUNT-NAME-", "ACCOUNT-CODE-", "ACCOUNT-DESCRIPTION-", "ACCOUNT-COLOR-", "ACCOUNT-FILTER-", "ACCOUNT-SORT-ORDER-", "ACCOUNT-SORT-REVERSED-", "ACCOUNT-NOTES-", "ACCOUNT-BALANCE-", "ACCOUNT-CLEARED-", "ACCOUNT-RECONCILED-", "ACCOUNT-PRESENT-", "ACCOUNT-FUTURE-MINIMUM-", "ACCOUNT-TAX-RELATED", "ACCOUNT-TYPE-", "ACCOUNT-SCU", "ACCOUNT-NSCU", "ACCOUNT-PARENT", "ACCOUNT-MATCH-ALL-TYPE", "gnc-transaction-get-type", "TXN-TYPE-NONE", "TXN-TYPE-INVOICE", "TXN-TYPE-PAYMENT", "TXN-TYPE-LINK", "xaccMallocTransaction", "xaccTransDestroy", "xaccTransClone", "xaccTransCloneNoKvp", "xaccTransEqual", "xaccTransBeginEdit", "xaccTransCommitEdit", "xaccTransRollbackEdit", "xaccTransIsOpen", "xaccTransLookup", "xaccTransCopyToClipBoard", "xaccTransCopyOnto", "xaccTransCopyFromClipBoard", "xaccTransFindSplitByAccount", "xaccTransScrubGains", "gnc-book-count-transactions", "xaccTransUseTradingAccounts", "xaccTransSortSplits", "xaccTransSetTxnType", "xaccTransGetTxnType", "xaccTransSetNum", "xaccTransSetDescription", "xaccTransSetAssociation", "xaccTransSetNotes", "xaccTransGetNum", "xaccTransGetDescription", "xaccTransGetAssociation", "xaccTransGetNotes", "xaccTransSetIsClosingTxn", "xaccTransGetIsClosingTxn", "xaccTransGetSplit", "xaccTransGetSplitIndex", "xaccTransGetSplitList", "xaccTransGetPaymentAcctSplitList", "xaccTransGetAPARAcctSplitList", "xaccTransStillHasSplit", "xaccTransGetFirstPaymentAcctSplit", "xaccTransGetFirstAPARAcctSplit", "xaccTransSetReadOnly", "xaccTransClearReadOnly", "xaccTransGetReadOnly", "xaccTransIsReadonlyByPostedDate", "xaccTransInFutureByPostedDate", "xaccTransCountSplits", "xaccTransHasReconciledSplits", "xaccTransHasReconciledSplitsByAccount", "xaccTransHasSplitsInState", "xaccTransHasSplitsInStateByAccount", "xaccTransGetCurrency", "xaccTransSetCurrency", "xaccTransGetImbalanceValue", "xaccTransGetImbalance", "xaccTransIsBalanced", "xaccTransGetAccountValue", "xaccTransGetAccountAmount", "xaccTransGetRateForCommodity", "xaccTransGetAccountConvRate", "xaccTransGetAccountBalance", "xaccTransOrder", "xaccTransOrder-num-action", "xaccTransSetDate", "xaccTransSetDatePostedGDate", "xaccTransSetDatePostedSecs", "xaccTransSetDatePostedSecsNormalized", "xaccTransSetDateEnteredSecs", "xaccTransSetDateDue", "xaccTransGetDate", "xaccTransRetDatePosted", "xaccTransGetDatePostedGDate", "xaccTransGetDateEntered", "xaccTransRetDateEntered", "xaccTransRetDateDue", "xaccTransVoid", "xaccTransUnvoid", "xaccTransReverse", "xaccTransGetReversedBy", "xaccTransGetVoidStatus", "xaccTransGetVoidReason", "xaccTransGetVoidTime", "TRANS-KVP", "TRANS-NUM", "TRANS-DESCRIPTION", "TRANS-DATE-ENTERED", "TRANS-DATE-POSTED", "TRANS-DATE-DUE", "TRANS-IMBALANCE", "TRANS-IS-BALANCED", "TRANS-IS-CLOSING", "TRANS-NOTES", "TRANS-ASSOCIATION", "TRANS-TYPE", "TRANS-VOID-STATUS", "TRANS-VOID-REASON", "TRANS-VOID-TIME", "TRANS-SPLITLIST", "RECONCILED-MATCH-TYPE", "GncLotClass-parent-class-set", "GncLotClass-parent-class-get", "new-GncLotClass", "delete-GncLotClass", "gnc-lot-get-type", "gnc-lot-new", "gnc-lot-destroy", "gnc-lot-lookup", "gnc-lot-get-book", "gnc-lot-begin-edit", "gnc-lot-commit-edit", "gnc-lot-add-split", "gnc-lot-remove-split", "gnc-lot-get-split-list", "gnc-lot-count-splits", "gnc-lot-get-account", "gnc-lot-set-account", "gnc-lot-get-balance", "gnc-lot-get-balance-before", "gnc-lot-is-closed", "gnc-lot-get-earliest-split", "gnc-lot-get-latest-split", "gnc-lot-set-closed-unknown", "gnc-lot-get-title", "gnc-lot-get-notes", "gnc-lot-set-title", "gnc-lot-set-notes", "gnc-lot-make-default", "LOT-IS-CLOSED", "LOT-BALANCE", "LOT-TITLE", "LOT-NOTES", "gncPriceGetGUID", "gncBudgetGetGUID", "QOF-ID-BOOK-SCM", "gnc-transaction-get-date-posted", "gnc-transaction-get-date-entered", "gnc-split-get-date-reconciled", "gnc-transaction-set-date", "gnc-get-num-action", "gnc-get-action-num", "gnc-set-num-action", "gnc-book-option-num-field-source-change", "gnc-book-option-book-currency-selected", "gnc-book-option-register-cb", "gnc-book-option-remove-cb", "gnc-timespec2timepair", "gnc-timepair2timespec", "gnc-time64-to-GDate", "gnc-timepair-p", "gnc-guid2scm", "gnc-scm2guid", "gnc-guid-p", "gnc-query-scm2path", "gnc-query2scm", "gnc-scm2query", "gnc-numeric-to-scm", "gnc-scm-to-numeric", "gnc-scm-to-commodity", "gnc-commodity-to-scm", "gnc-book-to-scm", "gnc-get-valid-policy-list", "gnc-valid-policy-name", "PolicyGetName", "PolicyGetDescription", "PolicyGetHint", "xaccGetFIFOPolicy", "xaccGetLIFOPolicy", "gnc-price-get-type", "gnc-pricedb-get-type", "PRICE-SOURCE-EDIT-DLG", "PRICE-SOURCE-FQ", "PRICE-SOURCE-USER-PRICE", "PRICE-SOURCE-XFER-DLG-VAL", "PRICE-SOURCE-SPLIT-REG", "PRICE-SOURCE-STOCK-SPLIT", "PRICE-SOURCE-INVOICE", "PRICE-SOURCE-TEMP", "PRICE-SOURCE-INVALID", "PRICE-TYPE-LAST", "PRICE-TYPE-UNK", "PRICE-TYPE-TRN", "gnc-price-create", "gnc-price-clone", "gnc-price-invert", "gnc-price-ref", "gnc-price-unref", "gnc-price-begin-edit", "gnc-price-commit-edit", "gnc-price-set-commodity", "gnc-price-set-currency", "gnc-price-set-time", "gnc-price-set-time64", "gnc-price-set-source", "gnc-price-set-source-string", "gnc-price-set-typestr", "gnc-price-set-value", "gnc-price-lookup", "gnc-price-get-commodity", "gnc-price-get-currency", "gnc-price-get-time", "gnc-price-get-time64", "gnc-price-get-source", "gnc-price-get-source-string", "gnc-price-get-typestr", "gnc-price-get-value", "gnc-price-equal", "gnc-price-print", "CURRENCY-DENOM", "COMMODITY-DENOM-MULT", "gnc-price-list-insert", "gnc-price-list-remove", "gnc-price-list-destroy", "gnc-price-list-equal", "gnc-pricedb-get-db", "gnc-collection-get-pricedb", "gnc-pricedb-destroy", "gnc-pricedb-begin-edit", "gnc-pricedb-commit-edit", "gnc-pricedb-set-bulk-update", "gnc-pricedb-add-price", "gnc-pricedb-remove-price", "PRICE-REMOVE-SOURCE-FQ", "PRICE-REMOVE-SOURCE-USER", "PRICE-REMOVE-SOURCE-APP", "PRICE-REMOVE-SOURCE-COMM", "PRICE-REMOVE-KEEP-NONE", "PRICE-REMOVE-KEEP-LAST-WEEKLY", "PRICE-REMOVE-KEEP-LAST-MONTHLY", "PRICE-REMOVE-KEEP-LAST-QUARTERLY", "PRICE-REMOVE-KEEP-LAST-PERIOD", "PRICE-REMOVE-KEEP-SCALED", "gnc-pricedb-remove-old-prices", "gnc-pricedb-lookup-latest", "gnc-pricedb-lookup-latest-any-currency", "gnc-pricedb-has-prices", "gnc-pricedb-get-prices", "gnc-pricedb-lookup-at-time", "gnc-pricedb-lookup-day", "gnc-pricedb-lookup-day-t64", "gnc-pricedb-lookup-nearest-in-time", "gnc-pricedb-lookup-nearest-in-time64", "gnc-pricedb-lookup-nearest-in-time-any-currency", "gnc-pricedb-lookup-nearest-in-time-any-currency-t64", "gnc-pricedb-lookup-latest-before", "gnc-pricedb-lookup-latest-before-any-currency", "gnc-pricedb-convert-balance-latest-price", "gnc-pricedb-convert-balance-nearest-price", "gnc-pricedb-foreach-price", "gnc-pricedb-num-prices", "gnc-pricedb-nth-price", "gnc-pricedb-get-num-prices", "gnc-pricedb-equal", "gnc-pricedb-print-contents", "PRICE-COMMODITY", "PRICE-CURRENCY", "PRICE-DATE", "PRICE-SOURCE", "PRICE-TYPE", "PRICE-VALUE", "qof-session-new", "qof-session-get-book", "qof-session-get-url", "timespec-get-type", "gnc-default-strftime-date-format", "MAX-DATE-LENGTH", "QOF-UTC-DATE-FORMAT", "QOF-DATE-FORMAT-US", "QOF-DATE-FORMAT-UK", "QOF-DATE-FORMAT-CE", "QOF-DATE-FORMAT-ISO", "QOF-DATE-FORMAT-LOCALE", "QOF-DATE-FORMAT-UTC", "QOF-DATE-FORMAT-CUSTOM", "QOF-DATE-FORMAT-UNSET", "QOF-DATE-COMPLETION-THISYEAR", "QOF-DATE-COMPLETION-SLIDING", "GNCDATE-MONTH-NUMBER", "GNCDATE-MONTH-ABBREV", "GNCDATE-MONTH-NAME", "gnc-localtime", "gnc-localtime-r", "gnc-gmtime", "gnc-mktime", "gnc-timegm", "gnc-ctime", "gnc-time", "gnc-difftime", "gnc-date-dateformat-to-string", "gnc-date-string-to-dateformat", "gnc-date-monthformat-to-string", "gnc-date-string-to-monthformat", "gnc-print-time64", "gnc-g-date-new-today", "gnc-gdate-set-today", "gnc-gdate-set-time64", "timespec-equal", "timespec-cmp", "timespec-diff", "timespec-abs", "timespecCanonicalDayTime", "time64CanonicalDayTime", "timespec-now", "timespecFromTime64", "timespecToTime64", "time64-to-gdate", "timespec-to-gdate", "gdate-to-timespec", "gdate-to-time64", "gnc-dmy2time64", "gnc-dmy2time64-neutral", "gnc-dmy2time64-end", "gnc-dmy2timespec", "gnc-dmy2timespec-end", "gnc-dmy2timespec-neutral", "gnc-iso8601-to-time64-gmt", "gnc-timespec-to-iso8601-buff", "gnc-time64-to-iso8601-buff", "gnc-timespec2dmy", "qof-date-format-get", "qof-date-format-set", "qof-date-format-get-string", "qof-date-text-format-get-string", "qof-date-completion-set", "dateSeparator", "qof-strftime", "qof-print-date-dmy-buff", "qof-print-date-buff", "qof-print-gdate", "qof-print-date", "gnc-print-date", "qof-scan-date", "gnc-tm-set-day-start", "gnc-tm-set-day-middle", "gnc-tm-set-day-end", "gnc-time64-get-day-start", "gnc-time64-get-day-end", "gnc-date-get-last-mday", "gnc-tm-get-today-start", "gnc-tm-get-today-end", "gnc-time64-get-today-start", "gnc-time64-get-today-end", "gnc-date-timestamp", "MIN-BUF-LEN", "gnc-dow-abbrev", "gnc-gdate-equal", "gnc-gdate-hash", "gnc-time64-get-day-start-gdate", "gnc-time64-get-day-end-gdate", "gnc-gdate-set-month-start", "gnc-gdate-set-month-end", "gnc-gdate-set-prev-month-start", "gnc-gdate-set-prev-month-end", "gnc-gdate-set-quarter-start", "gnc-gdate-set-quarter-end", "gnc-gdate-set-prev-quarter-start", "gnc-gdate-set-prev-quarter-end", "gnc-gdate-set-year-start", "gnc-gdate-set-year-end", "gnc-gdate-set-prev-year-start", "gnc-gdate-set-prev-year-end", "gnc-gdate-set-fiscal-year-start", "gnc-gdate-set-fiscal-year-end", "gnc-gdate-set-prev-fiscal-year-start", "gnc-gdate-set-prev-fiscal-year-end", "guid-new-return", "qof-query-create-for-splits", "qof-query-run", "qof-query-last-run", "qof-query-run-subquery", "gnc-get-current-session", "gnc-clear-current-session", "gnc-set-current-session", "gnc-current-session-exist", "QUERY-TXN-MATCH-ALL", "QUERY-TXN-MATCH-ANY", "xaccQueryGetSplitsUniqueTrans", "xaccQueryGetTransactions", "xaccQueryGetLots", "xaccQueryAddAccountMatch", "xaccQueryAddAccountGUIDMatch", "xaccQueryAddSingleAccountMatch", "xaccQueryAddStringMatch", "xaccQueryAddDescriptionMatch", "xaccQueryAddNotesMatch", "xaccQueryAddNumberMatch", "xaccQueryAddActionMatch", "xaccQueryAddMemoMatch", "xaccQueryAddValueMatch", "xaccQueryAddSharePriceMatch", "xaccQueryAddSharesMatch", "xaccQueryAddBalanceMatch", "xaccQueryAddNumericMatch", "xaccQueryAddDateMatch", "xaccQueryAddDateMatchTT", "xaccQueryGetDateMatchTT", "xaccQueryAddClosingTransMatch", "CLEARED-NONE", "CLEARED-NO", "CLEARED-CLEARED", "CLEARED-RECONCILED", "CLEARED-FROZEN", "CLEARED-VOIDED", "CLEARED-ALL", "xaccQueryAddClearedMatch", "xaccQueryAddGUIDMatch", "xaccQueryGetEarliestDateFound", "xaccQueryGetLatestDateFound", "QOF-MOD-QUERY", "QOF-QUERY-AND", "QOF-QUERY-OR", "QOF-QUERY-NAND", "QOF-QUERY-NOR", "QOF-QUERY-XOR", "QUERY-DEFAULT-SORT", "QOF-PARAM-BOOK", "QOF-PARAM-GUID", "QOF-PARAM-KVP", "QOF-PARAM-ACTIVE", "QOF-PARAM-VERSION", "qof-query-init", "qof-query-shutdown", "qof-query-build-param-list", "qof-query-create", "qof-query-create-for", "qof-query-destroy", "qof-query-search-for", "qof-query-set-book", "qof-query-add-term", "qof-query-add-guid-match", "qof-query-add-guid-list-match", "qof-query-add-boolean-match", "qof-query-clear", "qof-query-purge-terms", "qof-query-has-terms", "qof-query-num-terms", "qof-query-has-term-type", "qof-query-get-term-type", "qof-query-copy", "qof-query-invert", "qof-query-merge", "qof-query-merge-in-place", "qof-query-set-sort-order", "qof-query-set-sort-options", "qof-query-set-sort-increasing", "qof-query-set-max-results", "qof-query-equal", "qof-query-print", "qof-query-get-search-for", "qof-query-get-books", "QOF-COMPARE-LT", "QOF-COMPARE-LTE", "QOF-COMPARE-EQUAL", "QOF-COMPARE-GT", "QOF-COMPARE-GTE", "QOF-COMPARE-NEQ", "QOF-COMPARE-CONTAINS", "QOF-COMPARE-NCONTAINS", "QOF-STRING-MATCH-NORMAL", "QOF-STRING-MATCH-CASEINSENSITIVE", "QOF-DATE-MATCH-NORMAL", "QOF-DATE-MATCH-DAY", "QOF-NUMERIC-MATCH-DEBIT", "QOF-NUMERIC-MATCH-CREDIT", "QOF-NUMERIC-MATCH-ANY", "QOF-GUID-MATCH-ANY", "QOF-GUID-MATCH-NONE", "QOF-GUID-MATCH-NULL", "QOF-GUID-MATCH-ALL", "QOF-GUID-MATCH-LIST-ANY", "QOF-CHAR-MATCH-ANY", "QOF-CHAR-MATCH-NONE", "-QofQueryPredData-type-name-set", "-QofQueryPredData-type-name-get", "-QofQueryPredData-how-set", "-QofQueryPredData-how-get", "new--QofQueryPredData", "delete--QofQueryPredData", "qof-query-string-predicate", "qof-query-date-predicate", "qof-query-numeric-predicate", "qof-query-guid-predicate", "qof-query-int32-predicate", "qof-query-int64-predicate", "qof-query-double-predicate", "qof-query-boolean-predicate", "qof-query-char-predicate", "qof-query-collect-predicate", "qof-query-choice-predicate", "qof-query-core-predicate-copy", "qof-query-core-predicate-free", "qof-query-date-predicate-get-date", "qof-query-core-to-string", "qof-string-number-compare-func", "KVP-OPTION-PATH", "OPTION-SECTION-ACCOUNTS", "OPTION-NAME-TRADING-ACCOUNTS", "OPTION-NAME-CURRENCY-ACCOUNTING", "OPTION-NAME-BOOK-CURRENCY", "OPTION-NAME-DEFAULT-GAINS-POLICY", "OPTION-NAME-DEFAULT-GAINS-LOSS-ACCT-GUID", "OPTION-NAME-AUTO-READONLY-DAYS", "OPTION-NAME-NUM-FIELD-SOURCE", "OPTION-SECTION-BUDGETING", "OPTION-NAME-DEFAULT-BUDGET", "qof-book-use-trading-accounts", "qof-book-get-book-currency-name", "qof-book-get-default-gains-policy", "qof-book-get-default-gain-loss-acct-guid", "qof-book-uses-autoreadonly", "qof-book-get-num-days-autoreadonly", "qof-book-get-autoreadonly-gdate", "qof-book-use-split-action-for-num-field", "qof-book-shutting-down", "qof-book-session-not-saved", "-gnc-numeric-num-set", "-gnc-numeric-num-get", "-gnc-numeric-denom-set", "-gnc-numeric-denom-get", "new--gnc-numeric", "delete--gnc-numeric", "GNC-NUMERIC-RND-MASK", "GNC-NUMERIC-DENOM-MASK", "GNC-NUMERIC-SIGFIGS-MASK", "GNC-HOW-RND-FLOOR", "GNC-HOW-RND-CEIL", "GNC-HOW-RND-TRUNC", "GNC-HOW-RND-PROMOTE", "GNC-HOW-RND-ROUND-HALF-DOWN", "GNC-HOW-RND-ROUND-HALF-UP", "GNC-HOW-RND-ROUND", "GNC-HOW-RND-NEVER", "GNC-HOW-DENOM-EXACT", "GNC-HOW-DENOM-REDUCE", "GNC-HOW-DENOM-LCD", "GNC-HOW-DENOM-FIXED", "GNC-HOW-DENOM-SIGFIG", "gnc-numeric-create", "gnc-numeric-zero", "double-to-gnc-numeric", "string-to-gnc-numeric", "gnc-numeric-error", "gnc-numeric-errorCode-to-string", "gnc-numeric-num", "gnc-numeric-denom", "gnc-numeric-to-double", "gnc-numeric-to-string", "gnc-num-dbg-to-string", "gnc-numeric-check", "gnc-numeric-compare", "gnc-numeric-zero-p", "gnc-numeric-negative-p", "gnc-numeric-positive-p", "gnc-numeric-eq", "gnc-numeric-equal", "gnc-numeric-same", "gnc-numeric-add", "gnc-numeric-sub", "gnc-numeric-mul", "gnc-numeric-div", "gnc-numeric-neg", "gnc-numeric-abs", "gnc-numeric-add-fixed", "gnc-numeric-sub-fixed", "gnc-numeric-convert", "gnc-numeric-reduce", "gnc-numeric-to-decimal", "gnc-numeric-invert", "gnc-numeric-get-type", "gnc-budget-get-type", "GNC-BUDGET-MAX-NUM-PERIODS-DIGITS", "gnc-budget-register", "gnc-budget-new", "gnc-budget-destroy", "gnc-budget-begin-edit", "gnc-budget-commit-edit", "gnc-budget-clone", "gnc-budget-get-guid", "gnc-budget-set-name", "gnc-budget-get-name", "gnc-budget-set-description", "gnc-budget-get-description", "gnc-budget-set-num-periods", "gnc-budget-get-num-periods", "gnc-budget-set-recurrence", "gnc-budget-get-recurrence", "gnc-budget-get-period-start-date", "gnc-budget-get-period-end-date", "gnc-budget-set-account-period-value", "gnc-budget-unset-account-period-value", "gnc-budget-is-account-period-value-set", "gnc-budget-get-account-period-value", "gnc-budget-get-account-period-actual-value", "gnc-budget-get-default", "gnc-budget-lookup", "gnc-quote-source-set-fq-installed", "gnc-commodity-get-type", "gnc-commodity-namespace-get-type", "GNC-COMMODITY-TABLE", "GNC-COMMODITY-NS-LEGACY", "GNC-COMMODITY-NS-TEMPLATE", "GNC-COMMODITY-NS-ISO", "GNC-COMMODITY-NS-CURRENCY", "GNC-COMMODITY-NS-NASDAQ", "GNC-COMMODITY-NS-NYSE", "GNC-COMMODITY-NS-EUREX", "GNC-COMMODITY-NS-MUTUAL", "GNC-COMMODITY-NS-AMEX", "GNC-COMMODITY-NS-ASX", "GNC-COMMODITY-NS-ISO-GUI", "SOURCE-SINGLE", "SOURCE-MULTI", "SOURCE-UNKNOWN", "SOURCE-MAX", "SOURCE-CURRENCY", "gnc-quote-source-fq-installed", "gnc-quote-source-fq-version", "gnc-quote-source-num-entries", "gnc-quote-source-add-new", "gnc-quote-source-lookup-by-internal", "gnc-quote-source-lookup-by-ti", "gnc-quote-source-get-supported", "gnc-quote-source-get-type", "gnc-quote-source-get-index", "gnc-quote-source-get-user-name", "gnc-quote-source-get-internal-name", "gnc-commodity-new", "gnc-commodity-destroy", "gnc-commodity-copy", "gnc-commodity-clone", "gnc-commodity-get-mnemonic", "gnc-commodity-get-namespace", "gnc-commodity-get-namespace-ds", "gnc-commodity-get-fullname", "gnc-commodity-get-printname", "gnc-commodity-get-cusip", "gnc-commodity-get-unique-name", "gnc-commodity-get-fraction", "gnc-commodity-get-quote-flag", "gnc-commodity-get-quote-source", "gnc-commodity-get-default-quote-source", "gnc-commodity-get-quote-tz", "gnc-commodity-get-user-symbol", "gnc-commodity-get-default-symbol", "gnc-commodity-get-nice-symbol", "gnc-commodity-set-mnemonic", "gnc-commodity-set-namespace", "gnc-commodity-set-fullname", "gnc-commodity-set-cusip", "gnc-commodity-set-fraction", "gnc-commodity-user-set-quote-flag", "gnc-commodity-set-quote-flag", "gnc-commodity-set-quote-source", "gnc-commodity-set-quote-tz", "gnc-commodity-set-user-symbol", "gnc-commodity-increment-usage-count", "gnc-commodity-decrement-usage-count", "gnc-commodity-equiv", "gnc-commodity-equal", "gnc-commodity-compare", "gnc-commodity-compare-void", "gnc-commodity-namespace-is-iso", "gnc-commodity-is-iso", "gnc-commodity-is-currency", "gnc-commodity-table-get-table", "gnc-commodity-table-lookup", "gnc-commodity-table-lookup-unique", "gnc-commodity-table-find-full", "gnc-commodity-find-commodity-by-guid", "gnc-commodity-table-insert", "gnc-commodity-table-remove", "gnc-commodity-table-add-default-data", "gnc-commodity-namespace-get-name", "gnc-commodity-namespace-get-gui-name", "gnc-commodity-namespace-get-commodity-list", "gnc-commodity-table-has-namespace", "gnc-commodity-table-get-namespaces", "gnc-commodity-table-get-namespaces-list", "gnc-commodity-table-add-namespace", "gnc-commodity-table-find-namespace", "gnc-commodity-table-delete-namespace", "gnc-commodity-table-get-size", "gnc-commodity-table-get-commodities", "gnc-commodity-table-foreach-commodity", "gnc-commodity-table-new", "gnc-commodity-table-destroy", "gnc-commodity-obtain-twin", "gnc-commodity-table-register", "gnc-commodity-begin-edit", "gnc-commodity-commit-edit", "-gnc-monetary-commodity-set", "-gnc-monetary-commodity-get", "-gnc-monetary-value-set", "-gnc-monetary-value-get", "new--gnc-monetary", "delete--gnc-monetary", "gnc-monetary-create", "gnc-monetary-commodity", "gnc-monetary-value", "gnc-monetary-list-add-monetary", "gnc-monetary-list-add-value", "gnc-monetary-list-delete-zeros", "gnc-monetary-list-free", "gnc-hook-add-scm-dangler", "gnc-hook-run", "gnc-hook-create", "gnc-hook-add-dangler", "gnc-hook-remove-dangler", "gnc-hooks-init", "HOOK-STARTUP", "HOOK-SHUTDOWN", "HOOK-UI-STARTUP", "HOOK-UI-POST-STARTUP", "HOOK-UI-SHUTDOWN", "HOOK-NEW-BOOK", "HOOK-REPORT", "HOOK-CURRENCY-CHANGED", "HOOK-SAVE-OPTIONS", "HOOK-ADD-EXTENSION", "HOOK-BOOK-OPENED", "HOOK-BOOK-CLOSED", "HOOK-BOOK-SAVED", "gnc-book-get-template-root", "qof-book-options-delete", "qof-book-set-option", "qof-book-get-option", "qof-book-get-string-option", "qof-book-set-string-option", "gncTaxTableReturnGUID", "gncInvoiceReturnGUID", "gncJobReturnGUID", "gncVendorReturnGUID", "gncCustomerReturnGUID", "gncEmployeeReturnGUID", "gncTaxTableLookupFlip", "gncInvoiceLookupFlip", "gncJobLookupFlip", "gncVendorLookupFlip", "gncCustomerLookupFlip", "gncEmployeeLookupFlip", "GNC-ADDRESS-MODULE-NAME", "GNC-ID-ADDRESS", "gnc-address-get-type", "gncAddressCreate", "gncAddressDestroy", "gncAddressBeginEdit", "gncAddressCommitEdit", "gncAddressSetName", "gncAddressSetAddr1", "gncAddressSetAddr2", "gncAddressSetAddr3", "gncAddressSetAddr4", "gncAddressSetPhone", "gncAddressSetFax", "gncAddressSetEmail", "gncAddressClearDirty", "gncAddressGetName", "gncAddressGetAddr1", "gncAddressGetAddr2", "gncAddressGetAddr3", "gncAddressGetAddr4", "gncAddressGetPhone", "gncAddressGetFax", "gncAddressGetEmail", "gncAddressIsDirty", "gncAddressCompare", "gncAddressEqual", "ADDRESS-NAME", "ADDRESS-ONE", "ADDRESS-TWO", "ADDRESS-THREE", "ADDRESS-FOUR", "ADDRESS-PHONE", "ADDRESS-FAX", "ADDRESS-EMAIL", "ADDRESS-OWNER", "GNC-ID-BILLTERM", "gnc-billterm-get-type", "GNC-BILLTERM-NAME", "GNC-BILLTERM-DESC", "GNC-BILLTERM-DUEDAYS", "GNC-BILLTERM-DISCDAYS", "GNC-BILLTERM-CUTOFF", "GNC-BILLTERM-TYPE", "GNC-BILLTERM-DISCOUNT", "GNC-BILLTERM-REFCOUNT", "GNC-TERM-TYPE-DAYS", "GNC-TERM-TYPE-PROXIMO", "gncBillTermCreate", "gncBillTermDestroy", "gncBillTermIncRef", "gncBillTermDecRef", "gncBillTermChanged", "gncBillTermBeginEdit", "gncBillTermCommitEdit", "gncBillTermSetName", "gncBillTermSetDescription", "gncBillTermSetType", "gncBillTermSetDueDays", "gncBillTermSetDiscountDays", "gncBillTermSetDiscount", "gncBillTermSetCutoff", "gncBillTermLookup", "gncBillTermLookupByName", "gncBillTermGetTerms", "gncBillTermGetName", "gncBillTermGetDescription", "gncBillTermGetType", "gncBillTermGetDueDays", "gncBillTermGetDiscountDays", "gncBillTermGetDiscount", "gncBillTermGetCutoff", "gncBillTermIsDirty", "gncBillTermGetParent", "gncBillTermReturnChild", "gncBillTermGetRefcount", "gncBillTermCompare", "gncBillTermEqual", "gncBillTermIsFamily", "gncBillTermComputeDueDate", "OWNER-EXPORT-PDF-DIRNAME", "LAST-POSTED-TO-ACCT", "GNC-PAYMENT", "GNC-LAST-ACCOUNT", "GNC-BILLTERM-MODULE-NAME", "gncBusinessGetList", "gncBusinessGetOwnerList", "gncBusinessIsPaymentAcctType", "GNC-ID-CUSTOMER", "gnc-customer-get-type", "gncCustomerCreate", "gncCustomerDestroy", "gncCustomerBeginEdit", "gncCustomerCommitEdit", "gncCustomerSetID", "gncCustomerSetName", "gncCustomerSetNotes", "gncCustomerSetTerms", "gncCustomerSetTaxIncluded", "gncCustomerSetActive", "gncCustomerSetDiscount", "gncCustomerSetCredit", "gncCustomerSetCurrency", "gncCustomerSetTaxTableOverride", "gncCustomerSetTaxTable", "gncCustomerAddJob", "gncCustomerRemoveJob", "gncCustomerLookup", "gncCustomerGetID", "gncCustomerGetName", "gncCustomerGetAddr", "gncCustomerGetShipAddr", "gncCustomerGetNotes", "gncCustomerGetTerms", "gncCustomerGetTaxIncluded", "gncCustomerGetActive", "gncCustomerGetDiscount", "gncCustomerGetCredit", "gncCustomerGetCurrency", "gncCustomerGetTaxTableOverride", "gncCustomerGetTaxTable", "gncCustomerCompare", "CUSTOMER-ID", "CUSTOMER-NAME", "CUSTOMER-ADDR", "CUSTOMER-SHIPADDR", "CUSTOMER-NOTES", "CUSTOMER-DISCOUNT", "CUSTOMER-CREDIT", "CUSTOMER-TT-OVER", "CUSTOMER-TAX-INC", "CUSTOMER-TERMS", "CUSTOMER-ACTIVE", "CUSTOMER-SLOTS", "gncCustomerEqual", "gncCustomerGetJoblist", "gncCustomerIsDirty", "GNC-ID-EMPLOYEE", "gnc-employee-get-type", "gncEmployeeCreate", "gncEmployeeDestroy", "gncEmployeeBeginEdit", "gncEmployeeCommitEdit", "gncEmployeeCompare", "gncEmployeeSetID", "gncEmployeeSetUsername", "gncEmployeeSetName", "gncEmployeeSetLanguage", "gncEmployeeSetAcl", "gncEmployeeSetWorkday", "gncEmployeeSetRate", "gncEmployeeSetCurrency", "gncEmployeeSetActive", "gncEmployeeSetCCard", "qofEmployeeSetAddr", "gncEmployeeGetBook", "gncEmployeeGetID", "gncEmployeeGetUsername", "gncEmployeeGetName", "gncEmployeeGetAddr", "gncEmployeeGetLanguage", "gncEmployeeGetAcl", "gncEmployeeGetWorkday", "gncEmployeeGetRate", "gncEmployeeGetCurrency", "gncEmployeeGetActive", "gncEmployeeGetCCard", "gncEmployeeLookup", "EMPLOYEE-ID", "EMPLOYEE-USERNAME", "EMPLOYEE-NAME", "EMPLOYEE-ADDR", "EMPLOYEE-LANGUAGE", "EMPLOYEE-ACL", "EMPLOYEE-WORKDAY", "EMPLOYEE-RATE", "EMPLOYEE-CC", "gncEmployeeEqual", "gncEmployeeIsDirty", "GNC-PAYMENT-CASH", "GNC-PAYMENT-CARD", "GNC-DISC-PRETAX", "GNC-DISC-SAMETIME", "GNC-DISC-POSTTAX", "GNC-ID-ENTRY", "gnc-entry-get-type", "gncEntryDiscountHowToString", "gncEntryDiscountStringToHow", "gncEntryPaymentTypeToString", "gncEntryPaymentStringToType", "gncEntryCreate", "gncEntryDestroy", "gncEntrySetDateGDate", "gncEntrySetDate", "gncEntrySetDateEntered", "gncEntrySetDescription", "gncEntrySetAction", "gncEntrySetNotes", "gncEntrySetQuantity", "gncEntrySetDocQuantity", "gncEntrySetInvAccount", "gncEntrySetInvPrice", "gncEntrySetInvTaxable", "gncEntrySetInvTaxIncluded", "gncEntrySetInvTaxTable", "gncEntrySetInvDiscount", "gncEntrySetInvDiscountType", "gncEntrySetInvDiscountHow", "qofEntrySetInvDiscType", "qofEntrySetInvDiscHow", "gncEntrySetBillAccount", "gncEntrySetBillPrice", "gncEntrySetBillTaxable", "gncEntrySetBillTaxIncluded", "gncEntrySetBillTaxTable", "gncEntrySetBillable", "gncEntrySetBillTo", "gncEntrySetBillPayment", "gncEntryGetDateGDate", "gncEntryGetDate", "gncEntryGetDateEntered", "gncEntryGetDescription", "gncEntryGetAction", "gncEntryGetNotes", "gncEntryGetQuantity", "gncEntryGetDocQuantity", "gncEntryGetInvAccount", "gncEntryGetInvPrice", "gncEntryGetPrice", "gncEntryGetInvDiscount", "gncEntryGetInvDiscountType", "gncEntryGetInvDiscountHow", "qofEntryGetInvDiscType", "qofEntryGetInvDiscHow", "gncEntryGetInvTaxable", "gncEntryGetInvTaxIncluded", "gncEntryGetInvTaxTable", "gncEntryGetBillAccount", "gncEntryGetBillPrice", "gncEntryGetBillTaxable", "gncEntryGetBillTaxIncluded", "gncEntryGetBillTaxTable", "gncEntryGetBillable", "gncEntryGetBillTo", "gncEntryGetBillPayment", "gncEntryCopy", "gncEntryGetDocValue", "gncEntryGetDocTaxValue", "gncEntryGetDocTaxValues", "gncEntryGetDocDiscountValue", "gncEntryGetBalValue", "gncEntryGetBalTaxValue", "gncEntryGetBalTaxValues", "gncEntryGetBalDiscountValue", "gncEntryComputeValue", "gncEntryGetOrder", "gncEntryGetInvoice", "gncEntryGetBill", "gncEntryLookup", "gncEntryIsOpen", "gncEntryBeginEdit", "gncEntryCommitEdit", "gncEntryCompare", "ENTRY-DATE", "ENTRY-DATE-ENTERED", "ENTRY-DESC", "ENTRY-ACTION", "ENTRY-NOTES", "ENTRY-QTY", "ENTRY-IPRICE", "ENTRY-IACCT", "ENTRY-BACCT", "ENTRY-BPRICE", "ENTRY-BILLABLE", "ENTRY-BILLTO", "ENTRY-ORDER", "ENTRY-INVOICE", "ENTRY-BILL", "ENTRY-INV-DISC-TYPE", "ENTRY-INV-DISC-HOW", "ENTRY-INV-TAXABLE", "ENTRY-BILL-TAXABLE", "ENTRY-INV-TAX-INC", "ENTRY-BILL-TAX-INC", "ENTRY-INV-DISCOUNT", "ENTRY-BILL-PAY-TYPE", "GNC-ID-INVOICE", "GNC-INVOICE-UNDEFINED", "GNC-INVOICE-CUST-INVOICE", "GNC-INVOICE-VEND-INVOICE", "GNC-INVOICE-EMPL-INVOICE", "GNC-INVOICE-CUST-CREDIT-NOTE", "GNC-INVOICE-VEND-CREDIT-NOTE", "GNC-INVOICE-EMPL-CREDIT-NOTE", "GNC-INVOICE-NUM-TYPES", "gnc-invoice-get-type", "gncInvoiceCreate", "gncInvoiceDestroy", "gncInvoiceCopy", "gncInvoiceSetID", "gncInvoiceSetOwner", "gncInvoiceSetDateOpenedGDate", "gncInvoiceSetDateOpened", "gncInvoiceSetDatePosted", "gncInvoiceSetTerms", "gncInvoiceSetBillingID", "gncInvoiceSetNotes", "gncInvoiceSetCurrency", "gncInvoiceSetActive", "gncInvoiceSetIsCreditNote", "gncInvoiceSetBillTo", "gncInvoiceSetToChargeAmount", "gncInvoiceAddEntry", "gncInvoiceRemoveEntry", "gncInvoiceAddPrice", "gncBillAddEntry", "gncBillRemoveEntry", "gncInvoiceSortEntries", "gncInvoiceRemoveEntries", "gncInvoiceGetID", "gncInvoiceGetOwner", "gncInvoiceGetDateOpened", "gncInvoiceGetDatePosted", "gncInvoiceGetDateDue", "gncInvoiceGetTerms", "gncInvoiceGetBillingID", "gncInvoiceGetNotes", "gncInvoiceGetOwnerType", "gncInvoiceGetTypeListForOwnerType", "gncInvoiceGetType", "gncInvoiceGetTypeString", "gncInvoiceGetCurrency", "gncInvoiceGetBillTo", "gncInvoiceGetToChargeAmount", "gncInvoiceGetActive", "gncInvoiceGetIsCreditNote", "gncInvoiceGetPostedLot", "gncInvoiceGetPostedTxn", "gncInvoiceGetPostedAcc", "gncInvoiceGetTotal", "gncInvoiceGetTotalOf", "gncInvoiceGetTotalSubtotal", "gncInvoiceGetTotalTax", "gncInvoiceGetTotalTaxList", "gncInvoiceGetEntries", "gncInvoiceGetPrice", "gncInvoiceAmountPositive", "gncInvoiceGetForeignCurrencies", "gncInvoicePostToAccount", "gncInvoiceUnpost", "gncInvoiceAutoApplyPayments", "gncInvoiceApplyPayment", "gncInvoiceGetInvoiceFromTxn", "gncInvoiceGetInvoiceFromLot", "gncInvoiceLookup", "gncInvoiceBeginEdit", "gncInvoiceCommitEdit", "gncInvoiceCompare", "gncInvoiceIsPosted", "gncInvoiceIsPaid", "INVOICE-ID", "INVOICE-OWNER", "INVOICE-OPENED", "INVOICE-POSTED", "INVOICE-DUE", "INVOICE-IS-POSTED", "INVOICE-IS-PAID", "INVOICE-TERMS", "INVOICE-BILLINGID", "INVOICE-NOTES", "INVOICE-ACC", "INVOICE-POST-TXN", "INVOICE-POST-LOT", "INVOICE-IS-CN", "INVOICE-TYPE", "INVOICE-TYPE-STRING", "INVOICE-BILLTO", "INVOICE-ENTRIES", "INVOICE-JOB", "INVOICE-FROM-LOT", "INVOICE-FROM-TXN", "gncInvoiceGetBook", "gncInvoiceEqual", "GNC-ID-JOB", "gnc-job-get-type", "gncJobCreate", "gncJobDestroy", "gncJobSetID", "gncJobSetName", "gncJobSetReference", "gncJobSetRate", "gncJobSetOwner", "gncJobSetActive", "gncJobBeginEdit", "gncJobCommitEdit", "gncJobGetID", "gncJobGetName", "gncJobGetReference", "gncJobGetRate", "gncJobGetOwner", "gncJobGetActive", "gncJobLookup", "gncJobCompare", "gncJobEqual", "JOB-ID", "JOB-NAME", "JOB-REFERENCE", "JOB-RATE", "JOB-OWNER", "Q-JOB-OWNER", "JOB-ACTIVE", "GNC-ID-ORDER", "gnc-order-get-type", "gncOrderCreate", "gncOrderDestroy", "gncOrderSetID", "gncOrderSetOwner", "gncOrderSetDateOpened", "gncOrderSetDateClosed", "gncOrderSetNotes", "gncOrderSetReference", "gncOrderSetActive", "gncOrderAddEntry", "gncOrderRemoveEntry", "gncOrderGetID", "gncOrderGetOwner", "gncOrderGetDateOpened", "gncOrderGetDateClosed", "gncOrderGetNotes", "gncOrderGetReference", "gncOrderGetActive", "gncOrderGetEntries", "gncOrderBeginEdit", "gncOrderCommitEdit", "gncOrderCompare", "gncOrderIsClosed", "gncOrderLookup", "ORDER-ID", "ORDER-REFERENCE", "ORDER-OWNER", "ORDER-OPENED", "ORDER-CLOSED", "ORDER-IS-CLOSED", "ORDER-NOTES", "GNC-ID-OWNER", "GNC-OWNER-NONE", "GNC-OWNER-UNDEFINED", "GNC-OWNER-CUSTOMER", "GNC-OWNER-JOB", "GNC-OWNER-VENDOR", "GNC-OWNER-EMPLOYEE", "qofOwnerGetType", "qofOwnerGetOwner", "qofOwnerSetEntity", "GNC-IS-OWNER", "gncOwnerTypeToQofIdType", "gncOwnerRegister", "gncOwnerInitUndefined", "gncOwnerInitCustomer", "gncOwnerInitJob", "gncOwnerInitVendor", "gncOwnerInitEmployee", "gncOwnerGetType", "gncOwnerIsValid", "gncOwnerGetUndefined", "gncOwnerGetCustomer", "gncOwnerGetJob", "gncOwnerGetVendor", "gncOwnerGetEmployee", "gncOwnerGetID", "gncOwnerGetName", "gncOwnerGetAddr", "gncOwnerGetActive", "gncOwnerGetCurrency", "gncOwnerSetActive", "gncOwnerCopy", "gncOwnerEqual", "gncOwnerGCompareFunc", "gncOwnerCompare", "gncOwnerGetGUID", "gncOwnerReturnGUID", "gncOwnerGetEndOwner", "gncOwnerGetEndGUID", "gncOwnerAttachToLot", "gncOwnerLotMatchOwnerFunc", "gncOwnerLotsSortFunc", "gncOwnerGetOwnerFromLot", "gncOwnerGetOwnerFromTxn", "gncOwnerGetOwnerFromTypeGuid", "gncOwnerCreatePaymentLot", "gncOwnerAutoApplyPaymentsWithLots", "gncOwnerApplyPayment", "gncOwnerFindOffsettingSplit", "gncOwnerReduceSplitTo", "gncOwnerSetLotLinkMemo", "gncOwnerGetAccountTypesList", "gncOwnerGetCommoditiesList", "gncOwnerGetBalanceInCurrency", "OWNER-TYPE", "OWNER-TYPE-STRING", "OWNER-CUSTOMER", "OWNER-JOB", "OWNER-VENDOR", "OWNER-EMPLOYEE", "OWNER-PARENT", "OWNER-PARENTG", "OWNER-NAME", "OWNER-FROM-LOT", "gncOwnerNew", "gncOwnerFree", "gncOwnerBeginEdit", "gncOwnerCommitEdit", "gncOwnerDestroy", "GNC-ID-TAXTABLE", "gnc-taxtable-get-type", "GNC-AMT-TYPE-VALUE", "GNC-AMT-TYPE-PERCENT", "GNC-TAXINCLUDED-YES", "GNC-TAXINCLUDED-NO", "GNC-TAXINCLUDED-USEGLOBAL", "gncAmountTypeToString", "gncAmountStringToType", "gncTaxIncludedTypeToString", "gncTaxIncludedStringToType", "gncTaxTableCreate", "gncTaxTableDestroy", "gncTaxTableEntryCreate", "gncTaxTableEntryDestroy", "gncTaxTableSetName", "gncTaxTableIncRef", "gncTaxTableDecRef", "gncTaxTableEntrySetAccount", "gncTaxTableEntrySetType", "gncTaxTableEntrySetAmount", "gncTaxTableAddEntry", "gncTaxTableRemoveEntry", "gncTaxTableChanged", "gncTaxTableBeginEdit", "gncTaxTableCommitEdit", "gncTaxTableEqual", "gncTaxTableLookup", "gncTaxTableLookupByName", "gncTaxTableGetTables", "gncTaxTableGetName", "gncTaxTableGetParent", "gncTaxTableReturnChild", "gncTaxTableGetEntries", "gncTaxTableGetRefcount", "gncTaxTableLastModified", "gncTaxTableEntryGetAccount", "gncTaxTableEntryGetType", "gncTaxTableEntryGetAmount", "gncTaxTableCompare", "gncTaxTableEntryCompare", "gncTaxTableEntryEqual", "-gncAccountValue-account-set", "-gncAccountValue-account-get", "-gncAccountValue-value-set", "-gncAccountValue-value-get", "new--gncAccountValue", "delete--gncAccountValue", "gncAccountValueAdd", "gncAccountValueAddList", "gncAccountValueTotal", "gncAccountValueDestroy", "GNC-TT-NAME", "GNC-TT-REFCOUNT", "GNC-ID-VENDOR", "gnc-vendor-get-type", "gncVendorCreate", "gncVendorDestroy", "gncVendorSetID", "gncVendorSetName", "gncVendorSetNotes", "gncVendorSetTerms", "gncVendorSetTaxIncluded", "gncVendorSetCurrency", "gncVendorSetActive", "gncVendorSetTaxTableOverride", "gncVendorSetTaxTable", "gncVendorAddJob", "gncVendorRemoveJob", "gncVendorBeginEdit", "gncVendorCommitEdit", "gncVendorGetID", "gncVendorGetName", "gncVendorGetAddr", "gncVendorGetNotes", "gncVendorGetTerms", "gncVendorGetTaxIncluded", "gncVendorGetCurrency", "gncVendorGetActive", "gncVendorGetTaxTableOverride", "gncVendorGetTaxTable", "gncVendorCompare", "gncVendorLookup", "VENDOR-ID", "VENDOR-NAME", "VENDOR-ADDR", "VENDOR-NOTES", "VENDOR-TERMS", "VENDOR-TAX-INC", "VENDOR-ACTIVE", "VENDOR-TAX-OVERRIDE", "VENDOR-TAX-TABLE", "gncVendorEqual", "gncVendorIsDirty", "gnc-scm-to-account-value-ptr", "gnc-account-value-ptr-to-scm", "URL-TYPE-CUSTOMER", "URL-TYPE-VENDOR", "URL-TYPE-EMPLOYEE", "URL-TYPE-JOB", "URL-TYPE-INVOICE", "URL-TYPE-OWNERREPORT", "qof-query-create-for-invoices", "qof-query-run-for-invoices", NULL);
+scm_c_export("gncSplitGetGUID", "gncTransGetGUID", "gncAccountGetGUID", "gnc-split-get-type", "CREC", "YREC", "FREC", "NREC", "VREC", "xaccSplitConvertAmount", "xaccMallocSplit", "xaccSplitReinit", "xaccSplitDestroy", "xaccSplitCopyOnto", "xaccSplitGetBook", "xaccSplitGetAccount", "xaccSplitSetAccount", "xaccSplitGetParent", "xaccSplitSetParent", "xaccSplitGetLot", "xaccSplitSetLot", "xaccSplitSetMemo", "xaccSplitGetMemo", "xaccSplitSetAction", "xaccSplitGetAction", "xaccSplitSetReconcile", "xaccSplitGetReconcile", "xaccSplitSetDateReconciledSecs", "xaccSplitGetDateReconciled", "xaccSplitSetAmount", "xaccSplitGetAmount", "xaccSplitSetValue", "xaccSplitGetValue", "xaccSplitSetSharePriceAndAmount", "xaccSplitGetSharePrice", "xaccSplitSetBaseValue", "xaccSplitGetBaseValue", "xaccSplitGetBalance", "xaccSplitGetClearedBalance", "xaccSplitGetReconciledBalance", "xaccSplitEqual", "xaccSplitLookup", "xaccSplitListGetUniqueTransactions", "xaccSplitAddPeerSplit", "xaccSplitHasPeers", "xaccSplitIsPeerSplit", "xaccSplitRemovePeerSplit", "xaccSplitMergePeerSplits", "xaccSplitGetOtherSplit", "xaccSplitGetType", "xaccSplitMakeStockSplit", "xaccSplitOrder", "xaccSplitOrderDateOnly", "xaccSplitCompareAccountFullNames", "xaccSplitCompareAccountCodes", "xaccSplitCompareOtherAccountFullNames", "xaccSplitCompareOtherAccountCodes", "xaccSplitGetCorrAccountFullName", "xaccSplitGetCorrAccountName", "xaccSplitGetCorrAccountCode", "xaccSplitSetSharePrice", "xaccSplitVoidFormerAmount", "xaccSplitVoidFormerValue", "SPLIT-DATE-RECONCILED", "SPLIT-BALANCE", "SPLIT-CLEARED-BALANCE", "SPLIT-RECONCILED-BALANCE", "SPLIT-MEMO", "SPLIT-ACTION", "SPLIT-RECONCILE", "SPLIT-AMOUNT", "SPLIT-SHARE-PRICE", "SPLIT-VALUE", "SPLIT-TYPE", "SPLIT-VOIDED-AMOUNT", "SPLIT-VOIDED-VALUE", "SPLIT-LOT", "SPLIT-TRANS", "SPLIT-ACCOUNT", "SPLIT-ACCOUNT-GUID", "SPLIT-ACCT-FULLNAME", "SPLIT-CORR-ACCT-NAME", "SPLIT-CORR-ACCT-CODE", "gnc-account-get-children", "gnc-account-get-children-sorted", "gnc-account-get-descendants", "gnc-account-get-descendants-sorted", "AccountClass-parent-class-set", "AccountClass-parent-class-get", "new-AccountClass", "delete-AccountClass", "GncImportMatchMap-acc-set", "GncImportMatchMap-acc-get", "GncImportMatchMap-book-set", "GncImportMatchMap-book-get", "new-GncImportMatchMap", "delete-GncImportMatchMap", "gnc-account-get-type", "ACCT-TYPE-INVALID", "ACCT-TYPE-NONE", "ACCT-TYPE-BANK", "ACCT-TYPE-CASH", "ACCT-TYPE-CREDIT", "ACCT-TYPE-ASSET", "ACCT-TYPE-LIABILITY", "ACCT-TYPE-STOCK", "ACCT-TYPE-MUTUAL", "ACCT-TYPE-CURRENCY", "ACCT-TYPE-INCOME", "ACCT-TYPE-EXPENSE", "ACCT-TYPE-EQUITY", "ACCT-TYPE-RECEIVABLE", "ACCT-TYPE-PAYABLE", "ACCT-TYPE-ROOT", "ACCT-TYPE-TRADING", "NUM-ACCOUNT-TYPES", "ACCT-TYPE-CHECKING", "ACCT-TYPE-SAVINGS", "ACCT-TYPE-MONEYMRKT", "ACCT-TYPE-CREDITLINE", "ACCT-TYPE-LAST", "xaccMallocAccount", "gnc-account-create-root", "xaccCloneAccount", "xaccAccountBeginEdit", "xaccAccountCommitEdit", "xaccAccountDestroy", "xaccAccountEqual", "xaccAccountOrder", "gnc-get-account-separator-string", "gnc-get-account-separator", "gnc-set-account-separator", "gnc-book-get-root-account", "gnc-book-set-root-account", "xaccAccountLookup", "gnc-account-name-violations-errmsg", "gnc-account-list-name-violations", "gnc-account-get-book", "xaccAccountSetType", "xaccAccountSetName", "xaccAccountSetCode", "xaccAccountSetDescription", "xaccAccountSetColor", "xaccAccountSetFilter", "xaccAccountSetSortOrder", "xaccAccountSetSortReversed", "xaccAccountSetNotes", "xaccAccountSetLastNum", "gnc-account-set-policy", "xaccAccountGetType", "xaccAccountIsPriced", "gnc-account-set-start-balance", "gnc-account-set-start-cleared-balance", "gnc-account-set-start-reconciled-balance", "gnc-account-set-balance-dirty", "gnc-account-set-sort-dirty", "gnc-account-insert-split", "gnc-account-remove-split", "xaccAccountGetName", "xaccAccountGetCode", "xaccAccountGetDescription", "xaccAccountGetColor", "xaccAccountGetFilter", "xaccAccountGetSortOrder", "xaccAccountGetSortReversed", "xaccAccountGetNotes", "xaccAccountGetLastNum", "gnc-account-get-policy", "xaccAccountRecomputeBalance", "xaccAccountSortSplits", "gnc-account-get-full-name", "xaccAccountGainsAccount", "dxaccAccountSetPriceSrc", "dxaccAccountGetPriceSrc", "xaccAccountGetAutoInterestXfer", "xaccAccountSetAutoInterestXfer", "xaccAccountSetCommodity", "xaccAccountGetCommodity", "gnc-account-get-currency-or-parent", "xaccAccountGetCommoditySCU", "xaccAccountGetCommoditySCUi", "xaccAccountSetCommoditySCU", "xaccAccountSetNonStdSCU", "xaccAccountGetNonStdSCU", "xaccAccountGetBalance", "xaccAccountGetClearedBalance", "xaccAccountGetReconciledBalance", "xaccAccountGetPresentBalance", "xaccAccountGetProjectedMinimumBalance", "xaccAccountGetBalanceAsOfDate", "xaccAccountConvertBalanceToCurrency", "xaccAccountConvertBalanceToCurrencyAsOfDate", "xaccAccountGetBalanceInCurrency", "xaccAccountGetClearedBalanceInCurrency", "xaccAccountGetReconciledBalanceInCurrency", "xaccAccountGetPresentBalanceInCurrency", "xaccAccountGetProjectedMinimumBalanceInCurrency", "xaccAccountGetBalanceAsOfDateInCurrency", "xaccAccountGetBalanceChangeForPeriod", "gnc-account-append-child", "gnc-account-remove-child", "gnc-account-get-parent", "gnc-account-get-root", "gnc-account-is-root", "gnc-account-n-children", "gnc-account-child-index", "gnc-account-nth-child", "gnc-account-n-descendants", "gnc-account-get-current-depth", "gnc-account-get-tree-depth", "gnc-account-foreach-child", "gnc-account-foreach-descendant", "gnc-account-foreach-descendant-until", "gnc-account-join-children", "gnc-account-merge-children", "xaccAccountSetReconcileChildrenStatus", "xaccAccountGetReconcileChildrenStatus", "xaccAccountHasAncestor", "gnc-account-lookup-by-name", "gnc-account-lookup-by-full-name", "gnc-account-lookup-by-code", "xaccAccountTypeEnumAsString", "xaccAccountStringToType", "xaccAccountStringToEnum", "xaccAccountGetTypeStr", "xaccAccountTypesCompatibleWith", "xaccParentAccountTypesCompatibleWith", "xaccAccountTypesCompatible", "xaccAccountTypesValid", "xaccAccountIsAssetLiabType", "xaccAccountIsAPARType", "xaccAccountIsEquityType", "xaccAccountGetSplitList", "xaccAccountCountSplits", "xaccAccountMoveAllSplits", "xaccAccountForEachTransaction", "xaccAccountFindTransByDesc", "xaccAccountFindSplitByDesc", "xaccAccountInsertLot", "xaccAccountRemoveLot", "xaccAccountGetLotList", "xaccAccountForEachLot", "xaccAccountFindOpenLots", "xaccAccountGetReconcileLastDate", "xaccAccountSetReconcileLastDate", "xaccAccountGetReconcileLastInterval", "xaccAccountSetReconcileLastInterval", "xaccAccountGetReconcilePostponeDate", "xaccAccountSetReconcilePostponeDate", "xaccAccountGetReconcilePostponeBalance", "xaccAccountSetReconcilePostponeBalance", "xaccAccountClearReconcilePostpone", "PLACEHOLDER-NONE", "PLACEHOLDER-THIS", "PLACEHOLDER-CHILD", "xaccAccountGetPlaceholder", "xaccAccountSetPlaceholder", "xaccAccountGetDescendantPlaceholder", "xaccAccountGetHidden", "xaccAccountSetHidden", "xaccAccountIsHidden", "xaccAccountGetTaxRelated", "xaccAccountSetTaxRelated", "xaccAccountGetTaxUSCode", "xaccAccountSetTaxUSCode", "xaccAccountGetTaxUSPayerNameSource", "xaccAccountSetTaxUSPayerNameSource", "xaccAccountGetTaxUSCopyNumber", "xaccAccountSetTaxUSCopyNumber", "xaccAccountSetMark", "xaccClearMark", "xaccClearMarkDown", "gnc-account-tree-begin-staged-transaction-traversals", "xaccSplitsBeginStagedTransactionTraversals", "xaccAccountBeginStagedTransactionTraversals", "xaccTransactionTraverse", "xaccAccountStagedTransactionTraversal", "gnc-account-tree-staged-transaction-traversal", "xaccAccountTreeForEachTransaction", "gnc-account-imap-create-imap", "gnc-account-imap-find-account", "gnc-account-imap-add-account", "gnc-account-imap-delete-account", "gnc-account-imap-find-account-bayes", "gnc-account-imap-add-account-bayes", "GncImapInfo-source-account-set", "GncImapInfo-source-account-get", "GncImapInfo-map-account-set", "GncImapInfo-map-account-get", "GncImapInfo-list-set", "GncImapInfo-list-get", "GncImapInfo-head-set", "GncImapInfo-head-get", "GncImapInfo-category-set", "GncImapInfo-category-get", "GncImapInfo-match-string-set", "GncImapInfo-match-string-get", "GncImapInfo-count-set", "GncImapInfo-count-get", "new-GncImapInfo", "delete-GncImapInfo", "gnc-account-imap-get-info-bayes", "gnc-account-imap-get-info", "gnc-account-get-map-entry", "gnc-account-delete-map-entry", "gnc-account-delete-all-bayes-maps", "DxaccAccountSetCurrency", "DxaccAccountGetCurrency", "dxaccAccountSetQuoteTZ", "dxaccAccountGetQuoteTZ", "ACCOUNT-KVP", "ACCOUNT-NAME-", "ACCOUNT-CODE-", "ACCOUNT-DESCRIPTION-", "ACCOUNT-COLOR-", "ACCOUNT-FILTER-", "ACCOUNT-SORT-ORDER-", "ACCOUNT-SORT-REVERSED-", "ACCOUNT-NOTES-", "ACCOUNT-BALANCE-", "ACCOUNT-CLEARED-", "ACCOUNT-RECONCILED-", "ACCOUNT-PRESENT-", "ACCOUNT-FUTURE-MINIMUM-", "ACCOUNT-TAX-RELATED", "ACCOUNT-TYPE-", "ACCOUNT-SCU", "ACCOUNT-NSCU", "ACCOUNT-PARENT", "ACCOUNT-MATCH-ALL-TYPE", "gnc-transaction-get-type", "TXN-TYPE-NONE", "TXN-TYPE-INVOICE", "TXN-TYPE-PAYMENT", "TXN-TYPE-LINK", "xaccMallocTransaction", "xaccTransDestroy", "xaccTransClone", "xaccTransCloneNoKvp", "xaccTransEqual", "xaccTransBeginEdit", "xaccTransCommitEdit", "xaccTransRollbackEdit", "xaccTransIsOpen", "xaccTransLookup", "xaccTransCopyToClipBoard", "xaccTransCopyOnto", "xaccTransCopyFromClipBoard", "xaccTransFindSplitByAccount", "xaccTransScrubGains", "gnc-book-count-transactions", "xaccTransUseTradingAccounts", "xaccTransSortSplits", "xaccTransSetTxnType", "xaccTransGetTxnType", "xaccTransSetNum", "xaccTransSetDescription", "xaccTransSetAssociation", "xaccTransSetNotes", "xaccTransGetNum", "xaccTransGetDescription", "xaccTransGetAssociation", "xaccTransGetNotes", "xaccTransSetIsClosingTxn", "xaccTransGetIsClosingTxn", "xaccTransGetSplit", "xaccTransGetSplitIndex", "xaccTransGetSplitList", "xaccTransGetPaymentAcctSplitList", "xaccTransGetAPARAcctSplitList", "xaccTransStillHasSplit", "xaccTransGetFirstPaymentAcctSplit", "xaccTransGetFirstAPARAcctSplit", "xaccTransSetReadOnly", "xaccTransClearReadOnly", "xaccTransGetReadOnly", "xaccTransIsReadonlyByPostedDate", "xaccTransInFutureByPostedDate", "xaccTransCountSplits", "xaccTransHasReconciledSplits", "xaccTransHasReconciledSplitsByAccount", "xaccTransHasSplitsInState", "xaccTransHasSplitsInStateByAccount", "xaccTransGetCurrency", "xaccTransSetCurrency", "xaccTransGetImbalanceValue", "xaccTransGetImbalance", "xaccTransIsBalanced", "xaccTransGetAccountValue", "xaccTransGetAccountAmount", "xaccTransGetRateForCommodity", "xaccTransGetAccountConvRate", "xaccTransGetAccountBalance", "xaccTransOrder", "xaccTransOrder-num-action", "xaccTransSetDate", "xaccTransSetDatePostedGDate", "xaccTransSetDatePostedSecs", "xaccTransSetDatePostedSecsNormalized", "xaccTransSetDateEnteredSecs", "xaccTransSetDateDue", "xaccTransGetDate", "xaccTransRetDatePosted", "xaccTransGetDatePostedGDate", "xaccTransGetDateEntered", "xaccTransRetDateEntered", "xaccTransRetDateDue", "xaccTransVoid", "xaccTransUnvoid", "xaccTransReverse", "xaccTransGetReversedBy", "xaccTransGetVoidStatus", "xaccTransGetVoidReason", "xaccTransGetVoidTime", "TRANS-KVP", "TRANS-NUM", "TRANS-DESCRIPTION", "TRANS-DATE-ENTERED", "TRANS-DATE-POSTED", "TRANS-DATE-DUE", "TRANS-IMBALANCE", "TRANS-IS-BALANCED", "TRANS-IS-CLOSING", "TRANS-NOTES", "TRANS-ASSOCIATION", "TRANS-TYPE", "TRANS-VOID-STATUS", "TRANS-VOID-REASON", "TRANS-VOID-TIME", "TRANS-SPLITLIST", "RECONCILED-MATCH-TYPE", "GncLotClass-parent-class-set", "GncLotClass-parent-class-get", "new-GncLotClass", "delete-GncLotClass", "gnc-lot-get-type", "gnc-lot-new", "gnc-lot-destroy", "gnc-lot-lookup", "gnc-lot-get-book", "gnc-lot-begin-edit", "gnc-lot-commit-edit", "gnc-lot-add-split", "gnc-lot-remove-split", "gnc-lot-get-split-list", "gnc-lot-count-splits", "gnc-lot-get-account", "gnc-lot-set-account", "gnc-lot-get-balance", "gnc-lot-get-balance-before", "gnc-lot-is-closed", "gnc-lot-get-earliest-split", "gnc-lot-get-latest-split", "gnc-lot-set-closed-unknown", "gnc-lot-get-title", "gnc-lot-get-notes", "gnc-lot-set-title", "gnc-lot-set-notes", "gnc-lot-make-default", "LOT-IS-CLOSED", "LOT-BALANCE", "LOT-TITLE", "LOT-NOTES", "Timespec-tv-sec-set", "Timespec-tv-sec-get", "Timespec-tv-nsec-set", "Timespec-tv-nsec-get", "new-Timespec", "delete-Timespec", "xaccSplitSetDateReconciledTS", "xaccSplitGetDateReconciledTS", "xaccSplitRetDateReconciledTS", "gnc-transaction-get-date-posted", "gnc-transaction-get-date-entered", "gnc-split-get-date-reconciled", "gnc-transaction-set-date", "gncTaxTableLastModified", "gncOwnerApplyPayment", "gncOwnerCreatePaymentLot", "gnc-price-set-time", "gnc-price-get-time", "gnc-pricedb-lookup-at-time", "gnc-pricedb-lookup-day", "gnc-pricedb-lookup-nearest-in-time", "gnc-pricedb-lookup-nearest-in-time-any-currency", "gnc-pricedb-lookup-latest-before", "gnc-pricedb-lookup-latest-before-any-currency", "gnc-pricedb-convert-balance-nearest-price", "gncPriceGetGUID", "gncBudgetGetGUID", "QOF-ID-BOOK-SCM", "gnc-get-num-action", "gnc-get-action-num", "gnc-set-num-action", "gnc-book-option-num-field-source-change", "gnc-book-option-book-currency-selected", "gnc-book-option-register-cb", "gnc-book-option-remove-cb", "gnc-time64-to-GDate", "gnc-guid2scm", "gnc-scm2guid", "gnc-guid-p", "gnc-query-scm2path", "gnc-query2scm", "gnc-scm2query", "gnc-numeric-to-scm", "gnc-scm-to-numeric", "gnc-scm-to-commodity", "gnc-commodity-to-scm", "gnc-book-to-scm", "gnc-get-valid-policy-list", "gnc-valid-policy-name", "PolicyGetName", "PolicyGetDescription", "PolicyGetHint", "xaccGetFIFOPolicy", "xaccGetLIFOPolicy", "gnc-price-get-type", "gnc-pricedb-get-type", "PRICE-SOURCE-EDIT-DLG", "PRICE-SOURCE-FQ", "PRICE-SOURCE-USER-PRICE", "PRICE-SOURCE-XFER-DLG-VAL", "PRICE-SOURCE-SPLIT-REG", "PRICE-SOURCE-STOCK-SPLIT", "PRICE-SOURCE-INVOICE", "PRICE-SOURCE-TEMP", "PRICE-SOURCE-INVALID", "PRICE-TYPE-LAST", "PRICE-TYPE-UNK", "PRICE-TYPE-TRN", "gnc-price-create", "gnc-price-clone", "gnc-price-invert", "gnc-price-ref", "gnc-price-unref", "gnc-price-begin-edit", "gnc-price-commit-edit", "gnc-price-set-commodity", "gnc-price-set-currency", "gnc-price-set-time64", "gnc-price-set-source", "gnc-price-set-source-string", "gnc-price-set-typestr", "gnc-price-set-value", "gnc-price-lookup", "gnc-price-get-commodity", "gnc-price-get-currency", "gnc-price-get-time64", "gnc-price-get-source", "gnc-price-get-source-string", "gnc-price-get-typestr", "gnc-price-get-value", "gnc-price-equal", "gnc-price-print", "CURRENCY-DENOM", "COMMODITY-DENOM-MULT", "gnc-price-list-insert", "gnc-price-list-remove", "gnc-price-list-destroy", "gnc-price-list-equal", "gnc-pricedb-get-db", "gnc-collection-get-pricedb", "gnc-pricedb-destroy", "gnc-pricedb-begin-edit", "gnc-pricedb-commit-edit", "gnc-pricedb-set-bulk-update", "gnc-pricedb-add-price", "gnc-pricedb-remove-price", "PRICE-REMOVE-SOURCE-FQ", "PRICE-REMOVE-SOURCE-USER", "PRICE-REMOVE-SOURCE-APP", "PRICE-REMOVE-SOURCE-COMM", "PRICE-REMOVE-KEEP-NONE", "PRICE-REMOVE-KEEP-LAST-WEEKLY", "PRICE-REMOVE-KEEP-LAST-MONTHLY", "PRICE-REMOVE-KEEP-LAST-QUARTERLY", "PRICE-REMOVE-KEEP-LAST-PERIOD", "PRICE-REMOVE-KEEP-SCALED", "gnc-pricedb-remove-old-prices", "gnc-pricedb-lookup-latest", "gnc-pricedb-lookup-latest-any-currency", "gnc-pricedb-has-prices", "gnc-pricedb-get-prices", "gnc-pricedb-lookup-at-time64", "gnc-pricedb-lookup-day-t64", "gnc-pricedb-lookup-nearest-in-time64", "gnc-pricedb-lookup-nearest-in-time-any-currency-t64", "gnc-pricedb-lookup-latest-before-t64", "gnc-pricedb-lookup-latest-before-any-currency-t64", "gnc-pricedb-convert-balance-latest-price", "gnc-pricedb-convert-balance-nearest-price-t64", "gnc-pricedb-foreach-price", "gnc-pricedb-num-prices", "gnc-pricedb-nth-price", "gnc-pricedb-get-num-prices", "gnc-pricedb-equal", "gnc-pricedb-print-contents", "PRICE-COMMODITY", "PRICE-CURRENCY", "PRICE-DATE", "PRICE-SOURCE", "PRICE-TYPE", "PRICE-VALUE", "qof-session-new", "qof-session-get-book", "qof-session-get-url", "Time64-t-set", "Time64-t-get", "new-Time64", "delete-Time64", "time64-get-type", "gnc-default-strftime-date-format", "MAX-DATE-LENGTH", "QOF-UTC-DATE-FORMAT", "QOF-DATE-FORMAT-US", "QOF-DATE-FORMAT-UK", "QOF-DATE-FORMAT-CE", "QOF-DATE-FORMAT-ISO", "QOF-DATE-FORMAT-LOCALE", "QOF-DATE-FORMAT-UTC", "QOF-DATE-FORMAT-CUSTOM", "QOF-DATE-FORMAT-UNSET", "QOF-DATE-COMPLETION-THISYEAR", "QOF-DATE-COMPLETION-SLIDING", "GNCDATE-MONTH-NUMBER", "GNCDATE-MONTH-ABBREV", "GNCDATE-MONTH-NAME", "gnc-localtime", "gnc-localtime-r", "gnc-gmtime", "gnc-mktime", "gnc-timegm", "gnc-ctime", "gnc-time", "gnc-difftime", "gnc-date-dateformat-to-string", "gnc-date-string-to-dateformat", "gnc-date-monthformat-to-string", "gnc-date-string-to-monthformat", "gnc-print-time64", "gnc-g-date-new-today", "gnc-gdate-set-today", "gnc-gdate-set-time64", "time64CanonicalDayTime", "gdate-to-time64", "gnc-dmy2time64", "gnc-dmy2time64-neutral", "gnc-dmy2time64-end", "gnc-iso8601-to-time64-gmt", "gnc-time64-to-iso8601-buff", "qof-date-format-get", "qof-date-format-set", "qof-date-format-get-string", "qof-date-text-format-get-string", "qof-date-completion-set", "dateSeparator", "qof-strftime", "qof-print-date-dmy-buff", "qof-print-date-buff", "qof-print-gdate", "qof-print-date", "qof-scan-date", "gnc-tm-set-day-start", "gnc-tm-set-day-neutral", "gnc-tm-set-day-middle", "gnc-tm-set-day-end", "gnc-time64-get-day-start", "gnc-time64-get-day-neutral", "gnc-time64-get-day-end", "gnc-date-get-last-mday", "gnc-tm-get-today-start", "gnc-tm-get-today-end", "gnc-time64-get-today-start", "gnc-time64-get-today-end", "gnc-date-timestamp", "MIN-BUF-LEN", "gnc-dow-abbrev", "gnc-gdate-equal", "gnc-gdate-hash", "time64-to-gdate", "gnc-time64-get-day-start-gdate", "gnc-time64-get-day-end-gdate", "gnc-gdate-set-month-start", "gnc-gdate-set-month-end", "gnc-gdate-set-prev-month-start", "gnc-gdate-set-prev-month-end", "gnc-gdate-set-quarter-start", "gnc-gdate-set-quarter-end", "gnc-gdate-set-prev-quarter-start", "gnc-gdate-set-prev-quarter-end", "gnc-gdate-set-year-start", "gnc-gdate-set-year-end", "gnc-gdate-set-prev-year-start", "gnc-gdate-set-prev-year-end", "gnc-gdate-set-fiscal-year-start", "gnc-gdate-set-fiscal-year-end", "gnc-gdate-set-prev-fiscal-year-start", "gnc-gdate-set-prev-fiscal-year-end", "guid-new-return", "qof-query-create-for-splits", "qof-query-run", "qof-query-last-run", "qof-query-run-subquery", "gnc-get-current-session", "gnc-clear-current-session", "gnc-set-current-session", "gnc-current-session-exist", "QUERY-TXN-MATCH-ALL", "QUERY-TXN-MATCH-ANY", "xaccQueryGetSplitsUniqueTrans", "xaccQueryGetTransactions", "xaccQueryGetLots", "xaccQueryAddAccountMatch", "xaccQueryAddAccountGUIDMatch", "xaccQueryAddSingleAccountMatch", "xaccQueryAddStringMatch", "xaccQueryAddDescriptionMatch", "xaccQueryAddNotesMatch", "xaccQueryAddNumberMatch", "xaccQueryAddActionMatch", "xaccQueryAddMemoMatch", "xaccQueryAddValueMatch", "xaccQueryAddSharePriceMatch", "xaccQueryAddSharesMatch", "xaccQueryAddBalanceMatch", "xaccQueryAddNumericMatch", "xaccQueryAddDateMatch", "xaccQueryAddDateMatchTT", "xaccQueryGetDateMatchTT", "xaccQueryAddClosingTransMatch", "CLEARED-NONE", "CLEARED-NO", "CLEARED-CLEARED", "CLEARED-RECONCILED", "CLEARED-FROZEN", "CLEARED-VOIDED", "CLEARED-ALL", "xaccQueryAddClearedMatch", "xaccQueryAddGUIDMatch", "xaccQueryGetEarliestDateFound", "xaccQueryGetLatestDateFound", "QOF-MOD-QUERY", "QOF-QUERY-AND", "QOF-QUERY-OR", "QOF-QUERY-NAND", "QOF-QUERY-NOR", "QOF-QUERY-XOR", "QUERY-DEFAULT-SORT", "QOF-PARAM-BOOK", "QOF-PARAM-GUID", "QOF-PARAM-KVP", "QOF-PARAM-ACTIVE", "QOF-PARAM-VERSION", "qof-query-init", "qof-query-shutdown", "qof-query-build-param-list", "qof-query-create", "qof-query-create-for", "qof-query-destroy", "qof-query-search-for", "qof-query-set-book", "qof-query-add-term", "qof-query-add-guid-match", "qof-query-add-guid-list-match", "qof-query-add-boolean-match", "qof-query-clear", "qof-query-purge-terms", "qof-query-has-terms", "qof-query-num-terms", "qof-query-has-term-type", "qof-query-get-term-type", "qof-query-copy", "qof-query-invert", "qof-query-merge", "qof-query-merge-in-place", "qof-query-set-sort-order", "qof-query-set-sort-options", "qof-query-set-sort-increasing", "qof-query-set-max-results", "qof-query-equal", "qof-query-print", "qof-query-get-search-for", "qof-query-get-books", "QOF-COMPARE-LT", "QOF-COMPARE-LTE", "QOF-COMPARE-EQUAL", "QOF-COMPARE-GT", "QOF-COMPARE-GTE", "QOF-COMPARE-NEQ", "QOF-COMPARE-CONTAINS", "QOF-COMPARE-NCONTAINS", "QOF-STRING-MATCH-NORMAL", "QOF-STRING-MATCH-CASEINSENSITIVE", "QOF-DATE-MATCH-NORMAL", "QOF-DATE-MATCH-DAY", "QOF-NUMERIC-MATCH-DEBIT", "QOF-NUMERIC-MATCH-CREDIT", "QOF-NUMERIC-MATCH-ANY", "QOF-GUID-MATCH-ANY", "QOF-GUID-MATCH-NONE", "QOF-GUID-MATCH-NULL", "QOF-GUID-MATCH-ALL", "QOF-GUID-MATCH-LIST-ANY", "QOF-CHAR-MATCH-ANY", "QOF-CHAR-MATCH-NONE", "-QofQueryPredData-type-name-set", "-QofQueryPredData-type-name-get", "-QofQueryPredData-how-set", "-QofQueryPredData-how-get", "new--QofQueryPredData", "delete--QofQueryPredData", "qof-query-string-predicate", "qof-query-date-predicate", "qof-query-numeric-predicate", "qof-query-guid-predicate", "qof-query-int32-predicate", "qof-query-int64-predicate", "qof-query-double-predicate", "qof-query-boolean-predicate", "qof-query-char-predicate", "qof-query-collect-predicate", "qof-query-choice-predicate", "qof-query-core-predicate-copy", "qof-query-core-predicate-free", "qof-query-date-predicate-get-date", "qof-query-core-to-string", "qof-string-number-compare-func", "KVP-OPTION-PATH", "OPTION-SECTION-ACCOUNTS", "OPTION-NAME-TRADING-ACCOUNTS", "OPTION-NAME-CURRENCY-ACCOUNTING", "OPTION-NAME-BOOK-CURRENCY", "OPTION-NAME-DEFAULT-GAINS-POLICY", "OPTION-NAME-DEFAULT-GAINS-LOSS-ACCT-GUID", "OPTION-NAME-AUTO-READONLY-DAYS", "OPTION-NAME-NUM-FIELD-SOURCE", "OPTION-SECTION-BUDGETING", "OPTION-NAME-DEFAULT-BUDGET", "qof-book-use-trading-accounts", "qof-book-get-book-currency-name", "qof-book-get-default-gains-policy", "qof-book-get-default-gain-loss-acct-guid", "qof-book-uses-autoreadonly", "qof-book-get-num-days-autoreadonly", "qof-book-get-autoreadonly-gdate", "qof-book-use-split-action-for-num-field", "qof-book-shutting-down", "qof-book-session-not-saved", "-gnc-numeric-num-set", "-gnc-numeric-num-get", "-gnc-numeric-denom-set", "-gnc-numeric-denom-get", "new--gnc-numeric", "delete--gnc-numeric", "GNC-NUMERIC-RND-MASK", "GNC-NUMERIC-DENOM-MASK", "GNC-NUMERIC-SIGFIGS-MASK", "GNC-HOW-RND-FLOOR", "GNC-HOW-RND-CEIL", "GNC-HOW-RND-TRUNC", "GNC-HOW-RND-PROMOTE", "GNC-HOW-RND-ROUND-HALF-DOWN", "GNC-HOW-RND-ROUND-HALF-UP", "GNC-HOW-RND-ROUND", "GNC-HOW-RND-NEVER", "GNC-HOW-DENOM-EXACT", "GNC-HOW-DENOM-REDUCE", "GNC-HOW-DENOM-LCD", "GNC-HOW-DENOM-FIXED", "GNC-HOW-DENOM-SIGFIG", "gnc-numeric-create", "gnc-numeric-zero", "double-to-gnc-numeric", "string-to-gnc-numeric", "gnc-numeric-error", "gnc-numeric-errorCode-to-string", "gnc-numeric-num", "gnc-numeric-denom", "gnc-numeric-to-double", "gnc-numeric-to-string", "gnc-num-dbg-to-string", "gnc-numeric-check", "gnc-numeric-compare", "gnc-numeric-zero-p", "gnc-numeric-negative-p", "gnc-numeric-positive-p", "gnc-numeric-eq", "gnc-numeric-equal", "gnc-numeric-same", "gnc-numeric-add", "gnc-numeric-sub", "gnc-numeric-mul", "gnc-numeric-div", "gnc-numeric-neg", "gnc-numeric-abs", "gnc-numeric-add-fixed", "gnc-numeric-sub-fixed", "gnc-numeric-convert", "gnc-numeric-reduce", "gnc-numeric-to-decimal", "gnc-numeric-invert", "gnc-numeric-get-type", "gnc-budget-get-type", "GNC-BUDGET-MAX-NUM-PERIODS-DIGITS", "gnc-budget-register", "gnc-budget-new", "gnc-budget-destroy", "gnc-budget-begin-edit", "gnc-budget-commit-edit", "gnc-budget-clone", "gnc-budget-get-guid", "gnc-budget-set-name", "gnc-budget-get-name", "gnc-budget-set-description", "gnc-budget-get-description", "gnc-budget-set-num-periods", "gnc-budget-get-num-periods", "gnc-budget-set-recurrence", "gnc-budget-get-recurrence", "gnc-budget-get-period-start-date", "gnc-budget-get-period-end-date", "gnc-budget-set-account-period-value", "gnc-budget-unset-account-period-value", "gnc-budget-is-account-period-value-set", "gnc-budget-get-account-period-value", "gnc-budget-get-account-period-actual-value", "gnc-budget-get-default", "gnc-budget-lookup", "gnc-quote-source-set-fq-installed", "gnc-commodity-get-type", "gnc-commodity-namespace-get-type", "GNC-COMMODITY-TABLE", "GNC-COMMODITY-NS-LEGACY", "GNC-COMMODITY-NS-TEMPLATE", "GNC-COMMODITY-NS-ISO", "GNC-COMMODITY-NS-CURRENCY", "GNC-COMMODITY-NS-NASDAQ", "GNC-COMMODITY-NS-NYSE", "GNC-COMMODITY-NS-EUREX", "GNC-COMMODITY-NS-MUTUAL", "GNC-COMMODITY-NS-AMEX", "GNC-COMMODITY-NS-ASX", "GNC-COMMODITY-NS-ISO-GUI", "GNC-COMMODITY-MAX-FRACTION", "SOURCE-SINGLE", "SOURCE-MULTI", "SOURCE-UNKNOWN", "SOURCE-MAX", "SOURCE-CURRENCY", "gnc-quote-source-fq-installed", "gnc-quote-source-fq-version", "gnc-quote-source-num-entries", "gnc-quote-source-add-new", "gnc-quote-source-lookup-by-internal", "gnc-quote-source-lookup-by-ti", "gnc-quote-source-get-supported", "gnc-quote-source-get-type", "gnc-quote-source-get-index", "gnc-quote-source-get-user-name", "gnc-quote-source-get-internal-name", "gnc-commodity-new", "gnc-commodity-destroy", "gnc-commodity-copy", "gnc-commodity-clone", "gnc-commodity-get-mnemonic", "gnc-commodity-get-namespace", "gnc-commodity-get-namespace-ds", "gnc-commodity-get-fullname", "gnc-commodity-get-printname", "gnc-commodity-get-cusip", "gnc-commodity-get-unique-name", "gnc-commodity-get-fraction", "gnc-commodity-get-quote-flag", "gnc-commodity-get-quote-source", "gnc-commodity-get-default-quote-source", "gnc-commodity-get-quote-tz", "gnc-commodity-get-user-symbol", "gnc-commodity-get-default-symbol", "gnc-commodity-get-nice-symbol", "gnc-commodity-set-mnemonic", "gnc-commodity-set-namespace", "gnc-commodity-set-fullname", "gnc-commodity-set-cusip", "gnc-commodity-set-fraction", "gnc-commodity-user-set-quote-flag", "gnc-commodity-set-quote-flag", "gnc-commodity-set-quote-source", "gnc-commodity-set-quote-tz", "gnc-commodity-set-user-symbol", "gnc-commodity-increment-usage-count", "gnc-commodity-decrement-usage-count", "gnc-commodity-equiv", "gnc-commodity-equal", "gnc-commodity-compare", "gnc-commodity-compare-void", "gnc-commodity-namespace-is-iso", "gnc-commodity-is-iso", "gnc-commodity-is-currency", "gnc-commodity-table-get-table", "gnc-commodity-table-lookup", "gnc-commodity-table-lookup-unique", "gnc-commodity-table-find-full", "gnc-commodity-find-commodity-by-guid", "gnc-commodity-table-insert", "gnc-commodity-table-remove", "gnc-commodity-table-add-default-data", "gnc-commodity-namespace-get-name", "gnc-commodity-namespace-get-gui-name", "gnc-commodity-namespace-get-commodity-list", "gnc-commodity-table-has-namespace", "gnc-commodity-table-get-namespaces", "gnc-commodity-table-get-namespaces-list", "gnc-commodity-table-add-namespace", "gnc-commodity-table-find-namespace", "gnc-commodity-table-delete-namespace", "gnc-commodity-table-get-size", "gnc-commodity-table-get-commodities", "gnc-commodity-table-foreach-commodity", "gnc-commodity-table-new", "gnc-commodity-table-destroy", "gnc-commodity-obtain-twin", "gnc-commodity-table-register", "gnc-commodity-begin-edit", "gnc-commodity-commit-edit", "-gnc-monetary-commodity-set", "-gnc-monetary-commodity-get", "-gnc-monetary-value-set", "-gnc-monetary-value-get", "new--gnc-monetary", "delete--gnc-monetary", "gnc-monetary-create", "gnc-monetary-commodity", "gnc-monetary-value", "gnc-monetary-list-add-monetary", "gnc-monetary-list-add-value", "gnc-monetary-list-delete-zeros", "gnc-monetary-list-free", "gnc-hook-add-scm-dangler", "gnc-hook-run", "gnc-hook-create", "gnc-hook-add-dangler", "gnc-hook-remove-dangler", "gnc-hooks-init", "HOOK-STARTUP", "HOOK-SHUTDOWN", "HOOK-UI-STARTUP", "HOOK-UI-POST-STARTUP", "HOOK-UI-SHUTDOWN", "HOOK-NEW-BOOK", "HOOK-REPORT", "HOOK-CURRENCY-CHANGED", "HOOK-SAVE-OPTIONS", "HOOK-ADD-EXTENSION", "HOOK-BOOK-OPENED", "HOOK-BOOK-CLOSED", "HOOK-BOOK-SAVED", "gnc-book-get-template-root", "qof-book-options-delete", "qof-book-set-option", "qof-book-get-option", "qof-book-get-string-option", "qof-book-set-string-option", "gncTaxTableReturnGUID", "gncInvoiceReturnGUID", "gncJobReturnGUID", "gncVendorReturnGUID", "gncCustomerReturnGUID", "gncEmployeeReturnGUID", "gncTaxTableLookupFlip", "gncInvoiceLookupFlip", "gncJobLookupFlip", "gncVendorLookupFlip", "gncCustomerLookupFlip", "gncEmployeeLookupFlip", "GNC-ADDRESS-MODULE-NAME", "GNC-ID-ADDRESS", "gnc-address-get-type", "gncAddressCreate", "gncAddressDestroy", "gncAddressBeginEdit", "gncAddressCommitEdit", "gncAddressSetName", "gncAddressSetAddr1", "gncAddressSetAddr2", "gncAddressSetAddr3", "gncAddressSetAddr4", "gncAddressSetPhone", "gncAddressSetFax", "gncAddressSetEmail", "gncAddressClearDirty", "gncAddressGetName", "gncAddressGetAddr1", "gncAddressGetAddr2", "gncAddressGetAddr3", "gncAddressGetAddr4", "gncAddressGetPhone", "gncAddressGetFax", "gncAddressGetEmail", "gncAddressIsDirty", "gncAddressCompare", "gncAddressEqual", "ADDRESS-NAME", "ADDRESS-ONE", "ADDRESS-TWO", "ADDRESS-THREE", "ADDRESS-FOUR", "ADDRESS-PHONE", "ADDRESS-FAX", "ADDRESS-EMAIL", "ADDRESS-OWNER", "GNC-ID-BILLTERM", "gnc-billterm-get-type", "GNC-BILLTERM-NAME", "GNC-BILLTERM-DESC", "GNC-BILLTERM-DUEDAYS", "GNC-BILLTERM-DISCDAYS", "GNC-BILLTERM-CUTOFF", "GNC-BILLTERM-TYPE", "GNC-BILLTERM-DISCOUNT", "GNC-BILLTERM-REFCOUNT", "GNC-TERM-TYPE-DAYS", "GNC-TERM-TYPE-PROXIMO", "gncBillTermCreate", "gncBillTermDestroy", "gncBillTermIncRef", "gncBillTermDecRef", "gncBillTermChanged", "gncBillTermBeginEdit", "gncBillTermCommitEdit", "gncBillTermSetName", "gncBillTermSetDescription", "gncBillTermSetType", "gncBillTermSetDueDays", "gncBillTermSetDiscountDays", "gncBillTermSetDiscount", "gncBillTermSetCutoff", "gncBillTermLookup", "gncBillTermLookupByName", "gncBillTermGetTerms", "gncBillTermGetName", "gncBillTermGetDescription", "gncBillTermGetType", "gncBillTermGetDueDays", "gncBillTermGetDiscountDays", "gncBillTermGetDiscount", "gncBillTermGetCutoff", "gncBillTermIsDirty", "gncBillTermGetParent", "gncBillTermReturnChild", "gncBillTermGetRefcount", "gncBillTermCompare", "gncBillTermEqual", "gncBillTermIsFamily", "gncBillTermComputeDueDate", "OWNER-EXPORT-PDF-DIRNAME", "LAST-POSTED-TO-ACCT", "GNC-PAYMENT", "GNC-LAST-ACCOUNT", "GNC-BILLTERM-MODULE-NAME", "gncBusinessGetList", "gncBusinessGetOwnerList", "gncBusinessIsPaymentAcctType", "GNC-ID-CUSTOMER", "gnc-customer-get-type", "gncCustomerCreate", "gncCustomerDestroy", "gncCustomerBeginEdit", "gncCustomerCommitEdit", "gncCustomerSetID", "gncCustomerSetName", "gncCustomerSetNotes", "gncCustomerSetTerms", "gncCustomerSetTaxIncluded", "gncCustomerSetActive", "gncCustomerSetDiscount", "gncCustomerSetCredit", "gncCustomerSetCurrency", "gncCustomerSetTaxTableOverride", "gncCustomerSetTaxTable", "gncCustomerAddJob", "gncCustomerRemoveJob", "gncCustomerLookup", "gncCustomerGetID", "gncCustomerGetName", "gncCustomerGetAddr", "gncCustomerGetShipAddr", "gncCustomerGetNotes", "gncCustomerGetTerms", "gncCustomerGetTaxIncluded", "gncCustomerGetActive", "gncCustomerGetDiscount", "gncCustomerGetCredit", "gncCustomerGetCurrency", "gncCustomerGetTaxTableOverride", "gncCustomerGetTaxTable", "gncCustomerCompare", "CUSTOMER-ID", "CUSTOMER-NAME", "CUSTOMER-ADDR", "CUSTOMER-SHIPADDR", "CUSTOMER-NOTES", "CUSTOMER-DISCOUNT", "CUSTOMER-CREDIT", "CUSTOMER-TT-OVER", "CUSTOMER-TAX-INC", "CUSTOMER-TERMS", "CUSTOMER-ACTIVE", "CUSTOMER-SLOTS", "gncCustomerEqual", "gncCustomerGetJoblist", "gncCustomerIsDirty", "GNC-ID-EMPLOYEE", "gnc-employee-get-type", "gncEmployeeCreate", "gncEmployeeDestroy", "gncEmployeeBeginEdit", "gncEmployeeCommitEdit", "gncEmployeeCompare", "gncEmployeeSetID", "gncEmployeeSetUsername", "gncEmployeeSetName", "gncEmployeeSetLanguage", "gncEmployeeSetAcl", "gncEmployeeSetWorkday", "gncEmployeeSetRate", "gncEmployeeSetCurrency", "gncEmployeeSetActive", "gncEmployeeSetCCard", "qofEmployeeSetAddr", "gncEmployeeGetBook", "gncEmployeeGetID", "gncEmployeeGetUsername", "gncEmployeeGetName", "gncEmployeeGetAddr", "gncEmployeeGetLanguage", "gncEmployeeGetAcl", "gncEmployeeGetWorkday", "gncEmployeeGetRate", "gncEmployeeGetCurrency", "gncEmployeeGetActive", "gncEmployeeGetCCard", "gncEmployeeLookup", "EMPLOYEE-ID", "EMPLOYEE-USERNAME", "EMPLOYEE-NAME", "EMPLOYEE-ADDR", "EMPLOYEE-LANGUAGE", "EMPLOYEE-ACL", "EMPLOYEE-WORKDAY", "EMPLOYEE-RATE", "EMPLOYEE-CC", "gncEmployeeEqual", "gncEmployeeIsDirty", "GNC-PAYMENT-CASH", "GNC-PAYMENT-CARD", "GNC-DISC-PRETAX", "GNC-DISC-SAMETIME", "GNC-DISC-POSTTAX", "GNC-ID-ENTRY", "gnc-entry-get-type", "gncEntryDiscountHowToString", "gncEntryDiscountStringToHow", "gncEntryPaymentTypeToString", "gncEntryPaymentStringToType", "gncEntryCreate", "gncEntryDestroy", "gncEntrySetDateGDate", "gncEntrySetDate", "gncEntrySetDateEntered", "gncEntrySetDescription", "gncEntrySetAction", "gncEntrySetNotes", "gncEntrySetQuantity", "gncEntrySetDocQuantity", "gncEntrySetInvAccount", "gncEntrySetInvPrice", "gncEntrySetInvTaxable", "gncEntrySetInvTaxIncluded", "gncEntrySetInvTaxTable", "gncEntrySetInvDiscount", "gncEntrySetInvDiscountType", "gncEntrySetInvDiscountHow", "qofEntrySetInvDiscType", "qofEntrySetInvDiscHow", "gncEntrySetBillAccount", "gncEntrySetBillPrice", "gncEntrySetBillTaxable", "gncEntrySetBillTaxIncluded", "gncEntrySetBillTaxTable", "gncEntrySetBillable", "gncEntrySetBillTo", "gncEntrySetBillPayment", "gncEntryGetDateGDate", "gncEntryGetDate", "gncEntryGetDateEntered", "gncEntryGetDescription", "gncEntryGetAction", "gncEntryGetNotes", "gncEntryGetQuantity", "gncEntryGetDocQuantity", "gncEntryGetInvAccount", "gncEntryGetInvPrice", "gncEntryGetPrice", "gncEntryGetInvDiscount", "gncEntryGetInvDiscountType", "gncEntryGetInvDiscountHow", "qofEntryGetInvDiscType", "qofEntryGetInvDiscHow", "gncEntryGetInvTaxable", "gncEntryGetInvTaxIncluded", "gncEntryGetInvTaxTable", "gncEntryGetBillAccount", "gncEntryGetBillPrice", "gncEntryGetBillTaxable", "gncEntryGetBillTaxIncluded", "gncEntryGetBillTaxTable", "gncEntryGetBillable", "gncEntryGetBillTo", "gncEntryGetBillPayment", "gncEntryCopy", "gncEntryGetDocValue", "gncEntryGetDocTaxValue", "gncEntryGetDocTaxValues", "gncEntryGetDocDiscountValue", "gncEntryGetBalValue", "gncEntryGetBalTaxValue", "gncEntryGetBalTaxValues", "gncEntryGetBalDiscountValue", "gncEntryComputeValue", "gncEntryGetOrder", "gncEntryGetInvoice", "gncEntryGetBill", "gncEntryLookup", "gncEntryIsOpen", "gncEntryBeginEdit", "gncEntryCommitEdit", "gncEntryCompare", "ENTRY-DATE", "ENTRY-DATE-ENTERED", "ENTRY-DESC", "ENTRY-ACTION", "ENTRY-NOTES", "ENTRY-QTY", "ENTRY-IPRICE", "ENTRY-IACCT", "ENTRY-BACCT", "ENTRY-BPRICE", "ENTRY-BILLABLE", "ENTRY-BILLTO", "ENTRY-ORDER", "ENTRY-INVOICE", "ENTRY-BILL", "ENTRY-INV-DISC-TYPE", "ENTRY-INV-DISC-HOW", "ENTRY-INV-TAXABLE", "ENTRY-BILL-TAXABLE", "ENTRY-INV-TAX-INC", "ENTRY-BILL-TAX-INC", "ENTRY-INV-DISCOUNT", "ENTRY-BILL-PAY-TYPE", "GNC-ID-INVOICE", "GNC-INVOICE-UNDEFINED", "GNC-INVOICE-CUST-INVOICE", "GNC-INVOICE-VEND-INVOICE", "GNC-INVOICE-EMPL-INVOICE", "GNC-INVOICE-CUST-CREDIT-NOTE", "GNC-INVOICE-VEND-CREDIT-NOTE", "GNC-INVOICE-EMPL-CREDIT-NOTE", "GNC-INVOICE-NUM-TYPES", "gnc-invoice-get-type", "gncInvoiceCreate", "gncInvoiceDestroy", "gncInvoiceCopy", "gncInvoiceSetID", "gncInvoiceSetOwner", "gncInvoiceSetDateOpenedGDate", "gncInvoiceSetDateOpened", "gncInvoiceSetDatePosted", "gncInvoiceSetTerms", "gncInvoiceSetBillingID", "gncInvoiceSetNotes", "gncInvoiceSetCurrency", "gncInvoiceSetActive", "gncInvoiceSetIsCreditNote", "gncInvoiceSetBillTo", "gncInvoiceSetToChargeAmount", "gncInvoiceAddEntry", "gncInvoiceRemoveEntry", "gncInvoiceAddPrice", "gncBillAddEntry", "gncBillRemoveEntry", "gncInvoiceSortEntries", "gncInvoiceRemoveEntries", "gncInvoiceGetID", "gncInvoiceGetOwner", "gncInvoiceGetDateOpened", "gncInvoiceGetDatePosted", "gncInvoiceGetDateDue", "gncInvoiceGetTerms", "gncInvoiceGetBillingID", "gncInvoiceGetNotes", "gncInvoiceGetOwnerType", "gncInvoiceGetTypeListForOwnerType", "gncInvoiceGetType", "gncInvoiceGetTypeString", "gncInvoiceGetCurrency", "gncInvoiceGetBillTo", "gncInvoiceGetToChargeAmount", "gncInvoiceGetActive", "gncInvoiceGetIsCreditNote", "gncInvoiceGetPostedLot", "gncInvoiceGetPostedTxn", "gncInvoiceGetPostedAcc", "gncInvoiceGetTotal", "gncInvoiceGetTotalOf", "gncInvoiceGetTotalSubtotal", "gncInvoiceGetTotalTax", "gncInvoiceGetTotalTaxList", "gncInvoiceGetEntries", "gncInvoiceGetPrice", "gncInvoiceAmountPositive", "gncInvoiceGetForeignCurrencies", "gncInvoicePostToAccount", "gncInvoiceUnpost", "gncInvoiceAutoApplyPayments", "gncInvoiceApplyPayment", "gncInvoiceGetInvoiceFromTxn", "gncInvoiceGetInvoiceFromLot", "gncInvoiceLookup", "gncInvoiceBeginEdit", "gncInvoiceCommitEdit", "gncInvoiceCompare", "gncInvoiceIsPosted", "gncInvoiceIsPaid", "INVOICE-ID", "INVOICE-OWNER", "INVOICE-OPENED", "INVOICE-POSTED", "INVOICE-DUE", "INVOICE-IS-POSTED", "INVOICE-IS-PAID", "INVOICE-TERMS", "INVOICE-BILLINGID", "INVOICE-NOTES", "INVOICE-ACC", "INVOICE-POST-TXN", "INVOICE-POST-LOT", "INVOICE-IS-CN", "INVOICE-TYPE", "INVOICE-TYPE-STRING", "INVOICE-BILLTO", "INVOICE-ENTRIES", "INVOICE-JOB", "INVOICE-FROM-LOT", "INVOICE-FROM-TXN", "gncInvoiceGetBook", "gncInvoiceEqual", "GNC-ID-JOB", "gnc-job-get-type", "gncJobCreate", "gncJobDestroy", "gncJobSetID", "gncJobSetName", "gncJobSetReference", "gncJobSetRate", "gncJobSetOwner", "gncJobSetActive", "gncJobBeginEdit", "gncJobCommitEdit", "gncJobGetID", "gncJobGetName", "gncJobGetReference", "gncJobGetRate", "gncJobGetOwner", "gncJobGetActive", "gncJobLookup", "gncJobCompare", "gncJobEqual", "JOB-ID", "JOB-NAME", "JOB-REFERENCE", "JOB-RATE", "JOB-OWNER", "Q-JOB-OWNER", "JOB-ACTIVE", "GNC-ID-ORDER", "gnc-order-get-type", "gncOrderCreate", "gncOrderDestroy", "gncOrderSetID", "gncOrderSetOwner", "gncOrderSetDateOpened", "gncOrderSetDateClosed", "gncOrderSetNotes", "gncOrderSetReference", "gncOrderSetActive", "gncOrderAddEntry", "gncOrderRemoveEntry", "gncOrderGetID", "gncOrderGetOwner", "gncOrderGetDateOpened", "gncOrderGetDateClosed", "gncOrderGetNotes", "gncOrderGetReference", "gncOrderGetActive", "gncOrderGetEntries", "gncOrderBeginEdit", "gncOrderCommitEdit", "gncOrderCompare", "gncOrderIsClosed", "gncOrderLookup", "ORDER-ID", "ORDER-REFERENCE", "ORDER-OWNER", "ORDER-OPENED", "ORDER-CLOSED", "ORDER-IS-CLOSED", "ORDER-NOTES", "GNC-ID-OWNER", "GNC-OWNER-NONE", "GNC-OWNER-UNDEFINED", "GNC-OWNER-CUSTOMER", "GNC-OWNER-JOB", "GNC-OWNER-VENDOR", "GNC-OWNER-EMPLOYEE", "qofOwnerGetType", "qofOwnerGetOwner", "qofOwnerSetEntity", "GNC-IS-OWNER", "gncOwnerTypeToQofIdType", "gncOwnerRegister", "gncOwnerInitUndefined", "gncOwnerInitCustomer", "gncOwnerInitJob", "gncOwnerInitVendor", "gncOwnerInitEmployee", "gncOwnerGetType", "gncOwnerIsValid", "gncOwnerGetUndefined", "gncOwnerGetCustomer", "gncOwnerGetJob", "gncOwnerGetVendor", "gncOwnerGetEmployee", "gncOwnerGetID", "gncOwnerGetName", "gncOwnerGetAddr", "gncOwnerGetActive", "gncOwnerGetCurrency", "gncOwnerSetActive", "gncOwnerCopy", "gncOwnerEqual", "gncOwnerGCompareFunc", "gncOwnerCompare", "gncOwnerGetGUID", "gncOwnerReturnGUID", "gncOwnerGetEndOwner", "gncOwnerGetEndGUID", "gncOwnerAttachToLot", "gncOwnerLotMatchOwnerFunc", "gncOwnerLotsSortFunc", "gncOwnerGetOwnerFromLot", "gncOwnerGetOwnerFromTxn", "gncOwnerGetOwnerFromTypeGuid", "gncOwnerCreatePaymentLotSecs", "gncOwnerAutoApplyPaymentsWithLots", "gncOwnerApplyPaymentSecs", "gncOwnerFindOffsettingSplit", "gncOwnerReduceSplitTo", "gncOwnerSetLotLinkMemo", "gncOwnerGetAccountTypesList", "gncOwnerGetCommoditiesList", "gncOwnerGetBalanceInCurrency", "OWNER-TYPE", "OWNER-TYPE-STRING", "OWNER-CUSTOMER", "OWNER-JOB", "OWNER-VENDOR", "OWNER-EMPLOYEE", "OWNER-PARENT", "OWNER-PARENTG", "OWNER-NAME", "OWNER-FROM-LOT", "gncOwnerNew", "gncOwnerFree", "gncOwnerBeginEdit", "gncOwnerCommitEdit", "gncOwnerDestroy", "GNC-ID-TAXTABLE", "gnc-taxtable-get-type", "GNC-AMT-TYPE-VALUE", "GNC-AMT-TYPE-PERCENT", "GNC-TAXINCLUDED-YES", "GNC-TAXINCLUDED-NO", "GNC-TAXINCLUDED-USEGLOBAL", "gncAmountTypeToString", "gncAmountStringToType", "gncTaxIncludedTypeToString", "gncTaxIncludedStringToType", "gncTaxTableCreate", "gncTaxTableDestroy", "gncTaxTableEntryCreate", "gncTaxTableEntryDestroy", "gncTaxTableSetName", "gncTaxTableIncRef", "gncTaxTableDecRef", "gncTaxTableEntrySetAccount", "gncTaxTableEntrySetType", "gncTaxTableEntrySetAmount", "gncTaxTableAddEntry", "gncTaxTableRemoveEntry", "gncTaxTableChanged", "gncTaxTableBeginEdit", "gncTaxTableCommitEdit", "gncTaxTableEqual", "gncTaxTableLookup", "gncTaxTableLookupByName", "gncTaxTableGetTables", "gncTaxTableGetName", "gncTaxTableGetParent", "gncTaxTableReturnChild", "gncTaxTableGetEntries", "gncTaxTableGetRefcount", "gncTaxTableLastModifiedSecs", "gncTaxTableEntryGetAccount", "gncTaxTableEntryGetType", "gncTaxTableEntryGetAmount", "gncTaxTableCompare", "gncTaxTableEntryCompare", "gncTaxTableEntryEqual", "-gncAccountValue-account-set", "-gncAccountValue-account-get", "-gncAccountValue-value-set", "-gncAccountValue-value-get", "new--gncAccountValue", "delete--gncAccountValue", "gncAccountValueAdd", "gncAccountValueAddList", "gncAccountValueTotal", "gncAccountValueDestroy", "GNC-TT-NAME", "GNC-TT-REFCOUNT", "GNC-ID-VENDOR", "gnc-vendor-get-type", "gncVendorCreate", "gncVendorDestroy", "gncVendorSetID", "gncVendorSetName", "gncVendorSetNotes", "gncVendorSetTerms", "gncVendorSetTaxIncluded", "gncVendorSetCurrency", "gncVendorSetActive", "gncVendorSetTaxTableOverride", "gncVendorSetTaxTable", "gncVendorAddJob", "gncVendorRemoveJob", "gncVendorBeginEdit", "gncVendorCommitEdit", "gncVendorGetID", "gncVendorGetName", "gncVendorGetAddr", "gncVendorGetNotes", "gncVendorGetTerms", "gncVendorGetTaxIncluded", "gncVendorGetCurrency", "gncVendorGetActive", "gncVendorGetTaxTableOverride", "gncVendorGetTaxTable", "gncVendorCompare", "gncVendorLookup", "VENDOR-ID", "VENDOR-NAME", "VENDOR-ADDR", "VENDOR-NOTES", "VENDOR-TERMS", "VENDOR-TAX-INC", "VENDOR-ACTIVE", "VENDOR-TAX-OVERRIDE", "VENDOR-TAX-TABLE", "gncVendorEqual", "gncVendorIsDirty", "gnc-scm-to-account-value-ptr", "gnc-account-value-ptr-to-scm", "URL-TYPE-CUSTOMER", "URL-TYPE-VENDOR", "URL-TYPE-EMPLOYEE", "URL-TYPE-JOB", "URL-TYPE-INVOICE", "URL-TYPE-OWNERREPORT", "qof-query-create-for-invoices", "qof-query-run-for-invoices", NULL);
 }
 
 SCM

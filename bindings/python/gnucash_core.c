@@ -3033,76 +3033,74 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 #define SWIGTYPE_p_QuoteSourceType swig_types[47]
 #define SWIGTYPE_p_Split swig_types[48]
 #define SWIGTYPE_p_SplitList swig_types[49]
-#define SWIGTYPE_p_Timespec swig_types[50]
-#define SWIGTYPE_p_Transaction swig_types[51]
-#define SWIGTYPE_p_TransactionCallback swig_types[52]
-#define SWIGTYPE_p__GncCommodityClass swig_types[53]
-#define SWIGTYPE_p__GncCommodityNamespaceClass swig_types[54]
-#define SWIGTYPE_p__GncPriceClass swig_types[55]
-#define SWIGTYPE_p__GncPriceDBClass swig_types[56]
-#define SWIGTYPE_p__QofQuery swig_types[57]
-#define SWIGTYPE_p__QofQueryPredData swig_types[58]
-#define SWIGTYPE_p__SplitClass swig_types[59]
-#define SWIGTYPE_p__TransactionClass swig_types[60]
-#define SWIGTYPE_p__gncAccountValue swig_types[61]
-#define SWIGTYPE_p__gncAddress swig_types[62]
-#define SWIGTYPE_p__gncAddressClass swig_types[63]
-#define SWIGTYPE_p__gncBillTerm swig_types[64]
-#define SWIGTYPE_p__gncBillTermClass swig_types[65]
-#define SWIGTYPE_p__gncCustomer swig_types[66]
-#define SWIGTYPE_p__gncCustomerClass swig_types[67]
-#define SWIGTYPE_p__gncEmployee swig_types[68]
-#define SWIGTYPE_p__gncEmployeeClass swig_types[69]
-#define SWIGTYPE_p__gncEntry swig_types[70]
-#define SWIGTYPE_p__gncEntryClass swig_types[71]
-#define SWIGTYPE_p__gncGuid swig_types[72]
-#define SWIGTYPE_p__gncInvoice swig_types[73]
-#define SWIGTYPE_p__gncInvoiceClass swig_types[74]
-#define SWIGTYPE_p__gncJob swig_types[75]
-#define SWIGTYPE_p__gncJobClass swig_types[76]
-#define SWIGTYPE_p__gncOwner swig_types[77]
-#define SWIGTYPE_p__gncTaxTable swig_types[78]
-#define SWIGTYPE_p__gncTaxTableClass swig_types[79]
-#define SWIGTYPE_p__gncTaxTableEntry swig_types[80]
-#define SWIGTYPE_p__gncVendor swig_types[81]
-#define SWIGTYPE_p__gncVendorClass swig_types[82]
-#define SWIGTYPE_p__gnc_monetary swig_types[83]
-#define SWIGTYPE_p__gnc_numeric swig_types[84]
-#define SWIGTYPE_p_char swig_types[85]
-#define SWIGTYPE_p_f_p_Account_p_void__p_void swig_types[86]
-#define SWIGTYPE_p_f_p_Account_p_void__void swig_types[87]
-#define SWIGTYPE_p_f_p_GNCLot_p_void__gboolean swig_types[88]
-#define SWIGTYPE_p_f_p_GNCLot_p_void__p_void swig_types[89]
-#define SWIGTYPE_p_f_p_GNCPrice_p_void__gboolean swig_types[90]
-#define SWIGTYPE_p_f_p_QofInstance_p_void__void swig_types[91]
-#define SWIGTYPE_p_f_p_gnc_commodity_p_void__gboolean swig_types[92]
-#define SWIGTYPE_p_f_p_q_const__char_double__void swig_types[93]
-#define SWIGTYPE_p_gboolean swig_types[94]
-#define SWIGTYPE_p_gconstpointer swig_types[95]
-#define SWIGTYPE_p_gint32 swig_types[96]
-#define SWIGTYPE_p_gnc_commodity swig_types[97]
-#define SWIGTYPE_p_gnc_commodity_namespace swig_types[98]
-#define SWIGTYPE_p_gnc_commodity_table swig_types[99]
-#define SWIGTYPE_p_gnc_price_db_s swig_types[100]
-#define SWIGTYPE_p_gnc_quote_source swig_types[101]
-#define SWIGTYPE_p_guint32 swig_types[102]
-#define SWIGTYPE_p_guint8 swig_types[103]
-#define SWIGTYPE_p_gunichar swig_types[104]
-#define SWIGTYPE_p_imap_info swig_types[105]
-#define SWIGTYPE_p_int swig_types[106]
-#define SWIGTYPE_p_long_long swig_types[107]
-#define SWIGTYPE_p_p_GList swig_types[108]
-#define SWIGTYPE_p_p_Transaction swig_types[109]
-#define SWIGTYPE_p_short swig_types[110]
-#define SWIGTYPE_p_signed_char swig_types[111]
-#define SWIGTYPE_p_time64 swig_types[112]
-#define SWIGTYPE_p_unsigned_char swig_types[113]
-#define SWIGTYPE_p_unsigned_int swig_types[114]
-#define SWIGTYPE_p_unsigned_long_long swig_types[115]
-#define SWIGTYPE_p_unsigned_short swig_types[116]
-#define SWIGTYPE_p_void swig_types[117]
-static swig_type_info *swig_types[119];
-static swig_module_info swig_module = {swig_types, 118, 0, 0, 0, 0};
+#define SWIGTYPE_p_Transaction swig_types[50]
+#define SWIGTYPE_p_TransactionCallback swig_types[51]
+#define SWIGTYPE_p__GncCommodityClass swig_types[52]
+#define SWIGTYPE_p__GncCommodityNamespaceClass swig_types[53]
+#define SWIGTYPE_p__GncPriceClass swig_types[54]
+#define SWIGTYPE_p__GncPriceDBClass swig_types[55]
+#define SWIGTYPE_p__QofQuery swig_types[56]
+#define SWIGTYPE_p__QofQueryPredData swig_types[57]
+#define SWIGTYPE_p__SplitClass swig_types[58]
+#define SWIGTYPE_p__TransactionClass swig_types[59]
+#define SWIGTYPE_p__gncAccountValue swig_types[60]
+#define SWIGTYPE_p__gncAddress swig_types[61]
+#define SWIGTYPE_p__gncAddressClass swig_types[62]
+#define SWIGTYPE_p__gncBillTerm swig_types[63]
+#define SWIGTYPE_p__gncBillTermClass swig_types[64]
+#define SWIGTYPE_p__gncCustomer swig_types[65]
+#define SWIGTYPE_p__gncCustomerClass swig_types[66]
+#define SWIGTYPE_p__gncEmployee swig_types[67]
+#define SWIGTYPE_p__gncEmployeeClass swig_types[68]
+#define SWIGTYPE_p__gncEntry swig_types[69]
+#define SWIGTYPE_p__gncEntryClass swig_types[70]
+#define SWIGTYPE_p__gncGuid swig_types[71]
+#define SWIGTYPE_p__gncInvoice swig_types[72]
+#define SWIGTYPE_p__gncInvoiceClass swig_types[73]
+#define SWIGTYPE_p__gncJob swig_types[74]
+#define SWIGTYPE_p__gncJobClass swig_types[75]
+#define SWIGTYPE_p__gncOwner swig_types[76]
+#define SWIGTYPE_p__gncTaxTable swig_types[77]
+#define SWIGTYPE_p__gncTaxTableClass swig_types[78]
+#define SWIGTYPE_p__gncTaxTableEntry swig_types[79]
+#define SWIGTYPE_p__gncVendor swig_types[80]
+#define SWIGTYPE_p__gncVendorClass swig_types[81]
+#define SWIGTYPE_p__gnc_monetary swig_types[82]
+#define SWIGTYPE_p__gnc_numeric swig_types[83]
+#define SWIGTYPE_p_char swig_types[84]
+#define SWIGTYPE_p_f_p_Account_p_void__p_void swig_types[85]
+#define SWIGTYPE_p_f_p_Account_p_void__void swig_types[86]
+#define SWIGTYPE_p_f_p_GNCLot_p_void__gboolean swig_types[87]
+#define SWIGTYPE_p_f_p_GNCLot_p_void__p_void swig_types[88]
+#define SWIGTYPE_p_f_p_GNCPrice_p_void__gboolean swig_types[89]
+#define SWIGTYPE_p_f_p_QofInstance_p_void__void swig_types[90]
+#define SWIGTYPE_p_f_p_gnc_commodity_p_void__gboolean swig_types[91]
+#define SWIGTYPE_p_f_p_q_const__char_double__void swig_types[92]
+#define SWIGTYPE_p_gboolean swig_types[93]
+#define SWIGTYPE_p_gconstpointer swig_types[94]
+#define SWIGTYPE_p_gnc_commodity swig_types[95]
+#define SWIGTYPE_p_gnc_commodity_namespace swig_types[96]
+#define SWIGTYPE_p_gnc_commodity_table swig_types[97]
+#define SWIGTYPE_p_gnc_price_db_s swig_types[98]
+#define SWIGTYPE_p_gnc_quote_source swig_types[99]
+#define SWIGTYPE_p_guint32 swig_types[100]
+#define SWIGTYPE_p_guint8 swig_types[101]
+#define SWIGTYPE_p_gunichar swig_types[102]
+#define SWIGTYPE_p_imap_info swig_types[103]
+#define SWIGTYPE_p_int swig_types[104]
+#define SWIGTYPE_p_long_long swig_types[105]
+#define SWIGTYPE_p_p_GList swig_types[106]
+#define SWIGTYPE_p_p_Transaction swig_types[107]
+#define SWIGTYPE_p_short swig_types[108]
+#define SWIGTYPE_p_signed_char swig_types[109]
+#define SWIGTYPE_p_time64 swig_types[110]
+#define SWIGTYPE_p_unsigned_char swig_types[111]
+#define SWIGTYPE_p_unsigned_int swig_types[112]
+#define SWIGTYPE_p_unsigned_long_long swig_types[113]
+#define SWIGTYPE_p_unsigned_short swig_types[114]
+#define SWIGTYPE_p_void swig_types[115]
+static swig_type_info *swig_types[117];
+static swig_module_info swig_module = {swig_types, 116, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -4305,88 +4303,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_xaccSplitSetDateReconciledTS(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  Split *arg1 = (Split *) 0 ;
-  Timespec *arg2 = (Timespec *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:xaccSplitSetDateReconciledTS",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Split, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccSplitSetDateReconciledTS" "', argument " "1"" of type '" "Split *""'"); 
-  }
-  arg1 = (Split *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_Timespec, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "xaccSplitSetDateReconciledTS" "', argument " "2"" of type '" "Timespec *""'"); 
-  }
-  arg2 = (Timespec *)(argp2);
-  xaccSplitSetDateReconciledTS(arg1,arg2);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_xaccSplitGetDateReconciledTS(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  Split *arg1 = (Split *) 0 ;
-  Timespec *arg2 = (Timespec *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:xaccSplitGetDateReconciledTS",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Split, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccSplitGetDateReconciledTS" "', argument " "1"" of type '" "Split const *""'"); 
-  }
-  arg1 = (Split *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_Timespec, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "xaccSplitGetDateReconciledTS" "', argument " "2"" of type '" "Timespec *""'"); 
-  }
-  arg2 = (Timespec *)(argp2);
-  xaccSplitGetDateReconciledTS((Split const *)arg1,arg2);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_xaccSplitRetDateReconciledTS(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  Split *arg1 = (Split *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  Timespec result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:xaccSplitRetDateReconciledTS",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Split, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccSplitRetDateReconciledTS" "', argument " "1"" of type '" "Split const *""'"); 
-  }
-  arg1 = (Split *)(argp1);
-  result = xaccSplitRetDateReconciledTS((Split const *)arg1);
-  resultobj = SWIG_NewPointerObj((Timespec *)memcpy((Timespec *)malloc(sizeof(Timespec)),&result,sizeof(Timespec)), SWIGTYPE_p_Timespec, SWIG_POINTER_OWN |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_xaccSplitGetDateReconciled(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   Split *arg1 = (Split *) 0 ;
@@ -4403,12 +4319,16 @@ SWIGINTERN PyObject *_wrap_xaccSplitGetDateReconciled(PyObject *SWIGUNUSEDPARM(s
   arg1 = (Split *)(argp1);
   result = xaccSplitGetDateReconciled((Split const *)arg1);
   {
-    PyDateTime_IMPORT;
-    struct tm t;
-    gnc_localtime_r(&result, &t);
-    resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
-      t.tm_mday, t.tm_hour, t.tm_min,
-      t.tm_sec, 0);
+    if (result == INT64_MAX) {
+      resultobj = Py_None;
+    } else {
+      PyDateTime_IMPORT;
+      struct tm t;
+      gnc_localtime_r(&result, &t);
+      resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
+        t.tm_mday, t.tm_hour, t.tm_min,
+        t.tm_sec, 0);
+    }
   }
   return resultobj;
 fail:
@@ -13798,10 +13718,10 @@ SWIGINTERN PyObject *_wrap_xaccTransGetReadOnly(PyObject *SWIGUNUSEDPARM(self), 
   if (!PyArg_ParseTuple(args,(char *)"O:xaccTransGetReadOnly",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Transaction, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccTransGetReadOnly" "', argument " "1"" of type '" "Transaction const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccTransGetReadOnly" "', argument " "1"" of type '" "Transaction *""'"); 
   }
   arg1 = (Transaction *)(argp1);
-  result = (char *)xaccTransGetReadOnly((Transaction const *)arg1);
+  result = (char *)xaccTransGetReadOnly(arg1);
   resultobj = SWIG_FromCharPtr((const char *)result);
   return resultobj;
 fail:
@@ -14809,12 +14729,16 @@ SWIGINTERN PyObject *_wrap_xaccTransGetDate(PyObject *SWIGUNUSEDPARM(self), PyOb
   arg1 = (Transaction *)(argp1);
   result = xaccTransGetDate((Transaction const *)arg1);
   {
-    PyDateTime_IMPORT;
-    struct tm t;
-    gnc_localtime_r(&result, &t);
-    resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
-      t.tm_mday, t.tm_hour, t.tm_min,
-      t.tm_sec, 0);
+    if (result == INT64_MAX) {
+      resultobj = Py_None;
+    } else {
+      PyDateTime_IMPORT;
+      struct tm t;
+      gnc_localtime_r(&result, &t);
+      resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
+        t.tm_mday, t.tm_hour, t.tm_min,
+        t.tm_sec, 0);
+    }
   }
   return resultobj;
 fail:
@@ -14838,12 +14762,16 @@ SWIGINTERN PyObject *_wrap_xaccTransRetDatePosted(PyObject *SWIGUNUSEDPARM(self)
   arg1 = (Transaction *)(argp1);
   result = xaccTransRetDatePosted((Transaction const *)arg1);
   {
-    PyDateTime_IMPORT;
-    struct tm t;
-    gnc_localtime_r(&result, &t);
-    resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
-      t.tm_mday, t.tm_hour, t.tm_min,
-      t.tm_sec, 0);
+    if (result == INT64_MAX) {
+      resultobj = Py_None;
+    } else {
+      PyDateTime_IMPORT;
+      struct tm t;
+      gnc_localtime_r(&result, &t);
+      resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
+        t.tm_mday, t.tm_hour, t.tm_min,
+        t.tm_sec, 0);
+    }
   }
   return resultobj;
 fail:
@@ -14889,12 +14817,16 @@ SWIGINTERN PyObject *_wrap_xaccTransGetDateEntered(PyObject *SWIGUNUSEDPARM(self
   arg1 = (Transaction *)(argp1);
   result = xaccTransGetDateEntered((Transaction const *)arg1);
   {
-    PyDateTime_IMPORT;
-    struct tm t;
-    gnc_localtime_r(&result, &t);
-    resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
-      t.tm_mday, t.tm_hour, t.tm_min,
-      t.tm_sec, 0);
+    if (result == INT64_MAX) {
+      resultobj = Py_None;
+    } else {
+      PyDateTime_IMPORT;
+      struct tm t;
+      gnc_localtime_r(&result, &t);
+      resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
+        t.tm_mday, t.tm_hour, t.tm_min,
+        t.tm_sec, 0);
+    }
   }
   return resultobj;
 fail:
@@ -14918,12 +14850,16 @@ SWIGINTERN PyObject *_wrap_xaccTransRetDateEntered(PyObject *SWIGUNUSEDPARM(self
   arg1 = (Transaction *)(argp1);
   result = xaccTransRetDateEntered((Transaction const *)arg1);
   {
-    PyDateTime_IMPORT;
-    struct tm t;
-    gnc_localtime_r(&result, &t);
-    resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
-      t.tm_mday, t.tm_hour, t.tm_min,
-      t.tm_sec, 0);
+    if (result == INT64_MAX) {
+      resultobj = Py_None;
+    } else {
+      PyDateTime_IMPORT;
+      struct tm t;
+      gnc_localtime_r(&result, &t);
+      resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
+        t.tm_mday, t.tm_hour, t.tm_min,
+        t.tm_sec, 0);
+    }
   }
   return resultobj;
 fail:
@@ -14947,12 +14883,16 @@ SWIGINTERN PyObject *_wrap_xaccTransRetDateDue(PyObject *SWIGUNUSEDPARM(self), P
   arg1 = (Transaction *)(argp1);
   result = xaccTransRetDateDue((Transaction const *)arg1);
   {
-    PyDateTime_IMPORT;
-    struct tm t;
-    gnc_localtime_r(&result, &t);
-    resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
-      t.tm_mday, t.tm_hour, t.tm_min,
-      t.tm_sec, 0);
+    if (result == INT64_MAX) {
+      resultobj = Py_None;
+    } else {
+      PyDateTime_IMPORT;
+      struct tm t;
+      gnc_localtime_r(&result, &t);
+      resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
+        t.tm_mday, t.tm_hour, t.tm_min,
+        t.tm_sec, 0);
+    }
   }
   return resultobj;
 fail:
@@ -15137,12 +15077,16 @@ SWIGINTERN PyObject *_wrap_xaccTransGetVoidTime(PyObject *SWIGUNUSEDPARM(self), 
   arg1 = (Transaction *)(argp1);
   result = xaccTransGetVoidTime((Transaction const *)arg1);
   {
-    PyDateTime_IMPORT;
-    struct tm t;
-    gnc_localtime_r(&result, &t);
-    resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
-      t.tm_mday, t.tm_hour, t.tm_min,
-      t.tm_sec, 0);
+    if (result == INT64_MAX) {
+      resultobj = Py_None;
+    } else {
+      PyDateTime_IMPORT;
+      struct tm t;
+      gnc_localtime_r(&result, &t);
+      resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
+        t.tm_mday, t.tm_hour, t.tm_min,
+        t.tm_sec, 0);
+    }
   }
   return resultobj;
 fail:
@@ -17129,24 +17073,24 @@ fail:
 SWIGINTERN PyObject *_wrap_qof_collection_new(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   QofIdType arg1 = (QofIdType) 0 ;
-  int res1 ;
-  char *buf1 = 0 ;
-  int alloc1 = 0 ;
   PyObject * obj0 = 0 ;
   QofCollection *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:qof_collection_new",&obj0)) SWIG_fail;
-  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_collection_new" "', argument " "1"" of type '" "QofIdType""'");
+  {
+    if (PyUnicode_Check(obj0)) {
+      arg1 = PyUnicode_AsUTF8(obj0);
+    } else if (PyBytes_Check(obj0)) {
+      arg1 = PyBytes_AsString(obj0);
+    } else {
+      PyErr_SetString(PyExc_TypeError, "not a string or bytes object");
+      return NULL;
+    }
   }
-  arg1 = (QofIdType)(buf1);
   result = (QofCollection *)qof_collection_new((gchar const *)arg1);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_QofCollection_s, 0 |  0 );
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return resultobj;
 fail:
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return NULL;
 }
 
@@ -17480,9 +17424,6 @@ SWIGINTERN PyObject *_wrap_qof_collection_from_glist(PyObject *SWIGUNUSEDPARM(se
   PyObject *resultobj = 0;
   QofIdType arg1 = (QofIdType) 0 ;
   GList *arg2 = (GList *) 0 ;
-  int res1 ;
-  char *buf1 = 0 ;
-  int alloc1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
   PyObject * obj0 = 0 ;
@@ -17490,11 +17431,16 @@ SWIGINTERN PyObject *_wrap_qof_collection_from_glist(PyObject *SWIGUNUSEDPARM(se
   QofCollection *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:qof_collection_from_glist",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_collection_from_glist" "', argument " "1"" of type '" "QofIdType""'");
+  {
+    if (PyUnicode_Check(obj0)) {
+      arg1 = PyUnicode_AsUTF8(obj0);
+    } else if (PyBytes_Check(obj0)) {
+      arg1 = PyBytes_AsString(obj0);
+    } else {
+      PyErr_SetString(PyExc_TypeError, "not a string or bytes object");
+      return NULL;
+    }
   }
-  arg1 = (QofIdType)(buf1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_GList, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "qof_collection_from_glist" "', argument " "2"" of type '" "GList const *""'"); 
@@ -17502,10 +17448,8 @@ SWIGINTERN PyObject *_wrap_qof_collection_from_glist(PyObject *SWIGUNUSEDPARM(se
   arg2 = (GList *)(argp2);
   result = (QofCollection *)qof_collection_from_glist((gchar const *)arg1,(GList const *)arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_QofCollection_s, 0 |  0 );
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return resultobj;
 fail:
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return NULL;
 }
 
@@ -17590,24 +17534,24 @@ fail:
 SWIGINTERN PyObject *_wrap_qof_query_create_for(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   QofIdTypeConst arg1 = (QofIdTypeConst) 0 ;
-  int res1 ;
-  char *buf1 = 0 ;
-  int alloc1 = 0 ;
   PyObject * obj0 = 0 ;
   QofQuery *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:qof_query_create_for",&obj0)) SWIG_fail;
-  res1 = SWIG_AsCharPtrAndSize(obj0, &buf1, NULL, &alloc1);
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_query_create_for" "', argument " "1"" of type '" "QofIdTypeConst""'");
+  {
+    if (PyUnicode_Check(obj0)) {
+      arg1 = PyUnicode_AsUTF8(obj0);
+    } else if (PyBytes_Check(obj0)) {
+      arg1 = PyBytes_AsString(obj0);
+    } else {
+      PyErr_SetString(PyExc_TypeError, "not a string or bytes object");
+      return NULL;
+    }
   }
-  arg1 = (QofIdTypeConst)(buf1);
   result = (QofQuery *)qof_query_create_for((gchar const *)arg1);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__QofQuery, 0 |  0 );
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return resultobj;
 fail:
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return NULL;
 }
 
@@ -17639,9 +17583,6 @@ SWIGINTERN PyObject *_wrap_qof_query_search_for(PyObject *SWIGUNUSEDPARM(self), 
   QofIdTypeConst arg2 = (QofIdTypeConst) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int res2 ;
-  char *buf2 = 0 ;
-  int alloc2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   
@@ -17651,17 +17592,20 @@ SWIGINTERN PyObject *_wrap_qof_query_search_for(PyObject *SWIGUNUSEDPARM(self), 
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_query_search_for" "', argument " "1"" of type '" "QofQuery *""'"); 
   }
   arg1 = (QofQuery *)(argp1);
-  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "qof_query_search_for" "', argument " "2"" of type '" "QofIdTypeConst""'");
+  {
+    if (PyUnicode_Check(obj1)) {
+      arg2 = PyUnicode_AsUTF8(obj1);
+    } else if (PyBytes_Check(obj1)) {
+      arg2 = PyBytes_AsString(obj1);
+    } else {
+      PyErr_SetString(PyExc_TypeError, "not a string or bytes object");
+      return NULL;
+    }
   }
-  arg2 = (QofIdTypeConst)(buf2);
   qof_query_search_for(arg1,(gchar const *)arg2);
   resultobj = SWIG_Py_Void();
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return resultobj;
 fail:
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return NULL;
 }
 
@@ -17727,8 +17671,9 @@ SWIGINTERN PyObject *_wrap_qof_query_add_term(PyObject *SWIGUNUSEDPARM(self), Py
       int size = PyList_Size(obj1);
       for (i = size-1; i >= 0; i--) {
         PyObject *o = PyList_GetItem(obj1, i);
-        if (PyString_Check(o)) {
-          arg2 = g_slist_prepend(arg2,PyString_AsString(PyList_GetItem(obj1, i)));
+        if (PyUnicode_Check(o)) {
+          /* There's no way to preserve constness in GSList items. */
+          arg2 = g_slist_prepend(arg2, (char*)PyUnicode_AsUTF8(PyList_GetItem(obj1, i)));
         } else {
           PyErr_SetString(PyExc_TypeError, "list must contain strings");
           g_slist_free(arg2);
@@ -17789,8 +17734,9 @@ SWIGINTERN PyObject *_wrap_qof_query_add_guid_match(PyObject *SWIGUNUSEDPARM(sel
       int size = PyList_Size(obj1);
       for (i = size-1; i >= 0; i--) {
         PyObject *o = PyList_GetItem(obj1, i);
-        if (PyString_Check(o)) {
-          arg2 = g_slist_prepend(arg2,PyString_AsString(PyList_GetItem(obj1, i)));
+        if (PyUnicode_Check(o)) {
+          /* There's no way to preserve constness in GSList items. */
+          arg2 = g_slist_prepend(arg2, (char*)PyUnicode_AsUTF8(PyList_GetItem(obj1, i)));
         } else {
           PyErr_SetString(PyExc_TypeError, "list must contain strings");
           g_slist_free(arg2);
@@ -17855,8 +17801,9 @@ SWIGINTERN PyObject *_wrap_qof_query_add_guid_list_match(PyObject *SWIGUNUSEDPAR
       int size = PyList_Size(obj1);
       for (i = size-1; i >= 0; i--) {
         PyObject *o = PyList_GetItem(obj1, i);
-        if (PyString_Check(o)) {
-          arg2 = g_slist_prepend(arg2,PyString_AsString(PyList_GetItem(obj1, i)));
+        if (PyUnicode_Check(o)) {
+          /* There's no way to preserve constness in GSList items. */
+          arg2 = g_slist_prepend(arg2, (char*)PyUnicode_AsUTF8(PyList_GetItem(obj1, i)));
         } else {
           PyErr_SetString(PyExc_TypeError, "list must contain strings");
           g_slist_free(arg2);
@@ -17920,8 +17867,9 @@ SWIGINTERN PyObject *_wrap_qof_query_add_boolean_match(PyObject *SWIGUNUSEDPARM(
       int size = PyList_Size(obj1);
       for (i = size-1; i >= 0; i--) {
         PyObject *o = PyList_GetItem(obj1, i);
-        if (PyString_Check(o)) {
-          arg2 = g_slist_prepend(arg2,PyString_AsString(PyList_GetItem(obj1, i)));
+        if (PyUnicode_Check(o)) {
+          /* There's no way to preserve constness in GSList items. */
+          arg2 = g_slist_prepend(arg2, (char*)PyUnicode_AsUTF8(PyList_GetItem(obj1, i)));
         } else {
           PyErr_SetString(PyExc_TypeError, "list must contain strings");
           g_slist_free(arg2);
@@ -18202,8 +18150,9 @@ SWIGINTERN PyObject *_wrap_qof_query_purge_terms(PyObject *SWIGUNUSEDPARM(self),
       int size = PyList_Size(obj1);
       for (i = size-1; i >= 0; i--) {
         PyObject *o = PyList_GetItem(obj1, i);
-        if (PyString_Check(o)) {
-          arg2 = g_slist_prepend(arg2,PyString_AsString(PyList_GetItem(obj1, i)));
+        if (PyUnicode_Check(o)) {
+          /* There's no way to preserve constness in GSList items. */
+          arg2 = g_slist_prepend(arg2, (char*)PyUnicode_AsUTF8(PyList_GetItem(obj1, i)));
         } else {
           PyErr_SetString(PyExc_TypeError, "list must contain strings");
           g_slist_free(arg2);
@@ -18291,8 +18240,9 @@ SWIGINTERN PyObject *_wrap_qof_query_has_term_type(PyObject *SWIGUNUSEDPARM(self
       int size = PyList_Size(obj1);
       for (i = size-1; i >= 0; i--) {
         PyObject *o = PyList_GetItem(obj1, i);
-        if (PyString_Check(o)) {
-          arg2 = g_slist_prepend(arg2,PyString_AsString(PyList_GetItem(obj1, i)));
+        if (PyUnicode_Check(o)) {
+          /* There's no way to preserve constness in GSList items. */
+          arg2 = g_slist_prepend(arg2, (char*)PyUnicode_AsUTF8(PyList_GetItem(obj1, i)));
         } else {
           PyErr_SetString(PyExc_TypeError, "list must contain strings");
           g_slist_free(arg2);
@@ -18355,8 +18305,9 @@ SWIGINTERN PyObject *_wrap_qof_query_get_term_type(PyObject *SWIGUNUSEDPARM(self
       int size = PyList_Size(obj1);
       for (i = size-1; i >= 0; i--) {
         PyObject *o = PyList_GetItem(obj1, i);
-        if (PyString_Check(o)) {
-          arg2 = g_slist_prepend(arg2,PyString_AsString(PyList_GetItem(obj1, i)));
+        if (PyUnicode_Check(o)) {
+          /* There's no way to preserve constness in GSList items. */
+          arg2 = g_slist_prepend(arg2, (char*)PyUnicode_AsUTF8(PyList_GetItem(obj1, i)));
         } else {
           PyErr_SetString(PyExc_TypeError, "list must contain strings");
           g_slist_free(arg2);
@@ -18526,8 +18477,9 @@ SWIGINTERN PyObject *_wrap_qof_query_set_sort_order(PyObject *SWIGUNUSEDPARM(sel
       int size = PyList_Size(obj1);
       for (i = size-1; i >= 0; i--) {
         PyObject *o = PyList_GetItem(obj1, i);
-        if (PyString_Check(o)) {
-          arg2 = g_slist_prepend(arg2,PyString_AsString(PyList_GetItem(obj1, i)));
+        if (PyUnicode_Check(o)) {
+          /* There's no way to preserve constness in GSList items. */
+          arg2 = g_slist_prepend(arg2, (char*)PyUnicode_AsUTF8(PyList_GetItem(obj1, i)));
         } else {
           PyErr_SetString(PyExc_TypeError, "list must contain strings");
           g_slist_free(arg2);
@@ -18547,8 +18499,9 @@ SWIGINTERN PyObject *_wrap_qof_query_set_sort_order(PyObject *SWIGUNUSEDPARM(sel
       int size = PyList_Size(obj2);
       for (i = size-1; i >= 0; i--) {
         PyObject *o = PyList_GetItem(obj2, i);
-        if (PyString_Check(o)) {
-          arg3 = g_slist_prepend(arg3,PyString_AsString(PyList_GetItem(obj2, i)));
+        if (PyUnicode_Check(o)) {
+          /* There's no way to preserve constness in GSList items. */
+          arg3 = g_slist_prepend(arg3, (char*)PyUnicode_AsUTF8(PyList_GetItem(obj2, i)));
         } else {
           PyErr_SetString(PyExc_TypeError, "list must contain strings");
           g_slist_free(arg3);
@@ -18568,8 +18521,9 @@ SWIGINTERN PyObject *_wrap_qof_query_set_sort_order(PyObject *SWIGUNUSEDPARM(sel
       int size = PyList_Size(obj3);
       for (i = size-1; i >= 0; i--) {
         PyObject *o = PyList_GetItem(obj3, i);
-        if (PyString_Check(o)) {
-          arg4 = g_slist_prepend(arg4,PyString_AsString(PyList_GetItem(obj3, i)));
+        if (PyUnicode_Check(o)) {
+          /* There's no way to preserve constness in GSList items. */
+          arg4 = g_slist_prepend(arg4, (char*)PyUnicode_AsUTF8(PyList_GetItem(obj3, i)));
         } else {
           PyErr_SetString(PyExc_TypeError, "list must contain strings");
           g_slist_free(arg4);
@@ -19230,8 +19184,8 @@ SWIGINTERN PyObject *_wrap_qof_query_int32_predicate(PyObject *SWIGUNUSEDPARM(se
   gint32 arg2 ;
   int val1 ;
   int ecode1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   QofQueryPredData *result = 0 ;
@@ -19242,17 +19196,11 @@ SWIGINTERN PyObject *_wrap_qof_query_int32_predicate(PyObject *SWIGUNUSEDPARM(se
     SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "qof_query_int32_predicate" "', argument " "1"" of type '" "QofQueryCompare""'");
   } 
   arg1 = (QofQueryCompare)(val1);
-  {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_gint32,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "qof_query_int32_predicate" "', argument " "2"" of type '" "gint32""'"); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "qof_query_int32_predicate" "', argument " "2"" of type '" "gint32""'");
-    } else {
-      arg2 = *((gint32 *)(argp2));
-    }
-  }
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "qof_query_int32_predicate" "', argument " "2"" of type '" "gint32""'");
+  } 
+  arg2 = (gint32)(val2);
   result = (QofQueryPredData *)qof_query_int32_predicate(arg1,arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__QofQueryPredData, 0 |  0 );
   return resultobj;
@@ -26990,9 +26938,6 @@ SWIGINTERN PyObject *_wrap_gncOwnerGetOwnerFromTypeGuid(PyObject *SWIGUNUSEDPARM
   GncGUID *arg4 = (GncGUID *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int res3 ;
-  char *buf3 = 0 ;
-  int alloc3 = 0 ;
   void *argp4 = 0 ;
   int res4 = 0 ;
   PyObject * obj0 = 0 ;
@@ -27042,11 +26987,16 @@ SWIGINTERN PyObject *_wrap_gncOwnerGetOwnerFromTypeGuid(PyObject *SWIGUNUSEDPARM
       return NULL;
     }
   }
-  res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gncOwnerGetOwnerFromTypeGuid" "', argument " "3"" of type '" "QofIdType""'");
+  {
+    if (PyUnicode_Check(obj2)) {
+      arg3 = PyUnicode_AsUTF8(obj2);
+    } else if (PyBytes_Check(obj2)) {
+      arg3 = PyBytes_AsString(obj2);
+    } else {
+      PyErr_SetString(PyExc_TypeError, "not a string or bytes object");
+      return NULL;
+    }
   }
-  arg3 = (QofIdType)(buf3);
   res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p__gncGuid, 0 |  0 );
   if (!SWIG_IsOK(res4)) {
     SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gncOwnerGetOwnerFromTypeGuid" "', argument " "4"" of type '" "GncGUID *""'"); 
@@ -27076,18 +27026,16 @@ SWIGINTERN PyObject *_wrap_gncOwnerGetOwnerFromTypeGuid(PyObject *SWIGUNUSEDPARM
   {
     gncOwnerFree(arg2);
   }
-  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return resultobj;
 fail:
   {
     gncOwnerFree(arg2);
   }
-  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_gncOwnerCreatePaymentLot(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_gncOwnerCreatePaymentLotSecs(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GncOwner *arg1 = (GncOwner *) 0 ;
   Transaction **arg2 = (Transaction **) 0 ;
@@ -27095,7 +27043,7 @@ SWIGINTERN PyObject *_wrap_gncOwnerCreatePaymentLot(PyObject *SWIGUNUSEDPARM(sel
   Account *arg4 = (Account *) 0 ;
   gnc_numeric arg5 ;
   gnc_numeric arg6 ;
-  Timespec arg7 ;
+  time64 arg7 ;
   char *arg8 = (char *) 0 ;
   char *arg9 = (char *) 0 ;
   void *argp2 = 0 ;
@@ -27108,8 +27056,6 @@ SWIGINTERN PyObject *_wrap_gncOwnerCreatePaymentLot(PyObject *SWIGUNUSEDPARM(sel
   int res5 = 0 ;
   void *argp6 ;
   int res6 = 0 ;
-  void *argp7 ;
-  int res7 = 0 ;
   int res8 ;
   char *buf8 = 0 ;
   int alloc8 = 0 ;
@@ -27127,7 +27073,7 @@ SWIGINTERN PyObject *_wrap_gncOwnerCreatePaymentLot(PyObject *SWIGUNUSEDPARM(sel
   PyObject * obj8 = 0 ;
   GNCLot *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOO:gncOwnerCreatePaymentLot",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOO:gncOwnerCreatePaymentLotSecs",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8)) SWIG_fail;
   {
     GncOwner * temp_owner = gncOwnerNew();
     void * pointer_to_real_thing;
@@ -27165,26 +27111,26 @@ SWIGINTERN PyObject *_wrap_gncOwnerCreatePaymentLot(PyObject *SWIGUNUSEDPARM(sel
   }
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_p_Transaction, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gncOwnerCreatePaymentLot" "', argument " "2"" of type '" "Transaction **""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gncOwnerCreatePaymentLotSecs" "', argument " "2"" of type '" "Transaction **""'"); 
   }
   arg2 = (Transaction **)(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_Account, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gncOwnerCreatePaymentLot" "', argument " "3"" of type '" "Account *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gncOwnerCreatePaymentLotSecs" "', argument " "3"" of type '" "Account *""'"); 
   }
   arg3 = (Account *)(argp3);
   res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_Account, 0 |  0 );
   if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gncOwnerCreatePaymentLot" "', argument " "4"" of type '" "Account *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gncOwnerCreatePaymentLotSecs" "', argument " "4"" of type '" "Account *""'"); 
   }
   arg4 = (Account *)(argp4);
   {
     res5 = SWIG_ConvertPtr(obj4, &argp5, SWIGTYPE_p__gnc_numeric,  0 );
     if (!SWIG_IsOK(res5)) {
-      SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "gncOwnerCreatePaymentLot" "', argument " "5"" of type '" "gnc_numeric""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "gncOwnerCreatePaymentLotSecs" "', argument " "5"" of type '" "gnc_numeric""'"); 
     }  
     if (!argp5) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gncOwnerCreatePaymentLot" "', argument " "5"" of type '" "gnc_numeric""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gncOwnerCreatePaymentLotSecs" "', argument " "5"" of type '" "gnc_numeric""'");
     } else {
       arg5 = *((gnc_numeric *)(argp5));
     }
@@ -27192,36 +27138,37 @@ SWIGINTERN PyObject *_wrap_gncOwnerCreatePaymentLot(PyObject *SWIGUNUSEDPARM(sel
   {
     res6 = SWIG_ConvertPtr(obj5, &argp6, SWIGTYPE_p__gnc_numeric,  0 );
     if (!SWIG_IsOK(res6)) {
-      SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "gncOwnerCreatePaymentLot" "', argument " "6"" of type '" "gnc_numeric""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "gncOwnerCreatePaymentLotSecs" "', argument " "6"" of type '" "gnc_numeric""'"); 
     }  
     if (!argp6) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gncOwnerCreatePaymentLot" "', argument " "6"" of type '" "gnc_numeric""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gncOwnerCreatePaymentLotSecs" "', argument " "6"" of type '" "gnc_numeric""'");
     } else {
       arg6 = *((gnc_numeric *)(argp6));
     }
   }
   {
-    res7 = SWIG_ConvertPtr(obj6, &argp7, SWIGTYPE_p_Timespec,  0 );
-    if (!SWIG_IsOK(res7)) {
-      SWIG_exception_fail(SWIG_ArgError(res7), "in method '" "gncOwnerCreatePaymentLot" "', argument " "7"" of type '" "Timespec""'"); 
-    }  
-    if (!argp7) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gncOwnerCreatePaymentLot" "', argument " "7"" of type '" "Timespec""'");
-    } else {
-      arg7 = *((Timespec *)(argp7));
-    }
+    PyDateTime_IMPORT;
+    struct tm time = {
+      PyDateTime_DATE_GET_SECOND(obj6),
+      PyDateTime_DATE_GET_MINUTE(obj6),
+      PyDateTime_DATE_GET_HOUR(obj6),
+      PyDateTime_GET_DAY(obj6),
+      PyDateTime_GET_MONTH(obj6) - 1,
+      PyDateTime_GET_YEAR(obj6) - 1900
+    };
+    arg7 = gnc_mktime(&time);
   }
   res8 = SWIG_AsCharPtrAndSize(obj7, &buf8, NULL, &alloc8);
   if (!SWIG_IsOK(res8)) {
-    SWIG_exception_fail(SWIG_ArgError(res8), "in method '" "gncOwnerCreatePaymentLot" "', argument " "8"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res8), "in method '" "gncOwnerCreatePaymentLotSecs" "', argument " "8"" of type '" "char const *""'");
   }
   arg8 = (char *)(buf8);
   res9 = SWIG_AsCharPtrAndSize(obj8, &buf9, NULL, &alloc9);
   if (!SWIG_IsOK(res9)) {
-    SWIG_exception_fail(SWIG_ArgError(res9), "in method '" "gncOwnerCreatePaymentLot" "', argument " "9"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res9), "in method '" "gncOwnerCreatePaymentLotSecs" "', argument " "9"" of type '" "char const *""'");
   }
   arg9 = (char *)(buf9);
-  result = (GNCLot *)gncOwnerCreatePaymentLot((struct _gncOwner const *)arg1,arg2,arg3,arg4,arg5,arg6,arg7,(char const *)arg8,(char const *)arg9);
+  result = (GNCLot *)gncOwnerCreatePaymentLotSecs((struct _gncOwner const *)arg1,arg2,arg3,arg4,arg5,arg6,arg7,(char const *)arg8,(char const *)arg9);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNCLot, 0 |  0 );
   {
     gncOwnerFree(arg1);
@@ -27303,7 +27250,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_gncOwnerApplyPayment(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_gncOwnerApplyPaymentSecs(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GncOwner *arg1 = (GncOwner *) 0 ;
   Transaction **arg2 = (Transaction **) 0 ;
@@ -27312,7 +27259,7 @@ SWIGINTERN PyObject *_wrap_gncOwnerApplyPayment(PyObject *SWIGUNUSEDPARM(self), 
   Account *arg5 = (Account *) 0 ;
   gnc_numeric arg6 ;
   gnc_numeric arg7 ;
-  Timespec arg8 ;
+  time64 arg8 ;
   char *arg9 = (char *) 0 ;
   char *arg10 = (char *) 0 ;
   gboolean arg11 ;
@@ -27328,8 +27275,6 @@ SWIGINTERN PyObject *_wrap_gncOwnerApplyPayment(PyObject *SWIGUNUSEDPARM(self), 
   int res6 = 0 ;
   void *argp7 ;
   int res7 = 0 ;
-  void *argp8 ;
-  int res8 = 0 ;
   int res9 ;
   char *buf9 = 0 ;
   int alloc9 = 0 ;
@@ -27348,7 +27293,7 @@ SWIGINTERN PyObject *_wrap_gncOwnerApplyPayment(PyObject *SWIGUNUSEDPARM(self), 
   PyObject * obj9 = 0 ;
   PyObject * obj10 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOO:gncOwnerApplyPayment",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOO:gncOwnerApplyPaymentSecs",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10)) SWIG_fail;
   {
     GncOwner * temp_owner = gncOwnerNew();
     void * pointer_to_real_thing;
@@ -27386,31 +27331,31 @@ SWIGINTERN PyObject *_wrap_gncOwnerApplyPayment(PyObject *SWIGUNUSEDPARM(self), 
   }
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_p_Transaction, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gncOwnerApplyPayment" "', argument " "2"" of type '" "Transaction **""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gncOwnerApplyPaymentSecs" "', argument " "2"" of type '" "Transaction **""'"); 
   }
   arg2 = (Transaction **)(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_GList, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gncOwnerApplyPayment" "', argument " "3"" of type '" "GList *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gncOwnerApplyPaymentSecs" "', argument " "3"" of type '" "GList *""'"); 
   }
   arg3 = (GList *)(argp3);
   res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_Account, 0 |  0 );
   if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gncOwnerApplyPayment" "', argument " "4"" of type '" "Account *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gncOwnerApplyPaymentSecs" "', argument " "4"" of type '" "Account *""'"); 
   }
   arg4 = (Account *)(argp4);
   res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_Account, 0 |  0 );
   if (!SWIG_IsOK(res5)) {
-    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "gncOwnerApplyPayment" "', argument " "5"" of type '" "Account *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "gncOwnerApplyPaymentSecs" "', argument " "5"" of type '" "Account *""'"); 
   }
   arg5 = (Account *)(argp5);
   {
     res6 = SWIG_ConvertPtr(obj5, &argp6, SWIGTYPE_p__gnc_numeric,  0 );
     if (!SWIG_IsOK(res6)) {
-      SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "gncOwnerApplyPayment" "', argument " "6"" of type '" "gnc_numeric""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "gncOwnerApplyPaymentSecs" "', argument " "6"" of type '" "gnc_numeric""'"); 
     }  
     if (!argp6) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gncOwnerApplyPayment" "', argument " "6"" of type '" "gnc_numeric""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gncOwnerApplyPaymentSecs" "', argument " "6"" of type '" "gnc_numeric""'");
     } else {
       arg6 = *((gnc_numeric *)(argp6));
     }
@@ -27418,33 +27363,34 @@ SWIGINTERN PyObject *_wrap_gncOwnerApplyPayment(PyObject *SWIGUNUSEDPARM(self), 
   {
     res7 = SWIG_ConvertPtr(obj6, &argp7, SWIGTYPE_p__gnc_numeric,  0 );
     if (!SWIG_IsOK(res7)) {
-      SWIG_exception_fail(SWIG_ArgError(res7), "in method '" "gncOwnerApplyPayment" "', argument " "7"" of type '" "gnc_numeric""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res7), "in method '" "gncOwnerApplyPaymentSecs" "', argument " "7"" of type '" "gnc_numeric""'"); 
     }  
     if (!argp7) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gncOwnerApplyPayment" "', argument " "7"" of type '" "gnc_numeric""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gncOwnerApplyPaymentSecs" "', argument " "7"" of type '" "gnc_numeric""'");
     } else {
       arg7 = *((gnc_numeric *)(argp7));
     }
   }
   {
-    res8 = SWIG_ConvertPtr(obj7, &argp8, SWIGTYPE_p_Timespec,  0 );
-    if (!SWIG_IsOK(res8)) {
-      SWIG_exception_fail(SWIG_ArgError(res8), "in method '" "gncOwnerApplyPayment" "', argument " "8"" of type '" "Timespec""'"); 
-    }  
-    if (!argp8) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gncOwnerApplyPayment" "', argument " "8"" of type '" "Timespec""'");
-    } else {
-      arg8 = *((Timespec *)(argp8));
-    }
+    PyDateTime_IMPORT;
+    struct tm time = {
+      PyDateTime_DATE_GET_SECOND(obj7),
+      PyDateTime_DATE_GET_MINUTE(obj7),
+      PyDateTime_DATE_GET_HOUR(obj7),
+      PyDateTime_GET_DAY(obj7),
+      PyDateTime_GET_MONTH(obj7) - 1,
+      PyDateTime_GET_YEAR(obj7) - 1900
+    };
+    arg8 = gnc_mktime(&time);
   }
   res9 = SWIG_AsCharPtrAndSize(obj8, &buf9, NULL, &alloc9);
   if (!SWIG_IsOK(res9)) {
-    SWIG_exception_fail(SWIG_ArgError(res9), "in method '" "gncOwnerApplyPayment" "', argument " "9"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res9), "in method '" "gncOwnerApplyPaymentSecs" "', argument " "9"" of type '" "char const *""'");
   }
   arg9 = (char *)(buf9);
   res10 = SWIG_AsCharPtrAndSize(obj9, &buf10, NULL, &alloc10);
   if (!SWIG_IsOK(res10)) {
-    SWIG_exception_fail(SWIG_ArgError(res10), "in method '" "gncOwnerApplyPayment" "', argument " "10"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res10), "in method '" "gncOwnerApplyPaymentSecs" "', argument " "10"" of type '" "char const *""'");
   }
   arg10 = (char *)(buf10);
   {
@@ -27461,7 +27407,7 @@ SWIGINTERN PyObject *_wrap_gncOwnerApplyPayment(PyObject *SWIGUNUSEDPARM(self), 
       return NULL;
     }
   }
-  gncOwnerApplyPayment((struct _gncOwner const *)arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,(char const *)arg9,(char const *)arg10,arg11);
+  gncOwnerApplyPaymentSecs((struct _gncOwner const *)arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,(char const *)arg9,(char const *)arg10,arg11);
   resultobj = SWIG_Py_Void();
   {
     gncOwnerFree(arg1);
@@ -29239,6 +29185,58 @@ SWIGINTERN PyObject *_wrap_gncCustomerNextID(PyObject *SWIGUNUSEDPARM(self), PyO
   arg1 = (QofBook *)(argp1);
   result = (gchar *)gncCustomerNextID(arg1);
   resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gncCustomerGetCachedBalance(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GncCustomer *arg1 = (GncCustomer *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  gnc_numeric *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:gncCustomerGetCachedBalance",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__gncCustomer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncCustomerGetCachedBalance" "', argument " "1"" of type '" "GncCustomer *""'"); 
+  }
+  arg1 = (GncCustomer *)(argp1);
+  result = (gnc_numeric *)gncCustomerGetCachedBalance(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__gnc_numeric, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gncCustomerSetCachedBalance(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GncCustomer *arg1 = (GncCustomer *) 0 ;
+  gnc_numeric *arg2 = (gnc_numeric *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:gncCustomerSetCachedBalance",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__gncCustomer, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncCustomerSetCachedBalance" "', argument " "1"" of type '" "GncCustomer *""'"); 
+  }
+  arg1 = (GncCustomer *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p__gnc_numeric, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gncCustomerSetCachedBalance" "', argument " "2"" of type '" "gnc_numeric const *""'"); 
+  }
+  arg2 = (gnc_numeric *)(argp2);
+  gncCustomerSetCachedBalance(arg1,(struct _gnc_numeric const *)arg2);
+  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -31059,6 +31057,58 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_gncVendorGetCachedBalance(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GncVendor *arg1 = (GncVendor *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  gnc_numeric *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:gncVendorGetCachedBalance",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__gncVendor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncVendorGetCachedBalance" "', argument " "1"" of type '" "GncVendor *""'"); 
+  }
+  arg1 = (GncVendor *)(argp1);
+  result = (gnc_numeric *)gncVendorGetCachedBalance(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__gnc_numeric, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gncVendorSetCachedBalance(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GncVendor *arg1 = (GncVendor *) 0 ;
+  gnc_numeric *arg2 = (gnc_numeric *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:gncVendorSetCachedBalance",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__gncVendor, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncVendorSetCachedBalance" "', argument " "1"" of type '" "GncVendor *""'"); 
+  }
+  arg1 = (GncVendor *)(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p__gnc_numeric, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gncVendorSetCachedBalance" "', argument " "2"" of type '" "gnc_numeric const *""'"); 
+  }
+  arg2 = (gnc_numeric *)(argp2);
+  gncVendorSetCachedBalance(arg1,(struct _gnc_numeric const *)arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_gnc_address_get_type(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GType result;
@@ -32698,12 +32748,16 @@ SWIGINTERN PyObject *_wrap_gncBillTermComputeDueDate(PyObject *SWIGUNUSEDPARM(se
   }
   result = gncBillTermComputeDueDate((struct _gncBillTerm const *)arg1,arg2);
   {
-    PyDateTime_IMPORT;
-    struct tm t;
-    gnc_localtime_r(&result, &t);
-    resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
-      t.tm_mday, t.tm_hour, t.tm_min,
-      t.tm_sec, 0);
+    if (result == INT64_MAX) {
+      resultobj = Py_None;
+    } else {
+      PyDateTime_IMPORT;
+      struct tm t;
+      gnc_localtime_r(&result, &t);
+      resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
+        t.tm_mday, t.tm_hour, t.tm_min,
+        t.tm_sec, 0);
+    }
   }
   return resultobj;
 fail:
@@ -33565,12 +33619,16 @@ SWIGINTERN PyObject *_wrap_gncInvoiceGetDateOpened(PyObject *SWIGUNUSEDPARM(self
   arg1 = (GncInvoice *)(argp1);
   result = gncInvoiceGetDateOpened((struct _gncInvoice const *)arg1);
   {
-    PyDateTime_IMPORT;
-    struct tm t;
-    gnc_localtime_r(&result, &t);
-    resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
-      t.tm_mday, t.tm_hour, t.tm_min,
-      t.tm_sec, 0);
+    if (result == INT64_MAX) {
+      resultobj = Py_None;
+    } else {
+      PyDateTime_IMPORT;
+      struct tm t;
+      gnc_localtime_r(&result, &t);
+      resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
+        t.tm_mday, t.tm_hour, t.tm_min,
+        t.tm_sec, 0);
+    }
   }
   return resultobj;
 fail:
@@ -33594,12 +33652,16 @@ SWIGINTERN PyObject *_wrap_gncInvoiceGetDatePosted(PyObject *SWIGUNUSEDPARM(self
   arg1 = (GncInvoice *)(argp1);
   result = gncInvoiceGetDatePosted((struct _gncInvoice const *)arg1);
   {
-    PyDateTime_IMPORT;
-    struct tm t;
-    gnc_localtime_r(&result, &t);
-    resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
-      t.tm_mday, t.tm_hour, t.tm_min,
-      t.tm_sec, 0);
+    if (result == INT64_MAX) {
+      resultobj = Py_None;
+    } else {
+      PyDateTime_IMPORT;
+      struct tm t;
+      gnc_localtime_r(&result, &t);
+      resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
+        t.tm_mday, t.tm_hour, t.tm_min,
+        t.tm_sec, 0);
+    }
   }
   return resultobj;
 fail:
@@ -33623,12 +33685,16 @@ SWIGINTERN PyObject *_wrap_gncInvoiceGetDateDue(PyObject *SWIGUNUSEDPARM(self), 
   arg1 = (GncInvoice *)(argp1);
   result = gncInvoiceGetDateDue((struct _gncInvoice const *)arg1);
   {
-    PyDateTime_IMPORT;
-    struct tm t;
-    gnc_localtime_r(&result, &t);
-    resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
-      t.tm_mday, t.tm_hour, t.tm_min,
-      t.tm_sec, 0);
+    if (result == INT64_MAX) {
+      resultobj = Py_None;
+    } else {
+      PyDateTime_IMPORT;
+      struct tm t;
+      gnc_localtime_r(&result, &t);
+      resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
+        t.tm_mday, t.tm_hour, t.tm_min,
+        t.tm_sec, 0);
+    }
   }
   return resultobj;
 fail:
@@ -37035,12 +37101,16 @@ SWIGINTERN PyObject *_wrap_gncEntryGetDate(PyObject *SWIGUNUSEDPARM(self), PyObj
   arg1 = (GncEntry *)(argp1);
   result = gncEntryGetDate((struct _gncEntry const *)arg1);
   {
-    PyDateTime_IMPORT;
-    struct tm t;
-    gnc_localtime_r(&result, &t);
-    resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
-      t.tm_mday, t.tm_hour, t.tm_min,
-      t.tm_sec, 0);
+    if (result == INT64_MAX) {
+      resultobj = Py_None;
+    } else {
+      PyDateTime_IMPORT;
+      struct tm t;
+      gnc_localtime_r(&result, &t);
+      resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
+        t.tm_mday, t.tm_hour, t.tm_min,
+        t.tm_sec, 0);
+    }
   }
   return resultobj;
 fail:
@@ -37064,12 +37134,16 @@ SWIGINTERN PyObject *_wrap_gncEntryGetDateEntered(PyObject *SWIGUNUSEDPARM(self)
   arg1 = (GncEntry *)(argp1);
   result = gncEntryGetDateEntered((struct _gncEntry const *)arg1);
   {
-    PyDateTime_IMPORT;
-    struct tm t;
-    gnc_localtime_r(&result, &t);
-    resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
-      t.tm_mday, t.tm_hour, t.tm_min,
-      t.tm_sec, 0);
+    if (result == INT64_MAX) {
+      resultobj = Py_None;
+    } else {
+      PyDateTime_IMPORT;
+      struct tm t;
+      gnc_localtime_r(&result, &t);
+      resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
+        t.tm_mday, t.tm_hour, t.tm_min,
+        t.tm_sec, 0);
+    }
   }
   return resultobj;
 fail:
@@ -39593,22 +39667,33 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_gncTaxTableLastModified(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_gncTaxTableLastModifiedSecs(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GncTaxTable *arg1 = (GncTaxTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  Timespec result;
+  time64 result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:gncTaxTableLastModified",&obj0)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"O:gncTaxTableLastModifiedSecs",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__gncTaxTable, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncTaxTableLastModified" "', argument " "1"" of type '" "GncTaxTable const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gncTaxTableLastModifiedSecs" "', argument " "1"" of type '" "GncTaxTable const *""'"); 
   }
   arg1 = (GncTaxTable *)(argp1);
-  result = gncTaxTableLastModified((struct _gncTaxTable const *)arg1);
-  resultobj = SWIG_NewPointerObj((Timespec *)memcpy((Timespec *)malloc(sizeof(Timespec)),&result,sizeof(Timespec)), SWIGTYPE_p_Timespec, SWIG_POINTER_OWN |  0 );
+  result = gncTaxTableLastModifiedSecs((struct _gncTaxTable const *)arg1);
+  {
+    if (result == INT64_MAX) {
+      resultobj = Py_None;
+    } else {
+      PyDateTime_IMPORT;
+      struct tm t;
+      gnc_localtime_r(&result, &t);
+      resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
+        t.tm_mday, t.tm_hour, t.tm_min,
+        t.tm_sec, 0);
+    }
+  }
   return resultobj;
 fail:
   return NULL;
@@ -40521,42 +40606,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_gnc_price_set_time(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  GNCPrice *arg1 = (GNCPrice *) 0 ;
-  Timespec arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 ;
-  int res2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OO:gnc_price_set_time",&obj0,&obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNCPrice, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_price_set_time" "', argument " "1"" of type '" "GNCPrice *""'"); 
-  }
-  arg1 = (GNCPrice *)(argp1);
-  {
-    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_Timespec,  0 );
-    if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gnc_price_set_time" "', argument " "2"" of type '" "Timespec""'"); 
-    }  
-    if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gnc_price_set_time" "', argument " "2"" of type '" "Timespec""'");
-    } else {
-      arg2 = *((Timespec *)(argp2));
-    }
-  }
-  gnc_price_set_time(arg1,arg2);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_gnc_price_set_time64(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GNCPrice *arg1 = (GNCPrice *) 0 ;
@@ -40799,28 +40848,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_gnc_price_get_time(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  GNCPrice *arg1 = (GNCPrice *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  Timespec result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:gnc_price_get_time",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_GNCPrice, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_price_get_time" "', argument " "1"" of type '" "GNCPrice const *""'"); 
-  }
-  arg1 = (GNCPrice *)(argp1);
-  result = gnc_price_get_time((GNCPrice const *)arg1);
-  resultobj = SWIG_NewPointerObj((Timespec *)memcpy((Timespec *)malloc(sizeof(Timespec)),&result,sizeof(Timespec)), SWIGTYPE_p_Timespec, SWIG_POINTER_OWN |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_gnc_price_get_time64(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GNCPrice *arg1 = (GNCPrice *) 0 ;
@@ -40837,12 +40864,16 @@ SWIGINTERN PyObject *_wrap_gnc_price_get_time64(PyObject *SWIGUNUSEDPARM(self), 
   arg1 = (GNCPrice *)(argp1);
   result = gnc_price_get_time64((GNCPrice const *)arg1);
   {
-    PyDateTime_IMPORT;
-    struct tm t;
-    gnc_localtime_r(&result, &t);
-    resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
-      t.tm_mday, t.tm_hour, t.tm_min,
-      t.tm_sec, 0);
+    if (result == INT64_MAX) {
+      resultobj = Py_None;
+    } else {
+      PyDateTime_IMPORT;
+      struct tm t;
+      gnc_localtime_r(&result, &t);
+      resultobj = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
+        t.tm_mday, t.tm_hour, t.tm_min,
+        t.tm_sec, 0);
+    }
   }
   return resultobj;
 fail:
@@ -41463,7 +41494,7 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_remove_old_prices(PyObject *SWIGUNUSEDPAR
   GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
   GList *arg2 = (GList *) 0 ;
   GDate *arg3 = (GDate *) 0 ;
-  Timespec arg4 ;
+  time64 arg4 ;
   PriceRemoveSourceFlags arg5 ;
   PriceRemoveKeepOptions arg6 ;
   void *argp1 = 0 ;
@@ -41472,8 +41503,6 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_remove_old_prices(PyObject *SWIGUNUSEDPAR
   int res2 = 0 ;
   void *argp3 = 0 ;
   int res3 = 0 ;
-  void *argp4 ;
-  int res4 = 0 ;
   int val5 ;
   int ecode5 = 0 ;
   int val6 ;
@@ -41503,15 +41532,16 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_remove_old_prices(PyObject *SWIGUNUSEDPAR
   }
   arg3 = (GDate *)(argp3);
   {
-    res4 = SWIG_ConvertPtr(obj3, &argp4, SWIGTYPE_p_Timespec,  0 );
-    if (!SWIG_IsOK(res4)) {
-      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gnc_pricedb_remove_old_prices" "', argument " "4"" of type '" "Timespec""'"); 
-    }  
-    if (!argp4) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gnc_pricedb_remove_old_prices" "', argument " "4"" of type '" "Timespec""'");
-    } else {
-      arg4 = *((Timespec *)(argp4));
-    }
+    PyDateTime_IMPORT;
+    struct tm time = {
+      PyDateTime_DATE_GET_SECOND(obj3),
+      PyDateTime_DATE_GET_MINUTE(obj3),
+      PyDateTime_DATE_GET_HOUR(obj3),
+      PyDateTime_GET_DAY(obj3),
+      PyDateTime_GET_MONTH(obj3) - 1,
+      PyDateTime_GET_YEAR(obj3) - 1900
+    };
+    arg4 = gnc_mktime(&time);
   }
   ecode5 = SWIG_AsVal_int(obj4, &val5);
   if (!SWIG_IsOK(ecode5)) {
@@ -41802,109 +41832,53 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_at_time(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_at_time64(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
   gnc_commodity *arg2 = (gnc_commodity *) 0 ;
   gnc_commodity *arg3 = (gnc_commodity *) 0 ;
-  Timespec arg4 ;
+  time64 arg4 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
   void *argp3 = 0 ;
   int res3 = 0 ;
-  void *argp4 ;
-  int res4 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   GNCPrice *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOO:gnc_pricedb_lookup_at_time",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOOO:gnc_pricedb_lookup_at_time64",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_gnc_price_db_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_pricedb_lookup_at_time" "', argument " "1"" of type '" "GNCPriceDB *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_pricedb_lookup_at_time64" "', argument " "1"" of type '" "GNCPriceDB *""'"); 
   }
   arg1 = (GNCPriceDB *)(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_gnc_commodity, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gnc_pricedb_lookup_at_time" "', argument " "2"" of type '" "gnc_commodity const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gnc_pricedb_lookup_at_time64" "', argument " "2"" of type '" "gnc_commodity const *""'"); 
   }
   arg2 = (gnc_commodity *)(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_gnc_commodity, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gnc_pricedb_lookup_at_time" "', argument " "3"" of type '" "gnc_commodity const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gnc_pricedb_lookup_at_time64" "', argument " "3"" of type '" "gnc_commodity const *""'"); 
   }
   arg3 = (gnc_commodity *)(argp3);
   {
-    res4 = SWIG_ConvertPtr(obj3, &argp4, SWIGTYPE_p_Timespec,  0 );
-    if (!SWIG_IsOK(res4)) {
-      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gnc_pricedb_lookup_at_time" "', argument " "4"" of type '" "Timespec""'"); 
-    }  
-    if (!argp4) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gnc_pricedb_lookup_at_time" "', argument " "4"" of type '" "Timespec""'");
-    } else {
-      arg4 = *((Timespec *)(argp4));
-    }
+    PyDateTime_IMPORT;
+    struct tm time = {
+      PyDateTime_DATE_GET_SECOND(obj3),
+      PyDateTime_DATE_GET_MINUTE(obj3),
+      PyDateTime_DATE_GET_HOUR(obj3),
+      PyDateTime_GET_DAY(obj3),
+      PyDateTime_GET_MONTH(obj3) - 1,
+      PyDateTime_GET_YEAR(obj3) - 1900
+    };
+    arg4 = gnc_mktime(&time);
   }
-  result = (GNCPrice *)gnc_pricedb_lookup_at_time(arg1,(gnc_commodity const *)arg2,(gnc_commodity const *)arg3,arg4);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNCPrice, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_day(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
-  gnc_commodity *arg2 = (gnc_commodity *) 0 ;
-  gnc_commodity *arg3 = (gnc_commodity *) 0 ;
-  Timespec arg4 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  void *argp3 = 0 ;
-  int res3 = 0 ;
-  void *argp4 ;
-  int res4 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  GNCPrice *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOOO:gnc_pricedb_lookup_day",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_gnc_price_db_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_pricedb_lookup_day" "', argument " "1"" of type '" "GNCPriceDB *""'"); 
-  }
-  arg1 = (GNCPriceDB *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_gnc_commodity, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gnc_pricedb_lookup_day" "', argument " "2"" of type '" "gnc_commodity const *""'"); 
-  }
-  arg2 = (gnc_commodity *)(argp2);
-  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_gnc_commodity, 0 |  0 );
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gnc_pricedb_lookup_day" "', argument " "3"" of type '" "gnc_commodity const *""'"); 
-  }
-  arg3 = (gnc_commodity *)(argp3);
-  {
-    res4 = SWIG_ConvertPtr(obj3, &argp4, SWIGTYPE_p_Timespec,  0 );
-    if (!SWIG_IsOK(res4)) {
-      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gnc_pricedb_lookup_day" "', argument " "4"" of type '" "Timespec""'"); 
-    }  
-    if (!argp4) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gnc_pricedb_lookup_day" "', argument " "4"" of type '" "Timespec""'");
-    } else {
-      arg4 = *((Timespec *)(argp4));
-    }
-  }
-  result = (GNCPrice *)gnc_pricedb_lookup_day(arg1,(gnc_commodity const *)arg2,(gnc_commodity const *)arg3,arg4);
+  result = (GNCPrice *)gnc_pricedb_lookup_at_time64(arg1,(gnc_commodity const *)arg2,(gnc_commodity const *)arg3,arg4);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNCPrice, 0 |  0 );
   return resultobj;
 fail:
@@ -41966,61 +41940,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_nearest_in_time(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
-  gnc_commodity *arg2 = (gnc_commodity *) 0 ;
-  gnc_commodity *arg3 = (gnc_commodity *) 0 ;
-  Timespec arg4 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  void *argp3 = 0 ;
-  int res3 = 0 ;
-  void *argp4 ;
-  int res4 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  GNCPrice *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOOO:gnc_pricedb_lookup_nearest_in_time",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_gnc_price_db_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_pricedb_lookup_nearest_in_time" "', argument " "1"" of type '" "GNCPriceDB *""'"); 
-  }
-  arg1 = (GNCPriceDB *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_gnc_commodity, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gnc_pricedb_lookup_nearest_in_time" "', argument " "2"" of type '" "gnc_commodity const *""'"); 
-  }
-  arg2 = (gnc_commodity *)(argp2);
-  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_gnc_commodity, 0 |  0 );
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gnc_pricedb_lookup_nearest_in_time" "', argument " "3"" of type '" "gnc_commodity const *""'"); 
-  }
-  arg3 = (gnc_commodity *)(argp3);
-  {
-    res4 = SWIG_ConvertPtr(obj3, &argp4, SWIGTYPE_p_Timespec,  0 );
-    if (!SWIG_IsOK(res4)) {
-      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gnc_pricedb_lookup_nearest_in_time" "', argument " "4"" of type '" "Timespec""'"); 
-    }  
-    if (!argp4) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gnc_pricedb_lookup_nearest_in_time" "', argument " "4"" of type '" "Timespec""'");
-    } else {
-      arg4 = *((Timespec *)(argp4));
-    }
-  }
-  result = (GNCPrice *)gnc_pricedb_lookup_nearest_in_time(arg1,(gnc_commodity const *)arg2,(gnc_commodity const *)arg3,arg4);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNCPrice, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_nearest_in_time64(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
@@ -42069,93 +41988,6 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_nearest_in_time64(PyObject *SWIGUN
   }
   result = (GNCPrice *)gnc_pricedb_lookup_nearest_in_time64(arg1,(gnc_commodity const *)arg2,(gnc_commodity const *)arg3,arg4);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNCPrice, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_nearest_in_time_any_currency(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
-  gnc_commodity *arg2 = (gnc_commodity *) 0 ;
-  Timespec arg3 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  void *argp3 ;
-  int res3 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PriceList *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOO:gnc_pricedb_lookup_nearest_in_time_any_currency",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_gnc_price_db_s, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_pricedb_lookup_nearest_in_time_any_currency" "', argument " "1"" of type '" "GNCPriceDB *""'"); 
-  }
-  arg1 = (GNCPriceDB *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_gnc_commodity, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gnc_pricedb_lookup_nearest_in_time_any_currency" "', argument " "2"" of type '" "gnc_commodity const *""'"); 
-  }
-  arg2 = (gnc_commodity *)(argp2);
-  {
-    res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_Timespec,  0 );
-    if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gnc_pricedb_lookup_nearest_in_time_any_currency" "', argument " "3"" of type '" "Timespec""'"); 
-    }  
-    if (!argp3) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gnc_pricedb_lookup_nearest_in_time_any_currency" "', argument " "3"" of type '" "Timespec""'");
-    } else {
-      arg3 = *((Timespec *)(argp3));
-    }
-  }
-  result = (PriceList *)gnc_pricedb_lookup_nearest_in_time_any_currency(arg1,(gnc_commodity const *)arg2,arg3);
-  {
-    guint i;
-    gpointer data;
-    PyObject *list = PyList_New(0);
-    for (i = 0; i < g_list_length(result); i++)
-    {
-      data = g_list_nth_data(result, i);
-      if (GNC_IS_ACCOUNT(data))
-      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_Account, 0));
-      else if (GNC_IS_SPLIT(data))
-      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_Split, 0));
-      else if (GNC_IS_TRANSACTION(data))
-      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_Transaction, 0));
-      else if (GNC_IS_COMMODITY(data))
-      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_gnc_commodity, 0));
-      else if (GNC_IS_COMMODITY_NAMESPACE(data))
-      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_gnc_commodity_namespace, 0));
-      else if (GNC_IS_LOT(data))
-      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCLot, 0));
-      else if (GNC_IS_PRICE(data))
-      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_GNCPrice, 0));
-      else if (GNC_IS_INVOICE(data))
-      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncInvoice, 0));
-      else if (GNC_IS_ENTRY(data))
-      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEntry, 0));
-      else if (GNC_IS_CUSTOMER(data))
-      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncCustomer, 0));
-      else if (GNC_IS_VENDOR(data))
-      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncVendor, 0));
-      else if (GNC_IS_EMPLOYEE(data))
-      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncEmployee, 0));
-      else if (GNC_IS_JOB(data))
-      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncJob, 0));
-      else if (GNC_IS_TAXTABLE(data))
-      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gncTaxTable, 0));
-      else if (SWIGTYPE_p_GList == SWIGTYPE_p_GList)
-      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p__gnc_monetary, 0));
-      else
-      PyList_Append(list, SWIG_NewPointerObj(data, SWIGTYPE_p_void, 0));
-    }
-    resultobj = list;
-  }
   return resultobj;
 fail:
   return NULL;
@@ -42248,54 +42080,53 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_latest_before(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_latest_before_t64(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
   gnc_commodity *arg2 = (gnc_commodity *) 0 ;
   gnc_commodity *arg3 = (gnc_commodity *) 0 ;
-  Timespec arg4 ;
+  time64 arg4 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
   void *argp3 = 0 ;
   int res3 = 0 ;
-  void *argp4 ;
-  int res4 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   GNCPrice *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOO:gnc_pricedb_lookup_latest_before",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOOO:gnc_pricedb_lookup_latest_before_t64",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_gnc_price_db_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_pricedb_lookup_latest_before" "', argument " "1"" of type '" "GNCPriceDB *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_pricedb_lookup_latest_before_t64" "', argument " "1"" of type '" "GNCPriceDB *""'"); 
   }
   arg1 = (GNCPriceDB *)(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_gnc_commodity, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gnc_pricedb_lookup_latest_before" "', argument " "2"" of type '" "gnc_commodity *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gnc_pricedb_lookup_latest_before_t64" "', argument " "2"" of type '" "gnc_commodity *""'"); 
   }
   arg2 = (gnc_commodity *)(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_gnc_commodity, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gnc_pricedb_lookup_latest_before" "', argument " "3"" of type '" "gnc_commodity *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gnc_pricedb_lookup_latest_before_t64" "', argument " "3"" of type '" "gnc_commodity *""'"); 
   }
   arg3 = (gnc_commodity *)(argp3);
   {
-    res4 = SWIG_ConvertPtr(obj3, &argp4, SWIGTYPE_p_Timespec,  0 );
-    if (!SWIG_IsOK(res4)) {
-      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gnc_pricedb_lookup_latest_before" "', argument " "4"" of type '" "Timespec""'"); 
-    }  
-    if (!argp4) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gnc_pricedb_lookup_latest_before" "', argument " "4"" of type '" "Timespec""'");
-    } else {
-      arg4 = *((Timespec *)(argp4));
-    }
+    PyDateTime_IMPORT;
+    struct tm time = {
+      PyDateTime_DATE_GET_SECOND(obj3),
+      PyDateTime_DATE_GET_MINUTE(obj3),
+      PyDateTime_DATE_GET_HOUR(obj3),
+      PyDateTime_GET_DAY(obj3),
+      PyDateTime_GET_MONTH(obj3) - 1,
+      PyDateTime_GET_YEAR(obj3) - 1900
+    };
+    arg4 = gnc_mktime(&time);
   }
-  result = (GNCPrice *)gnc_pricedb_lookup_latest_before(arg1,arg2,arg3,arg4);
+  result = (GNCPrice *)gnc_pricedb_lookup_latest_before_t64(arg1,arg2,arg3,arg4);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNCPrice, 0 |  0 );
   return resultobj;
 fail:
@@ -42303,45 +42134,44 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_latest_before_any_currency(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_latest_before_any_currency_t64(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
   gnc_commodity *arg2 = (gnc_commodity *) 0 ;
-  Timespec arg3 ;
+  time64 arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
-  void *argp3 ;
-  int res3 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PriceList *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOO:gnc_pricedb_lookup_latest_before_any_currency",&obj0,&obj1,&obj2)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOO:gnc_pricedb_lookup_latest_before_any_currency_t64",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_gnc_price_db_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_pricedb_lookup_latest_before_any_currency" "', argument " "1"" of type '" "GNCPriceDB *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_pricedb_lookup_latest_before_any_currency_t64" "', argument " "1"" of type '" "GNCPriceDB *""'"); 
   }
   arg1 = (GNCPriceDB *)(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_gnc_commodity, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gnc_pricedb_lookup_latest_before_any_currency" "', argument " "2"" of type '" "gnc_commodity const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gnc_pricedb_lookup_latest_before_any_currency_t64" "', argument " "2"" of type '" "gnc_commodity const *""'"); 
   }
   arg2 = (gnc_commodity *)(argp2);
   {
-    res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_Timespec,  0 );
-    if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gnc_pricedb_lookup_latest_before_any_currency" "', argument " "3"" of type '" "Timespec""'"); 
-    }  
-    if (!argp3) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gnc_pricedb_lookup_latest_before_any_currency" "', argument " "3"" of type '" "Timespec""'");
-    } else {
-      arg3 = *((Timespec *)(argp3));
-    }
+    PyDateTime_IMPORT;
+    struct tm time = {
+      PyDateTime_DATE_GET_SECOND(obj2),
+      PyDateTime_DATE_GET_MINUTE(obj2),
+      PyDateTime_DATE_GET_HOUR(obj2),
+      PyDateTime_GET_DAY(obj2),
+      PyDateTime_GET_MONTH(obj2) - 1,
+      PyDateTime_GET_YEAR(obj2) - 1900
+    };
+    arg3 = gnc_mktime(&time);
   }
-  result = (PriceList *)gnc_pricedb_lookup_latest_before_any_currency(arg1,(gnc_commodity const *)arg2,arg3);
+  result = (PriceList *)gnc_pricedb_lookup_latest_before_any_currency_t64(arg1,(gnc_commodity const *)arg2,arg3);
   {
     guint i;
     gpointer data;
@@ -42445,7 +42275,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_gnc_pricedb_convert_balance_nearest_price(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_gnc_pricedb_convert_balance_nearest_price_t64(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
   gnc_numeric arg2 ;
@@ -42467,31 +42297,31 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_convert_balance_nearest_price(PyObject *S
   PyObject * obj4 = 0 ;
   gnc_numeric result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOOO:gnc_pricedb_convert_balance_nearest_price",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOOOO:gnc_pricedb_convert_balance_nearest_price_t64",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_gnc_price_db_s, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_pricedb_convert_balance_nearest_price" "', argument " "1"" of type '" "GNCPriceDB *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_pricedb_convert_balance_nearest_price_t64" "', argument " "1"" of type '" "GNCPriceDB *""'"); 
   }
   arg1 = (GNCPriceDB *)(argp1);
   {
     res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p__gnc_numeric,  0 );
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gnc_pricedb_convert_balance_nearest_price" "', argument " "2"" of type '" "gnc_numeric""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gnc_pricedb_convert_balance_nearest_price_t64" "', argument " "2"" of type '" "gnc_numeric""'"); 
     }  
     if (!argp2) {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gnc_pricedb_convert_balance_nearest_price" "', argument " "2"" of type '" "gnc_numeric""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "gnc_pricedb_convert_balance_nearest_price_t64" "', argument " "2"" of type '" "gnc_numeric""'");
     } else {
       arg2 = *((gnc_numeric *)(argp2));
     }
   }
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_gnc_commodity, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gnc_pricedb_convert_balance_nearest_price" "', argument " "3"" of type '" "gnc_commodity const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gnc_pricedb_convert_balance_nearest_price_t64" "', argument " "3"" of type '" "gnc_commodity const *""'"); 
   }
   arg3 = (gnc_commodity *)(argp3);
   res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_gnc_commodity, 0 |  0 );
   if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gnc_pricedb_convert_balance_nearest_price" "', argument " "4"" of type '" "gnc_commodity const *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gnc_pricedb_convert_balance_nearest_price_t64" "', argument " "4"" of type '" "gnc_commodity const *""'"); 
   }
   arg4 = (gnc_commodity *)(argp4);
   {
@@ -42506,7 +42336,7 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_convert_balance_nearest_price(PyObject *S
     };
     arg5 = gnc_mktime(&time);
   }
-  result = gnc_pricedb_convert_balance_nearest_price(arg1,arg2,(gnc_commodity const *)arg3,(gnc_commodity const *)arg4,arg5);
+  result = gnc_pricedb_convert_balance_nearest_price_t64(arg1,arg2,(gnc_commodity const *)arg3,(gnc_commodity const *)arg4,arg5);
   resultobj = SWIG_NewPointerObj((gnc_numeric *)memcpy((gnc_numeric *)malloc(sizeof(gnc_numeric)),&result,sizeof(gnc_numeric)), SWIGTYPE_p__gnc_numeric, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
@@ -43198,9 +43028,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"xaccSplitSetReconcile", _wrap_xaccSplitSetReconcile, METH_VARARGS, (char *)"xaccSplitSetReconcile(Split * split, char reconciled_flag)"},
 	 { (char *)"xaccSplitGetReconcile", _wrap_xaccSplitGetReconcile, METH_VARARGS, (char *)"xaccSplitGetReconcile(Split const * split) -> char"},
 	 { (char *)"xaccSplitSetDateReconciledSecs", _wrap_xaccSplitSetDateReconciledSecs, METH_VARARGS, (char *)"xaccSplitSetDateReconciledSecs(Split * split, time64 time)"},
-	 { (char *)"xaccSplitSetDateReconciledTS", _wrap_xaccSplitSetDateReconciledTS, METH_VARARGS, (char *)"xaccSplitSetDateReconciledTS(Split * split, Timespec * ts)"},
-	 { (char *)"xaccSplitGetDateReconciledTS", _wrap_xaccSplitGetDateReconciledTS, METH_VARARGS, (char *)"xaccSplitGetDateReconciledTS(Split const * split, Timespec * ts)"},
-	 { (char *)"xaccSplitRetDateReconciledTS", _wrap_xaccSplitRetDateReconciledTS, METH_VARARGS, (char *)"xaccSplitRetDateReconciledTS(Split const * split) -> Timespec"},
 	 { (char *)"xaccSplitGetDateReconciled", _wrap_xaccSplitGetDateReconciled, METH_VARARGS, (char *)"xaccSplitGetDateReconciled(Split const * split) -> time64"},
 	 { (char *)"xaccSplitSetAmount", _wrap_xaccSplitSetAmount, METH_VARARGS, (char *)"xaccSplitSetAmount(Split * split, _gnc_numeric amount)"},
 	 { (char *)"xaccSplitGetAmount", _wrap_xaccSplitGetAmount, METH_VARARGS, (char *)"xaccSplitGetAmount(Split const * split) -> _gnc_numeric"},
@@ -43481,7 +43308,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"xaccTransGetFirstAPARAcctSplit", _wrap_xaccTransGetFirstAPARAcctSplit, METH_VARARGS, (char *)"xaccTransGetFirstAPARAcctSplit(Transaction const * trans, gboolean strict) -> Split *"},
 	 { (char *)"xaccTransSetReadOnly", _wrap_xaccTransSetReadOnly, METH_VARARGS, (char *)"xaccTransSetReadOnly(Transaction * trans, char const * reason)"},
 	 { (char *)"xaccTransClearReadOnly", _wrap_xaccTransClearReadOnly, METH_VARARGS, (char *)"xaccTransClearReadOnly(Transaction * trans)"},
-	 { (char *)"xaccTransGetReadOnly", _wrap_xaccTransGetReadOnly, METH_VARARGS, (char *)"xaccTransGetReadOnly(Transaction const * trans) -> char const *"},
+	 { (char *)"xaccTransGetReadOnly", _wrap_xaccTransGetReadOnly, METH_VARARGS, (char *)"xaccTransGetReadOnly(Transaction * trans) -> char const *"},
 	 { (char *)"xaccTransIsReadonlyByPostedDate", _wrap_xaccTransIsReadonlyByPostedDate, METH_VARARGS, (char *)"xaccTransIsReadonlyByPostedDate(Transaction const * trans) -> gboolean"},
 	 { (char *)"xaccTransInFutureByPostedDate", _wrap_xaccTransInFutureByPostedDate, METH_VARARGS, (char *)"xaccTransInFutureByPostedDate(Transaction const * trans) -> gboolean"},
 	 { (char *)"xaccTransCountSplits", _wrap_xaccTransCountSplits, METH_VARARGS, (char *)"xaccTransCountSplits(Transaction const * trans) -> int"},
@@ -43850,9 +43677,9 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gncOwnerGetOwnerFromLot", _wrap_gncOwnerGetOwnerFromLot, METH_VARARGS, (char *)"gncOwnerGetOwnerFromLot(GNCLot * lot, GncOwner * owner) -> gboolean"},
 	 { (char *)"gncOwnerGetOwnerFromTxn", _wrap_gncOwnerGetOwnerFromTxn, METH_VARARGS, (char *)"gncOwnerGetOwnerFromTxn(Transaction * txn, GncOwner * owner) -> gboolean"},
 	 { (char *)"gncOwnerGetOwnerFromTypeGuid", _wrap_gncOwnerGetOwnerFromTypeGuid, METH_VARARGS, (char *)"gncOwnerGetOwnerFromTypeGuid(QofBook * book, GncOwner * owner, QofIdType type, GncGUID guid) -> gboolean"},
-	 { (char *)"gncOwnerCreatePaymentLot", _wrap_gncOwnerCreatePaymentLot, METH_VARARGS, (char *)"gncOwnerCreatePaymentLot(GncOwner const * owner, Transaction ** preset_txn, Account * posted_acc, Account * xfer_acc, _gnc_numeric amount, _gnc_numeric exch, Timespec date, char const * memo, char const * num) -> GNCLot *"},
+	 { (char *)"gncOwnerCreatePaymentLotSecs", _wrap_gncOwnerCreatePaymentLotSecs, METH_VARARGS, (char *)"gncOwnerCreatePaymentLotSecs(GncOwner const * owner, Transaction ** preset_txn, Account * posted_acc, Account * xfer_acc, _gnc_numeric amount, _gnc_numeric exch, time64 date, char const * memo, char const * num) -> GNCLot *"},
 	 { (char *)"gncOwnerAutoApplyPaymentsWithLots", _wrap_gncOwnerAutoApplyPaymentsWithLots, METH_VARARGS, (char *)"gncOwnerAutoApplyPaymentsWithLots(GncOwner const * owner, GList * lots)"},
-	 { (char *)"gncOwnerApplyPayment", _wrap_gncOwnerApplyPayment, METH_VARARGS, (char *)"gncOwnerApplyPayment(GncOwner const * owner, Transaction ** preset_txn, GList * lots, Account * posted_acc, Account * xfer_acc, _gnc_numeric amount, _gnc_numeric exch, Timespec date, char const * memo, char const * num, gboolean auto_pay)"},
+	 { (char *)"gncOwnerApplyPaymentSecs", _wrap_gncOwnerApplyPaymentSecs, METH_VARARGS, (char *)"gncOwnerApplyPaymentSecs(GncOwner const * owner, Transaction ** preset_txn, GList * lots, Account * posted_acc, Account * xfer_acc, _gnc_numeric amount, _gnc_numeric exch, time64 date, char const * memo, char const * num, gboolean auto_pay)"},
 	 { (char *)"gncOwnerFindOffsettingSplit", _wrap_gncOwnerFindOffsettingSplit, METH_VARARGS, (char *)"gncOwnerFindOffsettingSplit(GNCLot * pay_lot, _gnc_numeric target_value) -> Split *"},
 	 { (char *)"gncOwnerReduceSplitTo", _wrap_gncOwnerReduceSplitTo, METH_VARARGS, (char *)"gncOwnerReduceSplitTo(Split * split, _gnc_numeric target_value) -> gboolean"},
 	 { (char *)"gncOwnerSetLotLinkMemo", _wrap_gncOwnerSetLotLinkMemo, METH_VARARGS, (char *)"gncOwnerSetLotLinkMemo(Transaction * ll_txn)"},
@@ -43902,6 +43729,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gncCustomerIsDirty", _wrap_gncCustomerIsDirty, METH_VARARGS, (char *)"gncCustomerIsDirty(GncCustomer * customer) -> gboolean"},
 	 { (char *)"gncCustomerRegister", _wrap_gncCustomerRegister, METH_VARARGS, (char *)"gncCustomerRegister() -> gboolean"},
 	 { (char *)"gncCustomerNextID", _wrap_gncCustomerNextID, METH_VARARGS, (char *)"gncCustomerNextID(QofBook * book) -> gchar *"},
+	 { (char *)"gncCustomerGetCachedBalance", _wrap_gncCustomerGetCachedBalance, METH_VARARGS, (char *)"gncCustomerGetCachedBalance(GncCustomer * cust) -> _gnc_numeric"},
+	 { (char *)"gncCustomerSetCachedBalance", _wrap_gncCustomerSetCachedBalance, METH_VARARGS, (char *)"gncCustomerSetCachedBalance(GncCustomer * cust, _gnc_numeric new_bal)"},
 	 { (char *)"gnc_employee_get_type", _wrap_gnc_employee_get_type, METH_VARARGS, (char *)"gnc_employee_get_type() -> GType"},
 	 { (char *)"gncEmployeeCreate", _wrap_gncEmployeeCreate, METH_VARARGS, (char *)"gncEmployeeCreate(QofBook * book) -> GncEmployee *"},
 	 { (char *)"gncEmployeeDestroy", _wrap_gncEmployeeDestroy, METH_VARARGS, (char *)"gncEmployeeDestroy(GncEmployee * employee)"},
@@ -43966,6 +43795,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gncVendorIsDirty", _wrap_gncVendorIsDirty, METH_VARARGS, (char *)"gncVendorIsDirty(GncVendor const * vendor) -> gboolean"},
 	 { (char *)"gncVendorRegister", _wrap_gncVendorRegister, METH_VARARGS, (char *)"gncVendorRegister() -> gboolean"},
 	 { (char *)"gncVendorNextID", _wrap_gncVendorNextID, METH_VARARGS, (char *)"gncVendorNextID(QofBook * book) -> gchar *"},
+	 { (char *)"gncVendorGetCachedBalance", _wrap_gncVendorGetCachedBalance, METH_VARARGS, (char *)"gncVendorGetCachedBalance(GncVendor * vend) -> _gnc_numeric"},
+	 { (char *)"gncVendorSetCachedBalance", _wrap_gncVendorSetCachedBalance, METH_VARARGS, (char *)"gncVendorSetCachedBalance(GncVendor * vend, _gnc_numeric new_bal)"},
 	 { (char *)"gnc_address_get_type", _wrap_gnc_address_get_type, METH_VARARGS, (char *)"gnc_address_get_type() -> GType"},
 	 { (char *)"gncAddressCreate", _wrap_gncAddressCreate, METH_VARARGS, (char *)"gncAddressCreate(QofBook * book, QofInstance * parent) -> GncAddress *"},
 	 { (char *)"gncAddressDestroy", _wrap_gncAddressDestroy, METH_VARARGS, (char *)"gncAddressDestroy(GncAddress * addr)"},
@@ -44226,7 +44057,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gncTaxTableReturnChild", _wrap_gncTaxTableReturnChild, METH_VARARGS, (char *)"gncTaxTableReturnChild(GncTaxTable * table, gboolean make_new) -> GncTaxTable *"},
 	 { (char *)"gncTaxTableGetEntries", _wrap_gncTaxTableGetEntries, METH_VARARGS, (char *)"gncTaxTableGetEntries(GncTaxTable const * table) -> GncTaxTableEntryList *"},
 	 { (char *)"gncTaxTableGetRefcount", _wrap_gncTaxTableGetRefcount, METH_VARARGS, (char *)"gncTaxTableGetRefcount(GncTaxTable const * table) -> gint64"},
-	 { (char *)"gncTaxTableLastModified", _wrap_gncTaxTableLastModified, METH_VARARGS, (char *)"gncTaxTableLastModified(GncTaxTable const * table) -> Timespec"},
+	 { (char *)"gncTaxTableLastModifiedSecs", _wrap_gncTaxTableLastModifiedSecs, METH_VARARGS, (char *)"gncTaxTableLastModifiedSecs(GncTaxTable const * table) -> time64"},
 	 { (char *)"gncTaxTableEntryGetAccount", _wrap_gncTaxTableEntryGetAccount, METH_VARARGS, (char *)"gncTaxTableEntryGetAccount(GncTaxTableEntry const * entry) -> Account *"},
 	 { (char *)"gncTaxTableEntryGetType", _wrap_gncTaxTableEntryGetType, METH_VARARGS, (char *)"gncTaxTableEntryGetType(GncTaxTableEntry const * entry) -> GncAmountType"},
 	 { (char *)"gncTaxTableEntryGetAmount", _wrap_gncTaxTableEntryGetAmount, METH_VARARGS, (char *)"gncTaxTableEntryGetAmount(GncTaxTableEntry const * entry) -> _gnc_numeric"},
@@ -44259,8 +44090,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gnc_price_commit_edit", _wrap_gnc_price_commit_edit, METH_VARARGS, (char *)"gnc_price_commit_edit(GNCPrice * p)"},
 	 { (char *)"gnc_price_set_commodity", _wrap_gnc_price_set_commodity, METH_VARARGS, (char *)"gnc_price_set_commodity(GNCPrice * p, gnc_commodity * c)"},
 	 { (char *)"gnc_price_set_currency", _wrap_gnc_price_set_currency, METH_VARARGS, (char *)"gnc_price_set_currency(GNCPrice * p, gnc_commodity * c)"},
-	 { (char *)"gnc_price_set_time", _wrap_gnc_price_set_time, METH_VARARGS, (char *)"gnc_price_set_time(GNCPrice * p, Timespec t)"},
-	 { (char *)"gnc_price_set_time64", _wrap_gnc_price_set_time64, METH_VARARGS, (char *)"gnc_price_set_time64(GNCPrice * p, time64 t64)"},
+	 { (char *)"gnc_price_set_time64", _wrap_gnc_price_set_time64, METH_VARARGS, (char *)"gnc_price_set_time64(GNCPrice * p, time64 t)"},
 	 { (char *)"gnc_price_set_source", _wrap_gnc_price_set_source, METH_VARARGS, (char *)"gnc_price_set_source(GNCPrice * p, PriceSource source)"},
 	 { (char *)"gnc_price_set_source_string", _wrap_gnc_price_set_source_string, METH_VARARGS, (char *)"gnc_price_set_source_string(GNCPrice * p, char const * s)"},
 	 { (char *)"gnc_price_set_typestr", _wrap_gnc_price_set_typestr, METH_VARARGS, (char *)"gnc_price_set_typestr(GNCPrice * p, char const * type)"},
@@ -44268,7 +44098,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gnc_price_lookup", _wrap_gnc_price_lookup, METH_VARARGS, (char *)"gnc_price_lookup(GncGUID guid, QofBook * book) -> GNCPrice *"},
 	 { (char *)"gnc_price_get_commodity", _wrap_gnc_price_get_commodity, METH_VARARGS, (char *)"gnc_price_get_commodity(GNCPrice const * p) -> gnc_commodity *"},
 	 { (char *)"gnc_price_get_currency", _wrap_gnc_price_get_currency, METH_VARARGS, (char *)"gnc_price_get_currency(GNCPrice const * p) -> gnc_commodity *"},
-	 { (char *)"gnc_price_get_time", _wrap_gnc_price_get_time, METH_VARARGS, (char *)"gnc_price_get_time(GNCPrice const * p) -> Timespec"},
 	 { (char *)"gnc_price_get_time64", _wrap_gnc_price_get_time64, METH_VARARGS, (char *)"gnc_price_get_time64(GNCPrice const * p) -> time64"},
 	 { (char *)"gnc_price_get_source", _wrap_gnc_price_get_source, METH_VARARGS, (char *)"gnc_price_get_source(GNCPrice const * p) -> PriceSource"},
 	 { (char *)"gnc_price_get_source_string", _wrap_gnc_price_get_source_string, METH_VARARGS, (char *)"gnc_price_get_source_string(GNCPrice const * p) -> char const *"},
@@ -44288,22 +44117,19 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gnc_pricedb_set_bulk_update", _wrap_gnc_pricedb_set_bulk_update, METH_VARARGS, (char *)"gnc_pricedb_set_bulk_update(GNCPriceDB * db, gboolean bulk_update)"},
 	 { (char *)"gnc_pricedb_add_price", _wrap_gnc_pricedb_add_price, METH_VARARGS, (char *)"gnc_pricedb_add_price(GNCPriceDB * db, GNCPrice * p) -> gboolean"},
 	 { (char *)"gnc_pricedb_remove_price", _wrap_gnc_pricedb_remove_price, METH_VARARGS, (char *)"gnc_pricedb_remove_price(GNCPriceDB * db, GNCPrice * p) -> gboolean"},
-	 { (char *)"gnc_pricedb_remove_old_prices", _wrap_gnc_pricedb_remove_old_prices, METH_VARARGS, (char *)"gnc_pricedb_remove_old_prices(GNCPriceDB * db, GList * comm_list, GDate * fiscal_end_date, Timespec cutoff, PriceRemoveSourceFlags source, PriceRemoveKeepOptions keep) -> gboolean"},
+	 { (char *)"gnc_pricedb_remove_old_prices", _wrap_gnc_pricedb_remove_old_prices, METH_VARARGS, (char *)"gnc_pricedb_remove_old_prices(GNCPriceDB * db, GList * comm_list, GDate * fiscal_end_date, time64 cutoff, PriceRemoveSourceFlags source, PriceRemoveKeepOptions keep) -> gboolean"},
 	 { (char *)"gnc_pricedb_lookup_latest", _wrap_gnc_pricedb_lookup_latest, METH_VARARGS, (char *)"gnc_pricedb_lookup_latest(GNCPriceDB * db, gnc_commodity const * commodity, gnc_commodity const * currency) -> GNCPrice *"},
 	 { (char *)"gnc_pricedb_lookup_latest_any_currency", _wrap_gnc_pricedb_lookup_latest_any_currency, METH_VARARGS, (char *)"gnc_pricedb_lookup_latest_any_currency(GNCPriceDB * db, gnc_commodity const * commodity) -> PriceList *"},
 	 { (char *)"gnc_pricedb_has_prices", _wrap_gnc_pricedb_has_prices, METH_VARARGS, (char *)"gnc_pricedb_has_prices(GNCPriceDB * db, gnc_commodity const * commodity, gnc_commodity const * currency) -> gboolean"},
 	 { (char *)"gnc_pricedb_get_prices", _wrap_gnc_pricedb_get_prices, METH_VARARGS, (char *)"gnc_pricedb_get_prices(GNCPriceDB * db, gnc_commodity const * commodity, gnc_commodity const * currency) -> PriceList *"},
-	 { (char *)"gnc_pricedb_lookup_at_time", _wrap_gnc_pricedb_lookup_at_time, METH_VARARGS, (char *)"gnc_pricedb_lookup_at_time(GNCPriceDB * db, gnc_commodity const * commodity, gnc_commodity const * currency, Timespec t) -> GNCPrice *"},
-	 { (char *)"gnc_pricedb_lookup_day", _wrap_gnc_pricedb_lookup_day, METH_VARARGS, (char *)"gnc_pricedb_lookup_day(GNCPriceDB * db, gnc_commodity const * commodity, gnc_commodity const * currency, Timespec t) -> GNCPrice *"},
-	 { (char *)"gnc_pricedb_lookup_day_t64", _wrap_gnc_pricedb_lookup_day_t64, METH_VARARGS, (char *)"gnc_pricedb_lookup_day_t64(GNCPriceDB * db, gnc_commodity const * commodity, gnc_commodity const * currency, time64 t64) -> GNCPrice *"},
-	 { (char *)"gnc_pricedb_lookup_nearest_in_time", _wrap_gnc_pricedb_lookup_nearest_in_time, METH_VARARGS, (char *)"gnc_pricedb_lookup_nearest_in_time(GNCPriceDB * db, gnc_commodity const * c, gnc_commodity const * currency, Timespec t) -> GNCPrice *"},
+	 { (char *)"gnc_pricedb_lookup_at_time64", _wrap_gnc_pricedb_lookup_at_time64, METH_VARARGS, (char *)"gnc_pricedb_lookup_at_time64(GNCPriceDB * db, gnc_commodity const * commodity, gnc_commodity const * currency, time64 t) -> GNCPrice *"},
+	 { (char *)"gnc_pricedb_lookup_day_t64", _wrap_gnc_pricedb_lookup_day_t64, METH_VARARGS, (char *)"gnc_pricedb_lookup_day_t64(GNCPriceDB * db, gnc_commodity const * commodity, gnc_commodity const * currency, time64 t) -> GNCPrice *"},
 	 { (char *)"gnc_pricedb_lookup_nearest_in_time64", _wrap_gnc_pricedb_lookup_nearest_in_time64, METH_VARARGS, (char *)"gnc_pricedb_lookup_nearest_in_time64(GNCPriceDB * db, gnc_commodity const * c, gnc_commodity const * currency, time64 t) -> GNCPrice *"},
-	 { (char *)"gnc_pricedb_lookup_nearest_in_time_any_currency", _wrap_gnc_pricedb_lookup_nearest_in_time_any_currency, METH_VARARGS, (char *)"gnc_pricedb_lookup_nearest_in_time_any_currency(GNCPriceDB * db, gnc_commodity const * c, Timespec t) -> PriceList *"},
-	 { (char *)"gnc_pricedb_lookup_nearest_in_time_any_currency_t64", _wrap_gnc_pricedb_lookup_nearest_in_time_any_currency_t64, METH_VARARGS, (char *)"gnc_pricedb_lookup_nearest_in_time_any_currency_t64(GNCPriceDB * db, gnc_commodity const * c, time64 t64) -> PriceList *"},
-	 { (char *)"gnc_pricedb_lookup_latest_before", _wrap_gnc_pricedb_lookup_latest_before, METH_VARARGS, (char *)"gnc_pricedb_lookup_latest_before(GNCPriceDB * db, gnc_commodity * c, gnc_commodity * currency, Timespec t) -> GNCPrice *"},
-	 { (char *)"gnc_pricedb_lookup_latest_before_any_currency", _wrap_gnc_pricedb_lookup_latest_before_any_currency, METH_VARARGS, (char *)"gnc_pricedb_lookup_latest_before_any_currency(GNCPriceDB * db, gnc_commodity const * c, Timespec t) -> PriceList *"},
+	 { (char *)"gnc_pricedb_lookup_nearest_in_time_any_currency_t64", _wrap_gnc_pricedb_lookup_nearest_in_time_any_currency_t64, METH_VARARGS, (char *)"gnc_pricedb_lookup_nearest_in_time_any_currency_t64(GNCPriceDB * db, gnc_commodity const * c, time64 t) -> PriceList *"},
+	 { (char *)"gnc_pricedb_lookup_latest_before_t64", _wrap_gnc_pricedb_lookup_latest_before_t64, METH_VARARGS, (char *)"gnc_pricedb_lookup_latest_before_t64(GNCPriceDB * db, gnc_commodity * c, gnc_commodity * currency, time64 t) -> GNCPrice *"},
+	 { (char *)"gnc_pricedb_lookup_latest_before_any_currency_t64", _wrap_gnc_pricedb_lookup_latest_before_any_currency_t64, METH_VARARGS, (char *)"gnc_pricedb_lookup_latest_before_any_currency_t64(GNCPriceDB * db, gnc_commodity const * c, time64 t) -> PriceList *"},
 	 { (char *)"gnc_pricedb_convert_balance_latest_price", _wrap_gnc_pricedb_convert_balance_latest_price, METH_VARARGS, (char *)"gnc_pricedb_convert_balance_latest_price(GNCPriceDB * pdb, _gnc_numeric balance, gnc_commodity const * balance_currency, gnc_commodity const * new_currency) -> _gnc_numeric"},
-	 { (char *)"gnc_pricedb_convert_balance_nearest_price", _wrap_gnc_pricedb_convert_balance_nearest_price, METH_VARARGS, (char *)"gnc_pricedb_convert_balance_nearest_price(GNCPriceDB * pdb, _gnc_numeric balance, gnc_commodity const * balance_currency, gnc_commodity const * new_currency, time64 t) -> _gnc_numeric"},
+	 { (char *)"gnc_pricedb_convert_balance_nearest_price_t64", _wrap_gnc_pricedb_convert_balance_nearest_price_t64, METH_VARARGS, (char *)"gnc_pricedb_convert_balance_nearest_price_t64(GNCPriceDB * pdb, _gnc_numeric balance, gnc_commodity const * balance_currency, gnc_commodity const * new_currency, time64 t) -> _gnc_numeric"},
 	 { (char *)"gnc_pricedb_foreach_price", _wrap_gnc_pricedb_foreach_price, METH_VARARGS, (char *)"gnc_pricedb_foreach_price(GNCPriceDB * db, GncPriceForeachFunc f, gpointer user_data, gboolean stable_order) -> gboolean"},
 	 { (char *)"gnc_pricedb_num_prices", _wrap_gnc_pricedb_num_prices, METH_VARARGS, (char *)"gnc_pricedb_num_prices(GNCPriceDB * db, gnc_commodity const * c) -> int"},
 	 { (char *)"gnc_pricedb_nth_price", _wrap_gnc_pricedb_nth_price, METH_VARARGS, (char *)"gnc_pricedb_nth_price(GNCPriceDB * db, gnc_commodity const * c, int const n) -> GNCPrice *"},
@@ -44379,7 +44205,6 @@ static swig_type_info _swigt__p_QofType = {"_p_QofType", "QofType *", 0, 0, (voi
 static swig_type_info _swigt__p_QuoteSourceType = {"_p_QuoteSourceType", "enum QuoteSourceType *|QuoteSourceType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_Split = {"_p_Split", "Split *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_SplitList = {"_p_SplitList", "SplitList *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_Timespec = {"_p_Timespec", "Timespec *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_Transaction = {"_p_Transaction", "Transaction *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_TransactionCallback = {"_p_TransactionCallback", "TransactionCallback *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__GncCommodityClass = {"_p__GncCommodityClass", "struct _GncCommodityClass *|gnc_commodityClass *", 0, 0, (void*)0, 0};
@@ -44425,7 +44250,6 @@ static swig_type_info _swigt__p_f_p_gnc_commodity_p_void__gboolean = {"_p_f_p_gn
 static swig_type_info _swigt__p_f_p_q_const__char_double__void = {"_p_f_p_q_const__char_double__void", "QofPercentageFunc|void (*)(char const *,double)", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_gboolean = {"_p_gboolean", "gboolean *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_gconstpointer = {"_p_gconstpointer", "gconstpointer *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_gint32 = {"_p_gint32", "gint32 *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_gnc_commodity = {"_p_gnc_commodity", "gnc_commodity *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_gnc_commodity_namespace = {"_p_gnc_commodity_namespace", "gnc_commodity_namespace *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_gnc_commodity_table = {"_p_gnc_commodity_table", "gnc_commodity_table *", 0, 0, (void*)0, 0};
@@ -44499,7 +44323,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_QuoteSourceType,
   &_swigt__p_Split,
   &_swigt__p_SplitList,
-  &_swigt__p_Timespec,
   &_swigt__p_Transaction,
   &_swigt__p_TransactionCallback,
   &_swigt__p__GncCommodityClass,
@@ -44545,7 +44368,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_f_p_q_const__char_double__void,
   &_swigt__p_gboolean,
   &_swigt__p_gconstpointer,
-  &_swigt__p_gint32,
   &_swigt__p_gnc_commodity,
   &_swigt__p_gnc_commodity_namespace,
   &_swigt__p_gnc_commodity_table,
@@ -44619,7 +44441,6 @@ static swig_cast_info _swigc__p_QofType[] = {  {&_swigt__p_QofType, 0, 0, 0},{0,
 static swig_cast_info _swigc__p_QuoteSourceType[] = {  {&_swigt__p_QuoteSourceType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_Split[] = {  {&_swigt__p_Split, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_SplitList[] = {  {&_swigt__p_SplitList, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_Timespec[] = {  {&_swigt__p_Timespec, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_Transaction[] = {  {&_swigt__p_Transaction, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_TransactionCallback[] = {  {&_swigt__p_TransactionCallback, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__GncCommodityClass[] = {  {&_swigt__p__GncCommodityClass, 0, 0, 0},{0, 0, 0, 0}};
@@ -44665,7 +44486,6 @@ static swig_cast_info _swigc__p_f_p_gnc_commodity_p_void__gboolean[] = {  {&_swi
 static swig_cast_info _swigc__p_f_p_q_const__char_double__void[] = {  {&_swigt__p_f_p_q_const__char_double__void, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_gboolean[] = {  {&_swigt__p_gboolean, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_gconstpointer[] = {  {&_swigt__p_gconstpointer, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_gint32[] = {  {&_swigt__p_gint32, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_gnc_commodity[] = {  {&_swigt__p_gnc_commodity, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_gnc_commodity_namespace[] = {  {&_swigt__p_gnc_commodity_namespace, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_gnc_commodity_table[] = {  {&_swigt__p_gnc_commodity_table, 0, 0, 0},{0, 0, 0, 0}};
@@ -44739,7 +44559,6 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_QuoteSourceType,
   _swigc__p_Split,
   _swigc__p_SplitList,
-  _swigc__p_Timespec,
   _swigc__p_Transaction,
   _swigc__p_TransactionCallback,
   _swigc__p__GncCommodityClass,
@@ -44785,7 +44604,6 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_f_p_q_const__char_double__void,
   _swigc__p_gboolean,
   _swigc__p_gconstpointer,
-  _swigc__p_gint32,
   _swigc__p_gnc_commodity,
   _swigc__p_gnc_commodity_namespace,
   _swigc__p_gnc_commodity_table,
@@ -45721,6 +45539,7 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, "GNC_COMMODITY_NS_MUTUAL",SWIG_FromCharPtr("FUND"));
   SWIG_Python_SetConstant(d, "GNC_COMMODITY_NS_AMEX",SWIG_FromCharPtr("AMEX"));
   SWIG_Python_SetConstant(d, "GNC_COMMODITY_NS_ASX",SWIG_FromCharPtr("ASX"));
+  SWIG_Python_SetConstant(d, "GNC_COMMODITY_MAX_FRACTION",SWIG_From_int((int)(1000000000)));
   SWIG_Python_SetConstant(d, "SOURCE_SINGLE",SWIG_From_int((int)(SOURCE_SINGLE)));
   SWIG_Python_SetConstant(d, "SOURCE_MULTI",SWIG_From_int((int)(SOURCE_MULTI)));
   SWIG_Python_SetConstant(d, "SOURCE_UNKNOWN",SWIG_From_int((int)(SOURCE_UNKNOWN)));

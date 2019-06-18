@@ -159,11 +159,13 @@ gnc_print_unstable_message(void)
 {
     if (!is_development_version) return;
 
-    g_print("\n\n%s\n%s\n%s\n%s\n",
+    g_print("\n\n%s\n%s\n%s %s\n%s %s\n",
             _("This is a development version. It may or may not work."),
             _("Report bugs and other problems to gnucash-devel@gnucash.org"),
-            _("You can also lookup and file bug reports at http://bugzilla.gnome.org"),
-            _("To find the last stable version, please refer to http://www.gnucash.org"));
+	    /* Translators: An URLs follows*/
+            _("You can also lookup and file bug reports at"), PACKAGE_BUGREPORT,
+	    /* Translators: An URLs follows*/
+           _("To find the last stable version, please refer to"), PACKAGE_URL);
 }
 
 #ifdef MAC_INTEGRATION
@@ -171,29 +173,32 @@ static void
 mac_set_currency_locale(NSLocale *locale, NSString *locale_str)
 {
     /* If the currency doesn't match the base locale, we need to find a locale that does match, because setlocale won't know what to do with just a currency identifier. */
+    NSLocale *cur_locale = [[NSLocale alloc] initWithLocaleIdentifier: locale_str];
     if (![[locale objectForKey: NSLocaleCurrencyCode] isEqualToString:
-	  [[[NSLocale alloc] initWithLocaleIdentifier: locale_str] objectForKey: NSLocaleCurrencyCode]]) {
-	NSArray *all_locales = [NSLocale availableLocaleIdentifiers];
-	NSEnumerator *locale_iter = [all_locales objectEnumerator];
-	NSString *this_locale;
-	NSString *currency = [locale objectForKey: NSLocaleCurrencyCode];
-	NSString *money_locale = nil;
-	while ((this_locale = (NSString*)[locale_iter nextObject]))
-	{
-	    NSLocale *templocale = [[NSLocale alloc]
-				    initWithLocaleIdentifier: this_locale];
-	    if ([[templocale objectForKey: NSLocaleCurrencyCode]
-		 isEqualToString: currency])
-	    {
-		money_locale = this_locale;
-		[templocale release];
-		break;
-	    }
-	    [templocale release];
-	}
-	if (money_locale)
-	    setlocale(LC_MONETARY, [money_locale UTF8String]);
+	  [cur_locale objectForKey: NSLocaleCurrencyCode]])
+    {
+        NSArray *all_locales = [NSLocale availableLocaleIdentifiers];
+        NSEnumerator *locale_iter = [all_locales objectEnumerator];
+        NSString *this_locale;
+        NSString *currency = [locale objectForKey: NSLocaleCurrencyCode];
+        NSString *money_locale = nil;
+        while ((this_locale = (NSString*)[locale_iter nextObject]))
+        {
+            NSLocale *templocale = [[NSLocale alloc]
+                                    initWithLocaleIdentifier: this_locale];
+            if ([[templocale objectForKey: NSLocaleCurrencyCode]
+                 isEqualToString: currency])
+            {
+                money_locale = this_locale;
+                [templocale release];
+                break;
+            }
+            [templocale release];
+        }
+        if (money_locale)
+            setlocale(LC_MONETARY, [money_locale UTF8String]);
     }
+    [cur_locale release];
 }
 /* The locale that we got from AppKit isn't a supported POSIX one, so we need to
  * find something close. First see if we can find another locale for the
@@ -217,9 +222,7 @@ mac_find_close_country(NSString *locale_str, NSString *country_str,
             new_locale = this_locale;
             break;
         }
-    if (new_locale)
-        locale_str = new_locale;
-    else
+    if (!new_locale)
         while ((this_locale = (NSString*)[locale_iter nextObject]))
             if ([[[NSLocale componentsFromLocaleIdentifier: this_locale]
                   objectForKey: NSLocaleLanguageCode]
@@ -585,8 +588,13 @@ inner_main_add_price_quotes(void *closure, int argc, char **argv)
     gnc_shutdown(0);
     return;
 fail:
-    if (session && qof_session_get_error(session) != ERR_BACKEND_NO_ERR)
-        g_warning("Session Error: %s", qof_session_get_error_message(session));
+    if (session)
+    {
+        if (qof_session_get_error(session) != ERR_BACKEND_NO_ERR)
+            g_warning("Session Error: %s",
+                      qof_session_get_error_message(session));
+        qof_session_destroy(session);
+    }
     qof_event_resume();
     gnc_shutdown(1);
 }
@@ -597,6 +605,7 @@ get_file_to_load()
     if (file_to_load)
         return g_strdup(file_to_load);
     else
+        /* Note history will always return a valid (possibly empty) string */
         return gnc_history_get_last();
 }
 
@@ -604,7 +613,7 @@ static void
 inner_main (void *closure, int argc, char **argv)
 {
     SCM main_mod;
-    char* fn;
+    char* fn = NULL;
 
     scm_c_eval_string("(debug-set! stack 200000)");
 
@@ -640,7 +649,7 @@ inner_main (void *closure, int argc, char **argv)
 
     gnc_hook_run(HOOK_STARTUP, NULL);
 
-    if (!nofile && (fn = get_file_to_load()))
+    if (!nofile && (fn = get_file_to_load()) && *fn )
     {
         gnc_update_splash_screen(_("Loading data..."), GNC_SPLASH_PERCENTAGE_UNKNOWN);
         gnc_file_open_file(gnc_get_splash_screen(), fn, /*open_readonly*/ FALSE);
@@ -648,6 +657,7 @@ inner_main (void *closure, int argc, char **argv)
     }
     else if (gnc_prefs_get_bool(GNC_PREFS_GROUP_NEW_USER, GNC_PREF_FIRST_STARTUP))
     {
+        g_free(fn); /* fn could be an empty string ("") */
         gnc_destroy_splash_screen();
         gnc_ui_new_user_dialog();
     }

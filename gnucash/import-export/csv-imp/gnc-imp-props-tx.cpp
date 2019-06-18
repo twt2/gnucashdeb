@@ -114,13 +114,13 @@ GncNumeric parse_amount (const std::string &str, int currency_format)
     std::string str_no_symbols = boost::u32regex_replace(str, expr, "");
 
     /* Convert based on user chosen currency format */
-    gnc_numeric val;
+    gnc_numeric val = gnc_numeric_zero();
     char *endptr;
     switch (currency_format)
     {
     case 0:
         /* Currency locale */
-        if (!(xaccParseAmount (str_no_symbols.c_str(), TRUE, &val, &endptr)))
+        if (!(xaccParseAmountPosSign (str_no_symbols.c_str(), TRUE, &val, &endptr, TRUE)))
             throw std::invalid_argument (_("Value can't be parsed into a number using the selected currency format."));
         break;
     case 1:
@@ -556,10 +556,11 @@ static void trans_add_split (Transaction* trans, Account* account, GncNumeric am
         value = amount * *price;
     else
     {
-        Timespec ts = {xaccTransRetDatePosted (trans), 0};
+        auto time = xaccTransRetDatePosted (trans);
         /* Import data didn't specify price, let's lookup the nearest in time */
-        auto nprice = gnc_pricedb_lookup_nearest_in_time(gnc_pricedb_get_db(book),
-                acct_comm, trans_curr, ts);
+        auto nprice =
+            gnc_pricedb_lookup_nearest_in_time64(gnc_pricedb_get_db(book),
+                                                 acct_comm, trans_curr, time);
         if (nprice)
         {
             /* Found a usable price. Let's check if the conversion direction is right */

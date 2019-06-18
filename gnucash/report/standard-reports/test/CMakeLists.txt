@@ -1,16 +1,20 @@
 set(scm_test_standard_reports_SOURCES
   test-cash-flow.scm
-  test-cashflow-barchart.scm
-  test-standard-category-report.scm
-  test-standard-net-barchart.scm
-  test-standard-net-linechart.scm
 )
 
 set(scm_test_with_srfi64_SOURCES
+  test-standard-category-report.scm
+  test-standard-net-linechart.scm
+  test-standard-net-barchart.scm
+  test-cashflow-barchart.scm
   test-charts.scm
   test-transaction.scm
-  test-balance-sheet.scm
+  test-balsheet-pnl.scm
   test-income-gst.scm
+)
+
+set(scm_test_with_textual_ports_SOURCES
+    test-stress-options.scm
 )
 
 set(GUILE_DEPENDS
@@ -27,6 +31,9 @@ set(GUILE_DEPENDS
 
 if (HAVE_SRFI64)
   gnc_add_scheme_tests("${scm_test_with_srfi64_SOURCES}")
+  if (HAVE_TEXT_PORTS)
+    gnc_add_scheme_tests("${scm_test_with_textual_ports_SOURCES}")
+  endif (HAVE_TEXT_PORTS)
 endif (HAVE_SRFI64)
 
 gnc_add_scheme_tests("${scm_test_standard_reports_SOURCES}")

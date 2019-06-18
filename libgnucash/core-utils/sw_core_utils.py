@@ -198,6 +198,14 @@ def gnc_prefs_is_set_up() -> "gboolean":
     return _sw_core_utils.gnc_prefs_is_set_up()
 gnc_prefs_is_set_up = _sw_core_utils.gnc_prefs_is_set_up
 
+def gnc_prefs_block_all() -> "void":
+    return _sw_core_utils.gnc_prefs_block_all()
+gnc_prefs_block_all = _sw_core_utils.gnc_prefs_block_all
+
+def gnc_prefs_unblock_all() -> "void":
+    return _sw_core_utils.gnc_prefs_unblock_all()
+gnc_prefs_unblock_all = _sw_core_utils.gnc_prefs_unblock_all
+
 def gnc_prefs_register_cb(group: 'char const *', pref_name: 'gchar const *', func: 'gpointer', user_data: 'gpointer') -> "gulong":
     return _sw_core_utils.gnc_prefs_register_cb(group, pref_name, func, user_data)
 gnc_prefs_register_cb = _sw_core_utils.gnc_prefs_register_cb

@@ -514,7 +514,7 @@ gnc_sxed_check_consistent (GncSxEditorDialog2 *sxed)
 {
     gboolean multi_commodity = FALSE;
     gnc_commodity *base_cmdty = NULL;
-    gint ttVarCount, splitCount;
+    gint ttVarCount, splitCount = 0;
     GList *schedule = NULL;
 
     /* Do checks on validity and such, interrupting the user if
@@ -536,8 +536,6 @@ gnc_sxed_check_consistent (GncSxEditorDialog2 *sxed)
      *   right... ]
      */
 
-    ttVarCount = 0;
-    splitCount = 0;
     {
         static const int NUM_ITERS_WITH_VARS = 5;
         static const int NUM_ITERS_NO_VARS = 1;
@@ -617,6 +615,7 @@ gnc_sxed_check_consistent (GncSxEditorDialog2 *sxed)
 				  "sx-debit-formula", &debit_formula,
 				  NULL);
                 acct = xaccAccountLookup( acct_guid, gnc_get_current_book ());
+                guid_free (acct_guid);
                 split_cmdty = xaccAccountGetCommodity(acct);
                 if (base_cmdty == NULL)
                 {
@@ -1213,7 +1212,7 @@ gnc_ui_scheduled_xaction_editor_dialog_create2 (GtkWindow *parent,
 
     /* Allow resize */
     gtk_window_set_resizable (GTK_WINDOW (sxed->dialog), TRUE);
-    gnc_restore_window_size (GNC_PREFS_GROUP_SXED, GTK_WINDOW (sxed->dialog));
+    gnc_restore_window_size (GNC_PREFS_GROUP_SXED, GTK_WINDOW (sxed->dialog), parent);
 
     /* create the frequency-selection widget and example [dense-]calendar. */
     schedXact_editor_create_freq_sel (sxed);

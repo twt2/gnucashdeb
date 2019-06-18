@@ -265,21 +265,21 @@ gnc_entry_ledger_config_cells (GncEntryLedger *ledger)
     ((ComboCell *)
      gnc_table_layout_get_cell (ledger->table->layout, ENTRY_ACTN_CELL), FALSE);
 
-    /* Use 6 decimal places for all prices and quantities */
+    /* Use GNC_COMMODITY_MAX_FRACTION for all prices and quantities */
     gnc_price_cell_set_fraction
     ((PriceCell *)
      gnc_table_layout_get_cell (ledger->table->layout, ENTRY_PRIC_CELL),
-     1000000);
+     GNC_COMMODITY_MAX_FRACTION);
 
     gnc_price_cell_set_fraction
     ((PriceCell *)
      gnc_table_layout_get_cell (ledger->table->layout, ENTRY_DISC_CELL),
-     1000000);
+     GNC_COMMODITY_MAX_FRACTION);
 
     gnc_price_cell_set_fraction
     ((PriceCell *) gnc_table_layout_get_cell (ledger->table->layout,
             ENTRY_QTY_CELL),
-     1000000);
+     GNC_COMMODITY_MAX_FRACTION);
 
     /* add menu items for the action and payment cells */
     gnc_entry_ledger_config_action (ledger);
@@ -567,7 +567,7 @@ void gnc_entry_ledger_set_default_invoice (GncEntryLedger *ledger,
      * adding bills on a day different from the bill's own date.
      * Note this is for bills only, because for (customer's) invoices
      * it makes more sense to use the current date.
-     * Consult https://bugzilla.gnome.org/show_bug.cgi?id=646541
+     * Consult https://bugs.gnucash.org/show_bug.cgi?id=646541
      * to understand why.
      */
     if (gncInvoiceGetOwnerType (invoice) == GNC_OWNER_VENDOR)
@@ -721,7 +721,7 @@ void
 gnc_entry_ledger_compute_value (GncEntryLedger *ledger,
                                 gnc_numeric *value, gnc_numeric *tax_value)
 {
-    gnc_numeric qty, price, discount;
+    gnc_numeric qty = gnc_numeric_zero(), price = gnc_numeric_zero(), discount = gnc_numeric_zero();
     gint disc_type, disc_how;
     gboolean taxable, taxincluded;
     GncTaxTable *table;
@@ -1036,15 +1036,15 @@ void gnc_entry_ledger_move_current_entry_updown (GncEntryLedger *ledger,
             return;
 
         /* Special treatment if the equality doesn't hold if we access the
-        dates as timespec. See the comment in gncEntrySetDateGDate() for the
-        reason: Some code used the timespec at noon for the EntryDate, other
-        code used the timespec at the start of day. */
+        dates as time64. See the comment in gncEntrySetDateGDate() for the
+        reason: Some code used the time64 at noon for the EntryDate, other
+        code used the time64 at the start of day. */
         t1 = gncEntryGetDate(current);
         t2 = gncEntryGetDate(target);
         if (t1 != t2)
         {
-            /* Timespecs are not equal, even though the GDates were equal? Then
-            we set the GDates again. This will force the timespecs to be equal
+            /* times are not equal, even though the GDates were equal? Then
+            we set the GDates again. This will force the times to be equal
             as well. */
             gncEntrySetDateGDate(current, &d1);
             gncEntrySetDateGDate(target, &d2);

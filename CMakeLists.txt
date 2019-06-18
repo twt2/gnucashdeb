@@ -12,17 +12,17 @@ enable_testing()
 
 # Version number of gnucash
 set (GNUCASH_MAJOR_VERSION 3)
-set (GNUCASH_MINOR_VERSION 2)
+set (GNUCASH_MINOR_VERSION 4)
 set (VERSION "${GNUCASH_MAJOR_VERSION}.${GNUCASH_MINOR_VERSION}")
 set (GNUCASH_LATEST_STABLE_SERIES 3.x)
 
 set (PACKAGE gnucash)
 set (PACKAGE_NAME GnuCash)
-set (PACKAGE_VERSION 3.2)
-set (PACKAGE_BUGREPORT gnucash-devel@gnucash.org)
+set (PACKAGE_VERSION 3.4)
+set (PACKAGE_BUGREPORT "https://bugs.gnucash.org")
 set (PACKAGE_TARNAME ${PACKAGE})
 set (PACKAGE_STRING "${PACKAGE_NAME} ${PACKAGE_VERSION}")
-set (PACKAGE_URL "")
+set (PACKAGE_URL "https://www.gnucash.org/")
 
 # Change this in development versions when changing anything that
 # affects stored data structures. Reset to zero when bumping version.
@@ -48,6 +48,7 @@ include (GncAddGSchemaTargets)
 include (GncAddTest)
 include (MakeDistFiles)
 include (GNUInstallDirs)
+include (TestBigEndian)
 
 # ############################################################
 # These options are settable from the CMake command line. For example, to disable
@@ -285,8 +286,9 @@ endif (WIN32)
 
 # SWIG
 if(GENERATE_SWIG_WRAPPERS)
-  find_package (SWIG REQUIRED)
+  find_package (SWIG 2.0.10 REQUIRED)
   include (${SWIG_USE_FILE})
+  string(REGEX MATCH "^[0-9]+[.]" SWIG_MAJOR ${SWIG_VERSION})
 endif()
 
 # Find Guile and determine which version we are using.
@@ -340,6 +342,17 @@ execute_process (COMMAND ${GUILE_EXECUTABLE} -c "(use-modules (srfi srfi-64))"
 if (GNC_SRFI64_RESULT EQUAL 0)
   message (STATUS "Using guile SRFI-64")
   set (HAVE_SRFI64 TRUE)
+endif ()
+
+# Test that guile has textual-ports. This is required for the stress test.
+execute_process (COMMAND ${GUILE_EXECUTABLE} -c "(use-modules (ice-9 textual-ports))"
+  RESULT_VARIABLE GNC_TEXT_PORTS_RESULT
+  ERROR_QUIET
+)
+
+if (GNC_TEXT_PORTS_RESULT EQUAL 0)
+  message (STATUS "Using guile textual-ports")
+  set (HAVE_TEXT_PORTS TRUE)
 endif ()
 
 # ############################################################
@@ -530,30 +543,24 @@ endif (Boost_FOUND)
 # Compiler flags
 
 include (CheckCCompilerFlag)
+include (CheckCXXCompilerFlag)
 check_c_compiler_flag(-Wstringop-truncation have_stringop_truncation)
 if (have_stringop_truncation)
     set(HAVE_STRINGOP_TRUNCATION TRUE)
 endif()
 
-if (APPLE)
-  include (CheckCXXCompilerFlag)
-  check_cxx_compiler_flag(-Wno-unused-local-typedef, have_wno_ult)
-  if (have_wno_ult)
-    set( CMAKE_CXX_FLAGS "-Wno-unused-local-typedef -Wmissing-prototypes ${CMAKE_CXX_FLAGS}")
-  else()
-    set( CMAKE_CXX_FLAGS "-Wmissing-prototypes ${CMAKE_CXX_FLAGS}")
+if (SWIG_MAJOR LESS 3)
+check_cxx_compiler_flag(-Wno-register have_no_register)
+if (have_no_register)
+  set(REGISTER_CXXFLAG -Wno-register)
+else()
+  check_cxx_compiler_flag(-Wno-deprecated-register have_no_dep_register)
+  if (have_no_dep_register)
+    set(REGISTER_CXXFLAG -Wno-deprecated-register)
   endif()
-  check_c_compiler_flag(-Wno-unknown-attributes have_no_unkatt)
-  if (have_no_unkatt)
-    set(CMAKE_C_FLAGS "-Wno-unknown-attributes -Wno-typedef-redefinition ${CMAKE_C_FLAGS}")
-    set(CMAKE_CXX_FLAGS "-Wno-unknown-attributes -Wno-typedef-redefinition ${CMAKE_CXX_FLAGS}")
-  else()
-    set(CMAKE_C_FLAGS "-Wno-typedef-redefinition ${CMAKE_C_FLAGS}")
-    set(CMAKE_CXX_FLAGS "-Wno-typedef-redefinition ${CMAKE_CXX_FLAGS}")
-  endif()
-  #  set (CMAKE_OSX_ARCHITECTURES "i386")
-endif (APPLE)
-
+endif()
+endif()
+add_definitions(-D_GNU_SOURCE)
 
 # Also, set the C++ version to c++11
 set(CMAKE_CXX_FLAGS "-std=gnu++11 ${CMAKE_CXX_FLAGS}")  # FIXME: should be -std=c++11
@@ -561,8 +568,9 @@ set(CMAKE_CXX_FLAGS "-std=gnu++11 ${CMAKE_CXX_FLAGS}")  # FIXME: should be -std=
 
 if (UNIX)
   set( CMAKE_C_FLAGS "-Werror -Wdeclaration-after-statement -Wno-pointer-sign -Wall -Wmissing-prototypes -Wmissing-declarations -Wno-unused ${CMAKE_C_FLAGS}")
+  set( CMAKE_C_FLAGS "-Wno-error=deprecated-declarations -std=gnu11 -Wno-error=parentheses ${CMAKE_C_FLAGS}")
   set( CMAKE_CXX_FLAGS "-Werror -Wall -Wmissing-declarations -Wno-unused -Wno-error=parentheses ${CMAKE_CXX_FLAGS}")
-  set( CMAKE_C_FLAGS "-Wno-deprecated-declarations -std=gnu11 -Wno-error=parentheses ${CMAKE_C_FLAGS}")
+  set( CMAKE_CXX_FLAGS "-Wno-error=deprecated-declarations ${REGISTER_CXXFLAG} ${CMAKE_CXX_FLAGS}")
   set( CMAKE_C_FLAGS_RELEASE "-O3 -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 ${CMAKE_C_FLAGS}")
 endif (UNIX)
 if (MINGW)
@@ -676,6 +684,11 @@ check_include_files (unistd.h HAVE_UNISTD_H)
 check_include_files (utmp.h HAVE_UTMP_H)
 check_include_files (wctype.h HAVE_WCTYPE_H)
 
+test_big_endian(IS_BIGENDIAN)
+if (IS_BIGENDIAN)
+  set(WORDS_BIGENDIAN)
+endif (IS_BIGENDIAN)
+
 if (NOT DISABLE_NLS)
 set(ENABLE_NLS 1)
 endif(NOT DISABLE_NLS)
@@ -721,7 +734,6 @@ set (HAVE_PTHREAD_PRIO_INHERIT 1)
 set (HAVE_SCANF_LLD 1)
 set (HAVE_SETENV 1)
 set (HAVE_STPCPY 1)
-set (HAVE_STRFMON 1)
 set (HAVE_STRPTIME 1)
 set (HAVE_STRUCT_TM_GMTOFF 1)
 set (HAVE_TIMEGM 1)

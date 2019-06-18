@@ -725,9 +725,8 @@
                                         (gnc-price-get-value
                                                           pricedb-lookup-price))
                                 (set! pricedb-lookup-price-time
-                                        (gnc-price-get-time64
-                                                          pricedb-lookup-price))
-                                (gnc-pricedb-convert-balance-nearest-price
+                                        (gnc-price-get-time64 pricedb-lookup-price))
+                                (gnc-pricedb-convert-balance-nearest-price-t64
                                         pricedb
                                         (if neg?
                                             (gnc-numeric-neg splt-rpt-amount)

@@ -1081,7 +1081,8 @@ on_cancel (GtkAssistant      *gtkassistant,
 {
     gnc_suspend_gui_refresh ();
     if (data->new_book)
-        gtk_dialog_response(GTK_DIALOG(gnc_options_dialog_widget (data->optionwin)), GTK_RESPONSE_CANCEL);
+        gnc_options_dialog_destroy (data->optionwin);
+
     delete_hierarchy_dialog (data);
     delete_our_account_tree (data);
     g_free(data);
@@ -1126,7 +1127,7 @@ on_finish (GtkAssistant  *gtkassistant,
 
     gnc_suspend_gui_refresh ();
     if (data->new_book)
-        gtk_dialog_response(GTK_DIALOG(gnc_options_dialog_widget (data->optionwin)), GTK_RESPONSE_CANCEL);
+        gnc_options_dialog_destroy (data->optionwin);
 
     account_trees_merge(gnc_get_current_root_account(), data->our_account_tree);
 
@@ -1317,7 +1318,8 @@ gnc_create_hierarchy_assistant (gboolean use_defaults, GncHierarchyAssistantFini
 
     data->balance_hash = g_hash_table_new(NULL, NULL);
 
-    gnc_restore_window_size (GNC_PREFS_GROUP, GTK_WINDOW(data->dialog));
+    gnc_restore_window_size (GNC_PREFS_GROUP,
+                             GTK_WINDOW(data->dialog), gnc_ui_get_main_window(NULL));
 
     g_signal_connect (G_OBJECT(dialog), "destroy",
                       G_CALLBACK (gnc_hierarchy_destroy_cb), data);

@@ -33,7 +33,7 @@ class KvpFrameTest : public ::testing::Test
 public:
     KvpFrameTest() :
         t_int_val{new KvpValue {INT64_C(15)}},
-        t_str_val{new KvpValue{"a value"}}     {
+        t_str_val{new KvpValue{g_strdup ("a value")}}     {
         auto f1 = new KvpFrame;
         t_root.set({"top"}, new KvpValue{f1});
         f1->set({"first"}, t_int_val);
@@ -42,8 +42,8 @@ public:
     }
 protected:
     KvpFrameImpl t_root;
-    KvpValue *t_int_val;
-    KvpValue *t_str_val;
+    KvpValue *t_int_val = nullptr;
+    KvpValue *t_str_val = nullptr;
 };
 
 template <typename A, typename B> void

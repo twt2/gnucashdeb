@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 ##  @file
-#   @brief Output all the credits and debits on an account
+#   @brief Recurse over all accounts in a book and marks the first one having target_account_code as tax related
 #   @ingroup python_bindings_examples
 
 from gnucash import Session, Account
@@ -24,7 +24,7 @@ def mark_account_with_code_as_tax_related(account, target_code):
             if mark_account_with_code_as_tax_related(child, target_code):
                 return True
         return False
-            
+
 # Change this path to your own
 gnucash_session = Session("/home/mark/python-bindings-help/test.xac")
 

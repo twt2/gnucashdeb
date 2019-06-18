@@ -308,6 +308,10 @@ gnc_embedded_window_add_widget (GtkUIManager *merge,
     if (GTK_IS_TOOLBAR (widget))
     {
         priv->toolbar = widget;
+        gtk_toolbar_set_style (GTK_TOOLBAR(priv->toolbar),
+                               GTK_TOOLBAR_BOTH);
+        gtk_toolbar_set_icon_size (GTK_TOOLBAR(priv->toolbar),
+                                   GTK_ICON_SIZE_SMALL_TOOLBAR);
     }
 
     gtk_box_pack_start (GTK_BOX (priv->menu_dock), widget, FALSE, FALSE, 0);
@@ -378,7 +382,7 @@ gnc_embedded_window_new (const gchar *action_group_name,
 
     /* Create menu and toolbar information */
     priv->action_group = gtk_action_group_new (action_group_name);
-    gnc_gtk_action_group_set_translation_domain(priv->action_group, GETTEXT_PACKAGE);
+    gtk_action_group_set_translation_domain(priv->action_group, GETTEXT_PACKAGE);
     gtk_action_group_add_actions (priv->action_group, action_entries,
                                   n_action_entries, user_data);
     gtk_ui_manager_insert_action_group (window->ui_merge, priv->action_group, 0);

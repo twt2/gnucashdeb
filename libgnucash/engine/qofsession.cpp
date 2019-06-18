@@ -125,7 +125,6 @@ QofSessionImpl::QofSessionImpl () noexcept
     m_last_err {},
     m_error_message {}
 {
-    clear_error ();
 }
 
 QofSessionImpl::~QofSessionImpl () noexcept
@@ -180,7 +179,9 @@ QofSessionImpl::load_backend (std::string access_method) noexcept
             continue;
         }
         PINFO (" Selected provider %s", prov->provider_name);
-        if (!prov->type_check (m_book_id.c_str ()))
+        // Only do a type check when trying to open an existing file
+        // When saving over an existing file the contents of the original file don't matter
+        if (!m_creating && !prov->type_check (m_book_id.c_str ()))
         {
             PINFO("Provider, %s, reported not being usable for book, %s.",
                     prov->provider_name, m_book_id.c_str ());
@@ -199,44 +200,23 @@ QofSessionImpl::load_backend (std::string access_method) noexcept
 void
 QofSessionImpl::load (QofPercentageFunc percentage_func) noexcept
 {
+    /* We must have an empty book to load into or bad things will happen. */
+    g_return_if_fail(m_book && qof_book_empty(m_book));
+    
     if (!m_book_id.size ()) return;
     ENTER ("sess=%p book_id=%s", this, m_book_id.c_str ());
 
     /* At this point, we should are supposed to have a valid book
     * id and a lock on the file. */
-    QofBook * oldbook {m_book};
-
-    QofBook * newbook {qof_book_new ()};
-    m_book = newbook;
-    PINFO ("new book=%p", newbook);
     clear_error ();
-
-    /* This code should be sufficient to initialize *any* backend,
-    * whether http, postgres, or anything else that might come along.
-    * Basically, the idea is that by now, a backend has already been
-    * created & set up.  At this point, we only need to get the
-    * top-level account group out of the backend, and that is a
-    * generic, backend-independent operation.
-    */
-    auto be (qof_book_get_backend (oldbook));
-    qof_book_set_backend (newbook, be);
-
-    /* Starting the session should result in a bunch of accounts
-    * and currencies being downloaded, but probably no transactions;
-    * The GUI will need to do a query for that.
-    */
+    auto be (qof_book_get_backend(m_book));
     if (be)
     {
         be->set_percentage(percentage_func);
-        be->load (newbook, LOAD_TYPE_INITIAL_LOAD);
+        be->load (m_book, LOAD_TYPE_INITIAL_LOAD);
         push_error (be->get_error(), {});
     }
 
-    /* XXX if the load fails, then we try to restore the old set of books;
-    * however, we don't undo the session id (the URL).  Thus if the
-    * user attempts to save after a failed load, they weill be trying to
-    * save to some bogus URL.   This is wrong. XXX  FIXME.
-    */
     auto err = get_error ();
     if ((err != ERR_BACKEND_NO_ERR) &&
             (err != ERR_FILEIO_FILE_TOO_OLD) &&
@@ -245,16 +225,12 @@ QofSessionImpl::load (QofPercentageFunc percentage_func) noexcept
             (err != ERR_SQL_DB_TOO_OLD) &&
             (err != ERR_SQL_DB_TOO_NEW))
     {
-        /* Something broke, put back the old stuff */
-        qof_book_set_backend (newbook, NULL);
-        qof_book_destroy (newbook);
-        m_book = oldbook;
+        auto old_book = m_book;
+        m_book = qof_book_new();
+        qof_book_destroy(old_book);
         LEAVE ("error from backend %d", get_error ());
         return;
     }
-    qof_book_set_backend (oldbook, NULL);
-    qof_book_destroy (oldbook);
-
     LEAVE ("sess = %p, book_id=%s", this, m_book_id.c_str ());
 }
 
@@ -303,6 +279,7 @@ QofSessionImpl::begin (std::string new_book_id, bool ignore_lock,
     destroy_backend ();
     /* Store the session URL  */
     m_book_id = new_book_id;
+    m_creating = create;
     if (filename)
         load_backend ("file");
     else                       /* access method found, load appropriate backend */
@@ -448,23 +425,21 @@ QofSessionImpl::is_saving () const noexcept
 void
 QofSessionImpl::save (QofPercentageFunc percentage_func) noexcept
 {
+    if (!qof_book_session_not_saved (m_book)) //Clean book, nothing to do.
+        return;
     m_saving = true;
     ENTER ("sess=%p book_id=%s", this, m_book_id.c_str ());
 
-    /* If there is a backend, and the backend is reachable
-    * (i.e. we can communicate with it), then synchronize with
-    * the backend.  If we cannot contact the backend (e.g.
-    * because we've gone offline, the network has crashed, etc.)
-    * then give the user the option to save to the local disk.
-    *
-    * hack alert -- FIXME -- XXX the code below no longer
-    * does what the words above say.  This needs fixing.
-    */
+    /* If there is a backend, the book is dirty, and the backend is reachable
+     * (i.e. we can communicate with it), then synchronize with the backend.  If
+     * we cannot contact the backend (e.g.  because we've gone offline, the
+     * network has crashed, etc.)  then raise an error so that the controlling
+     * dialog can offer the user a chance to save in a different way.
+     */
     auto backend = qof_book_get_backend (m_book);
     if (backend)
     {
-        /* if invoked as SaveAs(), then backend not yet set */
-        qof_book_set_backend (m_book, backend);
+
         backend->set_percentage(percentage_func);
         backend->sync(m_book);
         auto err = backend->get_error();
@@ -481,7 +456,7 @@ QofSessionImpl::save (QofPercentageFunc percentage_func) noexcept
     }
     else
     {
-        push_error (ERR_BACKEND_NO_HANDLER, "failod to load backend");
+        push_error (ERR_BACKEND_NO_HANDLER, "failed to load backend");
         LEAVE("error -- No backend!");
     }
     m_saving = false;

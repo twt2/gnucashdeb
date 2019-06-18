@@ -60,6 +60,7 @@ add_dependencies (gnucash gnucash-manpage)
 target_compile_definitions(gnucash PRIVATE -DG_LOG_DOMAIN=\"gnc.bin\")
 
 if (BUILDING_FROM_VCS)
+  target_compile_definitions(gnucash PRIVATE -DGNC_VCS=\"git\")
   target_compile_definitions(gncmod-gnome-utils PRIVATE -DGNC_VCS=\"git\")
 endif (BUILDING_FROM_VCS)
 
@@ -74,15 +75,18 @@ execute_process(
    COMMAND
        ${PKG_CONFIG_EXECUTABLE} gio-2.0 --variable glib_compile_resources
    OUTPUT_VARIABLE
-       GLIB_COMPILE_RESOURCES_EXECUTABLE
+       GLIB_COMPILE_RESOURCES_NAME
    OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
+find_program(GLIB_COMPILE_RESOURCES_EXECUTABLE ${GLIB_COMPILE_RESOURCES_NAME})
+
 # Get the dependencies of the gresource
+
 execute_process(
   OUTPUT_VARIABLE
       gr_files
-  COMMAND ${GLIB_COMPILE_RESOURCES_EXECUTABLE}
+  COMMAND "${GLIB_COMPILE_RESOURCES_EXECUTABLE}"
      --sourcedir=${CMAKE_CURRENT_SOURCE_DIR}
      --generate-dependencies
      ${CMAKE_CURRENT_SOURCE_DIR}/gnucash-gresources.xml
@@ -93,7 +97,7 @@ string (REPLACE "\n" ";" gresource_files ${gr_files})
 add_custom_command(
    OUTPUT gnucash-gresources.c
    COMMAND
-    ${GLIB_COMPILE_RESOURCES_EXECUTABLE}
+    "${GLIB_COMPILE_RESOURCES_EXECUTABLE}"
     --target=gnucash-gresources.c
     --sourcedir=${CMAKE_CURRENT_SOURCE_DIR}
     --generate-source
@@ -183,7 +187,7 @@ if (WITH_PYTHON)
 endif()
 
 if (MAC_INTEGRATION)
-  file(APPEND ${ENV_FILE_OUT} "XDG_CONFIG_HOME={HOME}/Library/Application Support/Gnucash/config\n")
+  file(APPEND ${ENV_FILE_OUT} "XDG_CONFIG_HOME={HOME}/Library/Application Support/${PACKAGE_NAME}/config\n")
   file(APPEND ${ENV_FILE_OUT} "GDK_PIXBUF_MODULE_FILE={SYS_LIB}/gdk-pixbuf-2.0/2.10.0/loaders.cache\n")
   file(APPEND ${ENV_FILE_OUT} "FONTCONFIG_FILE={GNC_HOME}/etc/fonts/fonts.conf\n")
   file(APPEND ${ENV_FILE_OUT} "OFX_DTD_PATH={GNC_HOME}/share/libofx/dtd\n")

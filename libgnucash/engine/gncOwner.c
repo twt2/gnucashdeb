@@ -641,9 +641,11 @@ gboolean gncOwnerGetOwnerFromLot (GNCLot *lot, GncOwner *owner)
         gncOwnerInitJob (owner, gncJobLookup (book, guid));
         break;
     default:
+        guid_free (guid);
         return FALSE;
     }
 
+    guid_free (guid);
     return (owner->owner.undefined != NULL);
 }
 
@@ -723,10 +725,10 @@ gncOwnerLotsSortFunc (GNCLot *lotA, GNCLot *lotB)
 }
 
 GNCLot *
-gncOwnerCreatePaymentLot (const GncOwner *owner, Transaction **preset_txn,
-                          Account *posted_acc, Account *xfer_acc,
-                          gnc_numeric amount, gnc_numeric exch, Timespec date,
-                          const char *memo, const char *num)
+gncOwnerCreatePaymentLotSecs (const GncOwner *owner, Transaction **preset_txn,
+                              Account *posted_acc, Account *xfer_acc,
+                              gnc_numeric amount, gnc_numeric exch, time64 date,
+                              const char *memo, const char *num)
 {
     QofBook *book;
     Split *split;
@@ -814,7 +816,7 @@ gncOwnerCreatePaymentLot (const GncOwner *owner, Transaction **preset_txn,
         /* set per book option */
         xaccTransSetCurrency (txn, commodity);
         xaccTransSetDateEnteredSecs (txn, gnc_time (NULL));
-        xaccTransSetDatePostedSecs (txn, date.tv_sec);
+        xaccTransSetDatePostedSecs (txn, date);
 
 
         /* The split for the transfer account */
@@ -1376,10 +1378,10 @@ void gncOwnerAutoApplyPaymentsWithLots (const GncOwner *owner, GList *lots)
  * then all open lots for the owner are considered.
  */
 void
-gncOwnerApplyPayment (const GncOwner *owner, Transaction **preset_txn, GList *lots,
-                      Account *posted_acc, Account *xfer_acc,
-                      gnc_numeric amount, gnc_numeric exch, Timespec date,
-                      const char *memo, const char *num, gboolean auto_pay)
+gncOwnerApplyPaymentSecs (const GncOwner *owner, Transaction **preset_txn,
+                          GList *lots, Account *posted_acc, Account *xfer_acc,
+                          gnc_numeric amount, gnc_numeric exch, time64 date,
+                          const char *memo, const char *num, gboolean auto_pay)
 {
     GNCLot *payment_lot = NULL;
     GList *selected_lots = NULL;
@@ -1391,8 +1393,10 @@ gncOwnerApplyPayment (const GncOwner *owner, Transaction **preset_txn, GList *lo
 
     /* If there's a real amount to transfer create a lot for this payment */
     if (!gnc_numeric_zero_p (amount))
-        payment_lot = gncOwnerCreatePaymentLot (owner, preset_txn, posted_acc, xfer_acc,
-                                                amount, exch, date, memo, num);
+        payment_lot = gncOwnerCreatePaymentLotSecs (owner, preset_txn,
+                                                    posted_acc, xfer_acc,
+                                                    amount, exch, date, memo,
+                                                    num);
 
     if (lots)
         selected_lots = lots;
@@ -1449,46 +1453,60 @@ gncOwnerGetBalanceInCurrency (const GncOwner *owner,
                               const gnc_commodity *report_currency)
 {
     gnc_numeric balance = gnc_numeric_zero ();
-    GList *acct_list, *acct_node, *acct_types, *lot_list = NULL, *lot_node;
     QofBook *book;
     gnc_commodity *owner_currency;
     GNCPriceDB *pdb;
+    const gnc_numeric *cached_balance = NULL;
 
     g_return_val_if_fail (owner, gnc_numeric_zero ());
 
-    /* Get account list */
     book       = qof_instance_get_book (qofOwnerGetOwner (owner));
-    acct_list  = gnc_account_get_descendants (gnc_book_get_root_account (book));
-    acct_types = gncOwnerGetAccountTypesList (owner);
     owner_currency = gncOwnerGetCurrency (owner);
 
-    /* For each account */
-    for (acct_node = acct_list; acct_node; acct_node = acct_node->next)
+    cached_balance = gncOwnerGetCachedBalance (owner);
+    if (cached_balance)
+        balance = *cached_balance;
+    else
     {
-        Account *account = acct_node->data;
+        /* No valid cache value found for balance. Let's recalculate */
+        GList *acct_list  = gnc_account_get_descendants (gnc_book_get_root_account (book));
+        GList *acct_types = gncOwnerGetAccountTypesList (owner);
+        GList *acct_node;
 
-        /* Check if this account can have lots for the owner, otherwise skip to next */
-        if (g_list_index (acct_types, (gpointer)xaccAccountGetType (account))
-                == -1)
-            continue;
-
-
-        if (!gnc_commodity_equal (owner_currency, xaccAccountGetCommodity (account)))
-            continue;
-
-        /* Get a list of open lots for this owner and account */
-        lot_list = xaccAccountFindOpenLots (account, gncOwnerLotMatchOwnerFunc,
-                                            (gpointer)owner, NULL);
-        /* For each lot */
-        for (lot_node = lot_list; lot_node; lot_node = lot_node->next)
+        /* For each account */
+        for (acct_node = acct_list; acct_node; acct_node = acct_node->next)
         {
-            GNCLot *lot = lot_node->data;
-            gnc_numeric lot_balance = gnc_lot_get_balance (lot);
-            GncInvoice *invoice = gncInvoiceGetInvoiceFromLot(lot);
-            if (invoice)
-               balance = gnc_numeric_add (balance, lot_balance,
-                                          gnc_commodity_get_fraction (owner_currency), GNC_HOW_RND_ROUND_HALF_UP);
+            Account *account = acct_node->data;
+            GList *lot_list = NULL, *lot_node;
+
+            /* Check if this account can have lots for the owner, otherwise skip to next */
+            if (g_list_index (acct_types, (gpointer)xaccAccountGetType (account))
+                    == -1)
+                continue;
+
+
+            if (!gnc_commodity_equal (owner_currency, xaccAccountGetCommodity (account)))
+                continue;
+
+            /* Get a list of open lots for this owner and account */
+            lot_list = xaccAccountFindOpenLots (account, gncOwnerLotMatchOwnerFunc,
+                                                (gpointer)owner, NULL);
+            /* For each lot */
+            for (lot_node = lot_list; lot_node; lot_node = lot_node->next)
+            {
+                GNCLot *lot = lot_node->data;
+                gnc_numeric lot_balance = gnc_lot_get_balance (lot);
+                GncInvoice *invoice = gncInvoiceGetInvoiceFromLot(lot);
+                if (invoice)
+                balance = gnc_numeric_add (balance, lot_balance,
+                                            gnc_commodity_get_fraction (owner_currency), GNC_HOW_RND_ROUND_HALF_UP);
+            }
+            g_list_free (lot_list);
         }
+        g_list_free (acct_list);
+        g_list_free (acct_types);
+
+        gncOwnerSetCachedBalance (owner, &balance);
     }
 
     pdb = gnc_pricedb_get_db (book);
@@ -1579,4 +1597,31 @@ gboolean gncOwnerRegister (void)
     reg_lot ();
 
     return TRUE;
+}
+
+const gnc_numeric*
+gncOwnerGetCachedBalance (const GncOwner *owner)
+{
+    if (!owner) return NULL;
+
+    if (gncOwnerGetType (owner) == GNC_OWNER_CUSTOMER)
+        return gncCustomerGetCachedBalance (gncOwnerGetCustomer (owner));
+    else if (gncOwnerGetType (owner) == GNC_OWNER_VENDOR)
+        return gncVendorGetCachedBalance (gncOwnerGetVendor (owner));
+    else if (gncOwnerGetType (owner) == GNC_OWNER_EMPLOYEE)
+        return gncEmployeeGetCachedBalance (gncOwnerGetEmployee (owner));
+
+    return NULL;
+}
+
+void gncOwnerSetCachedBalance (const GncOwner *owner, const gnc_numeric *new_bal)
+{
+    if (!owner) return;
+
+    if (gncOwnerGetType (owner) == GNC_OWNER_CUSTOMER)
+        gncCustomerSetCachedBalance (gncOwnerGetCustomer (owner), new_bal);
+    else if (gncOwnerGetType (owner) == GNC_OWNER_VENDOR)
+        gncVendorSetCachedBalance (gncOwnerGetVendor (owner), new_bal);
+    else if (gncOwnerGetType (owner) == GNC_OWNER_EMPLOYEE)
+        gncEmployeeSetCachedBalance (gncOwnerGetEmployee (owner), new_bal);
 }

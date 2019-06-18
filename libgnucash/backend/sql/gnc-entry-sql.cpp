@@ -70,9 +70,9 @@ static void entry_set_bill (gpointer pObject, gpointer val);
 static EntryVec col_table
 ({
     gnc_sql_make_table_entry<CT_GUID>("guid", 0, COL_NNUL | COL_PKEY, "guid"),
-    gnc_sql_make_table_entry<CT_TIME64>("date", 0, COL_NNUL, ENTRY_DATE,
+    gnc_sql_make_table_entry<CT_TIME>("date", 0, COL_NNUL, ENTRY_DATE,
                                           true),
-    gnc_sql_make_table_entry<CT_TIME64>("date_entered", 0, 0,
+    gnc_sql_make_table_entry<CT_TIME>("date_entered", 0, 0,
                                           ENTRY_DATE_ENTERED, true),
     gnc_sql_make_table_entry<CT_STRING>(
         "description", MAX_DESCRIPTION_LEN, 0, "description"),
@@ -203,7 +203,7 @@ GncSqlEntryBackend::load_all (GncSqlBackend* sql_be)
     auto result = sql_be->execute_select_statement(stmt);
 
     for (auto row : *result)
-        GncEntry* pEntry = load_single_entry (sql_be, row);
+        load_single_entry (sql_be, row);
 
     std::string pkey(col_table[0]->name());
     sql = "SELECT DISTINCT ";

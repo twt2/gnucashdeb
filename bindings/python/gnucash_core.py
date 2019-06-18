@@ -109,7 +109,7 @@ class Session(GnuCashCoreClass):
                 # New xml file can't be loaded, new sql store
                 # has to be loaded before it can be altered
                 # Any existing store obviously has to be loaded
-                # More background: https://bugzilla.gnome.org/show_bug.cgi?id=726891
+                # More background: https://bugs.gnucash.org/show_bug.cgi?id=726891
                 if book_uri[:3] != "xml" or not is_new:
                     self.load()
             except GnuCashBackendException as backend_exception:
@@ -375,10 +375,10 @@ class GncPriceDB(GnuCashCoreClass):
 GncPriceDB.add_methods_with_prefix('gnc_pricedb_')
 PriceDB_dict =  {
                 'lookup_latest' : GncPrice,
-                'lookup_nearest_in_time' : GncPrice,
-                'lookup_latest_before' : GncPrice,
+                'lookup_nearest_in_time64' : GncPrice,
+                'lookup_latest_before_t64' : GncPrice,
                 'convert_balance_latest_price' : GncNumeric,
-                'convert_balance_nearest_price' : GncNumeric,
+                'convert_balance_nearest_price_t64' : GncNumeric,
                 }
 methods_return_instance(GncPriceDB,PriceDB_dict)
 GncPriceDB.get_prices = method_function_returns_instance_list(
@@ -435,12 +435,22 @@ class Transaction(GnuCashCoreClass):
             gncInvoiceGetInvoiceFromTxn, Transaction )
 
 def decorate_monetary_list_returning_function(orig_function):
-    def new_function(self):
+    def new_function(self, *args):
+        """decorate function that returns list of gnc_monetary to return tuples of GncCommodity and GncNumeric
+
+        Args:
+            *args: Variable length argument list. Will get passed to orig_function
+
+        Returns:
+            array of tuples: (GncCommodity, GncNumeric)
+
+        ToDo:
+            Maybe this function should better reside in module function_class (?)"""
         # warning, item.commodity has been shown to be None
         # when the transaction doesn't have a currency
         return [(GncCommodity(instance=item.commodity),
                  GncNumeric(instance=item.value))
-                for item in orig_function(self) ]
+                for item in orig_function(self, *args) ]
     return new_function
 
 class Split(GnuCashCoreClass):
@@ -760,12 +770,19 @@ from gnucash.gnucash_core_c import \
     INVOICE_IS_PAID
 
 class Query(GnuCashCoreClass):
-    pass
 
-Query.add_constructor_and_methods_with_prefix('qof_query_', 'create')
+    def search_for(self, obj_type):
+        """Set search_for to obj_type
+
+        calls qof_query_search_for. Buffers search string for queries lifetime.
+        @see https://bugs.gnucash.org/show_bug.cgi?id=796137"""
+        self.__search_for_buf = obj_type
+        self._search_for(self.__search_for_buf)
+
+Query.add_constructor_and_methods_with_prefix('qof_query_', 'create', exclude=["qof_query_search_for"])
 
 Query.add_method('qof_query_set_book', 'set_book')
-Query.add_method('qof_query_search_for', 'search_for')
+Query.add_method('qof_query_search_for', '_search_for')
 Query.add_method('qof_query_run', 'run')
 Query.add_method('qof_query_add_term', 'add_term')
 Query.add_method('qof_query_add_boolean_match', 'add_boolean_match')

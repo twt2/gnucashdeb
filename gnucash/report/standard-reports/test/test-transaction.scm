@@ -50,11 +50,12 @@
       (run-test-proper)))
 
 (define (coverage-test)
-  (define %test-vm (make-vm))
-  (add-to-load-path "/home/chris/sources/gnucash/gnucash/report/standard-reports")
+  (let* ((currfile (dirname (current-filename)))
+         (path (string-take currfile (string-rindex currfile #\/))))
+    (add-to-load-path path))
   (call-with-values
       (lambda()
-        (with-code-coverage %test-vm run-test-proper))
+        (with-code-coverage run-test-proper))
     (lambda (data result)
       (let ((port (open-output-file "/tmp/lcov.info")))
         (coverage-data->lcov data port)
@@ -470,6 +471,16 @@
              (length ((sxpath '(// (table 1) // (tr 4) // td)) sxml))
              (length ((sxpath '(// (table 1) // (tr -1) // td)) sxml))
              1)))
+
+      (set-option! options "Display" "Enable links" #f)
+      (let ((sxml (options->sxml options "disable hyperlinks")))
+        (test-assert "no anchor when disabling hyperlinks"
+          (zero? (length ((sxpath '(// a // *text*)) sxml)))))
+
+      (set-option! options "Display" "Enable links" #t)
+      (let ((sxml (options->sxml options "enable hyperlinks")))
+        (test-assert "anchors exist when enabling hyperlinks"
+          (positive? (length ((sxpath '(// a // *text*)) sxml)))))
 
       (set-option! options "Display" "Amount" 'none)
       (let ((sxml (options->sxml options "no columns")))

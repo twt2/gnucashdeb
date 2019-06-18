@@ -636,13 +636,14 @@ gnc_sxed_split_check_account (GncSxEditorDialog *sxed, Split *s,
                      gnc_commodity *base_cmdty, gboolean *multi_cmdty)
 {
     gnc_commodity *split_cmdty = NULL;
-    gnc_numeric split_amount = gnc_numeric_zero ();
+    gnc_numeric split_amount;
     Account *acct = NULL;
     GncGUID *acct_guid = NULL;
     qof_instance_get (QOF_INSTANCE (s),
                       "sx-account", &acct_guid,
                       NULL);
     acct = xaccAccountLookup (acct_guid, gnc_get_current_book ());
+    guid_free (acct_guid);
     if (acct == NULL)
         return FALSE;
     split_cmdty = xaccAccountGetCommodity(acct);
@@ -1240,7 +1241,7 @@ gnc_ui_scheduled_xaction_editor_dialog_create (GtkWindow *parent,
 
     /* Allow resize */
     gtk_window_set_resizable (GTK_WINDOW(sxed->dialog), TRUE);
-    gnc_restore_window_size(GNC_PREFS_GROUP_SXED, GTK_WINDOW(sxed->dialog));
+    gnc_restore_window_size(GNC_PREFS_GROUP_SXED, GTK_WINDOW(sxed->dialog), parent);
 
     /* create the frequency-selection widget and example [dense-]calendar. */
     schedXact_editor_create_freq_sel( sxed );

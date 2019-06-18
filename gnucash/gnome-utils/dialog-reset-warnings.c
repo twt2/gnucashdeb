@@ -366,8 +366,6 @@ gnc_reset_warnings_dialog (GtkWindow *parent)
     GtkWidget  *dialog;
     GtkBuilder *builder;
 
-    rw_dialog = g_new0 (RWDialog, 1);
-
     ENTER("");
     if (gnc_forall_gui_components(DIALOG_RESET_WARNINGS_CM_CLASS,
                                   show_handler, NULL))
@@ -386,6 +384,7 @@ gnc_reset_warnings_dialog (GtkWindow *parent)
 
     gtk_window_set_transient_for(GTK_WINDOW (dialog), parent);
 
+    rw_dialog = g_new0 (RWDialog, 1);
     rw_dialog->dialog = dialog;
     PINFO("rw_dialog %p, dialog %p", rw_dialog, dialog);
 
@@ -413,7 +412,7 @@ gnc_reset_warnings_dialog (GtkWindow *parent)
     /* Record the pointer to the rw data structure and clean up after */
     g_object_set_data_full(G_OBJECT(rw_dialog->dialog), "dialog-structure", rw_dialog, g_free);
 
-    gnc_restore_window_size(GNC_PREFS_GROUP, GTK_WINDOW(rw_dialog->dialog));
+    gnc_restore_window_size(GNC_PREFS_GROUP, GTK_WINDOW(rw_dialog->dialog), parent);
 
     gnc_register_gui_component (DIALOG_RESET_WARNINGS_CM_CLASS,
                                 NULL, close_handler, rw_dialog);

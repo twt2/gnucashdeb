@@ -26,7 +26,6 @@ add_dependencies(check test-link)
 
 add_engine_test(test-load-engine test-load-engine.c)
 add_engine_test(test-guid test-guid.cpp)
-add_engine_test(test-date test-date.cpp)
 add_engine_test(test-object test-object.c)
 add_engine_test(test-commodities test-commodities.cpp)
 
@@ -218,7 +217,6 @@ gnc_add_test_with_guile(test-scm-query test-scm-query.cpp ENGINE_TEST_INCLUDE_DI
 set(engine_test_SCHEME
   test-account.scm
   test-create-account.scm
-  test-test-extras.scm
   test-split.scm
   )
 
@@ -271,7 +269,6 @@ set(test_engine_SOURCES_DIST
         test-business.c
         test-commodities.cpp
         test-customer.c
-        test-date.cpp
         test-employee.c
         test-engine-kvp-properties.c
         test-engine.c
@@ -317,7 +314,6 @@ set(test_engine_SCHEME_DIST
         test-extras.scm
         test-scm-query-import.scm
         test-split.scm
-        test-test-extras.scm
 )
 
 set(test_engine_EXTRA_DIST

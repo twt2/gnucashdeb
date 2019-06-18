@@ -818,7 +818,8 @@ pcd_save_custom_data(PrintCheckDialog *pcd, const gchar *title)
                                         GTK_BUTTONS_CLOSE, "%s",
                                         _("Cannot save check format file."));
         gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog),
-                "%s", error->message);
+                                                 _("Cannot open file %s"),
+                                                 _(error->message));
         gtk_dialog_run(GTK_DIALOG(dialog));
         gtk_widget_destroy(dialog);
         g_error_free(error);
@@ -1413,6 +1414,7 @@ format_read_general_info(const gchar *file,
 static void
 free_check_format(check_format_t *data)
 {
+    g_return_if_fail(data);
     g_free(data->guid);
     g_free(data->filename);
     g_free(data->title);
@@ -1475,7 +1477,7 @@ static void
 read_one_check_directory(PrintCheckDialog *pcd, GtkListStore *store,
                          const gchar *groupname, const gchar *dirname)
 {
-    check_format_t *format, *existing;
+    check_format_t *format = NULL, *existing;
     GDir *dir;
     const gchar *filename;
     GtkTreeIter iter;
@@ -1528,6 +1530,7 @@ read_one_check_directory(PrintCheckDialog *pcd, GtkListStore *store,
             found = TRUE;
         }
     }
+    free_check_format (format);
     g_dir_close(dir);
 
     /* If any files were added to the list, add a separator between
@@ -1732,7 +1735,7 @@ gnc_ui_print_check_dialog_create(GtkWidget *parent,
     gtk_widget_destroy(GTK_WIDGET(gtk_builder_get_object (builder, "lower_left")));
 
     gnc_ui_print_restore_dialog(pcd);
-    gnc_restore_window_size(GNC_PREFS_GROUP, GTK_WINDOW(pcd->dialog));
+    gnc_restore_window_size(GNC_PREFS_GROUP, GTK_WINDOW(pcd->dialog), GTK_WINDOW (parent));
 
     g_object_unref(G_OBJECT(builder));
     gtk_widget_show_all(pcd->dialog);

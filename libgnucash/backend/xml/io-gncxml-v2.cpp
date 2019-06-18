@@ -77,7 +77,7 @@ extern "C"
 
 /* Do not treat -Wstrict-aliasing warnings as errors because of problems of the
  * G_LOCK* macros as declared by glib.  See
- * http://bugzilla.gnome.org/show_bug.cgi?id=316221 for additional information.
+ * https://bugs.gnucash.org/show_bug.cgi?id=316221 for additional information.
  */
 #if (__GNUC__ >= 4 && __GNUC_MINOR__ >= 2)
 #    pragma GCC diagnostic warning "-Wstrict-aliasing"
@@ -791,7 +791,7 @@ qof_session_load_from_xml_file_v2_full (
         /* Even though libxml2 knows how to decompress zipped files, we
          * do it ourself since as of version 2.9.1 it has a bug that
          * causes it to fail to decompress certain files. See
-         * https://bugzilla.gnome.org/show_bug.cgi?id=712528 for more
+         * https://bugs.gnucash.org/show_bug.cgi?id=712528 for more
          * info.
          */
          const char* filename = xml_be->get_filename();
@@ -1539,7 +1539,6 @@ try_gz_open (const char* filename, const char* perms, gboolean use_gzip,
     {
         int filedes[2];
         GThread* thread;
-        GError* error = NULL;
         gz_thread_params_t* params;
         FILE* file;
 
@@ -1564,9 +1563,7 @@ try_gz_open (const char* filename, const char* perms, gboolean use_gzip,
                                params);
         if (!thread)
         {
-            g_warning ("Could not create thread for (de)compression: %s",
-                       error->message);
-            g_error_free (error);
+            g_warning ("Could not create thread for (de)compression.");
             g_free (params->filename);
             g_free (params->perms);
             g_free (params);
@@ -1868,6 +1865,7 @@ gnc_xml2_find_ambiguous (const gchar* filename, GList* encodings,
         if (iconv_item->iconv == (GIConv) - 1)
         {
             PWARN ("Unable to open IConv conversion descriptor for '%s'", enc);
+            g_free (iconv_item);
             goto cleanup_find_ambs;
         }
         else
@@ -2176,7 +2174,8 @@ gnc_xml2_parse_with_subst (GncXmlBackend* xml_be, QofBook* book, GHashTable* sub
     success = qof_session_load_from_xml_file_v2_full (
                   xml_be, book, (sixtp_push_handler) parse_with_subst_push_handler,
                   push_data, GNC_BOOK_XML2_FILE);
-
+    g_free (push_data);
+    
     if (success)
         qof_instance_set_dirty (QOF_INSTANCE (book));
 

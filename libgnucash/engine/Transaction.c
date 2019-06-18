@@ -35,17 +35,7 @@
 #include <glib/gi18n.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef HAVE_SYS_TIME_H
-# include <sys/time.h>
-#else
-/* We simply define the struct timeval on our own here. */
-struct timeval
-{
-    long    tv_sec;         /* seconds */
-    long    tv_usec;        /* and microseconds */
-};
-/* include <Winsock2.h> */
-#endif
+#include <stdint.h>
 #include <time.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
@@ -281,6 +271,8 @@ gnc_transaction_init(Transaction* trans)
     trans->date_posted  = 0;
     trans->marker = 0;
     trans->orig = NULL;
+    trans->readonly_reason = NULL;
+    trans->reason_cache_valid = FALSE;
     LEAVE (" ");
 }
 
@@ -310,7 +302,7 @@ gnc_transaction_get_property(GObject* object,
 {
     Transaction* tx;
     gchar *key;
-    Timespec ts = {0,0};
+    Time64 time;
 
     g_return_if_fail(GNC_IS_TRANSACTION(object));
 
@@ -327,12 +319,12 @@ gnc_transaction_get_property(GObject* object,
         g_value_take_object(value, tx->common_currency);
         break;
     case PROP_POST_DATE:
-        ts.tv_sec = tx->date_posted;
-        g_value_set_boxed(value, &ts);
+        time.t = tx->date_posted;
+        g_value_set_boxed(value, &time);
         break;
     case PROP_ENTER_DATE:
-        ts.tv_sec = tx->date_entered;
-        g_value_set_boxed(value, &ts);
+        time.t = tx->date_entered;
+        g_value_set_boxed(value, &time);
         break;
     case PROP_INVOICE:
         qof_instance_get_kvp (QOF_INSTANCE (tx), value, 2, GNC_INVOICE_ID, GNC_INVOICE_GUID);
@@ -357,6 +349,7 @@ gnc_transaction_set_property(GObject* object,
 {
     Transaction* tx;
     gchar *key;
+    Time64 *t;
 
     g_return_if_fail(GNC_IS_TRANSACTION(object));
 
@@ -375,10 +368,12 @@ gnc_transaction_set_property(GObject* object,
         xaccTransSetCurrency(tx, g_value_get_object(value));
         break;
     case PROP_POST_DATE:
-        xaccTransSetDatePostedSecs(tx, ((Timespec*)g_value_get_boxed(value))->tv_sec);
+        t = (Time64*)g_value_get_boxed(value);
+        xaccTransSetDatePostedSecs(tx, t->t);
         break;
     case PROP_ENTER_DATE:
-        xaccTransSetDateEnteredSecs(tx, ((Timespec*)g_value_get_boxed(value))->tv_sec);
+        t = (Time64*)g_value_get_boxed(value);
+        xaccTransSetDateEnteredSecs(tx, t->t);
         break;
     case PROP_INVOICE:
         qof_instance_set_kvp (QOF_INSTANCE (tx), value, 2, GNC_INVOICE_ID, GNC_INVOICE_GUID);
@@ -446,7 +441,7 @@ gnc_transaction_class_init(TransactionClass* klass)
      g_param_spec_boxed("post-date",
                         "Post Date",
                         "The date the transaction occurred.",
-                        GNC_TYPE_TIMESPEC,
+                        GNC_TYPE_TIME64,
                         G_PARAM_READWRITE));
 
     g_object_class_install_property
@@ -455,7 +450,7 @@ gnc_transaction_class_init(TransactionClass* klass)
      g_param_spec_boxed("enter-date",
                         "Enter Date",
                         "The date the transaction was entered.",
-                        GNC_TYPE_TIMESPEC,
+                        GNC_TYPE_TIME64,
                         G_PARAM_READWRITE));
 
      g_object_class_install_property(
@@ -530,8 +525,12 @@ xaccTransDump (const Transaction *trans, const char *tag)
     GList *node;
 
     printf("%s Trans %p", tag, trans);
-    printf("    Entered:     %s\n", gnc_print_date(trans->date_entered));
-    printf("    Posted:      %s\n", gnc_print_date(trans->date_posted));
+    memset(datebuff, 0, sizeof(datebuff));
+    qof_print_date_buff(datebuff, sizeof(datebuff), trans->date_entered);
+    printf("    Entered:     %s\n", datebuff);
+    memset(datebuff, 0, sizeof(datebuff));
+    qof_print_date_buff(datebuff, sizeof(datebuff), trans->date_posted);
+    printf("    Posted:      %s\n", datebuff);
     printf("    Num:         %s\n", trans->num ? trans->num : "(null)");
     printf("    Description: %s\n",
            trans->description ? trans->description : "(null)");
@@ -758,6 +757,7 @@ xaccTransCopyFromClipBoard(const Transaction *from_trans, Transaction *to_trans,
         xaccTransSetNum(to_trans, xaccTransGetNum(from_trans));
 
     xaccTransSetNotes(to_trans, xaccTransGetNotes(from_trans));
+    xaccTransSetAssociation(to_trans, xaccTransGetAssociation (from_trans));
     if(!no_date)
     {
         xaccTransSetDatePostedSecs(to_trans, xaccTransRetDatePosted (from_trans));
@@ -804,12 +804,15 @@ xaccFreeTransaction (Transaction *trans)
     /* free up transaction strings */
     CACHE_REMOVE(trans->num);
     CACHE_REMOVE(trans->description);
+    g_free (trans->readonly_reason);
 
     /* Just in case someone looks up freed memory ... */
     trans->num         = (char *) 1;
     trans->description = NULL;
     trans->date_entered = 0;
     trans->date_posted = 0;
+    trans->readonly_reason = NULL;
+    trans->reason_cache_valid = FALSE;
     if (trans->orig)
     {
         xaccFreeTransaction (trans->orig);
@@ -1750,7 +1753,7 @@ xaccTransRollbackEdit (Transaction *trans)
         if (!qof_instance_is_dirty(QOF_INSTANCE(s)))
             continue;
 
-        if (i < num_preexist)
+        if (i < num_preexist && onode)
         {
             Split *so = onode->data;
 
@@ -1884,6 +1887,14 @@ xaccTransOrder_num_action (const Transaction *ta, const char *actna,
     if (ta->date_posted != tb->date_posted)
         return (ta->date_posted > tb->date_posted) - (ta->date_posted < tb->date_posted);
 
+    /* Always sort closing transactions after normal transactions */
+    {
+        gboolean ta_is_closing = xaccTransGetIsClosingTxn (ta);
+        gboolean tb_is_closing = xaccTransGetIsClosingTxn (tb);
+        if (ta_is_closing != tb_is_closing)
+            return (ta_is_closing - tb_is_closing);
+    }
+
     /* otherwise, sort on number string */
     if (actna && actnb) /* split action string, if not NULL */
     {
@@ -1955,7 +1966,7 @@ xaccTransSetDatePostedSecs (Transaction *trans, time64 secs)
 {
     if (!trans) return;
     xaccTransSetDateInternal(trans, &trans->date_posted, secs);
-    set_gains_date_dirty (trans);
+    set_gains_date_dirty(trans);
 }
 
 void
@@ -1974,7 +1985,7 @@ xaccTransSetDatePostedGDate (Transaction *trans, GDate date)
 
     /* We additionally save this date into a kvp frame to ensure in
      * the future a date which was set as *date* (without time) can
-     * clearly be distinguished from the Timespec. */
+     * clearly be distinguished from the time64. */
     g_value_init (&v, G_TYPE_DATE);
     g_value_set_boxed (&v, &date);
     qof_instance_set_kvp (QOF_INSTANCE(trans), &v, 1, TRANS_DATE_POSTED);
@@ -1992,25 +2003,21 @@ xaccTransSetDateEnteredSecs (Transaction *trans, time64 secs)
 }
 
 static void
-qofTransSetDatePosted (Transaction *trans, Timespec ts)
+qofTransSetDatePosted (Transaction *trans, time64 time)
 {
     if (!trans) return;
-    if ((ts.tv_nsec == 0) && (ts.tv_sec == 0)) return;
     if (!qof_begin_edit(&trans->inst)) return;
-    xaccTransSetDateInternal(trans, &trans->date_posted, ts.tv_sec);
+    xaccTransSetDateInternal(trans, &trans->date_posted, time);
     set_gains_date_dirty(trans);
     qof_commit_edit(&trans->inst);
 }
 
 static void
-qofTransSetDateEntered (Transaction *trans, Timespec ts)
+qofTransSetDateEntered (Transaction *trans, time64 time)
 {
-    /*This is called from the query framework, so we'll leave the timespec
-     * until the query framework is converted, too.*/
     if (!trans) return;
-    if ((ts.tv_nsec == 0) && (ts.tv_sec == 0)) return;
     if (!qof_begin_edit(&trans->inst)) return;
-    xaccTransSetDateInternal(trans, &trans->date_entered, ts.tv_sec);
+    xaccTransSetDateInternal(trans, &trans->date_entered, time);
     qof_commit_edit(&trans->inst);
 }
 
@@ -2035,10 +2042,9 @@ void
 xaccTransSetDateDue (Transaction * trans, time64 time)
 {
     GValue v = G_VALUE_INIT;
-    Timespec send_ts = {time, 0};
     if (!trans) return;
-    g_value_init (&v, GNC_TYPE_TIMESPEC);
-    g_value_set_boxed (&v, &send_ts);
+    g_value_init (&v, GNC_TYPE_TIME64);
+    g_value_set_boxed (&v, &time);
     xaccTransBeginEdit(trans);
     qof_instance_set_kvp (QOF_INSTANCE (trans), &v, 1, TRANS_DATE_DUE_KVP);
     qof_instance_set_dirty(QOF_INSTANCE(trans));
@@ -2067,6 +2073,10 @@ void xaccTransClearReadOnly (Transaction *trans)
         qof_instance_set_kvp (QOF_INSTANCE (trans), NULL, 1, TRANS_READ_ONLY_REASON);
         qof_instance_set_dirty(QOF_INSTANCE(trans));
         xaccTransCommitEdit(trans);
+
+        g_free (trans->readonly_reason);
+        trans->readonly_reason = NULL;
+        trans->reason_cache_valid = TRUE;
     }
 }
 
@@ -2082,6 +2092,10 @@ xaccTransSetReadOnly (Transaction *trans, const char *reason)
         qof_instance_set_kvp (QOF_INSTANCE (trans), &v, 1, TRANS_READ_ONLY_REASON);
         qof_instance_set_dirty(QOF_INSTANCE(trans));
         xaccTransCommitEdit(trans);
+
+        g_free (trans->readonly_reason);
+        trans->readonly_reason = g_strdup (reason);
+        trans->reason_cache_valid = TRUE;
     }
 }
 
@@ -2132,12 +2146,17 @@ xaccTransSetDescription (Transaction *trans, const char *desc)
 void
 xaccTransSetAssociation (Transaction *trans, const char *assoc)
 {
-    GValue v = G_VALUE_INIT;
     if (!trans || !assoc) return;
-    g_value_init (&v, G_TYPE_STRING);
-    g_value_set_string (&v, assoc);
     xaccTransBeginEdit(trans);
-    qof_instance_set_kvp (QOF_INSTANCE (trans), &v, 1, assoc_uri_str);
+    if (g_strcmp0 (assoc, "") == 0)
+        qof_instance_set_kvp (QOF_INSTANCE (trans), NULL, 1, assoc_uri_str);
+    else
+    {
+        GValue v = G_VALUE_INIT;
+        g_value_init (&v, G_TYPE_STRING);
+        g_value_set_string (&v, assoc);
+        qof_instance_set_kvp (QOF_INSTANCE (trans), &v, 1, assoc_uri_str);
+    }
     qof_instance_set_dirty(QOF_INSTANCE(trans));
     xaccTransCommitEdit(trans);
 }
@@ -2355,7 +2374,7 @@ xaccTransGetDate (const Transaction *trans)
 time64
 xaccTransGetDateEntered (const Transaction *trans)
 {
-    return trans ? trans->date_entered : 0;;
+    return trans ? trans->date_entered : 0;
 }
 /*################## Added for Reg2 #################*/
 
@@ -2379,13 +2398,11 @@ xaccTransGetDatePostedGDate (const Transaction *trans)
         qof_instance_get_kvp (QOF_INSTANCE (trans), &v, 1, TRANS_DATE_POSTED);
         if (G_VALUE_HOLDS_BOXED (&v))
              result = *(GDate*)g_value_get_boxed (&v);
-        if (! g_date_valid (&result))
+        if (! g_date_valid (&result) || gdate_to_time64 (result) == INT64_MAX)
         {
-             /* Well, this txn doesn't have a GDate saved in a
-              * slot. Avoid getting the date in the local TZ by
-              * converting to UTC before generating the
-              * date. (timespec_to_gdate doesn't do this so don't use
-              * it.
+             /* Well, this txn doesn't have a valid GDate saved in a slot.
+              * time64_to_gdate() uses local time and we want UTC so we have
+              * to write it out.
               */
              time64 time = xaccTransGetDate(trans);
              struct tm *stm = gnc_gmtime(&time);
@@ -2415,7 +2432,10 @@ xaccTransRetDateDue(const Transaction *trans)
     if (!trans) return 0;
     qof_instance_get_kvp (QOF_INSTANCE (trans), &v, 1, TRANS_DATE_DUE_KVP);
     if (G_VALUE_HOLDS_BOXED (&v))
-        ret = ((Timespec*)g_value_get_boxed (&v))->tv_sec;
+    {
+        ret = ((Time64*)g_value_get_boxed (&v))->t;
+        g_value_unset (&v);
+    }
     if (!ret)
         return xaccTransRetDatePosted (trans);
     return ret;
@@ -2438,21 +2458,29 @@ xaccTransGetTxnType (const Transaction *trans)
 }
 
 const char *
-xaccTransGetReadOnly (const Transaction *trans)
+xaccTransGetReadOnly (Transaction *trans)
 {
-    /* XXX This flag should be cached in the transaction structure
-     * for performance reasons, since its checked every trans commit.
-     */
-    GValue v = G_VALUE_INIT;
-    const char *s = NULL;
-    if (trans == NULL) return NULL;
-    qof_instance_get_kvp (QOF_INSTANCE(trans), &v, 1, TRANS_READ_ONLY_REASON);
-    if (G_VALUE_HOLDS_STRING (&v))
-         s = g_value_get_string (&v);
-    if (s && strlen (s))
-        return s;
+    if (!trans)
+        return NULL;
 
-    return NULL;
+    if (!trans->reason_cache_valid)
+    {
+        GValue v = G_VALUE_INIT;
+        qof_instance_get_kvp (QOF_INSTANCE(trans), &v, 1, TRANS_READ_ONLY_REASON);
+
+        /* Clear possible old cache value first */
+        g_free (trans->readonly_reason);
+        trans->readonly_reason = NULL;
+
+        /* Then set the new one */
+        if (G_VALUE_HOLDS_STRING (&v))
+        {
+            trans->readonly_reason = g_value_dup_string (&v);
+            g_value_unset (&v);
+        }
+        trans->reason_cache_valid = TRUE;
+    }
+    return trans->readonly_reason;
 }
 
 static gboolean
@@ -2655,7 +2683,7 @@ xaccTransVoid(Transaction *trans, const char *reason)
     g_value_set_string (&v, reason);
     qof_instance_set_kvp (QOF_INSTANCE (trans), &v, 1, void_reason_str);
 
-    gnc_timespec_to_iso8601_buff (timespec_now (), iso8601_str);
+    gnc_time64_to_iso8601_buff (gnc_time(NULL), iso8601_str);
     g_value_set_string (&v, iso8601_str);
     qof_instance_set_kvp (QOF_INSTANCE (trans), &v, 1, void_time_str);
 
@@ -2938,39 +2966,6 @@ static gboolean
 trans_is_balanced_p (const Transaction *trans)
 {
     return trans ? xaccTransIsBalanced(trans) : FALSE;
-}
-
-static Timespec
-xaccTransRetDateEnteredTS (Transaction * trans)
-{
-    Timespec ret = {xaccTransRetDateEntered (trans), 0};
-    return ret;
-}
-
-static void
-qofTransSetDateEnteredTS (Transaction * trans, Timespec t)
-{
-    xaccTransSetDateEnteredSecs (trans, t.tv_sec);
-}
-
-static Timespec
-xaccTransRetDatePostedTS (Transaction * trans)
-{
-    Timespec ret = {xaccTransRetDatePosted (trans), 0};
-    return ret;
-}
-
-static void
-qofTransSetDatePostedTS (Transaction * trans, Timespec t)
-{
-    xaccTransSetDatePostedSecs (trans, t.tv_sec);
-}
-
-static Timespec
-xaccTransRetDateDueTS (Transaction * trans)
-{
-    Timespec ret = {xaccTransRetDateDue (trans), 0};
-    return ret;
 }
 
 gboolean xaccTransRegister (void)

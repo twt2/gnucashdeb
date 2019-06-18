@@ -196,18 +196,6 @@ def xaccSplitSetDateReconciledSecs(split: 'Split *', time: 'time64') -> "void":
     """xaccSplitSetDateReconciledSecs(Split * split, time64 time)"""
     return _gnucash_core_c.xaccSplitSetDateReconciledSecs(split, time)
 
-def xaccSplitSetDateReconciledTS(split: 'Split *', ts: 'Timespec *') -> "void":
-    """xaccSplitSetDateReconciledTS(Split * split, Timespec * ts)"""
-    return _gnucash_core_c.xaccSplitSetDateReconciledTS(split, ts)
-
-def xaccSplitGetDateReconciledTS(split: 'Split const *', ts: 'Timespec *') -> "void":
-    """xaccSplitGetDateReconciledTS(Split const * split, Timespec * ts)"""
-    return _gnucash_core_c.xaccSplitGetDateReconciledTS(split, ts)
-
-def xaccSplitRetDateReconciledTS(split: 'Split const *') -> "Timespec":
-    """xaccSplitRetDateReconciledTS(Split const * split) -> Timespec"""
-    return _gnucash_core_c.xaccSplitRetDateReconciledTS(split)
-
 def xaccSplitGetDateReconciled(split: 'Split const *') -> "time64":
     """xaccSplitGetDateReconciled(Split const * split) -> time64"""
     return _gnucash_core_c.xaccSplitGetDateReconciled(split)
@@ -1385,8 +1373,8 @@ def xaccTransClearReadOnly(trans: 'Transaction *') -> "void":
     """xaccTransClearReadOnly(Transaction * trans)"""
     return _gnucash_core_c.xaccTransClearReadOnly(trans)
 
-def xaccTransGetReadOnly(trans: 'Transaction const *') -> "char const *":
-    """xaccTransGetReadOnly(Transaction const * trans) -> char const *"""
+def xaccTransGetReadOnly(trans: 'Transaction *') -> "char const *":
+    """xaccTransGetReadOnly(Transaction * trans) -> char const *"""
     return _gnucash_core_c.xaccTransGetReadOnly(trans)
 
 def xaccTransIsReadonlyByPostedDate(trans: 'Transaction const *') -> "gboolean":
@@ -1863,7 +1851,7 @@ def qof_book_get_default_gains_policy(book: 'QofBook *') -> "gchar const *":
     """qof_book_get_default_gains_policy(QofBook * book) -> gchar const *"""
     return _gnucash_core_c.qof_book_get_default_gains_policy(book)
 
-def qof_book_get_default_gain_loss_acct_guid(book: 'QofBook *') -> "GncGUID const *":
+def qof_book_get_default_gain_loss_acct_guid(book: 'QofBook *') -> "GncGUID *":
     """qof_book_get_default_gain_loss_acct_guid(QofBook * book) -> GncGUID"""
     return _gnucash_core_c.qof_book_get_default_gain_loss_acct_guid(book)
 
@@ -2497,6 +2485,7 @@ GNC_COMMODITY_NS_EUREX = _gnucash_core_c.GNC_COMMODITY_NS_EUREX
 GNC_COMMODITY_NS_MUTUAL = _gnucash_core_c.GNC_COMMODITY_NS_MUTUAL
 GNC_COMMODITY_NS_AMEX = _gnucash_core_c.GNC_COMMODITY_NS_AMEX
 GNC_COMMODITY_NS_ASX = _gnucash_core_c.GNC_COMMODITY_NS_ASX
+GNC_COMMODITY_MAX_FRACTION = _gnucash_core_c.GNC_COMMODITY_MAX_FRACTION
 SOURCE_SINGLE = _gnucash_core_c.SOURCE_SINGLE
 SOURCE_MULTI = _gnucash_core_c.SOURCE_MULTI
 SOURCE_UNKNOWN = _gnucash_core_c.SOURCE_UNKNOWN
@@ -3031,17 +3020,17 @@ def gncOwnerGetOwnerFromTypeGuid(book: 'QofBook *', owner: 'GncOwner *', type: '
     """gncOwnerGetOwnerFromTypeGuid(QofBook * book, GncOwner * owner, QofIdType type, GncGUID guid) -> gboolean"""
     return _gnucash_core_c.gncOwnerGetOwnerFromTypeGuid(book, owner, type, guid)
 
-def gncOwnerCreatePaymentLot(owner: 'GncOwner const *', preset_txn: 'Transaction **', posted_acc: 'Account *', xfer_acc: 'Account *', amount: '_gnc_numeric', exch: '_gnc_numeric', date: 'Timespec', memo: 'char const *', num: 'char const *') -> "GNCLot *":
-    """gncOwnerCreatePaymentLot(GncOwner const * owner, Transaction ** preset_txn, Account * posted_acc, Account * xfer_acc, _gnc_numeric amount, _gnc_numeric exch, Timespec date, char const * memo, char const * num) -> GNCLot *"""
-    return _gnucash_core_c.gncOwnerCreatePaymentLot(owner, preset_txn, posted_acc, xfer_acc, amount, exch, date, memo, num)
+def gncOwnerCreatePaymentLotSecs(owner: 'GncOwner const *', preset_txn: 'Transaction **', posted_acc: 'Account *', xfer_acc: 'Account *', amount: '_gnc_numeric', exch: '_gnc_numeric', date: 'time64', memo: 'char const *', num: 'char const *') -> "GNCLot *":
+    """gncOwnerCreatePaymentLotSecs(GncOwner const * owner, Transaction ** preset_txn, Account * posted_acc, Account * xfer_acc, _gnc_numeric amount, _gnc_numeric exch, time64 date, char const * memo, char const * num) -> GNCLot *"""
+    return _gnucash_core_c.gncOwnerCreatePaymentLotSecs(owner, preset_txn, posted_acc, xfer_acc, amount, exch, date, memo, num)
 
 def gncOwnerAutoApplyPaymentsWithLots(owner: 'GncOwner const *', lots: 'GList *') -> "void":
     """gncOwnerAutoApplyPaymentsWithLots(GncOwner const * owner, GList * lots)"""
     return _gnucash_core_c.gncOwnerAutoApplyPaymentsWithLots(owner, lots)
 
-def gncOwnerApplyPayment(owner: 'GncOwner const *', preset_txn: 'Transaction **', lots: 'GList *', posted_acc: 'Account *', xfer_acc: 'Account *', amount: '_gnc_numeric', exch: '_gnc_numeric', date: 'Timespec', memo: 'char const *', num: 'char const *', auto_pay: 'gboolean') -> "void":
-    """gncOwnerApplyPayment(GncOwner const * owner, Transaction ** preset_txn, GList * lots, Account * posted_acc, Account * xfer_acc, _gnc_numeric amount, _gnc_numeric exch, Timespec date, char const * memo, char const * num, gboolean auto_pay)"""
-    return _gnucash_core_c.gncOwnerApplyPayment(owner, preset_txn, lots, posted_acc, xfer_acc, amount, exch, date, memo, num, auto_pay)
+def gncOwnerApplyPaymentSecs(owner: 'GncOwner const *', preset_txn: 'Transaction **', lots: 'GList *', posted_acc: 'Account *', xfer_acc: 'Account *', amount: '_gnc_numeric', exch: '_gnc_numeric', date: 'time64', memo: 'char const *', num: 'char const *', auto_pay: 'gboolean') -> "void":
+    """gncOwnerApplyPaymentSecs(GncOwner const * owner, Transaction ** preset_txn, GList * lots, Account * posted_acc, Account * xfer_acc, _gnc_numeric amount, _gnc_numeric exch, time64 date, char const * memo, char const * num, gboolean auto_pay)"""
+    return _gnucash_core_c.gncOwnerApplyPaymentSecs(owner, preset_txn, lots, posted_acc, xfer_acc, amount, exch, date, memo, num, auto_pay)
 
 def gncOwnerFindOffsettingSplit(pay_lot: 'GNCLot *', target_value: '_gnc_numeric') -> "Split *":
     """gncOwnerFindOffsettingSplit(GNCLot * pay_lot, _gnc_numeric target_value) -> Split *"""
@@ -3261,6 +3250,14 @@ def gncCustomerRegister() -> "gboolean":
 def gncCustomerNextID(book: 'QofBook *') -> "gchar *":
     """gncCustomerNextID(QofBook * book) -> gchar *"""
     return _gnucash_core_c.gncCustomerNextID(book)
+
+def gncCustomerGetCachedBalance(cust: 'GncCustomer *') -> "gnc_numeric const *":
+    """gncCustomerGetCachedBalance(GncCustomer * cust) -> _gnc_numeric"""
+    return _gnucash_core_c.gncCustomerGetCachedBalance(cust)
+
+def gncCustomerSetCachedBalance(cust: 'GncCustomer *', new_bal: '_gnc_numeric') -> "void":
+    """gncCustomerSetCachedBalance(GncCustomer * cust, _gnc_numeric new_bal)"""
+    return _gnucash_core_c.gncCustomerSetCachedBalance(cust, new_bal)
 GNC_ID_EMPLOYEE = _gnucash_core_c.GNC_ID_EMPLOYEE
 
 def gnc_employee_get_type() -> "GType":
@@ -3537,6 +3534,14 @@ def gncVendorRegister() -> "gboolean":
 def gncVendorNextID(book: 'QofBook *') -> "gchar *":
     """gncVendorNextID(QofBook * book) -> gchar *"""
     return _gnucash_core_c.gncVendorNextID(book)
+
+def gncVendorGetCachedBalance(vend: 'GncVendor *') -> "gnc_numeric const *":
+    """gncVendorGetCachedBalance(GncVendor * vend) -> _gnc_numeric"""
+    return _gnucash_core_c.gncVendorGetCachedBalance(vend)
+
+def gncVendorSetCachedBalance(vend: 'GncVendor *', new_bal: '_gnc_numeric') -> "void":
+    """gncVendorSetCachedBalance(GncVendor * vend, _gnc_numeric new_bal)"""
+    return _gnucash_core_c.gncVendorSetCachedBalance(vend, new_bal)
 GNC_ADDRESS_MODULE_NAME = _gnucash_core_c.GNC_ADDRESS_MODULE_NAME
 GNC_ID_ADDRESS = _gnucash_core_c.GNC_ID_ADDRESS
 
@@ -4673,9 +4678,9 @@ def gncTaxTableGetRefcount(table: 'GncTaxTable const *') -> "gint64":
     """gncTaxTableGetRefcount(GncTaxTable const * table) -> gint64"""
     return _gnucash_core_c.gncTaxTableGetRefcount(table)
 
-def gncTaxTableLastModified(table: 'GncTaxTable const *') -> "Timespec":
-    """gncTaxTableLastModified(GncTaxTable const * table) -> Timespec"""
-    return _gnucash_core_c.gncTaxTableLastModified(table)
+def gncTaxTableLastModifiedSecs(table: 'GncTaxTable const *') -> "time64":
+    """gncTaxTableLastModifiedSecs(GncTaxTable const * table) -> time64"""
+    return _gnucash_core_c.gncTaxTableLastModifiedSecs(table)
 
 def gncTaxTableEntryGetAccount(entry: 'GncTaxTableEntry const *') -> "Account *":
     """gncTaxTableEntryGetAccount(GncTaxTableEntry const * entry) -> Account *"""
@@ -4820,13 +4825,9 @@ def gnc_price_set_currency(p: 'GNCPrice *', c: 'gnc_commodity *') -> "void":
     """gnc_price_set_currency(GNCPrice * p, gnc_commodity * c)"""
     return _gnucash_core_c.gnc_price_set_currency(p, c)
 
-def gnc_price_set_time(p: 'GNCPrice *', t: 'Timespec') -> "void":
-    """gnc_price_set_time(GNCPrice * p, Timespec t)"""
-    return _gnucash_core_c.gnc_price_set_time(p, t)
-
-def gnc_price_set_time64(p: 'GNCPrice *', t64: 'time64') -> "void":
-    """gnc_price_set_time64(GNCPrice * p, time64 t64)"""
-    return _gnucash_core_c.gnc_price_set_time64(p, t64)
+def gnc_price_set_time64(p: 'GNCPrice *', t: 'time64') -> "void":
+    """gnc_price_set_time64(GNCPrice * p, time64 t)"""
+    return _gnucash_core_c.gnc_price_set_time64(p, t)
 
 def gnc_price_set_source(p: 'GNCPrice *', source: 'PriceSource') -> "void":
     """gnc_price_set_source(GNCPrice * p, PriceSource source)"""
@@ -4855,10 +4856,6 @@ def gnc_price_get_commodity(p: 'GNCPrice const *') -> "gnc_commodity *":
 def gnc_price_get_currency(p: 'GNCPrice const *') -> "gnc_commodity *":
     """gnc_price_get_currency(GNCPrice const * p) -> gnc_commodity *"""
     return _gnucash_core_c.gnc_price_get_currency(p)
-
-def gnc_price_get_time(p: 'GNCPrice const *') -> "Timespec":
-    """gnc_price_get_time(GNCPrice const * p) -> Timespec"""
-    return _gnucash_core_c.gnc_price_get_time(p)
 
 def gnc_price_get_time64(p: 'GNCPrice const *') -> "time64":
     """gnc_price_get_time64(GNCPrice const * p) -> time64"""
@@ -4948,8 +4945,8 @@ PRICE_REMOVE_KEEP_LAST_QUARTERLY = _gnucash_core_c.PRICE_REMOVE_KEEP_LAST_QUARTE
 PRICE_REMOVE_KEEP_LAST_PERIOD = _gnucash_core_c.PRICE_REMOVE_KEEP_LAST_PERIOD
 PRICE_REMOVE_KEEP_SCALED = _gnucash_core_c.PRICE_REMOVE_KEEP_SCALED
 
-def gnc_pricedb_remove_old_prices(db: 'GNCPriceDB *', comm_list: 'GList *', fiscal_end_date: 'GDate *', cutoff: 'Timespec', source: 'PriceRemoveSourceFlags', keep: 'PriceRemoveKeepOptions') -> "gboolean":
-    """gnc_pricedb_remove_old_prices(GNCPriceDB * db, GList * comm_list, GDate * fiscal_end_date, Timespec cutoff, PriceRemoveSourceFlags source, PriceRemoveKeepOptions keep) -> gboolean"""
+def gnc_pricedb_remove_old_prices(db: 'GNCPriceDB *', comm_list: 'GList *', fiscal_end_date: 'GDate *', cutoff: 'time64', source: 'PriceRemoveSourceFlags', keep: 'PriceRemoveKeepOptions') -> "gboolean":
+    """gnc_pricedb_remove_old_prices(GNCPriceDB * db, GList * comm_list, GDate * fiscal_end_date, time64 cutoff, PriceRemoveSourceFlags source, PriceRemoveKeepOptions keep) -> gboolean"""
     return _gnucash_core_c.gnc_pricedb_remove_old_prices(db, comm_list, fiscal_end_date, cutoff, source, keep)
 
 def gnc_pricedb_lookup_latest(db: 'GNCPriceDB *', commodity: 'gnc_commodity const *', currency: 'gnc_commodity const *') -> "GNCPrice *":
@@ -4968,49 +4965,37 @@ def gnc_pricedb_get_prices(db: 'GNCPriceDB *', commodity: 'gnc_commodity const *
     """gnc_pricedb_get_prices(GNCPriceDB * db, gnc_commodity const * commodity, gnc_commodity const * currency) -> PriceList *"""
     return _gnucash_core_c.gnc_pricedb_get_prices(db, commodity, currency)
 
-def gnc_pricedb_lookup_at_time(db: 'GNCPriceDB *', commodity: 'gnc_commodity const *', currency: 'gnc_commodity const *', t: 'Timespec') -> "GNCPrice *":
-    """gnc_pricedb_lookup_at_time(GNCPriceDB * db, gnc_commodity const * commodity, gnc_commodity const * currency, Timespec t) -> GNCPrice *"""
-    return _gnucash_core_c.gnc_pricedb_lookup_at_time(db, commodity, currency, t)
+def gnc_pricedb_lookup_at_time64(db: 'GNCPriceDB *', commodity: 'gnc_commodity const *', currency: 'gnc_commodity const *', t: 'time64') -> "GNCPrice *":
+    """gnc_pricedb_lookup_at_time64(GNCPriceDB * db, gnc_commodity const * commodity, gnc_commodity const * currency, time64 t) -> GNCPrice *"""
+    return _gnucash_core_c.gnc_pricedb_lookup_at_time64(db, commodity, currency, t)
 
-def gnc_pricedb_lookup_day(db: 'GNCPriceDB *', commodity: 'gnc_commodity const *', currency: 'gnc_commodity const *', t: 'Timespec') -> "GNCPrice *":
-    """gnc_pricedb_lookup_day(GNCPriceDB * db, gnc_commodity const * commodity, gnc_commodity const * currency, Timespec t) -> GNCPrice *"""
-    return _gnucash_core_c.gnc_pricedb_lookup_day(db, commodity, currency, t)
-
-def gnc_pricedb_lookup_day_t64(db: 'GNCPriceDB *', commodity: 'gnc_commodity const *', currency: 'gnc_commodity const *', t64: 'time64') -> "GNCPrice *":
-    """gnc_pricedb_lookup_day_t64(GNCPriceDB * db, gnc_commodity const * commodity, gnc_commodity const * currency, time64 t64) -> GNCPrice *"""
-    return _gnucash_core_c.gnc_pricedb_lookup_day_t64(db, commodity, currency, t64)
-
-def gnc_pricedb_lookup_nearest_in_time(db: 'GNCPriceDB *', c: 'gnc_commodity const *', currency: 'gnc_commodity const *', t: 'Timespec') -> "GNCPrice *":
-    """gnc_pricedb_lookup_nearest_in_time(GNCPriceDB * db, gnc_commodity const * c, gnc_commodity const * currency, Timespec t) -> GNCPrice *"""
-    return _gnucash_core_c.gnc_pricedb_lookup_nearest_in_time(db, c, currency, t)
+def gnc_pricedb_lookup_day_t64(db: 'GNCPriceDB *', commodity: 'gnc_commodity const *', currency: 'gnc_commodity const *', t: 'time64') -> "GNCPrice *":
+    """gnc_pricedb_lookup_day_t64(GNCPriceDB * db, gnc_commodity const * commodity, gnc_commodity const * currency, time64 t) -> GNCPrice *"""
+    return _gnucash_core_c.gnc_pricedb_lookup_day_t64(db, commodity, currency, t)
 
 def gnc_pricedb_lookup_nearest_in_time64(db: 'GNCPriceDB *', c: 'gnc_commodity const *', currency: 'gnc_commodity const *', t: 'time64') -> "GNCPrice *":
     """gnc_pricedb_lookup_nearest_in_time64(GNCPriceDB * db, gnc_commodity const * c, gnc_commodity const * currency, time64 t) -> GNCPrice *"""
     return _gnucash_core_c.gnc_pricedb_lookup_nearest_in_time64(db, c, currency, t)
 
-def gnc_pricedb_lookup_nearest_in_time_any_currency(db: 'GNCPriceDB *', c: 'gnc_commodity const *', t: 'Timespec') -> "PriceList *":
-    """gnc_pricedb_lookup_nearest_in_time_any_currency(GNCPriceDB * db, gnc_commodity const * c, Timespec t) -> PriceList *"""
-    return _gnucash_core_c.gnc_pricedb_lookup_nearest_in_time_any_currency(db, c, t)
+def gnc_pricedb_lookup_nearest_in_time_any_currency_t64(db: 'GNCPriceDB *', c: 'gnc_commodity const *', t: 'time64') -> "PriceList *":
+    """gnc_pricedb_lookup_nearest_in_time_any_currency_t64(GNCPriceDB * db, gnc_commodity const * c, time64 t) -> PriceList *"""
+    return _gnucash_core_c.gnc_pricedb_lookup_nearest_in_time_any_currency_t64(db, c, t)
 
-def gnc_pricedb_lookup_nearest_in_time_any_currency_t64(db: 'GNCPriceDB *', c: 'gnc_commodity const *', t64: 'time64') -> "PriceList *":
-    """gnc_pricedb_lookup_nearest_in_time_any_currency_t64(GNCPriceDB * db, gnc_commodity const * c, time64 t64) -> PriceList *"""
-    return _gnucash_core_c.gnc_pricedb_lookup_nearest_in_time_any_currency_t64(db, c, t64)
+def gnc_pricedb_lookup_latest_before_t64(db: 'GNCPriceDB *', c: 'gnc_commodity *', currency: 'gnc_commodity *', t: 'time64') -> "GNCPrice *":
+    """gnc_pricedb_lookup_latest_before_t64(GNCPriceDB * db, gnc_commodity * c, gnc_commodity * currency, time64 t) -> GNCPrice *"""
+    return _gnucash_core_c.gnc_pricedb_lookup_latest_before_t64(db, c, currency, t)
 
-def gnc_pricedb_lookup_latest_before(db: 'GNCPriceDB *', c: 'gnc_commodity *', currency: 'gnc_commodity *', t: 'Timespec') -> "GNCPrice *":
-    """gnc_pricedb_lookup_latest_before(GNCPriceDB * db, gnc_commodity * c, gnc_commodity * currency, Timespec t) -> GNCPrice *"""
-    return _gnucash_core_c.gnc_pricedb_lookup_latest_before(db, c, currency, t)
-
-def gnc_pricedb_lookup_latest_before_any_currency(db: 'GNCPriceDB *', c: 'gnc_commodity const *', t: 'Timespec') -> "PriceList *":
-    """gnc_pricedb_lookup_latest_before_any_currency(GNCPriceDB * db, gnc_commodity const * c, Timespec t) -> PriceList *"""
-    return _gnucash_core_c.gnc_pricedb_lookup_latest_before_any_currency(db, c, t)
+def gnc_pricedb_lookup_latest_before_any_currency_t64(db: 'GNCPriceDB *', c: 'gnc_commodity const *', t: 'time64') -> "PriceList *":
+    """gnc_pricedb_lookup_latest_before_any_currency_t64(GNCPriceDB * db, gnc_commodity const * c, time64 t) -> PriceList *"""
+    return _gnucash_core_c.gnc_pricedb_lookup_latest_before_any_currency_t64(db, c, t)
 
 def gnc_pricedb_convert_balance_latest_price(pdb: 'GNCPriceDB *', balance: '_gnc_numeric', balance_currency: 'gnc_commodity const *', new_currency: 'gnc_commodity const *') -> "gnc_numeric":
     """gnc_pricedb_convert_balance_latest_price(GNCPriceDB * pdb, _gnc_numeric balance, gnc_commodity const * balance_currency, gnc_commodity const * new_currency) -> _gnc_numeric"""
     return _gnucash_core_c.gnc_pricedb_convert_balance_latest_price(pdb, balance, balance_currency, new_currency)
 
-def gnc_pricedb_convert_balance_nearest_price(pdb: 'GNCPriceDB *', balance: '_gnc_numeric', balance_currency: 'gnc_commodity const *', new_currency: 'gnc_commodity const *', t: 'time64') -> "gnc_numeric":
-    """gnc_pricedb_convert_balance_nearest_price(GNCPriceDB * pdb, _gnc_numeric balance, gnc_commodity const * balance_currency, gnc_commodity const * new_currency, time64 t) -> _gnc_numeric"""
-    return _gnucash_core_c.gnc_pricedb_convert_balance_nearest_price(pdb, balance, balance_currency, new_currency, t)
+def gnc_pricedb_convert_balance_nearest_price_t64(pdb: 'GNCPriceDB *', balance: '_gnc_numeric', balance_currency: 'gnc_commodity const *', new_currency: 'gnc_commodity const *', t: 'time64') -> "gnc_numeric":
+    """gnc_pricedb_convert_balance_nearest_price_t64(GNCPriceDB * pdb, _gnc_numeric balance, gnc_commodity const * balance_currency, gnc_commodity const * new_currency, time64 t) -> _gnc_numeric"""
+    return _gnucash_core_c.gnc_pricedb_convert_balance_nearest_price_t64(pdb, balance, balance_currency, new_currency, t)
 
 def gnc_pricedb_foreach_price(db: 'GNCPriceDB *', f: 'GncPriceForeachFunc', user_data: 'gpointer', stable_order: 'gboolean') -> "gboolean":
     """gnc_pricedb_foreach_price(GNCPriceDB * db, GncPriceForeachFunc f, gpointer user_data, gboolean stable_order) -> gboolean"""

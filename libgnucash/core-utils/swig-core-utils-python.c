@@ -3859,6 +3859,30 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_gnc_prefs_block_all(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  
+  if (!PyArg_ParseTuple(args,(char *)":gnc_prefs_block_all")) SWIG_fail;
+  gnc_prefs_block_all();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gnc_prefs_unblock_all(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  
+  if (!PyArg_ParseTuple(args,(char *)":gnc_prefs_unblock_all")) SWIG_fail;
+  gnc_prefs_unblock_all();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_gnc_prefs_register_cb(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   char *arg1 = (char *) 0 ;
@@ -5471,6 +5495,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gnc_prefs_set_file_retention_days", _wrap_gnc_prefs_set_file_retention_days, METH_VARARGS, NULL},
 	 { (char *)"gnc_prefs_get_long_version", _wrap_gnc_prefs_get_long_version, METH_VARARGS, NULL},
 	 { (char *)"gnc_prefs_is_set_up", _wrap_gnc_prefs_is_set_up, METH_VARARGS, NULL},
+	 { (char *)"gnc_prefs_block_all", _wrap_gnc_prefs_block_all, METH_VARARGS, NULL},
+	 { (char *)"gnc_prefs_unblock_all", _wrap_gnc_prefs_unblock_all, METH_VARARGS, NULL},
 	 { (char *)"gnc_prefs_register_cb", _wrap_gnc_prefs_register_cb, METH_VARARGS, NULL},
 	 { (char *)"gnc_prefs_remove_cb_by_func", _wrap_gnc_prefs_remove_cb_by_func, METH_VARARGS, NULL},
 	 { (char *)"gnc_prefs_remove_cb_by_id", _wrap_gnc_prefs_remove_cb_by_id, METH_VARARGS, NULL},

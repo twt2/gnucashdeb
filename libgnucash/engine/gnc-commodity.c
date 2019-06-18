@@ -842,7 +842,7 @@ gnc_commodity_class_init(struct _GncCommodityClass* klass)
                                             "The fraction is the number of sub-units that "
                                             "the basic commodity can be divided into.",
                                             1,
-                                            1000000,
+                                            GNC_COMMODITY_MAX_FRACTION,
                                             1,
                                             G_PARAM_READWRITE));
     g_object_class_install_property(gobject_class,
@@ -2457,8 +2457,8 @@ gnc_commodity_table_destroy(gnc_commodity_table * t)
     t->ns_list = NULL;
     g_hash_table_destroy(t->ns_table);
     t->ns_table = NULL;
-    g_free(t);
     LEAVE ("table=%p", t);
+    g_free(t);
 }
 
 /* =========================================================== */

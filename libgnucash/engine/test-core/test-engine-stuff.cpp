@@ -87,7 +87,7 @@ static gint total_num_accounts = 0;
 static gint max_scu = 100; //6000;
 static gint min_scu = 100; //1;
 static const int64_t num_limit = INT64_MAX; //1E19+
-static const int64_t max_denom_mult = 1000000LL; //1E6
+static const int64_t max_denom_mult = 1000000000LL; //1E9
 
 
 /* The inverse fraction of split/transaction data that should
@@ -157,20 +157,6 @@ kvp_type_excluded (KvpValue::Type kvp_type)
 
 static gboolean zero_nsec = FALSE;
 
-void
-random_timespec_zero_nsec (gboolean zero_nsec_in)
-{
-    zero_nsec = zero_nsec_in;
-}
-
-static gboolean usec_resolution = FALSE;
-
-void
-random_timespec_usec_resolution (gboolean usec_resolution_in)
-{
-    usec_resolution = usec_resolution_in;
-}
-
 /* ========================================================== */
 
 static inline gboolean
@@ -233,20 +219,6 @@ get_random_time (void)
     time64 ret {0};
     while (ret <= 0)
         ret = rand();
-    return ret;
-}
-
-Timespec*
-get_random_timespec(void)
-{
-    Timespec *ret;
-
-    ret = g_new0(Timespec, 1);
-
-    while (ret->tv_sec <= 0)
-        ret->tv_sec = rand();
-
-    ret->tv_nsec = 0;
     return ret;
 }
 
@@ -324,11 +296,10 @@ get_random_kvp_value_depth (int type, gint depth)
     }
     break;
 
-    case KvpValue::Type::TIMESPEC:
+    case KvpValue::Type::TIME64:
     {
-        Timespec *ts = get_random_timespec();
-        ret = new KvpValue(*ts);
-        g_free(ts);
+        time64 t = get_random_time();
+        ret = new KvpValue(t);
     }
     break;
 
@@ -431,7 +402,7 @@ get_random_gnc_numeric(int64_t deno)
         {
             gint64 norm = RAND_IN_RANGE (11ULL);
 
-            /* multiple of 10, between 1 and 1 million */
+            /* multiple of 10, between 1 and 100 billion */
             deno = 1;
             while (norm)
             {
@@ -648,7 +619,7 @@ make_random_changes_to_commodity_table (gnc_commodity_table *table)
 void
 make_random_changes_to_price (QofBook *book, GNCPrice *p)
 {
-    Timespec *ts;
+    time64 time;
     PriceSource ps;
     char *string;
     gnc_commodity *c;
@@ -663,9 +634,8 @@ make_random_changes_to_price (QofBook *book, GNCPrice *p)
     c = get_random_commodity (book);
     gnc_price_set_currency (p, c);
 
-    ts = get_random_timespec ();
-    gnc_price_set_time (p, *ts);
-    g_free (ts);
+    time = get_random_time ();
+    gnc_price_set_time64 (p, time);
 
     ps = (PriceSource)get_random_int_in_range((int)PRICE_SOURCE_EDIT_DLG,
                                               (int)PRICE_SOURCE_INVALID);
@@ -943,7 +913,7 @@ add_random_splits(QofBook *book, Transaction *trn, GList *account_list)
     /* Other split should have equal and opposite value */
     if (do_bork())
     {
-        val = get_random_gnc_numeric(GNC_DENOM_AUTO);
+        val = get_random_gnc_numeric(s2_scu);
         g_log ("test.engine.suff", G_LOG_LEVEL_DEBUG, "Borking second %" PRIu64
 	       " / %" PRIu64 ", scu %d\n", val.num, val.denom, s2_scu);
     }
@@ -1269,7 +1239,7 @@ get_random_split(QofBook *book, Account *acct, Transaction *trn)
     const gchar *str;
     gnc_commodity *com;
     int scu, denom;
-    Timespec *ts;
+    time64 time;
 
     com = xaccTransGetCurrency (trn);
     scu = gnc_commodity_get_fraction(com);
@@ -1283,9 +1253,8 @@ get_random_split(QofBook *book, Account *acct, Transaction *trn)
 
     xaccSplitSetReconcile(ret, possible_chars[get_random_int_in_range(0, 3)]);
 
-    ts = get_random_timespec();
-    xaccSplitSetDateReconciledTS(ret, ts);
-    g_free(ts);
+    time = get_random_time();
+    xaccSplitSetDateReconciledSecs (ret, time);
 
     /* Split must be in an account before we can set an amount */
     /* and in a transaction before it can be added to an account. */
@@ -1366,7 +1335,7 @@ void
 make_random_changes_to_split (Split *split)
 {
     Transaction *trans;
-    Timespec *ts;
+    time64 time;
 
     g_return_if_fail (split);
 
@@ -1379,9 +1348,8 @@ make_random_changes_to_split (Split *split)
 
     xaccSplitSetReconcile (split, possible_chars[get_random_int_in_range(0, 3)]);
 
-    ts = get_random_timespec();
-    xaccSplitSetDateReconciledTS (split, ts);
-    g_free(ts);
+    time = get_random_time();
+    xaccSplitSetDateReconciledSecs (split, time);
 
     qof_instance_set_slots (QOF_INSTANCE (split), get_random_kvp_frame());
 

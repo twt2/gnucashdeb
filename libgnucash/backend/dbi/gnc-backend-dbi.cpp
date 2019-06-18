@@ -111,7 +111,8 @@ static QofLogModule log_module = G_LOG_DOMAIN;
 #define PGSQL_DEFAULT_PORT 5432
 
 static void adjust_sql_options (dbi_conn connection);
-static bool save_may_clobber_data (dbi_conn conn, const std::string& dbname);
+template<DbType Type> bool save_may_clobber_data (dbi_conn conn,
+                                                  const std::string& dbname);
 
 template <DbType Type>
 class QofDbiBackendProvider : public QofBackendProvider
@@ -152,24 +153,23 @@ struct UriStrings
 
 UriStrings::UriStrings(const std::string& uri)
 {
-    gchar *protocol, *host, *username, *password, *dbname;
+    gchar *scheme, *host, *username, *password, *dbname;
     int portnum;
-    gnc_uri_get_components(uri.c_str(), &protocol, &host, &portnum, &username,
+    gnc_uri_get_components(uri.c_str(), &scheme, &host, &portnum, &username,
                            &password, &dbname);
-    m_protocol = std::string{protocol};
+    m_protocol = std::string{scheme};
     m_host = std::string{host};
     m_dbname = std::string{dbname};
     if (username)
-	m_username = std::string{username};
+        m_username = std::string{username};
     if (password)
-	m_password = std::string{password};
+        m_password = std::string{password};
     m_portnum = portnum;
-    g_free(protocol);
+    g_free(scheme);
     g_free(host);
     g_free(username);
     g_free(password);
     g_free(dbname);
-    
 }
 
 std::string
@@ -206,7 +206,7 @@ set_options(dbi_conn conn, const PairVec& options)
         if (result < 0)
         {
             const char *msg = nullptr;
-            int err = dbi_conn_error(conn, &msg);
+            dbi_conn_error(conn, &msg);
             PERR("Error setting %s option to %s: %s", opt, val, msg);
             throw std::runtime_error(msg);
         }
@@ -275,7 +275,7 @@ GncDbiBackend<Type>::conn_setup (PairVec& options, UriStrings& uri)
     {
         PERR ("Unable to create %s dbi connection", dbstr);
         set_error (ERR_BACKEND_BAD_URL);
-	return nullptr;
+        return nullptr;
     }
 
     dbi_conn_error_handler (conn, error_handler<Type>, this);
@@ -401,16 +401,21 @@ GncDbiBackend<DbType::DBI_SQLITE>::session_begin(QofSession* session,
         set_message (msg + filepath + " not found");
         PWARN ("Sqlite3 file %s not found", filepath.c_str());
         LEAVE("Error");
-	return;
+        return;
     }
 
-    if (create && !force && file_exists)
+    if (create && file_exists)
     {
-        set_error (ERR_BACKEND_STORE_EXISTS);
-        auto msg = "Might clobber, no force";
-        PWARN ("%s", msg);
-        LEAVE("Error");
-	return;
+        if (force)
+            g_unlink (filepath.c_str());
+        else
+        {
+            set_error (ERR_BACKEND_STORE_EXISTS);
+            auto msg = "Might clobber, no force";
+            PWARN ("%s", msg);
+            LEAVE("Error");
+            return;
+        }
     }
 
     connect(nullptr);
@@ -438,7 +443,7 @@ GncDbiBackend<DbType::DBI_SQLITE>::session_begin(QofSession* session,
         PERR ("Unable to connect to %s: %d\n", book_id, result);
         set_error (ERR_BACKEND_BAD_URL);
         LEAVE("Error");
-	return;
+        return;
     }
 
     if (!conn_test_dbi_library(conn))
@@ -527,6 +532,12 @@ error_handler<DbType::DBI_MYSQL> (dbi_conn conn, void* user_data)
         dbi_be->set_dbi_error (ERR_BACKEND_CANT_CONNECT, 1, true);
         dbi_be->retry_connection (msg);
     }
+    else if (err_num == 1007) //Database exists
+    {
+        dbi_be->set_exists(true);
+        return;
+    }
+
     else                            // Any other error
     {
         PERR ("DBI error: %s\n", msg);
@@ -570,10 +581,10 @@ adjust_sql_options (dbi_conn connection)
     {
         const char* errmsg;
         int err = dbi_conn_error(connection, &errmsg);
-	if (err)
-	    PERR("Unable to get sql_mode %d : %s", err, errmsg);
-	else
-	    PINFO("Sql_mode isn't set.");
+        if (err)
+            PERR("Unable to get sql_mode %d : %s", err, errmsg);
+        else
+            PINFO("Sql_mode isn't set.");
         return;
     }
     PINFO("Initial sql_mode: %s", str.c_str());
@@ -648,64 +659,104 @@ GncDbiBackend<Type>::session_begin (QofSession* session, const char* book_id,
             LEAVE("Error");
             return;
         }
-        if (create && !force && save_may_clobber_data (conn,
-                                                       uri.quote_dbname(Type)))
+        if (create && save_may_clobber_data<Type>(conn,
+                                                   uri.quote_dbname(Type)))
         {
-            set_error (ERR_BACKEND_STORE_EXISTS);
-            PWARN ("Databse already exists, Might clobber it.");
+            if (force)
+            {
+                // Drop DB
+                const char *root_db;
+                if (Type == DbType::DBI_PGSQL)
+                {
+                    root_db = "template1";
+                }
+                else if (Type == DbType::DBI_MYSQL)
+                {
+                    root_db = "mysql";
+                }
+                else
+                {
+                    PERR ("Unknown database type, can't proceed.");
+                    LEAVE("Error");
+                    return;
+                }
+                if (dbi_conn_select_db (conn, root_db) == -1)
+                {
+                    PERR ("Failed to switch out of %s, drop will fail.",
+                          uri.quote_dbname(Type).c_str());
+                    LEAVE ("Error");
+                    return;
+                }
+                if (!dbi_conn_queryf (conn, "DROP DATABASE %s",
+                                 uri.quote_dbname(Type).c_str()))
+                {
+                    PERR ("Failed to drop database %s prior to recreating it."
+                          "Proceeding would combine old and new data.",
+                           uri.quote_dbname(Type).c_str());
+                    LEAVE ("Error");
+                    return;
+                }
+            }
+            else
+            {
+                set_error (ERR_BACKEND_STORE_EXISTS);
+                PWARN ("Database already exists, Might clobber it.");
+                dbi_conn_close(conn);
+                LEAVE("Error");
+                return;
+            }
+            /* Drop successful. */
+            m_exists = false;
+        }
+
+    }
+    else if (m_exists)
+    {
+        PERR ("Unable to connect to database '%s'\n", uri.dbname());
+        set_error (ERR_BACKEND_SERVER_ERR);
+        dbi_conn_close(conn);
+        LEAVE("Error");
+        return;
+    }
+    else if (!create)
+    {
+        PERR ("Database '%s' does not exist\n", uri.dbname());
+        set_error(ERR_BACKEND_NO_SUCH_DB);
+        std::string msg{"Database "};
+        set_message(msg + uri.dbname() + " not found");
+        LEAVE("Error");
+        return;
+    }
+
+    if (create)
+    {
+        if (!m_exists &&
+            !create_database(conn, uri.quote_dbname(Type).c_str()))
+        {
             dbi_conn_close(conn);
             LEAVE("Error");
             return;
         }
-
-    }
-    else
-    {
-
-        if (m_exists)
+        conn = conn_setup(options, uri);
+        result = dbi_conn_connect (conn);
+        if (result < 0)
         {
-            PERR ("Unable to connect to database '%s'\n", uri.dbname());
+            PERR ("Unable to create database '%s'\n", uri.dbname());
             set_error (ERR_BACKEND_SERVER_ERR);
             dbi_conn_close(conn);
             LEAVE("Error");
             return;
         }
-
-        if (create)
+        if (Type == DbType::DBI_MYSQL)
+            adjust_sql_options (conn);
+        if (!conn_test_dbi_library(conn))
         {
-            if (!create_database(conn, uri.quote_dbname(Type).c_str()))
-            {
-                dbi_conn_close(conn);
-                LEAVE("Error");
-                return;
-            }
-            conn = conn_setup(options, uri);
-            result = dbi_conn_connect (conn);
-            if (result < 0)
-            {
-                PERR ("Unable to create database '%s'\n", uri.dbname());
-                set_error (ERR_BACKEND_SERVER_ERR);
-                dbi_conn_close(conn);
-                LEAVE("Error");
-                return;
-            }
-            if (Type == DbType::DBI_MYSQL)
-                adjust_sql_options (conn);
-            if (!conn_test_dbi_library(conn))
-            {
-                if (Type == DbType::DBI_PGSQL)
-                    dbi_conn_select_db (conn, "template1");
-                dbi_conn_queryf (conn, "DROP DATABASE %s",
-                                 uri.quote_dbname(Type).c_str());
-                dbi_conn_close(conn);
-                return;
-            }
-        }
-        else
-        {
-            set_error(ERR_BACKEND_NO_SUCH_DB);
-            std::string msg{"Database "};
-            set_message(msg + uri.dbname() + " not found");
+            if (Type == DbType::DBI_PGSQL)
+                dbi_conn_select_db (conn, "template1");
+            dbi_conn_queryf (conn, "DROP DATABASE %s",
+                                uri.quote_dbname(Type).c_str());
+            dbi_conn_close(conn);
+            return;
         }
     }
 
@@ -855,12 +906,29 @@ GncDbiBackend<Type>::load (QofBook* book, QofBackendLoadType loadType)
 
 /* ================================================================= */
 /* This is used too early to call GncDbiProvider::get_table_list(). */
-static bool
+template <DbType T> bool
 save_may_clobber_data (dbi_conn conn, const std::string& dbname)
 {
 
     /* Data may be clobbered iff the number of tables != 0 */
     auto result = dbi_conn_get_table_list (conn, dbname.c_str(), nullptr);
+    bool retval = false;
+    if (result)
+    {
+        retval =  dbi_result_get_numrows (result) > 0;
+        dbi_result_free (result);
+    }
+    return retval;
+}
+
+template <> bool
+save_may_clobber_data <DbType::DBI_PGSQL>(dbi_conn conn,
+                                          const std::string& dbname)
+{
+
+    /* Data may be clobbered iff the number of tables != 0 */
+    const char* query = "SELECT relname FROM pg_class WHERE relname !~ '^(pg|sql)_' AND relkind = 'r' ORDER BY relname";
+    auto result = dbi_conn_query (conn, query);
     bool retval = false;
     if (result)
     {

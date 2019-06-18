@@ -920,7 +920,7 @@ variable_value_changed_cb(GtkCellRendererText *cell,
                           const gchar *value,
                           GncSxSinceLastRunDialog *dialog)
 {
-    GncSxVariable *var;
+    GncSxVariable *var = NULL;
     GncSxInstance *inst;
     GtkTreeIter tree_iter;
     gnc_numeric parsed_num;
@@ -1040,7 +1040,7 @@ gnc_ui_sx_since_last_run_dialog (GtkWindow *parent, GncSxInstanceModel *sx_insta
     g_signal_connect(G_OBJECT(dialog->dialog), "response", G_CALLBACK(dialog_response_cb), dialog);
     g_signal_connect(G_OBJECT(dialog->dialog), "destroy", G_CALLBACK(dialog_destroy_cb), dialog);
 
-    gnc_restore_window_size(GNC_PREFS_GROUP_STARTUP, GTK_WINDOW(dialog->dialog));
+    gnc_restore_window_size(GNC_PREFS_GROUP_STARTUP, GTK_WINDOW(dialog->dialog), parent);
 
     dialog->component_id = gnc_register_gui_component
                            (DIALOG_SX_SINCE_LAST_RUN_CM_CLASS, NULL, close_handler, dialog);
@@ -1154,6 +1154,7 @@ dialog_response_cb(GtkDialog *dialog, gint response_id, GncSxSinceLastRunDialog 
     gnc_suspend_gui_refresh();
     gnc_sx_slr_model_effect_change(app_dialog->editing_model, FALSE, &app_dialog->created_txns, &creation_errors);
     gnc_resume_gui_refresh();
+    gnc_gui_refresh_all (); // force a refresh of all registers
     if (creation_errors)
         creation_error_dialog(&creation_errors);
 

@@ -446,10 +446,8 @@ gnc_payment_window_fill_docs_list (PaymentWindow *pw)
         for (node = pw->tx_info->lots; node; node = node->next)
         {
             PreExistLotInfo *lot_info = node->data;
-            if (!gnc_numeric_zero_p (gnc_lot_get_balance (lot_info->lot)))
-                /* This case will be handled below when the lot is processed as part of the open lots */
-                tx_lot = lot_info->lot;
-            else
+            if (gnc_numeric_zero_p (gnc_lot_get_balance (lot_info->lot)))
+                /* The not-zero case will be handled below when the lot is processed as part of the open lots */
             {
                 GncOwner lotowner;
                 gncOwnerInitUndefined(&lotowner, NULL);
@@ -486,7 +484,7 @@ gnc_payment_window_fill_docs_list (PaymentWindow *pw)
         const gchar *doc_cred_str = NULL;
         GtkTreeIter iter;
         GncInvoice *document;
-        gnc_numeric value = gnc_numeric_zero();
+        gnc_numeric value;
         gnc_numeric debit = gnc_numeric_zero();
         gnc_numeric credit = gnc_numeric_zero();
 
@@ -626,6 +624,7 @@ gnc_payment_dialog_owner_changed (PaymentWindow *pw)
                             "payment-last-account", &guid,
                             NULL);
         last_acct = xaccAccountLookup(guid, pw->book);
+        guid_free (guid);
         if (last_acct)
             gnc_tree_view_account_set_selected_account(GNC_TREE_VIEW_ACCOUNT(pw->acct_tree),
                 last_acct);
@@ -913,7 +912,7 @@ gnc_payment_ok_cb (G_GNUC_UNUSED GtkWidget *widget, gpointer data)
      * before we close it. This is undesired because the lots may be in
      * an inconsistent state until after all events are handled. So
      * the gui refresh may result in a crash.
-     * See https://bugzilla.gnome.org/show_bug.cgi?id=740471
+     * See https://bugs.gnucash.org/show_bug.cgi?id=740471
      */
     gnc_gui_component_clear_watches (pw->component_id);
 
@@ -921,7 +920,7 @@ gnc_payment_ok_cb (G_GNUC_UNUSED GtkWidget *widget, gpointer data)
     {
         const char *memo, *num;
         GDate date;
-        Timespec ts;
+        time64 t;
         gnc_numeric exch = gnc_numeric_create(1, 1); //default to "one to one" rate
         GList *selected_lots = NULL;
         GtkTreeSelection *selection;
@@ -932,7 +931,7 @@ gnc_payment_ok_cb (G_GNUC_UNUSED GtkWidget *widget, gpointer data)
         num = gtk_entry_get_text (GTK_ENTRY (pw->num_entry));
         g_date_clear (&date, 1);
         gnc_date_edit_get_gdate (GNC_DATE_EDIT (pw->date_edit), &date);
-        ts = gdate_to_timespec (date);
+        t = gdate_to_time64 (date);
 
         /* Obtain the list of selected lots (documents/payments) from the dialog */
         selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(pw->docs_list_tree_view));
@@ -973,9 +972,9 @@ gnc_payment_ok_cb (G_GNUC_UNUSED GtkWidget *widget, gpointer data)
         else
             auto_pay = gnc_prefs_get_bool (GNC_PREFS_GROUP_BILL, GNC_PREF_AUTO_PAY);
 
-        gncOwnerApplyPayment (&pw->owner, &(pw->tx_info->txn), selected_lots,
-                              pw->post_acct, pw->xfer_acct, pw->amount_tot, exch,
-                              ts, memo, num, auto_pay);
+        gncOwnerApplyPaymentSecs (&pw->owner, &(pw->tx_info->txn), selected_lots,
+                                  pw->post_acct, pw->xfer_acct, pw->amount_tot,
+                                  exch, t, memo, num, auto_pay);
     }
     gnc_resume_gui_refresh ();
 

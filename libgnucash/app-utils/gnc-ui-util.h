@@ -293,7 +293,7 @@ GNCPrintAmountInfo gnc_split_amount_print_info (Split *split,
 
 GNCPrintAmountInfo gnc_share_print_info_places (int decplaces);
 GNCPrintAmountInfo gnc_default_share_print_info (void);
-GNCPrintAmountInfo gnc_default_price_print_info (void);
+GNCPrintAmountInfo gnc_default_price_print_info (const gnc_commodity *curr);
 
 GNCPrintAmountInfo gnc_integral_print_info (void);
 
@@ -320,6 +320,19 @@ gchar *numeric_to_words(gnc_numeric val);
  *   non-NULL, *endstr will point to in_str. */
 gboolean xaccParseAmount (const char * in_str, gboolean monetary,
                           gnc_numeric *result, char **endstr);
+
+/*
+ * xaccParseAmountPosSign is just like xaccParseAmount except the
+ * caller can choose whether the locale's postive sign (or in absense
+ * the '+') character is ignored. Setting skip to TRUE will cause
+ * the function to ignore any positive sign. Setting it to FALSE,
+ * and positive signs will be treated as unrecognized characters.
+ * xaccParseAmount will run as if skip is FALSE for compatibility
+ * reasons (gnc-expression-parser depends on this behaviour).
+ */
+gboolean
+xaccParseAmountPosSign (const char * in_str, gboolean monetary, gnc_numeric *result,
+                        char **endstr, gboolean skip);
 
 /*
  * xaccParseAmountExtended is just like xaccParseAmount except the

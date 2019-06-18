@@ -909,7 +909,7 @@ gncInvoiceGetNetAndTaxesInternal (GncInvoice *invoice, gboolean use_value,
         if (use_value)
         {
             // Always use rounded net values to prevent creating imbalanced transactions on posting
-            // https://bugzilla.gnome.org/show_bug.cgi?id=628903
+            // https://bugs.gnucash.org/show_bug.cgi?id=628903
             value = gncEntryGetDocValue (entry, TRUE, is_cust_doc, is_cn);
             if (gnc_numeric_check (value) == GNC_ERROR_OK)
                 net_total = gnc_numeric_add (net_total, value, GNC_DENOM_AUTO, GNC_HOW_DENOM_LCD);
@@ -953,7 +953,6 @@ gncInvoiceGetTotalInternal(GncInvoice *invoice, gboolean use_value,
 
     if (!invoice) return gnc_numeric_zero();
 
-    denom = gnc_commodity_get_fraction(gncInvoiceGetCurrency(invoice));
     total = gncInvoiceGetNetAndTaxesInternal(invoice, use_value, use_tax? &taxes : NULL, use_payment_type, type);
 
     if (use_tax)
@@ -998,7 +997,7 @@ AccountValueList *gncInvoiceGetTotalTaxList (GncInvoice *invoice)
     AccountValueList *taxes;
     if (!invoice) return NULL;
 
-    unused = gncInvoiceGetNetAndTaxesInternal(invoice, FALSE, &taxes, FALSE, 0);
+    gncInvoiceGetNetAndTaxesInternal(invoice, FALSE, &taxes, FALSE, 0);
     return taxes;
 }
 
@@ -1250,12 +1249,15 @@ GncInvoice * gncInvoiceGetInvoiceFromLot (GNCLot *lot)
 {
     GncGUID *guid = NULL;
     QofBook *book;
+    GncInvoice *invoice = NULL;
 
     if (!lot) return NULL;
 
     book = gnc_lot_get_book (lot);
     qof_instance_get (QOF_INSTANCE (lot), "invoice", &guid, NULL);
-    return gncInvoiceLookup(book, guid);
+    invoice = gncInvoiceLookup(book, guid);
+    guid_free (guid);
+    return invoice;
 }
 
 void
@@ -1279,12 +1281,15 @@ gncInvoiceGetInvoiceFromTxn (const Transaction *txn)
 {
     GncGUID *guid = NULL;
     QofBook *book;
+    GncInvoice *invoice = NULL;
 
     if (!txn) return NULL;
 
     book = xaccTransGetBook (txn);
     qof_instance_get (QOF_INSTANCE (txn), "invoice", &guid, NULL);
-    return gncInvoiceLookup(book, guid);
+    invoice = gncInvoiceLookup(book, guid);
+    guid_free (guid);
+    return invoice;
 }
 
 gboolean gncInvoiceAmountPositive (const GncInvoice *invoice)
@@ -1477,6 +1482,7 @@ Transaction * gncInvoicePostToAccount (GncInvoice *invoice, Account *acc,
 
     /* Create a new lot for this invoice */
     lot = gnc_lot_new (book);
+    gncInvoiceAttachToLot (invoice, lot);
     gnc_lot_begin_edit (lot);
 
     type = gncInvoiceGetTypeString (invoice);
@@ -1509,8 +1515,11 @@ Transaction * gncInvoicePostToAccount (GncInvoice *invoice, Account *acc,
     total = gncInvoiceGetTotal (invoice);
     taxes = gncInvoiceGetTotalTaxList (invoice);
     /* The two functions above return signs relative to the document
-     * We need to convert them to balance values before we can use them here */
-    if (is_cust_doc)
+     * We need to convert them to balance values before we can use them here
+     * Note the odd construct comparing two booleans is to xor them
+     * that is, only evaluate true if both are different.
+     */
+    if (is_cust_doc != is_cn)
     {
         GList *node;
         total = gnc_numeric_neg (total);
@@ -1688,8 +1697,7 @@ Transaction * gncInvoicePostToAccount (GncInvoice *invoice, Account *acc,
         gnc_lot_add_split (lot, split);
     }
 
-    /* Now attach this invoice to the txn, lot, and account */
-    gncInvoiceAttachToLot (invoice, lot);
+    /* Now attach this invoice to the txn and account */
     gncInvoiceAttachToTxn (invoice, txn);
     gncInvoiceSetPostedAcc (invoice, acc);
 
@@ -1932,7 +1940,6 @@ gncInvoiceApplyPayment (const GncInvoice *invoice, Transaction *txn,
     GNCLot *payment_lot;
     GList *selected_lots = NULL;
     const GncOwner *owner;
-    Timespec ts_pass = {date,0};
 
     /* Verify our arguments */
     if (!invoice || !gncInvoiceIsPosted (invoice) || !xfer_acc) return;
@@ -1941,8 +1948,10 @@ gncInvoiceApplyPayment (const GncInvoice *invoice, Transaction *txn,
     g_return_if_fail (owner->owner.undefined);
 
     /* Create a lot for this payment */
-    payment_lot = gncOwnerCreatePaymentLot (owner, &txn, invoice->posted_acc, xfer_acc,
-                                            amount, exch, ts_pass, memo, num);
+    payment_lot = gncOwnerCreatePaymentLotSecs (owner, &txn,
+                                                invoice->posted_acc,
+                                                xfer_acc, amount, exch,
+                                                date, memo, num);
 
     /* Select the invoice as only payment candidate */
     selected_lots = g_list_prepend (selected_lots, invoice->posted_lot);

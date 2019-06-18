@@ -237,16 +237,16 @@ public:
     QofBook* book() const noexcept { return m_book; }
     void set_loading(bool loading) noexcept { m_loading = loading; }
     bool pristine() const noexcept { return m_is_pristine_db; }
-    void update_progress() const noexcept;
+    void update_progress(double pct) const noexcept;
     void finish_progress() const noexcept;
 
 protected:
-    GncSqlConnection* m_conn;  /**< SQL connection */
-    QofBook* m_book;           /**< The primary, main open book */
+    GncSqlConnection* m_conn = nullptr;  /**< SQL connection */
+    QofBook* m_book = nullptr;           /**< The primary, main open book */
     bool m_loading;        /**< We are performing an initial load */
     bool m_in_query;       /**< We are processing a query */
     bool m_is_pristine_db; /**< Are we saving to a new pristine db? */
-    const char* m_timespec_format; /**< Server-specific date-time string format */
+    const char* m_time_format = nullptr; /**< Server-specific date-time string format */
     VersionVec m_versions;    /**< Version number for each table */
 private:
     bool write_account_tree(Account*);
@@ -282,6 +282,7 @@ private:
         void load_remaining(GncSqlBackend*);
         OBEVec::iterator begin() { return m_registry.begin(); }
         OBEVec::iterator end() { return m_registry.end(); }
+        OBEVec::size_type size() { return m_registry.size(); }
     private:
         OBEVec m_registry;
     };

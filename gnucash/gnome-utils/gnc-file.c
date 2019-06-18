@@ -45,6 +45,7 @@
 #include "gnc-window.h"
 #include "gnc-plugin-file-history.h"
 #include "qof.h"
+#include "Scrub.h"
 #include "TransLog.h"
 #include "gnc-session.h"
 #include "gnc-state.h"
@@ -86,7 +87,7 @@ gnc_file_dialog (GtkWindow *parent,
     GtkWidget *file_box;
     const char *internal_name;
     char *file_name = NULL;
-    gchar * okbutton = _("_Open");
+    gchar * okbutton = NULL;
     const gchar *ok_icon = NULL;
     GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
     gint response;
@@ -207,11 +208,11 @@ show_session_error (GtkWindow *parent,
     {
         displayname = g_strdup(_("(null)"));
     }
-    else if (! gnc_uri_is_file_uri (newfile)) /* Hide the db password in error messages */
+    else if (!gnc_uri_targets_local_fs (newfile)) /* Hide the db password in error messages */
         displayname = gnc_uri_normalize_uri ( newfile, FALSE);
     else
     {
-        /* Strip the protocol from the file name. */
+        /* Strip the protocol from the file name and ensure absolute filename. */
         char *uri = gnc_uri_normalize_uri(newfile, FALSE);
         displayname = gnc_uri_get_path(uri);
         g_free(uri);
@@ -323,7 +324,8 @@ show_session_error (GtkWindow *parent,
     case ERR_BACKEND_READONLY:
         fmt = _("GnuCash could not write to %s. "
                 "That database may be on a read-only file system, "
-                "or you may not have write permission for the directory.");
+                "you may not have write permission for the directory "
+                "or your anti-virus software is preventing this action.");
         gnc_error_dialog (parent, fmt, displayname);
         break;
 
@@ -463,7 +465,7 @@ show_session_error (GtkWindow *parent,
                 "store large numbers. This means GnuCash cannot use SQL databases "
                 "correctly. Gnucash will not open or save to SQL databases until this is "
                 "fixed by installing a different version of \"libdbi\". Please see "
-                "https://bugzilla.gnome.org/show_bug.cgi?id=611936 for more "
+                "https://bugs.gnucash.org/show_bug.cgi?id=611936 for more "
                 "information.");
 
         gnc_error_dialog (parent, "%s", fmt);
@@ -474,7 +476,7 @@ show_session_error (GtkWindow *parent,
         fmt = _("GnuCash could not complete a critical test for the presence of "
                 "a bug in the \"libdbi\" library. This may be caused by a "
                 "permissions misconfiguration of your SQL database. Please see "
-                "https://bugzilla.gnome.org/show_bug.cgi?id=645216 for more "
+                "https://bugs.gnucash.org/show_bug.cgi?id=645216 for more "
                 "information.");
 
         gnc_error_dialog (parent, "%s", fmt);
@@ -513,7 +515,7 @@ gnc_add_history (QofSession * session)
     if ( !strlen (url) )
         return;
 
-    if ( gnc_uri_is_file_uri ( url ) )
+    if (gnc_uri_targets_local_fs (url))
         file = gnc_uri_get_path ( url );
     else
         file = gnc_uri_normalize_uri ( url, FALSE ); /* Note that the password is not saved in history ! */
@@ -656,7 +658,7 @@ gnc_post_file_open (GtkWindow *parent, const char * filename, gboolean is_readon
     char * newfile;
     QofBackendError io_err = ERR_BACKEND_NO_ERR;
 
-    gchar *protocol = NULL;
+    gchar *scheme   = NULL;
     gchar *hostname = NULL;
     gchar *username = NULL;
     gchar *password = NULL;
@@ -679,7 +681,7 @@ RESTART:
         return FALSE;
     }
 
-    gnc_uri_get_components (newfile, &protocol, &hostname,
+    gnc_uri_get_components (newfile, &scheme, &hostname,
                             &port, &username, &password, &path);
 
     /* If the file to open is a database, and no password was given,
@@ -687,23 +689,25 @@ RESTART:
      * function will ask the user to enter a password. The user can
      * cancel this dialog, in which case the open file action will be
      * abandoned.
+     * Note newfile is normalized uri so we can safely call
+     * gnc_uri_is_file_scheme on it.
      */
-    if ( !gnc_uri_is_file_protocol (protocol) && !password)
+    if (!gnc_uri_is_file_scheme (scheme) && !password)
     {
         gboolean have_valid_pw = FALSE;
-        have_valid_pw = gnc_keyring_get_password ( NULL, protocol, hostname, port,
+        have_valid_pw = gnc_keyring_get_password ( NULL, scheme, hostname, port,
                         path, &username, &password );
         if (!have_valid_pw)
             return FALSE;
 
         /* Got password. Recreate the uri to use internally. */
         g_free ( newfile );
-        newfile = gnc_uri_create_uri ( protocol, hostname, port,
+        newfile = gnc_uri_create_uri ( scheme, hostname, port,
                                        username, password, path);
     }
 
     /* For file based uri's, remember the directory as the default. */
-    if (gnc_uri_is_file_protocol(protocol))
+    if (gnc_uri_is_file_scheme(scheme))
     {
         gchar *default_dir = g_path_get_dirname(path);
         gnc_set_default_directory (GNC_PREFS_GROUP_OPEN_SAVE, default_dir);
@@ -741,7 +745,6 @@ RESTART:
     {
         gchar *directory;
         show_session_error (parent, io_err, newfile, GNC_FILE_DIALOG_OPEN);
-        io_err = ERR_BACKEND_NO_ERR;
         if (g_file_test (filename, G_FILE_TEST_IS_DIR))
             directory = g_strdup (filename);
         else
@@ -766,16 +769,18 @@ RESTART:
                         "in which case you should not open the database. "
                         "What would you like to do?") :
                       _("That database may be on a read-only file system, "
-                        "or you may not have write permission for the directory. "
+                        "you may not have write permission for the directory, "
+                        "or your anti-virus software is preventing this action. "
                         "If you proceed you may not be able to save any changes. "
                         "What would you like to do?")
                      );
         int rc;
 
-        if (! gnc_uri_is_file_uri (newfile)) /* Hide the db password in error messages */
+        /* Hide the db password and local filesystem schemes in error messages */
+        if (!gnc_uri_is_file_uri (newfile))
             displayname = gnc_uri_normalize_uri ( newfile, FALSE);
         else
-            displayname = g_strdup (newfile);
+            displayname = gnc_uri_get_path (newfile);
 
         dialog = gtk_message_dialog_new(parent,
                                         0,
@@ -834,8 +839,8 @@ RESTART:
         if (!show_session_error (parent, io_err, newfile, GNC_FILE_DIALOG_OPEN))
         {
             /* user told us to create a new database. Do it. We
-            	     * shouldn't have to worry about locking or clobbering,
-            	     * it's supposed to be new. */
+                     * shouldn't have to worry about locking or clobbering,
+                     * it's supposed to be new. */
             qof_session_begin (new_session, newfile, FALSE, TRUE, FALSE);
         }
     }
@@ -863,8 +868,8 @@ RESTART:
         /* If the new "file" is a database, attempt to store the password
          * in a keyring. GnuCash itself will not save it.
          */
-        if ( !gnc_uri_is_file_protocol (protocol))
-            gnc_keyring_set_password ( protocol, hostname, port,
+        if ( !gnc_uri_is_file_scheme (scheme))
+            gnc_keyring_set_password ( scheme, hostname, port,
                                        path, username, password );
 
         xaccLogDisable();
@@ -962,7 +967,7 @@ RESTART:
         }
     }
 
-    g_free (protocol);
+    g_free (scheme);
     g_free (hostname);
     g_free (username);
     g_free (password);
@@ -1019,9 +1024,15 @@ RESTART:
     {
         gchar *message = gnc_account_name_violations_errmsg ( gnc_get_account_separator_string(),
                          invalid_account_names );
-        gnc_warning_dialog(NULL, "%s", message);
+        gnc_warning_dialog(parent, "%s", message);
         g_free ( message );
     }
+
+    // Fix account color slots being set to 'Not Set', should run once on a book
+    qof_event_suspend();
+    xaccAccountScrubColorNotSet (gnc_get_current_book());
+    qof_event_resume();
+
     return TRUE;
 }
 
@@ -1042,7 +1053,7 @@ gnc_file_open (GtkWindow *parent)
     if (!gnc_file_query_save (parent, TRUE))
         return FALSE;
 
-    if ( last && gnc_uri_is_file_uri ( last ) )
+    if ( last && gnc_uri_targets_local_fs (last))
     {
         gchar *filepath = gnc_uri_get_path ( last );
         default_dir = g_path_get_dirname( filepath );
@@ -1091,7 +1102,7 @@ gnc_file_export (GtkWindow *parent)
     ENTER(" ");
 
     last = gnc_history_get_last();
-    if ( last && gnc_uri_is_file_uri ( last ) )
+    if ( last && gnc_uri_targets_local_fs (last))
     {
         gchar *filepath = gnc_uri_get_path ( last );
         default_dir = g_path_get_dirname( filepath );
@@ -1153,7 +1164,7 @@ gnc_file_do_export(GtkWindow *parent, const char * filename)
     gchar *newfile;
     const gchar *oldfile;
 
-    gchar *protocol = NULL;
+    gchar *scheme   = NULL;
     gchar *hostname = NULL;
     gchar *username = NULL;
     gchar *password = NULL;
@@ -1174,33 +1185,35 @@ gnc_file_do_export(GtkWindow *parent, const char * filename)
 
     newfile = gnc_uri_add_extension (norm_file, GNC_DATAFILE_EXT);
     g_free (norm_file);
-    gnc_uri_get_components (newfile, &protocol, &hostname,
+    gnc_uri_get_components (newfile, &scheme, &hostname,
                             &port, &username, &password, &path);
 
     /* Save As can't use the generic 'file' protocol. If the user didn't set
      * a specific protocol, assume the default 'xml'.
      */
-    if (g_strcmp0 (protocol, "file") == 0)
+    if (g_strcmp0 (scheme, "file") == 0)
     {
-        g_free (protocol);
-        protocol = g_strdup ("xml");
-        norm_file = gnc_uri_create_uri (protocol, hostname, port,
+        g_free (scheme);
+        scheme = g_strdup ("xml");
+        norm_file = gnc_uri_create_uri (scheme, hostname, port,
                                         username, password, path);
         g_free (newfile);
         newfile = norm_file;
     }
 
-    /* Some extra steps for file based uri's only */
-    if (gnc_uri_is_file_protocol(protocol))
+    /* Some extra steps for file based uri's only
+     * Note newfile is normalized uri so we can safely call
+     * gnc_uri_is_file_scheme on it. */
+    if (gnc_uri_is_file_scheme (scheme))
     {
-	if (check_file_path (path))
-	{
-	    show_session_error (parent, ERR_FILEIO_RESERVED_WRITE, newfile,
-				GNC_FILE_DIALOG_SAVE);
-	    return;
-	}
-	gnc_set_default_directory (GNC_PREFS_GROUP_OPEN_SAVE,
-				   g_path_get_dirname(path));
+        if (check_file_path (path))
+        {
+            show_session_error (parent, ERR_FILEIO_RESERVED_WRITE, newfile,
+                    GNC_FILE_DIALOG_SAVE);
+            return;
+        }
+        gnc_set_default_directory (GNC_PREFS_GROUP_OPEN_SAVE,
+                       g_path_get_dirname(path));
     }
     /* Check to see if the user specified the same file as the current
      * file. If so, prevent the export from happening to avoid killing this file */
@@ -1234,7 +1247,7 @@ gnc_file_do_export(GtkWindow *parent, const char * filename)
         else
             name = gnc_uri_normalize_uri ( newfile, FALSE );
         /* if user says cancel, we should break out */
-        if (!gnc_verify_dialog (NULL, FALSE, format, name))
+        if (!gnc_verify_dialog (parent, FALSE, format, name))
         {
             return;
         }
@@ -1269,7 +1282,7 @@ gnc_file_do_export(GtkWindow *parent, const char * filename)
         /* %s is the strerror(3) error string of the error that occurred. */
         const char *format = _("There was an error saving the file.\n\n%s");
 
-        gnc_error_dialog (NULL, format, strerror(errno));
+        gnc_error_dialog (parent, format, strerror(errno));
         return;
     }
 }
@@ -1352,7 +1365,7 @@ gnc_file_save_as (GtkWindow *parent)
     ENTER(" ");
 
     last = gnc_history_get_last();
-    if ( last && gnc_uri_is_file_uri ( last ) )
+    if ( last && gnc_uri_targets_local_fs (last))
     {
         gchar *filepath = gnc_uri_get_path ( last );
         default_dir = g_path_get_dirname( filepath );
@@ -1382,7 +1395,7 @@ gnc_file_do_save_as (GtkWindow *parent, const char* filename)
     gchar *newfile;
     const gchar *oldfile;
 
-    gchar *protocol = NULL;
+    gchar *scheme   = NULL;
     gchar *hostname = NULL;
     gchar *username = NULL;
     gchar *password = NULL;
@@ -1406,33 +1419,35 @@ gnc_file_do_save_as (GtkWindow *parent, const char* filename)
 
     newfile = gnc_uri_add_extension (norm_file, GNC_DATAFILE_EXT);
     g_free (norm_file);
-    gnc_uri_get_components (newfile, &protocol, &hostname,
+    gnc_uri_get_components (newfile, &scheme, &hostname,
                             &port, &username, &password, &path);
 
     /* Save As can't use the generic 'file' protocol. If the user didn't set
      * a specific protocol, assume the default 'xml'.
      */
-    if (g_strcmp0 (protocol, "file") == 0)
+    if (g_strcmp0 (scheme, "file") == 0)
     {
-        g_free (protocol);
-        protocol = g_strdup ("xml");
-        norm_file = gnc_uri_create_uri (protocol, hostname, port,
+        g_free (scheme);
+        scheme = g_strdup ("xml");
+        norm_file = gnc_uri_create_uri (scheme, hostname, port,
                                         username, password, path);
         g_free (newfile);
         newfile = norm_file;
     }
 
-    /* Some extra steps for file based uri's only */
-    if (gnc_uri_is_file_protocol(protocol))
+    /* Some extra steps for file based uri's only
+     * Note newfile is normalized uri so we can safely call
+     * gnc_uri_is_file_scheme on it. */
+    if (gnc_uri_is_file_scheme (scheme))
     {
-	if (check_file_path (path))
-	{
-	    show_session_error (parent, ERR_FILEIO_RESERVED_WRITE, newfile,
-				GNC_FILE_DIALOG_SAVE);
-	    return;
-	}
-	gnc_set_default_directory (GNC_PREFS_GROUP_OPEN_SAVE,
-				   g_path_get_dirname (path));
+        if (check_file_path (path))
+        {
+            show_session_error (parent, ERR_FILEIO_RESERVED_WRITE, newfile,
+                    GNC_FILE_DIALOG_SAVE);
+            return;
+        }
+        gnc_set_default_directory (GNC_PREFS_GROUP_OPEN_SAVE,
+                       g_path_get_dirname (path));
     }
 
     /* Check to see if the user specified the same file as the current
@@ -1471,7 +1486,7 @@ gnc_file_do_save_as (GtkWindow *parent, const char* filename)
             name = gnc_uri_normalize_uri ( newfile, FALSE );
 
         /* if user says cancel, we should break out */
-        if (!gnc_verify_dialog (NULL, FALSE, format, name ))
+        if (!gnc_verify_dialog (parent, FALSE, format, name ))
         {
             xaccLogDisable();
             qof_session_destroy (new_session);
@@ -1523,8 +1538,8 @@ gnc_file_do_save_as (GtkWindow *parent, const char* filename)
     /* If the new "file" is a database, attempt to store the password
      * in a keyring. GnuCash itself will not save it.
      */
-    if ( !gnc_uri_is_file_protocol (protocol))
-        gnc_keyring_set_password ( protocol, hostname, port,
+    if ( !gnc_uri_is_file_scheme (scheme))
+        gnc_keyring_set_password ( scheme, hostname, port,
                                    path, username, password );
 
     /* Prevent race condition between swapping the contents of the two
@@ -1536,11 +1551,7 @@ gnc_file_do_save_as (GtkWindow *parent, const char* filename)
     /* if we got to here, then we've successfully gotten a new session */
     /* close up the old file session (if any) */
     qof_session_swap_data (session, new_session);
-
-    /* XXX At this point, we should really mark the data in the new session
-     * as being 'dirty', since we haven't saved it at all under the new
-     * session. But I'm lazy...
-     */
+    qof_book_mark_session_dirty (qof_session_get_book (new_session));
 
     qof_event_resume();
 
@@ -1604,7 +1615,7 @@ gnc_file_revert (GtkWindow *parent)
     else
         filename = fileurl;
 
-    if (!gnc_verify_dialog (NULL, FALSE, title, filename))
+    if (!gnc_verify_dialog (parent, FALSE, title, filename))
         return;
 
     qof_book_mark_session_saved (qof_session_get_book (session));

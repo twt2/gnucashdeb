@@ -335,7 +335,7 @@ gnucash_sheet_get_text_cursor_position (GnucashSheet *sheet, const VirtualLocati
     x_offset = gnucash_sheet_get_text_offset (sheet, virt_loc,
                                               rect.width, logical_rect.width);
 
-    result = pango_layout_xy_to_index (layout,
+    pango_layout_xy_to_index (layout,
                  PANGO_SCALE * (sheet->button_x - rect.x - x_offset),
                  PANGO_SCALE * (height/2), &index, &trailing);
 
@@ -761,6 +761,7 @@ gnucash_sheet_finalize (GObject *object)
 
     sheet = GNUCASH_SHEET (object);
 
+    g_table_resize (sheet->blocks, 0, 0);
     g_table_destroy (sheet->blocks);
     sheet->blocks = NULL;
 
@@ -1040,6 +1041,9 @@ gnucash_sheet_insert_cb (GtkWidget *widget,
 
     if (start_sel != end_sel)
         gtk_editable_select_region(editable, start_sel, end_sel);
+    /* Save the selected region in case the input module eats it. */
+    sheet->start_sel = start_sel;
+    sheet->end_sel = end_sel;
 
     g_string_free (new_text_gs, TRUE);
     g_string_free (change_text_gs, TRUE);
@@ -1165,7 +1169,7 @@ gnucash_sheet_draw_cb (GtkWidget *widget, cairo_t *cr, G_GNUC_UNUSED gpointer da
     gtk_style_context_restore (context);
 
 //FIXME what should be done with result being TRUE or FALSE
-    result = gnucash_sheet_draw_internal (sheet, cr, &alloc);
+    gnucash_sheet_draw_internal (sheet, cr, &alloc);
     gnucash_sheet_draw_cursor (sheet->cursor, cr);
 
     return FALSE;
@@ -1527,7 +1531,7 @@ gnucash_sheet_button_press_event (GtkWidget *widget, GdkEventButton *event)
         return TRUE;
 
 //FIXME does something need to be done if changed_cells is true or false ?
-    changed_cells = gnucash_sheet_cursor_move (sheet, new_virt_loc);
+    gnucash_sheet_cursor_move (sheet, new_virt_loc);
 
     if (button_1)
         gnucash_sheet_check_grab (sheet);
@@ -1718,6 +1722,8 @@ gnucash_sheet_key_press_event_internal (GtkWidget *widget, GdkEventKey *event)
         case GDK_KEY_Return:
         case GDK_KEY_KP_Enter:
             g_signal_emit_by_name(sheet->reg, "activate_cursor");
+	    /* Clear the saved selection. */
+	    sheet->end_sel = sheet->start_sel;
             return TRUE;
             break;
         case GDK_KEY_Tab:
@@ -1781,6 +1787,8 @@ gnucash_sheet_key_press_event_internal (GtkWidget *widget, GdkEventKey *event)
                 if (gnc_table_confirm_change (table,
                                               cur_virt_loc))
                     gnc_item_edit_show_popup (item_edit);
+		/* Clear the saved selection for the new cell. */
+		sheet->end_sel = sheet->start_sel;
 
                 return TRUE;
             }
@@ -1797,10 +1805,23 @@ gnucash_sheet_key_press_event_internal (GtkWidget *widget, GdkEventKey *event)
         case GDK_KEY_Alt_R:
             pass_on = TRUE;
             break;
+        case GDK_KEY_KP_Right:
+        case GDK_KEY_Right:
+        case GDK_KEY_KP_Left:
+        case GDK_KEY_Left:
+        case GDK_KEY_Home:
+        case GDK_KEY_End:
+	    /* Clear the saved selection, we're not using it. */
+	    sheet->end_sel = sheet->start_sel;
+	    pass_on = TRUE;
+	    break;
         default:
             if (gnucash_sheet_clipboard_event(sheet, event))
+	    {
+		/* Clear the saved selection. */
+		sheet->end_sel = sheet->start_sel;
                 return TRUE;
-
+	    }
             pass_on = TRUE;
             break;
         }
@@ -1810,11 +1831,22 @@ gnucash_sheet_key_press_event_internal (GtkWidget *widget, GdkEventKey *event)
     if (pass_on)
     {
         gboolean result = FALSE;
+        GtkEditable *editable = GTK_EDITABLE(sheet->entry);
 
         // If sheet is readonly, entry is not realized
-        if (gtk_widget_get_realized (GTK_WIDGET(sheet->entry)))
-            result = gtk_widget_event (sheet->entry, (GdkEvent *) event);
-
+        if (gtk_widget_get_realized (GTK_WIDGET(editable)))
+	{
+            result = gtk_widget_event (GTK_WIDGET(editable), (GdkEvent*)event);
+        /* Restore the stored selection in case it was eaten by the input
+         * module.
+         */
+	    if (sheet->start_sel != sheet->end_sel)
+	    {
+		gtk_editable_select_region(editable, sheet->start_sel,
+					   sheet->end_sel);
+		sheet->end_sel = sheet->start_sel;
+	    }
+	}
         return result;
     }
 
@@ -1825,6 +1857,8 @@ gnucash_sheet_key_press_event_internal (GtkWidget *widget, GdkEventKey *event)
     if (abort_move)
         return TRUE;
 
+    /* Clear the saved selection for the new cell. */
+    sheet->end_sel = sheet->start_sel;
     gnucash_sheet_cursor_move (sheet, new_virt_loc);
 
     /* return true because we handled the key press */
@@ -1835,13 +1869,15 @@ static gint
 gnucash_sheet_key_press_event (GtkWidget *widget, GdkEventKey *event)
 {
     GnucashSheet *sheet;
+    GtkEditable *editable = NULL;
+    int start_sel = 0, end_sel = 0;
 
     g_return_val_if_fail(widget != NULL, TRUE);
     g_return_val_if_fail(GNUCASH_IS_SHEET(widget), TRUE);
     g_return_val_if_fail(event != NULL, TRUE);
 
     sheet = GNUCASH_SHEET (widget);
-
+    editable = GTK_EDITABLE(sheet->entry);
     /* bug#60582 comment#27 2
            save shift state to enable <shift minus> and <shift equal>
        bug#618434
@@ -1862,6 +1898,9 @@ gnucash_sheet_key_press_event (GtkWidget *widget, GdkEventKey *event)
         sheet->shift_state = event->state & GDK_SHIFT_MASK;
         sheet->keyval_state = (event->keyval == GDK_KEY_KP_Decimal) ? GDK_KEY_KP_Decimal : 0;
     }
+
+    gtk_editable_get_selection_bounds (editable, &start_sel, &end_sel);
+
     if (gtk_im_context_filter_keypress (sheet->im_context, event))
     {
         sheet->need_im_reset = TRUE;
@@ -2193,7 +2232,7 @@ gnucash_sheet_block_set_from_table (GnucashSheet *sheet,
 
     if (block->style && (block->style != style))
     {
-        gnucash_style_unref (block->style);
+        gnucash_sheet_style_unref (sheet, block->style);
         block->style = NULL;
     }
 
@@ -2202,7 +2241,7 @@ gnucash_sheet_block_set_from_table (GnucashSheet *sheet,
     if (block->style == NULL)
     {
         block->style = style;
-        gnucash_style_ref(block->style);
+        gnucash_sheet_style_ref(sheet, block->style);
         return TRUE;
     }
 
@@ -2302,14 +2341,15 @@ static void
 gnucash_sheet_block_destroy (gpointer _block, gpointer user_data)
 {
     SheetBlock *block = _block;
+    GnucashSheet *sheet = GNUCASH_SHEET(user_data);
 
     if (block == NULL)
         return;
 
     if (block->style)
     {
-        gnucash_style_unref (block->style);
-        block->style = NULL;
+        gnucash_sheet_style_unref (sheet, block->style);
+        /* Don't free the block itself here. It's managed by the block table */
     }
 }
 
@@ -2372,7 +2412,7 @@ gnucash_sheet_recompute_block_offsets (GnucashSheet *sheet)
                 width += block->style->dimensions->width;
         }
 
-        if (i > 0 && block->visible)
+        if (i > 0 && block && block->visible)
             height += block->style->dimensions->height;
     }
 
@@ -2452,8 +2492,11 @@ gnucash_get_style_classes (GnucashSheet *sheet, GtkStyleContext *stylectxt,
         field_type -= COLOR_NEGATIVE;
     }
     else
-        gtk_style_context_add_class (stylectxt, "register-foreground");
-
+    {
+        if (sheet->use_gnc_color_theme) // only add this class if builtin colors used
+            gtk_style_context_add_class (stylectxt, "register-foreground");
+    }
+    
     switch (field_type)
     {
     default:
@@ -2564,7 +2607,7 @@ gnucash_sheet_init (GnucashSheet *sheet)
 
     sheet->blocks = g_table_new (sizeof (SheetBlock),
                                  gnucash_sheet_block_construct,
-                                 gnucash_sheet_block_destroy, NULL);
+                                 gnucash_sheet_block_destroy, sheet);
 
     gtk_widget_add_events(GTK_WIDGET(sheet), (GDK_EXPOSURE_MASK
     | GDK_BUTTON_PRESS_MASK
@@ -2588,6 +2631,7 @@ gnucash_sheet_init (GnucashSheet *sheet)
     sheet->delete_surrounding_signal = 0;
     sheet->shift_state = 0;
     sheet->keyval_state = 0;
+    sheet->start_sel = sheet->end_sel = 0;
 }
 
 
@@ -2698,7 +2742,7 @@ gnucash_sheet_new (Table *table)
     /* some register data */
     sheet->dimensions_hash_table = g_hash_table_new_full (g_int_hash,
                                    g_int_equal,
-                                   g_free, NULL);
+                                   g_free, g_free);
 
     /* add tooltips to sheet */
     gtk_widget_set_has_tooltip (GTK_WIDGET(sheet), TRUE);

@@ -66,9 +66,9 @@ static EntryVec col_table
     gnc_sql_make_table_entry<CT_STRING>(
         "reference", MAX_REFERENCE_LEN, COL_NNUL, "reference"),
     gnc_sql_make_table_entry<CT_BOOLEAN>("active", 0, COL_NNUL, "order"),
-    gnc_sql_make_table_entry<CT_TIMESPEC>("date_opened", 0, COL_NNUL,
+    gnc_sql_make_table_entry<CT_TIME>("date_opened", 0, COL_NNUL,
                                           "date-opened"),
-    gnc_sql_make_table_entry<CT_TIMESPEC>("date_closed", 0, COL_NNUL,
+    gnc_sql_make_table_entry<CT_TIME>("date_closed", 0, COL_NNUL,
                                           "date-closed"),
     gnc_sql_make_table_entry<CT_OWNERREF>("owner", 0, COL_NNUL,
                                           ORDER_OWNER, true),
@@ -115,7 +115,7 @@ GncSqlOrderBackend::load_all (GncSqlBackend* sql_be)
     auto result = sql_be->execute_select_statement(stmt);
 
     for (auto row : *result)
-        GncOrder* pOrder = load_single_order (sql_be, row);
+        load_single_order (sql_be, row);
 
     std::string pkey(col_table[0]->name());
     sql = "SELECT DISTINCT ";

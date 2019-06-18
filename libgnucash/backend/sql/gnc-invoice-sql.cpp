@@ -67,9 +67,9 @@ static EntryVec col_table
     gnc_sql_make_table_entry<CT_GUID>("guid", 0, COL_NNUL | COL_PKEY, "guid"),
     gnc_sql_make_table_entry<CT_STRING>("id", MAX_ID_LEN, COL_NNUL, INVOICE_ID,
                                         true),
-    gnc_sql_make_table_entry<CT_TIME64>("date_opened", 0, 0, INVOICE_OPENED,
+    gnc_sql_make_table_entry<CT_TIME>("date_opened", 0, 0, INVOICE_OPENED,
                                           true),
-    gnc_sql_make_table_entry<CT_TIME64>("date_posted", 0, 0, INVOICE_POSTED,
+    gnc_sql_make_table_entry<CT_TIME>("date_posted", 0, 0, INVOICE_POSTED,
                                           true),
     gnc_sql_make_table_entry<CT_STRING>("notes", MAX_NOTES_LEN, COL_NNUL,
                                         "notes"),
@@ -141,7 +141,7 @@ GncSqlInvoiceBackend::load_all (GncSqlBackend* sql_be)
     auto result = sql_be->execute_select_statement(stmt);
 
     for (auto row : *result)
-        GncInvoice* pInvoice = load_single_invoice (sql_be, row);
+        load_single_invoice (sql_be, row);
 
     std::string pkey(col_table[0]->name());
     sql = "SELECT DISTINCT ";

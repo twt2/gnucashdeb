@@ -51,34 +51,6 @@ cannot be considered "standard" or public parts of QOF. */
 
 static QofLogModule log_module = GNC_MOD_ENGINE;
 
-Timespec
-gnc_transaction_get_date_posted(const Transaction *t)
-{
-    Timespec ret = {xaccTransRetDatePosted(t), 0};
-    return ret;
-}
-
-Timespec
-gnc_transaction_get_date_entered(const Transaction *t)
-{
-    Timespec result = {xaccTransRetDateEntered(t), 0};
-    return result;
-}
-
-Timespec
-gnc_split_get_date_reconciled(const Split *s)
-{
-    Timespec result;
-    xaccSplitGetDateReconciledTS(s, &result);
-    return(result);
-}
-
-void
-gnc_transaction_set_date(Transaction *t, Timespec ts)
-{
-    xaccTransSetDatePostedSecs(t, ts.tv_sec);
-}
-
 /** Gets the transaction Number or split Action based on book option:
   * if the book option is TRUE (split action is used for NUM) and a
   * split is provided, split-action is returned; if book option is FALSE
@@ -284,41 +256,11 @@ gnc_book_option_remove_cb (gchar *key, GncBOCb func, gpointer user_data)
     }
 }
 
-SCM
-gnc_timespec2timepair(Timespec t)
-{
-    SCM secs;
-    SCM nsecs;
-
-    secs = scm_from_int64(t.tv_sec);
-    nsecs = scm_from_long (t.tv_nsec);
-    return(scm_cons(secs, nsecs));
-}
-
-Timespec
-gnc_timepair2timespec(SCM x)
-{
-    Timespec result = {0, 0};
-    if (gnc_timepair_p (x))
-    {
-        result.tv_sec = scm_to_int64(SCM_CAR(x));
-        result.tv_nsec = scm_to_long(SCM_CDR(x));
-    }
-    return(result);
-}
 
 GDate gnc_time64_to_GDate(SCM x)
 {
     time64 time = scm_to_int64 (x);
     return time64_to_gdate(time);
-}
-
-int
-gnc_timepair_p(SCM x)
-{
-    return(scm_is_pair(x) &&
-           (scm_is_signed_integer(SCM_CAR(x), INT64_MIN, INT64_MAX) &&
-            scm_is_signed_integer(SCM_CDR(x), INT64_MIN, INT64_MAX)));
 }
 
 SCM
@@ -390,8 +332,6 @@ gnc_guid_p(SCM guid_scm)
  *   Each OR term is a list of AND terms.
  *   Each AND term is a list of one of the following forms:
  *
- *   ('pd-date pr-type sense-bool use-start-bool start-timepair
- *             use-end-bool use-end-timepair)
  *   ('pd-amount pr-type sense-bool amt-match-how amt-match-sign amount)
  *   ('pd-account pr-type sense-bool acct-match-how list-of-account-guids)
  *   ('pd-string pr-type sense-bool case-sense-bool use-regexp-bool string)
@@ -829,7 +769,6 @@ gnc_scm2query_term_query_v2 (SCM qt_scm)
             is_regex = scm_is_true (scm);
 
             scm = SCM_CAR (qt_scm);
-            qt_scm = SCM_CDR (qt_scm);
             if (!scm_is_string (scm)) break;
 
             matchstring = gnc_scm_to_utf8_string (scm);
@@ -850,7 +789,6 @@ gnc_scm2query_term_query_v2 (SCM qt_scm)
             options = gnc_query_scm2date (scm);
 
             scm = SCM_CAR (qt_scm);
-            qt_scm = SCM_CDR (qt_scm);
             if (scm_is_null (scm))
                 break;
             date = scm_to_int64 (scm);
@@ -870,7 +808,6 @@ gnc_scm2query_term_query_v2 (SCM qt_scm)
             options = gnc_query_scm2numericop (scm);
 
             scm = SCM_CAR (qt_scm);
-            qt_scm = SCM_CDR (qt_scm);
             if (!gnc_query_numeric_p (scm))
                 break;
             val = gnc_query_scm2numeric (scm);
@@ -890,7 +827,6 @@ gnc_scm2query_term_query_v2 (SCM qt_scm)
             options = gnc_query_scm2guid (scm);
 
             scm = SCM_CAR (qt_scm);
-            qt_scm = SCM_CDR (qt_scm);
             if (!scm_is_list (scm))
                 break;
             guids = gnc_scm2guid_glist (scm);
@@ -905,7 +841,6 @@ gnc_scm2query_term_query_v2 (SCM qt_scm)
             gint64 val;
 
             scm = SCM_CAR (qt_scm);
-            qt_scm = SCM_CDR (qt_scm);
             if (scm_is_null (scm))
                 break;
             val = scm_to_int64 (scm);
@@ -918,7 +853,6 @@ gnc_scm2query_term_query_v2 (SCM qt_scm)
             double val;
 
             scm = SCM_CAR (qt_scm);
-            qt_scm = SCM_CDR (qt_scm);
             if (!scm_is_number (scm))
                 break;
             val = scm_to_double (scm);
@@ -931,7 +865,6 @@ gnc_scm2query_term_query_v2 (SCM qt_scm)
             gboolean val;
 
             scm = SCM_CAR (qt_scm);
-            qt_scm = SCM_CDR (qt_scm);
             if (!scm_is_bool (scm))
                 break;
             val = scm_is_true (scm);
@@ -951,7 +884,6 @@ gnc_scm2query_term_query_v2 (SCM qt_scm)
             options = gnc_query_scm2char (scm);
 
             scm = SCM_CAR (qt_scm);
-            qt_scm = SCM_CDR (qt_scm);
             if (!scm_is_string (scm))
                 break;
             char_list = gnc_scm_to_utf8_string (scm);
@@ -1074,7 +1006,6 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
                 break;
 
             scm = SCM_CAR (query_term_scm);
-            query_term_scm = SCM_CDR (query_term_scm);
             end = scm_to_int64 (scm);
 
             xaccQueryAddDateMatchTT (q, use_start, start, use_end, end, QOF_QUERY_OR);
@@ -1107,7 +1038,6 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
             if (scm_is_null (query_term_scm))
                 break;
             scm = SCM_CAR (query_term_scm);
-            query_term_scm = SCM_CDR (query_term_scm);
             val = gnc_numeric_create (scm_to_int64(scm_numerator(scm)),
                                       scm_to_int64(scm_denominator(scm)));
 
@@ -1159,7 +1089,6 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
             }
 
             scm = SCM_CAR (query_term_scm);
-            query_term_scm = SCM_CDR (query_term_scm);
 
             account_guids = gnc_scm2guid_glist (scm);
 
@@ -1197,7 +1126,6 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
                 break;
 
             scm = SCM_CAR (query_term_scm);
-            query_term_scm = SCM_CDR (query_term_scm);
             matchstring = gnc_scm_to_utf8_string (scm);
 
             if (!g_strcmp0 (pr_type, "pr-action"))
@@ -1244,7 +1172,6 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
                 break;
 
             scm = SCM_CAR (query_term_scm);
-            query_term_scm = SCM_CDR (query_term_scm);
             how = gnc_scm2cleared_match_how (scm);
 
             xaccQueryAddClearedMatch (q, how, QOF_QUERY_OR);
@@ -1260,7 +1187,6 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
                 break;
 
             scm = SCM_CAR (query_term_scm);
-            query_term_scm = SCM_CDR (query_term_scm);
             if (gnc_scm2balance_match_how (scm, &how) == FALSE)
                 break;
 
@@ -1283,7 +1209,6 @@ gnc_scm2query_term_query_v1 (SCM query_term_scm)
 
             /* id type */
             scm = SCM_CAR (query_term_scm);
-            query_term_scm = SCM_CDR (query_term_scm);
             id_type = (QofIdType) gnc_scm_to_utf8_string (scm);
 
             xaccQueryAddGUIDMatch (q, &guid, id_type, QOF_QUERY_OR);

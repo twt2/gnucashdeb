@@ -314,7 +314,7 @@ using std::to_string;
 #include <istream>
 #include <cstdlib>
 
-using boost::posix_time::ptime;;
+using boost::posix_time::ptime;
 //To enable using Transition with different meanings for IANA files
 //and for DSTRules.
 namespace IANAParser
@@ -435,9 +435,6 @@ namespace IANAParser
 	    time_count = *(endian_swap(reinterpret_cast<uint32_t*>(tzh.timecnt)));
 	    type_count = *(endian_swap(reinterpret_cast<uint32_t*>(tzh.typecnt)));
 	    char_count = *(endian_swap(reinterpret_cast<uint32_t*>(tzh.charcnt)));
-	    isgmt_count = *(endian_swap(reinterpret_cast<uint32_t*>(tzh.ttisgmtcnt)));
-	    isstd_count = *(endian_swap(reinterpret_cast<uint32_t*>(tzh.ttisstdcnt)));
-	    leap_count = *(endian_swap(reinterpret_cast<uint32_t*>(tzh.leapcnt)));
 	    transition_size = 8;
 	}
 	fb_index += sizeof(tzh);
@@ -471,7 +468,9 @@ namespace IANAParser
 	for(uint32_t index = 0; index < type_count; ++index)
 	{
 	    fb_index = start_index + index * tzinfo_size;
-	    TTInfo info = *reinterpret_cast<TTInfo*>(&fileblock[fb_index]);
+	    /* Use memcpy instead of static_cast to avoid memory alignment issues with chars */
+	    TTInfo info{};
+	    memcpy(&info, &fileblock[fb_index], ttinfo_size);
 	    endian_swap(&info.gmtoff);
 	    tzinfo.push_back(
 		{info, &fileblock[abbrev + info.abbrind],

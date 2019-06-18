@@ -453,18 +453,21 @@ gnc_split_register_move_cursor (VirtualLocation *p_new_virt_loc,
             (old_split != new_split) &&
             gnc_split_register_old_split_empty_p(reg, old_split))
     {
-        int current_row;
+        if (old_split != gnc_split_register_get_blank_split (reg))
+        {
+            int current_row;
 
-        xaccSplitDestroy(old_split);
-        old_split = NULL;
+            xaccSplitDestroy(old_split);
+            old_split = NULL;
 
-        /*
-         * If the user is moving down a row, we've just thrown off the
-         * numbers by deleting a split. Correct for that.
-         */
-        current_row = reg->table->current_cursor_loc.vcell_loc.virt_row;
-        if (new_virt_loc.vcell_loc.virt_row > current_row)
-            new_virt_loc.vcell_loc.virt_row--;
+            /*
+             * If the user is moving down a row, we've just thrown off the
+             * numbers by deleting a split. Correct for that.
+             */
+            current_row = reg->table->current_cursor_loc.vcell_loc.virt_row;
+            if (new_virt_loc.vcell_loc.virt_row > current_row)
+                new_virt_loc.vcell_loc.virt_row--;
+        }
     }
     else if ((pending_trans != NULL)      &&
              (pending_trans == old_trans) &&
@@ -886,6 +889,9 @@ gnc_split_register_auto_completion (SplitRegister *reg,
         g_assert(pending_trans == trans);
 
         gnc_copy_trans_onto_trans (auto_trans, trans, FALSE, FALSE);
+        /* if there is an association, lets clear it */
+        if (xaccTransGetAssociation (auto_trans) != NULL)
+            xaccTransSetAssociation (trans, "");
         blank_split = NULL;
 
         if (gnc_split_register_get_default_account (reg) != NULL)
@@ -1204,36 +1210,6 @@ gnc_split_register_get_account_always (SplitRegister *reg,
     return gnc_split_register_get_account_by_name (reg, cell, name);
 }
 
-#if 0 /* Not Used */
-static const char *
-gnc_split_register_get_cell_string (SplitRegister *reg, const char *cell_name)
-{
-    BasicCell *cell;
-
-    cell = gnc_table_layout_get_cell (reg->table->layout, cell_name);
-    if (!cell)
-        return "";
-
-    return gnc_basic_cell_get_value (cell);
-}
-
-static Timespec
-gnc_split_register_get_cell_date (SplitRegister *reg, const char *cell_name)
-{
-    DateCell *cell;
-    Timespec ts;
-
-    cell = (DateCell*) gnc_table_layout_get_cell (reg->table->layout, cell_name);
-
-    if (cell)
-        gnc_date_cell_get_date (cell, &ts);
-    else
-        timespecFromTime64 (&ts, gnc_time (NULL));
-
-    return ts;
-}
-#endif /* Not Used */
-
 /* Creates a transfer dialog and fills its values from register cells (if
  * available) or from the provided transaction and split.
  */
@@ -1288,7 +1264,7 @@ gnc_split_register_xfer_dialog(SplitRegister *reg, Transaction *txn,
     if (cell)
     {
         time64 time;
-        gnc_date_cell_get_date((DateCell*) cell, &time);
+        gnc_date_cell_get_date((DateCell*) cell, &time, TRUE);
         gnc_xfer_dialog_set_date(xfer, time);
     }
     else

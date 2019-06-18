@@ -294,7 +294,7 @@ new_tax_table_dialog (TaxTableWindow *ttw, gboolean new_table,
         gtk_widget_hide (GTK_WIDGET(gtk_builder_get_object (builder, "spacer")));
         gtk_widget_hide (ntt->name_entry);
         /* Tables are great for layout, but a pain when you hide widgets */
-        widget = GTK_WIDGET(gtk_builder_get_object (builder, "ttd_table"));
+        GTK_WIDGET(gtk_builder_get_object (builder, "ttd_table"));
         gtk_widget_grab_focus (gnc_amount_edit_gtk_entry
                                (GNC_AMOUNT_EDIT (ntt->amount_entry)));
     }
@@ -481,7 +481,7 @@ tax_table_window_refresh (TaxTableWindow *ttw)
             gtk_tree_path_free(path);
         }
     }
-    ;;
+
     tax_table_entries_refresh (ttw);
     /* select_row() above will refresh the entries window */
 }
@@ -768,7 +768,7 @@ gnc_ui_tax_table_window_new (GtkWindow *parent, QofBook *book)
                                     ttw);
 
     tax_table_window_refresh (ttw);
-    gnc_restore_window_size (GNC_PREFS_GROUP, GTK_WINDOW (ttw->dialog));
+    gnc_restore_window_size (GNC_PREFS_GROUP, GTK_WINDOW (ttw->dialog), parent);
     gtk_widget_show_all (ttw->dialog);
 
     g_object_unref(G_OBJECT(builder));

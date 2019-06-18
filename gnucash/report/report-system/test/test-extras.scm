@@ -25,64 +25,6 @@
 (use-modules (sxml simple))
 (use-modules (sxml xpath))
 
-(export pattern-streamer)
-
-(export tbl-column-count)
-(export tbl-row-count)
-(export tbl-ref)
-(export tbl-ref->number)
-
-;;
-;; Table parsing
-;;
-(use-modules (ice-9 regex))
-(use-modules (ice-9 streams))
-
-(define (values-for-keywords pos regex-list text)
-  (make-stream (lambda (pos-keywords-pair)
-		 (let ((current-pos (car pos-keywords-pair))
-			(regex-list (cdr pos-keywords-pair)))
-		   (if (null? regex-list)
-		       '()
-		       (let ((match (string-match (caar regex-list) text current-pos)))
-			 (if (not match)
-			     '()
-			     (let ((new-state (cons (match:end match)
-						    (cdr regex-list)))
-				   (next-value (cons (match:end match)
-						     (map (lambda (item)
-							    (match:substring match item))
-							  (cdar regex-list)))))
-			       (cons next-value new-state)))))))
-	       (cons pos regex-list)))
-
-(define (pattern-streamer start-text regex-list text)
-  (define (stream-next index)
-    ;;(format #t "Next.  Index: ~a\n" index)
-    (let ((head-index (string-contains text start-text index)))
-      ;; (format #t "head index ~a ~a --> ~a\n" start-text index head-index)
-      (if (not head-index) '()
-	  (let ((values (stream->list (values-for-keywords head-index regex-list text))))
-	    (if (null? values) '()
-		(let ((new-state (car (car (last-pair values))))
-		      (next-value (map cdr values)))
-		  (cons next-value new-state)))))))
-  ;;(format #t "Stream ~a\n" text)
-  (make-stream stream-next 0))
-
-;; silly table functions
-(define (tbl-column-count tbl)
-  (length (car tbl)))
-
-(define (tbl-row-count tbl)
-  (length tbl))
-
-(define (tbl-ref tbl row-index column-index)
-  (list-ref (list-ref tbl row-index) column-index))
-
-(define (tbl-ref->number tbl row-index column-index)
-  (string->number (car (tbl-ref tbl row-index column-index))))
-
 (export gnc:options->render)
 (define (gnc:options->render uuid options prefix test-title)
   ;; uuid - str to locate report uuid
@@ -117,14 +59,27 @@
           (display render)))
       render)))
 
+(define (strip-string s1 s2)
+  (let loop ((str s1))
+    (let ((startpos (string-contains str (format #f "<~a" s2)))
+          (endpos (string-contains str (format #f "</~a>" s2))))
+      (if (and startpos endpos)
+          (loop (string-append
+                 (string-take str startpos)
+                 (string-drop str (+ endpos (string-length s2) 3))))
+          str))))
+
 (export gnc:options->sxml)
-(define (gnc:options->sxml uuid options prefix test-title)
+(define* (gnc:options->sxml uuid options prefix test-title #:key strip-tag)
   ;; This functions calls the above gnc:options->render to render
   ;; report.  Then report is converted to SXML.  It catches XML
-  ;; parsing errors, dumping the options changed.
+  ;; parsing errors, dumping the options changed. Also optionally strip
+  ;; an HTML tag from the render, e.g. <script>...</script>
   (let ((render (gnc:options->render uuid options prefix test-title)))
     (catch 'parser-error
-      (lambda () (xml->sxml render
+      (lambda () (xml->sxml (if strip-tag
+                                (strip-string render strip-tag)
+                                render)
                             #:trim-whitespace? #t
                             #:entities '((nbsp . "\xa0"))))
       (lambda (k . args)

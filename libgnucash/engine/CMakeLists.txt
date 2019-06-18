@@ -10,6 +10,7 @@ set(engine_noinst_HEADERS
   SX-book.h
   SX-ttinfo.h
   TransactionP.h
+  engine-deprecated.h
   gnc-backend-prov.hpp
   gnc-date-p.h
   gnc-hooks-scm.h
@@ -149,6 +150,7 @@ set (engine_SOURCES
   Transaction.c
   cap-gains.c
   cashobjects.c
+  engine-deprecated.c
   gnc-aqbanking-templates.cpp
   gnc-budget.c
   gnc-commodity.c
@@ -229,11 +231,15 @@ add_library (gncmod-engine
 
 # Add dependency on swig-runtime.h and iso-4217-currencies.c
 add_dependencies (gncmod-engine swig-runtime-h iso-4217-c)
+if (WIN32)
+  set(BCRYPT "bcrypt.lib")
+else()
+  set(BCRYPT "")
+endif()
 
-target_link_libraries(gncmod-engine gnc-core-utils gnc-module ${Boost_DATE_TIME_LIBRARIES}  ${Boost_REGEX_LIBRARIES} ${REGEX_LDFLAGS} ${GMODULE_LDFLAGS} ${GLIB2_LDFLAGS} ${GOBJECT_LDFLAGS} ${GUILE_LDFLAGS})
+target_link_libraries(gncmod-engine gnc-core-utils gnc-module ${Boost_DATE_TIME_LIBRARIES}  ${Boost_REGEX_LIBRARIES} ${BCRYPT} ${REGEX_LDFLAGS} ${GMODULE_LDFLAGS} ${GLIB2_LDFLAGS} ${GOBJECT_LDFLAGS} ${GUILE_LDFLAGS})
 
 target_compile_definitions (gncmod-engine PRIVATE -DG_LOG_DOMAIN=\"gnc.engine\")
-target_compile_options (gncmod-engine PRIVATE -Wno-deprecated-register)
 
 target_include_directories (gncmod-engine
     PRIVATE ${CMAKE_CURRENT_BINARY_DIR} # for iso-4217-currencies.c

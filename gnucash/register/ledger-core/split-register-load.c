@@ -487,7 +487,7 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
     {
         GDate *d = qof_book_get_autoreadonly_gdate(gnc_get_current_book());
         // "d" is NULL if use_autoreadonly is FALSE
-        autoreadonly_time = d ? timespecToTime64(gdate_to_timespec(*d)) : 0;
+        autoreadonly_time = d ? gdate_to_time64 (*d) : 0;
         g_date_free(d);
     }
 
@@ -673,7 +673,6 @@ gnc_split_register_load (SplitRegister *reg, GList * slist,
             !found_divider_upper && need_divider_upper)
     {
         table->model->dividing_row_upper = vcell_loc.virt_row;
-        found_divider_upper = TRUE;
     }
 
     /* If we didn't find the pending transaction, it was removed

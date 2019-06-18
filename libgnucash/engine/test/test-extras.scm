@@ -49,6 +49,7 @@
 (export env-create-account-structure)
 (export env-create-account-structure-alist)
 (export env-expense-account-structure)
+(export gnc-pricedb-create)
 
 ;;
 ;; Random test related syntax and the like
@@ -141,20 +142,31 @@
     txn))
 
 (define (gnc-pricedb-create currency commodity time64 value)
-  ;; I think adding pricedb for a DMY date will clobber any existing
-  ;; pricedb entry for that date.
-  (let ((price (gnc-price-create (gnc-get-current-book)))
-        (pricedb (gnc-pricedb-get-db (gnc-get-current-book))))
-    (gnc-price-begin-edit price)
-    (gnc-price-set-commodity price commodity)
-    (gnc-price-set-currency price currency)
-    (gnc-price-set-time64 price time64)
-    (gnc-price-set-source price PRICE-SOURCE-XFER-DLG-VAL)
-    (gnc-price-set-source-string price "test-price")
-    (gnc-price-set-typestr price "test")
-    (gnc-price-set-value price value)
-    (gnc-price-commit-edit price)
-    (gnc-pricedb-add-price pricedb price)))
+  ;; does not check for pre-existing pricedb data on date
+  (unless (gnc-commodity-equiv currency commodity)
+    (let ((price (gnc-price-create (gnc-get-current-book)))
+          (pricedb (gnc-pricedb-get-db (gnc-get-current-book))))
+      (gnc-price-begin-edit price)
+      (gnc-price-set-commodity price commodity)
+      (gnc-price-set-currency price currency)
+      (gnc-price-set-time64 price time64)
+      (gnc-price-set-source price PRICE-SOURCE-XFER-DLG-VAL)
+      (gnc-price-set-source-string price "test-price")
+      (gnc-price-set-typestr price "test")
+      (gnc-price-set-value price value)
+      (gnc-price-commit-edit price)
+      (gnc-pricedb-add-price pricedb price))))
+
+;; When creating stock transactions always put the stock account and the number
+;; of shares second, using negative numbers for a sale. e.g., to buy 100 shares
+;; of IBM:
+;;    (env-transfer-foreign env 15 01 2012 cash-a ibm-a 3583200/100 200
+;;                          #:description "Buy IBM 200") ;;200 @ $179.16
+;; and to sell them:
+;;    (env-transfer-foreign env 8 8 2014 cash-a ibm-a -3732600/100 -200
+;;                          #:description "Sell IBM 200") ;;-200 @ $186.63
+;;    (env-transfer-foreign env 8 8 2014 capgain ibm-a 149400/100 0
+;;                          #:description "IBM 200 G/L")
 
 (define* (env-transfer-foreign
           env
@@ -202,10 +214,11 @@
         (begin
           (xaccSplitSetMemo split-1 memo)
           (xaccSplitSetMemo split-2 memo)))
-    (gnc-pricedb-create (xaccAccountGetCommodity debit)
+    (if (> amount2 0)
+        (gnc-pricedb-create (xaccAccountGetCommodity debit)
                         (xaccAccountGetCommodity credit)
                         (gnc-dmy2time64 DD MM YY)
-                        (/ amount1 amount2))
+                        (/ amount1 amount2)))
     (xaccTransCommitEdit txn)
     txn))
 

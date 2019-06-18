@@ -830,10 +830,11 @@ gnc_tree_model_split_reg_get_tooltip (GncTreeModelSplitReg *model, gint position
 {
     GncTreeModelSplitRegPrivate *priv;
     Transaction *trans;
-    const gchar *date_text;
+    char date_text[MAX_DATE_LENGTH + 1];
     const gchar *desc_text;
     GList *node;
 
+    memset (date_text, 0, sizeof(date_text));
     priv = model->priv;
 
     node = g_list_nth (priv->full_tlist, position);
@@ -848,8 +849,8 @@ gnc_tree_model_split_reg_get_tooltip (GncTreeModelSplitReg *model, gint position
            return g_strconcat ("Blank Transaction", NULL);
         else
         {
-            Timespec ts = {xaccTransRetDatePosted (trans), 0};
-            date_text = gnc_print_date (ts);
+            time64 t = xaccTransRetDatePosted (trans);
+            qof_print_date_buff (date_text, sizeof(date_text), t);
             desc_text = xaccTransGetDescription (trans);
             model->current_trans = trans;
             return g_strconcat (date_text, "\n", desc_text, NULL);
@@ -991,7 +992,7 @@ gnc_tree_model_split_reg_get_sub_account (GncTreeModelSplitReg *model)
 void
 gnc_tree_model_split_reg_update_query (GncTreeModelSplitReg *model, Query *query)
 {
-    GSList *p1 = NULL, *p2 = NULL, *p3 = NULL, *standard;
+    GSList *p1 = NULL, *p2 = NULL, *standard;
 
     time64 start;
     struct tm tm;
@@ -1018,7 +1019,7 @@ gnc_tree_model_split_reg_update_query (GncTreeModelSplitReg *model, Query *query
             else if (model->sort_depth == 3)
             {
                 p1 = g_slist_prepend (p1, SPLIT_RECONCILE);
-                p1 = g_slist_prepend (p2, SPLIT_DATE_RECONCILED);
+                p1 = g_slist_prepend (p1, SPLIT_DATE_RECONCILED);
                 p2 = standard;
             }
             break;
@@ -1060,7 +1061,7 @@ gnc_tree_model_split_reg_update_query (GncTreeModelSplitReg *model, Query *query
         case GNC_TREE_MODEL_SPLIT_REG_COL_RECN:
             {
                 p1 = g_slist_prepend (p1, SPLIT_RECONCILE);
-                p1 = g_slist_prepend (p2, SPLIT_DATE_RECONCILED);
+                p1 = g_slist_prepend (p1, SPLIT_DATE_RECONCILED);
                 p2 = standard;
             }
             break;
@@ -1087,7 +1088,7 @@ gnc_tree_model_split_reg_update_query (GncTreeModelSplitReg *model, Query *query
         xaccQueryAddDateMatchTT (query, TRUE, start, FALSE, 0, QOF_QUERY_AND);
     }
 
-    qof_query_set_sort_order (query, p1, p2, p3);
+    qof_query_set_sort_order (query, p1, p2, NULL);
 
 }
 
@@ -1336,7 +1337,7 @@ gnc_tree_model_split_reg_get_path (GtkTreeModel *tree_model, GtkTreeIter *iter)
        This path should be freed with gtk_tree_path_free(). */
     GncTreeModelSplitReg *model = GNC_TREE_MODEL_SPLIT_REG (tree_model);
     GtkTreePath *path;
-    gint tpos, spos;
+    gint tpos = -1, spos = -1;
     GList *tnode, *snode;
 
     g_return_val_if_fail (GNC_IS_TREE_MODEL_SPLIT_REG (model), NULL);
@@ -1370,7 +1371,7 @@ gnc_tree_model_split_reg_get_path (GtkTreeModel *tree_model, GtkTreeIter *iter)
         {
             spos = xaccTransCountSplits (tnode->data);
         }
-        else
+        else if (tnode && snode)
         {
             /* Can not use snode position directly as slist length does not follow
                number of splits exactly, especailly if you delete a split */

@@ -58,6 +58,8 @@ extern "C"
 #include "qofobject-p.h"
 #include "qofbookslots.h"
 #include "kvp-frame.hpp"
+// For GNC_ID_ROOT_ACCOUNT:
+#include "AccountP.h"
 
 static QofLogModule log_module = QOF_MOD_ENGINE;
 #define AB_KEY "hbci"
@@ -66,38 +68,44 @@ static QofLogModule log_module = QOF_MOD_ENGINE;
 enum
 {
     PROP_0,
-//  PROP_ROOT_ACCOUNT,		/* Table */
-//  PROP_ROOT_TEMPLATE,		/* Table */
+//  PROP_ROOT_ACCOUNT,                        /* Table */
+//  PROP_ROOT_TEMPLATE,                       /* Table */
 /*   keep trading accounts property, while adding book-currency, default gains
      policy and default gains account properties, so that files prior to 2.7 can
      be read/processed; GUI changed to use all four properties as of 2.7.
      Trading accounts, on the one hand, and book-currency plus default-gains-
      policy, and optionally, default gains account, on the other, are mutually
      exclusive */
-    PROP_OPT_TRADING_ACCOUNTS,	/* KVP */
+    PROP_OPT_TRADING_ACCOUNTS,              /* KVP */
 /*   Book currency and default gains policy properties only apply if currency
      accounting method selected in GUI is 'book-currency'; both required and
      both are exclusive with trading accounts */
-    PROP_OPT_BOOK_CURRENCY, 	/* KVP */
-    PROP_OPT_DEFAULT_GAINS_POLICY, 	/* KVP */
+    PROP_OPT_BOOK_CURRENCY,                 /* KVP */
+    PROP_OPT_DEFAULT_GAINS_POLICY,          /* KVP */
 /*   Default gains account property only applies if currency accounting method
      selected in GUI is 'book-currency'; its use is optional but exclusive with
      trading accounts */
-    PROP_OPT_DEFAULT_GAINS_ACCOUNT_GUID, 	/* KVP */
-    PROP_OPT_AUTO_READONLY_DAYS,/* KVP */
-    PROP_OPT_NUM_FIELD_SOURCE,	/* KVP */
-    PROP_OPT_DEFAULT_BUDGET,	/* KVP */
-    PROP_OPT_FY_END,		/* KVP */
-    PROP_AB_TEMPLATES,		/* KVP */
-    N_PROPERTIES		/* Just a counter */
+    PROP_OPT_DEFAULT_GAINS_ACCOUNT_GUID,    /* KVP */
+    PROP_OPT_AUTO_READONLY_DAYS,            /* KVP */
+    PROP_OPT_NUM_FIELD_SOURCE,              /* KVP */
+    PROP_OPT_DEFAULT_BUDGET,                /* KVP */
+    PROP_OPT_FY_END,                        /* KVP */
+    PROP_AB_TEMPLATES,                      /* KVP */
+    N_PROPERTIES                            /* Just a counter */
 };
 
 static void
 qof_book_option_num_field_source_changed_cb (GObject *gobject,
                                              GParamSpec *pspec,
                                              gpointer    user_data);
+static void
+qof_book_option_num_autoreadonly_changed_cb (GObject *gobject,
+                                             GParamSpec *pspec,
+                                             gpointer    user_data);
+
 // Use a #define for the GParam name to avoid typos
 #define PARAM_NAME_NUM_FIELD_SOURCE "split-action-num-field"
+#define PARAM_NAME_NUM_AUTOREAD_ONLY "autoreadonly-days"
 
 QOF_GOBJECT_GET_TYPE(QofBook, qof_book, QOF_TYPE_INSTANCE, {});
 QOF_GOBJECT_DISPOSE(qof_book);
@@ -134,6 +142,7 @@ qof_book_init (QofBook *book)
     book->session_dirty = FALSE;
     book->version = 0;
     book->cached_num_field_source_isvalid = FALSE;
+    book->cached_num_days_autoreadonly_isvalid = FALSE;
 
     // Register a callback on this NUM_FIELD_SOURCE property of that object
     // because it gets called quite a lot, so that its value must be stored in
@@ -141,6 +150,14 @@ qof_book_init (QofBook *book)
     g_signal_connect (G_OBJECT(book),
                       "notify::" PARAM_NAME_NUM_FIELD_SOURCE,
                       G_CALLBACK (qof_book_option_num_field_source_changed_cb),
+                      book);
+
+    // Register a callback on this NUM_AUTOREAD_ONLY property of that object
+    // because it gets called quite a lot, so that its value must be stored in
+    // a bool member variable instead of a KVP lookup on each getter call.
+    g_signal_connect (G_OBJECT(book),
+                      "notify::" PARAM_NAME_NUM_AUTOREAD_ONLY,
+                      G_CALLBACK (qof_book_option_num_autoreadonly_changed_cb),
                       book);
 }
 
@@ -152,9 +169,9 @@ static const std::string str_OPTION_NAME_NUM_FIELD_SOURCE(OPTION_NAME_NUM_FIELD_
 
 static void
 qof_book_get_property (GObject* object,
-		       guint prop_id,
-		       GValue* value,
-		       GParamSpec* pspec)
+               guint prop_id,
+               GValue* value,
+               GParamSpec* pspec)
 {
     QofBook *book;
     gchar *key;
@@ -195,8 +212,7 @@ qof_book_get_property (GObject* object,
         qof_instance_get_path_kvp (QOF_INSTANCE (book), value, {"fy_end"});
         break;
     case PROP_AB_TEMPLATES:
-        key = const_cast<char*>(AB_KEY "/" AB_TEMPLATES);
-        qof_instance_get_path_kvp (QOF_INSTANCE (book), value, {"AB_KEY", "AB_TEMPLATES"});
+          qof_instance_get_path_kvp (QOF_INSTANCE (book), value, {"AB_KEY", "AB_TEMPLATES"});
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -206,9 +222,9 @@ qof_book_get_property (GObject* object,
 
 static void
 qof_book_set_property (GObject      *object,
-		       guint         prop_id,
-		       const GValue *value,
-		       GParamSpec   *pspec)
+               guint         prop_id,
+               const GValue *value,
+               GParamSpec   *pspec)
 {
     QofBook *book;
     gchar *key;
@@ -273,9 +289,9 @@ qof_book_class_init (QofBookClass *klass)
      PROP_OPT_TRADING_ACCOUNTS,
      g_param_spec_string("trading-accts",
                          "Use Trading Accounts",
-			 "Scheme true ('t') or NULL. If 't', then the book "
-			 "uses trading accounts for managing multiple-currency "
-			 "transactions.",
+                         "Scheme true ('t') or NULL. If 't', then the book "
+                         "uses trading accounts for managing multiple-currency "
+                         "transactions.",
                          NULL,
                          G_PARAM_READWRITE));
 
@@ -284,9 +300,9 @@ qof_book_class_init (QofBookClass *klass)
      PROP_OPT_BOOK_CURRENCY,
      g_param_spec_string("book-currency",
                          "Select Book Currency",
-			 "The reference currency used to manage multiple-currency "
-             "transactions when 'book-currency' currency accounting method "
-             "selected; requires valid default gains/loss policy.",
+                         "The reference currency used to manage multiple-currency "
+                         "transactions when 'book-currency' currency accounting method "
+                         "selected; requires valid default gains/loss policy.",
                          NULL,
                          G_PARAM_READWRITE));
 
@@ -295,10 +311,10 @@ qof_book_class_init (QofBookClass *klass)
      PROP_OPT_DEFAULT_GAINS_POLICY,
      g_param_spec_string("default-gains-policy",
                          "Select Default Gains Policy",
-			 "The default policy to be used to calculate gains/losses on "
-             "dispositions of currencies/commodities other than "
-             "'book-currency' when 'book-currency' currency accounting "
-             "method selected; requires valid book-currency.",
+                         "The default policy to be used to calculate gains/losses on "
+                         "dispositions of currencies/commodities other than "
+                         "'book-currency' when 'book-currency' currency accounting "
+                         "method selected; requires valid book-currency.",
                          NULL,
                          G_PARAM_READWRITE));
 
@@ -307,10 +323,10 @@ qof_book_class_init (QofBookClass *klass)
      PROP_OPT_DEFAULT_GAINS_ACCOUNT_GUID,
      g_param_spec_boxed("default-gain-loss-account-guid",
                         "Select Default Gain/Loss Account",
-			 "The default account to be used for calculated gains/losses on "
-             "dispositions of currencies/commodities other than "
-             "'book-currency' when 'book-currency' currency accounting "
-             "method selected; requires valid book-currency.",
+                        "The default account to be used for calculated gains/losses on "
+                        "dispositions of currencies/commodities other than "
+                        "'book-currency' when 'book-currency' currency accounting "
+                        "method selected; requires valid book-currency.",
                          GNC_TYPE_GUID,
                          G_PARAM_READWRITE));
 
@@ -319,8 +335,8 @@ qof_book_class_init (QofBookClass *klass)
      PROP_OPT_NUM_FIELD_SOURCE,
      g_param_spec_string(PARAM_NAME_NUM_FIELD_SOURCE,
                          "Use Split-Action in the Num Field",
-			 "Scheme true ('t') or NULL. If 't', then the book "
-			 "will put the split action value in the Num field.",
+                         "Scheme true ('t') or NULL. If 't', then the book "
+                         "will put the split action value in the Num field.",
                          NULL,
                          G_PARAM_READWRITE));
 
@@ -329,11 +345,11 @@ qof_book_class_init (QofBookClass *klass)
      PROP_OPT_AUTO_READONLY_DAYS,
      g_param_spec_double("autoreadonly-days",
                          "Transaction Auto-read-only Days",
-			 "Prevent editing of transactions posted more than "
-			 "this many days ago.",
-			 0,
+                         "Prevent editing of transactions posted more than "
+                         "this many days ago.",
+                         0,
                          G_MAXDOUBLE,
-			 0,
+                         0,
                          G_PARAM_READWRITE));
 
     g_object_class_install_property
@@ -350,7 +366,7 @@ qof_book_class_init (QofBookClass *klass)
      g_param_spec_boxed("fy-end",
                         "Book Fiscal Year End",
                         "A GDate with a bogus year having the last Month and "
-			"Day of the Fiscal year for the book.",
+                        "Day of the Fiscal year for the book.",
                         G_TYPE_DATE,
                         G_PARAM_READWRITE));
     g_object_class_install_property
@@ -441,7 +457,7 @@ gboolean
 qof_book_session_not_saved (const QofBook *book)
 {
     if (!book) return FALSE;
-    return book->session_dirty;
+    return !qof_book_empty(book) && book->session_dirty;
 
 }
 
@@ -546,7 +562,7 @@ qof_book_set_data_fin (QofBook *book, const char *key, gpointer data, QofBookFin
 
     if (!cb) return;
     g_hash_table_insert (book->data_table_finalizers, (gpointer)key,
-			 reinterpret_cast<void*>(cb));
+             reinterpret_cast<void*>(cb));
 }
 
 gpointer
@@ -570,6 +586,15 @@ qof_book_mark_readonly(QofBook *book)
     g_return_if_fail( book != NULL );
     book->read_only = TRUE;
 }
+
+gboolean
+qof_book_empty(const QofBook *book)
+{
+    if (!book) return TRUE;
+    auto root_acct_col = qof_book_get_collection (book, GNC_ID_ROOT_ACCOUNT);
+    return qof_collection_get_data(root_acct_col) == nullptr;
+}
+
 /* ====================================================================== */
 
 QofCollection *
@@ -964,8 +989,8 @@ qof_book_get_book_currency_name (QofBook *book)
 {
     const gchar *opt = NULL;
     qof_instance_get (QOF_INSTANCE (book),
-		      "book-currency", &opt,
-		      NULL);
+              "book-currency", &opt,
+              NULL);
     return opt;
 }
 
@@ -979,8 +1004,8 @@ qof_book_get_default_gains_policy (QofBook *book)
 {
     const gchar *opt = NULL;
     qof_instance_get (QOF_INSTANCE (book),
-		      "default-gains-policy", &opt,
-		      NULL);
+              "default-gains-policy", &opt,
+              NULL);
     return opt;
 }
 
@@ -989,13 +1014,13 @@ qof_book_get_default_gains_policy (QofBook *book)
   * valid book-currency, both of which are required, for the 'book-currency'
   * currency accounting method to apply. Use instead
   * 'gnc_book_get_default_gain_loss_acct' which does these validations. */
-const GncGUID *
+GncGUID *
 qof_book_get_default_gain_loss_acct_guid (QofBook *book)
 {
     GncGUID *guid = NULL;
     qof_instance_get (QOF_INSTANCE (book),
-		      "default-gain-loss-account-guid", &guid,
-		      NULL);
+              "default-gain-loss-account-guid", &guid,
+              NULL);
     return guid;
 
 }
@@ -1006,8 +1031,8 @@ qof_book_use_trading_accounts (const QofBook *book)
 {
     const char *opt = NULL;
     qof_instance_get (QOF_INSTANCE (book),
-		      "trading-accts", &opt,
-		      NULL);
+              "trading-accts", &opt,
+              NULL);
     if (opt && opt[0] == 't' && opt[1] == 0)
         return TRUE;
     return FALSE;
@@ -1065,11 +1090,21 @@ gboolean qof_book_uses_autoreadonly (const QofBook *book)
 gint qof_book_get_num_days_autoreadonly (const QofBook *book)
 {
     g_assert(book);
-    double tmp;
-    qof_instance_get (QOF_INSTANCE (book),
-		      "autoreadonly-days", &tmp,
-		      NULL);
-    return (gint) tmp;
+
+    if (!book->cached_num_days_autoreadonly_isvalid)
+    {
+        double tmp;
+
+        // No cached value? Then do the expensive KVP lookup
+        qof_instance_get (QOF_INSTANCE (book),
+              PARAM_NAME_NUM_AUTOREAD_ONLY, &tmp,
+              NULL);
+
+        const_cast<QofBook*>(book)->cached_num_days_autoreadonly = tmp;
+        const_cast<QofBook*>(book)->cached_num_days_autoreadonly_isvalid = TRUE;
+    }
+    // Value is cached now. Use the cheap variable returning.
+    return (gint) book->cached_num_days_autoreadonly;
 }
 
 GDate* qof_book_get_autoreadonly_gdate (const QofBook *book)
@@ -1085,6 +1120,19 @@ GDate* qof_book_get_autoreadonly_gdate (const QofBook *book)
         g_date_subtract_days(result, num_days);
     }
     return result;
+}
+
+// The callback that is called when the KVP option value of
+// "autoreadonly-days" changes, so that we mark the cached value as
+// invalid.
+static void
+qof_book_option_num_autoreadonly_changed_cb (GObject *gobject,
+                                             GParamSpec *pspec,
+                                             gpointer    user_data)
+{
+    QofBook *book = reinterpret_cast<QofBook*>(user_data);
+    g_return_if_fail(QOF_IS_BOOK(book));
+    book->cached_num_days_autoreadonly_isvalid = FALSE;
 }
 
 /* Note: this will fail if the book slots we're looking for here are flattened at some point !
@@ -1173,7 +1221,7 @@ qof_book_set_feature (QofBook *book, const gchar *key, const gchar *descr)
     if (feature == nullptr || g_strcmp0 (feature->get<const char*>(), descr))
     {
         qof_book_begin_edit (book);
-        delete frame->set_path({GNC_FEATURES, key}, new KvpValue(descr));
+        delete frame->set_path({GNC_FEATURES, key}, new KvpValue(g_strdup (descr)));
         qof_instance_set_dirty (QOF_INSTANCE (book));
         qof_book_commit_edit (book);
     }
@@ -1187,7 +1235,7 @@ qof_book_load_options (QofBook *book, GNCOptionLoad load_cb, GNCOptionDB *odb)
 
 void
 qof_book_save_options (QofBook *book, GNCOptionSave save_cb,
-		       GNCOptionDB* odb, gboolean clear)
+               GNCOptionDB* odb, gboolean clear)
 {
     /* Wrap this in begin/commit so that it commits only once instead of doing
      * so for every option. Qof_book_set_option will take care of dirtying the

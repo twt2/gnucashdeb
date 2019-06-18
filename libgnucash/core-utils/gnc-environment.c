@@ -100,13 +100,12 @@ static void
 gnc_environment_parse_one (const gchar *env_path)
 {
     GKeyFile    *keyfile = g_key_file_new();
-    GError      *error = NULL;
     gchar **env_vars;
     gsize param_count;
     gint i;
     gboolean got_keyfile;
 
-    got_keyfile = g_key_file_load_from_file (keyfile, env_path, G_KEY_FILE_NONE, &error);
+    got_keyfile = g_key_file_load_from_file (keyfile, env_path, G_KEY_FILE_NONE, NULL);
     if ( !got_keyfile )
     {
         g_key_file_free(keyfile);
@@ -114,7 +113,7 @@ gnc_environment_parse_one (const gchar *env_path)
     }
 
     /* Read the environment overrides and apply them */
-    env_vars = g_key_file_get_keys(keyfile, "Variables", &param_count, &error);
+    env_vars = g_key_file_get_keys(keyfile, "Variables", &param_count, NULL);
     for ( i = 0; i < param_count; i++ )
     {
         gchar **val_list;
@@ -125,7 +124,7 @@ gnc_environment_parse_one (const gchar *env_path)
         /* For each variable, read its new value, optionally expand it and set/unset it */
         val_list = g_key_file_get_string_list (keyfile, "Variables",
                                                env_vars[i], &val_count,
-                                               &error );
+                                               NULL);
         if ( val_count == 0 )
             g_unsetenv (env_vars[i]);
         else
@@ -147,9 +146,10 @@ gnc_environment_parse_one (const gchar *env_path)
 
             /* Remove the "x" from our result */
             if (g_strcmp0 (tmp_val, "x"))
+            {
                 new_val = g_strdup (tmp_val + sizeof (G_SEARCHPATH_SEPARATOR_S));
-            g_free (tmp_val);
-
+                g_free (tmp_val);
+            }
             if (!g_setenv (env_vars[i], new_val, TRUE))
                 g_warning ("Couldn't properly override environment variable \"%s\". "
                 "This may lead to unexpected results", env_vars[i]);
