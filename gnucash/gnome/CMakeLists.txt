@@ -128,6 +128,7 @@ target_link_libraries(gnc-gnome gncmod-gnome-search gncmod-ledger-core gncmod-re
     gncmod-register-gnome gncmod-register-core gncmod-gnome-utils gncmod-engine ${GTK3_LDFLAGS} ${GTK_MAC_LDFLAGS})
 
 target_compile_definitions (gnc-gnome PRIVATE -DG_LOG_DOMAIN=\"gnc.gui\" ${GTK_MAC_CFLAGS_OTHER})
+target_compile_options(gnc-gnome PRIVATE -Wno-deprecated-declarations)
 
 target_include_directories(gnc-gnome
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
@@ -154,12 +155,6 @@ install(TARGETS gnc-gnome
 
 # FIXME: where does LC_ALL=C come from?
 
-set(CMAKE_COMMAND_TMP "")
-if (${CMAKE_VERSION} VERSION_GREATER 3.1)
-  set(CMAKE_COMMAND_TMP ${CMAKE_COMMAND} -E env)
-endif()
-
-
 if (${GETTEXT_VERSION_STRING} VERSION_LESS 0.19.6)
     # Gettext is too old to be able to merge an appdata file.
     # Fall back to providing an unmerged (and hence untranslated) appdata file.
@@ -168,7 +163,7 @@ if (${GETTEXT_VERSION_STRING} VERSION_LESS 0.19.6)
 else()
     add_custom_command (
         OUTPUT gnucash.appdata.xml
-        COMMAND ${CMAKE_COMMAND_TMP}
+        COMMAND ${CMAKE_COMMAND} -E env
             LC_ALL=C
             ${GETTEXT_MSGFMT_EXECUTABLE}
                 --xml --template ${CMAKE_CURRENT_SOURCE_DIR}/gnucash.appdata.xml.in
@@ -194,7 +189,7 @@ if (${GETTEXT_VERSION_STRING} VERSION_LESS 0.19)
 else()
     add_custom_command (
         OUTPUT gnucash.desktop
-        COMMAND ${CMAKE_COMMAND_TMP}
+        COMMAND ${CMAKE_COMMAND} -E env
             LC_ALL=C
             ${GETTEXT_MSGFMT_EXECUTABLE}
                 --desktop --template gnucash.desktop.in

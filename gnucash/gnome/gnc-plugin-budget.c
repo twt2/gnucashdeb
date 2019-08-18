@@ -87,33 +87,6 @@ typedef struct GncPluginBudgetPrivate
 
 static GObjectClass *parent_class = NULL;
 
-GType
-gnc_plugin_budget_get_type (void)
-{
-    static GType gnc_plugin_budget_type = 0;
-
-    if (!gnc_plugin_budget_type)
-    {
-        static const GTypeInfo our_info =
-        {
-            sizeof (GncPluginBudgetClass),
-            NULL,       /* base_init */
-            NULL,       /* base_finalize */
-            (GClassInitFunc) gnc_plugin_budget_class_init,
-            NULL,       /* class_finalize */
-            NULL,       /* class_data */
-            sizeof (GncPluginBudget),
-            0,          /* n_preallocs */
-            (GInstanceInitFunc) gnc_plugin_budget_init
-        };
-
-        gnc_plugin_budget_type = g_type_register_static(
-                                     GNC_TYPE_PLUGIN, "GncPluginBudget", &our_info, 0);
-    }
-
-    return gnc_plugin_budget_type;
-}
-
 GncPlugin * gnc_plugin_budget_new (void)
 {
     GncPluginBudget *plugin;
@@ -149,6 +122,8 @@ gnc_plugin_budget_main_window_page_changed (GncMainWindow *window,
     }
 }
 
+G_DEFINE_TYPE_WITH_PRIVATE(GncPluginBudget, gnc_plugin_budget, GNC_TYPE_PLUGIN)
+
 static void
 gnc_plugin_budget_class_init (GncPluginBudgetClass *klass)
 {
@@ -168,7 +143,6 @@ gnc_plugin_budget_class_init (GncPluginBudgetClass *klass)
     plugin_class->n_actions    = gnc_plugin_n_actions;
     plugin_class->ui_filename  = PLUGIN_UI_FILENAME;
 
-    g_type_class_add_private(klass, sizeof(GncPluginBudgetPrivate));
     LEAVE (" ");
 }
 
@@ -338,6 +312,13 @@ gnc_budget_gui_select_budget(GtkWindow *parent, QofBook *book)
     gtk_container_add(GTK_CONTAINER (gtk_dialog_get_content_area (dlg)), GTK_WIDGET(tv));
     gtk_widget_show_all(GTK_WIDGET(dlg));
 
+    // Preselect the default budget
+    bgt = gnc_budget_get_default(book);
+    if (bgt && gnc_tree_model_budget_get_iter_for_budget(tm, &iter, bgt))
+    {
+        gtk_tree_view_set_cursor(tv, gtk_tree_model_get_path(tm, &iter), NULL,
+                                 FALSE);
+    }
     bgt = NULL;
     response = gtk_dialog_run(dlg);
     switch (response)

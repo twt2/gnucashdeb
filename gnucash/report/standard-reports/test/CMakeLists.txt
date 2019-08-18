@@ -11,6 +11,9 @@ set(scm_test_with_srfi64_SOURCES
   test-transaction.scm
   test-balsheet-pnl.scm
   test-income-gst.scm
+  test-budget.scm
+  test-register.scm
+  test-average-balance.scm
 )
 
 set(scm_test_with_textual_ports_SOURCES
@@ -49,4 +52,5 @@ add_dependencies(check scm-test-standard-reports)
 
 set_dist_list(test_standard_reports_DIST CMakeLists.txt
   ${scm_test_with_srfi64_SOURCES}
+  ${scm_test_with_textual_ports_SOURCES}
   ${scm_test_standard_reports_SOURCES})

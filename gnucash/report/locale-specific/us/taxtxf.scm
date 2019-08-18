@@ -63,6 +63,13 @@
 ;; Fix beginning balance sign and signs for Transfer From/To amounts for
 ;; liability/equity accounts
 ;;
+;; January, 2019 Update:
+;;
+;; Update from "V041" to "V042", although added codes are not implemented
+;;   because cost/gain data not reliably available
+;; The format for code 673 can be 4 or 5, per spec, so leave as 4
+;; Fix beginning balance off-by-one-day error for B/S accounts
+;;
 ;; From prior version:
 ;; NOTE: setting of specific dates is squirly! and seems
 ;; to be current-date dependent!  Actually, time of day dependent!  Just
@@ -291,94 +298,34 @@
        (string->symbol (if (string-null? code) "N000" code))))
 
 (define (get-acct-txf-info info-type acct-type code)
-  (let ((tax-entity-type (gnc-get-current-book-tax-type)))
-    (cond
-      ((= acct-type ACCT-TYPE-INCOME)
-       (cond
-         ((eqv? info-type 'form)
-           (gnc:txf-get-form txf-income-categories code tax-entity-type))
-         ((eqv? info-type 'desc)
-           (gnc:txf-get-description txf-income-categories code tax-entity-type))
-         ((eqv? info-type 'pns)
-           (gnc:txf-get-payer-name-source txf-income-categories code
-                                                               tax-entity-type))
-         ((eqv? info-type 'format)
-           (gnc:txf-get-format txf-income-categories code tax-entity-type))
-         ((eqv? info-type 'multiple)
-           (gnc:txf-get-multiple txf-income-categories code tax-entity-type))
-         ((eqv? info-type 'cat-key)
-           (gnc:txf-get-category-key txf-income-categories code tax-entity-type))
-         ((eqv? info-type 'line)
-           (gnc:txf-get-line-data txf-income-categories code tax-entity-type))
-         ((eqv? info-type 'last-yr)
-           (gnc:txf-get-last-year txf-income-categories code tax-entity-type))
-         (else #f)))
-      ((= acct-type ACCT-TYPE-EXPENSE)
-       (cond
-         ((eqv? info-type 'form)
-           (gnc:txf-get-form txf-expense-categories code tax-entity-type))
-         ((eqv? info-type 'desc)
-           (gnc:txf-get-description txf-expense-categories code tax-entity-type))
-         ((eqv? info-type 'pns)
-           (gnc:txf-get-payer-name-source txf-expense-categories code
-                                                               tax-entity-type))
-         ((eqv? info-type 'format)
-           (gnc:txf-get-format txf-expense-categories code tax-entity-type))
-         ((eqv? info-type 'multiple)
-           (gnc:txf-get-multiple txf-expense-categories code tax-entity-type))
-         ((eqv? info-type 'cat-key)
-           (gnc:txf-get-category-key txf-expense-categories code tax-entity-type))
-         ((eqv? info-type 'line)
-           (gnc:txf-get-line-data txf-expense-categories code tax-entity-type))
-         ((eqv? info-type 'last-yr)
-           (gnc:txf-get-last-year txf-expense-categories code tax-entity-type))
-         (else #f)))
-      ((or (= acct-type ACCT-TYPE-BANK) (= acct-type ACCT-TYPE-CASH)
-           (= acct-type ACCT-TYPE-ASSET) (= acct-type ACCT-TYPE-STOCK)
-           (= acct-type ACCT-TYPE-MUTUAL) (= acct-type ACCT-TYPE-RECEIVABLE))
-       (cond
-         ((eqv? info-type 'form)
-           (gnc:txf-get-form txf-asset-categories code tax-entity-type))
-         ((eqv? info-type 'desc)
-           (gnc:txf-get-description txf-asset-categories code tax-entity-type))
-         ((eqv? info-type 'pns)
-           (gnc:txf-get-payer-name-source txf-asset-categories code
-                                                               tax-entity-type))
-         ((eqv? info-type 'format)
-           (gnc:txf-get-format txf-asset-categories code tax-entity-type))
-         ((eqv? info-type 'multiple)
-           (gnc:txf-get-multiple txf-asset-categories code tax-entity-type))
-         ((eqv? info-type 'cat-key)
-           (gnc:txf-get-category-key txf-asset-categories code tax-entity-type))
-         ((eqv? info-type 'line)
-           (gnc:txf-get-line-data txf-asset-categories code tax-entity-type))
-         ((eqv? info-type 'last-yr)
-           (gnc:txf-get-last-year txf-asset-categories code tax-entity-type))
-         (else #f)))
-      ((or (= acct-type ACCT-TYPE-CREDIT) (= acct-type ACCT-TYPE-LIABILITY)
-           (= acct-type ACCT-TYPE-EQUITY) (= acct-type ACCT-TYPE-PAYABLE))
-       (cond
-         ((eqv? info-type 'form)
-           (gnc:txf-get-form txf-liab-eq-categories code tax-entity-type))
-         ((eqv? info-type 'desc)
-           (gnc:txf-get-description txf-liab-eq-categories code tax-entity-type))
-         ((eqv? info-type 'pns)
-           (gnc:txf-get-payer-name-source txf-liab-eq-categories code
-                                                               tax-entity-type))
-         ((eqv? info-type 'format)
-           (gnc:txf-get-format txf-liab-eq-categories code tax-entity-type))
-         ((eqv? info-type 'multiple)
-           (gnc:txf-get-multiple txf-liab-eq-categories code tax-entity-type))
-         ((eqv? info-type 'cat-key)
-           (gnc:txf-get-category-key txf-liab-eq-categories code tax-entity-type))
-         ((eqv? info-type 'line)
-           (gnc:txf-get-line-data txf-liab-eq-categories code tax-entity-type))
-         ((eqv? info-type 'last-yr)
-           (gnc:txf-get-last-year txf-liab-eq-categories code tax-entity-type))
-         (else #f)))
-      (else #f))
-  )
-)
+  (let ((categories (assv-ref
+                     (list (cons ACCT-TYPE-INCOME txf-income-categories)
+                           (cons ACCT-TYPE-EXPENSE txf-expense-categories)
+                           (cons ACCT-TYPE-BANK txf-asset-categories)
+                           (cons ACCT-TYPE-CASH txf-asset-categories)
+                           (cons ACCT-TYPE-ASSET txf-asset-categories)
+                           (cons ACCT-TYPE-STOCK txf-asset-categories)
+                           (cons ACCT-TYPE-MUTUAL txf-asset-categories)
+                           (cons ACCT-TYPE-RECEIVABLE txf-asset-categories)
+                           (cons ACCT-TYPE-CREDIT txf-liab-eq-categories)
+                           (cons ACCT-TYPE-LIABILITY txf-liab-eq-categories)
+                           (cons ACCT-TYPE-EQUITY txf-liab-eq-categories)
+                           (cons ACCT-TYPE-PAYABLE txf-liab-eq-categories))
+                     acct-type))
+        (get-info-fn
+         (case info-type
+           ((form) gnc:txf-get-form)
+           ((desc) gnc:txf-get-description)
+           ((pns) gnc:txf-get-payer-name-source)
+           ((format) gnc:txf-get-format)
+           ((multiple) gnc:txf-get-multiple)
+           ((cat-key) gnc:txf-get-category-key)
+           ((line) gnc:txf-get-line-data)
+           ((last-yr) gnc:txf-get-last-year)
+           (else #f))))
+    (and categories
+         get-info-fn
+         (get-info-fn categories code (gnc-get-current-book-tax-type)))))
 
 (define (gnc:account-get-txf-payer-source account)
   (let ((pns (xaccAccountGetTaxUSPayerNameSource account)))
@@ -540,13 +487,13 @@
     (if (and txf?
              (not (gnc-numeric-zero-p account-value)))
         (let* ((date-str (if date
-                             (strftime "%m/%d/%Y" (gnc-localtime date))
+                             (gnc-print-time64 date "%m/%d/%Y")
                              #f))
                (x-date-str (if x-date
-                               (strftime "%m/%d/%Y" (gnc-localtime x-date))
+                               (gnc-print-time64 x-date "%m/%d/%Y")
                                #f))
                ;; Only formats 1,3,4,6 implemented now! Others are treated as 1.
-               (format (get-acct-txf-info 'format type code))
+               (format_type (get-acct-txf-info 'format type code))
                (action (if (eq? type ACCT-TYPE-INCOME)
                            (case code
                              ((N286 N488) "ReinvD")
@@ -587,11 +534,11 @@
                (value (string-append "$"  ; in txf output, income is positive; expense negative
                                           ; liabilities are positive, assets are negative;
                                           ; essentially, just reverse signs on dr's & cr's
-                                     (format #f "!0,2f" (gnc-numeric-to-double
+                                     (format #f "~0,2f" (gnc-numeric-to-double
                                                           (gnc-numeric-neg
                                                             account-value)))))
           )
-          ;; Based on TXF Spec of 6/16/06, V 041, and Quicken 98 output, the
+          ;; Based on TXF Spec of 11/30/11, V 042, and Quicken 98 output, the
           ;; fields by format are as follows, for F1040:
           ;; Format Type Fields                       Comments/Status
           ;; 0      D    T, N, C, L, X                Spec unclear, unverified
@@ -623,19 +570,19 @@
                 ;; these apply if pns is either 'current or 'parent', but not
                 ;; otherwise
                 "L" (number->string txf-l-count) crlf
-                (if (= format 4)
+                (if (= format_type 4)
                     (if x?
                         (list "P" sold-desc crlf "D" crlf "D" date-str crlf
                                                                        "$" crlf)
                         (list "$" crlf))
                     '())
-                (if (and d? (= format 6) x?)
+                (if (and d? (= format_type 6) x?)
                     (list "D" date-str crlf)
                     '())
-                (case format
+                (case format_type
                   ((1 3 4 6) (list value crlf))
                   ((0 2 5) '()))
-                (case format
+                (case format_type
                   ((3) (if (not x?) (list "P" txf-account-name crlf) '()))
                   ((6) (if x?
                            (if (string=? "N521" (symbol->string code))
@@ -811,8 +758,8 @@
                                )
                                (string-append
                                  " on "
-                                 (strftime "%Y-%b-%d"
-                                    (gnc-localtime pricedb-lookup-price-time))
+                                 (gnc-print-time64 pricedb-lookup-price-time
+                                                   "%Y-%b-%d")
                                  ")"
                                )
                                ""))
@@ -824,7 +771,7 @@
 
 (define (process-transaction-multi-transfer-detail split parent
             USD-currency full-names? trans-date trans-currency acct-type
-            currency-conversion-date to-date transfer-table print-amnt format
+            currency-conversion-date to-date transfer-table print-amnt format_type
             split-details? tax-mode? account account-type tax-code copy
             tax-entity-type)
   (let* ((all-tran-splits (xaccTransGetSplitList parent))
@@ -838,7 +785,7 @@
          (trans-cap-gain-sales-USD-total (gnc-numeric-zero))
          (trans-cap-gain-basis-USD-total (gnc-numeric-zero))
         )
-        (if (= 4 format)
+        (if (= 4 format_type)
             (begin
                (gnc:html-table-set-style! cap-gains-detail-table "table"
                                           'attribute (list "border" "0")
@@ -944,7 +891,7 @@
                            )
                            #f
                        )
-                       (if (and (= 4 format) (gnc-numeric-negative-p
+                       (if (and (= 4 format_type) (gnc-numeric-negative-p
                                                (xaccSplitGetAmount tran-split)))
                            (begin
                               (if tax-mode?
@@ -965,8 +912,7 @@
                                                     "Not Available"))
                                              (list (gnc:make-html-table-cell/markup
                                                     "text-cell-center"
-                                                  (strftime "%Y-%b-%d" (gnc-localtime
-                                                            trans-date))))
+                                                  (gnc-print-time64 trans-date "%Y-%b-%d")))
                                              (list (gnc:make-html-table-cell/markup
                                                     "number-cell-bot"
                                                     (xaccPrintAmount
@@ -1030,7 +976,7 @@
                                      (gnc:make-html-table-cell/markup
                                          "number-cell-bot" splt-amnt-anchor)))
                              )
-                             (if (= 4 format)
+                             (if (= 4 format_type)
                                  (gnc:html-table-append-row!
                                       trans-sub-table
                                       (append (list cell)
@@ -1068,7 +1014,7 @@
                                         (gnc:make-html-table-cell/markup
                                             "number-cell-bot" plug-amnt)))
                         )
-                        (if (= 4 format)
+                        (if (= 4 format_type)
                             (gnc:html-table-append-row! trans-sub-table
                                       (append (list conversion-cell)
                                               (list plug-amnt)))
@@ -1079,7 +1025,7 @@
                   )
             )
         ) ;; end of if
-        (if (= 4 format)
+        (if (= 4 format_type)
             (let* ((total-cell (gnc:make-html-table-cell/markup
                                     "column-heading-right" "Totals: "))
                   )
@@ -1128,7 +1074,7 @@
 
   (let*
     ((account-commodity (xaccAccountGetCommodity account))
-     (format (get-acct-txf-info 'format account-type tax-code))
+     (format_type (get-acct-txf-info 'format account-type tax-code))
      (payer-src (gnc:account-get-txf-payer-source account))
      (code-pns (get-acct-txf-info 'pns account-type tax-code))
      (acct-collector (gnc:make-commodity-collector))
@@ -1152,7 +1098,7 @@
                                               "Name Source is Parent"
                                               "Name Source is Current")
                                           ""))
-                                 (line (if (and (= format 3)
+                                 (line (if (and (= format_type 3)
                                                 (or (eq? code-pns 'parent)
                                                     (eq? code-pns 'current)))
                                            (string-append "Item "
@@ -1187,7 +1133,7 @@
           (render-header-row table (string-append
                                     "&nbsp; &nbsp; &nbsp; &nbsp;" account-desc))
           (render-account-detail-header-row table suppress-action-memo?
-                                                        (if (= format 4) #t #f))
+                                                        (if (= format_type 4) #t #f))
         ))
     (if (not (or (eq? account-type ACCT-TYPE-INCOME)
                  (eq? account-type ACCT-TYPE-EXPENSE)))
@@ -1250,9 +1196,9 @@
                                  (not transaction-details?))
                             ""
                             (string-append "Balance on "
-                                         (strftime "%Y-%b-%d"
-                                            (gnc-localtime (gnc:time64-previous-day
-                                                                  from-value)))
+                                           (gnc-print-time64
+                                            (gnc:time64-previous-day from-value)
+                                            "%Y-%b-%d")
                                          (if (string=? curr-conv-note "")
                                              ":"
                                              (string-append  " " curr-conv-note)
@@ -1437,7 +1383,7 @@
                  ;; details and/or Transfer To/From Accounts
                  (if (or (and transaction-details? tax-mode?
                                         (null? other-account) split-details?)
-                         (= 4 format)
+                         (= 4 format_type)
                      )
                      (let ((cap-gain-data
                                       (process-transaction-multi-transfer-detail
@@ -1452,7 +1398,7 @@
                                              to-value
                                              transfer-table
                                              print-amnt
-                                             format
+                                             format_type
                                              split-details?
                                              tax-mode?
                                              account
@@ -1483,8 +1429,7 @@
                             date-table
                             (gnc:make-html-table-cell/markup
                                          "date-cell"
-                                         (strftime "%Y-%b-%d"
-                                                 (gnc-localtime trans-date))))
+                                         (gnc-print-time64 trans-date "%Y-%b-%d")))
                        (gnc:html-table-set-style! num-table "table" 
                                           'attribute (list "border" "0")
                                           'attribute (list "cellspacing" "0")
@@ -1675,14 +1620,14 @@
                                     #f
                                     (if (txf-beg-bal-only? tax-code)
                                         (string-append "Balance on "
-                                           (strftime "%Y-%b-%d" (gnc-localtime 
-                                                (gnc:time64-previous-day
-                                                                  from-value)))
+                                                       (gnc-print-time64
+                                                        (gnc:time64-previous-day
+                                                         from-value)
+                                                        "%Y-%b-%d")
                                            " For "
                                         )
                                         (string-append "Balance on "
-                                           (strftime "%Y-%b-%d"
-                                                     (gnc-localtime to-value))
+                                           (gnc-print-time64 to-value "%Y-%b-%d")
                                            " For "
                                         )
                                     )
@@ -1690,7 +1635,7 @@
                                 (if (gnc-numeric-negative-p account-USD-total)
                                     #t
                                     #f)
-                                (if (= format 4)
+                                (if (= format_type 4)
                                     #t
                                     #f)
                                 account-cap-gain-sales-total-amount
@@ -2116,6 +2061,8 @@
                       ;; The exact same code, in from-value, further above,
                       ;;   only subtraces one!  Go figure!
                       ;; So, we add one back below!
+;; comment - could it be because from-date coming in has already had 1
+;; subtracted in setting from-value?
                       (if (member alt-period
                                   '(last-year 1st-last 2nd-last
                                               3rd-last 4th-last))
@@ -2239,7 +2186,7 @@
                                          (or (eq? account-type ACCT-TYPE-INCOME)
                                            (eq? account-type ACCT-TYPE-EXPENSE)))
                              (gnc:account-get-comm-balance-at-date account
-                                      (gnc:time64-previous-day from-value) #f)
+                                      (gnc:time64-start-day-time from-value) #f)
                              #f))
               (acct-end-bal-collector (if (not
                                          (or (eq? account-type ACCT-TYPE-INCOME)
@@ -2379,13 +2326,11 @@
           ) ;; end of let*
     )
 
-    (let ((from-date  (strftime "%Y-%b-%d" (gnc-localtime from-value)))
-          (to-date    (strftime "%Y-%b-%d" (gnc-localtime to-value)))
-          (today-date (strftime "D%m/%d/%Y"
-                                (gnc-localtime
-                                 (time64CanonicalDayTime
-                                  (current-time)))))
-          (tax-year   (strftime "%Y" (gnc-localtime from-value)))
+    (let ((from-date  (gnc-print-time64 from-value "%Y-%b-%d"))
+          (to-date    (gnc-print-time64 to-value "%Y-%b-%d"))
+          (today-date (gnc-print-time64 (time64CanonicalDayTime (current-time))
+                                        "D%m/%d/%Y"))
+          (tax-year   (gnc-print-time64 from-value "%Y"))
           (tax-entity-type (gnc-get-current-book-tax-type))
           (tax-entity-type-valid? #f)
           (prior-form-schedule "")
@@ -2430,9 +2375,9 @@
                                             (if (eq? payer-src 'parent)
                                                 (gnc-account-get-parent account)
                                                 account)))
-                   (format (get-acct-txf-info 'format type tax-code))
+                   (format_type (get-acct-txf-info 'format type tax-code))
                    (code-pns (get-acct-txf-info 'pns type tax-code))
-                   (txf-new-payer? (if (= 3 format)
+                   (txf-new-payer? (if (= 3 format_type)
                                        (if (string=? prior-tax-code
                                                                current-tax-code)
                                            (if (string=? txf-last-payer txf-pyr)
@@ -2868,7 +2813,7 @@
                       )
                   )
                   (set! txf-account-name txf-pyr)
-                  (set! txf-l-count (if (and (= format 3)
+                  (set! txf-l-count (if (and (= format_type 3)
                                              (or (eq? code-pns 'parent)
                                                  (eq? code-pns 'current)))
                                         (if (equal? txf-last-payer
@@ -2878,7 +2823,7 @@
                                                 1
                                                 (+ 1 txf-l-count)))
                                         1))
-                  (set! txf-last-payer (if (and (= format 3)
+                  (set! txf-last-payer (if (and (= format_type 3)
                                                 (or (eq? code-pns 'parent)
                                                     (eq? code-pns 'current)))
                                            txf-account-name
@@ -2999,7 +2944,7 @@
                                     selected-accounts-sorted-by-form-line-acct))
                                   (output-txf
                                     (list
-                                      "V041" crlf
+                                      "V042" crlf
                                       "AGnuCash " gnc:version crlf
                                       today-date crlf
                                       "^" crlf

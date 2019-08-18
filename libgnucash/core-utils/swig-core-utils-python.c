@@ -3037,7 +3037,7 @@ static swig_module_info swig_module = {swig_types, 16, 0, 0, 0, 0};
 #include <gnc-filepath-utils.h>
 #include <gnc-locale-utils.h>
 #include <glib.h>
-const gchar *gnc_version(void);
+#include <gnc-version.h>
 
 
 #if PY_VERSION_HEX >= 0x03000000
@@ -3509,10 +3509,6 @@ SWIG_AsVal_long_SS_long (PyObject *obj, long long *val)
   return res;
 }
 #endif
-
-
-const gchar *gnc_version(void)
-{ return VERSION; }
 
 #ifdef __cplusplus
 extern "C" {
@@ -5082,11 +5078,63 @@ fail:
 
 SWIGINTERN PyObject *_wrap_gnc_version(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  gchar *result = 0 ;
+  char *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)":gnc_version")) SWIG_fail;
-  result = (gchar *)gnc_version();
+  result = (char *)gnc_version();
   resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gnc_build_id(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":gnc_build_id")) SWIG_fail;
+  result = (char *)gnc_build_id();
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gnc_vcs_rev(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":gnc_vcs_rev")) SWIG_fail;
+  result = (char *)gnc_vcs_rev();
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gnc_vcs_rev_date(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  char *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":gnc_vcs_rev_date")) SWIG_fail;
+  result = (char *)gnc_vcs_rev_date();
+  resultobj = SWIG_FromCharPtr((const char *)result);
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gnc_gnucash_major_version(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)":gnc_gnucash_major_version")) SWIG_fail;
+  result = (int)gnc_gnucash_major_version();
+  resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
   return NULL;
@@ -5522,6 +5570,10 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gnc_prefs_reset", _wrap_gnc_prefs_reset, METH_VARARGS, NULL},
 	 { (char *)"gnc_prefs_reset_group", _wrap_gnc_prefs_reset_group, METH_VARARGS, NULL},
 	 { (char *)"gnc_version", _wrap_gnc_version, METH_VARARGS, NULL},
+	 { (char *)"gnc_build_id", _wrap_gnc_build_id, METH_VARARGS, NULL},
+	 { (char *)"gnc_vcs_rev", _wrap_gnc_vcs_rev, METH_VARARGS, NULL},
+	 { (char *)"gnc_vcs_rev_date", _wrap_gnc_vcs_rev_date, METH_VARARGS, NULL},
+	 { (char *)"gnc_gnucash_major_version", _wrap_gnc_gnucash_major_version, METH_VARARGS, NULL},
 	 { (char *)"gnc_path_get_bindir", _wrap_gnc_path_get_bindir, METH_VARARGS, NULL},
 	 { (char *)"gnc_path_get_stdreportsdir", _wrap_gnc_path_get_stdreportsdir, METH_VARARGS, NULL},
 	 { (char *)"gnc_path_find_localized_html_file", _wrap_gnc_path_find_localized_html_file, METH_VARARGS, NULL},

@@ -1255,7 +1255,7 @@ static swig_module_info swig_module = {swig_types, 10, 0, 0, 0, 0};
 #include <gnc-filepath-utils.h>
 #include <gnc-locale-utils.h>
 #include <glib.h>
-const gchar *gnc_version(void);
+#include <gnc-version.h>
 
 
 #include "guile-mappings.h"
@@ -1301,10 +1301,6 @@ static char const *gswig_const_GNC_PREF_END_PERIOD = (char const *)("end-period"
 static char const *gswig_const_GNC_PREF_CURRENCY_OTHER = (char const *)("currency-other");
 static char const *gswig_const_GNC_PREF_CURRENCY_CHOICE_LOCALE = (char const *)("currency-choice-locale");
 static char const *gswig_const_GNC_PREF_CURRENCY_CHOICE_OTHER = (char const *)("currency-choice-other");
-
-const gchar *gnc_version(void)
-{ return VERSION; }
-
 
   /* This helper function wraps gnc_utf8_validate() into a predicate. */
   gboolean wrap_gnc_utf8_validate(const gchar *);
@@ -3012,9 +3008,9 @@ _wrap_gnc_version ()
 #define FUNC_NAME "gnc-version"
   SCM gswig_result;
   SWIGUNUSED int gswig_list_p = 0;
-  gchar *result = 0 ;
+  char *result = 0 ;
   
-  result = (gchar *)gnc_version();
+  result = (char *)gnc_version();
   {
     gswig_result = SCM_UNSPECIFIED;
     if (result) {
@@ -3023,6 +3019,96 @@ _wrap_gnc_version ()
     if (!result || !scm_is_true(gswig_result)) {
       gswig_result = scm_c_make_string(0, SCM_UNDEFINED);
     }
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_build_id ()
+{
+#define FUNC_NAME "gnc-build-id"
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  char *result = 0 ;
+  
+  result = (char *)gnc_build_id();
+  {
+    gswig_result = SCM_UNSPECIFIED;
+    if (result) {
+      gswig_result = scm_from_utf8_string((const char *)result);
+    }
+    if (!result || !scm_is_true(gswig_result)) {
+      gswig_result = scm_c_make_string(0, SCM_UNDEFINED);
+    }
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_vcs_rev ()
+{
+#define FUNC_NAME "gnc-vcs-rev"
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  char *result = 0 ;
+  
+  result = (char *)gnc_vcs_rev();
+  {
+    gswig_result = SCM_UNSPECIFIED;
+    if (result) {
+      gswig_result = scm_from_utf8_string((const char *)result);
+    }
+    if (!result || !scm_is_true(gswig_result)) {
+      gswig_result = scm_c_make_string(0, SCM_UNDEFINED);
+    }
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_vcs_rev_date ()
+{
+#define FUNC_NAME "gnc-vcs-rev-date"
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  char *result = 0 ;
+  
+  result = (char *)gnc_vcs_rev_date();
+  {
+    gswig_result = SCM_UNSPECIFIED;
+    if (result) {
+      gswig_result = scm_from_utf8_string((const char *)result);
+    }
+    if (!result || !scm_is_true(gswig_result)) {
+      gswig_result = scm_c_make_string(0, SCM_UNDEFINED);
+    }
+  }
+  
+  return gswig_result;
+#undef FUNC_NAME
+}
+
+
+static SCM
+_wrap_gnc_gnucash_major_version ()
+{
+#define FUNC_NAME "gnc-gnucash-major-version"
+  SCM gswig_result;
+  SWIGUNUSED int gswig_list_p = 0;
+  int result;
+  
+  result = (int)gnc_gnucash_major_version();
+  {
+    gswig_result = scm_from_long(result);
   }
   
   return gswig_result;
@@ -3813,6 +3899,10 @@ SWIG_init(void)
   scm_c_define_gsubr("gnc-prefs-reset", 2, 0, 0, (swig_guile_proc) _wrap_gnc_prefs_reset);
   scm_c_define_gsubr("gnc-prefs-reset-group", 1, 0, 0, (swig_guile_proc) _wrap_gnc_prefs_reset_group);
   scm_c_define_gsubr("gnc-version", 0, 0, 0, (swig_guile_proc) _wrap_gnc_version);
+  scm_c_define_gsubr("gnc-build-id", 0, 0, 0, (swig_guile_proc) _wrap_gnc_build_id);
+  scm_c_define_gsubr("gnc-vcs-rev", 0, 0, 0, (swig_guile_proc) _wrap_gnc_vcs_rev);
+  scm_c_define_gsubr("gnc-vcs-rev-date", 0, 0, 0, (swig_guile_proc) _wrap_gnc_vcs_rev_date);
+  scm_c_define_gsubr("gnc-gnucash-major-version", 0, 0, 0, (swig_guile_proc) _wrap_gnc_gnucash_major_version);
   scm_c_define_gsubr("gnc-path-get-bindir", 0, 0, 0, (swig_guile_proc) _wrap_gnc_path_get_bindir);
   scm_c_define_gsubr("gnc-path-get-stdreportsdir", 0, 0, 0, (swig_guile_proc) _wrap_gnc_path_get_stdreportsdir);
   scm_c_define_gsubr("gnc-path-find-localized-html-file", 1, 0, 0, (swig_guile_proc) _wrap_gnc_path_find_localized_html_file);
@@ -3838,7 +3928,7 @@ SWIG_init(void)
 static void SWIG_init_helper(void *data)
 {
 SWIG_init();
-scm_c_export("gnc-environment-setup", "GNC-PREFS-GROUP-GENERAL", "GNC-PREFS-GROUP-GENERAL-REGISTER", "GNC-PREFS-GROUP-GENERAL-REPORT", "GNC-PREFS-GROUP-WARNINGS", "GNC-PREFS-GROUP-WARNINGS-TEMP", "GNC-PREFS-GROUP-WARNINGS-PERM", "GNC-PREFS-GROUP-ACCT-SUMMARY", "GNC-PREF-VERSION", "GNC-PREF-SAVE-GEOMETRY", "GNC-PREF-LAST-PATH", "GNC-PREF-USE-NEW", "GNC-PREF-ACCOUNTING-LABELS", "GNC-PREF-ACCOUNT-SEPARATOR", "GNC-PREF-NEGATIVE-IN-RED", "GNC-PREF-NUM-SOURCE", "GNC-PREF-DATE-FORMAT", "GNC-PREF-DATE-COMPL-THISYEAR", "GNC-PREF-DATE-COMPL-SLIDING", "GNC-PREF-DATE-BACKMONTHS", "GNC-PREF-SHOW-LEAF-ACCT-NAMES", "GNC-PREF-ENTER-MOVES-TO-END", "GNC-PREF-DRAW-HOR-LINES", "GNC-PREF-DRAW-VERT-LINES", "GNC-PREF-ALT-COLOR-BY-TRANS", "GNC-PREF-USE-THEME-COLORS", "GNC-PREF-USE-GNUCASH-COLOR-THEME", "GNC-PREF-TAB-TRANS-MEMORISED", "GNC-PREF-FUTURE-AFTER-BLANK", "GNC-PREF-START-CHOICE-ABS", "GNC-PREF-START-CHOICE-REL", "GNC-PREF-START-DATE", "GNC-PREF-START-PERIOD", "GNC-PREF-END-CHOICE-ABS", "GNC-PREF-END-CHOICE-REL", "GNC-PREF-END-DATE", "GNC-PREF-END-PERIOD", "GNC-PREF-CURRENCY-OTHER", "GNC-PREF-CURRENCY-CHOICE-LOCALE", "GNC-PREF-CURRENCY-CHOICE-OTHER", "gnc-prefs-get-namespace-regexp", "gnc-prefs-set-namespace-regexp", "gnc-prefs-is-debugging-enabled", "gnc-prefs-set-debugging", "gnc-prefs-is-extra-enabled", "gnc-prefs-set-extra", "gnc-prefs-get-file-save-compressed", "gnc-prefs-set-file-save-compressed", "gnc-prefs-get-file-retention-policy", "gnc-prefs-set-file-retention-policy", "gnc-prefs-get-file-retention-days", "gnc-prefs-set-file-retention-days", "gnc-prefs-get-long-version", "gnc-prefs-is-set-up", "gnc-prefs-block-all", "gnc-prefs-unblock-all", "gnc-prefs-register-cb", "gnc-prefs-remove-cb-by-func", "gnc-prefs-remove-cb-by-id", "gnc-prefs-register-group-cb", "gnc-prefs-remove-group-cb-by-func", "gnc-prefs-bind", "gnc-prefs-get-bool", "gnc-prefs-get-int", "gnc-prefs-get-int64", "gnc-prefs-get-float", "gnc-prefs-get-string", "gnc-prefs-get-enum", "gnc-prefs-get-coords", "gnc-prefs-get-value", "gnc-prefs-set-bool", "gnc-prefs-set-int", "gnc-prefs-set-int64", "gnc-prefs-set-float", "gnc-prefs-set-string", "gnc-prefs-set-enum", "gnc-prefs-set-coords", "gnc-prefs-set-value", "gnc-prefs-reset", "gnc-prefs-reset-group", "gnc-version", "gnc-path-get-bindir", "gnc-path-get-stdreportsdir", "gnc-path-find-localized-html-file", "gnc-build-userdata-path", "gnc-build-report-path", "gnc-build-stdreports-path", "gnc-scm-log-warn", "gnc-scm-log-error", "gnc-scm-log-msg", "gnc-scm-log-debug", "gnc-utf8-strip-invalid-strdup", "gnc-locale-from-utf8", "gnc-locale-to-utf8", "gnc-locale-default-iso-currency-code", "gnc-utf8?", NULL);
+scm_c_export("gnc-environment-setup", "GNC-PREFS-GROUP-GENERAL", "GNC-PREFS-GROUP-GENERAL-REGISTER", "GNC-PREFS-GROUP-GENERAL-REPORT", "GNC-PREFS-GROUP-WARNINGS", "GNC-PREFS-GROUP-WARNINGS-TEMP", "GNC-PREFS-GROUP-WARNINGS-PERM", "GNC-PREFS-GROUP-ACCT-SUMMARY", "GNC-PREF-VERSION", "GNC-PREF-SAVE-GEOMETRY", "GNC-PREF-LAST-PATH", "GNC-PREF-USE-NEW", "GNC-PREF-ACCOUNTING-LABELS", "GNC-PREF-ACCOUNT-SEPARATOR", "GNC-PREF-NEGATIVE-IN-RED", "GNC-PREF-NUM-SOURCE", "GNC-PREF-DATE-FORMAT", "GNC-PREF-DATE-COMPL-THISYEAR", "GNC-PREF-DATE-COMPL-SLIDING", "GNC-PREF-DATE-BACKMONTHS", "GNC-PREF-SHOW-LEAF-ACCT-NAMES", "GNC-PREF-ENTER-MOVES-TO-END", "GNC-PREF-DRAW-HOR-LINES", "GNC-PREF-DRAW-VERT-LINES", "GNC-PREF-ALT-COLOR-BY-TRANS", "GNC-PREF-USE-THEME-COLORS", "GNC-PREF-USE-GNUCASH-COLOR-THEME", "GNC-PREF-TAB-TRANS-MEMORISED", "GNC-PREF-FUTURE-AFTER-BLANK", "GNC-PREF-START-CHOICE-ABS", "GNC-PREF-START-CHOICE-REL", "GNC-PREF-START-DATE", "GNC-PREF-START-PERIOD", "GNC-PREF-END-CHOICE-ABS", "GNC-PREF-END-CHOICE-REL", "GNC-PREF-END-DATE", "GNC-PREF-END-PERIOD", "GNC-PREF-CURRENCY-OTHER", "GNC-PREF-CURRENCY-CHOICE-LOCALE", "GNC-PREF-CURRENCY-CHOICE-OTHER", "gnc-prefs-get-namespace-regexp", "gnc-prefs-set-namespace-regexp", "gnc-prefs-is-debugging-enabled", "gnc-prefs-set-debugging", "gnc-prefs-is-extra-enabled", "gnc-prefs-set-extra", "gnc-prefs-get-file-save-compressed", "gnc-prefs-set-file-save-compressed", "gnc-prefs-get-file-retention-policy", "gnc-prefs-set-file-retention-policy", "gnc-prefs-get-file-retention-days", "gnc-prefs-set-file-retention-days", "gnc-prefs-get-long-version", "gnc-prefs-is-set-up", "gnc-prefs-block-all", "gnc-prefs-unblock-all", "gnc-prefs-register-cb", "gnc-prefs-remove-cb-by-func", "gnc-prefs-remove-cb-by-id", "gnc-prefs-register-group-cb", "gnc-prefs-remove-group-cb-by-func", "gnc-prefs-bind", "gnc-prefs-get-bool", "gnc-prefs-get-int", "gnc-prefs-get-int64", "gnc-prefs-get-float", "gnc-prefs-get-string", "gnc-prefs-get-enum", "gnc-prefs-get-coords", "gnc-prefs-get-value", "gnc-prefs-set-bool", "gnc-prefs-set-int", "gnc-prefs-set-int64", "gnc-prefs-set-float", "gnc-prefs-set-string", "gnc-prefs-set-enum", "gnc-prefs-set-coords", "gnc-prefs-set-value", "gnc-prefs-reset", "gnc-prefs-reset-group", "gnc-version", "gnc-build-id", "gnc-vcs-rev", "gnc-vcs-rev-date", "gnc-gnucash-major-version", "gnc-path-get-bindir", "gnc-path-get-stdreportsdir", "gnc-path-find-localized-html-file", "gnc-build-userdata-path", "gnc-build-report-path", "gnc-build-stdreports-path", "gnc-scm-log-warn", "gnc-scm-log-error", "gnc-scm-log-msg", "gnc-scm-log-debug", "gnc-utf8-strip-invalid-strdup", "gnc-locale-from-utf8", "gnc-locale-to-utf8", "gnc-locale-default-iso-currency-code", "gnc-utf8?", NULL);
 }
 
 SCM

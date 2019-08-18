@@ -113,12 +113,11 @@
     (gnc:make-date-list begindate to-date ThirtyDayDelta)))
 
 
-(define (make-aging-table options query bucket-intervals reverse?)
+(define (make-aging-table options query bucket-intervals reverse? currency)
   (let ((lots (xaccQueryGetLots query QUERY-TXN-MATCH-ANY))
 	(buckets (new-bucket-vector))
 	(payments (gnc-numeric-zero))
-	(currency (gnc-default-currency)) ;XXX
-	(table (gnc:make-html-table)))
+        (table (gnc:make-html-table)))
 
     (define (in-interval this-date current-bucket)
       (< this-date current-bucket))
@@ -239,7 +238,7 @@
 		  (gnc:invoice-anchor-text invoice)
 		  inv-str))
 		inv-str))
-	   ((equal? type TXN-TYPE-PAYMENT) (_ "Payment, thank you"))
+	   ((equal? type TXN-TYPE-PAYMENT) (_ "Payment, thank you!"))
 	   (else (_ "Unknown"))))
 	 )
 
@@ -276,7 +275,7 @@
   (let ((txns (xaccQueryGetTransactions query QUERY-TXN-MATCH-ANY))
 	(used-columns (build-column-used options))
 	(total (gnc-numeric-zero))
-	(currency (gnc-default-currency)) ;XXX
+        (currency (xaccAccountGetCommodity acc))
 	(table (gnc:make-html-table))
 	(inv-str (gnc:option-value (gnc:lookup-option options "__reg"
 						      "inv-str")))
@@ -333,7 +332,7 @@
        (list (gnc:make-html-table-cell/size/markup
 	      1 (+ 1 (value-col used-columns))
 	      "centered-label-cell"
-	      (make-aging-table options query interval-vec reverse?)))))
+	      (make-aging-table options query interval-vec reverse? currency)))))
 
     table))
 
@@ -512,10 +511,8 @@
     (gnc:html-table-append-row! table (list (string-expand
 					     (if addy addy "")
 					     #\newline "<br/>")))
-    (gnc:html-table-append-row! table (list
-				       (strftime
-					date-format
-					(gnc-localtime (current-time)))))
+    (gnc:html-table-append-row!
+     table (list (gnc-print-time64 (current-time) date-format)))
     table))
 
 (define (make-break! document)
@@ -619,11 +616,21 @@
 
 	;; else....
 	(gnc:html-document-add-object!
-	 document
-	 (gnc:make-html-text
-	  (format #f 
-		   (_ "No valid ~a selected. Click on the Options button to select a company.")
-		   (_ type-str))))) ;; FIXME because of translations: Please change this string into full sentences instead of format, because in non-english languages the "no valid" has different forms depending on the grammatical gender of the "%s".
+         document
+         (gnc:make-html-text
+          (string-append
+           (cond
+            ((eqv? type GNC-OWNER-CUSTOMER)
+             (_ "No valid customer selected."))
+            ((eqv? type GNC-OWNER-JOB)
+             (_ "No valid job selected."))
+            ((eqv? type GNC-OWNER-VENDOR)
+             (_ "No valid vendor selected."))
+            ((eqv? type GNC-OWNER-EMPLOYEE)
+             (_ "No valid employee selected."))
+            (else ""))
+           " "
+           (_ "Click on the \"Options\" button to select a company.")))))
 
     (qof-query-destroy query)
     document))

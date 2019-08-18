@@ -6,6 +6,7 @@ set(doc_DATA
   README-ca.win32-bin.txt
   README-de.win32-bin.txt
   README-fr.win32-bin.txt
+  README-hr.win32-bin.txt
   README-it.win32-bin.txt
   README-lv.win32-bin.txt
   README-nl.win32-bin.txt
@@ -18,8 +19,8 @@ set(doc_DATA
 )
 
 set(doc_noinst_DATA
-        build-aix.txt build-solaris.txt CMakeLists.txt gnc-fq-dump.1 gnc-fq-helper.1 gnucash.1.in
-        misc-notes.txt README.HBCI README.OFX README.translator.txt tip_of_the_day.list.c
+        CMakeLists.txt gnc-fq-dump.1 gnc-fq-helper.1 gnucash.1.in
+        README.HBCI README.OFX README.translator.txt tip_of_the_day.list.c
         TRANSLATION_HOWTO)
 
 install(FILES ${doc_DATA} DESTINATION  ${CMAKE_INSTALL_DOCDIR})

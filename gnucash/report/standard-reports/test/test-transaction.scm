@@ -2,6 +2,7 @@
 (gnc:module-begin-syntax (gnc:module-load "gnucash/app-utils" 0))
 (use-modules (gnucash engine test test-extras))
 (use-modules (gnucash report standard-reports transaction))
+(use-modules (gnucash report standard-reports reconcile-report))
 (use-modules (gnucash report stylesheets))
 (use-modules (gnucash report report-system))
 (use-modules (gnucash report report-system test test-extras))
@@ -214,28 +215,13 @@
     ;; $100 from bank
     ;;  $80 to expenses
     ;;  $20 to wallet
-    (let ((txn (xaccMallocTransaction (gnc-get-current-book)))
-          (split-1 (xaccMallocSplit  (gnc-get-current-book)))
-          (split-2 (xaccMallocSplit  (gnc-get-current-book)))
-          (split-3 (xaccMallocSplit  (gnc-get-current-book))))
-      (xaccTransBeginEdit txn)
-      (xaccTransSetDescription txn "$100bank -> $80expenses + $20wallet")
-      (xaccTransSetCurrency txn (xaccAccountGetCommodity bank))
-      (xaccTransSetDate txn 14 02 1971)
-      (xaccSplitSetParent split-1 txn)
-      (xaccSplitSetParent split-2 txn)
-      (xaccSplitSetParent split-3 txn)
-      (xaccSplitSetAccount split-1 bank)
-      (xaccSplitSetAccount split-2 expense)
-      (xaccSplitSetAccount split-3 wallet)
-      (xaccSplitSetValue split-1 -100)
-      (xaccSplitSetValue split-2 80)
-      (xaccSplitSetValue split-3 20)
-      (xaccSplitSetAmount split-1 -100)
-      (xaccSplitSetAmount split-2 80)
-      (xaccSplitSetAmount split-3 20)
-      (xaccTransSetNotes txn "multisplit")
-      (xaccTransCommitEdit txn))
+    (env-create-multisplit-transaction
+     env 14 02 1971
+     (list (vector bank  -100 -100)
+           (vector expense 80   80)
+           (vector wallet  20   20))
+     #:description "$100bank -> $80expenses + $20wallet"
+     #:notes "multisplit")
 
     ;; A single closing transaction
     (let ((closing-txn (env-transfer env 31 12 1999 expense equity 111 #:description "Closing")))
@@ -652,8 +638,8 @@
           (list "Grand Total" "$2,280.00" "$2,280.00")
           (get-row-col sxml -1 #f))
         (test-equal "dual amount column, first transaction correct"
-          (list "01/03/18" "$103 income" "Root.Asset.Bank" "$103.00" "$103.00")
-          (get-row-col sxml 1 #f)))
+          (list "$103 income" "Root.Asset.Bank" "$103.00" "$103.00")
+          (cdr (get-row-col sxml 1 #f))))
       )
 
     (test-end "display options")
@@ -872,7 +858,40 @@
           (list "$0.33" "$10.33" "-$9.67" "$1.00")
           (get-row-col sxml #f 6))))
     (test-end "subtotal table")
-    ))
+
+    (test-begin "csv-export")
+    (test-assert "csv output is valid"
+      (let ((options (default-testing-options)))
+        (set-option! options "Accounts" "Accounts"
+                     (list bank usd-bank gbp-bank gbp-income income expense))
+        (set-option! options "General" "Start Date"
+                     (cons 'absolute (gnc-dmy2time64 01 01 1969)))
+        (set-option! options "General" "End Date"
+                     (cons 'absolute (gnc-dmy2time64 31 12 1970)))
+        (set-option! options "Display" "Subtotal Table" #t)
+        (set-option! options "General" "Common Currency" #t)
+        (set-option! options "General" "Report Currency" foreign2)
+        (set-option! options "General" "Show original currency amount" #t)
+        (set-option! options "Sorting" "Primary Key" 'account-name)
+        (set-option! options "Sorting" "Primary Subtotal" #t)
+        (set-option! options "Sorting" "Secondary Key" 'date)
+        (set-option! options "Sorting" "Secondary Subtotal for Date Key" 'monthly)
+
+        (let* ((template (gnc:find-report-template trep-uuid))
+               (constructor (record-constructor <report>))
+               (report (constructor trep-uuid "bar" options #t #t #f #f ""))
+               (renderer (gnc:report-template-renderer template)))
+          ;; run the renderer, ignore its output. we'll query the csv export.
+          (renderer report #:export-type 'csv #:filename "/tmp/export.csv"))
+        (let ((call-with-input-file "/tmp/export.csv"))
+          (lambda (f)
+            (let lp ((c (read-char f)) (out '()))
+              (if (eof-object? c)
+                  (string=?
+                   "\"from\",\"01/01/69\"\n\"to\",\"12/31/70\"\n\"Amount (GBP)\",2.15\n\"Amount\",3.0"
+                   (reverse-list->string out))
+                  (lp (read-char f) (cons c out))))))))
+    (test-end "csv-export")))
 
 (define (reconcile-tests)
   (let* ((env (create-test-env))
@@ -905,9 +924,8 @@
 
 
     (let* ((options (default-testing-options)))
-      (let ((sxml (options->sxml options "null test")))
-        (test-assert "sxml"
-          sxml))
+      (test-assert "reconcile-report basic run"
+        (options->sxml options "null test"))
       (set-option! options "General" "Start Date" (cons 'absolute (gnc-dmy2time64 01 03 1970)))
       (set-option! options "General" "End Date" (cons 'absolute (gnc-dmy2time64 31 03 1970)))
       (let ((sxml (options->sxml options "filter reconcile date")))

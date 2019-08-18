@@ -9,6 +9,8 @@ set (standard_reports_SCHEME_2
     advanced-portfolio.scm
     average-balance.scm
     balance-sheet.scm
+    balance-forecast.scm
+    balsheet-pnl.scm
     budget-balance-sheet.scm
     budget-barchart.scm
     budget-flow.scm
@@ -26,6 +28,7 @@ set (standard_reports_SCHEME_2
     net-charts.scm
     portfolio.scm
     price-scatter.scm
+    reconcile-report.scm
     register.scm
     sx-summary.scm
     transaction.scm

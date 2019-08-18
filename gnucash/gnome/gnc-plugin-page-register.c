@@ -36,10 +36,10 @@
 #include <config.h>
 
 #include <libguile.h>
-#include "guile-mappings.h"
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include "swig-runtime.h"
+#include "guile-mappings.h"
 
 #include "gnc-plugin-page-register.h"
 /*################## Added for Reg2 #################*/
@@ -588,6 +588,8 @@ typedef struct GncPluginPageRegisterPrivate
     } fd;
 } GncPluginPageRegisterPrivate;
 
+G_DEFINE_TYPE_WITH_PRIVATE(GncPluginPageRegister, gnc_plugin_page_register, GNC_TYPE_PLUGIN_PAGE)
+
 #define GNC_PLUGIN_PAGE_REGISTER_GET_PRIVATE(o)  \
    (G_TYPE_INSTANCE_GET_PRIVATE ((o), GNC_TYPE_PLUGIN_PAGE_REGISTER, GncPluginPageRegisterPrivate))
 
@@ -596,34 +598,6 @@ static GObjectClass *parent_class = NULL;
 /************************************************************/
 /*                      Implementation                      */
 /************************************************************/
-
-GType
-gnc_plugin_page_register_get_type (void)
-{
-    static GType gnc_plugin_page_register_type = 0;
-
-    if (gnc_plugin_page_register_type == 0)
-    {
-        static const GTypeInfo our_info =
-        {
-            sizeof (GncPluginPageRegisterClass),
-            NULL,
-            NULL,
-            (GClassInitFunc) gnc_plugin_page_register_class_init,
-            NULL,
-            NULL,
-            sizeof (GncPluginPageRegister),
-            0,
-            (GInstanceInitFunc) gnc_plugin_page_register_init
-        };
-
-        gnc_plugin_page_register_type = g_type_register_static (GNC_TYPE_PLUGIN_PAGE,
-                                        GNC_PLUGIN_PAGE_REGISTER_NAME,
-                                        &our_info, 0);
-    }
-
-    return gnc_plugin_page_register_type;
-}
 
 static GncPluginPage *
 gnc_plugin_page_register_new_common (GNCLedgerDisplay *ledger)
@@ -761,8 +735,6 @@ gnc_plugin_page_register_class_init (GncPluginPageRegisterClass *klass)
     gnc_plugin_class->recreate_page   = gnc_plugin_page_register_recreate_page;
     gnc_plugin_class->update_edit_menu_actions = gnc_plugin_page_register_update_edit_menu;
     gnc_plugin_class->finish_pending  = gnc_plugin_page_register_finish_pending;
-
-    g_type_class_add_private(klass, sizeof(GncPluginPageRegisterPrivate));
 
     gnc_ui_register_account_destroy_callback (gppr_account_destroy_cb);
 }
@@ -957,13 +929,15 @@ gnc_plugin_page_register_ui_update (gpointer various, GncPluginPageRegister *pag
     GncPluginPageRegisterPrivate *priv;
     SplitRegister *reg;
     GtkAction *action;
-    gboolean expanded, voided;
+    gboolean expanded, voided, read_only = FALSE;
     Transaction *trans;
+    CursorClass cursor_class;
     const char *uri;
 
     /* Set 'Split Transaction' */
     priv = GNC_PLUGIN_PAGE_REGISTER_GET_PRIVATE(page);
     reg = gnc_ledger_display_get_split_register(priv->ledger);
+    cursor_class = gnc_split_register_get_current_cursor_class (reg);
     expanded = gnc_split_register_current_trans_expanded(reg);
     action = gnc_plugin_page_get_action (GNC_PLUGIN_PAGE(page),
                                          "SplitTransactionAction");
@@ -974,12 +948,50 @@ gnc_plugin_page_register_ui_update (gpointer various, GncPluginPageRegister *pag
     g_signal_handlers_unblock_by_func
     (action, gnc_plugin_page_register_cmd_expand_transaction, page);
 
-    /* Set 'Void' and 'Unvoid' */
-    trans = gnc_split_register_get_current_trans(reg);
+    /* Set available actions based on read only */
+    trans = gnc_split_register_get_current_trans (reg);
+
+    if (trans)
+        read_only = xaccTransIsReadonlyByPostedDate (trans);
     voided = xaccTransHasSplitsInState(trans, VREC);
+
+    action = gnc_plugin_page_get_action (GNC_PLUGIN_PAGE(page),
+                                         "CutTransactionAction");
+    gtk_action_set_sensitive (GTK_ACTION(action), !read_only & !voided);
+
+    action = gnc_plugin_page_get_action (GNC_PLUGIN_PAGE(page),
+                                         "PasteTransactionAction");
+    gtk_action_set_sensitive (GTK_ACTION(action), !read_only & !voided);
+
+    action = gnc_plugin_page_get_action (GNC_PLUGIN_PAGE(page),
+                                         "DeleteTransactionAction");
+    gtk_action_set_sensitive (GTK_ACTION(action), !read_only & !voided);
+
+    action = gnc_plugin_page_get_action (GNC_PLUGIN_PAGE(page),
+                                         "DuplicateTransactionAction");
+    gtk_action_set_sensitive (GTK_ACTION(action), TRUE);
+
+    if (cursor_class == CURSOR_CLASS_SPLIT)
+    {
+        action = gnc_plugin_page_get_action (GNC_PLUGIN_PAGE(page),
+                                             "DuplicateTransactionAction");
+        gtk_action_set_sensitive (GTK_ACTION(action), !read_only & !voided);
+    }
+
+    action = gnc_plugin_page_get_action (GNC_PLUGIN_PAGE(page),
+                                         "RemoveTransactionSplitsAction");
+    gtk_action_set_sensitive (GTK_ACTION(action), !read_only & !voided);
+
+    /* Set 'Void' and 'Unvoid' */
+    if (read_only)
+        voided = TRUE;
+
     action = gnc_plugin_page_get_action (GNC_PLUGIN_PAGE(page),
                                          "VoidTransactionAction");
     gtk_action_set_sensitive (GTK_ACTION(action), !voided);
+
+    if (read_only)
+        voided = FALSE;
 
     action = gnc_plugin_page_get_action (GNC_PLUGIN_PAGE(page),
                                          "UnvoidTransactionAction");
@@ -1009,7 +1021,6 @@ gnc_plugin_page_register_ui_update (gpointer various, GncPluginPageRegister *pag
     {
         const char **iter, **label_iter, **tooltip_iter;
         gboolean curr_label_trans = FALSE;
-        CursorClass cursor_class = gnc_split_register_get_current_cursor_class (reg);
         iter = tran_vs_split_actions;
         action = gnc_plugin_page_get_action (GNC_PLUGIN_PAGE(page), *iter);
         label_iter = tran_action_labels;
@@ -3571,17 +3582,16 @@ gnc_plugin_page_register_cmd_find_transactions (GtkAction *action,
 
 static void
 gnc_plugin_page_register_cmd_cut_transaction (GtkAction *action,
-        GncPluginPageRegister *page)
+        GncPluginPageRegister *plugin_page)
 {
     GncPluginPageRegisterPrivate *priv;
-    SplitRegister *reg;
 
-    g_return_if_fail(GNC_IS_PLUGIN_PAGE_REGISTER(page));
+    ENTER("(action %p, plugin_page %p)", action, plugin_page);
 
-    ENTER("(action %p, page %p)", action, page);
-    priv = GNC_PLUGIN_PAGE_REGISTER_GET_PRIVATE(page);
-    reg = gnc_ledger_display_get_split_register(priv->ledger);
-    gnc_split_register_cut_current(reg);
+    g_return_if_fail(GNC_IS_PLUGIN_PAGE_REGISTER(plugin_page));
+
+    priv = GNC_PLUGIN_PAGE_REGISTER_GET_PRIVATE(plugin_page);
+    gsr_default_cut_txn_handler (priv->gsr, NULL);
     LEAVE(" ");
 }
 

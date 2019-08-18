@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.2 -->
+<!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkTreeStore" id="tree-store">
@@ -39,6 +39,9 @@
     <property name="type_hint">dialog</property>
     <signal name="destroy" handler="gnc_imap_dialog_window_destroy_cb" swapped="no"/>
     <signal name="response" handler="gnc_imap_dialog_response_cb" swapped="no"/>
+    <child>
+      <placeholder/>
+    </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox2">
         <property name="can_focus">False</property>
@@ -257,7 +260,7 @@
             <property name="can_focus">False</property>
             <property name="margin_top">5</property>
             <property name="margin_bottom">5</property>
-            <property name="label" translatable="yes">Case sensitive filtering is available on 'Match String' and 'Mapped to Account Name'.</property>
+            <property name="label" translatable="yes">Filter will be applied to 'Match String' and 'Mapped to Account Name' fields, case sensitive.</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -360,7 +363,7 @@
             <property name="can_focus">False</property>
             <property name="margin_top">5</property>
             <property name="margin_bottom">5</property>
-            <property name="label" translatable="yes">Multiple rows can be selected and then deleted by pressing the delete button...</property>
+            <property name="label" translatable="yes">Multiple rows can be selected and then deleted by pressing the delete button.</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -374,8 +377,5 @@
       <action-widget response="-10">delete_button</action-widget>
       <action-widget response="-6">close_button</action-widget>
     </action-widgets>
-    <child>
-      <placeholder/>
-    </child>
   </object>
 </interface>

@@ -4285,15 +4285,25 @@ SWIGINTERN PyObject *_wrap_xaccSplitSetDateReconciledSecs(PyObject *SWIGUNUSEDPA
   arg1 = (Split *)(argp1);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj1),
-      PyDateTime_DATE_GET_MINUTE(obj1),
-      PyDateTime_DATE_GET_HOUR(obj1),
-      PyDateTime_GET_DAY(obj1),
-      PyDateTime_GET_MONTH(obj1) - 1,
-      PyDateTime_GET_YEAR(obj1) - 1900
-    };
-    arg2 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj1) && !PyInt_Check(obj1)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj1)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj1),
+        PyDateTime_DATE_GET_MINUTE(obj1),
+        PyDateTime_DATE_GET_HOUR(obj1),
+        PyDateTime_GET_DAY(obj1),
+        PyDateTime_GET_MONTH(obj1) - 1,
+        PyDateTime_GET_YEAR(obj1) - 1900
+      };
+      arg2 = gnc_mktime(&time);
+    } else {
+      arg2 = PyInt_AsLong(obj1);
+    }
   }
   xaccSplitSetDateReconciledSecs(arg1,arg2);
   resultobj = SWIG_Py_Void();
@@ -4885,15 +4895,25 @@ SWIGINTERN PyObject *_wrap_xaccSplitAddPeerSplit(PyObject *SWIGUNUSEDPARM(self),
   arg2 = (Split *)(argp2);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj2),
-      PyDateTime_DATE_GET_MINUTE(obj2),
-      PyDateTime_DATE_GET_HOUR(obj2),
-      PyDateTime_GET_DAY(obj2),
-      PyDateTime_GET_MONTH(obj2) - 1,
-      PyDateTime_GET_YEAR(obj2) - 1900
-    };
-    arg3 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj2) && !PyInt_Check(obj2)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj2)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj2),
+        PyDateTime_DATE_GET_MINUTE(obj2),
+        PyDateTime_DATE_GET_HOUR(obj2),
+        PyDateTime_GET_DAY(obj2),
+        PyDateTime_GET_MONTH(obj2) - 1,
+        PyDateTime_GET_YEAR(obj2) - 1900
+      };
+      arg3 = gnc_mktime(&time);
+    } else {
+      arg3 = PyInt_AsLong(obj2);
+    }
   }
   xaccSplitAddPeerSplit(arg1,(Split const *)arg2,arg3);
   resultobj = SWIG_Py_Void();
@@ -7986,15 +8006,25 @@ SWIGINTERN PyObject *_wrap_xaccAccountGetBalanceAsOfDate(PyObject *SWIGUNUSEDPAR
   arg1 = (Account *)(argp1);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj1),
-      PyDateTime_DATE_GET_MINUTE(obj1),
-      PyDateTime_DATE_GET_HOUR(obj1),
-      PyDateTime_GET_DAY(obj1),
-      PyDateTime_GET_MONTH(obj1) - 1,
-      PyDateTime_GET_YEAR(obj1) - 1900
-    };
-    arg2 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj1) && !PyInt_Check(obj1)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj1)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj1),
+        PyDateTime_DATE_GET_MINUTE(obj1),
+        PyDateTime_DATE_GET_HOUR(obj1),
+        PyDateTime_GET_DAY(obj1),
+        PyDateTime_GET_MONTH(obj1) - 1,
+        PyDateTime_GET_YEAR(obj1) - 1900
+      };
+      arg2 = gnc_mktime(&time);
+    } else {
+      arg2 = PyInt_AsLong(obj1);
+    }
   }
   result = xaccAccountGetBalanceAsOfDate(arg1,arg2);
   resultobj = SWIG_NewPointerObj((gnc_numeric *)memcpy((gnc_numeric *)malloc(sizeof(gnc_numeric)),&result,sizeof(gnc_numeric)), SWIGTYPE_p__gnc_numeric, SWIG_POINTER_OWN |  0 );
@@ -8110,15 +8140,25 @@ SWIGINTERN PyObject *_wrap_xaccAccountConvertBalanceToCurrencyAsOfDate(PyObject 
   arg4 = (gnc_commodity *)(argp4);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj4),
-      PyDateTime_DATE_GET_MINUTE(obj4),
-      PyDateTime_DATE_GET_HOUR(obj4),
-      PyDateTime_GET_DAY(obj4),
-      PyDateTime_GET_MONTH(obj4) - 1,
-      PyDateTime_GET_YEAR(obj4) - 1900
-    };
-    arg5 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj4) && !PyInt_Check(obj4)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj4)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj4),
+        PyDateTime_DATE_GET_MINUTE(obj4),
+        PyDateTime_DATE_GET_HOUR(obj4),
+        PyDateTime_GET_DAY(obj4),
+        PyDateTime_GET_MONTH(obj4) - 1,
+        PyDateTime_GET_YEAR(obj4) - 1900
+      };
+      arg5 = gnc_mktime(&time);
+    } else {
+      arg5 = PyInt_AsLong(obj4);
+    }
   }
   result = xaccAccountConvertBalanceToCurrencyAsOfDate((Account const *)arg1,arg2,arg3,arg4,arg5);
   resultobj = SWIG_NewPointerObj((gnc_numeric *)memcpy((gnc_numeric *)malloc(sizeof(gnc_numeric)),&result,sizeof(gnc_numeric)), SWIGTYPE_p__gnc_numeric, SWIG_POINTER_OWN |  0 );
@@ -8387,15 +8427,25 @@ SWIGINTERN PyObject *_wrap_xaccAccountGetBalanceAsOfDateInCurrency(PyObject *SWI
   arg1 = (Account *)(argp1);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj1),
-      PyDateTime_DATE_GET_MINUTE(obj1),
-      PyDateTime_DATE_GET_HOUR(obj1),
-      PyDateTime_GET_DAY(obj1),
-      PyDateTime_GET_MONTH(obj1) - 1,
-      PyDateTime_GET_YEAR(obj1) - 1900
-    };
-    arg2 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj1) && !PyInt_Check(obj1)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj1)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj1),
+        PyDateTime_DATE_GET_MINUTE(obj1),
+        PyDateTime_DATE_GET_HOUR(obj1),
+        PyDateTime_GET_DAY(obj1),
+        PyDateTime_GET_MONTH(obj1) - 1,
+        PyDateTime_GET_YEAR(obj1) - 1900
+      };
+      arg2 = gnc_mktime(&time);
+    } else {
+      arg2 = PyInt_AsLong(obj1);
+    }
   }
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_gnc_commodity, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
@@ -8446,27 +8496,47 @@ SWIGINTERN PyObject *_wrap_xaccAccountGetBalanceChangeForPeriod(PyObject *SWIGUN
   arg1 = (Account *)(argp1);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj1),
-      PyDateTime_DATE_GET_MINUTE(obj1),
-      PyDateTime_DATE_GET_HOUR(obj1),
-      PyDateTime_GET_DAY(obj1),
-      PyDateTime_GET_MONTH(obj1) - 1,
-      PyDateTime_GET_YEAR(obj1) - 1900
-    };
-    arg2 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj1) && !PyInt_Check(obj1)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj1)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj1),
+        PyDateTime_DATE_GET_MINUTE(obj1),
+        PyDateTime_DATE_GET_HOUR(obj1),
+        PyDateTime_GET_DAY(obj1),
+        PyDateTime_GET_MONTH(obj1) - 1,
+        PyDateTime_GET_YEAR(obj1) - 1900
+      };
+      arg2 = gnc_mktime(&time);
+    } else {
+      arg2 = PyInt_AsLong(obj1);
+    }
   }
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj2),
-      PyDateTime_DATE_GET_MINUTE(obj2),
-      PyDateTime_DATE_GET_HOUR(obj2),
-      PyDateTime_GET_DAY(obj2),
-      PyDateTime_GET_MONTH(obj2) - 1,
-      PyDateTime_GET_YEAR(obj2) - 1900
-    };
-    arg3 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj2) && !PyInt_Check(obj2)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj2)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj2),
+        PyDateTime_DATE_GET_MINUTE(obj2),
+        PyDateTime_DATE_GET_HOUR(obj2),
+        PyDateTime_GET_DAY(obj2),
+        PyDateTime_GET_MONTH(obj2) - 1,
+        PyDateTime_GET_YEAR(obj2) - 1900
+      };
+      arg3 = gnc_mktime(&time);
+    } else {
+      arg3 = PyInt_AsLong(obj2);
+    }
   }
   {
     if (obj3 == Py_True)
@@ -10030,29 +10100,19 @@ SWIGINTERN PyObject *_wrap_xaccAccountGetReconcileLastDate(PyObject *SWIGUNUSEDP
   void *argp1 = 0 ;
   int res1 = 0 ;
   time64 secs2 ;
+  time64 secs20 ;
   PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
   gboolean result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:xaccAccountGetReconcileLastDate",&obj0,&obj1)) SWIG_fail;
+  {
+    arg2 = &secs2;
+  }
+  if (!PyArg_ParseTuple(args,(char *)"O:xaccAccountGetReconcileLastDate",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Account, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccAccountGetReconcileLastDate" "', argument " "1"" of type '" "Account const *""'"); 
   }
   arg1 = (Account *)(argp1);
-  {
-    PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj1),
-      PyDateTime_DATE_GET_MINUTE(obj1),
-      PyDateTime_DATE_GET_HOUR(obj1),
-      PyDateTime_GET_DAY(obj1),
-      PyDateTime_GET_MONTH(obj1) - 1,
-      PyDateTime_GET_YEAR(obj1) - 1900
-    };
-    time64 secs2 = gnc_mktime(&time);
-    arg2 = &secs2;
-  }
   result = xaccAccountGetReconcileLastDate((Account const *)arg1,arg2);
   {
     if (result == TRUE)
@@ -10073,6 +10133,22 @@ SWIGINTERN PyObject *_wrap_xaccAccountGetReconcileLastDate(PyObject *SWIGUNUSEDP
         "TRUE or FALSE.");
       return NULL;
     }
+  }
+  {
+    PyDateTime_IMPORT;
+    PyObject *tp;
+    struct tm t;
+    
+    // directly access return value (result) of function
+    // only return datetime if TRUE
+    if(result) {
+      gnc_localtime_r(arg2, &t);
+      tp = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
+        t.tm_mday, t.tm_hour, t.tm_min,
+        t.tm_sec, 0);
+      
+      resultobj = SWIG_Python_AppendOutput(resultobj, tp);
+    } else resultobj = SWIG_Python_AppendOutput(resultobj, Py_None);
   }
   return resultobj;
 fail:
@@ -10097,15 +10173,25 @@ SWIGINTERN PyObject *_wrap_xaccAccountSetReconcileLastDate(PyObject *SWIGUNUSEDP
   arg1 = (Account *)(argp1);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj1),
-      PyDateTime_DATE_GET_MINUTE(obj1),
-      PyDateTime_DATE_GET_HOUR(obj1),
-      PyDateTime_GET_DAY(obj1),
-      PyDateTime_GET_MONTH(obj1) - 1,
-      PyDateTime_GET_YEAR(obj1) - 1900
-    };
-    arg2 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj1) && !PyInt_Check(obj1)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj1)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj1),
+        PyDateTime_DATE_GET_MINUTE(obj1),
+        PyDateTime_DATE_GET_HOUR(obj1),
+        PyDateTime_GET_DAY(obj1),
+        PyDateTime_GET_MONTH(obj1) - 1,
+        PyDateTime_GET_YEAR(obj1) - 1900
+      };
+      arg2 = gnc_mktime(&time);
+    } else {
+      arg2 = PyInt_AsLong(obj1);
+    }
   }
   xaccAccountSetReconcileLastDate(arg1,arg2);
   resultobj = SWIG_Py_Void();
@@ -10220,29 +10306,19 @@ SWIGINTERN PyObject *_wrap_xaccAccountGetReconcilePostponeDate(PyObject *SWIGUNU
   void *argp1 = 0 ;
   int res1 = 0 ;
   time64 secs2 ;
+  time64 secs20 ;
   PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
   gboolean result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:xaccAccountGetReconcilePostponeDate",&obj0,&obj1)) SWIG_fail;
+  {
+    arg2 = &secs2;
+  }
+  if (!PyArg_ParseTuple(args,(char *)"O:xaccAccountGetReconcilePostponeDate",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_Account, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "xaccAccountGetReconcilePostponeDate" "', argument " "1"" of type '" "Account const *""'"); 
   }
   arg1 = (Account *)(argp1);
-  {
-    PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj1),
-      PyDateTime_DATE_GET_MINUTE(obj1),
-      PyDateTime_DATE_GET_HOUR(obj1),
-      PyDateTime_GET_DAY(obj1),
-      PyDateTime_GET_MONTH(obj1) - 1,
-      PyDateTime_GET_YEAR(obj1) - 1900
-    };
-    time64 secs2 = gnc_mktime(&time);
-    arg2 = &secs2;
-  }
   result = xaccAccountGetReconcilePostponeDate((Account const *)arg1,arg2);
   {
     if (result == TRUE)
@@ -10263,6 +10339,22 @@ SWIGINTERN PyObject *_wrap_xaccAccountGetReconcilePostponeDate(PyObject *SWIGUNU
         "TRUE or FALSE.");
       return NULL;
     }
+  }
+  {
+    PyDateTime_IMPORT;
+    PyObject *tp;
+    struct tm t;
+    
+    // directly access return value (result) of function
+    // only return datetime if TRUE
+    if(result) {
+      gnc_localtime_r(arg2, &t);
+      tp = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
+        t.tm_mday, t.tm_hour, t.tm_min,
+        t.tm_sec, 0);
+      
+      resultobj = SWIG_Python_AppendOutput(resultobj, tp);
+    } else resultobj = SWIG_Python_AppendOutput(resultobj, Py_None);
   }
   return resultobj;
 fail:
@@ -10287,15 +10379,25 @@ SWIGINTERN PyObject *_wrap_xaccAccountSetReconcilePostponeDate(PyObject *SWIGUNU
   arg1 = (Account *)(argp1);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj1),
-      PyDateTime_DATE_GET_MINUTE(obj1),
-      PyDateTime_DATE_GET_HOUR(obj1),
-      PyDateTime_GET_DAY(obj1),
-      PyDateTime_GET_MONTH(obj1) - 1,
-      PyDateTime_GET_YEAR(obj1) - 1900
-    };
-    arg2 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj1) && !PyInt_Check(obj1)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj1)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj1),
+        PyDateTime_DATE_GET_MINUTE(obj1),
+        PyDateTime_DATE_GET_HOUR(obj1),
+        PyDateTime_GET_DAY(obj1),
+        PyDateTime_GET_MONTH(obj1) - 1,
+        PyDateTime_GET_YEAR(obj1) - 1900
+      };
+      arg2 = gnc_mktime(&time);
+    } else {
+      arg2 = PyInt_AsLong(obj1);
+    }
   }
   xaccAccountSetReconcilePostponeDate(arg1,arg2);
   resultobj = SWIG_Py_Void();
@@ -14590,15 +14692,25 @@ SWIGINTERN PyObject *_wrap_xaccTransSetDatePostedSecs(PyObject *SWIGUNUSEDPARM(s
   arg1 = (Transaction *)(argp1);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj1),
-      PyDateTime_DATE_GET_MINUTE(obj1),
-      PyDateTime_DATE_GET_HOUR(obj1),
-      PyDateTime_GET_DAY(obj1),
-      PyDateTime_GET_MONTH(obj1) - 1,
-      PyDateTime_GET_YEAR(obj1) - 1900
-    };
-    arg2 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj1) && !PyInt_Check(obj1)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj1)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj1),
+        PyDateTime_DATE_GET_MINUTE(obj1),
+        PyDateTime_DATE_GET_HOUR(obj1),
+        PyDateTime_GET_DAY(obj1),
+        PyDateTime_GET_MONTH(obj1) - 1,
+        PyDateTime_GET_YEAR(obj1) - 1900
+      };
+      arg2 = gnc_mktime(&time);
+    } else {
+      arg2 = PyInt_AsLong(obj1);
+    }
   }
   xaccTransSetDatePostedSecs(arg1,arg2);
   resultobj = SWIG_Py_Void();
@@ -14625,15 +14737,25 @@ SWIGINTERN PyObject *_wrap_xaccTransSetDatePostedSecsNormalized(PyObject *SWIGUN
   arg1 = (Transaction *)(argp1);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj1),
-      PyDateTime_DATE_GET_MINUTE(obj1),
-      PyDateTime_DATE_GET_HOUR(obj1),
-      PyDateTime_GET_DAY(obj1),
-      PyDateTime_GET_MONTH(obj1) - 1,
-      PyDateTime_GET_YEAR(obj1) - 1900
-    };
-    arg2 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj1) && !PyInt_Check(obj1)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj1)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj1),
+        PyDateTime_DATE_GET_MINUTE(obj1),
+        PyDateTime_DATE_GET_HOUR(obj1),
+        PyDateTime_GET_DAY(obj1),
+        PyDateTime_GET_MONTH(obj1) - 1,
+        PyDateTime_GET_YEAR(obj1) - 1900
+      };
+      arg2 = gnc_mktime(&time);
+    } else {
+      arg2 = PyInt_AsLong(obj1);
+    }
   }
   xaccTransSetDatePostedSecsNormalized(arg1,arg2);
   resultobj = SWIG_Py_Void();
@@ -14660,15 +14782,25 @@ SWIGINTERN PyObject *_wrap_xaccTransSetDateEnteredSecs(PyObject *SWIGUNUSEDPARM(
   arg1 = (Transaction *)(argp1);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj1),
-      PyDateTime_DATE_GET_MINUTE(obj1),
-      PyDateTime_DATE_GET_HOUR(obj1),
-      PyDateTime_GET_DAY(obj1),
-      PyDateTime_GET_MONTH(obj1) - 1,
-      PyDateTime_GET_YEAR(obj1) - 1900
-    };
-    arg2 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj1) && !PyInt_Check(obj1)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj1)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj1),
+        PyDateTime_DATE_GET_MINUTE(obj1),
+        PyDateTime_DATE_GET_HOUR(obj1),
+        PyDateTime_GET_DAY(obj1),
+        PyDateTime_GET_MONTH(obj1) - 1,
+        PyDateTime_GET_YEAR(obj1) - 1900
+      };
+      arg2 = gnc_mktime(&time);
+    } else {
+      arg2 = PyInt_AsLong(obj1);
+    }
   }
   xaccTransSetDateEnteredSecs(arg1,arg2);
   resultobj = SWIG_Py_Void();
@@ -14695,15 +14827,25 @@ SWIGINTERN PyObject *_wrap_xaccTransSetDateDue(PyObject *SWIGUNUSEDPARM(self), P
   arg1 = (Transaction *)(argp1);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj1),
-      PyDateTime_DATE_GET_MINUTE(obj1),
-      PyDateTime_DATE_GET_HOUR(obj1),
-      PyDateTime_GET_DAY(obj1),
-      PyDateTime_GET_MONTH(obj1) - 1,
-      PyDateTime_GET_YEAR(obj1) - 1900
-    };
-    arg2 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj1) && !PyInt_Check(obj1)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj1)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj1),
+        PyDateTime_DATE_GET_MINUTE(obj1),
+        PyDateTime_DATE_GET_HOUR(obj1),
+        PyDateTime_GET_DAY(obj1),
+        PyDateTime_GET_MONTH(obj1) - 1,
+        PyDateTime_GET_YEAR(obj1) - 1900
+      };
+      arg2 = gnc_mktime(&time);
+    } else {
+      arg2 = PyInt_AsLong(obj1);
+    }
   }
   xaccTransSetDateDue(arg1,arg2);
   resultobj = SWIG_Py_Void();
@@ -19083,15 +19225,25 @@ SWIGINTERN PyObject *_wrap_qof_query_date_predicate(PyObject *SWIGUNUSEDPARM(sel
   arg2 = (QofDateMatch)(val2);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj2),
-      PyDateTime_DATE_GET_MINUTE(obj2),
-      PyDateTime_DATE_GET_HOUR(obj2),
-      PyDateTime_GET_DAY(obj2),
-      PyDateTime_GET_MONTH(obj2) - 1,
-      PyDateTime_GET_YEAR(obj2) - 1900
-    };
-    arg3 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj2) && !PyInt_Check(obj2)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj2)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj2),
+        PyDateTime_DATE_GET_MINUTE(obj2),
+        PyDateTime_DATE_GET_HOUR(obj2),
+        PyDateTime_GET_DAY(obj2),
+        PyDateTime_GET_MONTH(obj2) - 1,
+        PyDateTime_GET_YEAR(obj2) - 1900
+      };
+      arg3 = gnc_mktime(&time);
+    } else {
+      arg3 = PyInt_AsLong(obj2);
+    }
   }
   result = (QofQueryPredData *)qof_query_date_predicate(arg1,arg2,arg3);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__QofQueryPredData, 0 |  0 );
@@ -19455,29 +19607,19 @@ SWIGINTERN PyObject *_wrap_qof_query_date_predicate_get_date(PyObject *SWIGUNUSE
   void *argp1 = 0 ;
   int res1 = 0 ;
   time64 secs2 ;
+  time64 secs20 ;
   PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
   gboolean result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OO:qof_query_date_predicate_get_date",&obj0,&obj1)) SWIG_fail;
+  {
+    arg2 = &secs2;
+  }
+  if (!PyArg_ParseTuple(args,(char *)"O:qof_query_date_predicate_get_date",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__QofQueryPredData, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "qof_query_date_predicate_get_date" "', argument " "1"" of type '" "QofQueryPredData const *""'"); 
   }
   arg1 = (QofQueryPredData *)(argp1);
-  {
-    PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj1),
-      PyDateTime_DATE_GET_MINUTE(obj1),
-      PyDateTime_DATE_GET_HOUR(obj1),
-      PyDateTime_GET_DAY(obj1),
-      PyDateTime_GET_MONTH(obj1) - 1,
-      PyDateTime_GET_YEAR(obj1) - 1900
-    };
-    time64 secs2 = gnc_mktime(&time);
-    arg2 = &secs2;
-  }
   result = qof_query_date_predicate_get_date((struct _QofQueryPredData const *)arg1,arg2);
   {
     if (result == TRUE)
@@ -19498,6 +19640,22 @@ SWIGINTERN PyObject *_wrap_qof_query_date_predicate_get_date(PyObject *SWIGUNUSE
         "TRUE or FALSE.");
       return NULL;
     }
+  }
+  {
+    PyDateTime_IMPORT;
+    PyObject *tp;
+    struct tm t;
+    
+    // directly access return value (result) of function
+    // only return datetime if TRUE
+    if(result) {
+      gnc_localtime_r(arg2, &t);
+      tp = PyDateTime_FromDateAndTime(t.tm_year + 1900, t.tm_mon + 1,
+        t.tm_mday, t.tm_hour, t.tm_min,
+        t.tm_sec, 0);
+      
+      resultobj = SWIG_Python_AppendOutput(resultobj, tp);
+    } else resultobj = SWIG_Python_AppendOutput(resultobj, Py_None);
   }
   return resultobj;
 fail:
@@ -27148,15 +27306,25 @@ SWIGINTERN PyObject *_wrap_gncOwnerCreatePaymentLotSecs(PyObject *SWIGUNUSEDPARM
   }
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj6),
-      PyDateTime_DATE_GET_MINUTE(obj6),
-      PyDateTime_DATE_GET_HOUR(obj6),
-      PyDateTime_GET_DAY(obj6),
-      PyDateTime_GET_MONTH(obj6) - 1,
-      PyDateTime_GET_YEAR(obj6) - 1900
-    };
-    arg7 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj6) && !PyInt_Check(obj6)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj6)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj6),
+        PyDateTime_DATE_GET_MINUTE(obj6),
+        PyDateTime_DATE_GET_HOUR(obj6),
+        PyDateTime_GET_DAY(obj6),
+        PyDateTime_GET_MONTH(obj6) - 1,
+        PyDateTime_GET_YEAR(obj6) - 1900
+      };
+      arg7 = gnc_mktime(&time);
+    } else {
+      arg7 = PyInt_AsLong(obj6);
+    }
   }
   res8 = SWIG_AsCharPtrAndSize(obj7, &buf8, NULL, &alloc8);
   if (!SWIG_IsOK(res8)) {
@@ -27373,15 +27541,25 @@ SWIGINTERN PyObject *_wrap_gncOwnerApplyPaymentSecs(PyObject *SWIGUNUSEDPARM(sel
   }
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj7),
-      PyDateTime_DATE_GET_MINUTE(obj7),
-      PyDateTime_DATE_GET_HOUR(obj7),
-      PyDateTime_GET_DAY(obj7),
-      PyDateTime_GET_MONTH(obj7) - 1,
-      PyDateTime_GET_YEAR(obj7) - 1900
-    };
-    arg8 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj7) && !PyInt_Check(obj7)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj7)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj7),
+        PyDateTime_DATE_GET_MINUTE(obj7),
+        PyDateTime_DATE_GET_HOUR(obj7),
+        PyDateTime_GET_DAY(obj7),
+        PyDateTime_GET_MONTH(obj7) - 1,
+        PyDateTime_GET_YEAR(obj7) - 1900
+      };
+      arg8 = gnc_mktime(&time);
+    } else {
+      arg8 = PyInt_AsLong(obj7);
+    }
   }
   res9 = SWIG_AsCharPtrAndSize(obj8, &buf9, NULL, &alloc9);
   if (!SWIG_IsOK(res9)) {
@@ -32736,15 +32914,25 @@ SWIGINTERN PyObject *_wrap_gncBillTermComputeDueDate(PyObject *SWIGUNUSEDPARM(se
   arg1 = (GncBillTerm *)(argp1);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj1),
-      PyDateTime_DATE_GET_MINUTE(obj1),
-      PyDateTime_DATE_GET_HOUR(obj1),
-      PyDateTime_GET_DAY(obj1),
-      PyDateTime_GET_MONTH(obj1) - 1,
-      PyDateTime_GET_YEAR(obj1) - 1900
-    };
-    arg2 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj1) && !PyInt_Check(obj1)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj1)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj1),
+        PyDateTime_DATE_GET_MINUTE(obj1),
+        PyDateTime_DATE_GET_HOUR(obj1),
+        PyDateTime_GET_DAY(obj1),
+        PyDateTime_GET_MONTH(obj1) - 1,
+        PyDateTime_GET_YEAR(obj1) - 1900
+      };
+      arg2 = gnc_mktime(&time);
+    } else {
+      arg2 = PyInt_AsLong(obj1);
+    }
   }
   result = gncBillTermComputeDueDate((struct _gncBillTerm const *)arg1,arg2);
   {
@@ -32987,15 +33175,25 @@ SWIGINTERN PyObject *_wrap_gncInvoiceSetDateOpened(PyObject *SWIGUNUSEDPARM(self
   arg1 = (GncInvoice *)(argp1);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj1),
-      PyDateTime_DATE_GET_MINUTE(obj1),
-      PyDateTime_DATE_GET_HOUR(obj1),
-      PyDateTime_GET_DAY(obj1),
-      PyDateTime_GET_MONTH(obj1) - 1,
-      PyDateTime_GET_YEAR(obj1) - 1900
-    };
-    arg2 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj1) && !PyInt_Check(obj1)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj1)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj1),
+        PyDateTime_DATE_GET_MINUTE(obj1),
+        PyDateTime_DATE_GET_HOUR(obj1),
+        PyDateTime_GET_DAY(obj1),
+        PyDateTime_GET_MONTH(obj1) - 1,
+        PyDateTime_GET_YEAR(obj1) - 1900
+      };
+      arg2 = gnc_mktime(&time);
+    } else {
+      arg2 = PyInt_AsLong(obj1);
+    }
   }
   gncInvoiceSetDateOpened(arg1,arg2);
   resultobj = SWIG_Py_Void();
@@ -33022,15 +33220,25 @@ SWIGINTERN PyObject *_wrap_gncInvoiceSetDatePosted(PyObject *SWIGUNUSEDPARM(self
   arg1 = (GncInvoice *)(argp1);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj1),
-      PyDateTime_DATE_GET_MINUTE(obj1),
-      PyDateTime_DATE_GET_HOUR(obj1),
-      PyDateTime_GET_DAY(obj1),
-      PyDateTime_GET_MONTH(obj1) - 1,
-      PyDateTime_GET_YEAR(obj1) - 1900
-    };
-    arg2 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj1) && !PyInt_Check(obj1)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj1)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj1),
+        PyDateTime_DATE_GET_MINUTE(obj1),
+        PyDateTime_DATE_GET_HOUR(obj1),
+        PyDateTime_GET_DAY(obj1),
+        PyDateTime_GET_MONTH(obj1) - 1,
+        PyDateTime_GET_YEAR(obj1) - 1900
+      };
+      arg2 = gnc_mktime(&time);
+    } else {
+      arg2 = PyInt_AsLong(obj1);
+    }
   }
   gncInvoiceSetDatePosted(arg1,arg2);
   resultobj = SWIG_Py_Void();
@@ -34493,27 +34701,47 @@ SWIGINTERN PyObject *_wrap_gncInvoicePostToAccount(PyObject *SWIGUNUSEDPARM(self
   arg2 = (Account *)(argp2);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj2),
-      PyDateTime_DATE_GET_MINUTE(obj2),
-      PyDateTime_DATE_GET_HOUR(obj2),
-      PyDateTime_GET_DAY(obj2),
-      PyDateTime_GET_MONTH(obj2) - 1,
-      PyDateTime_GET_YEAR(obj2) - 1900
-    };
-    arg3 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj2) && !PyInt_Check(obj2)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj2)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj2),
+        PyDateTime_DATE_GET_MINUTE(obj2),
+        PyDateTime_DATE_GET_HOUR(obj2),
+        PyDateTime_GET_DAY(obj2),
+        PyDateTime_GET_MONTH(obj2) - 1,
+        PyDateTime_GET_YEAR(obj2) - 1900
+      };
+      arg3 = gnc_mktime(&time);
+    } else {
+      arg3 = PyInt_AsLong(obj2);
+    }
   }
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj3),
-      PyDateTime_DATE_GET_MINUTE(obj3),
-      PyDateTime_DATE_GET_HOUR(obj3),
-      PyDateTime_GET_DAY(obj3),
-      PyDateTime_GET_MONTH(obj3) - 1,
-      PyDateTime_GET_YEAR(obj3) - 1900
-    };
-    arg4 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj3) && !PyInt_Check(obj3)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj3)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj3),
+        PyDateTime_DATE_GET_MINUTE(obj3),
+        PyDateTime_DATE_GET_HOUR(obj3),
+        PyDateTime_GET_DAY(obj3),
+        PyDateTime_GET_MONTH(obj3) - 1,
+        PyDateTime_GET_YEAR(obj3) - 1900
+      };
+      arg4 = gnc_mktime(&time);
+    } else {
+      arg4 = PyInt_AsLong(obj3);
+    }
   }
   res5 = SWIG_AsCharPtrAndSize(obj4, &buf5, NULL, &alloc5);
   if (!SWIG_IsOK(res5)) {
@@ -34711,15 +34939,25 @@ SWIGINTERN PyObject *_wrap_gncInvoiceApplyPayment(PyObject *SWIGUNUSEDPARM(self)
   }
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj5),
-      PyDateTime_DATE_GET_MINUTE(obj5),
-      PyDateTime_DATE_GET_HOUR(obj5),
-      PyDateTime_GET_DAY(obj5),
-      PyDateTime_GET_MONTH(obj5) - 1,
-      PyDateTime_GET_YEAR(obj5) - 1900
-    };
-    arg6 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj5) && !PyInt_Check(obj5)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj5)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj5),
+        PyDateTime_DATE_GET_MINUTE(obj5),
+        PyDateTime_DATE_GET_HOUR(obj5),
+        PyDateTime_GET_DAY(obj5),
+        PyDateTime_GET_MONTH(obj5) - 1,
+        PyDateTime_GET_YEAR(obj5) - 1900
+      };
+      arg6 = gnc_mktime(&time);
+    } else {
+      arg6 = PyInt_AsLong(obj5);
+    }
   }
   res7 = SWIG_AsCharPtrAndSize(obj6, &buf7, NULL, &alloc7);
   if (!SWIG_IsOK(res7)) {
@@ -36190,15 +36428,25 @@ SWIGINTERN PyObject *_wrap_gncEntrySetDate(PyObject *SWIGUNUSEDPARM(self), PyObj
   arg1 = (GncEntry *)(argp1);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj1),
-      PyDateTime_DATE_GET_MINUTE(obj1),
-      PyDateTime_DATE_GET_HOUR(obj1),
-      PyDateTime_GET_DAY(obj1),
-      PyDateTime_GET_MONTH(obj1) - 1,
-      PyDateTime_GET_YEAR(obj1) - 1900
-    };
-    arg2 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj1) && !PyInt_Check(obj1)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj1)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj1),
+        PyDateTime_DATE_GET_MINUTE(obj1),
+        PyDateTime_DATE_GET_HOUR(obj1),
+        PyDateTime_GET_DAY(obj1),
+        PyDateTime_GET_MONTH(obj1) - 1,
+        PyDateTime_GET_YEAR(obj1) - 1900
+      };
+      arg2 = gnc_mktime(&time);
+    } else {
+      arg2 = PyInt_AsLong(obj1);
+    }
   }
   gncEntrySetDate(arg1,arg2);
   resultobj = SWIG_Py_Void();
@@ -36225,15 +36473,25 @@ SWIGINTERN PyObject *_wrap_gncEntrySetDateEntered(PyObject *SWIGUNUSEDPARM(self)
   arg1 = (GncEntry *)(argp1);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj1),
-      PyDateTime_DATE_GET_MINUTE(obj1),
-      PyDateTime_DATE_GET_HOUR(obj1),
-      PyDateTime_GET_DAY(obj1),
-      PyDateTime_GET_MONTH(obj1) - 1,
-      PyDateTime_GET_YEAR(obj1) - 1900
-    };
-    arg2 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj1) && !PyInt_Check(obj1)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj1)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj1),
+        PyDateTime_DATE_GET_MINUTE(obj1),
+        PyDateTime_DATE_GET_HOUR(obj1),
+        PyDateTime_GET_DAY(obj1),
+        PyDateTime_GET_MONTH(obj1) - 1,
+        PyDateTime_GET_YEAR(obj1) - 1900
+      };
+      arg2 = gnc_mktime(&time);
+    } else {
+      arg2 = PyInt_AsLong(obj1);
+    }
   }
   gncEntrySetDateEntered(arg1,arg2);
   resultobj = SWIG_Py_Void();
@@ -40623,15 +40881,25 @@ SWIGINTERN PyObject *_wrap_gnc_price_set_time64(PyObject *SWIGUNUSEDPARM(self), 
   arg1 = (GNCPrice *)(argp1);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj1),
-      PyDateTime_DATE_GET_MINUTE(obj1),
-      PyDateTime_DATE_GET_HOUR(obj1),
-      PyDateTime_GET_DAY(obj1),
-      PyDateTime_GET_MONTH(obj1) - 1,
-      PyDateTime_GET_YEAR(obj1) - 1900
-    };
-    arg2 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj1) && !PyInt_Check(obj1)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj1)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj1),
+        PyDateTime_DATE_GET_MINUTE(obj1),
+        PyDateTime_DATE_GET_HOUR(obj1),
+        PyDateTime_GET_DAY(obj1),
+        PyDateTime_GET_MONTH(obj1) - 1,
+        PyDateTime_GET_YEAR(obj1) - 1900
+      };
+      arg2 = gnc_mktime(&time);
+    } else {
+      arg2 = PyInt_AsLong(obj1);
+    }
   }
   gnc_price_set_time64(arg1,arg2);
   resultobj = SWIG_Py_Void();
@@ -41533,15 +41801,25 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_remove_old_prices(PyObject *SWIGUNUSEDPAR
   arg3 = (GDate *)(argp3);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj3),
-      PyDateTime_DATE_GET_MINUTE(obj3),
-      PyDateTime_DATE_GET_HOUR(obj3),
-      PyDateTime_GET_DAY(obj3),
-      PyDateTime_GET_MONTH(obj3) - 1,
-      PyDateTime_GET_YEAR(obj3) - 1900
-    };
-    arg4 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj3) && !PyInt_Check(obj3)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj3)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj3),
+        PyDateTime_DATE_GET_MINUTE(obj3),
+        PyDateTime_DATE_GET_HOUR(obj3),
+        PyDateTime_GET_DAY(obj3),
+        PyDateTime_GET_MONTH(obj3) - 1,
+        PyDateTime_GET_YEAR(obj3) - 1900
+      };
+      arg4 = gnc_mktime(&time);
+    } else {
+      arg4 = PyInt_AsLong(obj3);
+    }
   }
   ecode5 = SWIG_AsVal_int(obj4, &val5);
   if (!SWIG_IsOK(ecode5)) {
@@ -41868,15 +42146,25 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_at_time64(PyObject *SWIGUNUSEDPARM
   arg3 = (gnc_commodity *)(argp3);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj3),
-      PyDateTime_DATE_GET_MINUTE(obj3),
-      PyDateTime_DATE_GET_HOUR(obj3),
-      PyDateTime_GET_DAY(obj3),
-      PyDateTime_GET_MONTH(obj3) - 1,
-      PyDateTime_GET_YEAR(obj3) - 1900
-    };
-    arg4 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj3) && !PyInt_Check(obj3)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj3)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj3),
+        PyDateTime_DATE_GET_MINUTE(obj3),
+        PyDateTime_DATE_GET_HOUR(obj3),
+        PyDateTime_GET_DAY(obj3),
+        PyDateTime_GET_MONTH(obj3) - 1,
+        PyDateTime_GET_YEAR(obj3) - 1900
+      };
+      arg4 = gnc_mktime(&time);
+    } else {
+      arg4 = PyInt_AsLong(obj3);
+    }
   }
   result = (GNCPrice *)gnc_pricedb_lookup_at_time64(arg1,(gnc_commodity const *)arg2,(gnc_commodity const *)arg3,arg4);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNCPrice, 0 |  0 );
@@ -41922,15 +42210,25 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_day_t64(PyObject *SWIGUNUSEDPARM(s
   arg3 = (gnc_commodity *)(argp3);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj3),
-      PyDateTime_DATE_GET_MINUTE(obj3),
-      PyDateTime_DATE_GET_HOUR(obj3),
-      PyDateTime_GET_DAY(obj3),
-      PyDateTime_GET_MONTH(obj3) - 1,
-      PyDateTime_GET_YEAR(obj3) - 1900
-    };
-    arg4 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj3) && !PyInt_Check(obj3)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj3)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj3),
+        PyDateTime_DATE_GET_MINUTE(obj3),
+        PyDateTime_DATE_GET_HOUR(obj3),
+        PyDateTime_GET_DAY(obj3),
+        PyDateTime_GET_MONTH(obj3) - 1,
+        PyDateTime_GET_YEAR(obj3) - 1900
+      };
+      arg4 = gnc_mktime(&time);
+    } else {
+      arg4 = PyInt_AsLong(obj3);
+    }
   }
   result = (GNCPrice *)gnc_pricedb_lookup_day_t64(arg1,(gnc_commodity const *)arg2,(gnc_commodity const *)arg3,arg4);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNCPrice, 0 |  0 );
@@ -41976,15 +42274,25 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_nearest_in_time64(PyObject *SWIGUN
   arg3 = (gnc_commodity *)(argp3);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj3),
-      PyDateTime_DATE_GET_MINUTE(obj3),
-      PyDateTime_DATE_GET_HOUR(obj3),
-      PyDateTime_GET_DAY(obj3),
-      PyDateTime_GET_MONTH(obj3) - 1,
-      PyDateTime_GET_YEAR(obj3) - 1900
-    };
-    arg4 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj3) && !PyInt_Check(obj3)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj3)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj3),
+        PyDateTime_DATE_GET_MINUTE(obj3),
+        PyDateTime_DATE_GET_HOUR(obj3),
+        PyDateTime_GET_DAY(obj3),
+        PyDateTime_GET_MONTH(obj3) - 1,
+        PyDateTime_GET_YEAR(obj3) - 1900
+      };
+      arg4 = gnc_mktime(&time);
+    } else {
+      arg4 = PyInt_AsLong(obj3);
+    }
   }
   result = (GNCPrice *)gnc_pricedb_lookup_nearest_in_time64(arg1,(gnc_commodity const *)arg2,(gnc_commodity const *)arg3,arg4);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNCPrice, 0 |  0 );
@@ -42021,15 +42329,25 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_nearest_in_time_any_currency_t64(P
   arg2 = (gnc_commodity *)(argp2);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj2),
-      PyDateTime_DATE_GET_MINUTE(obj2),
-      PyDateTime_DATE_GET_HOUR(obj2),
-      PyDateTime_GET_DAY(obj2),
-      PyDateTime_GET_MONTH(obj2) - 1,
-      PyDateTime_GET_YEAR(obj2) - 1900
-    };
-    arg3 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj2) && !PyInt_Check(obj2)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj2)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj2),
+        PyDateTime_DATE_GET_MINUTE(obj2),
+        PyDateTime_DATE_GET_HOUR(obj2),
+        PyDateTime_GET_DAY(obj2),
+        PyDateTime_GET_MONTH(obj2) - 1,
+        PyDateTime_GET_YEAR(obj2) - 1900
+      };
+      arg3 = gnc_mktime(&time);
+    } else {
+      arg3 = PyInt_AsLong(obj2);
+    }
   }
   result = (PriceList *)gnc_pricedb_lookup_nearest_in_time_any_currency_t64(arg1,(gnc_commodity const *)arg2,arg3);
   {
@@ -42116,15 +42434,25 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_latest_before_t64(PyObject *SWIGUN
   arg3 = (gnc_commodity *)(argp3);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj3),
-      PyDateTime_DATE_GET_MINUTE(obj3),
-      PyDateTime_DATE_GET_HOUR(obj3),
-      PyDateTime_GET_DAY(obj3),
-      PyDateTime_GET_MONTH(obj3) - 1,
-      PyDateTime_GET_YEAR(obj3) - 1900
-    };
-    arg4 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj3) && !PyInt_Check(obj3)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj3)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj3),
+        PyDateTime_DATE_GET_MINUTE(obj3),
+        PyDateTime_DATE_GET_HOUR(obj3),
+        PyDateTime_GET_DAY(obj3),
+        PyDateTime_GET_MONTH(obj3) - 1,
+        PyDateTime_GET_YEAR(obj3) - 1900
+      };
+      arg4 = gnc_mktime(&time);
+    } else {
+      arg4 = PyInt_AsLong(obj3);
+    }
   }
   result = (GNCPrice *)gnc_pricedb_lookup_latest_before_t64(arg1,arg2,arg3,arg4);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNCPrice, 0 |  0 );
@@ -42161,15 +42489,25 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_lookup_latest_before_any_currency_t64(PyO
   arg2 = (gnc_commodity *)(argp2);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj2),
-      PyDateTime_DATE_GET_MINUTE(obj2),
-      PyDateTime_DATE_GET_HOUR(obj2),
-      PyDateTime_GET_DAY(obj2),
-      PyDateTime_GET_MONTH(obj2) - 1,
-      PyDateTime_GET_YEAR(obj2) - 1900
-    };
-    arg3 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj2) && !PyInt_Check(obj2)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj2)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj2),
+        PyDateTime_DATE_GET_MINUTE(obj2),
+        PyDateTime_DATE_GET_HOUR(obj2),
+        PyDateTime_GET_DAY(obj2),
+        PyDateTime_GET_MONTH(obj2) - 1,
+        PyDateTime_GET_YEAR(obj2) - 1900
+      };
+      arg3 = gnc_mktime(&time);
+    } else {
+      arg3 = PyInt_AsLong(obj2);
+    }
   }
   result = (PriceList *)gnc_pricedb_lookup_latest_before_any_currency_t64(arg1,(gnc_commodity const *)arg2,arg3);
   {
@@ -42326,15 +42664,25 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_convert_balance_nearest_price_t64(PyObjec
   arg4 = (gnc_commodity *)(argp4);
   {
     PyDateTime_IMPORT;
-    struct tm time = {
-      PyDateTime_DATE_GET_SECOND(obj4),
-      PyDateTime_DATE_GET_MINUTE(obj4),
-      PyDateTime_DATE_GET_HOUR(obj4),
-      PyDateTime_GET_DAY(obj4),
-      PyDateTime_GET_MONTH(obj4) - 1,
-      PyDateTime_GET_YEAR(obj4) - 1900
-    };
-    arg5 = gnc_mktime(&time);
+    
+    if (!PyDate_Check(obj4) && !PyInt_Check(obj4)) {
+      PyErr_SetString(PyExc_ValueError,"date, datetime or integer expected");
+      return NULL;
+    }
+    
+    if (PyDate_Check(obj4)) {
+      struct tm time = {
+        PyDateTime_DATE_GET_SECOND(obj4),
+        PyDateTime_DATE_GET_MINUTE(obj4),
+        PyDateTime_DATE_GET_HOUR(obj4),
+        PyDateTime_GET_DAY(obj4),
+        PyDateTime_GET_MONTH(obj4) - 1,
+        PyDateTime_GET_YEAR(obj4) - 1900
+      };
+      arg5 = gnc_mktime(&time);
+    } else {
+      arg5 = PyInt_AsLong(obj4);
+    }
   }
   result = gnc_pricedb_convert_balance_nearest_price_t64(arg1,arg2,(gnc_commodity const *)arg3,(gnc_commodity const *)arg4,arg5);
   resultobj = SWIG_NewPointerObj((gnc_numeric *)memcpy((gnc_numeric *)malloc(sizeof(gnc_numeric)),&result,sizeof(gnc_numeric)), SWIGTYPE_p__gnc_numeric, SWIG_POINTER_OWN |  0 );
@@ -42481,6 +42829,27 @@ SWIGINTERN PyObject *_wrap_gnc_pricedb_nth_price(PyObject *SWIGUNUSEDPARM(self),
   arg3 = (int)(val3);
   result = (GNCPrice *)gnc_pricedb_nth_price(arg1,(gnc_commodity const *)arg2,arg3);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_GNCPrice, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_gnc_pricedb_nth_price_reset_cache(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  GNCPriceDB *arg1 = (GNCPriceDB *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:gnc_pricedb_nth_price_reset_cache",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_gnc_price_db_s, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gnc_pricedb_nth_price_reset_cache" "', argument " "1"" of type '" "GNCPriceDB *""'"); 
+  }
+  arg1 = (GNCPriceDB *)(argp1);
+  gnc_pricedb_nth_price_reset_cache(arg1);
+  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -43202,11 +43571,11 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"xaccAccountGetLotList", _wrap_xaccAccountGetLotList, METH_VARARGS, (char *)"xaccAccountGetLotList(Account const * account) -> LotList *"},
 	 { (char *)"xaccAccountForEachLot", _wrap_xaccAccountForEachLot, METH_VARARGS, (char *)"xaccAccountForEachLot(Account const * acc, gpointer (*)(GNCLot *,gpointer) proc, gpointer user_data) -> gpointer"},
 	 { (char *)"xaccAccountFindOpenLots", _wrap_xaccAccountFindOpenLots, METH_VARARGS, (char *)"xaccAccountFindOpenLots(Account const * acc, gboolean (*)(GNCLot *,gpointer) match_func, gpointer user_data, GCompareFunc sort_func) -> LotList *"},
-	 { (char *)"xaccAccountGetReconcileLastDate", _wrap_xaccAccountGetReconcileLastDate, METH_VARARGS, (char *)"xaccAccountGetReconcileLastDate(Account const * account, time64 * last_date) -> gboolean"},
+	 { (char *)"xaccAccountGetReconcileLastDate", _wrap_xaccAccountGetReconcileLastDate, METH_VARARGS, (char *)"xaccAccountGetReconcileLastDate(Account const * account) -> gboolean"},
 	 { (char *)"xaccAccountSetReconcileLastDate", _wrap_xaccAccountSetReconcileLastDate, METH_VARARGS, (char *)"xaccAccountSetReconcileLastDate(Account * account, time64 last_date)"},
 	 { (char *)"xaccAccountGetReconcileLastInterval", _wrap_xaccAccountGetReconcileLastInterval, METH_VARARGS, (char *)"xaccAccountGetReconcileLastInterval(Account const * account, int * months, int * days) -> gboolean"},
 	 { (char *)"xaccAccountSetReconcileLastInterval", _wrap_xaccAccountSetReconcileLastInterval, METH_VARARGS, (char *)"xaccAccountSetReconcileLastInterval(Account * account, int months, int days)"},
-	 { (char *)"xaccAccountGetReconcilePostponeDate", _wrap_xaccAccountGetReconcilePostponeDate, METH_VARARGS, (char *)"xaccAccountGetReconcilePostponeDate(Account const * account, time64 * postpone_date) -> gboolean"},
+	 { (char *)"xaccAccountGetReconcilePostponeDate", _wrap_xaccAccountGetReconcilePostponeDate, METH_VARARGS, (char *)"xaccAccountGetReconcilePostponeDate(Account const * account) -> gboolean"},
 	 { (char *)"xaccAccountSetReconcilePostponeDate", _wrap_xaccAccountSetReconcilePostponeDate, METH_VARARGS, (char *)"xaccAccountSetReconcilePostponeDate(Account * account, time64 postpone_date)"},
 	 { (char *)"xaccAccountGetReconcilePostponeBalance", _wrap_xaccAccountGetReconcilePostponeBalance, METH_VARARGS, (char *)"xaccAccountGetReconcilePostponeBalance(Account const * account, _gnc_numeric balance) -> gboolean"},
 	 { (char *)"xaccAccountSetReconcilePostponeBalance", _wrap_xaccAccountSetReconcilePostponeBalance, METH_VARARGS, (char *)"xaccAccountSetReconcilePostponeBalance(Account * account, _gnc_numeric balance)"},
@@ -43481,7 +43850,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"qof_query_choice_predicate", _wrap_qof_query_choice_predicate, METH_VARARGS, (char *)"qof_query_choice_predicate(QofGuidMatch options, GList * guids) -> _QofQueryPredData"},
 	 { (char *)"qof_query_core_predicate_copy", _wrap_qof_query_core_predicate_copy, METH_VARARGS, (char *)"qof_query_core_predicate_copy(_QofQueryPredData pdata) -> _QofQueryPredData"},
 	 { (char *)"qof_query_core_predicate_free", _wrap_qof_query_core_predicate_free, METH_VARARGS, (char *)"qof_query_core_predicate_free(_QofQueryPredData pdata)"},
-	 { (char *)"qof_query_date_predicate_get_date", _wrap_qof_query_date_predicate_get_date, METH_VARARGS, (char *)"qof_query_date_predicate_get_date(_QofQueryPredData pd, time64 * date) -> gboolean"},
+	 { (char *)"qof_query_date_predicate_get_date", _wrap_qof_query_date_predicate_get_date, METH_VARARGS, (char *)"qof_query_date_predicate_get_date(_QofQueryPredData pd) -> gboolean"},
 	 { (char *)"qof_query_core_to_string", _wrap_qof_query_core_to_string, METH_VARARGS, (char *)"qof_query_core_to_string(QofType arg1, gpointer object, QofParam * getter) -> char *"},
 	 { (char *)"qof_string_number_compare_func", _wrap_qof_string_number_compare_func, METH_VARARGS, (char *)"qof_string_number_compare_func(gpointer a, gpointer b, gint options, QofParam * this_param) -> int"},
 	 { (char *)"GncGUID_reserved_set", _wrap_GncGUID_reserved_set, METH_VARARGS, (char *)"GncGUID_reserved_set(GncGUID self, unsigned char [16] reserved)"},
@@ -44133,6 +44502,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"gnc_pricedb_foreach_price", _wrap_gnc_pricedb_foreach_price, METH_VARARGS, (char *)"gnc_pricedb_foreach_price(GNCPriceDB * db, GncPriceForeachFunc f, gpointer user_data, gboolean stable_order) -> gboolean"},
 	 { (char *)"gnc_pricedb_num_prices", _wrap_gnc_pricedb_num_prices, METH_VARARGS, (char *)"gnc_pricedb_num_prices(GNCPriceDB * db, gnc_commodity const * c) -> int"},
 	 { (char *)"gnc_pricedb_nth_price", _wrap_gnc_pricedb_nth_price, METH_VARARGS, (char *)"gnc_pricedb_nth_price(GNCPriceDB * db, gnc_commodity const * c, int const n) -> GNCPrice *"},
+	 { (char *)"gnc_pricedb_nth_price_reset_cache", _wrap_gnc_pricedb_nth_price_reset_cache, METH_VARARGS, (char *)"gnc_pricedb_nth_price_reset_cache(GNCPriceDB * db)"},
 	 { (char *)"gnc_pricedb_get_num_prices", _wrap_gnc_pricedb_get_num_prices, METH_VARARGS, (char *)"gnc_pricedb_get_num_prices(GNCPriceDB * db) -> guint"},
 	 { (char *)"gnc_pricedb_equal", _wrap_gnc_pricedb_equal, METH_VARARGS, (char *)"gnc_pricedb_equal(GNCPriceDB * db1, GNCPriceDB * db2) -> gboolean"},
 	 { (char *)"gnc_pricedb_print_contents", _wrap_gnc_pricedb_print_contents, METH_VARARGS, (char *)"gnc_pricedb_print_contents(GNCPriceDB * db, FILE * f)"},

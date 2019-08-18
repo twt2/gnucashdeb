@@ -176,7 +176,17 @@ void gnc_uri_get_components (const gchar *uri,
 
     if ( gnc_uri_is_file_scheme ( *scheme ) )
     {
-        *path     = gnc_resolve_file_path ( splituri[1] );
+        /* a true file uri on windows can start file:///N:/
+           so we come here with /N:/, it could also be /N:\
+        */
+        if (g_str_has_prefix (splituri[1], "/") &&
+           ((g_strstr_len (splituri[1], -1,  ":/") != NULL) || (g_strstr_len (splituri[1], -1,  ":\\") != NULL)))
+        {
+            gchar *ptr = splituri[1];
+            *path = gnc_resolve_file_path ( ptr + 1 );
+        }
+        else
+            *path = gnc_resolve_file_path ( splituri[1] );
         g_strfreev ( splituri );
         return;
     }
@@ -304,15 +314,40 @@ gchar *gnc_uri_create_uri (const gchar *scheme,
          * path info as is.
          */
         gchar *abs_path;
+        gchar *uri_scheme;
         if (scheme && (!gnc_uri_is_known_scheme (scheme)) )
             abs_path = g_strdup ( path );
         else
             abs_path = gnc_resolve_file_path ( path );
-        if ( scheme == NULL )
-            uri = g_strdup_printf ( "file://%s", abs_path );
+
+        if (!scheme)
+            uri_scheme = g_strdup ("file");
         else
-            uri = g_strdup_printf ( "%s://%s", scheme, abs_path );
+            uri_scheme = g_strdup (scheme);
+
+        /* Arrive here with...
+         *
+         * /my/path/to/file with space.txt
+         * becomes file:///my/path/to/file with space.txt
+         *
+         * c:\my\path\to\file with space.txt
+         * becomes file:///c:\my\path\to\file with space.txt
+         *
+         * \\myserver\share\path\to\file with space.txt
+         * becomes file://\\myserver\share\path\to\file with space.txt
+         *
+         * probably they should all be forward slashs and spaces escaped
+         * also with UNC it could be file://myserver/share/path/to/file with space.txt
+         */
+
+        if (g_str_has_prefix (abs_path, "/") || g_str_has_prefix (abs_path, "\\"))
+            uri = g_strdup_printf ( "%s://%s", uri_scheme, abs_path );
+        else // for windows add an extra "/"
+            uri = g_strdup_printf ( "%s:///%s", uri_scheme, abs_path );
+
+        g_free (uri_scheme);
         g_free (abs_path);
+
         return uri;
     }
 

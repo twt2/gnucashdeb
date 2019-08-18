@@ -107,7 +107,7 @@ qof_book_option_num_autoreadonly_changed_cb (GObject *gobject,
 #define PARAM_NAME_NUM_FIELD_SOURCE "split-action-num-field"
 #define PARAM_NAME_NUM_AUTOREAD_ONLY "autoreadonly-days"
 
-QOF_GOBJECT_GET_TYPE(QofBook, qof_book, QOF_TYPE_INSTANCE, {});
+G_DEFINE_TYPE(QofBook, qof_book, QOF_TYPE_INSTANCE);
 QOF_GOBJECT_DISPOSE(qof_book);
 QOF_GOBJECT_FINALIZE(qof_book);
 
@@ -163,6 +163,8 @@ qof_book_init (QofBook *book)
 
 static const std::string str_KVP_OPTION_PATH(KVP_OPTION_PATH);
 static const std::string str_OPTION_SECTION_ACCOUNTS(OPTION_SECTION_ACCOUNTS);
+static const std::string str_OPTION_SECTION_BUDGETING(OPTION_SECTION_BUDGETING);
+static const std::string str_OPTION_NAME_DEFAULT_BUDGET(OPTION_NAME_DEFAULT_BUDGET);
 static const std::string str_OPTION_NAME_TRADING_ACCOUNTS(OPTION_NAME_TRADING_ACCOUNTS);
 static const std::string str_OPTION_NAME_AUTO_READONLY_DAYS(OPTION_NAME_AUTO_READONLY_DAYS);
 static const std::string str_OPTION_NAME_NUM_FIELD_SOURCE(OPTION_NAME_NUM_FIELD_SOURCE);
@@ -206,7 +208,7 @@ qof_book_get_property (GObject* object,
         break;
     case PROP_OPT_DEFAULT_BUDGET:
         qof_instance_get_path_kvp (QOF_INSTANCE (book), value, {str_KVP_OPTION_PATH,
-                str_OPTION_SECTION_ACCOUNTS, OPTION_NAME_DEFAULT_BUDGET});
+                str_OPTION_SECTION_BUDGETING, str_OPTION_NAME_DEFAULT_BUDGET});
         break;
     case PROP_OPT_FY_END:
         qof_instance_get_path_kvp (QOF_INSTANCE (book), value, {"fy_end"});
@@ -261,7 +263,7 @@ qof_book_set_property (GObject      *object,
         break;
     case PROP_OPT_DEFAULT_BUDGET:
         qof_instance_set_path_kvp (QOF_INSTANCE (book), value, {str_KVP_OPTION_PATH,
-                str_OPTION_SECTION_ACCOUNTS, OPTION_NAME_DEFAULT_BUDGET});
+                str_OPTION_SECTION_BUDGETING, OPTION_NAME_DEFAULT_BUDGET});
         break;
     case PROP_OPT_FY_END:
         qof_instance_set_path_kvp (QOF_INSTANCE (book), value, {"fy_end"});
@@ -1164,11 +1166,25 @@ qof_book_set_string_option(QofBook* book, const char* opt_name, const char* opt_
     auto frame = qof_instance_get_slots(QOF_INSTANCE(book));
     auto opt_path = opt_name_to_path(opt_name);
     if (opt_val && (*opt_val != '\0'))
-        delete frame->set(opt_path, new KvpValue(g_strdup(opt_val)));
+        delete frame->set_path(opt_path, new KvpValue(g_strdup(opt_val)));
     else
-        delete frame->set(opt_path, nullptr);
+        delete frame->set_path(opt_path, nullptr);
     qof_instance_set_dirty (QOF_INSTANCE (book));
     qof_book_commit_edit(book);
+}
+
+void
+qof_book_option_frame_delete (QofBook *book, const char* opt_name)
+{
+    if (opt_name && (*opt_name != '\0'))
+    {
+        qof_book_begin_edit(book);
+        auto frame = qof_instance_get_slots(QOF_INSTANCE(book));
+        auto opt_path = opt_name_to_path(opt_name);
+        delete frame->set_path(opt_path, nullptr);
+        qof_instance_set_dirty (QOF_INSTANCE (book));
+        qof_book_commit_edit(book);
+    }
 }
 
 void

@@ -45,6 +45,7 @@
 #include "dialog-commodity.h"
 #include "dialog-totd.h"
 #include "gnc-ui-util.h"
+#include "gnc-uri-utils.h"
 #include "gnc-session.h"
 #include "qofbookslots.h"
 #ifdef G_OS_WIN32
@@ -457,7 +458,7 @@ gnc_gnome_help (const char *file_name, const char *anchor)
  * toolkit.
  */
 void
-gnc_launch_assoc (const char *uri)
+gnc_launch_assoc (GtkWindow *parent, const char *uri)
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     NSString *uri_str = [NSString stringWithUTF8String: uri];
@@ -472,47 +473,50 @@ gnc_launch_assoc (const char *uri)
         return;
     }
 
-    gnc_error_dialog(NULL, "%s", message);
+    gnc_error_dialog(parent, "%s", message);
 
     [pool release];
     return;
 }
 #elif defined G_OS_WIN32 /* G_OS_WIN32 */
 void
-gnc_launch_assoc (const char *uri)
+gnc_launch_assoc (GtkWindow *parent, const char *uri)
 {
     wchar_t *winuri = NULL;
-    char* scheme = g_uri_parse_scheme(uri);
+    gchar *filename = NULL;
     /* ShellExecuteW open doesn't decode http escapes if it's passed a
      * file URI so we have to do it. */
-    if (scheme && strcmp (scheme, "file") == 0)
+    if (gnc_uri_is_file_uri (uri))
     {
-	gchar *filename = g_filename_from_uri (uri, NULL, NULL);
-	winuri = (wchar_t *)g_utf8_to_utf16(filename, -1, NULL, NULL, NULL);
+        gchar *uri_ue = g_uri_unescape_string (uri, NULL);
+        filename = gnc_uri_get_path (uri_ue);
+        filename = g_strdelimit (filename, "/", '\\'); // needed for unc paths
+        winuri = (wchar_t *)g_utf8_to_utf16(filename, -1, NULL, NULL, NULL);
+        g_free (uri_ue);
     }
     else
-	winuri = (wchar_t *)g_utf8_to_utf16(uri, -1, NULL, NULL, NULL);
+        winuri = (wchar_t *)g_utf8_to_utf16(uri, -1, NULL, NULL, NULL);
 
     if (winuri)
     {
-	wchar_t *wincmd = (wchar_t *)g_utf8_to_utf16("open", -1,
-						     NULL, NULL, NULL);
-	if ((INT_PTR)ShellExecuteW(NULL, wincmd, winuri,
-				   NULL, NULL, SW_SHOWNORMAL) <= 32)
-	{
-	    const gchar *message =
-		_("GnuCash could not find the associated file");
-	    gnc_error_dialog(NULL, "%s: %s", message, uri);
-	}
-	g_free (wincmd);
-	g_free (winuri);
+        wchar_t *wincmd = (wchar_t *)g_utf8_to_utf16("open", -1,
+                                 NULL, NULL, NULL);
+        if ((INT_PTR)ShellExecuteW(NULL, wincmd, winuri,
+                       NULL, NULL, SW_SHOWNORMAL) <= 32)
+        {
+            const gchar *message =
+            _("GnuCash could not find the associated file");
+            gnc_error_dialog(parent, "%s:\n%s", message, filename);
+        }
+        g_free (wincmd);
+        g_free (winuri);
+        g_free (filename);
     }
-    g_free (scheme);
 }
 
 #else
 void
-gnc_launch_assoc (const char *uri)
+gnc_launch_assoc (GtkWindow *parent, const char *uri)
 {
     GError *error = NULL;
     gboolean success;
@@ -531,9 +535,23 @@ gnc_launch_assoc (const char *uri)
 
     g_assert(error != NULL);
     {
+        gchar *error_uri = NULL;
         const gchar *message =
             _("GnuCash could not open the associated URI:");
-        gnc_error_dialog(NULL, "%s\n%s", message, uri);
+
+        if (gnc_uri_is_file_uri (uri))
+        {
+            gchar *uri_ue = g_uri_unescape_string (uri, NULL);
+            gchar *filename = gnc_uri_get_path (uri_ue);
+            error_uri = g_strdup (filename);
+            g_free (uri_ue);
+            g_free (filename);
+        }
+        else
+            error_uri = g_strdup (uri);
+
+        gnc_error_dialog(parent, "%s\n%s", message, error_uri);
+        g_free (error_uri);
     }
     PERR ("%s", error->message);
     g_error_free(error);
@@ -647,10 +665,14 @@ gnc_ui_start_event_loop (void)
     id = g_timeout_add_full (G_PRIORITY_DEFAULT_IDLE, 10000, /* 10 secs */
                              gnc_ui_check_events, NULL, NULL);
 
+    scm_call_1(scm_c_eval_string("gnc:set-ui-status"), SCM_BOOL_T);
+
     /* Enter gnome event loop */
     gtk_main ();
 
     g_source_remove (id);
+
+    scm_call_1(scm_c_eval_string("gnc:set-ui-status"), SCM_BOOL_F);
 
     gnome_is_running = FALSE;
     gnome_is_terminating = FALSE;

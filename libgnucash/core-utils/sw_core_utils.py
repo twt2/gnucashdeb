@@ -302,9 +302,25 @@ def gnc_prefs_reset_group(group: 'gchar const *') -> "void":
     return _sw_core_utils.gnc_prefs_reset_group(group)
 gnc_prefs_reset_group = _sw_core_utils.gnc_prefs_reset_group
 
-def gnc_version() -> "gchar const *":
+def gnc_version() -> "char const *":
     return _sw_core_utils.gnc_version()
 gnc_version = _sw_core_utils.gnc_version
+
+def gnc_build_id() -> "char const *":
+    return _sw_core_utils.gnc_build_id()
+gnc_build_id = _sw_core_utils.gnc_build_id
+
+def gnc_vcs_rev() -> "char const *":
+    return _sw_core_utils.gnc_vcs_rev()
+gnc_vcs_rev = _sw_core_utils.gnc_vcs_rev
+
+def gnc_vcs_rev_date() -> "char const *":
+    return _sw_core_utils.gnc_vcs_rev_date()
+gnc_vcs_rev_date = _sw_core_utils.gnc_vcs_rev_date
+
+def gnc_gnucash_major_version() -> "int const":
+    return _sw_core_utils.gnc_gnucash_major_version()
+gnc_gnucash_major_version = _sw_core_utils.gnc_gnucash_major_version
 
 def gnc_path_get_bindir() -> "gchar *":
     return _sw_core_utils.gnc_path_get_bindir()

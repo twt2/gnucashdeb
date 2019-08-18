@@ -17,6 +17,18 @@
 ;; 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652
 ;; Boston, MA  02110-1301,  USA       gnu@gnu.org
 (use-modules (ice-9 regex))
+(use-modules (gnucash gettext))
+
+(define (rpterror-earlier type newoption fallback)
+  ;; Translators: the 3 ~a below refer to (1) option type (2) unknown
+  ;; new option name, (3) fallback option name. The order is
+  ;; important, and must not be changed.
+  (let* ((template (N_ "This report was saved using a later version of \
+GnuCash. One of the newer ~a options '~a' is not available, fallback to \
+the option '~a'."))
+         (console-msg (format #f template type newoption fallback))
+         (ui-msg (format #f (_ template) type newoption fallback)))
+    (gnc:gui-warn console-msg ui-msg)))
 
 (define (gnc:make-option
          ;; The category of this option
@@ -190,16 +202,12 @@
 
 
 (define (gnc:restore-form-generator value->string)
-  (lambda () (string-append
-              "(lambda (option) "
-              "(if option ((gnc:option-setter option) "
-              (value->string)
-              ")))")))
+  (lambda ()
+    (string-append "(lambda (o) (if o (gnc:option-set-value o "
+                   (value->string) ")))")))
 
 (define (gnc:value->string value)
-  (let ((result (call-with-output-string
-                 (lambda (port) (write value port)))))
-       result))
+  (format #f "~s" value))
 
 (define (gnc:make-string-option
          section
@@ -580,11 +588,11 @@
     (if (pair? (cdr date))
         (cons (car date) (cadr date))
         date))
-  (define (list-lookup list item)
-    (cond
-     ((null? list) #f)
-     ((eq? item (car list)) 0)
-     (else (+ 1 (list-lookup (cdr list) item)))))
+  (define (list-lookup full-list item)
+    (or (list-index (lambda (i) (eq? i item)) full-list)
+        (begin
+          (rpterror-earlier "date" item (car full-list))
+          0)))
   (let* ((value (default-getter))
          (value->string (lambda ()
                           (string-append "'" (gnc:value->string value)))))
@@ -736,31 +744,22 @@
      (lambda () (map convert-to-account (default-getter)))
      (gnc:restore-form-generator value->string)
      (lambda (b p)
-       (define (save-acc list count)
-         (if (not (null? list))
-             (let ((key (string-append "acc" (gnc:value->string count))))
-               (qof-book-set-option b (car list) (append p (list key)))
-               (save-acc (cdr list) (+ 1 count)))))
-
-       (if option-set
-           (begin
-             (qof-book-set-option b (length option)
-                                             (append p '("len")))
-             (save-acc option 0))))
+       (when option-set
+         (qof-book-set-option b (length option) (append p '("len")))
+         (let loop ((option option) (idx 0))
+           (unless (null? option)
+             (qof-book-set-option
+              b (car option) (append p (list (format #f "acc~a" idx))))
+             (loop (cdr option) (1+ idx))))))
      (lambda (b p)
        (let ((len (qof-book-get-option b (append p '("len")))))
-         (define (load-acc count)
-           (if (< count len)
-               (let* ((key (string-append "acc" (gnc:value->string count)))
-                      (guid (qof-book-get-option
-                             b (append p (list key)))))
-                 (cons guid (load-acc (+ count 1))))
-               '()))
-         
-         (if (and len (integer? len))
-             (begin
-               (set! option (load-acc 0))
-               (set! option-set #t)))))
+         (when (and len (integer? len))
+           (set! option
+             (map
+              (lambda (idx)
+                (qof-book-get-option b (append p (list (format #f "acc~a" idx)))))
+              (iota len)))
+           (set! option-set #t))))
      validator
      (cons multiple-selection acct-type-list) #f #f #f)))
 
@@ -862,11 +861,11 @@
      validator
      (cons #f acct-type-list) #f #f #f)))
 
-(define (gnc:multichoice-list-lookup list item )
-  (cond
-   ((null? list) #f)
-   ((eq? item (vector-ref (car list) 0)) 0)
-   (else (+ 1 (gnc:multichoice-list-lookup (cdr list) item)))))
+(define (gnc:multichoice-list-lookup full-lst item)
+  (or (list-index (lambda (i) (eq? (vector-ref i 0) item)) full-lst)
+      (begin
+        (rpterror-earlier "multichoice" item (car full-lst))
+        0)))
 
 ;; multichoice options use the option-data as a list of vectors.
 ;; Each vector contains a permissible value (scheme symbol), a
@@ -930,7 +929,7 @@
              (set! value x)
              (if (procedure? setter-function-called-cb)
                  (setter-function-called-cb x)))
-           (gnc:error "Illegal Multichoice option set")))
+           (rpterror-earlier "multichoice" x default-value)))
      (lambda () default-value)
      (gnc:restore-form-generator value->string)
      (lambda (b p) (qof-book-set-option b (symbol->string value) p))
@@ -1016,7 +1015,7 @@
              (set! value x)
              (if (procedure? setter-function-called-cb)
                  (setter-function-called-cb x)))
-           (gnc:error "Illegal Radiobutton option set")))
+           (rpterror-earlier "radiobutton" x default-value)))
      (lambda () default-value)
      (gnc:restore-form-generator value->string)
      (lambda (b p) (qof-book-set-option b (symbol->string value) p))
@@ -1078,29 +1077,24 @@
      (lambda (x)
        (if (list-legal x)
            (set! value x)
-           (gnc:error "Illegal list option set")))
+           (rpterror-earlier "list" x default-value)))
      (lambda () default-value)
      (gnc:restore-form-generator value->string)
      (lambda (b p)
-       (define (save-item list count)
-         (if (not (null? list))
-             (let ((key (string-append "item" (gnc:value->string count))))
-               (qof-book-set-option b (car list) (append p (list key)))
-               (save-item (cdr list) (+ 1 count)))))
        (qof-book-set-option b (length value) (append p '("len")))
-       (save-item value 0))
+       (let loop ((value value) (idx 0))
+         (unless (null? value)
+           (qof-book-set-option
+            b (caar value) (append p (list (format #f "item~a" idx))))
+           (loop (cdr value) (1+ idx)))))
      (lambda (b p)
        (let ((len (qof-book-get-option b (append p '("len")))))
-         (define (load-item count)
-           (if (< count len)
-               (let* ((key (string-append "item" (gnc:value->string count)))
-                      (val (qof-book-get-option
-                            b (append p (list key)))))
-                 (cons val (load-item (+ count 1))))
-               '()))
-
          (if (and len (integer? len))
-             (set! value (load-item 0)))))
+             (set! value
+               (map
+                (lambda (idx)
+                  (qof-book-get-option b (append p (list (format #f "item~a" idx)))))
+                (iota len))))))
      (lambda (x)
        (if (list-legal x)
            (list #t x)
@@ -1439,42 +1433,25 @@
     (currency-lookup currency))
 
   (define (valid-gains-loss-account? book-currency gains-loss-account-guid)
-  ;; xaccAccountLookup returns Account if guid valid otherwise NULL; also must
-  ;; be in book-currency, income or expense, and not placeholder nor hidden
+    ;; xaccAccountLookup returns Account if guid valid otherwise NULL; also must
+    ;; be in book-currency, income or expense, and not placeholder nor hidden
     (let* ((account (xaccAccountLookup gains-loss-account-guid
-                                                    (gnc-get-current-book)))
-           (hidden? (if account
-                        (xaccAccountIsHidden account)
-                        #t))
-           (placeholder? (if account
-                             (xaccAccountGetPlaceholder account)
-                             #t))
-           (account-type (if account
-                             (xaccAccountGetType account)
-                             #f))
-           (income-or-expense? (if (and account account-type)
-                                   (or (= ACCT-TYPE-INCOME account-type)
-                                       (= ACCT-TYPE-EXPENSE account-type))
-                                   #f))
-           (commodity-eq-book-curr? (if account
-                                        (gnc-commodity-equal
-                                          (currency-lookup book-currency)
-                                          (xaccAccountGetCommodity account))
-                                        #f))
-          )
-          (if (and account
-                   (not hidden?)
-                   (not placeholder?)
-                   income-or-expense?
-                   commodity-eq-book-curr?)
-              #t
-              #f)))
+                                       (gnc-get-current-book))))
+      (and account
+           (not (null? account))
+           (not (xaccAccountIsHidden account))
+           (not (xaccAccountGetPlaceholder account))
+           (memv (xaccAccountGetType account)
+                 (list ACCT-TYPE-INCOME ACCT-TYPE-EXPENSE))
+           (gnc-commodity-equal
+            (currency-lookup book-currency)
+            (xaccAccountGetCommodity account)))))
 
   (let* ((value (if (eq? 'book-currency default-radiobutton-value)
-                    (cons default-radiobutton-value
-                          (cons default-book-currency-value
-                                (cons default-cap-gains-policy-value '())))
-                    (cons default-radiobutton-value '())))
+                    (list default-radiobutton-value
+                          default-book-currency-value
+                          default-cap-gains-policy-value)
+                    (list default-radiobutton-value)))
          (value->string (lambda ()
                           (string-append "'" (gnc:value->string
                                                (car value)))))
@@ -1495,42 +1472,32 @@
            (set! value x)
            (gnc:error "Illegal Radiobutton option set"))) ;;setter
      (lambda () (if (eq? 'book-currency default-radiobutton-value)
-                    (cons default-radiobutton-value
-                          (cons default-book-currency-value
-                                (cons default-cap-gains-policy-value
-                                      (cons '() '()))))
-                    (cons default-radiobutton-value '()))) ;; default-getter
+                    (list default-radiobutton-value
+                          default-book-currency-value
+                          default-cap-gains-policy-value)
+                    (list default-radiobutton-value))) ;; default-getter
      (gnc:restore-form-generator value->string)
      (lambda (b p) ;; scm->kvp
-       (if (eq? 'book-currency (car value))
-           (begin
-             ;; Currency = selected currency
-             (qof-book-set-option
-                b
-                (currency->scm (cadr value))
-                book-currency-path)
-             ;; Default Gains Policy = selected policy
-             (qof-book-set-option
-                b
-                (symbol->string (caddr value))
-                gains-policy-path)
-             ;; Default Gains Account = if selected, selected account
-             (if (car (cdddr value))
-                 (qof-book-set-option
-                    b
-                    (car (cdddr value))
-                    gains-loss-account-path)))
-           (if (eq? 'trading (car value))
-               ;; Use Trading Accounts = "t"
-               (qof-book-set-option b "t" trading-accounts-path))))
+       (case (car value)
+         ((book-currency)
+          ;; Currency = selected currency
+          (qof-book-set-option b (currency->scm (cadr value))
+                               book-currency-path)
+          ;; Default Gains Policy = selected policy
+          (qof-book-set-option b (symbol->string (caddr value))
+                               gains-policy-path)
+          ;; Default Gains Account = if selected, selected account
+          (if (car (cdddr value))
+              (qof-book-set-option b (car (cdddr value))
+                                   gains-loss-account-path)))
+         ((trading)
+          ;; Use Trading Accounts = "t"
+          (qof-book-set-option b "t" trading-accounts-path))))
      (lambda (b p) ;; kvp->scm
        (let* ((trading-option-path-kvp?
-                       (qof-book-get-option
-                        b trading-accounts-path))
-              (trading? (if (and trading-option-path-kvp?
-                                 (string=? "t" trading-option-path-kvp?))
-                            #t
-                            #f))
+                       (qof-book-get-option b trading-accounts-path))
+              (trading? (and trading-option-path-kvp?
+                             (string=? "t" trading-option-path-kvp?)))
               (book-currency #f)
               (cap-gains-policy #f)
               (gains-loss-account-guid #f)
@@ -1580,25 +1547,26 @@
                                                (string->symbol cap-gains-policy)
                                                gains-loss-account-guid)
                                          '())))
-                 (set! value (cons 'neither '())))))
+                 (set! value (list 'neither)))))
      (lambda (x) ;; value validator
-       (if (list? x)
-           (if (legal-val (car x) ok-radiobutton-values)
-               (if (eq? 'book-currency (car x))
-                   (if (currency? (currency->scm (cadr x)))
-                       (if (gnc-valid-policy-name (symbol->string (caddr x)))
-                           (if (car(cdddr x))
-                               (if (valid-gains-loss-account?
-                                     (currency->scm (cadr x))
-                                     (car(cdddr x)))
-                                   (list #t x)
-                                   (list #f "gains-loss-account-option: illegal value"))
-                               (list #t x)) ;; must be valid if specified, otherwise OK
-                           (list #f "cap-gains-policy-option: illegal value"))
-                       (list #f "currency-option: illegal value"))
-                   (list #t x))
-               (list #f "radiobutton-option: illegal choice"))
-           (list #f "value not a list")))
+       (cond
+        ((not (list? x))
+         (list #f "value not a list"))
+        ((not (legal-val (car x) ok-radiobutton-values))
+         (list #f "radiobutton-option: illegal choice"))
+        ((not (eq? 'book-currency (car x)))
+         (list #t x))
+        ((not (currency? (currency->scm (cadr x))))
+         (list #f "currency-option: illegal value"))
+        ((not (gnc-valid-policy-name (symbol->string (caddr x))))
+         (list #f "cap-gains-policy-option: illegal value"))
+        ((not (car (cdddr x)))
+         (list #t x))
+        ((not (valid-gains-loss-account? (currency->scm (cadr x))
+                                         (car (cdddr x))))
+         (list #f "gains-loss-account-option: illegal value"))
+        (else
+         (list #t x))))
      (vector book-currency-documentation-string
              default-book-currency-value
              default-cap-gains-policy-documentation-string
@@ -1737,6 +1705,9 @@
                   (and name-match
                        (let ((new-section (car (cadr name-match)))
                              (new-name (cdr (cadr name-match))))
+                         (gnc:debug
+                          (format #f "option ~s/~s has been renamed to ~s/~s\n"
+                                  section name new-section new-name))
                          ;; compare if new-section name exists.
                          (if new-section
                              ;; if so, if it's different to current section name
@@ -2017,6 +1988,8 @@
    options))
 
 (define (gnc:save-options options options-string file header truncate?)
+  (issue-deprecation-warning
+   "gnc:save-options is deprecated.")
   (let ((code (gnc:generate-restore-forms options options-string))
         (port (false-if-exception
                (if truncate? 

@@ -30,6 +30,8 @@
 #include "gnc-engine.h"
 #include "gnc-prefs.h"
 #include "gnc-ui.h"
+#include "gnc-uri-utils.h"
+#include "gnc-filepath-utils.h"
 #include "gnc-warnings.h"
 #include "pricecell.h"
 #include "recncell.h"
@@ -552,23 +554,43 @@ gnc_split_register_get_associate_tooltip (VirtualLocation virt_loc,
     uri = xaccTransGetAssociation (trans);
 
     // Check for uri is empty or NULL
-    if (g_strcmp0 (uri, "") != 0 && g_strcmp0 (uri, NULL) != 0)
+    if (uri && *uri != '\0')
     {
-        gboolean valid_path_head = FALSE;
-        gchar *path_head = gnc_prefs_get_string (GNC_PREFS_GROUP_GENERAL, "assoc-head");
+        gchar *scheme = gnc_uri_get_scheme (uri);
+        gchar *file_path = NULL;
 
-        if ((path_head != NULL) && (g_strcmp0 (path_head, "") != 0)) // not default entry
-            valid_path_head = TRUE;
-
-        if (valid_path_head && g_str_has_prefix (uri,"file:/") && !g_str_has_prefix (uri,"file://"))
+        if (!scheme) // relative path
         {
-            const gchar *part = uri + strlen ("file:");
-            gchar *new_uri = g_strconcat (path_head, part, NULL);
+            gchar *path_head = gnc_prefs_get_string (GNC_PREFS_GROUP_GENERAL, "assoc-head");
+
+            if (path_head && *path_head != '\0') // not default entry
+                file_path = gnc_file_path_absolute (gnc_uri_get_path (path_head), uri);
+            else
+                file_path = gnc_file_path_absolute (NULL, uri);
+
             g_free (path_head);
-            return g_strdup (new_uri);
         }
+
+        if (gnc_uri_is_file_scheme (scheme)) // absolute path
+            file_path = gnc_uri_get_path (uri);
+
+#ifdef G_OS_WIN32 // make path look like a traditional windows path
+        if (file_path)
+            file_path = g_strdelimit (file_path, "/", '\\');
+#endif
+
+        g_free (scheme);
+
+        if (!file_path)
+            return g_uri_unescape_string (uri, NULL);
         else
-            return g_strdup (uri);
+        {
+            gchar *file_uri_u = g_uri_unescape_string (file_path, NULL);
+            const gchar *filename = gnc_uri_get_path (file_uri_u);
+            g_free (file_uri_u);
+            g_free (file_path);
+            return g_strdup (filename);
+        }
     }
     else
         return NULL;
@@ -824,12 +846,16 @@ gnc_split_register_get_associate_entry (VirtualLocation virt_loc,
     uri = xaccTransGetAssociation (trans);
 
     // Check for uri is empty or NULL
-    if (g_strcmp0 (uri, "") != 0 && g_strcmp0 (uri, NULL) != 0)
+    if (uri && g_strcmp0 (uri, "") != 0)
     {
-        if (g_str_has_prefix (uri, "file:"))
+        gchar *scheme = gnc_uri_get_scheme (uri);
+
+        if (!scheme || g_strcmp0 (scheme, "file") == 0)
             associate = 'f';
         else
             associate = 'w';
+
+        g_free (scheme);
     }
     else
         associate = ' ';
@@ -1928,7 +1954,19 @@ gnc_split_register_cursor_is_readonly (VirtualLocation virt_loc,
     char type;
 
     split = gnc_split_register_get_split (reg, virt_loc.vcell_loc);
-    if (!split) return FALSE;
+
+    if (!split) // this could be the blank split
+    {
+        txn = gnc_split_register_get_current_trans (reg);
+
+        if (txn) // get the current trans and see if read_only required
+        {
+            if (xaccTransGetReadOnly (txn)
+                    || xaccTransIsReadonlyByPostedDate (txn))
+                return (TRUE);
+        }
+        return FALSE;
+    }
 
     txn = xaccSplitGetParent (split);
     if (!txn) return FALSE;

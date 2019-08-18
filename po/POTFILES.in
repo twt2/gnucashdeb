@@ -462,11 +462,14 @@ gnucash/report/report-system/report-collectors.scm
 gnucash/report/report-system/report.scm
 gnucash/report/report-system/report-system.scm
 gnucash/report/report-system/report-utilities.scm
+gnucash/report/report-system/trep-engine.scm
 gnucash/report/standard-reports/account-piecharts.scm
 gnucash/report/standard-reports/account-summary.scm
 gnucash/report/standard-reports/advanced-portfolio.scm
 gnucash/report/standard-reports/average-balance.scm
+gnucash/report/standard-reports/balance-forecast.scm
 gnucash/report/standard-reports/balance-sheet.scm
+gnucash/report/standard-reports/balsheet-pnl.scm
 gnucash/report/standard-reports/budget-balance-sheet.scm
 gnucash/report/standard-reports/budget-barchart.scm
 gnucash/report/standard-reports/budget-flow.scm
@@ -484,6 +487,7 @@ gnucash/report/standard-reports/income-statement.scm
 gnucash/report/standard-reports/net-charts.scm
 gnucash/report/standard-reports/portfolio.scm
 gnucash/report/standard-reports/price-scatter.scm
+gnucash/report/standard-reports/reconcile-report.scm
 gnucash/report/standard-reports/register.scm
 gnucash/report/standard-reports/standard-reports.scm
 gnucash/report/standard-reports/sx-summary.scm
@@ -509,7 +513,6 @@ libgnucash/app-utils/business-prefs.scm
 libgnucash/app-utils/calculation/expression_parser.c
 libgnucash/app-utils/calculation/fin.c
 libgnucash/app-utils/c-interface.scm
-libgnucash/app-utils/config-var.scm
 libgnucash/app-utils/date-utilities.scm
 libgnucash/app-utils/file-utils.c
 libgnucash/app-utils/fin.scm
@@ -613,8 +616,10 @@ libgnucash/core-utils/gnc-glib-utils.c
 libgnucash/core-utils/gnc-guile-utils.c
 libgnucash/core-utils/gnc-jalali.c
 libgnucash/core-utils/gnc-locale-utils.c
+libgnucash/core-utils/gnc-locale-utils.cpp
 libgnucash/core-utils/gnc-path.c
 libgnucash/core-utils/gnc-prefs.c
+libgnucash/core-utils/gnc-version.c
 libgnucash/doc/doxygen_main_page.c
 libgnucash/engine/Account.cpp
 libgnucash/engine/business-core.scm

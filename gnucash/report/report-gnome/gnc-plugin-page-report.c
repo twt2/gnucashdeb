@@ -71,6 +71,7 @@
 #include "option-util.h"
 #include "window-report.h"
 #include "swig-runtime.h"
+#include "guile-mappings.h"
 #include "business-options.h"
 #include "gnc-icons.h"
 #include "print-session.h"
@@ -132,6 +133,8 @@ typedef struct GncPluginPageReportPrivate
     GtkContainer *container;
 } GncPluginPageReportPrivate;
 
+G_DEFINE_TYPE_WITH_PRIVATE(GncPluginPageReport, gnc_plugin_page_report, GNC_TYPE_PLUGIN_PAGE)
+
 #define GNC_PLUGIN_PAGE_REPORT_GET_PRIVATE(o)  \
    (G_TYPE_INSTANCE_GET_PRIVATE ((o), GNC_TYPE_PLUGIN_PAGE_REPORT, GncPluginPageReportPrivate))
 
@@ -179,34 +182,6 @@ static void gnc_plugin_page_report_options_cb(GtkAction *action, GncPluginPageRe
 static void gnc_plugin_page_report_print_cb(GtkAction *action, GncPluginPageReport *rep);
 static void gnc_plugin_page_report_exportpdf_cb(GtkAction *action, GncPluginPageReport *rep);
 static void gnc_plugin_page_report_copy_cb(GtkAction *action, GncPluginPageReport *rep);
-
-GType
-gnc_plugin_page_report_get_type (void)
-{
-    static GType gnc_plugin_page_report_type = 0;
-
-    if (gnc_plugin_page_report_type == 0)
-    {
-        static const GTypeInfo our_info =
-        {
-            sizeof (GncPluginPageReportClass),
-            NULL,
-            NULL,
-            (GClassInitFunc) gnc_plugin_page_report_class_init,
-            NULL,
-            NULL,
-            sizeof (GncPluginPageReport),
-            0,
-            (GInstanceInitFunc) gnc_plugin_page_report_init
-        };
-
-        gnc_plugin_page_report_type = g_type_register_static (GNC_TYPE_PLUGIN_PAGE,
-                                      "GncPluginPageReport",
-                                      &our_info, 0);
-    }
-
-    return gnc_plugin_page_report_type;
-}
 
 static void
 gnc_plugin_page_report_get_property( GObject *obj,
@@ -325,8 +300,6 @@ gnc_plugin_page_report_class_init (GncPluginPageReportClass *klass)
     gnc_plugin_page_class->page_name_changed = gnc_plugin_page_report_name_changed;
     gnc_plugin_page_class->update_edit_menu_actions = gnc_plugin_page_report_update_edit_menu;
     gnc_plugin_page_class->finish_pending   = gnc_plugin_page_report_finish_pending;
-
-    g_type_class_add_private(klass, sizeof(GncPluginPageReportPrivate));
 
     // create the "reportId" property
     g_object_class_install_property( object_class,
@@ -447,6 +420,7 @@ gnc_plugin_page_report_create_widget( GncPluginPage *page )
     GncPluginPageReportPrivate *priv;
     GncMainWindow  *window;
     GtkWindow *topLvl;
+    GtkAction *action;
     URLType type;
     char * id_name;
     char * child_name;
@@ -454,6 +428,13 @@ gnc_plugin_page_report_create_widget( GncPluginPage *page )
     char * url_label = NULL;
 
     ENTER("page %p", page);
+
+#ifndef WEBKIT1
+    /* Hide the ExportPdf action for Webkit2 */
+    action = gnc_plugin_page_get_action (page, "FilePrintPDFAction");
+    gtk_action_set_sensitive (action, FALSE);
+    gtk_action_set_visible (action, FALSE);
+#endif
 
     report = GNC_PLUGIN_PAGE_REPORT(page);
     priv = GNC_PLUGIN_PAGE_REPORT_GET_PRIVATE(report);
@@ -485,7 +466,7 @@ gnc_plugin_page_report_create_widget( GncPluginPage *page )
     gnc_html_set_urltype_cb(priv->html, gnc_plugin_page_report_check_urltype);
     gnc_html_set_load_cb(priv->html, gnc_plugin_page_report_load_cb, report);
 
-    /* We need to call the load call back so the report appears to of been run
+    /* We need to call the load call back so the report appears to have been run
      so it will get saved properly if the report is not realized in session */
     id_name = g_strdup_printf("id=%d", priv->reportId );
     child_name = gnc_build_url( URL_TYPE_REPORT, id_name, NULL );
@@ -959,8 +940,7 @@ gnc_plugin_page_report_recreate_page (GtkWidget *window,
             LEAVE("bad value");
             return NULL;
         }
-
-        scm_id = scm_c_eval_string(option_string);
+        scm_id = scm_eval_string(scm_from_utf8_string(option_string));
         g_free(option_string);
 
         if (!scm_integer_p(scm_id))
@@ -1199,6 +1179,7 @@ gnc_plugin_page_report_constr_init(GncPluginPageReport *plugin_page, gint report
             N_("Export the current report as a PDF document"),
             G_CALLBACK(gnc_plugin_page_report_exportpdf_cb)
         },
+
         {
             "EditCutAction", "edit-cut", N_("Cu_t"), "<primary>X",
             N_("Cut the current selection and copy it to clipboard"),
@@ -1901,7 +1882,7 @@ gnc_plugin_page_report_print_cb( GtkAction *action, GncPluginPageReport *report 
 #ifdef WEBKIT1
     gnc_html_print (priv->html, job_name, FALSE);
 #else
-    gnc_html_print (priv->html);
+    gnc_html_print (priv->html, job_name);
 #endif
 
     g_free (job_name);
@@ -1944,7 +1925,7 @@ gnc_plugin_page_report_exportpdf_cb( GtkAction *action, GncPluginPageReport *rep
 #ifdef WEBKIT1
     gnc_html_print (priv->html, job_name, TRUE);
 #else
-    gnc_html_print (priv->html);
+    gnc_html_print (priv->html, job_name);
 #endif
 
     if (owner)

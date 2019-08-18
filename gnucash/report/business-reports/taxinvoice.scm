@@ -21,7 +21,7 @@
 ; - copy the report to your .gnucash directory
 ; - specify a different module name below (eg mytaxinvoice)
 ; - refer to it from .gnucash/config.user
-; (see http://wiki.gnucash.org/wiki/Custom_Reports )
+; (see https://wiki.gnucash.org/wiki/Custom_Reports )
 (define-module (gnucash report taxinvoice))
 
 (use-modules (ice-9 local-eval))  ; for the-environment
@@ -221,7 +221,7 @@
                 headingpage2 optname-amount-due "b" "" (_ "Amount Due")))
   (add-option (gnc:make-string-option
                 headingpage2 optname-payment-recd "c" "" 
-                (_ "Payment received, thank you.")))
+                (_ "Payment received, thank you!")))
   (add-option (gnc:make-string-option	headingpage2	optname-invoice-number-text
     "d" "" (_ "Invoice number: ")))
   (add-option (gnc:make-string-option	headingpage2	optname-to-text

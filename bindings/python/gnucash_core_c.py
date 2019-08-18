@@ -941,9 +941,9 @@ def xaccAccountFindOpenLots(acc: 'Account const *', match_func: 'gboolean (*)(GN
     """xaccAccountFindOpenLots(Account const * acc, gboolean (*)(GNCLot *,gpointer) match_func, gpointer user_data, GCompareFunc sort_func) -> LotList *"""
     return _gnucash_core_c.xaccAccountFindOpenLots(acc, match_func, user_data, sort_func)
 
-def xaccAccountGetReconcileLastDate(account: 'Account const *', last_date: 'time64 *') -> "gboolean":
-    """xaccAccountGetReconcileLastDate(Account const * account, time64 * last_date) -> gboolean"""
-    return _gnucash_core_c.xaccAccountGetReconcileLastDate(account, last_date)
+def xaccAccountGetReconcileLastDate(account: 'Account const *') -> "time64 *":
+    """xaccAccountGetReconcileLastDate(Account const * account) -> gboolean"""
+    return _gnucash_core_c.xaccAccountGetReconcileLastDate(account)
 
 def xaccAccountSetReconcileLastDate(account: 'Account *', last_date: 'time64') -> "void":
     """xaccAccountSetReconcileLastDate(Account * account, time64 last_date)"""
@@ -957,9 +957,9 @@ def xaccAccountSetReconcileLastInterval(account: 'Account *', months: 'int', day
     """xaccAccountSetReconcileLastInterval(Account * account, int months, int days)"""
     return _gnucash_core_c.xaccAccountSetReconcileLastInterval(account, months, days)
 
-def xaccAccountGetReconcilePostponeDate(account: 'Account const *', postpone_date: 'time64 *') -> "gboolean":
-    """xaccAccountGetReconcilePostponeDate(Account const * account, time64 * postpone_date) -> gboolean"""
-    return _gnucash_core_c.xaccAccountGetReconcilePostponeDate(account, postpone_date)
+def xaccAccountGetReconcilePostponeDate(account: 'Account const *') -> "time64 *":
+    """xaccAccountGetReconcilePostponeDate(Account const * account) -> gboolean"""
+    return _gnucash_core_c.xaccAccountGetReconcilePostponeDate(account)
 
 def xaccAccountSetReconcilePostponeDate(account: 'Account *', postpone_date: 'time64') -> "void":
     """xaccAccountSetReconcilePostponeDate(Account * account, time64 postpone_date)"""
@@ -2181,9 +2181,9 @@ def qof_query_core_predicate_free(pdata: '_QofQueryPredData') -> "void":
     """qof_query_core_predicate_free(_QofQueryPredData pdata)"""
     return _gnucash_core_c.qof_query_core_predicate_free(pdata)
 
-def qof_query_date_predicate_get_date(pd: '_QofQueryPredData', date: 'time64 *') -> "gboolean":
-    """qof_query_date_predicate_get_date(_QofQueryPredData pd, time64 * date) -> gboolean"""
-    return _gnucash_core_c.qof_query_date_predicate_get_date(pd, date)
+def qof_query_date_predicate_get_date(pd: '_QofQueryPredData') -> "time64 *":
+    """qof_query_date_predicate_get_date(_QofQueryPredData pd) -> gboolean"""
+    return _gnucash_core_c.qof_query_date_predicate_get_date(pd)
 
 def qof_query_core_to_string(arg1: 'QofType', object: 'gpointer', getter: 'QofParam *') -> "char *":
     """qof_query_core_to_string(QofType arg1, gpointer object, QofParam * getter) -> char *"""
@@ -5008,6 +5008,10 @@ def gnc_pricedb_num_prices(db: 'GNCPriceDB *', c: 'gnc_commodity const *') -> "i
 def gnc_pricedb_nth_price(db: 'GNCPriceDB *', c: 'gnc_commodity const *', n: 'int const') -> "GNCPrice *":
     """gnc_pricedb_nth_price(GNCPriceDB * db, gnc_commodity const * c, int const n) -> GNCPrice *"""
     return _gnucash_core_c.gnc_pricedb_nth_price(db, c, n)
+
+def gnc_pricedb_nth_price_reset_cache(db: 'GNCPriceDB *') -> "void":
+    """gnc_pricedb_nth_price_reset_cache(GNCPriceDB * db)"""
+    return _gnucash_core_c.gnc_pricedb_nth_price_reset_cache(db)
 
 def gnc_pricedb_get_num_prices(db: 'GNCPriceDB *') -> "guint":
     """gnc_pricedb_get_num_prices(GNCPriceDB * db) -> guint"""

@@ -320,6 +320,57 @@
     
     options))
 
+(define (account-get-pos-trans-total-interval
+	 account-list type start-date end-date)
+  (let* ((str-query (qof-query-create-for-splits))
+	 (sign-query (qof-query-create-for-splits))
+	 (total-query #f)
+	 (get-val (lambda (alist key)
+		    (let ((lst (assoc-ref alist key)))
+		      (and lst (car lst)))))
+	 (matchstr (get-val type 'str))
+	 (case-sens (and (get-val type 'cased) #t))
+	 (regexp (and (get-val type 'regexp) #t))
+	 (pos? (and (get-val type 'positive) #t))
+         (total (gnc:make-commodity-collector)))
+    (qof-query-set-book str-query (gnc-get-current-book))
+    (qof-query-set-book sign-query (gnc-get-current-book))
+    (gnc:query-set-match-non-voids-only! str-query (gnc-get-current-book))
+    (gnc:query-set-match-non-voids-only! sign-query (gnc-get-current-book))
+    (xaccQueryAddAccountMatch str-query account-list QOF-GUID-MATCH-ANY QOF-QUERY-AND)
+    (xaccQueryAddAccountMatch sign-query account-list QOF-GUID-MATCH-ANY QOF-QUERY-AND)
+    (xaccQueryAddDateMatchTT str-query
+                             (and start-date #t) (or start-date 0)
+                             (and end-date #t) (or end-date 0)
+                             QOF-QUERY-AND)
+    (xaccQueryAddDateMatchTT sign-query
+                             (and start-date #t) (or start-date 0)
+                             (and end-date #t) (or end-date 0)
+                             QOF-QUERY-AND)
+    (xaccQueryAddDescriptionMatch
+     str-query matchstr case-sens regexp QOF-COMPARE-CONTAINS QOF-QUERY-AND)
+    (set! total-query
+      ;; this is a tad inefficient, but its a simple way to accomplish
+      ;; description match inversion...
+      (if pos?
+          (qof-query-merge-in-place sign-query str-query QOF-QUERY-AND)
+          (let ((inv-query (qof-query-invert str-query)))
+            (qof-query-merge-in-place
+             sign-query inv-query QOF-QUERY-AND)
+            qof-query-destroy inv-query)))
+    (qof-query-destroy str-query)
+
+    (map
+     (lambda (split)
+	   (let* ((shares (xaccSplitGetAmount split))
+		  (acct-comm (xaccAccountGetCommodity
+			      (xaccSplitGetAccount split))))
+	     (unless (negative? shares)
+               (total 'add acct-comm shares))))
+         (qof-query-run total-query))
+    (qof-query-destroy total-query)
+    total))
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; trial-balance-renderer
 ;; set up the document and add the table
@@ -663,31 +714,17 @@
 		(set! parent-headings
 		      (apply append
 			     (map
-			      (if gnc:colspans-are-working-right
-				  (lambda (heading)
-				    (list 
-				     (gnc:make-html-table-cell/size/markup
-				      1 2 "th" heading)
-				     )
-				    )
-				  (lambda (heading)
-				    (list
-				     (gnc:make-html-table-cell/size/markup
-				      1 1 "th" heading)
-				     (gnc:html-make-empty-cell)
-				     )
-				    )
-				  )
+                              (lambda (heading)
+				(list
+				 (gnc:make-html-table-cell/size/markup 1 1 "th" heading)
+				 (gnc:html-make-empty-cell)))
 			      headings)
 			     )
 		      )
 		(gnc:html-table-append-row!
 		 build-table
 		 (append
-		  (if gnc:colspans-are-working-right
-		      (list (gnc:make-html-table-cell/size 1 account-cols #f))
-		      (gnc:html-make-empty-cells account-cols)
-		      )
+                  (gnc:html-make-empty-cells account-cols)
 		  parent-headings)
 		 )
 		(set! header-rows (+ header-rows 1))
@@ -766,7 +803,7 @@
 			  (pos-adjusting
 			   (and ga-or-is?
 				adjusting
-				(gnc:account-get-pos-trans-total-interval
+				(account-get-pos-trans-total-interval
 				 group
 				 (list (list 'str adjusting-str)
 				       (list 'cased adjusting-cased)
@@ -1136,11 +1173,7 @@
 		 build-table
 		 "primary-subheading"
 		 (append
-		  (if gnc:colspans-are-working-right
-		      (list (gnc:make-html-table-cell/size
-			     1 (+ account-cols (* 2 is-col)) #f))
-		      (gnc:html-make-empty-cells (+ account-cols (* 2 is-col)))
-		      )
+                  (gnc:html-make-empty-cells (+ account-cols (* 2 is-col)))
 		  (list
 		   (tot-abs-amt-cell (if is-credit? tot-is is-debits))
 		   (tot-abs-amt-cell (if is-credit? is-credits tot-is))
@@ -1166,8 +1199,6 @@
 	  (gnc:report-percent-done 100)
 	  
 	  ;; if sending the report to a file, do so now
-	  ;; however, this still doesn't seem to get around the
-	  ;; colspan bug... cf. gnc:colspans-are-working-right
 	  (if filename
 	      (let* ((port (open-output-file filename)))
                 (gnc:display-report-list-item

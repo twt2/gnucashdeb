@@ -64,6 +64,7 @@ extern "C"
 #include "gnc-tokenizer-fw.hpp"
 #include "gnc-tokenizer-csv.hpp"
 
+#include <gnc-locale-utils.hpp>
 #include <boost/locale.hpp>
 
 namespace bl = boost::locale;
@@ -681,7 +682,7 @@ CsvImpTransAssist::~CsvImpTransAssist ()
  * Code related to the file chooser page
  **************************************************/
 
-/* check_for_valid_filename for a valid file to activate the forward button
+/* check_for_valid_filename for a valid file to activate the "Next" button
  */
 bool
 CsvImpTransAssist::check_for_valid_filename ()
@@ -730,7 +731,7 @@ CsvImpTransAssist::file_activated_cb ()
 void
 CsvImpTransAssist::file_selection_changed_cb ()
 {
-    /* Enable the forward button based on a valid filename */
+    /* Enable the "Next" button based on a valid filename */
     gtk_assistant_set_page_complete (csv_imp_asst, file_page,
         check_for_valid_filename ());
 }
@@ -1654,13 +1655,20 @@ CsvImpTransAssist::preview_refresh ()
     go_charmap_sel_set_encoding (encselector, tx_imp->encoding().c_str());
 
     // Handle separator checkboxes and custom field, only relevant if the file format is csv
+    // Note we defer the change signal until all buttons have been updated
+    // An early update may result in an incomplete tokenize run and that would
+    // cause our list of saved column types to be truncated
     if (tx_imp->file_format() == GncImpFileFormat::CSV)
     {
         auto separators = tx_imp->separators();
         const auto stock_sep_chars = std::string (" \t,:;-");
         for (int i = 0; i < SEP_NUM_OF_TYPES; i++)
+        {
+            g_signal_handlers_block_by_func (sep_button[i], (gpointer) csv_tximp_preview_sep_button_cb, this);
             gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(sep_button[i]),
                 separators.find (stock_sep_chars[i]) != std::string::npos);
+            g_signal_handlers_unblock_by_func (sep_button[i], (gpointer) csv_tximp_preview_sep_button_cb, this);
+        }
 
         // If there are any other separators in the separators string,
         // add them as custom separators
@@ -1670,9 +1678,14 @@ CsvImpTransAssist::preview_refresh ()
             separators.erase(pos);
             pos = separators.find_first_of (stock_sep_chars);
         }
+        g_signal_handlers_block_by_func (custom_cbutton, (gpointer) csv_tximp_preview_sep_button_cb, this);
+        g_signal_handlers_block_by_func (custom_entry, (gpointer) csv_tximp_preview_sep_button_cb, this);
         gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(custom_cbutton),
-                !separators.empty());
+                                      !separators.empty());
         gtk_entry_set_text (GTK_ENTRY(custom_entry), separators.c_str());
+        g_signal_handlers_unblock_by_func (custom_cbutton, (gpointer) csv_tximp_preview_sep_button_cb, this);
+        g_signal_handlers_unblock_by_func (custom_entry, (gpointer) csv_tximp_preview_sep_button_cb, this);
+        csv_tximp_preview_sep_button_cb (GTK_WIDGET (custom_cbutton), this);
     }
 
     // Repopulate the parsed data table
@@ -1872,7 +1885,7 @@ CsvImpTransAssist::assist_file_page_prepare ()
         g_free (starting_dir);
     }
 
-    /* Disable the Forward Assistant Button */
+    /* Disable the "Next" Assistant Button */
     gtk_assistant_set_page_complete (csv_imp_asst, account_match_page, false);
 }
 
@@ -1920,7 +1933,7 @@ CsvImpTransAssist::assist_preview_page_prepare ()
 
         tx_imp->req_mapped_accts (false);
 
-        /* Disable the Forward Assistant Button */
+        /* Disable the "Next" Assistant Button */
         gtk_assistant_set_page_complete (csv_imp_asst, preview_page, false);
 
         /* Load the data into the treeview. */
@@ -1949,7 +1962,7 @@ CsvImpTransAssist::assist_account_match_page_prepare ()
     gtk_widget_set_sensitive (account_match_view, true);
     gtk_widget_set_sensitive (account_match_btn, true);
 
-    /* Enable the Forward Assistant Button */
+    /* Enable the "Next" Assistant Button */
     gtk_assistant_set_page_complete (csv_imp_asst, account_match_page,
                csv_tximp_acct_match_check_all (store));
 }
@@ -2065,9 +2078,22 @@ CsvImpTransAssist::assist_summary_page_prepare ()
     gen.add_messages_domain(GETTEXT_PACKAGE);
 
     auto text = std::string("<span size=\"medium\"><b>");
+    try
+    {
     /* Translators: {1} will be replaced with a filename */
-    text += (bl::format (bl::translate ("The transactions were imported from file '{1}'.")) % m_file_name).str(gen(""));
-    text += "</b></span>";
+      text += (bl::format (bl::translate ("The transactions were imported from file '{1}'.")) % m_file_name).str(gnc_get_locale());
+        text += "</b></span>";
+    }
+    catch (const bl::conv::conversion_error& err)
+    {
+        PERR("Transcoding error: %s", err.what());
+        text += "The transactions were imported from the file.</b></span>";
+    }
+    catch (const bl::conv::invalid_charset_error& err)
+    {
+        PERR("Invalid charset error: %s", err.what());
+        text += "The transactions were imported from the file.</b></span>";
+    }
     gtk_label_set_markup (GTK_LABEL(summary_label), text.c_str());
 }
 

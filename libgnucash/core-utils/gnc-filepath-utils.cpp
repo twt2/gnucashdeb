@@ -64,6 +64,7 @@ extern "C" {
 #endif
 }
 
+#include "gnc-locale-utils.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/locale.hpp>
 #include <iostream>
@@ -333,6 +334,12 @@ gnc_path_find_localized_html_file (const gchar *file_name)
 static auto gnc_userdata_home = bfs::path();
 static auto gnc_userconfig_home = bfs::path();
 static auto build_dir = bfs::path();
+/*Provide static-stored strings for gnc_userdata_home and
+ * gnc_userconfig_home to ensure that the cstrings don't go out of
+ * scope when gnc_userdata_dir and gnc_userconfig_dir return them.
+ */
+static std::string gnc_userdata_home_str;
+static std::string gnc_userconfig_home_str;
 
 static bool dir_is_descendant (const bfs::path& path, const bfs::path& base)
 {
@@ -373,8 +380,8 @@ gnc_validate_directory (const bfs::path &dirname)
          * we need to overrule it during build (when guile interferes)
          * and testing.
          */
-	bfs::path home_dir(g_get_home_dir(), cvt);
-	home_dir.imbue(bfs_locale);
+        bfs::path home_dir(g_get_home_dir(), cvt);
+        home_dir.imbue(bfs_locale);
         auto homedir_exists = bfs::exists(home_dir);
         auto is_descendant = dir_is_descendant (dirname, home_dir);
         if (!homedir_exists && is_descendant)
@@ -446,10 +453,10 @@ copy_recursive(const bfs::path& src, const bfs::path& dest)
             string cur_str = direntry->path().string();
 #endif
             auto cur_len = cur_str.size();
-	    string rel_str(cur_str, old_len, cur_len - old_len);
-	    bfs::path relpath(rel_str, cvt);
+            string rel_str(cur_str, old_len, cur_len - old_len);
+            bfs::path relpath(rel_str, cvt);
             auto newpath = bfs::absolute (relpath.relative_path(), dest);
-	    newpath.imbue(bfs_locale);
+            newpath.imbue(bfs_locale);
             bfs::copy(direntry->path(), newpath);
         }
     }
@@ -457,7 +464,7 @@ copy_recursive(const bfs::path& src, const bfs::path& dest)
     {
         g_warning("An error occured while trying to migrate the user configation from\n%s to\n%s"
                   "(Error: %s)",
-                  src.string().c_str(), gnc_userdata_home.string().c_str(),
+                  src.string().c_str(), gnc_userdata_home_str.c_str(),
                   ex.what());
         return false;
     }
@@ -525,7 +532,6 @@ get_userdata_home(void)
     auto try_tmp_dir = true;
     auto userdata_home = get_user_data_dir();
 
-
     /* g_get_user_data_dir doesn't check whether the path exists nor attempts to
      * create it. So while it may return an actual path we may not be able to use it.
      * Let's check that now */
@@ -549,9 +555,9 @@ get_userdata_home(void)
        Hopefully we can always write there. */
     if (try_tmp_dir)
     {
-	bfs::path newpath(g_get_tmp_dir (), cvt);
+        bfs::path newpath(g_get_tmp_dir (), cvt);
         userdata_home = newpath / g_get_user_name ();
-	userdata_home.imbue(bfs_locale);
+        userdata_home.imbue(bfs_locale);
     }
     g_assert(!userdata_home.empty());
 
@@ -587,9 +593,8 @@ static std::string migrate_gnc_datahome()
     gen.add_messages_path(gnc_path_get_datadir());
     gen.add_messages_domain(PACKAGE);
 
-//    std::locale::global(gen(""));
     std::stringstream migration_msg;
-    migration_msg.imbue(gen(""));
+    migration_msg.imbue(gnc_get_locale());
 
     /* Step 1: copy directory $HOME/.gnucash to $GNC_DATA_HOME */
     auto full_copy = copy_recursive (old_dir, gnc_userdata_home);
@@ -673,7 +678,7 @@ static std::string migrate_gnc_datahome()
     if (full_copy)
     {
         migration_msg
-        << bl::translate ("Your gnucash metadata has been migrated .") << std::endl << std::endl
+        << bl::translate ("Your gnucash metadata has been migrated.") << std::endl << std::endl
         /* Translators: this refers to a directory name. */
         << bl::translate ("Old location:") << " " << old_dir.string() << std::endl
         /* Translators: this refers to a directory name. */
@@ -726,6 +731,7 @@ static std::string migrate_gnc_datahome()
 
     return migration_msg.str ();
 }
+
 
 
 #if defined G_OS_WIN32 ||defined MAC_INTEGRATION
@@ -808,6 +814,7 @@ gnc_file_path_init_config_home (void)
             "(Error: %s)", ex.what());
         }
     }
+    gnc_userconfig_home_str = gnc_userconfig_home.string();
 }
 
 // Initialize the user's config directory for gnucash
@@ -891,7 +898,7 @@ gnc_file_path_init_data_home (void)
             "(Error: %s)", ex.what());
         }
     }
-
+    gnc_userdata_home_str = gnc_userdata_home.string();
     return gnc_userdata_home_exists;
 }
 
@@ -907,6 +914,7 @@ char *
 gnc_filepath_init (void)
 {
     gnc_userconfig_home = get_userconfig_home() / path_package;
+    gnc_userconfig_home_str = gnc_userconfig_home.string();
 
     gnc_file_path_init_config_home ();
     auto gnc_userdata_home_exists = gnc_file_path_init_data_home ();
@@ -976,8 +984,7 @@ gnc_userdata_dir (void)
 {
     if (gnc_userdata_home.empty())
         gnc_filepath_init();
-
-    return gnc_userdata_home.string().c_str();
+    return g_strdup(gnc_userdata_home_str.c_str());
 }
 
 /** @fn const gchar * gnc_userconfig_dir ()
@@ -999,7 +1006,7 @@ gnc_userconfig_dir (void)
     if (gnc_userdata_home.empty())
         gnc_filepath_init();
 
-    return gnc_userconfig_home.string().c_str();
+    return gnc_userconfig_home_str.c_str();
 }
 
 static const bfs::path&
@@ -1015,6 +1022,35 @@ gnc_userdata_dir_as_path (void)
         gnc_filepath_init();
 
     return gnc_userdata_home;
+}
+
+gchar *gnc_file_path_absolute (const gchar *prefix, const gchar *relative)
+{
+    bfs::path path_relative (relative);
+    path_relative.imbue (bfs_locale);
+    bfs::path path_absolute;
+    bfs::path path_head;
+
+    if (prefix == nullptr)
+    {
+        const gchar *doc_dir = g_get_user_special_dir (G_USER_DIRECTORY_DOCUMENTS);
+        if (doc_dir == nullptr)
+            path_head = bfs::path (gnc_userdata_dir ()); // running as root maybe
+        else
+            path_head = bfs::path (doc_dir);
+
+        path_head.imbue (bfs_locale);
+        path_absolute = absolute (path_relative, path_head);
+    }
+    else
+    {
+        bfs::path path_head (prefix);
+        path_head.imbue (bfs_locale);
+        path_absolute = absolute (path_relative, path_head);
+    }
+    path_absolute.imbue (bfs_locale);
+
+    return g_strdup (path_absolute.string().c_str());
 }
 
 /** @fn gchar * gnc_build_userdata_path (const gchar *filename)

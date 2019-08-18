@@ -177,43 +177,42 @@ construct gnc:make-gnc-monetary and use gnc:monetary->string instead.")
 ;; yes.  I think that would still be faster.
 
 (define (gnc:make-stats-collector)
-  (let ;;; values
-      ((value 0)
-       (totalitems 0)
-       (max -10E9)
-       (min 10E9))
-    (let ;;; Functions to manipulate values
-	((adder (lambda (amount)
-		  (if (number? amount) 
-		      (begin
-			(set! value (+ amount value))
-			(if (> amount max)
-			    (set! max amount))
-			(if (< amount min)
-			    (set! min amount))
-			(set! totalitems (+ 1 totalitems))))))
-	 (getnumitems (lambda () totalitems))
-	 (gettotal (lambda () value))
-	 (getaverage (lambda () (/ value totalitems)))
-	 (getmax (lambda () max))
-	 (getmin (lambda () min))
-	 (reset-all (lambda ()
-		    (set! value 0)
-		    (set! max -10E9)
-		    (set! min 10E9)
-		    (set! totalitems 0))))
-      (lambda (action value)  ;;; Dispatch function
-	(case action
-	  ((add) (adder value))
-	  ((total) (gettotal))
-	  ((average) (getaverage))
-	  ((numitems) (getnumitems))
-	  ((getmax) (getmax))
-	  ((getmin) (getmin))
-	  ((reset) (reset-all))
+  (issue-deprecation-warning
+   "gnc:make-stats-collector is obsolete. use srfi-1 functions instead.")
+  (let ((value 0)
+        (totalitems 0)
+        (maximum -inf.0)
+        (minimum +inf.0))
+    (let ((adder (lambda (amount)
+                   (when (number? amount)
+                     (set! value (+ amount value))
+                     (if (> amount maximum) (set! maximum amount))
+                     (if (< amount minimum) (set! minimum amount))
+                     (set! totalitems (1+ totalitems)))))
+          (getnumitems (lambda () totalitems))
+          (gettotal (lambda () value))
+          (getaverage (lambda () (/ value totalitems)))
+          (getmax (lambda () maximum))
+          (getmin (lambda () minimum))
+          (reset-all (lambda ()
+                       (set! value 0)
+                       (set! maximum -inf.0)
+                       (set! minimum +inf.0)
+                       (set! totalitems 0))))
+      (lambda (action value)
+        (case action
+          ((add) (adder value))
+          ((total) (gettotal))
+          ((average) (getaverage))
+          ((numitems) (getnumitems))
+          ((getmax) (getmax))
+          ((getmin) (getmin))
+          ((reset) (reset-all))
           (else (gnc:warn "bad stats-collector action: " action)))))))
 
 (define (gnc:make-drcr-collector)
+  (issue-deprecation-warning
+   "gnc:make-drcr-collector is obsolete. use srfi-1 functions instead.")
   (let ;;; values
       ((debits 0)
        (credits 0)
@@ -265,6 +264,8 @@ construct gnc:make-gnc-monetary and use gnc:monetary->string instead.")
 ;;
 ;; New Example: But now USD is a <gnc:commodity*> and 123.4 a
 ;; <gnc:numeric>, so there is no simple example anymore.
+;
+;; Note amounts are rounded to the commodity's SCU.
 ;;
 ;; The functions:
 ;;   'add <commodity> <amount>: Add the given amount to the 
@@ -284,36 +285,33 @@ construct gnc:make-gnc-monetary and use gnc:monetary->string instead.")
 ;;       (even the fact that any commodity showed up at all).
 ;;   'getpair <commodity> signreverse?: Returns the two-element-list
 ;;       with the <commodity> and its corresponding balance. If
-;;       <commodity> doesn't exist, the balance will be
-;;       (gnc-numeric-zero). If signreverse? is true, the result's
-;;       sign will be reversed.
-;;   (internal) 'list #f #f: get the association list of 
-;;       commodity->numeric-collector
+;;       <commodity> doesn't exist, the balance will be 0. If
+;;       signreverse? is true, the result's sign will be reversed.
+;;   'getmonetary <commodity> signreverse?: Returns a gnc-monetary
+;;       of the <commodity> and its corresponding balance. If
+;;       <commodity> doesn't exist, the balance will be 0. If
+;;       signreverse? is true, the result's sign will be reversed.
+;;   (internal) 'list #f #f: get the list of
+;;       (cons commodity numeric-collector)
 
 (define (gnc:make-commodity-collector)
-  (let 
-      ;; the association list of (commodity -> value-collector) pairs.
-      ((commoditylist '()))
+  ;; the association list of (commodity . value-collector) pairs.
+  (let ((commoditylist '()))
     
-    ;; helper function to add a commodity->value pair to our list. 
+    ;; helper function to add a (commodity . value) pair to our list.
     ;; If no pair with this commodity exists, we will create one.
     (define (add-commodity-value commodity value)
-      ;; lookup the corresponding pair
       (let ((pair (assoc commodity commoditylist))
             (rvalue (gnc-numeric-convert
                      value
                      (gnc-commodity-get-fraction commodity) GNC-RND-ROUND)))
-	(if (not pair)
-	    (begin
-	      ;; create a new pair, using the gnc:value-collector
-	      (set! pair (list commodity (gnc:make-value-collector)))
-	      ;; and add it to the alist
-	      (set! commoditylist (cons pair commoditylist))))
-	;; add the value
+	(unless pair
+	  (set! pair (list commodity (gnc:make-value-collector)))
+	  (set! commoditylist (cons pair commoditylist)))
 	((cadr pair) 'add rvalue)))
     
     ;; helper function to walk an association list, adding each
-    ;; (commodity -> collector) pair to our list at the appropriate 
+    ;; (commodity . collector) pair to our list at the appropriate
     ;; place
     (define (add-commodity-clist clist)
       (cond ((null? clist) '())
@@ -332,25 +330,24 @@ construct gnc:make-gnc-monetary and use gnc:monetary->string instead.")
     ;; helper function walk the association list doing a callback on
     ;; each key-value pair.
     (define (process-commodity-list fn clist)
-      (map 
-       (lambda (pair) (fn (car pair) 
-			  ((cadr pair) 'total #f)))
+      (map
+       (lambda (pair)
+         (fn (car pair) ((cadr pair) 'total #f)))
        clist))
 
-    ;; helper function which is given a commodity and returns, if
-    ;; existing, a list (gnc:commodity gnc:numeric).
+    ;; helper function which is given a commodity and returns a list
+    ;; (list gnc:commodity number).
     (define (getpair c sign?)
       (let* ((pair (assoc c commoditylist))
-             (total (and pair ((cadr pair) 'total #f))))
-	(list c (if pair (if sign? (- total) total) 0))))
+             (total (if pair ((cadr pair) 'total #f) 0)))
+	(list c (if sign? (- total) total))))
 
-    ;; helper function which is given a commodity and returns, if
-    ;; existing, a <gnc:monetary> value.
+    ;; helper function which is given a commodity and returns a
+    ;; <gnc:monetary> value, whose amount may be 0.
     (define (getmonetary c sign?)
       (let* ((pair (assoc c commoditylist))
-             (total (and pair ((cadr pair) 'total #f))))
-	(gnc:make-gnc-monetary
-         c (if pair (if sign? (- total) total) 0))))
+             (total (if pair ((cadr pair) 'total #f) 0)))
+	(gnc:make-gnc-monetary c (if sign? (- total) total))))
     
     ;; Dispatch function
     (lambda (action commodity amount)
@@ -373,15 +370,15 @@ construct gnc:make-gnc-monetary and use gnc:monetary->string instead.")
     negated))
 
 (define (gnc:commodity-collectorlist-get-merged collectorlist)
+  (issue-deprecation-warning
+   "gnc:commodity-collectorlist-get-merged is now deprecated.")
   (let ((merged (gnc:make-commodity-collector)))
     (for-each (lambda (collector) (merged 'merge collector #f)) collectorlist)
     merged))
 
 ;; Returns zero if all entries in this collector are zero.
 (define (gnc-commodity-collector-allzero? collector)
-  (every zero?
-         (map gnc:gnc-monetary-amount
-              (collector 'format gnc:make-gnc-monetary #f))))
+  (every zero? (map cdr (collector 'format cons #f))))
 
 ;; add any number of gnc-monetary objects into a commodity-collector
 ;; usage: (gnc:monetaries-add monetary1 monetary2 ...)
@@ -398,9 +395,10 @@ construct gnc:make-gnc-monetary and use gnc:monetary->string instead.")
 ;; usage: (gnc:monetaries-add monetary1 monetary2 ...)
 ;; output: a monetary object
 (define (gnc:monetary+ . monetaries)
-  (let ((coll (apply gnc:monetaries-add monetaries)))
-    (if (= 1 (gnc-commodity-collector-commodity-count coll))
-        (car (coll 'format gnc:make-gnc-monetary #f))
+  (let* ((coll (apply gnc:monetaries-add monetaries))
+         (list-of-monetaries (coll 'format gnc:make-gnc-monetary #f)))
+    (if (null? (cdr list-of-monetaries))
+        (car list-of-monetaries)
         (throw "gnc:monetary+ expects 1 currency " (gnc:strify monetaries)))))
 
 ;; get the account balance at the specified date. if include-children?
@@ -429,14 +427,21 @@ flawed. see report-utilities.scm. please update reports.")
 ;; this function will scan through the account splitlist, building
 ;; a list of balances along the way at dates specified in dates-list.
 ;; in:  account
-;;      dates-list (list of time64)
-;;      ignore-closing? - if #true, will skip closing entries
+;;      dates-list (list of time64) - NOTE: IT WILL BE SORTED
+;;      split->amount - an unary lambda. calling (split->amount split)
+;;      returns a number, or #f which effectively skips the split.
 ;; out: (list bal0 bal1 ...), each entry is a gnc-monetary object
-(define* (gnc:account-get-balances-at-dates account dates-list #:key ignore-closing?)
+;;
+;; NOTE a prior incarnation accepted a #:ignore-closing? boolean
+;; keyword which can be reproduced via #:split->amount (lambda (s)
+;; (and (not (xaccTransGetIsClosingTxn (xaccSplitGetParent s)))
+;; (xaccSplitGetAmount s)))
+(define* (gnc:account-get-balances-at-dates
+          account dates-list #:key (split->amount xaccSplitGetAmount))
   (define (amount->monetary bal)
     (gnc:make-gnc-monetary (xaccAccountGetCommodity account) bal))
   (let loop ((splits (xaccAccountGetSplitList account))
-             (dates-list dates-list)
+             (dates-list (stable-sort! dates-list <))
              (currentbal 0)
              (lastbal 0)
              (balancelist '()))
@@ -458,10 +463,7 @@ flawed. see report-utilities.scm. please update reports.")
      (else
       (let* ((this (car splits))
              (rest (cdr splits))
-             (currentbal (if (and ignore-closing?
-                                  (xaccTransGetIsClosingTxn (xaccSplitGetParent this)))
-                             currentbal
-                             (+ (xaccSplitGetAmount this) currentbal)))
+             (currentbal (+ (or (split->amount this) 0) currentbal))
              (next (and (pair? rest) (car rest))))
 
         (cond
@@ -754,6 +756,8 @@ flawed. see report-utilities.scm. please update reports.")
 ;; *ignores* any closing entries
 (define (gnc:account-get-pos-trans-total-interval
 	 account-list type start-date end-date)
+  (issue-deprecation-warning
+   "(gnc:account-get-pos-trans-total-interval) is deprecated.")
   (let* ((str-query (qof-query-create-for-splits))
 	 (sign-query (qof-query-create-for-splits))
 	 (total-query #f)
@@ -973,14 +977,22 @@ flawed. see report-utilities.scm. please update reports.")
 ;;   budget - budget to use
 ;;   children - list of children
 ;;   period - budget period to use
+;;   currency - currency to use to accumulate the balances
 ;;
 ;; Return value:
 ;;   budget value to use for account for specified period.
-(define (budget-account-sum budget children period)
-  (apply + (map
-            (lambda (child)
-              (gnc:get-account-period-rolledup-budget-value budget child period))
-            children)))
+(define (budget-account-sum budget children period currency)
+  (let ((pricedb (gnc-pricedb-get-db (gnc-get-current-book)))
+        (start (gnc-budget-get-period-start-date budget period)))
+    (apply + (map
+              (lambda (child)
+                (gnc-pricedb-convert-balance-nearest-price-t64
+                  pricedb
+                  (gnc:get-account-period-rolledup-budget-value budget child period)
+                  (xaccAccountGetCommodity child)
+                  currency
+                  start))
+              children))))
 
 ;; Calculate the value to use for the budget of an account for a specific period.
 ;; - If the account has a budget value set for the period, use it
@@ -996,10 +1008,11 @@ flawed. see report-utilities.scm. please update reports.")
 ;;   sum of all budgets for list of children for specified period.
 (define (gnc:get-account-period-rolledup-budget-value budget acct period)
   (let* ((bgt-set? (gnc-budget-is-account-period-value-set budget acct period))
-         (children (gnc-account-get-children acct)))
+         (children (gnc-account-get-children acct))
+         (currency (xaccAccountGetCommodity acct)))
     (cond
      (bgt-set? (gnc-budget-get-account-period-value budget acct period))
-     ((not (null? children)) (budget-account-sum budget children period))
+     ((not (null? children)) (budget-account-sum budget children period currency))
      (else 0))))
 
 ;; Sums rolled-up budget values for a single account from start-period (inclusive) to
