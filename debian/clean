@@ -1,3 +1,7 @@
+## Debian CI:
+debian/.gitlab-ci.yml
+debian/.yamllint
+
 src/optional/python-bindings/tests/*.pyc
 src/optional/python-bindings/tests/runTests.py.log
 src/optional/python-bindings/tests/runTests.py.trs
