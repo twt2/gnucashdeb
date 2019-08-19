@@ -2,7 +2,7 @@ Source: gnucash
 Section: gnome
 Priority: optional
 Maintainer: Dmitry Smirnov <onlyjob@debian.org>
-Standards-Version: 4.1.4
+Standards-Version: 4.4.0
 Build-Depends: debhelper (>= 11~), pkg-config, dh-python
     ,cmake
     ,googletest
