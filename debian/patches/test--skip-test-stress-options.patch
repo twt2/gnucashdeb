@@ -6,8 +6,8 @@ Description: skip broken test
 
 --- a/gnucash/report/standard-reports/test/CMakeLists.txt
 +++ b/gnucash/report/standard-reports/test/CMakeLists.txt
-@@ -13,9 +13,8 @@
-   test-income-gst.scm
+@@ -16,9 +16,8 @@
+   test-average-balance.scm
  )
  
  set(scm_test_with_textual_ports_SOURCES

@@ -1,2 +1,1 @@
-test--fix-test-transaction.scm.patch
-test--skip-test-stress-options.patch
+#test--skip-test-stress-options.patch
