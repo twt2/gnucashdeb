@@ -103,6 +103,12 @@ endif
 override_dh_strip:
 	dh_strip --dbgsym-migration='gnucash-dbg (<< 1:2.6.13~)' -X.go
 
+## .go files are not what dwz expects:
+## * DWARF compression not beneficial
+## * Section overlap detected
+override_dh_dwz:
+	dh_dwz -X.go
+
 override_dh_gencontrol:
 	dh_gencontrol -- -Vmy:Built-Using="$(foreach pkg,googletest,$(word 2,$(shell dpkg --status $(pkg) | grep ^Package)) (=$(word 2,$(shell dpkg --status $(pkg) | grep Version))),)"
 
