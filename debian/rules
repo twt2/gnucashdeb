@@ -16,6 +16,8 @@ endif
 # reduce overlinking
 #export DEB_LDFLAGS_MAINT_APPEND += -Wl,--as-needed
 
+export DEB_CXXFLAGS_MAINT_APPEND= -Wno-error=stringop-truncation
+
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
 export GMOCK_ROOT=$(CURDIR)/.build/__gtest/googlemock
